@@ -1,0 +1,109 @@
+"======================================================"
+"Functions, blocks, dictionaries, arrays & types"
+"======================================================"
+
+str "done"
+num 10
+bool (2>1)
+arr #("one" "two" "three")
+dict #{
+	name "john"
+	surname "doe"
+	age 33
+}
+
+func {
+	print "something"
+}
+
+class #{
+	name "myname"
+
+	fun {
+		print "doing sth from withing class"
+	}
+
+	funWithArgs {
+		print "class class func with arg: " + $(get ~ 0)
+	}
+}
+
+exec func
+
+exec {
+	print "done"
+}
+exec {
+	print "arg: " + $(get ~ 0)
+} #("myarg")
+
+print $(get class "name")
+exec $(get class "fun")
+exec $(get class "funWithArgs") #("somearg")
+
+//print $(get class "name")
+
+print "str = " + str + ", type: " + $(type str)
+print "num = " + num + ", type: " + $(type num)
+print "bool = " + bool + ", type: " + $(type bool)
+print "arr = " + arr + ", type: " + $(type arr)
+print "dict = " + dict + ", type: " + $(type dict)
+print "func = " + func + ", type: " + $(type func)
+
+proc {
+	print "in proc"
+}
+
+exec proc
+proc:
+
+proc_with_arg {
+	print "proc_with_arg: " + $(get ~ 0)
+}
+exec proc_with_arg #("somearg")
+proc_with_arg: "somearg"
+
+proc_with_args {
+	print "proc_with_args: " + $(get ~ 0) + ", " + $(get ~ 1)
+}
+
+exec proc_with_args #("argA" "argB")
+proc_with_args: "argA" "argB"
+
+func_with_args {
+	argA $(get ~ 0)
+	argB $(get ~ 1)
+	print "func_with_args: " + argA + ", " + argB
+	return argA + argB
+}
+
+print $(exec func_with_args #(1 2))
+print $(func_with_args: 1 2)
+
+some_var 10
+print $(object "some_var")
+
+array_of_funcs {
+	print "something"
+} {
+	print "something else"
+}
+
+exec $(get array_of_funcs 0)
+exec $(get array_of_funcs 1)
+
+exec $(get $(object "array_of_funcs") 0)
+
+print class.name
+class.funWithArgs: 10
+
+one_line_dict #{ name "john"; surname "doe" }
+
+if (one_line_dict.name == "john") { 
+	print "YAY"
+} { 
+	print "not john" 
+}
+print one_line_dict
+//exec multiply
+//print $(exec multiply #(5))

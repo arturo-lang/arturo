@@ -1,0 +1,62 @@
+"==========================="
+"Style Test"
+"==========================="
+
+str 	"some string"
+num 	10
+arr 	1 2 3
+arrB	#(4 5 6)
+dict 	#{
+	name "john"
+	surname "doe"
+	registered true
+}
+
+func: 	{
+	print "doing something"
+}
+
+func
+
+class #{
+	sub: {
+		print "in sub: " + @0
+	}
+}
+
+class.sub 100
+
+file #{
+	delete: {
+		print "deleting file: " + @0
+	}
+}
+
+file.delete "/my/file/path.txt"
+
+def: {
+	args @0
+	print args
+
+	return {
+		12
+	}
+}
+
+x: $(def #(1 2 3))
+
+x
+
+cl #{
+	funA: {
+		print "in funA"
+	}
+
+	funB: {
+		print "in funB"
+		print this
+	}
+}
+
+cl.funA
+cl.funB

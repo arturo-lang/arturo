@@ -1,0 +1,36 @@
+a 1
+b "str"
+c true
+d #(1 2 3)
+e #{
+	name "john"
+	surname "doe"
+}
+
+add: [a,b]{ 
+	a + b 
+}
+
+even: [x]{ return (x%2==0) }
+odd: { (0%2!=0) }
+
+print $(add 1 2)
+foreach $(range 1 10) [num]{
+	print num + "->" + $(even num)
+}
+print $(odd 10)
+
+
+fibo: [x] {
+	if (x<2) { 1 } {
+		$(fibo x-1) + $(fibo x-2)
+	}
+}
+
+foreach $(range 0 20) [n]{
+	print "fibo(" + n + ")= " + $(fibo n)
+}
+
+~ add [x,y]{
+
+}

@@ -1,0 +1,56 @@
+
+str "some string"
+num 666
+bool true
+arr #(1 2 3)
+dict #{
+	name "john"
+	surname "doe"
+
+	func: {
+		print "do something"
+	}
+}
+
+addThem: {
+	@0+@1
+}
+
+print $(addThem 1 2)
+dict.func
+
+print $(min #(1 2 3))
+print $(md5 "Hello world!")
+print $(sha256 "Hello world!")
+print $(date.now)
+print $(time.now)
+print $(datetime.now)
+print $(month $(date.now))
+print $(day $(date.now))
+print $(month $(datetime.now))
+print $(day $(datetime.now))
+print $(uuid)
+print $(path.contents "..")
+print "Current path: " + $(path.current)
+print "Dir: " + $(path.filename $(path.current))
+
+filePath: "/some/dir/file.txt"
+
+print "folder: " + $(path.directory filePath)
+print "filename: " + $(path.filename filePath)
+print "extension: " + $(path.extension filePath)
+
+print $(split "one,two,three" ",")
+print $(split "one,two,three" "/[e]/")
+print $(split "Hello world" "")
+
+print $(is.match "hello" "/h/")
+print $(matches "hello w$#$llo" "([A-Za-z]+)")
+
+dictio: #{
+	name "john"
+	surname "doe"
+	age 33
+
+}
+

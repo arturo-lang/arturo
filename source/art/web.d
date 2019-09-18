@@ -1,0 +1,58 @@
+/************************************************
+ * Arturo
+ * 
+ * The Minimal Declarative-Like Language
+ * (c) 2019 Ioannis Zafeiropoulos
+ *
+ * @file: art/web.d
+ ************************************************/
+
+module art.web;
+
+// Imports
+
+import std.conv;
+import std.file;
+import std.net.curl;
+import std.stdio;
+import std.string;
+
+import parser.expression;
+import parser.expressions;
+import parser.statements;
+
+import compiler;
+
+import value;
+
+import func;
+import globals;
+
+import panic;
+
+// Functions
+
+class Web__Read_ : Func {
+	this() { super("web.read","download string contents from webpage using given URL",[[sV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias url = S!(v,0);
+
+		string contents = to!string(std.net.curl.get(url));
+
+		return new Value(contents);
+	}
+}
+
+class Web__Post_ : Func {
+	this() { super("web.post","perform POST request using given URL and data",[[sV,sV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias url = S!(v,0);
+		alias data = S!(v,1);
+
+		string contents = to!string(std.net.curl.post(url,data));
+
+		return new Value(contents);
+	}
+}

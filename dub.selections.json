@@ -1,0 +1,21 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"arsd-official": "4.0.2",
+		"botan": "1.12.10",
+		"botan-math": "1.0.3",
+		"diet-ng": "1.6.0",
+		"dyaml": "0.8.0",
+		"eventcore": "0.8.46",
+		"libasync": "0.8.4",
+		"libevent": "2.0.2+2.0.16",
+		"memutils": "0.4.13",
+		"mir-linux-kernel": "1.0.1",
+		"openssl": "1.1.6+1.0.1g",
+		"stdx-allocator": "2.77.5",
+		"taggedalgebraic": "0.11.4",
+		"tinyendian": "0.2.0",
+		"vibe-core": "1.6.2",
+		"vibe-d": "0.8.5"
+	}
+}

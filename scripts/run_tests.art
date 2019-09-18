@@ -1,0 +1,20 @@
+"Running tests..."
+
+foreach $(dir "../tests") {
+	test @
+	if $(contains test ".art") {
+		title $(replace test ".art" "")
+
+		sourcePath "tests/" + test
+		resultPath "../tests/" + title + ".out"
+
+		sourceResult $(shell "./arturo " + sourcePath)
+		result $(file.read resultPath)
+
+		if (sourceResult==result) { 
+			print title + ": OK" 
+		} { 
+			print title + ": error :(" 
+		}
+	}
+}

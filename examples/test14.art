@@ -1,0 +1,77 @@
+"============================="
+"Testing lib functions"
+"============================="
+
+log @(1 2 3)
+print $(size @(1 2 3))
+
+sayHello= {
+	print "Hello " + $(get ~ 0)
+}
+
+sayHello "John"
+
+print "test13.art -> exists? : " + $(file:exists "test13.art")
+print "examples/test13.art -> exists? : " + $(file:exists "examples/test13.art")
+
+file:create= { 
+	print "creating file..."
+}
+
+file:create
+
+// it would be great to be able to do sth like this 
+// (equivalent to the statement above):
+//
+// file {
+//		create= {
+//			print "creating file"
+//		}	
+// }
+
+print $(file:read "test13.art")
+file:write "test14.out" "yes,it worked! damnn!"
+
+dict {
+	name "john"
+	surname "zafeiropoulos"
+}
+
+print "Uppercase string = " + $(uppercase "Hello World")
+print "Lowercase string = " + $(lowercase "Hello World")
+print "Stripped = " + $(strip "   Hello World  ")
+print "Replaced = " + $(replace "Hello World" "World" "Mundo")
+print "String contains = " + $(contains "Hello World" "W")
+print "String contains = " + $(contains "Hello World" "w")
+print "Array contains = " + $(contains @(1 2 3) 1)
+print "Array contains = " + $(contains @(1 2 3) "boom")
+print "Dictionary contains = " + $(contains dict "name")
+print "Dictionary contains = " + $(contains dict "boom")
+//$#
+//something "done"
+//print x
+
+print $(get @(1 2 3) 2)
+print $(sort $(keys dict))
+
+print $(sort @(4 1 3 2))
+
+print $(json:generate dict)
+print $(json:parse "[5,1,2,3]")
+
+print "random number: " + $(random 0 10)
+print "sin(0)=" + $(sin 0)
+print "sin(0.5)=" + $(sin 0.5)
+print "sin(1)=" + $(sin 1)
+
+print "round(1.34)=" + $(round 1.34)
+
+print "first = " + $(first @("one" "two" "three"))
+print "tail = " + $(tail @("one" "two" "three"))
+print "dict = " + dict
+
+//print $(web:read "http://iswift.org")
+
+
+//if 10 10 10 10
+//print "Wrong contains = " + $(contains 10 5)

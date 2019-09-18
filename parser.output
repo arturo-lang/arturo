@@ -1,0 +1,1439 @@
+Terminals unused in grammar
+
+    "Function Identifier"
+    "."
+    "!"
+    ";"
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 identifier: "ID"
+
+    2 identifiers: identifiers "," identifier
+    3            | identifier
+
+    4 argument: identifier
+    5         | "Number"
+    6         | "String Literal"
+    7         | "Boolean"
+    8         | "Null"
+
+    9 expression: argument
+   10           | "(" expression ")"
+   11           | expression "+" expression
+   12           | expression "-" expression
+   13           | expression "*" expression
+   14           | expression "/" expression
+   15           | expression "%" expression
+   16           | expression "^" expression
+   17           | expression "==" expression
+   18           | expression "<=" expression
+   19           | expression ">=" expression
+   20           | expression "<" expression
+   21           | expression ">" expression
+   22           | expression "!=" expression
+   23           | "#" "{" statements "}"
+   24           | "[" "]" "{" statements "}"
+   25           | "[" identifiers "]" "{" statements "}"
+   26           | "{" statements "}"
+   27           | "$" "(" statement ")"
+   28           | "#" "(" expression_list ")"
+
+   29 expression_list: expression
+   30                | expression_list expression
+
+   31 statement: expression
+   32          | identifier expression_list
+   33          | identifier ":" expression_list
+
+   34 statements: statements "End Of Line" statement
+   35           | statements "," statement
+   36           | statements "End Of Line"
+   37           | statement
+   38           | %empty
+
+   39 program: statements
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    "ID" <str> (258) 1
+    "Function Identifier" <str> (259)
+    "Number" <str> (260) 5
+    "String Literal" <str> (261) 6
+    "Null" <str> (262) 8
+    "Boolean" <str> (263) 7
+    "==" <str> (264) 17
+    "<=" <str> (265) 18
+    "<" <str> (266) 20
+    ">=" <str> (267) 19
+    ">" <str> (268) 21
+    "!=" <str> (269) 22
+    "+" <str> (270) 11
+    "-" <str> (271) 12
+    "*" <str> (272) 13
+    "/" <str> (273) 14
+    "%" <str> (274) 15
+    "^" <str> (275) 16
+    "." <str> (276)
+    "#" <str> (277) 23 28
+    "$" <str> (278) 27
+    "(" <str> (279) 10 27 28
+    ")" <str> (280) 10 27 28
+    "{" <str> (281) 23 24 25 26
+    "}" <str> (282) 23 24 25 26
+    "[" <str> (283) 24 25
+    "]" <str> (284) 24 25
+    "," <str> (285) 2 35
+    ":" <str> (286) 33
+    "!" <str> (287)
+    ";" <str> (288)
+    "End Of Line" <str> (289) 34 36
+
+
+Nonterminals, with rules where they appear
+
+    $accept (35)
+        on left: 0
+    identifier <str> (36)
+        on left: 1
+        on right: 2 3 4 32 33
+    identifiers <str> (37)
+        on left: 2 3
+        on right: 2 25
+    argument <compo> (38)
+        on left: 4 5 6 7 8
+        on right: 9
+    expression <compo> (39)
+        on left: 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
+        on right: 10 11 12 13 14 15 16 17 18 19 20 21 22 29 30 31
+    expression_list <compo> (40)
+        on left: 29 30
+        on right: 28 30 32 33
+    statement <compo> (41)
+        on left: 31 32 33
+        on right: 27 34 35 37
+    statements <compo> (42)
+        on left: 34 35 36 37 38
+        on right: 23 24 25 26 34 35 36 39
+    program <compo> (43)
+        on left: 39
+        on right: 0
+
+
+State 0
+
+    0 $accept: . program $end
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 38 (statements)
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 14
+    statements  go to state 15
+    program     go to state 16
+
+
+State 1
+
+    1 identifier: "ID" .
+
+    $default  reduce using rule 1 (identifier)
+
+
+State 2
+
+    5 argument: "Number" .
+
+    $default  reduce using rule 5 (argument)
+
+
+State 3
+
+    6 argument: "String Literal" .
+
+    $default  reduce using rule 6 (argument)
+
+
+State 4
+
+    8 argument: "Null" .
+
+    $default  reduce using rule 8 (argument)
+
+
+State 5
+
+    7 argument: "Boolean" .
+
+    $default  reduce using rule 7 (argument)
+
+
+State 6
+
+   23 expression: "#" . "{" statements "}"
+   28           | "#" . "(" expression_list ")"
+
+    "("  shift, and go to state 17
+    "{"  shift, and go to state 18
+
+
+State 7
+
+   27 expression: "$" . "(" statement ")"
+
+    "("  shift, and go to state 19
+
+
+State 8
+
+   10 expression: "(" . expression ")"
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 21
+
+
+State 9
+
+   26 expression: "{" . statements "}"
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 38 (statements)
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 14
+    statements  go to state 22
+
+
+State 10
+
+   24 expression: "[" . "]" "{" statements "}"
+   25           | "[" . identifiers "]" "{" statements "}"
+
+    "ID"  shift, and go to state 1
+    "]"   shift, and go to state 23
+
+    identifier   go to state 24
+    identifiers  go to state 25
+
+
+State 11
+
+    4 argument: identifier .
+   32 statement: identifier . expression_list
+   33          | identifier . ":" expression_list
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+    ":"               shift, and go to state 26
+
+    $default  reduce using rule 4 (argument)
+
+    identifier       go to state 20
+    argument         go to state 12
+    expression       go to state 27
+    expression_list  go to state 28
+
+
+State 12
+
+    9 expression: argument .
+
+    $default  reduce using rule 9 (expression)
+
+
+State 13
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+   31 statement: expression .
+
+    "=="  shift, and go to state 29
+    "<="  shift, and go to state 30
+    "<"   shift, and go to state 31
+    ">="  shift, and go to state 32
+    ">"   shift, and go to state 33
+    "!="  shift, and go to state 34
+    "+"   shift, and go to state 35
+    "-"   shift, and go to state 36
+    "*"   shift, and go to state 37
+    "/"   shift, and go to state 38
+    "%"   shift, and go to state 39
+    "^"   shift, and go to state 40
+
+    $default  reduce using rule 31 (statement)
+
+
+State 14
+
+   37 statements: statement .
+
+    $default  reduce using rule 37 (statements)
+
+
+State 15
+
+   34 statements: statements . "End Of Line" statement
+   35           | statements . "," statement
+   36           | statements . "End Of Line"
+   39 program: statements .
+
+    ","            shift, and go to state 41
+    "End Of Line"  shift, and go to state 42
+
+    $default  reduce using rule 39 (program)
+
+
+State 16
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 43
+
+
+State 17
+
+   28 expression: "#" "(" . expression_list ")"
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier       go to state 20
+    argument         go to state 12
+    expression       go to state 27
+    expression_list  go to state 44
+
+
+State 18
+
+   23 expression: "#" "{" . statements "}"
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 38 (statements)
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 14
+    statements  go to state 45
+
+
+State 19
+
+   27 expression: "$" "(" . statement ")"
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 46
+
+
+State 20
+
+    4 argument: identifier .
+
+    $default  reduce using rule 4 (argument)
+
+
+State 21
+
+   10 expression: "(" expression . ")"
+   11           | expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "=="  shift, and go to state 29
+    "<="  shift, and go to state 30
+    "<"   shift, and go to state 31
+    ">="  shift, and go to state 32
+    ">"   shift, and go to state 33
+    "!="  shift, and go to state 34
+    "+"   shift, and go to state 35
+    "-"   shift, and go to state 36
+    "*"   shift, and go to state 37
+    "/"   shift, and go to state 38
+    "%"   shift, and go to state 39
+    "^"   shift, and go to state 40
+    ")"   shift, and go to state 47
+
+
+State 22
+
+   26 expression: "{" statements . "}"
+   34 statements: statements . "End Of Line" statement
+   35           | statements . "," statement
+   36           | statements . "End Of Line"
+
+    "}"            shift, and go to state 48
+    ","            shift, and go to state 41
+    "End Of Line"  shift, and go to state 42
+
+
+State 23
+
+   24 expression: "[" "]" . "{" statements "}"
+
+    "{"  shift, and go to state 49
+
+
+State 24
+
+    3 identifiers: identifier .
+
+    $default  reduce using rule 3 (identifiers)
+
+
+State 25
+
+    2 identifiers: identifiers . "," identifier
+   25 expression: "[" identifiers . "]" "{" statements "}"
+
+    "]"  shift, and go to state 50
+    ","  shift, and go to state 51
+
+
+State 26
+
+   33 statement: identifier ":" . expression_list
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier       go to state 20
+    argument         go to state 12
+    expression       go to state 27
+    expression_list  go to state 52
+
+
+State 27
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+   29 expression_list: expression .
+
+    "=="  shift, and go to state 29
+    "<="  shift, and go to state 30
+    "<"   shift, and go to state 31
+    ">="  shift, and go to state 32
+    ">"   shift, and go to state 33
+    "!="  shift, and go to state 34
+    "+"   shift, and go to state 35
+    "-"   shift, and go to state 36
+    "*"   shift, and go to state 37
+    "/"   shift, and go to state 38
+    "%"   shift, and go to state 39
+    "^"   shift, and go to state 40
+
+    $default  reduce using rule 29 (expression_list)
+
+
+State 28
+
+   30 expression_list: expression_list . expression
+   32 statement: identifier expression_list .
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 32 (statement)
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 53
+
+
+State 29
+
+   17 expression: expression "==" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 54
+
+
+State 30
+
+   18 expression: expression "<=" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 55
+
+
+State 31
+
+   20 expression: expression "<" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 56
+
+
+State 32
+
+   19 expression: expression ">=" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 57
+
+
+State 33
+
+   21 expression: expression ">" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 58
+
+
+State 34
+
+   22 expression: expression "!=" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 59
+
+
+State 35
+
+   11 expression: expression "+" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 60
+
+
+State 36
+
+   12 expression: expression "-" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 61
+
+
+State 37
+
+   13 expression: expression "*" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 62
+
+
+State 38
+
+   14 expression: expression "/" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 63
+
+
+State 39
+
+   15 expression: expression "%" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 64
+
+
+State 40
+
+   16 expression: expression "^" . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 65
+
+
+State 41
+
+   35 statements: statements "," . statement
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 66
+
+
+State 42
+
+   34 statements: statements "End Of Line" . statement
+   36           | statements "End Of Line" .
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 36 (statements)
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 67
+
+
+State 43
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 44
+
+   28 expression: "#" "(" expression_list . ")"
+   30 expression_list: expression_list . expression
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    ")"               shift, and go to state 68
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 53
+
+
+State 45
+
+   23 expression: "#" "{" statements . "}"
+   34 statements: statements . "End Of Line" statement
+   35           | statements . "," statement
+   36           | statements . "End Of Line"
+
+    "}"            shift, and go to state 69
+    ","            shift, and go to state 41
+    "End Of Line"  shift, and go to state 42
+
+
+State 46
+
+   27 expression: "$" "(" statement . ")"
+
+    ")"  shift, and go to state 70
+
+
+State 47
+
+   10 expression: "(" expression ")" .
+
+    $default  reduce using rule 10 (expression)
+
+
+State 48
+
+   26 expression: "{" statements "}" .
+
+    $default  reduce using rule 26 (expression)
+
+
+State 49
+
+   24 expression: "[" "]" "{" . statements "}"
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 38 (statements)
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 14
+    statements  go to state 71
+
+
+State 50
+
+   25 expression: "[" identifiers "]" . "{" statements "}"
+
+    "{"  shift, and go to state 72
+
+
+State 51
+
+    2 identifiers: identifiers "," . identifier
+
+    "ID"  shift, and go to state 1
+
+    identifier  go to state 73
+
+
+State 52
+
+   30 expression_list: expression_list . expression
+   33 statement: identifier ":" expression_list .
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 33 (statement)
+
+    identifier  go to state 20
+    argument    go to state 12
+    expression  go to state 53
+
+
+State 53
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+   30 expression_list: expression_list expression .
+
+    "=="  shift, and go to state 29
+    "<="  shift, and go to state 30
+    "<"   shift, and go to state 31
+    ">="  shift, and go to state 32
+    ">"   shift, and go to state 33
+    "!="  shift, and go to state 34
+    "+"   shift, and go to state 35
+    "-"   shift, and go to state 36
+    "*"   shift, and go to state 37
+    "/"   shift, and go to state 38
+    "%"   shift, and go to state 39
+    "^"   shift, and go to state 40
+
+    $default  reduce using rule 30 (expression_list)
+
+
+State 54
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   17           | expression "==" expression .
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "+"  shift, and go to state 35
+    "-"  shift, and go to state 36
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    "=="  error (nonassociative)
+    "<="  error (nonassociative)
+    "<"   error (nonassociative)
+    ">="  error (nonassociative)
+    ">"   error (nonassociative)
+    "!="  error (nonassociative)
+
+    $default  reduce using rule 17 (expression)
+
+
+State 55
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   18           | expression "<=" expression .
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "+"  shift, and go to state 35
+    "-"  shift, and go to state 36
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    "=="  error (nonassociative)
+    "<="  error (nonassociative)
+    "<"   error (nonassociative)
+    ">="  error (nonassociative)
+    ">"   error (nonassociative)
+    "!="  error (nonassociative)
+
+    $default  reduce using rule 18 (expression)
+
+
+State 56
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   20           | expression "<" expression .
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "+"  shift, and go to state 35
+    "-"  shift, and go to state 36
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    "=="  error (nonassociative)
+    "<="  error (nonassociative)
+    "<"   error (nonassociative)
+    ">="  error (nonassociative)
+    ">"   error (nonassociative)
+    "!="  error (nonassociative)
+
+    $default  reduce using rule 20 (expression)
+
+
+State 57
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   19           | expression ">=" expression .
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "+"  shift, and go to state 35
+    "-"  shift, and go to state 36
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    "=="  error (nonassociative)
+    "<="  error (nonassociative)
+    "<"   error (nonassociative)
+    ">="  error (nonassociative)
+    ">"   error (nonassociative)
+    "!="  error (nonassociative)
+
+    $default  reduce using rule 19 (expression)
+
+
+State 58
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   21           | expression ">" expression .
+   22           | expression . "!=" expression
+
+    "+"  shift, and go to state 35
+    "-"  shift, and go to state 36
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    "=="  error (nonassociative)
+    "<="  error (nonassociative)
+    "<"   error (nonassociative)
+    ">="  error (nonassociative)
+    ">"   error (nonassociative)
+    "!="  error (nonassociative)
+
+    $default  reduce using rule 21 (expression)
+
+
+State 59
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+   22           | expression "!=" expression .
+
+    "+"  shift, and go to state 35
+    "-"  shift, and go to state 36
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    "=="  error (nonassociative)
+    "<="  error (nonassociative)
+    "<"   error (nonassociative)
+    ">="  error (nonassociative)
+    ">"   error (nonassociative)
+    "!="  error (nonassociative)
+
+    $default  reduce using rule 22 (expression)
+
+
+State 60
+
+   11 expression: expression . "+" expression
+   11           | expression "+" expression .
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    $default  reduce using rule 11 (expression)
+
+
+State 61
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   12           | expression "-" expression .
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "*"  shift, and go to state 37
+    "/"  shift, and go to state 38
+    "%"  shift, and go to state 39
+    "^"  shift, and go to state 40
+
+    $default  reduce using rule 12 (expression)
+
+
+State 62
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   13           | expression "*" expression .
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "^"  shift, and go to state 40
+
+    $default  reduce using rule 13 (expression)
+
+
+State 63
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   14           | expression "/" expression .
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "^"  shift, and go to state 40
+
+    $default  reduce using rule 14 (expression)
+
+
+State 64
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   15           | expression "%" expression .
+   16           | expression . "^" expression
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    "^"  shift, and go to state 40
+
+    $default  reduce using rule 15 (expression)
+
+
+State 65
+
+   11 expression: expression . "+" expression
+   12           | expression . "-" expression
+   13           | expression . "*" expression
+   14           | expression . "/" expression
+   15           | expression . "%" expression
+   16           | expression . "^" expression
+   16           | expression "^" expression .
+   17           | expression . "==" expression
+   18           | expression . "<=" expression
+   19           | expression . ">=" expression
+   20           | expression . "<" expression
+   21           | expression . ">" expression
+   22           | expression . "!=" expression
+
+    $default  reduce using rule 16 (expression)
+
+
+State 66
+
+   35 statements: statements "," statement .
+
+    $default  reduce using rule 35 (statements)
+
+
+State 67
+
+   34 statements: statements "End Of Line" statement .
+
+    $default  reduce using rule 34 (statements)
+
+
+State 68
+
+   28 expression: "#" "(" expression_list ")" .
+
+    $default  reduce using rule 28 (expression)
+
+
+State 69
+
+   23 expression: "#" "{" statements "}" .
+
+    $default  reduce using rule 23 (expression)
+
+
+State 70
+
+   27 expression: "$" "(" statement ")" .
+
+    $default  reduce using rule 27 (expression)
+
+
+State 71
+
+   24 expression: "[" "]" "{" statements . "}"
+   34 statements: statements . "End Of Line" statement
+   35           | statements . "," statement
+   36           | statements . "End Of Line"
+
+    "}"            shift, and go to state 74
+    ","            shift, and go to state 41
+    "End Of Line"  shift, and go to state 42
+
+
+State 72
+
+   25 expression: "[" identifiers "]" "{" . statements "}"
+
+    "ID"              shift, and go to state 1
+    "Number"          shift, and go to state 2
+    "String Literal"  shift, and go to state 3
+    "Null"            shift, and go to state 4
+    "Boolean"         shift, and go to state 5
+    "#"               shift, and go to state 6
+    "$"               shift, and go to state 7
+    "("               shift, and go to state 8
+    "{"               shift, and go to state 9
+    "["               shift, and go to state 10
+
+    $default  reduce using rule 38 (statements)
+
+    identifier  go to state 11
+    argument    go to state 12
+    expression  go to state 13
+    statement   go to state 14
+    statements  go to state 75
+
+
+State 73
+
+    2 identifiers: identifiers "," identifier .
+
+    $default  reduce using rule 2 (identifiers)
+
+
+State 74
+
+   24 expression: "[" "]" "{" statements "}" .
+
+    $default  reduce using rule 24 (expression)
+
+
+State 75
+
+   25 expression: "[" identifiers "]" "{" statements . "}"
+   34 statements: statements . "End Of Line" statement
+   35           | statements . "," statement
+   36           | statements . "End Of Line"
+
+    "}"            shift, and go to state 76
+    ","            shift, and go to state 41
+    "End Of Line"  shift, and go to state 42
+
+
+State 76
+
+   25 expression: "[" identifiers "]" "{" statements "}" .
+
+    $default  reduce using rule 25 (expression)

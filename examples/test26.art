@@ -1,0 +1,27 @@
+str "somestring"
+num 666
+arr #(1 2 3)
+dict #{
+	name "john"
+	surname "doe"
+}
+
+ff: {
+	print "ff running"
+}
+
+class #{
+	name "john"
+	age 33
+
+	func: {
+		print "something"
+	}
+
+	add: {
+		print "adding..."
+		return @0 + @1
+	}
+}
+
+class.func

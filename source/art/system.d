@@ -1,0 +1,64 @@
+/************************************************
+ * Arturo
+ * 
+ * The Minimal Declarative-Like Language
+ * (c) 2019 Ioannis Zafeiropoulos
+ *
+ * @file: art/system.d
+ ************************************************/
+
+module art.system;
+
+// Imports
+
+import std.algorithm;
+import std.conv;
+import std.file;
+import std.process;
+import std.stdio;
+import std.string;
+
+import parser.expression;
+import parser.expressions;
+import parser.statements;
+
+import value;
+
+import func;
+import globals;
+
+class Shell_ : Func {
+	this() { super("shell","execute given shell command",[[sV]],[sV,bV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias command = S!(v,0);
+
+		auto cmd = executeShell(command);
+
+		if (cmd.status != 0) 
+			return new Value(false);
+		else
+			return new Value(cmd.output);
+	}
+}
+
+class Env_ : Func {
+	this() { super("env","get system environment variables as a dictionary",[[]],[dV]); }
+	override Value execute(Expressions ex) {
+		string[string] ret = environment.toAA();
+
+		return new Value(ret);
+	}
+}
+
+class Spawn_ : Func {
+	this() { super("spawn","spawn process using given string and get process id",[[sV]],[nV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+
+		auto pid = spawnProcess(input);
+
+		return new Value(pid.processID());
+	}
+}

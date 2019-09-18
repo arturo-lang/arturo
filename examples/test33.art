@@ -1,0 +1,41 @@
+"====================================="
+" Testing string interpolation"
+"====================================="
+
+x 10
+
+print "x = " + x
+
+"with interpolation"
+
+print "x = `x`"
+
+foreach $(range 1 10) { 
+	print "num = " + @
+	print "num = `print @`" 
+	b @
+	print "yup: " + b
+	print "yup: `b`"
+}  
+
+fun: {
+	print "arg = " + @
+	print "arg = `@`"
+	a @
+	print "something: " + a
+	print "something: `a`"
+
+	print "arg = " + @.0
+	print "arg = `$(@.0)`"
+	b @.0
+	print "something: " + b
+	print "something: `b`"
+
+	print "arg = " + @0
+	print "arg = `$(@0)`"
+	c @0
+	print "something: " + c
+	print "something: `c`"
+}
+
+fun "done"

@@ -1,0 +1,64 @@
+"Test10: Testing dictionaries and arrays"
+
+name "john"
+surname "zafeiropoulos"
+age 33
+fruit "banana" "apple"
+
+location {
+	city "Granada"
+	country "Spain"
+	address {
+		street "Molino de la corteza de san andres"
+		number 20
+	}
+}
+
+sayHello: {
+	print "Hello " + $(get ~ 0) + "!"
+}
+
+sayHello "John"
+
+print $(get fruit 0)
+print $(get location "city")
+
+print $(get $(get location "address") "street")
+
+fruit fruit + "apricot"
+
+print fruit
+
+addNumbers: {
+	x $(get ~ 0)
+	y $(get ~ 1)
+	//print "Sum = " + (x+y)
+	return x+y
+
+	print "something else that will not be printed ever"
+}
+
+addNumbers 2 3
+
+if (2>1) {
+	print "done"
+}
+
+if (5>3) $(print "done 2")
+if (3>4) $(print "whatever") $(print "done 3")
+if (3>4) {
+	print "whatever"
+} {
+	print "done 4"
+}
+
+count 1 
+
+print "Adding: " + $(addNumbers 2 3)
+loop (count < 10) {
+	print $(addNumbers count count)
+	count count+1
+}
+
+//print fruit.0
+//print location.address.street

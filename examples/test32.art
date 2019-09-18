@@ -1,0 +1,5 @@
+factorial: [n]{ product $(range 1 n) }
+
+foreach $(range 1 60) {
+	print "factorial(" + @ + ") = " + $(factorial @)
+}

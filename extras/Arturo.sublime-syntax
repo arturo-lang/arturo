@@ -1,0 +1,69 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+file_extensions:
+  - art
+scope: source.arturo
+contexts:
+  main:
+    # Double-quoted string literals
+    - match: '"'
+      scope: punctuation.definition.string.begin.arturo
+      push: double_quoted_string
+
+    # Single-line comments
+    - match: '//'
+      scope: punctuation.definition.comment.arturo
+      push: line_comment
+
+    # Array-Function symbols
+    - match: '(\$|#)'
+      scope: variable.parameter.arturo
+
+    # Symbols
+    - match: '(\+|\-|\*|\/|\%|\&\&|\|\||\<|\>)'
+      scope: entity.name.tag.arturo
+
+    # System functions
+    - match: '(\b|^\s+)(acos|acosh|all|any|asin|asinh|atan|atanh|capitalize|ceil|characters|contains|cos|cosh|date\.now|datetime\.now|day|endsWith|exec|exp|file\.exists|file\.read|file\.write|filter|first|floor|foreach|get|if|import|is\.directory|is\.file|is\.match|is\.symlink|json\.generate|json\.parse|justify\.center|justify\.left|justify\.right|keys|last|lines|ln|log10|loop|lowercase|map|markdown|matches|max|md5|min|month|object|path\.contents|path\.create|path\.current|path\.directory|path\.extension|path\.filename|path\.normalize|print|random|range|replace|return|reverse|round|set|sha256|sha512|shell|sin|sinh|size|sort|split|sqrt|startsWith|strip|tail|tan|tanh|time\.now|to\.number|trace|type|uppercase|uuid|web\.read|words|xml\.check|yaml\.generate|yaml\.parse)\b'
+      scope: entity.name.tag.arturo
+
+    # Numbers
+    - match: '\b(true|false)\b'
+      scope: constant.numeric.arturo
+
+    # Numbers
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric.arturo
+
+    - match: '@([0-9]+)?'
+      scope: support.function.arturo
+
+    # Function definitions
+    - match: '([a-zA-Z_\.0-9]+)(\s+)?:'
+      scope: entity.name.class.arturo
+
+    # User definitions
+    #- match: '^(\s+)?([a-zA-Z_]+)\b'
+    #  scope: entity.name.class.arturo
+
+  double_quoted_string:
+    - meta_scope: string.quoted.double.arturo
+    - match: '\\.'
+      scope: constant.character.escape.arturo
+    - match: '`'
+      scope: punctuation.definition.string.interpolated.element.begin.arturo
+      push:
+      - meta_scope: source.arturo
+      - match: '`'
+        scope: punctuation.definition.string.interpolated.element.end.arturo
+        pop: true
+      - include: 'main'
+    - match: '"'
+      scope: punctuation.definition.string.end.arturo
+      pop: true
+
+  line_comment:
+    - meta_scope: comment.line.arturo
+    - match: $
+      pop: true

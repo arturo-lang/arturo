@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+obj/
+/arturo
+/test.d
+arturo.so
+arturo.dylib
+arturo.dll
+arturo.a
+arturo.lib
+arturo-test-*
+*.exe
+*.o
+*.obj
+*.lst

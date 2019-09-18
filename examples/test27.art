@@ -1,0 +1,23 @@
+all: { ret true; foreach @ { if (@) {}{ ret false } }; ret }
+any: { ret false; foreach @ { if (@) { ret true } }; ret }
+
+all_: { 
+
+	ret true
+
+	foreach items { item: @
+		if $(exec cond #(item)) { print "yep" } {ret false}
+	}
+
+	ret
+}
+
+
+
+print "all: " + $(all true false)
+print "any: " + $(any true false)
+
+print "all_: " + $(all_ { (@0>2) } #(3 4 5))
+
+//a $(exec { (@>2) } #(3 4 5))
+//print a

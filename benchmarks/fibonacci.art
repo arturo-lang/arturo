@@ -1,0 +1,14 @@
+maxLimit $(to.number @0)
+
+fibo: [x]{
+	if (x<2) { 1 } {
+		$(fibo x-1) + $(fibo x-2)
+	}
+}
+
+foreach $(range 0 maxLimit) {
+	print $(fibo @)
+}
+
+
+fibox: [x]{ if (x<2) { 1 } { $(fibox x-1) + $(fibox x-2) } }

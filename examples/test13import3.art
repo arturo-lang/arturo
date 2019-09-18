@@ -1,0 +1,3 @@
+someFunc: {
+	print "someFunc imported!!! Yay! Arg is " + $(get ~ 0)
+}

@@ -1,0 +1,26 @@
+class #{
+	funcA: {
+		print "In FuncA: " + @0
+	}
+
+	funcB: {
+		print "In FuncB: " + @0
+		class.funcA 2+1
+		print "Back in FuncB: " + @0
+	}
+}
+
+class.funcA "one"
+class.funcB 2
+
+log $(yaml.parse "str: \"one\"\nboom: 123")
+
+obj: #{
+	name: "john"
+	surname: "doe"
+	age: 33
+	email: "yaniszaf@gmail.com"
+	registered: true
+}
+
+print $(yaml.generate obj)
