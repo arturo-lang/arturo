@@ -45,22 +45,8 @@ class And_ : Func {
 	}
 }
 
-class Exec_ : Func {
-	this() { super("exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias func = F!(v,0);
-
-		Value args = null;
-		if (v.length==2) 
-			args = v[1];
-
-		return func.execute(args);
-	}
-}
-
-class For__Each_ : Func {
-	this() { super("for.each","execute given function for each element in array or dictionary",[[aV,fV],[dV,fV]],[xV]); }
+class Each_ : Func {
+	this() { super("each","execute given function for each element in array or dictionary",[[aV,fV],[dV,fV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -84,6 +70,20 @@ class For__Each_ : Func {
 
 			return ret;
 		}
+	}
+}
+
+class Exec_ : Func {
+	this() { super("exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias func = F!(v,0);
+
+		Value args = null;
+		if (v.length==2) 
+			args = v[1];
+
+		return func.execute(args);
 	}
 }
 
@@ -126,6 +126,18 @@ class Import_ : Func {
 			return comp.compileImport(completeFilePath);
 		}
 		else throw new ERR_FileNotFound(filePath);
+	}
+}
+
+class Input_ : Func {
+	this() { super("input","read line from stdin",[[]],[sV,xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		
+		string input = readln();
+
+		if (input !is null) return new Value(input);
+		else return new Value();
 	}
 }
 

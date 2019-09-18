@@ -182,45 +182,6 @@ class Is__Whitespace_ : Func {
 	}
 }
 
-class Justify__Center_ : Func {
-	this() { super("justify.center","center justify string by adding padding",[[sV,nV]],[sV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias input = S!(v,0);
-		alias padding = I!(v,1);
-
-		auto ret = center(input,to!int(padding));
-
-		return new Value(ret);
-	}
-}
-
-class Justify__Left_ : Func {
-	this() { super("justify.left","left justify string by adding padding",[[sV,nV]],[sV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias input = S!(v,0);
-		alias padding = I!(v,1);
-
-		auto ret = leftJustify(input,to!int(padding));
-
-		return new Value(ret);
-	}
-}
-
-class Justify__Right_ : Func {
-	this() { super("justify.right","right justify string by adding padding",[[sV,nV]],[sV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias input = S!(v,0);
-		alias padding = I!(v,1);
-
-		auto ret = rightJustify(input,to!int(padding));
-
-		return new Value(ret);
-	}
-}
-
 class Levenshtein_ : Func {
 	this() { super("levenshtein","get Levenshtein distance between two given strings",[[sV,sV]],[nV]); }
 	override Value execute(Expressions ex) {
@@ -270,6 +231,45 @@ class Matches_ : Func {
 		auto rx = regex(pattern,"gm");
 
 		Value[] ret = match(input,rx).map!(m=> new Value(m.hit)).array;
+
+		return new Value(ret);
+	}
+}
+
+class Pad__Center_ : Func {
+	this() { super("pad.center","center justify string by adding padding",[[sV,nV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+		alias padding = I!(v,1);
+
+		auto ret = center(input,to!int(padding));
+
+		return new Value(ret);
+	}
+}
+
+class Pad__Left_ : Func {
+	this() { super("pad.left","left justify string by adding padding",[[sV,nV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+		alias padding = I!(v,1);
+
+		auto ret = leftJustify(input,to!int(padding));
+
+		return new Value(ret);
+	}
+}
+
+class Pad__Right_ : Func {
+	this() { super("pad.right","right justify string by adding padding",[[sV,nV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+		alias padding = I!(v,1);
+
+		auto ret = rightJustify(input,to!int(padding));
 
 		return new Value(ret);
 	}

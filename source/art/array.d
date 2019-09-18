@@ -15,6 +15,7 @@ import std.algorithm;
 import std.array;
 import std.conv;
 import std.file;
+import std.numeric;
 import std.random;
 import std.range;
 import std.stdio;
@@ -93,6 +94,27 @@ class Any_ : Func {
 	}
 }
 
+class Avg_ : Func {
+	this() { super("avg","get average value from array",[[aV]],[nV,rV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias arr = A!(v,0);
+		Value sum = new Value(0);
+
+		foreach (Value item; arr) {
+			if (item.type!=nV && item.type!=rV) throw new ERR_ExpectedValueTypeError("min","number",item.type);
+
+			sum = sum + item;
+		}
+
+		auto ret = to!real(sum.content.i)/(to!real(arr.length));
+
+		if (to!int(ret)==ret) return new Value(to!int(ret));
+		else return new Value(ret);
+	}
+}
+
 class Difference_ : Func {
 	this() { super("difference","get difference of two given arrays",[[aV,aV]],[aV]); }
 	override Value execute(Expressions ex) {
@@ -138,6 +160,39 @@ class First_ : Func {
 	}
 }
 
+class Fold_ : Func {
+	this() { super("fold","fold array using seed value and the given function",[[aV,xV,fV]],[xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias arr = A!(v,0);
+		alias func = F!(v,2);
+
+		Value seed = v[1];
+		foreach (Value item; arr) 
+			seed = func.execute(new Value([seed,item]));
+
+		return new Value(seed);
+	}
+}
+
+class Gcd_ : Func {
+	this() { super("gcd","calculate greatest common divisor of values from array",[[aV]],[nV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias arr = A!(v,0);
+		ulong currentGcd = I!(arr,0);
+
+		for (int i=1; i<arr.length; i++) {
+			if (arr[i].type!=nV) throw new ERR_ExpectedValueTypeError("gcd","number",arr[i].type);
+
+			currentGcd = gcd(currentGcd,arr[i].content.i);
+		}
+
+		return new Value(currentGcd);
+	}
+}
+
 class Intersection_ : Func {
 	this() { super("intersection","get intersection of two given arrays",[[aV,aV]],[aV]); }
 	override Value execute(Expressions ex) {
@@ -175,27 +230,6 @@ class Last_ : Func {
 	}
 }
 
-class Min_ : Func {
-	this() { super("min","get minimum value from array",[[aV]],[nV,rV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-
-		alias arr = A!(v,0);
-		Value minValue = new Value();
-
-		foreach (Value item; arr) {
-			if (item.type!=nV && item.type!=rV) throw new ERR_ExpectedValueTypeError("min","number",item.type);
-
-			if (minValue is null) minValue = item;
-			else {
-				if (item<minValue) minValue = item;
-			}
-		}
-
-		return minValue;
-	}
-}
-
 class Map_ : Func {
 	this() { super("map","get array after executing given function for each element",[[aV,fV]],[aV]); }
 	override Value execute(Expressions ex) {
@@ -229,6 +263,48 @@ class Max_ : Func {
 		}
 
 		return maxValue;
+	}
+}
+
+class Median_ : Func {
+	this() { super("median","get median value from array",[[aV]],[nV,rV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value arr = v[0];
+
+		Value sorted = arr.arraySort();
+
+		if (sorted !is null) {
+			alias sarr = A!(sorted);
+			if (sarr.length%1==0) {
+				return sarr[sarr.length/2+1];
+			}
+			else {
+				return new Value((to!real(sarr[sarr.length/2].content.i) + to!real(sarr[sarr.length/2+1].content.i))/2);
+			}
+		}
+		else throw new ERR_ArrayNotSortable(to!string(arr));
+	}
+}
+
+class Min_ : Func {
+	this() { super("min","get minimum value from array",[[aV]],[nV,rV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias arr = A!(v,0);
+		Value minValue = new Value();
+
+		foreach (Value item; arr) {
+			if (item.type!=nV && item.type!=rV) throw new ERR_ExpectedValueTypeError("min","number",item.type);
+
+			if (minValue is null) minValue = item;
+			else {
+				if (item<minValue) minValue = item;
+			}
+		}
+
+		return minValue;
 	}
 }
 
@@ -386,8 +462,8 @@ class Union_ : Func {
 	}
 }
 
-class Uniq_ : Func {
-	this() { super("uniq","get array by removing duplicates",[[aV]],[aV]); }
+class Unique_ : Func {
+	this() { super("unique","get array by removing duplicates",[[aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
