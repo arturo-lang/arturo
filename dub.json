@@ -7,7 +7,7 @@
 		"dyaml": "~>0.8.0",
 		"vibe-d": "~>0.8.5"
 	},
-	"description": "Arturo: The Minimal Declarative-Like Language",
+	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
 	"dflags-dmd": [
 		"-J source/resources",
 		"-noboundscheck"
