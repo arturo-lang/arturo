@@ -1,3 +1,3 @@
-# art:uro
+# Art:uro
 
-### The Powerful Modern Programming Language for Fast Scripting.
+### Simple, modern and powerful interpreted programming language for super-fast scripting.
