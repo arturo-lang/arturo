@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-lex source/grammar/lexer.l
+flex source/grammar/lexer.l
 bison -d source/grammar/parser.y
 gcc lex.yy.c -c
 gcc parser.tab.c -c
