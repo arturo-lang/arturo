@@ -4,9 +4,8 @@
 	],
 	"copyright": "Copyright © 2019, drkameleon",
 	"dependencies": {
-		"arsd-official:terminal": "~>4.0.2",
 		"dyaml": "~>0.8.0",
-		"vibe-d:textfilter": "~>0.8.5"
+		"vibe-d": "~>0.8.5"
 	},
 	"description": "Arturo: The Minimal Declarative-Like Language",
 	"dflags-dmd": [
