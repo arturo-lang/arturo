@@ -5,6 +5,7 @@ docs/
 obj/
 /arturo
 /test.d
+/test
 arturo.so
 arturo.dylib
 arturo.dll
