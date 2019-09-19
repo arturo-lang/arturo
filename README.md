@@ -151,6 +151,8 @@ http://arturo-lang.io
 - **yaml.parse**           [String] -> Any
 - **zip**                  [Array/Array] -> Array
 
+---
+
 #### License
 
 MIT License
