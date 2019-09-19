@@ -1,4 +1,4 @@
-<img align="left" width="100" src="logo.png">
+<img align="left" width="150" src="logo.png">
 
 <h1>Art:uro</h1>
 
