@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 lex source/grammar/lexer.l
-bison -v -d source/grammar/parser.y
+bison -d source/grammar/parser.y
 gcc lex.yy.c -c
 gcc parser.tab.c -c
 mv lex.yy.o obj/lexer.o
