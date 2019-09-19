@@ -148,7 +148,7 @@ int yywrap() {
 identifier 				: 	ID 
 						;
 
-identifiers				: 	identifiers[previous] COMMA identifier 								{ asprintf(&$$, "%s,%s", $previous, $identifier); }
+identifiers				: 	identifiers[previous] COMMA identifier 								{ char* ss = malloc((strlen($previous)+strlen($identifier)+1)*sizeof(char)); sprintf(ss, "%s,%s", $previous, $identifier); $$=ss; }
 						|	identifier 															{ $$ = $identifier; }
 						;
 
