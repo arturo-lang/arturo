@@ -8,11 +8,30 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square) ![Language](https://img.shields.io/badge/Language-D-red.svg?style=flat-square)
 
-#### Check it out online!
+Check it out online!
+------------------------------
 
 http://arturo-lang.io
 
-#### Library
+Build Instruction
+------------------------------
+
+Prerequisites:
+
+- Flex, Bison
+- DMD compiler + DUB
+
+Build:
+
+	dub build --build=release
+
+Run:
+
+	./arturo
+
+
+Library
+------------------------------
 
 - **acos**                 [Number or Real] -> Real
 - **acosh**                [Number or Real] -> Real
@@ -153,7 +172,8 @@ http://arturo-lang.io
 
 ---
 
-#### License
+License
+------------------------------
 
 MIT License
 
