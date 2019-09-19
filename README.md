@@ -1,4 +1,3 @@
 # Art:uro
 
-### Simple, modern and powerful 
-### interpreted programming language for super-fast scripting.
+### Simple, modern and powerful<br/>interpreted programming language for super-fast scripting.
