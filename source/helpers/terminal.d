@@ -64,65 +64,6 @@ module helpers.terminal;
 
 import std.conv;
 
-/++
-	$(H3 Get Line)
-
-	This example will demonstrate the high-level getline interface.
-
-	The user will be able to type a line and navigate around it with cursor keys and even the mouse on some systems, as well as perform editing as they expect (e.g. the backspace and delete keys work normally) until they press enter.  Then, the final line will be returned to your program, which the example will simply print back to the user.
-+/
-unittest {
-	import helpers.terminal;
-
-	void main() {
-		auto terminal = Terminal(ConsoleOutputType.linear);
-		string line = terminal.getline();
-		terminal.writeln("You wrote: ", line);
-	}
-
-	main; // exclude from docs
-}
-
-/++
-	$(H3 Color)
-
-	This example demonstrates color output, using [Terminal.color]
-	and the output functions like [Terminal.writeln].
-+/
-unittest {
-	import helpers.terminal;
-
-	void main() {
-		auto terminal = Terminal(ConsoleOutputType.linear);
-		terminal.color(Color.green, Color.black);
-		terminal.writeln("Hello world, in green on black!");
-		terminal.color(Color.DEFAULT, Color.DEFAULT);
-		terminal.writeln("And back to normal.");
-	}
-
-	main; // exclude from docs
-}
-
-/++
-	$(H3 Single Key)
-
-	This shows how to get one single character press using
-	the [RealTimeConsoleInput] structure.
-+/
-unittest {
-	import helpers.terminal;
-
-	void main() {
-		auto terminal = Terminal(ConsoleOutputType.linear);
-		auto input = RealTimeConsoleInput(&terminal, ConsoleInputFlags.raw);
-
-		terminal.writeln("Press any key to continue...");
-		auto ch = input.getch();
-		terminal.writeln("You pressed ", ch);
-	}
-
-	main; // exclude from docs
-}
 
 /*
 	Widgets:
