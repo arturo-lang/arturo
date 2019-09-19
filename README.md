@@ -6,7 +6,9 @@
 
 ---
 
-##### License
+![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square) ![Language](https://img.shields.io/badge/Language-D-red.svg?style=flat-square)
+
+#### License
 
 MIT License
 
