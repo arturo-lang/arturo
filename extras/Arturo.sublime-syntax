@@ -21,7 +21,7 @@ contexts:
       scope: variable.parameter.arturo
 
     # Symbols
-    - match: '(\+|\-|\*|\/|\%|\&\&|\|\||\<|\>)'
+    - match: '(\+|\-|\*|\/|\%|\&\&|\|\||\<|\>|=|\<=|\>=|!=)'
       scope: entity.name.tag.arturo
 
     # System functions
