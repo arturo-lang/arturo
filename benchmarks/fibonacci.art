@@ -1,14 +1,11 @@
-maxLimit $(to.number @0)
+maxLimit 20 // $(to.number @0)
 
-fibo: [x]{
-	if (x<2) { 1 } {
-		$(fibo x-1) + $(fibo x-2)
-	}
+fib: $(memoize [x]{
+	if x<2 { 1 }{
+		$(fib x-1) + $(fib x-2)
+	} 
+})
+
+loop $(range 0 maxLimit) {
+	print $(fib @)
 }
-
-foreach $(range 0 maxLimit) {
-	print $(fibo @)
-}
-
-
-fibox: [x]{ if (x<2) { 1 } { $(fibox x-1) + $(fibox x-2) } }
