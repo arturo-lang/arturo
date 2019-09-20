@@ -12,6 +12,7 @@ module parser.statements;
 // Imports
 
 import core.memory;
+import std.conv;
 import std.stdio;
 
 import parser.statement;
@@ -19,6 +20,8 @@ import parser.statement;
 import value;
 
 import panic;
+
+import globals;
 
 // C Interface
 
@@ -55,23 +58,58 @@ class Statements {
 	}
 
 	Value execute(Value* v = null) {
+		//Glob.retCounter += 1;
+		//writeln("** Statements:execute (before) : retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+		//writeln("** \tretCounter: incremented to " ~ to!string(Glob.retCounter));
 		Value ret;
 		foreach (size_t i, Statement s; lst) {
 			try {
+				//writeln("before executing statement: " ~ s.id);
 				ret = s.execute(null);
+				//writeln("after executing statement: " ~ s.id);
+
 			}
 			catch (Exception e) {
+
+				//writeln("Caught exception (block level): " ~ e.msg);
 				//writeln("Caught exception: " ~ e.msg);
-				//if (cast(ReturnResult)(e) !is null) {
-				//	Value va = (cast(ReturnResult)(e)).val;
-				//	return va;
-				//} else {
+				if (cast(ReturnResult)(e) !is null) {
+					//writeln("** Statements:execute : got ReturnResult");
+					//writeln("Glob.retCounter: " ~ to!string(Glob.retCounter));
+					if (Glob.blockStack.lastItem() is this) {
+
+						
+					//}
+					//if (Glob.retCounter==Glob.retStack.lastItem()) {
+						//Glob.retCounter -= 1;
+						//int popped = Glob.retStack.pop();
+						Glob.blockStack.pop();
+						//Glob.contextStack.pop();
+						//writeln("** Statements:execute (reached parent) : retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+						//writeln("** \tretCounter: decreased to " ~ to!string(Glob.retCounter));
+						//writeln("** \tretStacked: popped " ~ to!string(popped));
+						Value va = (cast(ReturnResult)(e)).val;
+						//writeln("**\t This is the last item in the block stack - POPing block & returning value: " ~ va.stringify());
+						return va;
+					}
+					else {
+						//writeln("**\t rethrowing");
+						//Glob.retCounter -= 1;
+						//writeln("Statements:execute (rethrowing exception) : retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+						//writeln("\tretCounter: decreased to " ~ to!string(Glob.retCounter));
+						throw e;
+					}
+				} else {
 				Panic.runtimeError(e.msg, s.pos);
 					// rethrow
 					//throw e;
-				//}
+				}
 			}
 		}
+		//Glob.retCounter -= 1;
+		//writeln("** Statements:execute (after) : retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+		//writeln("** \tretCounter: decreased to " ~ to!string(Glob.retCounter));
+		//writeln("about to return: " ~ ret.stringify());
 		return ret;
 	}
 

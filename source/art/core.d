@@ -44,7 +44,7 @@ class And_ : Func {
 		return new Value(true);
 	}
 }
-
+/*
 class Each_ : Func {
 	this() { super("each","execute given function for each element in array or dictionary",[[aV,fV],[dV,fV]],[xV]); }
 	override Value execute(Expressions ex) {
@@ -72,6 +72,7 @@ class Each_ : Func {
 		}
 	}
 }
+*/
 
 class Exec_ : Func {
 	this() { super("exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
@@ -150,20 +151,45 @@ class Lazy_ : Func {
 }
 
 class Loop_ : Func {
-	this() { super("loop","while condition is true, execute given function",[[bV,fV]],[xV]); }
+	this() { super("loop","execute given function for each element in array or dictionary, or while condition is true",[[aV,fV],[dV,fV],[bV,fV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		alias func = F!(v,1);
-		bool condition = B!(v,0);
-		Value ret;
-		while (condition) {
-			ret = func.execute();
 
-			Value conditionValue = validateValue(ex,0,[bV]);
-			condition = B!(conditionValue);
+		if (v[0].type==aV) {
+			// foreach <array>
+			alias arr = A!(v,0);
+			alias func = F!(v,1);
+
+			Value ret;
+			foreach (Value item; arr) 
+				ret = func.execute(item);
+
+			return ret;
+		} 
+		else if (v[0].type==dV) { 
+			// foreach <dictionary>
+			alias dict = D!(v,0);
+			alias func = F!(v,1);
+
+			Value ret;
+			foreach (Value key, Value item; dict)
+				ret = func.execute(new Value([key,item]));
+
+			return ret;
+		} else { 
+			// loop while
+			alias func = F!(v,1);
+			bool condition = B!(v,0);
+			Value ret;
+			while (condition) {
+				ret = func.execute();
+
+				Value conditionValue = validateValue(ex,0,[bV]);
+				condition = B!(conditionValue);
+			}
+
+			return ret;
 		}
-
-		return ret;
 	}
 }
 
@@ -179,7 +205,7 @@ class Memoize_ : Func {
 		//Value[Value] vv;
 		//Glob.memoized[to!string(&ret.content.f)] = new Value(vv);
 
-		writeln(Glob.memoize);
+		//writeln(Glob.memoize);
 
 		return ret;
 	}
@@ -227,6 +253,7 @@ class Return_ : Func {
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
+		//writeln("THROWING: return");
 		throw new ReturnResult(v[0]);
 	}
 }

@@ -37,11 +37,13 @@ class Stack(T)
 
 	void push(T v)
 	{
+		//writeln("pushing element to: " ~ to!string(this));
 		list ~= v;
 	}
 
 	T pop()
 	{
+		//writeln("poppin element from: " ~ to!string(this));
 		if (!isEmpty())
 		{
 			T item = list[list.length-1];
@@ -50,7 +52,7 @@ class Stack(T)
 			return item;
 		}
 		else
-			return null;
+			return cast(T)(null);
 	}
 
 	bool isEmpty()
@@ -79,6 +81,15 @@ class Stack(T)
 			writefln("%s : %s%s",to!string(i),tabs,to!string(value));
 		}
 		writeln("-----------/--/---------end-0--------/--/-----------");
+	}
+
+	string str() {
+		string[] ret;
+		foreach (i, T value; list) {
+			ret ~= to!string(value);
+		}
+
+		return ret.join(", ");
 	}
 
 	void printPath()

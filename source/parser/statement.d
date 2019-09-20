@@ -33,6 +33,8 @@ import panic;
 
 import func;
 
+import stack;
+
 // C Interface
 
 extern (C) {
@@ -157,10 +159,39 @@ class Statement {
 	Value executeUserFunctionCall(Func* f) {
 		//writeln("About to execute(pointer): " ~ to!string(f));
 		if (Glob.memoize.canFind(to!string(f))) {
-			return (*f).executeMemoized(expressions,to!string(f));
+			//Glob.retStack.push(Glob.retCounter+1);
+			//writeln("** Statement:executeUserFunctionCall : name=" ~ (*f).name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+			//writeln("** \tretStack: pushed " ~ to!string(Glob.retCounter+1));
+			Glob.blockStack.push((*f).block);
+
+			Value ret = (*f).executeMemoized(expressions,to!string(f));
+
+			if (Glob.blockStack.lastItem() is (*f).block) {
+				//writeln("STACK found unaltered (no return occured). I have to pop it");
+				Glob.blockStack.pop();
+			}
+			//Glob.retStack.pop();
+			return ret;
 		}
 		else {
-			return (*f).execute(expressions);
+			//Glob.retStack.push(Glob.retCounter+1);
+			//writeln("** Statement:executeUserFunctionCall : name=" ~ (*f).name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+			//writeln("** \tretStack: pushed " ~ to!string(Glob.retCounter+1));
+			//Stack!(int) stackBefore = Glob.retStack;
+			Glob.blockStack.push((*f).block);
+			//writeln("** Statement:executeUserFunctionCall - PUSHing block");
+			//writeln("** blockStack: " ~ Glob.blockStack.list.map!(b=> to!string(&b)).array.join(", "));
+			Value ret = (*f).execute(expressions);
+			//writeln("got result: " ~ ret.stringify());
+			if (Glob.blockStack.lastItem() is (*f).block) {
+				//writeln("STACK found unaltered (no return occured). I have to pop it");
+				Glob.blockStack.pop();
+			}
+			//if (Glob.retStack.size()==stackBefore.size()) {
+				//writeln("STACK found unaltered (no return occured) (before:" ~ to!string(stackBefore.size()) ~ ", after: " ~ to!string(Glob.retStack.size()) ~ " - popping");
+				//Glob.retStack.pop();
+			//}
+			return ret;
 		}
 		/*
 		Value func;
@@ -207,6 +238,7 @@ class Statement {
 	}
 
 	Value execute(Value* v) {
+		//writeln("executing statement: " ~	id);
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
@@ -336,7 +368,9 @@ class Statement {
 			//else return executeUserFunctionCall();*/
 		}
 		catch (Exception e) {
-			debug writeln("Caught exception (statement level): " ~ e.msg);
+			//writeln("Caught exception (statement level): " ~ e.msg);
+			throw e;
+			/*
 			if (cast(ReturnResult)(e) !is null) {
 				Value va = (cast(ReturnResult)(e)).val;
 				if (Glob.trace) {
@@ -347,7 +381,7 @@ class Statement {
 				//Panic.runtimeError(e.msg, s.pos);
 				// rethrow
 				throw e;
-			}
+			}*/
 		}
 		//return new Value(0);
 	}

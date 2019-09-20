@@ -189,7 +189,7 @@ class Expression {
 
 		switch (operator)
 		{
-			case "=="	: return new Value(lValue==rValue);
+			case "="	: return new Value(lValue==rValue);
 			case "!="	: return new Value(lValue!=rValue);
 			case ">"	: return new Value(lValue>rValue);
 			case ">="	: return new Value(lValue>=rValue);

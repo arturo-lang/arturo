@@ -100,6 +100,10 @@ class Compiler {
 			debug inspect();
 			Value v = sourceTree.execute();
 			debug Glob.inspect();
+
+			//Glob.contextStack.print();
+			//Glob.blockStack.print();
+			
 			return v;
 		}
 		catch (Exception e) {

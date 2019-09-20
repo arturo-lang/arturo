@@ -39,11 +39,16 @@ class To__String_ : Func {
 }
 
 class To__Number_ : Func {
-	this() { super("to.number","convert given string/boolean to its corresponding number value",[[sV],[bV]],[nV,rV]); }
+	this() { super("to.number","convert given value to its corresponding number value",[[rV],[sV],[bV]],[nV,rV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
-		if (v[0].type==sV) {
+		if (v[0].type==rV) {
+			alias input = R!(v,0);
+
+			return new Value(to!long(input));
+		}
+		else if (v[0].type==sV) {
 			alias input = S!(v,0);
 
 			if (input.indexOf(".")!=-1) return new Value(to!real(input));

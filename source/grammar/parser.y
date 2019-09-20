@@ -81,7 +81,10 @@ int yywrap() {
 %token <str> NULLV "Null"
 %token <str> BOOLEAN "Boolean"
 
-%token <str> EQ_OP "=="
+%token <str> IF "| (if)"
+%token <str> IMPLIES "->"
+
+%token <str> EQ_OP "="
 %token <str> LE_OP "<="
 %token <str> LT_OP "<"
 %token <str> GE_OP ">="
@@ -146,6 +149,7 @@ int yywrap() {
 //==============================
 
 identifier 				: 	ID 
+						| 	IF 																	{ $$ = "if"; }
 						;
 
 identifiers				: 	identifiers[previous] COMMA identifier 								{ char* ss = malloc((strlen($previous)+strlen($identifier)+1)*sizeof(char)); sprintf(ss, "%s,%s", $previous, $identifier); $$=ss; }
@@ -186,10 +190,13 @@ expression				: 	argument 															{
 
 
 expression_list			:	expression 															{ void* e = new_Expressions(); add_Expression(e, $expression); $$ = e; }
+						| 	IMPLIES expression													{ void* e = new_Expressions(); void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions("return", subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
 						| 	expression_list[previous] expression 								{ void* e = $previous; add_Expression(e, $expression); $$ = e; }
+						| 	expression_list[previous] IMPLIES expression 						{ void* e = $previous; void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions("return", subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
 						;
 
 statement				: 	expression 															{ $$ = new_StatementFromExpression($expression); POS($$); }
+						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions("return", subex); }
 						|	identifier expression_list											{ $$ = new_StatementWithExpressions($identifier, $expression_list); POS($$); }
 						|	identifier COLON expression_list									{ $$ = new_ImmutableStatementWithExpressions($identifier, $expression_list); POS($$); }
 						;

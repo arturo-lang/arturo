@@ -67,7 +67,10 @@ LETTER_OR_MISC		[a-zA-Z_\.]
 {DIGIT}+											{ count(); return NUMBER; }
 {DIGIT}+\.{DIGIT}+									{ count(); return NUMBER; }
 
-"=="												{ count(); return EQ_OP; }
+"|"													{ count(); return IF; }
+"->"												{ count(); return IMPLIES; }
+
+"="													{ count(); return EQ_OP; }
 "<="												{ count(); return LE_OP; }
 ">="												{ count(); return GE_OP; }
 "<"													{ count(); return LT_OP; }

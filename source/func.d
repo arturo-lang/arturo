@@ -112,6 +112,8 @@ class Func {
 	Value execute(Value values = null) {
 		//writeln("about to execute function with values");
 
+		//writeln("** Func:execute (before) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+
 		Glob.contextStack.push(new Context());
 
 		if (Glob.trace && name !is null && name.strip()!="") {
@@ -176,7 +178,13 @@ class Func {
 			
 		Value ret = block.execute();
 
+		//writeln("** Func:execute (after) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+
+		//int popped = Glob.retStack.pop();
+		//writeln("POPPING STACK FROM FUNC!");
 		Glob.contextStack.pop();
+
+		//writeln("** \tretStack: popped " ~ to!string(popped));
 
 		return ret;
 	}

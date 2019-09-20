@@ -152,12 +152,19 @@ class Globals : Context {
 	bool trace;
 	string[] memoize;
 	Value[string] memoized;
+	Statements parentBlock;
+	int retCounter;
+	Stack!(int) retStack;
+	Stack!(Statements) blockStack;
 
 	this(string[] args) {
 		super();
+
 		mixin(registerSystemFuncs());
 
 		contextStack = new Stack!(Context);
+		retStack = new Stack!(int);
+		blockStack = new Stack!(Statements);
 		contextStack.push(this);
 
 		Value[] ret = cast(Value[])([]);
@@ -170,6 +177,8 @@ class Globals : Context {
 
 		isRepl = false;
 		trace = false;
+
+		retCounter = -1;
 	}
 
 	Value getSymbol(string s) {
@@ -265,6 +274,9 @@ class Globals : Context {
 
 	void varSet(string n, Value v, bool immut = false, bool redefine = false) {
 		Value gs = getSymbol(n);
+
+		//writeln("attempting to set var: " ~ n);
+		//contextStack.print();
 
 		if (redefine || gs is null) 
 		{
