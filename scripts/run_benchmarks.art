@@ -1,0 +1,17 @@
+"=========================================="
+"Art:uro | Running benchmarks..."
+"=========================================="
+
+loop $(path.contents "../benchmarks") {
+	if $(contains @ ".art") {
+		title 		$(replace @ ".art" "")
+		srcPath		"benchmarks/" + @
+		rbPath 		"benchmarks/" + title + ".rb"
+
+		srcResult 	$(shell "time ./arturo " + srcPath + " &2>1")
+		rbResult 	$(shell "time ruby " + rbPath + " &2>1")
+
+		print srcResult
+		print rbResult
+	}
+}

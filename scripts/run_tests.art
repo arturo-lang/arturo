@@ -1,20 +1,16 @@
-"Running tests..."
+"=========================================="
+"Art:uro | Running tests..."
+"=========================================="
 
-foreach $(dir "../tests") {
-	test @
-	if $(contains test ".art") {
-		title $(replace test ".art" "")
+loop $(path.contents "../tests") {
+	if $(contains @ ".art") {
+		title 		$(replace @ ".art" "")
+		srcPath		"tests/" + @
+		resultPath 	"../tests/" + title + ".out"
 
-		sourcePath "tests/" + test
-		resultPath "../tests/" + title + ".out"
+		srcResult 	$(shell "./arturo " + srcPath)
+		result 		$(file.read resultPath)
 
-		sourceResult $(shell "./arturo " + sourcePath)
-		result $(file.read resultPath)
-
-		if (sourceResult==result) { 
-			print title + ": OK" 
-		} { 
-			print title + ": error :(" 
-		}
+		print $(if srcResult=result { title + ": OK" } { title + ": error :(" })
 	}
 }
