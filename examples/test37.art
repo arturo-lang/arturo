@@ -10,10 +10,16 @@ a 4
 print a
 
 funB: {
+	print "(funB)a: " + a
 	print "(funB)args: " + @
+	set @ 0 7
+	print "(funB)args:" + @
+	a 20
+	print "(funB)a: " + a
 }
 
 fun: {
+	print "(fun)a: " + a
 	print "(fun)args: " + @
 	print "(fun)args(.0): " + @0
 
@@ -28,16 +34,22 @@ fun: {
 
 		each #(4 5 6) {
 			print "In each 1 : " + x  + ", in each 2 : " + @
+			if @==5 { print "condition fulfiled", ~ 3, print "after: condition fulfiled" }
+			"after conditional"
 		}
+
+		print "after each"
 	}
 
 	print "after calling each:: (fun)args: " + @
 
 	set @ 0 5
 	print "(fun)args:" + @
-
+	print "(fun)a: " + a
 
 }
+
+
 
 fun 6
 fun a
