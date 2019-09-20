@@ -1,0 +1,23 @@
+
+print "hello!"
+
+x 2
+
+| x=2 { "done" } { "not done" }
+| x=3 { "done" } { "not done" }
+
+isprime: [x]{
+	| x < 2	 	-> false
+	| x = 2  	-> true
+	| x%2 = 0 	-> false
+
+	loop $(range 3 x/2+1 2) {
+		| x%@=0 -> false
+	}
+
+	-> true
+}
+
+loop $(range 1 30) {
+	print @ + "->" + $(isprime @)
+}

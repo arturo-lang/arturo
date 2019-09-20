@@ -1,0 +1,80 @@
+"==============================="
+"Primality Testing (v3.0)"
+"==============================="
+
+is.prime: [num]{
+	| num<0 -> false
+
+	root 	$(to.number $(ceil $(sqrt num)))
+	z 		5
+	cnt		1
+	d		1
+
+	| num<2 -> false
+	| $(and num>3 $(or num%2=0 num%3=0)) -> false
+
+	loop $(and z<=root d!=0) {
+		d num%z
+		if cnt%2=0 { z z+4 } { z z+2 }
+		cnt cnt+1
+	}
+
+	| d!=0 -> true 
+
+	return false
+}
+
+b 			0
+maxNum		$(to.number @0)
+MNum 		10
+maxCount 	0
+
+loop $(range 4 maxNum 4) [num]{
+	count 	0
+
+	loop $(range 2 $(to.number $(ceil $(sqrt num)))+1 2) [a]{
+		if num%a=0 {
+			b 	num/a
+			if b%2=0 {
+				c 	(a+b)/2
+				if $(all #($(is.prime c) $(is.prime c-a) c-a>1)) {
+					count 	count+1
+				}
+			}
+		}
+	}
+
+	if count>maxCount {
+		maxCount 	count
+		MNum 		num
+	}
+
+	if count>1 {
+		print "For the number " + num + " there are " + count + " pairs"
+	}
+	
+}
+
+//bool IsPrime(long long num)
+// Η συνάρτηση δέχεται έναν αριθμό και επιστρέφει true αν οαριθμός είναι πρώτος
+//{
+//    long long root=sqrt(num);
+//    long long a=5;
+//    long long count=1;
+//    long long d=1;
+//    if ((num>3)&&(((num%2)==0)||((num%3)==0)))
+//                return false;
+//    else
+//    {
+//        while((a<=root)&&(d!=0))
+//        {
+//            d=num%a;
+//            if ((count%2)==0)
+//                a=a+4;
+//                else a=a+2;
+//            ++count;
+//        }
+//        if (d!=0) return true;
+//        else return false;
+//    }
+//}

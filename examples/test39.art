@@ -1,0 +1,36 @@
+"================================"
+"Fixing Return statements"
+"================================"
+
+b: {
+	"IN func(b)"
+	print "func(b) - args: " + @
+	each #(1 2 3) {
+		print "func(b) - looping: " + @
+		if @==2 {
+			print "func(b) - looping - @==2"
+			print "func(b) - before returning"
+			return "func(b) - done"
+			print "func(b) - after returning [should not be executed]"
+		}
+	}
+	print "func(c) - end [should not be executed]"
+}
+
+a: {
+	"IN func(a)"
+	print "func(a) - args: " + @
+	print "func(a) - before calling func(b)"
+	c $(b 20)
+	print "func(a) - got from func(b): " + c
+	print "func(a) - args: " + @
+	print "func(a) - before returning"
+	return @0 + 10
+	print "func(a) - after returniing [should not be executed]"
+}
+
+"IN main"
+print "main() - before calling func(a)"
+d $(a 10)
+print "main() - got from func(a): " + d
+print "and... this is the end. yuhu!!"
