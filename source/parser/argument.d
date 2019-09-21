@@ -27,6 +27,8 @@ import panic;
 import program;
 import compiler;
 
+import var;
+
 // C Interface
 
 extern (C) {
@@ -122,46 +124,6 @@ class Argument {
 		}
 	}
 
-	Value getDottedItem(string s) {
-		//writeln("getting dotted item for: " ~ s);
-
-		string[] parts = s.split(".");
-		string mainObject = parts[0];
-		Value main;
-
-		if (Glob.varExists(mainObject)) main = Glob.varGet(mainObject);
-		else throw new ERR_SymbolNotFound(mainObject);
-
-		parts.popFront();
-
-		while (parts.length>0) {
-			string nextKey = parts[0];
-			//Value nextKeyValue = new Value(nextKey);
-
-			//writeln("nextKey: " ~ nextKey);
-
-			if (main.type==dV) {
-				Value nextKeyValue = main.getValueFromDict(nextKey);
-				if (nextKeyValue !is null)
-					main = nextKeyValue;
-				else throw new ERR_IndexNotFound(nextKey, to!string(main));
-			}
-			else if (main.type==aV) {
-				if (isNumeric(nextKey) && to!int(nextKey)<main.content.a.length) 
-					main = main.content.a[to!int(nextKey)];
-				else {
-					if (isNumeric(nextKey)) throw new ERR_IndexNotFound(to!long(nextKey), to!string(main));
-					else throw new ERR_IndexNotFound(nextKey, to!string(main));
-				}
-			}
-			else throw new ERR_ObjectNotIndexable(to!string(main), nextKey);
-
-			parts.popFront();
-		}
-
-		return main;
-	}
-
 	bool isStringInterpolated() {
 		if (type==ArgumentType.stringArgument) {
 			if (value.content.s.indexOf("`")!=-1) return true;
@@ -172,14 +134,17 @@ class Argument {
 
 	Value getValue() {
 		if (type==ArgumentType.identifierArgument) {
-			if (Glob.varExists(value.content.s)) return Glob.varGet(value.content.s);
-			else {
-				if (value.content.s.indexOf(".")!=-1) return getDottedItem(value.content.s);
-				else throw new ERR_SymbolNotFound(value.content.s);
-			}
+			Var symbol = Glob.varGet(value.content.s);
+
+			if (symbol !is null) return symbol.value;
+			else throw new ERR_SymbolNotFound(value.content.s);
+			//else {
+			//	if (value.content.s.indexOf(".")!=-1) return getDottedItem(value.content.s);
+			//	else 
+			//}
 		}
 		else {
-			
+			/*
 			if (isStringInterpolated()) {
 				string interpol = value.content.s;
 
@@ -200,7 +165,7 @@ class Argument {
 				value = new Value(finalString);
 				return value;
 			}
-			else return value;
+			else */return value;
 		}
 	}
 

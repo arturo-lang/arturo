@@ -112,9 +112,10 @@ class Func {
     Value execute(Value values = null) {
         //writeln("about to execute function with values");
 
-        //writeln("** Func:execute (before) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+        //writeln("** Func:execute (before) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
 
-        Glob.contextStack.push(new Context());
+        if (name=="" || name is null) Glob.contextStack.push(new Context());
+        else Glob.contextStack.push(new Context(true));
 
         if (Glob.trace && name !is null && name.strip()!="") {
             write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
@@ -175,14 +176,20 @@ class Func {
         }
         
         //else Glob.varSet(ARGS, new Value(cast(Value[])([])));
+
+        //writeln(Glob.inspectAllVars());
             
         Value ret = block.execute();
+
 
         //writeln("** Func:execute (after) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 
         //int popped = Glob.retStack.pop();
         //writeln("POPPING STACK FROM FUNC!");
         Glob.contextStack.pop();
+
+        //writeln("** Func:execute (after) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
+        //writeln(Glob.inspectAllVars());
 
         //writeln("** \tretStack: popped " ~ to!string(popped));
 

@@ -227,6 +227,15 @@ class ERR_CannotCompareTypesError : Exception {
     }
 }
 
+class ERR_ProgramPanic : Exception {
+    this(string msg) {
+        super( getErrorString("Program panic",null,
+            ["Message"],
+            [msg] )
+        );
+    }
+}
+
 class Panic
 {
     static void parseError(string msg, string filename, int line) {

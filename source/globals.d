@@ -180,46 +180,7 @@ class Globals : Context {
 
         retCounter = -1;
     }
-
-    Value getSymbol(string s) {
-        //writeln("searching for: " ~ s);
-        if (varExists(s)) return varGet(s);
-        else if (s.indexOf(".")!=-1) {
-            string[] parts = s.split(".");
-            string mainObject = parts[0];
-            Value main;
-
-            if (varExists(mainObject)) main = varGet(mainObject);
-            else return null;
-
-            parts.popFront();
-
-            while (parts.length>0) {
-                string nextKey = parts[0];
-
-                //writeln("looking for: " ~ nextKey ~ " in: " ~ main.stringify());
-
-                if (main.type==dV) {
-                    Value nextKeyValue = main.getValueFromDict(nextKey);
-                    if (nextKeyValue !is null)
-                        main = nextKeyValue;
-                    else return null;
-                }
-                else if (main.type==aV) {
-                    if (isNumeric(nextKey) && main.content.a.length<to!int(nextKey)) 
-                        main = main.content.a[to!int(nextKey)];
-                    else return null;
-                }
-                else return null;
-
-                parts.popFront();
-            }
-
-            return main;
-        }
-        else return null;
-    }
-
+/*
     Value getSymbolParent(string s) {
         string[] parts = s.split(".");
         string mainObject = parts[0];
@@ -271,93 +232,92 @@ class Globals : Context {
 
         return null;
     }
+*/
+
+    Value getParentDictForSymbol(string s) {
+        string[] parts = s.split(".");
+        string mainObject = parts[0];
+        Var main = varGet(mainObject);
+
+        if (main is null) return null;
+
+        Value mainValue = main.value;
+
+        parts.popFront();
+
+        while (parts.length>0) {
+            string nextKey = parts[0];
+
+            writeln("nextKey: " ~ nextKey);
+
+            if (mainValue.type==dV) {
+                if ((parts.length==1) && (mainValue.getValueFromDict(nextKey) !is null)) return mainValue;
+
+                Value nextKeyValue = mainValue.getValueFromDict(nextKey);
+                if (nextKeyValue !is null)
+                    mainValue = nextKeyValue;
+                else return null;
+            }
+            else if (mainValue.type==aV) {
+                if ((parts.length==1) && (isNumeric(nextKey)) && to!int(nextKey)<(mainValue.content.a.length)) return mainValue;
+
+                if (isNumeric(nextKey) && mainValue.content.a.length<to!int(nextKey)) 
+                    mainValue = mainValue.content.a[to!int(nextKey)];
+                else return null;
+            }
+            else return null;
+
+            parts.popFront();
+        }
+
+        return null;
+    }
 
     void varSet(string n, Value v, bool immut = false, bool redefine = false) {
-        Value gs = getSymbol(n);
-
-        //writeln("attempting to set var: " ~ n);
-        //contextStack.print();
-
-        if (redefine || gs is null) 
-        {
+        if (redefine) {
             contextStack.lastItem()._varSet(n,v,immut);
         }
         else {
-            if (gs !is null) {
-                return contextForSymbol(n)._varSet(n,v,immut);
+            Var existingVar = varGet(n);
+
+            if (existingVar !is null) {
+                existingVar.value = v;
             }
             else {
                 contextStack.lastItem()._varSet(n,v,immut);
             }
-
         }
-        //variables[n] = new Var(n,v);
+    } 
+
+    Var varGet(string n) {
+        // if it's an ARGS variable, return it from top-most context
+        if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
+
+        // if it's a global, return it now
+        if (this._varExists(n)) return this._varGet(n); 
+
+        // else search back into the context stack
+        // until reaching root (global), finding it, 
+        // or crossing the first function-type block
+        foreach_reverse (i, Context ctx; contextStack.list) {
+             // if we reach global, that's it
+            if (ctx is this) return null;
+
+            if (ctx._varExists(n)) return ctx._varGet(n);
+
+             // if it is a function and still not found, don't go any further
+            if (ctx.type==ContextType.functionContext) return null; 
+        }
+        return null;
     }
 
-    Var varGetVar(string n) {
-        if (varExists(n)) {
-            Stack!(Context) copied = contextStack.copy();
-            Context currentContext = copied.pop();
-
-            while (currentContext !is null) {
-                if (currentContext._varExists(n))
-                {
-                    //writeln("found. returning variable: " ~ n);
-                    return currentContext._varGetVar(n);
-                }
-
-                currentContext = copied.pop();
-                //if (currentContext is null) writeln("currentContext=null");
-            }
-
-            throw new ERR_SymbolNotFound(n);
+    string inspectAllVars() {
+        string[] ret;
+        foreach (i, st; contextStack.list) {
+            ret ~= "[" ~ to!string(i) ~ "]: " ~ st.type ~ " -> " ~ st.inspectVars();
         }
-        else throw new ERR_SymbolNotFound(n);
-    }
 
-    Value varGet(string n) {
-        if (varExists(n)) {
-            Stack!(Context) copied = contextStack.copy();
-            Context currentContext = copied.pop();
-
-            while (currentContext !is null) {
-                if (currentContext._varExists(n))
-                {
-                    //writeln("found. returning variable: " ~ n);
-                    return currentContext._varGet(n);
-                }
-
-                currentContext = copied.pop();
-                //if (currentContext is null) writeln("currentContext=null");
-            }
-
-            throw new ERR_SymbolNotFound(n);
-        }
-        else throw new ERR_SymbolNotFound(n);
-    }
-
-    bool varExists(string n) {
-        Stack!(Context) copied = contextStack.copy();
-        Context currentContext = copied.pop();
-
-        while (currentContext !is null) {
-            //writeln("searching " ~ n);
-            //writeln("copied " ~ to!string(copied.size()));
-            if (currentContext._varExists(n)) {
-                //writeln("found");
-                return true;
-            }
-
-            currentContext = copied.pop();
-            //if (currentContext is null) writeln("currentContext=null");
-
-        }
-        return false;
-        /*
-        Context currentContext = contextStack.lastItem();
-        if (currentContext._varExists(n)) 
-            return true;
-        return ((n in variables)!=null);*/
+        return ret.join(" | ");
     }
 
     void inspectSymbols() {

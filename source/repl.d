@@ -109,8 +109,8 @@ class Repl {
         if (Glob.funcExists(id)) {
             Glob.funcGet(id).inspect(true);
         }
-        else if (Glob.varExists(id)) {
-            Glob.varGetVar(id).inspect(true);
+        else if (Glob.varGet(id) !is null) {
+            Glob.varGet(id).inspect(true);
         }
         else {
             Panic.consoleError((new ERR_ConsoleIdentifierNotFoundError(id)).msg);

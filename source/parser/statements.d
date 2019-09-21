@@ -84,6 +84,7 @@ class Statements {
 						//Glob.retCounter -= 1;
 						//int popped = Glob.retStack.pop();
 						Glob.blockStack.pop();
+						Glob.contextStack.pop();
 						//Glob.contextStack.pop();
 						//writeln("** Statements:execute (reached parent) : retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 						//writeln("** \tretCounter: decreased to " ~ to!string(Glob.retCounter));
