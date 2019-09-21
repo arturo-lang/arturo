@@ -120,42 +120,6 @@ class Statement {
 		return Glob.funcGet(id).execute(expressions);
 	}
 
-	Value getDottedItem(string s) {
-
-		string[] parts = s.split(".");
-		string mainObject = parts[0];
-		Value main;
-
-		if (Glob.varExists(mainObject)) main = Glob.varGet(mainObject);
-		else throw new ERR_SymbolNotFound(mainObject);
-
-		parts.popFront();
-
-		while (parts.length>0) {
-			string nextKey = parts[0];
-
-			if (main.type==dV) {
-				Value nextKeyValue = main.getValueFromDict(nextKey);
-				if (nextKeyValue !is null)
-					main = nextKeyValue;
-				else throw new ERR_IndexNotFound(nextKey, to!string(main));
-			}
-			else if (main.type==aV) {
-				if (isNumeric(nextKey) && main.content.a.length<to!int(nextKey)) 
-					main = main.content.a[to!int(nextKey)];
-				else {
-					if (isNumeric(nextKey)) throw new ERR_IndexNotFound(to!long(nextKey), to!string(main));
-					else throw new ERR_IndexNotFound(nextKey, to!string(main));
-				}
-			}
-			else throw new ERR_ObjectNotIndexable(to!string(main), nextKey);
-
-			parts.popFront();
-		}
-
-		return main;
-	}
-
 	Value executeUserFunctionCall(Func* f) {
 		//writeln("About to execute(pointer): " ~ to!string(f));
 		if (Glob.memoize.canFind(to!string(f))) {
@@ -211,13 +175,14 @@ class Statement {
 */
 	Value executeAssignment(Value* v) {
 		if (v is null) {
+			debug writeln("Found assignment: " ~ id);
 			Value ev = expressions.evaluate();
 			if (ev.type==fV) {
 				ev.content.f.name = id;
 			}
 			Glob.varSet(id,ev,immut);
 			debug writeln("value= (" ~ id ~ ") -> " ~	ev.stringify());
-			debug writeln("Found assignment: " ~ id);
+			
 
 			return ev;
 		}
@@ -226,11 +191,16 @@ class Statement {
 			Value ev = expressions.evaluate();
 			//return ev;
 			//writeln("setting: " ~ ev.stringify ~ " for: " ~ id ~ " object: " ~ v.stringify());
-			if (v.getValueFromDict(id) !is null) {
-				v.setValueForDict(id, ev);
+			if (v.type==dV) { // is dictionary
+				if (v.getValueFromDict(id) !is null) {
+					v.setValueForDict(id, ev);
+				}
+				else { // key did not exist
+					v.content.d[new Value(id)] = ev;
+				}
 			}
-			else {
-				v.content.d[new Value(id)] = ev;
+			else { // is array
+				v.content.a[(new Value(id)).content.i] = ev;
 			}
 			return ev;
 			//return new Value(0);
@@ -238,43 +208,26 @@ class Statement {
 	}
 
 	Value execute(Value* v) {
-		//writeln("executing statement: " ~	id);
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
 
-					//writeln("normal statement");
-
-					if (Glob.funcExists(id)) return executeFunctionCall(); // System function
+					if (Glob.funcExists(id)) return executeFunctionCall();  // system function
 					else {
 						bool isDictionaryKey = id.indexOf(".")!=-1;
 						
-						Value sym = Glob.getSymbol(id);
-
-						//writeln("no func exists: " ~ id);
+						Var sym = Glob.varGet(id);
 						
 						if (hasExpressions) {
-							//writeln("has expressions");
-							if (sym is null) {
-								//writeln("sym is null");
-								//writeln("Defining new symbol: " ~ id);
-								return executeAssignment(v); // what about keys?
-							}
+							if (sym is null) return executeAssignment(v);
 							else {
-								//writeln("sym not null");
-								if (sym.type==fV) {
-									if (isDictionaryKey) return executeUserFunctionCall(&sym.content.f);
-									else {
-										Var va = Glob.varGetVar(id);
-										if (va.immut) return executeUserFunctionCall(&sym.content.f);
-										else throw new ERR_ModifyingImmutableVariableError(id);
-									}
+								if (sym.value.type==fV) {
+									if (sym.immut && !immut) return executeUserFunctionCall(&sym.value.content.f);
+									else throw new ERR_ModifyingImmutableVariableError(id);
 								}
 								else {
-									//writeln("not fV");
 									if (isDictionaryKey) { 
-										//writeln("dictionary key");
-										Value symParent = Glob.getSymbolParent(id);
+										Value symParent = Glob.getParentDictForSymbol(id);
 										if (symParent !is null) {
 											auto ids = id.split(".");
 											id = ids[ids.length-1];
@@ -283,107 +236,30 @@ class Statement {
 										else throw new ERR_SymbolNotFound(id);
 									}
 									else {
-										Var va = Glob.varGetVar(id);
-										if (va.immut) throw new ERR_ModifyingImmutableVariableError(id);
-										else {
-											//writeln("Re-assigning symbol: " ~ id);
-											return executeAssignment(v);
-										}
+										if (sym.immut) throw new ERR_ModifyingImmutableVariableError(id);
+										else return executeAssignment(v);
 									}
 								}
 							}
 						}
 						else {
-							//writeln("without expressions");
-							//if (sym is null) throw new ERR_SymbolNotFound(id);
-
-							if ((sym !is null) && (sym.type==fV)) {
-								if (isDictionaryKey) {
-									return executeUserFunctionCall(&sym.content.f);
-								}
-								else {
-									Var va = Glob.varGetVar(id);
-									if (va.immut) return executeUserFunctionCall(&sym.content.f);
-									else return sym;
-								}
+							if ((sym !is null) && (sym.value.type==fV)) {
+								if (sym.immut) return executeUserFunctionCall(&sym.value.content.f);
+								else return sym.value;
 							}
-							else {
-								return new Expression(new Argument("id",id)).evaluate();
-							}
-							//else return sym;
+							else return new Expression(new Argument("id",id)).evaluate();
 						}
 					}
 
 				case StatementType.expressionStatement:
-					//writeln("expression statement");
 					return expression.evaluate();
 				default:
 					return new Value();
 			}
-			/*
-			//writeln("about to execute executeUserFunctionCall: " ~ id);
-			if (type==StatementType.normalStatement) {
-				if (!hasExpressions) {
-					writeln("no expr");
-					if (Glob.funcExists(id)) return executeFunctionCall();
-					else {
-						if (Glob.varExists(id)) {
-							Var va = Glob.varGetVar(id);
-
-							if ((va.immut) && (va.value.type==fV)) return executeUserFunctionCall();
-							else return Glob.varGet(id);
-						}
-						else throw new ERR_SymbolNotFound(id);
-
-						// TODO: get dotted items
-						// if it's a function, call the function
-						// if it's a value, return it
-					}
-				} 
-				else {
-					if (Glob.funcExists(id)) return executeFunctionCall();
-					else {
-						if (Glob.varExists(id)) {
-							Var va = Glob.varGetVar(id);
-
-							if (va.immut) {
-								if (va.value.type==fV) return executeUserFunctionCall();
-								else throw new ERR_ModifyingImmutableVariableError(id);
-							}
-							else return executeAssignment(v);
-
-						} 
-						else if (id.indexOf(".")!=-1) return executeUserFunctionCall();
-						else return executeAssignment(v);
-					}
-				}
-			} 
-			else if (type==StatementType.expressionStatement) {
-				//writeln("executing expressionStatement");
-				return expression.evaluate();
-				
-				//return new Value(666);
-			}
-			else return new Value(0);
-			//else return executeUserFunctionCall();*/
 		}
 		catch (Exception e) {
-			//writeln("Caught exception (statement level): " ~ e.msg);
 			throw e;
-			/*
-			if (cast(ReturnResult)(e) !is null) {
-				Value va = (cast(ReturnResult)(e)).val;
-				if (Glob.trace) {
-					writeln(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "-> " ~ va.stringify());
-				}
-				return va;
-			} else {
-				//Panic.runtimeError(e.msg, s.pos);
-				// rethrow
-				throw e;
-			}*/
 		}
-		//return new Value(0);
 	}
 
 	void inspect() {
