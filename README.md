@@ -13,24 +13,44 @@ Check it out online!
 
 http://arturo-lang.io
 
-Build Instruction
+Build Instructions
 ------------------------------
 
-Prerequisites:
+**Prerequisites:**
 
-- Flex, Bison
-- DMD compiler + DUB
+- Flex
+- Bison
+- D compiler (preferably DMD) + DUB
 
-Build:
+**Build:**
 
 	dub build --build=release
 
-Run:
+**Run script:**
 
-	./arturo
+	./arturo <script>
+
+**REPL:**
+
+	./arturo -c
 
 
-Library
+The Language
+------------------------------
+
+Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Ruby, Haskell, D, SDL, Tcl and Lisp.
+
+It is built on some very simple and straightforward principles:
+
+- Everything is a simple statement and there are no "special" language constructs (*even `if` is nothing but a simple statement*)
+- Each statement is in the form `ID <expression> <expression> <expression> ...`
+- Each statement returns an expression
+- An expression can be anything: a number, a string, a boolean value, an array/dictionary literal, a function block, a function call, or a combination of the above
+- If an identifier is a variable or not defined, then the statement (re)assigns the right-hand values to it. If it's a constant named function block (marked by `:` during the initial assignment) - or a "system function" - it calls the corresponding function.
+
+Simple, isn't it?
+
+The Library
 ------------------------------
 
 - **acos**                 [Number or Real] -> Real
