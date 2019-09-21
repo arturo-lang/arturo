@@ -32,6 +32,8 @@ import globals;
 
 import panic;
 
+import var;
+
 class And_ : Func {
 	this() { super("and","if all conditions are true, return true, otherwise return false",[[bV,bV]],[bV]); }
 	override Value execute(Expressions ex) {
@@ -198,6 +200,16 @@ class Or_ : Func {
 	}
 }
 
+class Panic_ : Func {
+	this() { super("panic","exit program printing given error message",[[sV]],[]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias msg = S!(v,0);
+
+		throw new ERR_ProgramPanic(msg);
+	}
+}
+
 class Print_ : Func {
 	this() { super("print","print value of given expression to screen",[[xV]],[xV]); }
 	override Value execute(Expressions ex) {
@@ -220,6 +232,21 @@ class Return_ : Func {
 
 		//writeln("THROWING: return");
 		throw new ReturnResult(v[0]);
+	}
+}
+
+class Test_ : Func {
+	this() { super("test__","test function - dev only",[[sV]],[]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+		
+		Var va = Glob.varGet(input);
+
+		if (va !is null) va.inspect();
+		else writeln("variable not found");
+
+		return new Value(666);
 	}
 }
 
