@@ -1,0 +1,12 @@
+"========================"
+"A take on QuickSort"
+"========================"
+
+quicksort: [arr]{
+	if arr=#() -> #()
+
+	pivot $(first arr), arr_tail $(tail arr)
+	$(quicksort $(filter arr_tail { @ <= pivot })) + pivot + $(quicksort $(filter arr_tail { @ > pivot }))
+}
+
+print $(quicksort #(3 1 2 5 7 9 4 6))

@@ -34,7 +34,7 @@ fun: {
 
 		each #(4 5 6) {
 			print "In each 1 : " + x  + ", in each 2 : " + @
-			if @==5 { print "condition fulfiled", ~ 3, print "after: condition fulfiled" }
+			if @=5 { print "condition fulfiled", ~ 3, print "after: condition fulfiled" }
 			"after conditional"
 		}
 

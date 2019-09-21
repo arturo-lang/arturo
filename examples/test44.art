@@ -1,0 +1,30 @@
+"========================"
+"A take on QuickSort"
+"========================"
+
+//quicksort1 (x:xs) =
+//  let smallerSorted = quicksort1 [a | a <- xs, a <= x]
+//      biggerSorted = quicksort1 [a | a <- xs, a > x]
+//  in  smallerSorted ++ [x] ++ biggerSorted
+
+count 0
+
+quicksort: [arr,i]{
+	print "(" + i + ") RUN: " + arr
+	if arr=#() { #() } {
+		e 	$(first arr)
+		t 	$(tail arr)
+		l 	$(filter t { @<=e })
+		r 	$(filter t { @>e })
+		print "(" + i + ") PRE-CALL: middle: " + e + ", left: " + l + ", right: " + r
+		qsl $(quicksort l i+1)
+		print "(" + i + ") MIDDLE-CALL: middle: " + e + ", left: " + l + ", right: " + r
+		qsr $(quicksort r i+1)
+		print "(" + i + ") POST-CALL: middle: " + e + ", left: " + l + ", right: " + r
+		ret qsl + e + qsr
+		print "(" + i + ") returning " + ret
+		ret
+	}	
+}
+
+print $(quicksort #(3 1 2 5 7 9 4 6) 0)

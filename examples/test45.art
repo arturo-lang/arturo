@@ -1,0 +1,14 @@
+
+recursive_elem: [x,i]{
+	if x=#() { print "done" } {
+		a $(first x)
+		t $(tail x)
+
+		print i + " => first: " + a + ", tail: " + t
+		recursive_elem t i+1
+		print i + " => first: " + a + ", tail: " + t
+	}
+	
+}
+
+recursive_elem #(1 2 3 4 5) 0
