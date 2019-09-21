@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: stack.d
- ************************************************/
+ *****************************************************************/
 
 module stack;
 
@@ -19,87 +19,87 @@ import std.stdio;
 
 class Stack(T)
 {
-	T[] list;
-	this()
-	{
+    T[] list;
+    this()
+    {
 
-	}
+    }
 
-	Stack!(T) copy() {
-		Stack!(T) ret = new Stack!(T);
+    Stack!(T) copy() {
+        Stack!(T) ret = new Stack!(T);
 
-		foreach (T item; list) {
-			ret.push(item);
-		}
+        foreach (T item; list) {
+            ret.push(item);
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	void push(T v)
-	{
-		//writeln("pushing element to: " ~ to!string(this));
-		list ~= v;
-	}
+    void push(T v)
+    {
+        //writeln("pushing element to: " ~ to!string(this));
+        list ~= v;
+    }
 
-	T pop()
-	{
-		//writeln("poppin element from: " ~ to!string(this));
-		if (!isEmpty())
-		{
-			T item = list[list.length-1];
-			list.popBack();
+    T pop()
+    {
+        //writeln("poppin element from: " ~ to!string(this));
+        if (!isEmpty())
+        {
+            T item = list[list.length-1];
+            list.popBack();
 
-			return item;
-		}
-		else
-			return cast(T)(null);
-	}
+            return item;
+        }
+        else
+            return cast(T)(null);
+    }
 
-	bool isEmpty()
-	{
-		return list.length==0;
-	}
+    bool isEmpty()
+    {
+        return list.length==0;
+    }
 
-	ulong size()
-	{
-		return list.length;
-	}
+    ulong size()
+    {
+        return list.length;
+    }
 
-	T lastItem()
-	{
-		return list[list.length-1];
-	}
+    T lastItem()
+    {
+        return list[list.length-1];
+    }
 
-	void print()
-	{
-		writeln("-----------/--/---------STACK--------/--/-----------");
-		writeln("Stack size : " ~ to!string(list.length));
-		foreach (i, T value; list)
-		{
-			string tabs;
-			for (int j; j<=i; j++) tabs ~= "\t";
-			writefln("%s : %s%s",to!string(i),tabs,to!string(value));
-		}
-		writeln("-----------/--/---------end-0--------/--/-----------");
-	}
+    void print()
+    {
+        writeln("-----------/--/---------STACK--------/--/-----------");
+        writeln("Stack size : " ~ to!string(list.length));
+        foreach (i, T value; list)
+        {
+            string tabs;
+            for (int j; j<=i; j++) tabs ~= "\t";
+            writefln("%s : %s%s",to!string(i),tabs,to!string(value));
+        }
+        writeln("-----------/--/---------end-0--------/--/-----------");
+    }
 
-	string str() {
-		string[] ret;
-		foreach (i, T value; list) {
-			ret ~= to!string(value);
-		}
+    string str() {
+        string[] ret;
+        foreach (i, T value; list) {
+            ret ~= to!string(value);
+        }
 
-		return ret.join(", ");
-	}
+        return ret.join(", ");
+    }
 
-	void printPath()
-	{
-		string ret = "";
-		foreach (i, T value; list)
-		{
-			ret ~= to!string(value);
-			if (i!=list.length-1) ret~=":";
-		}
-		writeln(ret);
-	}
+    void printPath()
+    {
+        string ret = "";
+        foreach (i, T value; list)
+        {
+            ret ~= to!string(value);
+            if (i!=list.length-1) ret~=":";
+        }
+        writeln(ret);
+    }
 }

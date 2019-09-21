@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/csv.d
- ************************************************/
+ *****************************************************************/
 
 module art.csv;
 
@@ -29,6 +29,8 @@ import value;
 
 import func;
 import globals;
+
+// Functions
 
 class CSV__Parse_ : Func {
 	this() { super("csv.parse","get object by parsing given CSV string, optionally using headers",[[sV],[sV,bV]],[aV]); }

@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/system.d
- ************************************************/
+ *****************************************************************/
 
 module art.system;
 
@@ -27,6 +27,17 @@ import value;
 import func;
 import globals;
 
+// Functions
+
+class Env_ : Func {
+	this() { super("env","get system environment variables as a dictionary",[[]],[dV]); }
+	override Value execute(Expressions ex) {
+		string[string] ret = environment.toAA();
+
+		return new Value(ret);
+	}
+}
+
 class Shell_ : Func {
 	this() { super("shell","execute given shell command",[[sV]],[sV,bV]); }
 	override Value execute(Expressions ex) {
@@ -39,15 +50,6 @@ class Shell_ : Func {
 			return new Value(false);
 		else
 			return new Value(cmd.output);
-	}
-}
-
-class Env_ : Func {
-	this() { super("env","get system environment variables as a dictionary",[[]],[dV]); }
-	override Value execute(Expressions ex) {
-		string[string] ret = environment.toAA();
-
-		return new Value(ret);
 	}
 }
 

@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/dictionary.d
- ************************************************/
+ *****************************************************************/
 
 module art.dictionary;
 
@@ -29,19 +29,7 @@ import globals;
 
 import panic;
 
-class Keys : Func {
-	this() { super("keys","get array of dictionary keys",[[dV]],[aV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias dict = D!(v,0);
-
-		Value[] ret;
-		foreach (Value key, Value val; dict)
-			ret ~= key;
-
-		return new Value(ret);
-	}
-}
+// Functions
 
 class Has__Key : Func {
 	this() { super("has.key","check if dictionary has key",[[dV,sV]],[bV]); }
@@ -58,4 +46,16 @@ class Has__Key : Func {
 	}
 }
 
+class Keys : Func {
+	this() { super("keys","get array of dictionary keys",[[dV]],[aV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias dict = D!(v,0);
 
+		Value[] ret;
+		foreach (Value key, Value val; dict)
+			ret ~= key;
+
+		return new Value(ret);
+	}
+}

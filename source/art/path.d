@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/path.d
- ************************************************/
+ *****************************************************************/
 
 module art.path;
 
@@ -29,17 +29,7 @@ import value;
 import func;
 import globals;
 
-class Is__File_ : Func {
-	this() { super("is.file","check if given path is a file",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias path = S!(v,0);
-
-		auto ret = path.isFile();
-
-		return new Value(ret);
-	}
-}
+// Functions
 
 class Is__Directory_ : Func {
 	this() { super("is.directory","check if given path is a directory",[[sV]],[bV]); }
@@ -48,6 +38,18 @@ class Is__Directory_ : Func {
 		alias path = S!(v,0);
 
 		auto ret = path.isDir();
+
+		return new Value(ret);
+	}
+}
+
+class Is__File_ : Func {
+	this() { super("is.file","check if given path is a file",[[sV]],[bV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias path = S!(v,0);
+
+		auto ret = path.isFile();
 
 		return new Value(ret);
 	}
@@ -65,15 +67,27 @@ class Is__Symlink_ : Func {
 	}
 }
 
-class Path__Filename_ : Func {
-	this() { super("path.filename","get filename from given path",[[sV]],[sV]); }
+class Path__Contents_ : Func {
+	this() { super("path.contents","get array of directory contents at given path",[[],[sV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		alias path = S!(v,0);
+		string dirPath;
 
-		auto ret = baseName(path);
+		if (v.length == 1) dirPath = S!(v,0);
+		else dirPath = ".";
 
-		return new Value(ret);
+		string path = Glob.env.fileFolder ~ "/" ~ dirPath;
+
+	    string[] files = std.file.dirEntries(path, SpanMode.shallow)
+	        .filter!(a => a.isFile)
+	        .map!(a => baseName(a.name))
+	        .array;
+
+	    Value[] ret;
+	   	foreach (string f; files)
+	   		ret ~= new Value(f);
+
+	   	return new Value(ret);
 	}
 }
 
@@ -86,6 +100,15 @@ class Path__Create_ : Func {
 		mkdir(path);
 
 		return new Value(true);
+	}
+}
+
+class Path__Current_ : Func {
+	this() { super("path.current","get current directory path",[[]],[sV]); }
+	override Value execute(Expressions ex) {
+		auto dirPath = getcwd();
+
+		return new Value(dirPath);
 	}
 }
 
@@ -113,36 +136,15 @@ class Path__Extension_ : Func {
 	}
 }
 
-class Path__Current_ : Func {
-	this() { super("path.current","get current directory path",[[]],[sV]); }
-	override Value execute(Expressions ex) {
-		auto dirPath = getcwd();
-
-		return new Value(dirPath);
-	}
-}
-
-class Path__Contents_ : Func {
-	this() { super("path.contents","get array of directory contents at given path",[[],[sV]],[aV]); }
+class Path__Filename_ : Func {
+	this() { super("path.filename","get filename from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		string dirPath;
+		alias path = S!(v,0);
 
-		if (v.length == 1) dirPath = S!(v,0);
-		else dirPath = ".";
+		auto ret = baseName(path);
 
-		string path = Glob.env.fileFolder ~ "/" ~ dirPath;
-
-	    string[] files = std.file.dirEntries(path, SpanMode.shallow)
-	        .filter!(a => a.isFile)
-	        .map!(a => baseName(a.name))
-	        .array;
-
-	    Value[] ret;
-	   	foreach (string f; files)
-	   		ret ~= new Value(f);
-
-	   	return new Value(ret);
+		return new Value(ret);
 	}
 }
 

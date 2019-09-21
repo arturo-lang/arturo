@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: globals.d
- ************************************************/
+ *****************************************************************/
 
 module globals;
 
@@ -57,8 +57,8 @@ Globals Glob;
 
 // Constants
 
-const string ARGS 										= "@";
-//const string THIS 										= "this";
+const string ARGS                                       = "@";
+//const string THIS                                         = "this";
 
 // Utilities
 
@@ -69,8 +69,8 @@ template StaticFilter(alias Pred, T...) {
 }
 
 template isClass(string name) {
-	mixin("static if (is(" ~ name ~ " == class)) enum bool isClass = true;
-      			  else enum bool isClass = false;");
+    mixin("static if (is(" ~ name ~ " == class)) enum bool isClass = true;
+                  else enum bool isClass = false;");
 }
 
 template extractClasses(string moduleName, members...) {
@@ -82,312 +82,312 @@ template classMembers(string moduleName) {
 }
 
 string registerSystemFuncs() {
-	string ret = "";
-	string[] methods;
+    string ret = "";
+    string[] methods;
 
-	static foreach(string moduleName; [
-		"art.array", 
-		"art.collection", 
-		"art.convert",
-		"art.core", 
-		"art.crypto",
-		"art.csv",
-		"art.date",
-		"art.dictionary", 
-		"art.file", 
-		"art.html",
-		"art.json", 
-		"art.number",
-		"art.path",
-		"art.reflection", 
-		"art.string", 
-		"art.system",
-		"art.web",
-		"art.xml",
-		"art.yaml"
-		])
-		foreach (string className; classMembers!(moduleName))
-			ret ~= "funcSet(new " ~ className ~ "());";
+    static foreach(string moduleName; [
+        "art.array", 
+        "art.collection", 
+        "art.convert",
+        "art.core", 
+        "art.crypto",
+        "art.csv",
+        "art.date",
+        "art.dictionary", 
+        "art.file", 
+        "art.html",
+        "art.json", 
+        "art.number",
+        "art.path",
+        "art.reflection", 
+        "art.string", 
+        "art.system",
+        "art.web",
+        "art.xml",
+        "art.yaml"
+        ])
+        foreach (string className; classMembers!(moduleName))
+            ret ~= "funcSet(new " ~ className ~ "());";
 
-	return ret;
+    return ret;
 }
 
 string getSystemFuncsArray() {
-	string[] methods = [];
+    string[] methods = [];
 
-	static foreach(string moduleName; [
-		"art.array", 
-		"art.collection", 
-		"art.convert",
-		"art.core", 
-		"art.crypto",
-		"art.csv",
-		"art.date",
-		"art.dictionary", 
-		"art.file", 
-		"art.html",
-		"art.json", 
-		"art.number",
-		"art.path",
-		"art.reflection", 
-		"art.string", 
-		"art.system",
-		"art.web",
-		"art.xml",
-		"art.yaml"
-		])
-		foreach (string className; classMembers!(moduleName))
-			methods ~= "\"" ~ className.toLower.replace("__",".").replace("_","") ~ "\"";
+    static foreach(string moduleName; [
+        "art.array", 
+        "art.collection", 
+        "art.convert",
+        "art.core", 
+        "art.crypto",
+        "art.csv",
+        "art.date",
+        "art.dictionary", 
+        "art.file", 
+        "art.html",
+        "art.json", 
+        "art.number",
+        "art.path",
+        "art.reflection", 
+        "art.string", 
+        "art.system",
+        "art.web",
+        "art.xml",
+        "art.yaml"
+        ])
+        foreach (string className; classMembers!(moduleName))
+            methods ~= "\"" ~ className.toLower.replace("__",".").replace("_","") ~ "\"";
 
-	return "[\"?info\",\"?functions\",\"?symbols\",\"?write.to\",\"?clear\",\"?help\",\"?exit\"," ~ methods.join(",") ~ "]";
+    return "[\"?info\",\"?functions\",\"?symbols\",\"?write.to\",\"?clear\",\"?help\",\"?exit\"," ~ methods.join(",") ~ "]";
 
-	//return ret;
+    //return ret;
 }
 
 // Functions
 
 class Globals : Context {
-	Stack!(Context) contextStack;
-	bool isRepl;
-	bool trace;
-	string[] memoize;
-	Value[string] memoized;
-	Statements parentBlock;
-	int retCounter;
-	Stack!(int) retStack;
-	Stack!(Statements) blockStack;
+    Stack!(Context) contextStack;
+    bool isRepl;
+    bool trace;
+    string[] memoize;
+    Value[string] memoized;
+    Statements parentBlock;
+    int retCounter;
+    Stack!(int) retStack;
+    Stack!(Statements) blockStack;
 
-	this(string[] args) {
-		super();
+    this(string[] args) {
+        super();
 
-		mixin(registerSystemFuncs());
+        mixin(registerSystemFuncs());
 
-		contextStack = new Stack!(Context);
-		retStack = new Stack!(int);
-		blockStack = new Stack!(Statements);
-		contextStack.push(this);
+        contextStack = new Stack!(Context);
+        retStack = new Stack!(int);
+        blockStack = new Stack!(Statements);
+        contextStack.push(this);
 
-		Value[] ret = cast(Value[])([]);
+        Value[] ret = cast(Value[])([]);
 
-		foreach (string arg; args) {
-			ret ~= new Value(arg);	
-		}
+        foreach (string arg; args) {
+            ret ~= new Value(arg);  
+        }
 
-		varSet(ARGS, new Value(ret));
+        varSet(ARGS, new Value(ret));
 
-		isRepl = false;
-		trace = false;
+        isRepl = false;
+        trace = false;
 
-		retCounter = -1;
-	}
+        retCounter = -1;
+    }
 
-	Value getSymbol(string s) {
-		//writeln("searching for: " ~ s);
-		if (varExists(s)) return varGet(s);
-		else if (s.indexOf(".")!=-1) {
-			string[] parts = s.split(".");
-			string mainObject = parts[0];
-			Value main;
+    Value getSymbol(string s) {
+        //writeln("searching for: " ~ s);
+        if (varExists(s)) return varGet(s);
+        else if (s.indexOf(".")!=-1) {
+            string[] parts = s.split(".");
+            string mainObject = parts[0];
+            Value main;
 
-			if (varExists(mainObject)) main = varGet(mainObject);
-			else return null;
+            if (varExists(mainObject)) main = varGet(mainObject);
+            else return null;
 
-			parts.popFront();
+            parts.popFront();
 
-			while (parts.length>0) {
-				string nextKey = parts[0];
+            while (parts.length>0) {
+                string nextKey = parts[0];
 
-				//writeln("looking for: " ~ nextKey ~ " in: " ~ main.stringify());
+                //writeln("looking for: " ~ nextKey ~ " in: " ~ main.stringify());
 
-				if (main.type==dV) {
-					Value nextKeyValue = main.getValueFromDict(nextKey);
-					if (nextKeyValue !is null)
-						main = nextKeyValue;
-					else return null;
-				}
-				else if (main.type==aV) {
-					if (isNumeric(nextKey) && main.content.a.length<to!int(nextKey)) 
-						main = main.content.a[to!int(nextKey)];
-					else return null;
-				}
-				else return null;
+                if (main.type==dV) {
+                    Value nextKeyValue = main.getValueFromDict(nextKey);
+                    if (nextKeyValue !is null)
+                        main = nextKeyValue;
+                    else return null;
+                }
+                else if (main.type==aV) {
+                    if (isNumeric(nextKey) && main.content.a.length<to!int(nextKey)) 
+                        main = main.content.a[to!int(nextKey)];
+                    else return null;
+                }
+                else return null;
 
-				parts.popFront();
-			}
+                parts.popFront();
+            }
 
-			return main;
-		}
-		else return null;
-	}
+            return main;
+        }
+        else return null;
+    }
 
-	Value getSymbolParent(string s) {
-		string[] parts = s.split(".");
-		string mainObject = parts[0];
-		Value main;
+    Value getSymbolParent(string s) {
+        string[] parts = s.split(".");
+        string mainObject = parts[0];
+        Value main;
 
-		if (varExists(mainObject)) main = varGet(mainObject);
-		else return null;
+        if (varExists(mainObject)) main = varGet(mainObject);
+        else return null;
 
-		parts.popFront();
+        parts.popFront();
 
-		while (parts.length>0) {
-			string nextKey = parts[0];
+        while (parts.length>0) {
+            string nextKey = parts[0];
 
-			if (main.type==dV) {
-				if ((parts.length==1) && (main.getValueFromDict(nextKey) !is null)) return main;
+            if (main.type==dV) {
+                if ((parts.length==1) && (main.getValueFromDict(nextKey) !is null)) return main;
 
-				Value nextKeyValue = main.getValueFromDict(nextKey);
-				if (nextKeyValue !is null)
-					main = nextKeyValue;
-				else return null;
-			}
-			else if (main.type==aV) {
-				if ((parts.length==1) && (isNumeric(nextKey)) && (main.content.a.length<to!int(nextKey))) return main;
+                Value nextKeyValue = main.getValueFromDict(nextKey);
+                if (nextKeyValue !is null)
+                    main = nextKeyValue;
+                else return null;
+            }
+            else if (main.type==aV) {
+                if ((parts.length==1) && (isNumeric(nextKey)) && (main.content.a.length<to!int(nextKey))) return main;
 
-				if (isNumeric(nextKey) && main.content.a.length<to!int(nextKey)) 
-					main = main.content.a[to!int(nextKey)];
-				else return null;
-			}
-			else return null;
+                if (isNumeric(nextKey) && main.content.a.length<to!int(nextKey)) 
+                    main = main.content.a[to!int(nextKey)];
+                else return null;
+            }
+            else return null;
 
-			parts.popFront();
-		}
+            parts.popFront();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	Context contextForSymbol(string n) {
-		Stack!(Context) copied = contextStack.copy();
-		Context currentContext = copied.pop();
+    Context contextForSymbol(string n) {
+        Stack!(Context) copied = contextStack.copy();
+        Context currentContext = copied.pop();
 
-		while (currentContext !is null) {
-			if (currentContext._varExists(n)) {
-				return currentContext;
-			}
+        while (currentContext !is null) {
+            if (currentContext._varExists(n)) {
+                return currentContext;
+            }
 
-			currentContext = copied.pop();
-			
-		}
+            currentContext = copied.pop();
+            
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	void varSet(string n, Value v, bool immut = false, bool redefine = false) {
-		Value gs = getSymbol(n);
+    void varSet(string n, Value v, bool immut = false, bool redefine = false) {
+        Value gs = getSymbol(n);
 
-		//writeln("attempting to set var: " ~ n);
-		//contextStack.print();
+        //writeln("attempting to set var: " ~ n);
+        //contextStack.print();
 
-		if (redefine || gs is null) 
-		{
-			contextStack.lastItem()._varSet(n,v,immut);
-		}
-		else {
-			if (gs !is null) {
-				return contextForSymbol(n)._varSet(n,v,immut);
-			}
-			else {
-				contextStack.lastItem()._varSet(n,v,immut);
-			}
+        if (redefine || gs is null) 
+        {
+            contextStack.lastItem()._varSet(n,v,immut);
+        }
+        else {
+            if (gs !is null) {
+                return contextForSymbol(n)._varSet(n,v,immut);
+            }
+            else {
+                contextStack.lastItem()._varSet(n,v,immut);
+            }
 
-		}
-		//variables[n] = new Var(n,v);
-	}
+        }
+        //variables[n] = new Var(n,v);
+    }
 
-	Var varGetVar(string n) {
-		if (varExists(n)) {
-			Stack!(Context) copied = contextStack.copy();
-			Context currentContext = copied.pop();
+    Var varGetVar(string n) {
+        if (varExists(n)) {
+            Stack!(Context) copied = contextStack.copy();
+            Context currentContext = copied.pop();
 
-			while (currentContext !is null) {
-				if (currentContext._varExists(n))
-				{
-					//writeln("found. returning variable: " ~ n);
-					return currentContext._varGetVar(n);
-				}
+            while (currentContext !is null) {
+                if (currentContext._varExists(n))
+                {
+                    //writeln("found. returning variable: " ~ n);
+                    return currentContext._varGetVar(n);
+                }
 
-				currentContext = copied.pop();
-				//if (currentContext is null) writeln("currentContext=null");
-			}
+                currentContext = copied.pop();
+                //if (currentContext is null) writeln("currentContext=null");
+            }
 
-			throw new ERR_SymbolNotFound(n);
-		}
-		else throw new ERR_SymbolNotFound(n);
-	}
+            throw new ERR_SymbolNotFound(n);
+        }
+        else throw new ERR_SymbolNotFound(n);
+    }
 
-	Value varGet(string n) {
-		if (varExists(n)) {
-			Stack!(Context) copied = contextStack.copy();
-			Context currentContext = copied.pop();
+    Value varGet(string n) {
+        if (varExists(n)) {
+            Stack!(Context) copied = contextStack.copy();
+            Context currentContext = copied.pop();
 
-			while (currentContext !is null) {
-				if (currentContext._varExists(n))
-				{
-					//writeln("found. returning variable: " ~ n);
-					return currentContext._varGet(n);
-				}
+            while (currentContext !is null) {
+                if (currentContext._varExists(n))
+                {
+                    //writeln("found. returning variable: " ~ n);
+                    return currentContext._varGet(n);
+                }
 
-				currentContext = copied.pop();
-				//if (currentContext is null) writeln("currentContext=null");
-			}
+                currentContext = copied.pop();
+                //if (currentContext is null) writeln("currentContext=null");
+            }
 
-			throw new ERR_SymbolNotFound(n);
-		}
-		else throw new ERR_SymbolNotFound(n);
-	}
+            throw new ERR_SymbolNotFound(n);
+        }
+        else throw new ERR_SymbolNotFound(n);
+    }
 
-	bool varExists(string n) {
-		Stack!(Context) copied = contextStack.copy();
-		Context currentContext = copied.pop();
+    bool varExists(string n) {
+        Stack!(Context) copied = contextStack.copy();
+        Context currentContext = copied.pop();
 
-		while (currentContext !is null) {
-			//writeln("searching " ~ n);
-			//writeln("copied " ~ to!string(copied.size()));
-			if (currentContext._varExists(n)) {
-				//writeln("found");
-				return true;
-			}
+        while (currentContext !is null) {
+            //writeln("searching " ~ n);
+            //writeln("copied " ~ to!string(copied.size()));
+            if (currentContext._varExists(n)) {
+                //writeln("found");
+                return true;
+            }
 
-			currentContext = copied.pop();
-			//if (currentContext is null) writeln("currentContext=null");
+            currentContext = copied.pop();
+            //if (currentContext is null) writeln("currentContext=null");
 
-		}
-		return false;
-		/*
-		Context currentContext = contextStack.lastItem();
-		if (currentContext._varExists(n)) 
-			return true;
-		return ((n in variables)!=null);*/
-	}
+        }
+        return false;
+        /*
+        Context currentContext = contextStack.lastItem();
+        if (currentContext._varExists(n)) 
+            return true;
+        return ((n in variables)!=null);*/
+    }
 
-	void inspectSymbols() {
-		auto sortedSymbols = contextStack.lastItem().variables.keys.sort();
-		foreach (string symString; sortedSymbols) {
-			Var v = contextStack.lastItem().variables[symString];
-			v.inspect();
-		}
-	}
+    void inspectSymbols() {
+        auto sortedSymbols = contextStack.lastItem().variables.keys.sort();
+        foreach (string symString; sortedSymbols) {
+            Var v = contextStack.lastItem().variables[symString];
+            v.inspect();
+        }
+    }
 
-	void inspectFunctions() {
-		auto sortedFunctions = contextStack.lastItem().functions.keys.sort();
-		foreach (string funcString; sortedFunctions) {
-			Func f = contextStack.lastItem().functions[funcString];
-			f.inspect();
-		}
-	}
+    void inspectFunctions() {
+        auto sortedFunctions = contextStack.lastItem().functions.keys.sort();
+        foreach (string funcString; sortedFunctions) {
+            Func f = contextStack.lastItem().functions[funcString];
+            f.inspect();
+        }
+    }
 
-	void inspect() {
-		Stack!(Context) copied = contextStack.copy();
-		Context currentContext = copied.pop();
-		int level = 0;
-		while (currentContext !is null) {
-			writeln("----------------------");
-			writeln("context: " ~ to!string(level));
-			writeln("----------------------");
-			currentContext._inspect();
-		
-			currentContext = copied.pop();
-			level += 1;
-		}
-	}
+    void inspect() {
+        Stack!(Context) copied = contextStack.copy();
+        Context currentContext = copied.pop();
+        int level = 0;
+        while (currentContext !is null) {
+            writeln("----------------------");
+            writeln("context: " ~ to!string(level));
+            writeln("----------------------");
+            currentContext._inspect();
+        
+            currentContext = copied.pop();
+            level += 1;
+        }
+    }
 }

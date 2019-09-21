@@ -2,8 +2,8 @@
 /************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: grammar/parser.y
  ************************************************/
@@ -181,11 +181,14 @@ expression				: 	argument 															{
 						|	expression[left] GT_OP expression[right]							{ $$ = new_Expression($left, $2, $right, 1); } 
 						|	expression[left] NE_OP expression[right]							{ $$ = new_Expression($left, $2, $right, 1); } 
 						|	HASH LCURLY statements RCURLY										{ $$ = new_ExpressionFromDictionary($statements); }
+						//|	HASH LCURLY RCURLY													{ $$ = new_ExpressionFromDictionary(new_Statements()); }
 						| 	LSQUARE RSQUARE LCURLY statements RCURLY							{ $$ = new_ExpressionFromStatementBlock($statements); }
 						| 	LSQUARE identifiers RSQUARE LCURLY statements RCURLY				{ $$ = new_ExpressionFromStatementBlockWithArguments($statements, $identifiers); }
 						|	LCURLY statements RCURLY											{ $$ = new_ExpressionFromStatementBlock($statements); }
+						//|	LCURLY RCURLY														{ $$ = new_ExpressionFromStatementBlock(new_Statements()); }
 						|	DOLLAR LPAREN statement RPAREN 										{ $$ = new_ExpressionFromStatement($statement); }
 						|	HASH LPAREN expression_list RPAREN									{ $$ = new_ExpressionFromArray($expression_list); }
+						|	HASH LPAREN RPAREN													{ $$ = new_ExpressionFromArray(new_Expressions()); }
 						;
 
 

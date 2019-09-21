@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: env.d
- ************************************************/
+ *****************************************************************/
 
 module env;
 
@@ -21,25 +21,25 @@ import panic;
 
 class Env {
 
-	string currentFolder;
-	string fileFolder;
+    string currentFolder;
+    string fileFolder;
 
-	this() {
+    this() {
 
-	}
+    }
 
-	this(string cF, string fF) {
-		currentFolder = cF;
-		fileFolder = cF ~ "/" ~ fF;
-	}
+    this(string cF, string fF) {
+        currentFolder = cF;
+        fileFolder = cF ~ "/" ~ fF;
+    }
 
-	string[] searchPaths() {
-		return [currentFolder, fileFolder];
-	}
+    string[] searchPaths() {
+        return [currentFolder, fileFolder];
+    }
 
-	void inspect() {
-		writeln("ENV::");
-		writeln("currentFolder: " ~ currentFolder);
-		writeln("fileFolder: " ~ fileFolder);
-	}
+    void inspect() {
+        writeln("ENV::");
+        writeln("currentFolder: " ~ currentFolder);
+        writeln("fileFolder: " ~ fileFolder);
+    }
 }

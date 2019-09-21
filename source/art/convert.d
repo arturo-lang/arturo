@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/convert.d
- ************************************************/
+ *****************************************************************/
 
 module art.convert;
 
@@ -29,14 +29,7 @@ import globals;
 
 import panic;
 
-class To__String_ : Func {
-	this() { super("to.string","convert given number/boolean/array/dictionary to its corresponding string value",[[nV],[rV],[bV],[aV],[dV]],[sV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-
-		return new Value(v[0].stringify());
-	}
-}
+// Functions
 
 class To__Number_ : Func {
 	this() { super("to.number","convert given value to its corresponding number value",[[rV],[sV],[bV]],[nV,rV]); }
@@ -60,5 +53,14 @@ class To__Number_ : Func {
 			if (input) return new Value(1);
 			else return new Value(0);
 		}
+	}
+}
+
+class To__String_ : Func {
+	this() { super("to.string","convert given number/boolean/array/dictionary to its corresponding string value",[[nV],[rV],[bV],[aV],[dV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		return new Value(v[0].stringify());
 	}
 }

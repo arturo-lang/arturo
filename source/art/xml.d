@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/xml.d
- ************************************************/
+ *****************************************************************/
 
 module art.xml;
 
@@ -27,6 +27,8 @@ import value;
 
 import func;
 import globals;
+
+// Functions
 
 class XML__Check_ : Func {
 	this() { super("xml.check","check integrity of XML input using given string",[[sV]],[bV]); }

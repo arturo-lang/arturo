@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/file.d
- ************************************************/
+ *****************************************************************/
 
 module art.file;
 
@@ -28,6 +28,8 @@ import value;
 
 import func;
 import globals;
+
+// Functions
 
 class File__Exists_ : Func {
 	this() { super("file.exists","check if file exists at given path",[[sV]],[bV]); }

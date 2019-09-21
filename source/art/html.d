@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/html.d
- ************************************************/
+ *****************************************************************/
 
 module art.html;
 
@@ -29,6 +29,8 @@ import value;
 
 import func;
 import globals;
+
+// Functions
 
 class Convert__Markdown_ : Func {
 	this() { super("convert.markdown","convert given markdown string to html",[[sV]],[sV]); }

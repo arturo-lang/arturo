@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/crypto.d
- ************************************************/
+ *****************************************************************/
 
 module art.crypto;
 
@@ -30,6 +30,8 @@ import func;
 import globals;
 
 import panic;
+
+// Functions
 
 class Hash_ : Func {
 	this() { super("hash","get hash value for given value",[[xV]],[sV]); }

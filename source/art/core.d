@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/core.d
- ************************************************/
+ *****************************************************************/
 
 module art.core;
 
@@ -44,35 +44,6 @@ class And_ : Func {
 		return new Value(true);
 	}
 }
-/*
-class Each_ : Func {
-	this() { super("each","execute given function for each element in array or dictionary",[[aV,fV],[dV,fV]],[xV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-
-		if (v[0].type==aV) {
-			alias arr = A!(v,0);
-			alias func = F!(v,1);
-
-			Value ret;
-			foreach (Value item; arr) 
-				ret = func.execute(item);
-
-			return ret;
-		} 
-		else {
-			alias dict = D!(v,0);
-			alias func = F!(v,1);
-
-			Value ret;
-			foreach (Value key, Value item; dict)
-				ret = func.execute(new Value([key,item]));
-
-			return ret;
-		}
-	}
-}
-*/
 
 class Exec_ : Func {
 	this() { super("exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
@@ -199,13 +170,7 @@ class Memoize_ : Func {
 		Value[] v = validate(ex);
 
 		Value ret = new Value(v[0]);
-		//writeln("trying to memoize function: " ~ to!string(&ret.content.f));
 		Glob.memoize ~= to!string(&ret.content.f);
-
-		//Value[Value] vv;
-		//Glob.memoized[to!string(&ret.content.f)] = new Value(vv);
-
-		//writeln(Glob.memoize);
 
 		return ret;
 	}

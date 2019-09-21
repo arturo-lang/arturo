@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: parser/expressions.d
- ************************************************/
+ *****************************************************************/
 
 module parser.expressions;
 
@@ -25,6 +25,8 @@ extern (C) {
 	void* new_Expressions() { return cast(void*)(new Expressions()); }
 	void add_Expression(Expressions e, Expression ex) { GC.addRoot(cast(void*)e); e.add(ex); }
 }
+
+// Functions
 
 class Expressions {
 

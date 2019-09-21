@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/yaml.d
- ************************************************/
+ *****************************************************************/
 
 module art.yaml;
 
@@ -126,19 +126,6 @@ Node generateYAMLValue(Value input)
 
 // Functions
 
-class Yaml__Parse_ : Func {
-	this() { super("yaml.parse","get object by parsing given YAML string",[[sV]],[xV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias input = S!(v,0);
-
-		Node root = Loader.fromString(input).load();
-		Value ret = parseYAMLNode(root);
-
-		return ret;
-	}
-}
-
 class Yaml__Generate_ : Func {
 	this() { super("yaml.generate","get YAML string from given object",[[xV]],[sV]); }
 	override Value execute(Expressions ex) {
@@ -154,3 +141,18 @@ class Yaml__Generate_ : Func {
 		return new Value(ret);
 	}
 }
+
+class Yaml__Parse_ : Func {
+	this() { super("yaml.parse","get object by parsing given YAML string",[[sV]],[xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+
+		Node root = Loader.fromString(input).load();
+		Value ret = parseYAMLNode(root);
+
+		return ret;
+	}
+}
+
+

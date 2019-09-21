@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/reflection.d
- ************************************************/
+ *****************************************************************/
 
 module art.reflection;
 
@@ -26,14 +26,7 @@ import value;
 import func;
 import globals;
 
-class Type_ : Func {
-	this() { super("type","get type for given object",[[xV]],[sV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-
-		return new Value(v[0].type);
-	}
-}
+// Functions
 
 class Object_ : Func {
 	this() { super("object","get object for given symbol name",[[sV]],[xV]); }
@@ -45,3 +38,11 @@ class Object_ : Func {
 	}
 }
 
+class Type_ : Func {
+	this() { super("type","get type for given object",[[xV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		return new Value(v[0].type);
+	}
+}

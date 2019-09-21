@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: func.d
- ************************************************/
+ *****************************************************************/
 
 module func;
 
@@ -35,266 +35,266 @@ import context;
 
 enum FuncType
 {
-	userFunc,
-	systemFunc
+    userFunc,
+    systemFunc
 }
 
 // Functions
 
 class Func {
 
-	string name;
-	string description;
-	FuncType type;
-	Statements block;
+    string name;
+    string description;
+    FuncType type;
+    Statements block;
 
-	ExpressionType[][] expressionConstraints;
-	ValueType[][] valueConstraints;
-	ValueType[] returnValues;
+    ExpressionType[][] expressionConstraints;
+    ValueType[][] valueConstraints;
+    ValueType[] returnValues;
 
-	ulong minArgs;
-	ulong maxArgs;
+    ulong minArgs;
+    ulong maxArgs;
 
-	string[] ids;
+    string[] ids;
 
-	// system functions
-	this (string n, string descr, ValueType[][] vc = [], ValueType[] rets = []) {
-		name = n;
-		block = null;
-		type = FuncType.systemFunc;
+    // system functions
+    this (string n, string descr, ValueType[][] vc = [], ValueType[] rets = []) {
+        name = n;
+        block = null;
+        type = FuncType.systemFunc;
 
-		description = descr;
+        description = descr;
 
-		minArgs = -1;
-		maxArgs = 100;	
+        minArgs = -1;
+        maxArgs = 100;  
 
-		if (vc!=[]) {
-			valueConstraints = vc;
-			minArgs = 100;
-			maxArgs = 0;
-			foreach (ValueType[] constraints; valueConstraints) {
-				if (constraints.length<minArgs) minArgs = constraints.length;
-				if (constraints.length>maxArgs) maxArgs = constraints.length;
-			}
-		}
+        if (vc!=[]) {
+            valueConstraints = vc;
+            minArgs = 100;
+            maxArgs = 0;
+            foreach (ValueType[] constraints; valueConstraints) {
+                if (constraints.length<minArgs) minArgs = constraints.length;
+                if (constraints.length>maxArgs) maxArgs = constraints.length;
+            }
+        }
 
-		returnValues = rets;
-	}
+        returnValues = rets;
+    }
 
-	// user functions
-	this (string n, Statements b = null, ValueType[][] vc = [], string[] idents = []) {
-		//Func f = this;
-		//writeln("Creating: " ~ to!string(&f));
-		name = n;
-		block = b;
+    // user functions
+    this (string n, Statements b = null, ValueType[][] vc = [], string[] idents = []) {
+        //Func f = this;
+        //writeln("Creating: " ~ to!string(&f));
+        name = n;
+        block = b;
 
-		if (b is null) type = FuncType.systemFunc;
-		else type = FuncType.userFunc;
+        if (b is null) type = FuncType.systemFunc;
+        else type = FuncType.userFunc;
 
-		minArgs = -1;
-		maxArgs = 100;
+        minArgs = -1;
+        maxArgs = 100;
 
-		if (vc!=[]) {
-			valueConstraints = vc;
-			minArgs = 100;
-			maxArgs = 0;
-			foreach (ValueType[] constraints; valueConstraints) {
-				if (constraints.length<minArgs) minArgs = constraints.length;
-				if (constraints.length>maxArgs) maxArgs = constraints.length;
-			}
+        if (vc!=[]) {
+            valueConstraints = vc;
+            minArgs = 100;
+            maxArgs = 0;
+            foreach (ValueType[] constraints; valueConstraints) {
+                if (constraints.length<minArgs) minArgs = constraints.length;
+                if (constraints.length>maxArgs) maxArgs = constraints.length;
+            }
 
-			debug writeln("setting func: " ~ name ~ " minArgs: " ~ to!string(minArgs) ~ ", maxArgs: " ~ to!string(maxArgs));
-		}
+            debug writeln("setting func: " ~ name ~ " minArgs: " ~ to!string(minArgs) ~ ", maxArgs: " ~ to!string(maxArgs));
+        }
 
-		ids = idents;
-	}
+        ids = idents;
+    }
 
-	Value execute(Value values = null) {
-		//writeln("about to execute function with values");
+    Value execute(Value values = null) {
+        //writeln("about to execute function with values");
 
-		//writeln("** Func:execute (before) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+        //writeln("** Func:execute (before) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 
-		Glob.contextStack.push(new Context());
+        Glob.contextStack.push(new Context());
 
-		if (Glob.trace && name !is null && name.strip()!="") {
-			write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
-		}
+        if (Glob.trace && name !is null && name.strip()!="") {
+            write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
+        }
 
-		//writeln("executiing functions... ids = " ~ to!string(ids));
+        //writeln("executiing functions... ids = " ~ to!string(ids));
 
-		if ((ids.length>0) && (values is null)) {
-			string funcName;
-			if (name==null) funcName = "<user function>";
-			else funcName = name;
+        if ((ids.length>0) && (values is null)) {
+            string funcName;
+            if (name==null) funcName = "<user function>";
+            else funcName = name;
 
-			throw new ERR_FunctionCallErrorNotEnough(name,ids.length,0,true);
-		}
+            throw new ERR_FunctionCallErrorNotEnough(name,ids.length,0,true);
+        }
 
-		if ((ids.length>0) && (values !is null)) {
-			if (values.type==aV) {
-				 if (values.content.a.length!=ids.length) {
-				 	string funcName;
-					if (name==null) funcName = "<user function>";
-					else funcName = name;
+        if ((ids.length>0) && (values !is null)) {
+            if (values.type==aV) {
+                 if (values.content.a.length!=ids.length) {
+                    string funcName;
+                    if (name==null) funcName = "<user function>";
+                    else funcName = name;
 
-					if (ids.length>values.content.a.length) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,values.content.a.length,true);
-					else throw new ERR_FunctionCallErrorTooMany(name,ids.length,values.content.a.length,true);
-				}
-			} else {
-				if (1!=ids.length) {
-				 	string funcName;
-					if (name==null) funcName = "<user function>";
-					else funcName = name;
+                    if (ids.length>values.content.a.length) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,values.content.a.length,true);
+                    else throw new ERR_FunctionCallErrorTooMany(name,ids.length,values.content.a.length,true);
+                }
+            } else {
+                if (1!=ids.length) {
+                    string funcName;
+                    if (name==null) funcName = "<user function>";
+                    else funcName = name;
 
-					if (ids.length>1) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,1,true);
-					else throw new ERR_FunctionCallErrorTooMany(name,ids.length,1,true);
-				}
-			}
-			
-		}
+                    if (ids.length>1) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,1,true);
+                    else throw new ERR_FunctionCallErrorTooMany(name,ids.length,1,true);
+                }
+            }
+            
+        }
 
-		if (values !is null) {
-			if (values.type==aV) {
-				foreach (i, string ident; ids) {
-					Glob.varSet(ident, values.content.a[i], true, true);
-				}	
-			}
-			else {
-				if (ids.length==1) {
-					Glob.varSet(ids[0], values, true, true);
-				}
-			}
+        if (values !is null) {
+            if (values.type==aV) {
+                foreach (i, string ident; ids) {
+                    Glob.varSet(ident, values.content.a[i], true, true);
+                }   
+            }
+            else {
+                if (ids.length==1) {
+                    Glob.varSet(ids[0], values, true, true);
+                }
+            }
 
-			if (values !is null) {
-				Glob.varSet(ARGS, values, false, true);
-				if (Glob.trace) {
-					if (values.type==aV)
-						writeln(values.content.a.map!(v=>v.stringify()).array.join(", "));
-				}
-			}
-		}
-		
-		//else Glob.varSet(ARGS, new Value(cast(Value[])([])));
-			
-		Value ret = block.execute();
+            if (values !is null) {
+                Glob.varSet(ARGS, values, false, true);
+                if (Glob.trace) {
+                    if (values.type==aV)
+                        writeln(values.content.a.map!(v=>v.stringify()).array.join(", "));
+                }
+            }
+        }
+        
+        //else Glob.varSet(ARGS, new Value(cast(Value[])([])));
+            
+        Value ret = block.execute();
 
-		//writeln("** Func:execute (after) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
+        //writeln("** Func:execute (after) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 
-		//int popped = Glob.retStack.pop();
-		//writeln("POPPING STACK FROM FUNC!");
-		Glob.contextStack.pop();
+        //int popped = Glob.retStack.pop();
+        //writeln("POPPING STACK FROM FUNC!");
+        Glob.contextStack.pop();
 
-		//writeln("** \tretStack: popped " ~ to!string(popped));
+        //writeln("** \tretStack: popped " ~ to!string(popped));
 
-		return ret;
-	}
+        return ret;
+    }
 
-	Value execute(Expressions ex) {
-		//Func* f = cast(Func*)(&this);
-		//writeln("Executing: " ~ to!string(f));
-		Value values = ex.evaluate(true);
+    Value execute(Expressions ex) {
+        //Func* f = cast(Func*)(&this);
+        //writeln("Executing: " ~ to!string(f));
+        Value values = ex.evaluate(true);
 
-		return execute(values);
-	}
+        return execute(values);
+    }
 
-	Value executeMemoized(Expressions ex, string memo) {
-		Value values = ex.evaluate(true);
+    Value executeMemoized(Expressions ex, string memo) {
+        Value values = ex.evaluate(true);
 
-		//writeln("Glob.memoized before: ");
-		//writeln(Glob.memoized);
+        //writeln("Glob.memoized before: ");
+        //writeln(Glob.memoized);
 
-		string hsh = memo ~ "_" ~ values.hash();
-		//writeln("Hash: " ~ hsh);
+        string hsh = memo ~ "_" ~ values.hash();
+        //writeln("Hash: " ~ hsh);
 
-		if ((hsh in Glob.memoized) is null) {
-			//writeln("memoized value not found, calculating");
-			Value ret = execute(values);
-			Glob.memoized[hsh] = ret;
-			//writeln("stored: ");
-			//writeln(Glob.memoized);
-			return ret;
-		}
-		else {
-			//writeln("memoized value found, returning");
-			return Glob.memoized[hsh];
-		}
-	}
+        if ((hsh in Glob.memoized) is null) {
+            //writeln("memoized value not found, calculating");
+            Value ret = execute(values);
+            Glob.memoized[hsh] = ret;
+            //writeln("stored: ");
+            //writeln(Glob.memoized);
+            return ret;
+        }
+        else {
+            //writeln("memoized value found, returning");
+            return Glob.memoized[hsh];
+        }
+    }
 
-	string getAcceptedConstraintsDescription() {
-		string[] acceptedConstraints = [];
-		foreach (ValueType[] constraints; valueConstraints) {
-			acceptedConstraints ~= constraints.map!(c => "" ~ c).array.join("/");
-			debug writeln(constraints.map!(c => "" ~ c).array.join("/"));
-		}
-		return acceptedConstraints.join(" or ");
-	}
+    string getAcceptedConstraintsDescription() {
+        string[] acceptedConstraints = [];
+        foreach (ValueType[] constraints; valueConstraints) {
+            acceptedConstraints ~= constraints.map!(c => "" ~ c).array.join("/");
+            debug writeln(constraints.map!(c => "" ~ c).array.join("/"));
+        }
+        return acceptedConstraints.join(" or ");
+    }
 
-	string getReturnValuesDescription() {
-		return returnValues.map!(m => "" ~ m).array.join(" or ");
-	}
+    string getReturnValuesDescription() {
+        return returnValues.map!(m => "" ~ m).array.join(" or ");
+    }
 
-	Value[] validate(Expressions ex) {
-		if (ex.lst.length < minArgs) throw new ERR_FunctionCallErrorNotEnough(name, minArgs, ex.lst.length);
-		if (ex.lst.length > maxArgs) throw new ERR_FunctionCallErrorTooMany(name, maxArgs, ex.lst.length);
+    Value[] validate(Expressions ex) {
+        if (ex.lst.length < minArgs) throw new ERR_FunctionCallErrorNotEnough(name, minArgs, ex.lst.length);
+        if (ex.lst.length > maxArgs) throw new ERR_FunctionCallErrorTooMany(name, maxArgs, ex.lst.length);
 
-		Value[] ret;
-		//string[] retString;
-		foreach (Expression e; ex.lst) {
-			Value vv = e.evaluate();
-			ret ~= vv;
-			//retString ~= vv.stringify();
-		}
+        Value[] ret;
+        //string[] retString;
+        foreach (Expression e; ex.lst) {
+            Value vv = e.evaluate();
+            ret ~= vv;
+            //retString ~= vv.stringify();
+        }
 
-		
+        
 
-		foreach (ValueType[] constraints; valueConstraints.filter!(c => c.length == ex.lst.length)) {
-			bool passingConstraint = true;
-			foreach (i, ValueType constraint; constraints) {
-				if (constraint != xV) {
-					if (constraint != ret[i].type) {
-						passingConstraint = false;
-					}
-				}
-			}
-			if (passingConstraint) return ret;
-		}
-		/*
-		string[] acceptedConstraints = [];
-		foreach (ValueType[] constraints; valueConstraints) {
-			acceptedConstraints ~= constraints.map!(c => "" ~ c).array.join("/");
-			debug writeln(constraints.map!(c => "" ~ c).array.join("/"));
-		}
-	*/
-		string givenTypes = ret.map!(c => "" ~ c.type).array.join("/");
+        foreach (ValueType[] constraints; valueConstraints.filter!(c => c.length == ex.lst.length)) {
+            bool passingConstraint = true;
+            foreach (i, ValueType constraint; constraints) {
+                if (constraint != xV) {
+                    if (constraint != ret[i].type) {
+                        passingConstraint = false;
+                    }
+                }
+            }
+            if (passingConstraint) return ret;
+        }
+        /*
+        string[] acceptedConstraints = [];
+        foreach (ValueType[] constraints; valueConstraints) {
+            acceptedConstraints ~= constraints.map!(c => "" ~ c).array.join("/");
+            debug writeln(constraints.map!(c => "" ~ c).array.join("/"));
+        }
+    */
+        string givenTypes = ret.map!(c => "" ~ c.type).array.join("/");
 
-		throw new ERR_FunctionCallConstraintsError(name,getAcceptedConstraintsDescription(),givenTypes);
-	}
+        throw new ERR_FunctionCallConstraintsError(name,getAcceptedConstraintsDescription(),givenTypes);
+    }
 
-	Value validateValue(Expressions ex, int i, ValueType[] vts) {
-		Value evaluated = ex.lst[i].evaluate();
+    Value validateValue(Expressions ex, int i, ValueType[] vts) {
+        Value evaluated = ex.lst[i].evaluate();
 
-		bool valueOK = false;
+        bool valueOK = false;
 
-		foreach (ValueType vt; vts) {
-			if (evaluated.type == vt) valueOK = true;
-		}
+        foreach (ValueType vt; vts) {
+            if (evaluated.type == vt) valueOK = true;
+        }
 
-		if (valueOK) return evaluated;
-		else {
-			throw new ERR_FunctionCallValueError(name, i, vts.map!(v => "" ~ v).array.join(" or "), evaluated.type);
-		}
-	}
+        if (valueOK) return evaluated;
+        else {
+            throw new ERR_FunctionCallValueError(name, i, vts.map!(v => "" ~ v).array.join(" or "), evaluated.type);
+        }
+    }
 
-	void inspect(bool full=false) {
-		if (full) {
-			writeln("  Function : \x1B[37m\x1B[1m" ~ name ~ "\x1B[0m");
-			writeln("         # | " ~ description);
-			writeln();
-			writeln("     usage | " ~ name ~ " [" ~  getAcceptedConstraintsDescription() ~ "]");
-			writeln("        -> | " ~  getReturnValuesDescription());
-		}
-		else {
-			writeln("  " ~ leftJustify(name,20) ~ " [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
-		}
-	}
+    void inspect(bool full=false) {
+        if (full) {
+            writeln("  Function : \x1B[37m\x1B[1m" ~ name ~ "\x1B[0m");
+            writeln("         # | " ~ description);
+            writeln();
+            writeln("     usage | " ~ name ~ " [" ~  getAcceptedConstraintsDescription() ~ "]");
+            writeln("        -> | " ~  getReturnValuesDescription());
+        }
+        else {
+            writeln("  " ~ leftJustify(name,20) ~ " [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
+        }
+    }
 }

@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/json.d
- ************************************************/
+ *****************************************************************/
 
 module art.json;
 
@@ -99,6 +99,18 @@ JSONValue generateJsonValue(Value input)
 
 // Functions
 
+class Json__Generate_ : Func {
+	this() { super("json.generate","get JSON string from given object",[[xV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		JSONValue j = generateJsonValue(v[0]);
+		string ret = j.toString();
+
+		return new Value(ret);
+	}
+}
+
 class Json__Parse_ : Func {
 	this() { super("json.parse","get object by parsing given JSON string",[[sV]],[xV]); }
 	override Value execute(Expressions ex) {
@@ -109,17 +121,5 @@ class Json__Parse_ : Func {
 		Value ret = parseJsonNode(j);
 
 		return ret;
-	}
-}
-
-class Json__Generate_ : Func {
-	this() { super("json.generate","get JSON string from given object",[[xV]],[sV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-
-		JSONValue j = generateJsonValue(v[0]);
-		string ret = j.toString();
-
-		return new Value(ret);
 	}
 }

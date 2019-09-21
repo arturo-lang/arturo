@@ -1,11 +1,11 @@
-/************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
- * (c) 2019 Ioannis Zafeiropoulos
+ * Programming Language + Interpreter
+ * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/date.d
- ************************************************/
+ *****************************************************************/
 
 module art.date;
 
@@ -27,6 +27,8 @@ import value;
 import func;
 import globals;
 
+// Functions
+
 class Date__Now_ : Func {
 	this() { super("date.now","get current date into string",[[]],[sV]); }
 	override Value execute(Expressions ex) {
@@ -36,18 +38,6 @@ class Date__Now_ : Func {
 		auto dateStr = date.toISOExtString();
 
 		return new Value(dateStr);
-	}
-}
-
-class Time__Now_ : Func {
-	this() { super("time.now","get current time into string",[[]],[sV]); }
-	override Value execute(Expressions ex) {
-		SysTime now = Clock.currTime();
-
-		auto time = cast(TimeOfDay)now;
-		auto timeStr = time.toISOExtString();
-
-		return new Value(timeStr);
 	}
 }
 
@@ -100,5 +90,17 @@ class Month_ : Func {
 
 			return new Value(ret);
 		}
+	}
+}
+
+class Time__Now_ : Func {
+	this() { super("time.now","get current time into string",[[]],[sV]); }
+	override Value execute(Expressions ex) {
+		SysTime now = Clock.currTime();
+
+		auto time = cast(TimeOfDay)now;
+		auto timeStr = time.toISOExtString();
+
+		return new Value(timeStr);
 	}
 }

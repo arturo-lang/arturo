@@ -1,11 +1,11 @@
-/*******************************************************
+/*****************************************************************
  * Arturo
  * 
- * The Minimal Declarative-Like Language
+ * Programming Language + Interpreter
  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: art/array.d
- *******************************************************/
+ *****************************************************************/
 
 module art.array;
 
@@ -33,6 +33,8 @@ import func;
 import globals;
 
 import panic;
+
+// Functions
 
 class All_ : Func {
 	this() { super("all","check if all elements of array are true or pass the condition of given function",[[aV],[aV,fV]],[bV]); }
