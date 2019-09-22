@@ -21,7 +21,7 @@ There are no "special" language constructs (*even `if` is nothing but a simple s
 
 ### Code is data. And data is code.
 
-Arturo can be used both as a data-interchange format and a programming language. Basically or data structures are valid code and all code can be represented as a data structure. Think of it as SDL/Json/YAML/XML combined with the power of Lisp - but without the... sea of opening and closing parentheses.
+Arturo can be used both as a data-interchange format and a programming language. Basically all data structures are valid code and all code can be represented as a data structure. Think of it as SDL/Json/YAML/XML combined with the power of Lisp - but without the... sea of opening and closing parentheses.
 
 ### Each statement returns a value
 
