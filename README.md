@@ -42,11 +42,27 @@ Arturo is a modern programming language, vaguely inspired by various other ones 
 
 It is built on some very simple and straightforward principles:
 
-- Everything is a simple statement and there are no "special" language constructs (*even `if` is nothing but a simple statement*)
-- Each statement is in the form `ID <expression> <expression> <expression> ...`
-- Each statement returns an expression
-- An expression can be anything: a number, a string, a boolean value, an array/dictionary literal, a function block, a function call, or a combination of the above
-- If an identifier is a variable or not defined, then the statement (re)assigns the right-hand values to it. If it's a constant named function block (marked by `:` during the initial assignment) - or a "system function" - it calls the corresponding function.
+#### Everything is a simple statement
+
+There are no "special" language constructs (*even `if` is nothing but a simple statement*). Everything you see is a statement in the form `ID <expression> <expression> <expression> ...`
+
+#### Each statement returns a value
+
+Whether what you would consider a "function" or any other statement, it will return a value. If it's a block of code (see: *function*), the last statement's result will be return - unless specified otherwise.
+
+#### Functions are first-class citizens
+
+Functions - or blocks of statements enclosed in `{}` - can be anything. Assign them to a symbol/variable, pass them around as arguments to function calls, include them as a dictionary key value, or return them from a function. And of course they can be either named or anonymous/lambda.
+
+#### Uniform syntax
+
+As already mentioned, everything is a statement of the form `ID <expressions>`. So, how does this work?
+
+- Is your ID predefined? Then if it's a function it'll perform a function call. If it's a different symbol, you'll redefine it.
+- Is your ID not defined? Then the right-hand values will be assigned to your ID, pretty much like a regular variable assignment/initialization.
+- Do you want to define a constant?  Just suffix your ID with `:` when using it for the first time
+- Do you want to use the result of a function call as part of an expression? Just enclose the function call in `$(...)`	E.g.: `print $(reverse #(1 2 3))`
+
 
 Simple, isn't it?
 
