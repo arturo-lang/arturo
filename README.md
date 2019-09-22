@@ -42,6 +42,74 @@ As already mentioned, everything is a statement of the form `ID <expressions>`. 
 
 Simple, isn't it?
 
+Getting Started
+------------------------------
+
+### Hello World
+
+```
+	"Hello World"
+```
+
+or...
+
+```
+	print "Hello World"
+```
+
+### Declaring some data
+
+```
+	num 	10
+	str 	"this is a string"
+
+	arrA 	1 2 3
+	arrB 	"one" "two" "three"
+	arrC	#(1 2 3)
+
+	dict 	#{
+		name 	"john"
+		surname "doe"
+		age 	33
+		address #{
+			city	"Granada"
+			country	"Spain"
+		}
+	}
+```
+
+### Declaring a function
+
+```
+	addNumbers: {
+		@0 + @1
+	}
+```
+
+or...
+
+```
+	addNumbers: [x,y]{
+		x + y
+	}
+```
+
+### Fibonacci
+
+```
+	maxLimit 20 // $(to.number @0)
+
+	fib: $(memoize [x]{
+		if x<2 { 1 }{
+			$(fib x-1) + $(fib x-2)
+		} 
+	})
+
+	loop $(range 0 maxLimit) {
+		print $(fib @)
+	}
+```
+
 The Library
 ------------------------------
 
