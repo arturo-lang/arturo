@@ -45,8 +45,8 @@ Simple, isn't it?
 The Library
 ------------------------------
 
-| Function | Center-aligned | Syntax |
-| :---         |     :---:      |          ---: |
+| Function | Description | Syntax |
+| :---         | :---      | :---  |
 | **acos** | get 'acos' for given number | [Number or Real] -> Real |
 | **acosh** | get 'acosh' for given number | [Number or Real] -> Real |
 | **all** | check if all elements of array are true or pass the condition of given function | [Array or Array/Function] -> Boolean |
