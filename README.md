@@ -8,33 +8,6 @@
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square) ![Language](https://img.shields.io/badge/Language-D-red.svg?style=flat-square)
 
-Check it out online!
-------------------------------
-
-http://arturo-lang.io
-
-Build Instructions
-------------------------------
-
-**Prerequisites:**
-
-- Flex
-- Bison
-- D compiler (preferably DMD) + DUB
-
-**Build:**
-
-	dub build --build=release
-
-**Run script:**
-
-	./arturo <script>
-
-**REPL:**
-
-	./arturo -c
-
-
 The Language
 ------------------------------
 
@@ -205,6 +178,32 @@ The Library
 - **yaml.generate**        [Any] -> String
 - **yaml.parse**           [String] -> Any
 - **zip**                  [Array/Array] -> Array
+
+Build Instructions
+------------------------------
+
+**Prerequisites:**
+
+- Flex
+- Bison
+- D compiler (preferably DMD) + DUB
+
+**Build:**
+
+	dub build --build=release
+
+**Run script:**
+
+	./arturo <script>
+
+**REPL:**
+
+	./arturo -c
+
+Or... Check it out online!
+------------------------------
+
+http://arturo-lang.io
 
 ---
 
