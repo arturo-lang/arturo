@@ -42,19 +42,19 @@ Arturo is a modern programming language, vaguely inspired by various other ones 
 
 It is built on some very simple and straightforward principles:
 
-#### Everything is a simple statement
+### - Everything is a simple statement
 
 There are no "special" language constructs (*even `if` is nothing but a simple statement*). Everything you see is a statement in the form `ID <expression> <expression> <expression> ...`
 
-#### Each statement returns a value
+### - Each statement returns a value
 
 Whether what you would consider a "function" or any other statement, it will return a value. If it's a block of code (see: *function*), the last statement's result will be return - unless specified otherwise.
 
-#### Functions are first-class citizens
+### - Functions are first-class citizens
 
 Functions - or blocks of statements enclosed in `{}` - can be anything. Assign them to a symbol/variable, pass them around as arguments to function calls, include them as a dictionary key value, or return them from a function. And of course they can be either named or anonymous/lambda.
 
-#### Uniform syntax
+### - Uniform syntax
 
 As already mentioned, everything is a statement of the form `ID <expressions>`. So, how does this work?
 
