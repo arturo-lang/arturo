@@ -292,6 +292,10 @@ class Func {
         }
     }
 
+    string markdownish() {
+        return "| **" ~ name ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
+    }
+
     void inspect(bool full=false) {
         if (full) {
             writeln("  Function : \x1B[37m\x1B[1m" ~ name ~ "\x1B[0m");

@@ -332,7 +332,8 @@ class Globals : Context {
         auto sortedFunctions = contextStack.lastItem().functions.keys.sort();
         foreach (string funcString; sortedFunctions) {
             Func f = contextStack.lastItem().functions[funcString];
-            f.inspect();
+            writeln(f.markdownish());
+            //f.inspect();
         }
     }
 
