@@ -145,8 +145,9 @@ class Loop_ : Func {
 			alias func = F!(v,1);
 
 			Value ret;
-			foreach (Value key, Value item; dict)
-				ret = func.execute(new Value([key,item]));
+			foreach (Var va; dict.variables) {
+				ret = func.execute(new Value([new Value(va.name),va.value]));
+			}
 
 			return ret;
 		} else { 
@@ -211,7 +212,7 @@ class Panic_ : Func {
 }
 
 class Print_ : Func {
-	this() { super("print","print value of given expression to screen",[[xV]],[xV]); }
+	this() { super("print","print value of given expression to screen, optionally suppressing newlines",[[xV],[xV,bV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		Value item = v[0];
@@ -219,7 +220,9 @@ class Print_ : Func {
 		if (item.type==sV) write(item.content.s);
 		else write(item.stringify);
 
-		writeln();
+		if (v.length==2) {
+			if (!B!(v,1)) writeln();
+		} else writeln();
 
 		return v[0];
 	}

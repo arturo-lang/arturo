@@ -31,6 +31,11 @@ import std.json;
 
 import panic;
 
+import context;
+import globals;
+
+import var;
+
 // Aliases
 
 alias nV = ValueType.numberValue;
@@ -67,7 +72,7 @@ union ValueContent
     bool b;
     Func f;
     Value[] a;
-    Value[Value] d;
+    Context d;
 }
 
 // Aliases
@@ -98,10 +103,27 @@ class Value {
     ValueContent content;
     bool isBig;
 
-    this() { type = ValueType.noValue; }
-    this(int v)         { type = ValueType.numberValue; isBig = false;  content.i = v;}
-    this(BigInt v)      { type = ValueType.numberValue; isBig = true; content.bi = v; }
-    this(long v)        { type = ValueType.numberValue;     content.i = v; }
+    this() { 
+        type = ValueType.noValue; 
+    }
+
+    this(int v) { 
+        type = ValueType.numberValue; 
+        isBig = false;  
+        content.i = v;
+    }
+    
+    this(BigInt v) { 
+        type = ValueType.numberValue; 
+        isBig = true; 
+        content.bi = v; 
+    }
+
+    this(long v) { 
+        type = ValueType.numberValue; 
+        content.i = v; 
+    }
+
     this(string v, bool bignum=false) { 
         if (bignum) {
             isBig = true;
@@ -113,10 +135,27 @@ class Value {
             content.s = v; 
         }
     }
-    this(bool v)        { type = ValueType.booleanValue;    content.b = v; }
-    this(real v)        { type = ValueType.realValue;       content.r = v; }
-    this(Statements v)  { type = ValueType.functionValue;   content.f = new Func("", v); }
-    this(Statements v, string[] ids)    { type = ValueType.functionValue;   content.f = new Func("", v, [], ids); }
+
+    this(bool v) { 
+        type = ValueType.booleanValue;    
+        content.b = v; 
+    }
+
+    this(real v) { 
+        type = ValueType.realValue;       
+        content.r = v; 
+    }
+
+    this(Statements v) {
+        type = ValueType.functionValue;   
+        content.f = new Func("", v); 
+    }
+
+    this(Statements v, string[] ids) { 
+        type = ValueType.functionValue;   
+        content.f = new Func("", v, [], ids); 
+    }
+
     this(Value[] v)
     {
         type = ValueType.arrayValue;
@@ -125,11 +164,13 @@ class Value {
             content.a ~= i;
         }
     }
+
     this(Value[Value] v)
     {
         type = ValueType.dictionaryValue;
+        content.d =  new Context(ContextType.dictionaryContext);
         foreach (Value k, Value c; v) {
-            content.d[k] = c;
+            content.d._varSet(k.content.s, c);
         }
     }
 
@@ -145,8 +186,9 @@ class Value {
     this(string[string] v)
     {
         type = ValueType.dictionaryValue;
+        content.d = new Context(ContextType.dictionaryContext);
         foreach (string k, string c; v) {
-            content.d[new Value(k)] = new Value(c);
+            content.d._varSet(k, new Value(c));
         }
     }
 
@@ -166,8 +208,9 @@ class Value {
                 foreach (Value vv; v.content.a) content.a ~= new Value(vv);
                 break;
             case ValueType.dictionaryValue :
-                foreach (Value kv, Value vv; v.content.d)
-                    content.d[kv] = new Value(vv); break;
+                content.d = new Context(ContextType.dictionaryContext);
+                foreach (Var va; v.content.d.variables)
+                    content.d._varSet(va.name, va.value); break;
             default: break;
         }
     }
@@ -188,10 +231,18 @@ class Value {
                 foreach (const Value vv; v.content.a) content.a ~= new Value(vv);
                 break;
             case ValueType.dictionaryValue :
-                foreach (const Value kv, const Value vv; v.content.d)
-                    content.d[new Value(kv)] = new Value(vv); break;
+                content.d = new Context(ContextType.dictionaryContext);
+                foreach (const Var va; v.content.d.variables)
+                    content.d._varSet(va.name, new Value(va.value)); break;
             default: break;
         }
+    }
+
+    static Value dictionary() {
+        Value v = new Value();
+        v.type = ValueType.dictionaryValue;
+        v.content.d = new Context(ContextType.dictionaryContext);
+        return v;
     }
 
     bool arrayContains(Value item)
@@ -203,10 +254,7 @@ class Value {
     }
 
     bool dictionaryContains(Value item) {
-        foreach (Value k, Value v; content.d)
-            if (k==item) return true;
-
-        return false;
+        return content.d._varExists(item.content.s);
     }
 
     Value[] arrayValues() {
@@ -246,21 +294,21 @@ class Value {
     }
 
     Value removeValueFromDict(Value object) {
-        foreach (Value k, Value v; content.d) {
-            if (object==v) content.d.remove(k);
+        foreach (Var va; content.d.variables) {
+            if (va.value==object) content.d._varUnset(va.name);
         }
 
         return this;
     }
-
+/*
     const Value removeValueFromDictImmut(const Value object) {
         Value ret = new Value(this);
-        foreach (Value k, Value v; ret.content.d) {
-            if (object==v) ret.content.d.remove(k);
+        foreach (Var va; content.d.variables) {
+            if (va.value==object) content.d._varUnset(va.name);
         }
 
         return ret;
-    }
+    }*/
 
     const Value removeIndexFromArrayImmut(long index) {
         Value ret = new Value(this);
@@ -274,28 +322,22 @@ class Value {
     }
 
     Value removeIndexFromDict(string key) {
-        foreach (Value k, Value v; content.d) {
-            if (k.str()==key) content.d.remove(k);
-        }
+        content.d._varUnset(key);
 
         return this;
     }
 
     Value getValueFromDictValue(Value key)
     {
-        foreach (Value k, Value v; content.d)
-        {
-            if (k==key) return v;
-        }
-
-        return null;
+        if (content.d._varExists(key.content.s))
+            return content.d._varGet(key.content.s).value;
+        else return null;
     }
 
     Value getValueFromDict(string key)
     {
-        foreach (Value k, Value v; content.d)
-        {
-            if (k.str()==key) return v;
+        if (content.d._varExists(key)) {
+            return content.d._varGet(key).value;
         }
 
         return null;
@@ -303,47 +345,33 @@ class Value {
 
     const Value getValueFromDictImmut(string key)
     {
-        foreach (const Value k, const Value v; content.d)
-        {
-            if (k.strImmut()==key) return cast(Value)(v);
+        Value cp = new Value(this);
+        if (cp.content.d._varExists(key)) {
+            return cp.content.d._varGet(key).value;
         }
 
         return null;
     }
 
     void setValueForDictValue(Value key, Value val) {
-        content.d[key] = val;
+        content.d._varSet(key.content.s, val);
     }
 
     void setValueForDict(string key, Value val) {
-        foreach (Value k, Value v; content.d)
-        {
-            if (k.str()==key) {
-                content.d[k] = val;
-            }
-        }
+        //writeln("in setValueForDict: before");
+        content.d._varSet(key, val);
+        //writeln("in setValueForDict: after");
     }
 
     void setValueForDictRegardless(string key, Value val) {
-        bool added = false;
-        foreach (Value k, Value v; content.d)
-        {
-            if (k.str()==key) {
-                content.d[k] = val;
-                added = true;
-            }
-        }
-
-        if (!added) {
-            content.d[new Value(key)] = val;
-        }
+        content.d._varSet(key,val);
     }
 
     const Value mergeDictWith(const Value dictB) {
         Value cp = new Value(this);
 
-        foreach (const Value k, const Value v;  dictB.content.d) {
-            cp.setValueForDictRegardless((new Value(k)).str(), new Value(v));
+        foreach (const Var v; dictB.content.d.variables) {
+            cp.setValueForDictRegardless(new Value(v.name).content.s, new Value(v.value));
         }
 
         return cp;
@@ -667,8 +695,10 @@ class Value {
             return removeValueFromArrayImmut(rhs);
         }
         else if (type==ValueType.dictionaryValue)
-        {
-            return removeValueFromDictImmut(rhs);
+        {   
+            Value cp = new Value(this);
+            Value cprhs = new Value(rhs);
+            return cp.removeValueFromDict(cprhs);
         }
         else if (type==ValueType.functionValue)
         {
@@ -1391,16 +1421,13 @@ class Value {
             return true;
         }
         else if (type==ValueType.dictionaryValue) {
-            Value[Value] lhs = content.d;
-
-            if (lhs.length != rhs.content.d.length) return false;
-
-            foreach (Value key, Value item; lhs) {
-                Value dv = rhs.getValueFromDictValue(key);
+            Context lhs = content.d;
+            foreach (Var v; lhs.variables) {
+                Value dv = rhs.getValueFromDict(v.name);
 
                 if (dv is null) { return false; }
                 else {
-                    if (item != dv) return false;
+                    if (v.value!=dv) return false;
                 }
             }
 
@@ -1514,7 +1541,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{ ";
                 string[] items;
-                auto sortedKeys = content.d.keys.map!(v=> v.content.s).array.sort();
+                auto sortedKeys = content.d.variables.keys.array.sort();
                 foreach (string key; sortedKeys) {
                 //foreach (Value k, Value v; content.d) {
                     //items ~= k.content.s ~ " " ~ v.stringify();
@@ -1548,7 +1575,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{ ";
                 string[] items;
-                auto sortedKeys = content.d.keys.map!(v=> v.content.s).array.sort();
+                auto sortedKeys = content.d.variables.keys.array.sort();
                 foreach (string key; sortedKeys) {
                 //foreach (Value k, Value v; content.d) {
                     //items ~= k.content.s ~ " " ~ v.stringify();
@@ -1587,12 +1614,12 @@ class Value {
             case ValueType.dictionaryValue  :
                 write("[");
                 int i;
-                foreach (Value kv, Value vv; content.d)
+                foreach (Var v; content.d.variables)
                 {
-                    kv.print();
+                    write(v.name);
                     write(" : ");
-                    vv.print();
-                    if (i!=content.d.length-1) write(",");
+                    v.value.print();
+                    if (i!=content.d.variables.length-1) write(",");
                     i++;
                 }
                 write("]"); break;
@@ -1621,10 +1648,10 @@ class Value {
             case ValueType.dictionaryValue  :
                 ret ~= "dict([";
                 int i;
-                foreach (Value kv, Value vv; content.d)
+                foreach (Var v; content.d.variables)
                 {
-                    ret ~= kv.toString() ~ ":" ~ vv.toString();
-                    if (i!=content.d.length-1) ret ~= ", ";
+                    ret ~= v.name ~ ":" ~ v.value.toString();
+                    if (i!=content.d.variables.length-1) ret ~= ", ";
                     i++;
                 }
                 ret ~= "])"; break;
@@ -1654,10 +1681,10 @@ class Value {
             case ValueType.dictionaryValue  :
                 ret ~= "dict([";
                 int i;
-                foreach (const Value kv, const Value vv; content.d)
+                foreach (const Var v; content.d.variables)
                 {
-                    ret ~= kv.toString() ~ ":" ~ vv.toString();
-                    if (i!=content.d.length-1) ret ~= ", ";
+                    ret ~= v.name ~ ":" ~ v.value.toString();
+                    if (i!=content.d.variables.length-1) ret ~= ", ";
                     i++;
                 }
                 ret ~= "])"; break;
@@ -1677,8 +1704,8 @@ class Value {
             case ValueType.booleanValue     :   return HashValue(to!string(content.b));
             case ValueType.arrayValue       :   return HashValue(content.a.map!(v=> v.hash()).join(""));
             case ValueType.dictionaryValue  :   string ret = "";
-                                                foreach (Value k, Value v; content.d) {
-                                                    ret ~= k.hash() ~ v.hash();
+                                                foreach (Var v; content.d.variables) {
+                                                    ret ~= (new Value(v.name)).hash() ~ v.value.hash();
                                                 }
                                                 return HashValue(ret);
             case ValueType.functionValue    :   return HashValue(to!string(&content.f));

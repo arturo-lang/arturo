@@ -33,6 +33,8 @@ import panic;
 
 import dyaml;
 
+import var;
+
 // Constants
 
 enum YAML_STRING	=	"tag:yaml.org,2002:str";
@@ -111,9 +113,9 @@ Node generateYAMLValue(Value input)
 		case ValueType.dictionaryValue	: 	{
 			Node[Node] vals;
 
-			foreach (Value kv, Value vv; input.content.d)
+			foreach (Var va; input.content.d.variables)
 			{
-				vals [ generateYAMLValue(kv) ] = generateYAMLValue(vv);
+				vals [ generateYAMLValue(new Value(va.name)) ] = generateYAMLValue(va.value);
 			}
 			ret = Node(vals, YAML_MAP);
 			return ret;

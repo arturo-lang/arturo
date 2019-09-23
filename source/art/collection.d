@@ -122,7 +122,7 @@ class Is__Empty_ : Func {
 		switch (item.type) {
 			case sV: return new Value(S!(item).length==0);
 			case aV: return new Value(A!(item).length==0);
-			case dV: return new Value(D!(item).length==0);
+			case dV: return new Value(D!(item).variables.length==0);
 			default: break;
 		}
 
@@ -153,7 +153,7 @@ class Set_ : Func {
 				return item.getValueFromDict(index);
 			}
 			else {
-				item.content.d[new Value(index)] = v[2];
+				item.setValueForDict(index,v[2]);
 				return item;
 			}
 			//return new Value();
@@ -170,7 +170,7 @@ class Size_ : Func {
 		switch (item.type) {
 			case sV: return new Value(S!(item).length);
 			case aV: return new Value(A!(item).length);
-			case dV: return new Value(D!(item).length);
+			case dV: return new Value(D!(item).variables.length);
 			default: break;
 		}
 

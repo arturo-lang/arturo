@@ -132,36 +132,6 @@ class Expression {
 		expressions = ar;
 	}
 
-	void inspect() {
-		switch (type) {
-			case ExpressionType.argumentExpression:
-				writeln("\texpression: argument: ");
-				arg.inspect();
-				break;
-			case ExpressionType.functionExpression:
-				writeln("\texpression: statement: ");
-				statement.inspect();
-				break;
-			case ExpressionType.blockExpression:
-				writeln("\texpression: statement block: ");
-				statements.inspect();
-				break;
-			case ExpressionType.normalExpression:
-			case ExpressionType.comparisonExpression:
-				writeln("\texpression: left: ");
-				left.inspect();
-				writeln("\texpression: op: " ~ operator);
-				if (right !is null) {
-					writeln("\texpression: right: ");
-					right.inspect();
-				}
-				break;
-			default:
-				writeln("shouldn't reach this point");
-				break;
-		}
-	}
-
 	Value evaluateNormalExpression() {
 		Value lValue = left.evaluate();
 		Value rValue; 
@@ -213,8 +183,7 @@ class Expression {
 	}
 
 	Value evaluateDictionaryExpression() {
-		Value res = new Value();
-		res.type = ValueType.dictionaryValue;
+		Value res = Value.dictionary();
 
 		//Glob.contextStack.push(new Context());
 		//Glob.varSet(THIS, res);
@@ -235,29 +204,19 @@ class Expression {
 
 	Value evaluateBlockExpression() {
 		return new Value(statements, function_arguments);
-		//return new Value(statements);
 	}
 
 	Value evaluate()
 	{
 		switch (type) {
-			case ExpressionType.argumentExpression:
-				return arg.getValue();
-			case ExpressionType.normalExpression:
-				return evaluateNormalExpression();
-			case ExpressionType.arrayExpression:
-				return evaluateArrayExpression();
-			case ExpressionType.dictionaryExpression:
-				return evaluateDictionaryExpression();
-			case ExpressionType.comparisonExpression:
-				return evaluateComparisonExpression();
-			case ExpressionType.functionExpression:
-				return evaluateFunctionExpression();
-			case ExpressionType.blockExpression:
-				return evaluateBlockExpression();
-			default:
-				writeln("I don't know how to evaluate this");
-				return null;
+			case ExpressionType.argumentExpression:		return arg.getValue();
+			case ExpressionType.normalExpression:		return evaluateNormalExpression();
+			case ExpressionType.arrayExpression:		return evaluateArrayExpression();
+			case ExpressionType.dictionaryExpression:	return evaluateDictionaryExpression();
+			case ExpressionType.comparisonExpression: 	return evaluateComparisonExpression();
+			case ExpressionType.functionExpression:		return evaluateFunctionExpression();
+			case ExpressionType.blockExpression:		return evaluateBlockExpression();
+			default: return null;
 		}
 	}
 

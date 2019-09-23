@@ -174,8 +174,9 @@ class Statement {
 	}
 */
 	Value executeAssignment(Value* v) {
+
 		if (v is null) {
-			debug writeln("Found assignment: " ~ id);
+			//writeln("Found assignment: " ~ id);
 			Value ev = expressions.evaluate();
 			if (ev.type==fV) {
 				ev.content.f.name = id;
@@ -187,27 +188,25 @@ class Statement {
 			return ev;
 		}
 		else {
-			debug writeln("Executing inner assignment: " ~ id);
+			//writeln("Executing inner assignment: " ~ id);
 			Value ev = expressions.evaluate();
 			//return ev;
 			//writeln("setting: " ~ ev.stringify ~ " for: " ~ id ~ " object: " ~ v.stringify());
 			if (v.type==dV) { // is dictionary
-				if (v.getValueFromDict(id) !is null) {
-					v.setValueForDict(id, ev);
-				}
-				else { // key did not exist
-					v.content.d[new Value(id)] = ev;
-				}
+				//writeln("is dictionary");
+				v.setValueForDict(id, ev);
 			}
 			else { // is array
 				v.content.a[(new Value(id)).content.i] = ev;
 			}
+			//writeln("HERE");
 			return ev;
 			//return new Value(0);
 		}
 	}
 
 	Value execute(Value* v) {
+		//writeln("Executing statement: " ~ id);
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
@@ -217,6 +216,8 @@ class Statement {
 						bool isDictionaryKey = id.indexOf(".")!=-1;
 						
 						Var sym = Glob.varGet(id);
+
+						//writeln("sym :" ~ to!string(sym));
 						
 						if (hasExpressions) {
 							if (sym is null) return executeAssignment(v);

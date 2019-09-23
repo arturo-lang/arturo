@@ -290,6 +290,7 @@ class Globals : Context {
     } 
 
     Var varGet(string n) {
+        //writeln("in varGet: " ~ n);
         // if it's an ARGS variable, return it from top-most context
         if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
 

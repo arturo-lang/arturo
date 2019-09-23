@@ -50,6 +50,18 @@ class Capitalize_ : Func {
 	}
 }
 
+class Char_ : Func {
+	this() { super("char","get ASCII character from given char code",[[nV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias charCode = I!(v,0);
+
+		Value ret = new Value(to!string(cast(char)charCode));
+
+		return ret;
+	}
+}
+
 class Characters_ : Func {
 	this() { super("characters","get string characters as an array",[[sV]],[aV]); }
 	override Value execute(Expressions ex) {

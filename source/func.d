@@ -115,7 +115,9 @@ class Func {
         //writeln("** Func:execute (before) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
 
         if (name=="" || name is null) Glob.contextStack.push(new Context());
-        else Glob.contextStack.push(new Context(true));
+        else Glob.contextStack.push(new Context(ContextType.functionContext));
+
+        //writeln("Func:: pushing context");
 
         if (Glob.trace && name !is null && name.strip()!="") {
             write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
@@ -187,7 +189,8 @@ class Func {
         //int popped = Glob.retStack.pop();
         //writeln("POPPING STACK FROM FUNC!");
         Glob.contextStack.pop();
-
+        //writeln("Func:: popping context");
+        //writeln(Glob.inspectAllVars());
         //writeln("** Func:execute (after) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
         //writeln(Glob.inspectAllVars());
 

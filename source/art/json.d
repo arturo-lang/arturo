@@ -30,6 +30,8 @@ import globals;
 
 import panic;
 
+import var;
+
 // Utilities
 
 Value parseJsonNode(JSONValue n)
@@ -85,8 +87,8 @@ JSONValue generateJsonValue(Value input)
 		}
 		case ValueType.dictionaryValue	: 	{
 			JSONValue[string] result;
-			foreach (Value kv, Value vv; input.content.d)
-				result [kv.str()] = generateJsonValue(vv);
+			foreach (Var va; input.content.d.variables)
+				result [va.name] = generateJsonValue(va.value);
 
 			ret = result;
 			return ret;

@@ -29,6 +29,8 @@ import globals;
 
 import panic;
 
+import var;
+
 // Functions
 
 class Has__Key : Func {
@@ -38,11 +40,7 @@ class Has__Key : Func {
 		alias dict = D!(v,0);
 		alias key = S!(v,1);
 
-		foreach (Value k, Value v; dict) {
-			if (S!(k) == key) return new Value(true);
-		}
-
-		return new Value(false);
+		return new Value(v[0].dictionaryContains(v[1]));
 	}
 }
 
@@ -53,8 +51,8 @@ class Keys : Func {
 		alias dict = D!(v,0);
 
 		Value[] ret;
-		foreach (Value key, Value val; dict)
-			ret ~= key;
+		foreach (Var va; dict.variables)
+			ret ~= new Value(va.name);
 
 		return new Value(ret);
 	}

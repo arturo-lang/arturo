@@ -53,7 +53,7 @@ class Expressions {
 
 	void inspect() {
 		foreach (size_t i, Expression e; lst) {
-			e.inspect();
+			//e.inspect();
 		}
 	}
 

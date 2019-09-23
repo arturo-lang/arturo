@@ -76,6 +76,7 @@ class Statements {
 				if (cast(ReturnResult)(e) !is null) {
 					//writeln("** Statements:execute : got ReturnResult");
 					//writeln("Glob.retCounter: " ~ to!string(Glob.retCounter));
+
 					if (Glob.blockStack.lastItem() is this) {
 
 						
@@ -85,6 +86,8 @@ class Statements {
 						//int popped = Glob.retStack.pop();
 						Glob.blockStack.pop();
 						Glob.contextStack.pop();
+						writeln("Return:: popping context");
+						writeln(Glob.inspectAllVars());
 						//Glob.contextStack.pop();
 						//writeln("** Statements:execute (reached parent) : retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 						//writeln("** \tretCounter: decreased to " ~ to!string(Glob.retCounter));
@@ -98,6 +101,10 @@ class Statements {
 						//Glob.retCounter -= 1;
 						//writeln("Statements:execute (rethrowing exception) : retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 						//writeln("\tretCounter: decreased to " ~ to!string(Glob.retCounter));
+						writeln("Return:: popping context (throw)"); 
+					
+						//Glob.contextStack.pop();
+						//writeln(Glob.inspectAllVars());
 						throw e;
 					}
 				} else {
