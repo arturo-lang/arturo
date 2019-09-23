@@ -1,0 +1,20 @@
+"========================"
+"A take on QuickSort"
+"========================"
+
+//quicksort: [arr]{
+//	if arr=#() { return #() }
+//
+//	pivot $(first arr), arr_tail $(tail arr)
+//	return $(quicksort $(filter arr_tail { @ <= pivot })) + pivot + $(quicksort $(filter arr_tail { @ > pivot }))
+//}
+
+//print $(quicksort #(3 1 2 5 7 9 4 6))
+
+fib: [x]{ 
+	if (x<2) { return 1 } { 
+		$(fib x-1) + $(fib x-2) 
+	} 
+}
+
+print $(fib 3)

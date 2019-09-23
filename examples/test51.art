@@ -1,0 +1,20 @@
+fun: {
+	glob glob+1
+	print glob
+	loop #(1 2 3) {
+		| true {
+			| true { 
+				glob glob+1 
+			}
+		}
+	}
+
+	print glob
+}
+
+glob 10
+
+print glob
+
+fun
+print glob
