@@ -47,6 +47,15 @@ class And_ : Func {
 	}
 }
 
+class Copy_ : Func {
+	this() { super("copy","copy given object and return duplicate",[[xV]],[xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		return new Value(v[0]);
+	}
+}
+
 class Exec_ : Func {
 	this() { super("exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
 	override Value execute(Expressions ex) {

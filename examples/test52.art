@@ -62,3 +62,8 @@ clientB.printHello
 
 print "new client (A): "  + clientA
 print "new client (B): " + clientB
+
+clientC $(exec $(get $(copy person) "new") #("boom" "doe"))
+print "new client (A): "  + clientA
+print "new client (B): " + clientB
+print "new client (B): " + clientC
