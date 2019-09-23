@@ -1,0 +1,58 @@
+"from test52"
+
+info #{
+	name "john"
+	surname "zafeiropoulos"
+	age 33
+
+	print "info set"
+
+	fun: {
+		print "something"
+	}
+
+	address #{
+		number 20
+		number age+10
+	}
+
+	funb: {
+		print this.name
+		this.fun
+	}
+}
+
+person #{
+	name ""
+	surname ""
+
+	new: {
+		name @0
+		surname @1
+
+		this
+	}
+
+	printHello: {
+		print "Hello " + name + "!"
+	}
+}
+
+global 10
+
+print info
+print info.age
+print global
+
+info.fun
+print info.fun
+
+print info.address.number
+
+info.funb
+
+print global
+
+client $(person.new "john" "zafeiropoulos")
+print "new client: " + client
+client.printHello
