@@ -360,6 +360,11 @@ class Value {
     void setValueForDict(string key, Value val) {
         //writeln("in setValueForDict: before");
         content.d._varSet(key, val);
+
+        if (val.type==fV) {
+            val.content.f.parentThis = this;
+            val.content.f.parentContext = content.d;
+        }
         //writeln("in setValueForDict: after");
     }
 

@@ -185,6 +185,8 @@ class Expression {
 	Value evaluateDictionaryExpression() {
 		Value res = Value.dictionary();
 
+		Glob.contextStack.push(res.content.d);
+
 		//Glob.contextStack.push(new Context());
 		//Glob.varSet(THIS, res);
 		//Glob.inspect();
@@ -192,6 +194,8 @@ class Expression {
 		foreach (Statement s; statements.lst) {
 			s.execute(&res);
 		}
+
+		Glob.contextStack.pop();
 
 		//Glob.contextStack.pop();
 

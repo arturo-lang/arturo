@@ -57,6 +57,9 @@ class Func {
 
     string[] ids;
 
+    Context parentContext;
+    Value parentThis;
+
     // system functions
     this (string n, string descr, ValueType[][] vc = [], ValueType[] rets = []) {
         name = n;
@@ -79,6 +82,9 @@ class Func {
         }
 
         returnValues = rets;
+
+        parentContext = null;
+        parentThis = null;
     }
 
     // user functions
@@ -107,6 +113,8 @@ class Func {
         }
 
         ids = idents;
+        parentContext = null;
+        parentThis = null;
     }
 
     Value execute(Value values = null) {
@@ -114,8 +122,17 @@ class Func {
 
         //writeln("** Func:execute (before) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
 
+        if (parentContext !is null) { 
+            writeln("parentContext found!!");
+            Glob.contextStack.push(parentContext);
+        }
+
         if (name=="" || name is null) Glob.contextStack.push(new Context());
         else Glob.contextStack.push(new Context(ContextType.functionContext));
+
+        if (parentContext !is null) {
+            Glob.varSet("this", parentThis, false, true);
+        }
 
         //writeln("Func:: pushing context");
 
@@ -188,6 +205,12 @@ class Func {
 
         //int popped = Glob.retStack.pop();
         //writeln("POPPING STACK FROM FUNC!");
+        if (parentContext !is null) { 
+            //writeln("parentContext found!!");
+            Glob.contextStack.pop();
+        }
+
+
         Glob.contextStack.pop();
         //writeln("Func:: popping context");
         //writeln(Glob.inspectAllVars());
