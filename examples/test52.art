@@ -53,6 +53,12 @@ info.funb
 
 print global
 
-client $(person.new "john" "zafeiropoulos")
-print "new client: " + client
-client.printHello
+clientA $(person.new "john" "doe")
+print "new client (A): "  + clientA
+clientA.printHello
+clientB $(person.new "jane" "doe")
+print "new client (B): " + clientB
+clientB.printHello
+
+print "new client (A): "  + clientA
+print "new client (B): " + clientB
