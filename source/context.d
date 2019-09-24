@@ -52,6 +52,13 @@ class Context {
         type = xctype;
     }
 
+    Context dup() {
+        Context ret = new Context(type);
+        ret.functions = functions.dup;
+        ret.variables = variables.dup;
+        return ret;
+    }
+
     void  _varUnset(string n) {
         if (_varExists(n))  {
             variables.remove(n);
@@ -183,10 +190,13 @@ class Context {
     string inspectVars() {
         string[] ret;
         foreach (string name, Var v; variables) {
-            ret ~= name ~ ": " ~ v.value.stringify();
+            //writeln("name=" ~ name);
+            //if (name!="this") {
+                ret ~= "\t" ~ name ~ ": (0x" ~ to!string(cast(void*)v) ~ "|0x" ~ to!string(cast(void*)v.value) ~ ") = " ~ v.value.stringify();
+            //}
         }
 
-        return ret.join(",");
+        return ret.join("\n");
     }
 
     void _inspect() {

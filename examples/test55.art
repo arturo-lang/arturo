@@ -1,0 +1,114 @@
+client #{
+	name ""
+	surname ""
+
+	init: {
+		this.name @0
+		this.surname @1
+
+		//print "Name set to: " + name
+		print "Trying to set name to: " + @0
+		//print "Did we set it? -- name: " + name
+		print "Did we set it? -- this.name: " + this.name
+		print "init: &this => " + $(pointer this)
+	}
+
+	greet: {
+		print "Hello " + this.name
+		print "greet: &this => " + $(pointer this)
+	}
+
+	whoami: {
+		print "whoami: &this => " + $(pointer this)
+		this
+	}
+}
+"================="
+"PROTOTYPE"
+"================="
+
+print "&client => " + $(pointer client)
+
+"================="
+"CREATING CLIENT-A"
+"================="
+test 10
+str "done"
+print test
+print str
+print $(vars)
+clientA $(new client #("JOHN" "DOE"))
+print $(vars)
+print "clientA  : " + clientA
+print "&clientA => " + $(pointer clientA)
+print "[client] : " + client
+print "&client => " + $(pointer client)
+
+"================="
+"CREATING CLIENT-B"
+"================="
+
+clientB $(new client #("KING" "KONG"))
+print $(vars)
+print "clientB  : " + clientB
+print "&clientB => " + $(pointer clientB)
+print "[client] : " + client
+print "&client => " + $(pointer client)
+
+"================="
+"REPRINTING"
+"================="
+
+print "clientA  : " + clientA
+print "&clientA => " + $(pointer clientA)
+print "clientB  : " + clientB
+print "&clientB => " + $(pointer clientB)
+
+print "[client] : " + client
+print "&client => " + $(pointer client)
+
+"================="
+"GREETING"
+"================="
+
+clientA.greet
+print "&clientA => " + $(pointer clientA)
+clientB.greet
+print "&clientB => " + $(pointer clientB)
+
+"================="
+"REPRINTING"
+"================="
+
+print "clientA  : " + clientA
+print "&clientA => " + $(pointer clientA)
+print "clientB  : " + clientB
+print "&clientB => " + $(pointer clientB)
+print "[client] : " + client
+print "&client => " + $(pointer client)
+
+"================="
+"WHOAMI?"
+"================="
+
+print $(client.whoami)
+print $(clientA.whoami)
+print $(clientB.whoami)
+
+a "hello"
+print "a=>" + a
+b "boom"
+print "b=>" + b
+print "setting a=b"
+a b
+print "a=>" + a
+print "b=>" + b
+print "setting b='yep'"
+b "yep"
+print "a=>" + a
+print "b=>" + b
+print "setting a='nop'"
+a "nop"
+print "a=>" + a
+print "b=>" + b
+

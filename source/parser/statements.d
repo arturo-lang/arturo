@@ -65,7 +65,7 @@ class Statements {
 		foreach (size_t i, Statement s; lst) {
 			try {
 				//writeln("before executing statement: " ~ s.id);
-				ret = s.execute(null);
+				ret = s.execute(v);
 				//writeln("after executing statement: " ~ s.id);
 
 			}

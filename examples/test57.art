@@ -1,0 +1,39 @@
+person #{
+	name ""
+	surname ""
+
+	init: {
+		name @0
+		surname @1
+	}
+
+	sayHello: {
+		print $(vars)
+		print "Hello " + name
+	}
+
+	getName: {
+		name
+	}
+
+	setName: [n] {
+		name $(uppercase n)
+	}
+}
+
+one $(new person #("john" "zafeiropoulos"))
+//two $(new person #("natalia" "baena"))
+
+print $(vars)
+
+one.sayHello
+one.sayHello
+
+print $(one.getName)
+
+one.setName "alexander"
+
+print one
+//two.sayHello
+
+//print $(vars)

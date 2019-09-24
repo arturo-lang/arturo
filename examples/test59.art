@@ -1,0 +1,29 @@
+client #{
+	name ""
+	surname ""
+	email ""
+	address #{
+		street ""
+		number 0
+	}
+
+	init: [n,s,e] {
+		this.name 		n
+		this.surname 	s
+		this.email 		e
+	}
+
+	sayHi: {
+		print "Hi " + this.name
+	}
+}
+
+clients #()
+
+loop $(range 1 10) {
+	clients clients + $(new "client" #("name_"+@ "surname_"+@ "email_"+@))
+}
+
+print clients
+
+exec $(get $(get clients 2) "sayHi")

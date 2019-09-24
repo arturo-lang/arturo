@@ -113,26 +113,47 @@ class Func {
         }
 
         ids = idents;
+
         parentContext = null;
         parentThis = null;
     }
 
-    Value execute(Value values = null) {
+    this (Func f) {
+        name = f.name;
+        block = f.block;
+        type = f.type;
+        valueConstraints = f.valueConstraints;
+        expressionConstraints = f.expressionConstraints;
+        returnValues = f.returnValues;
+        ids = f.ids;
+        parentContext = f.parentContext;
+        parentThis = f.parentThis;
+    }
+
+    Value execute(Value values = null, Value* v=null) {
         //writeln("about to execute function with values");
 
         //writeln("** Func:execute (before) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
 
         if (parentContext !is null) { 
-            writeln("parentContext found!!");
+            //writeln("parentContext found!!");
             Glob.contextStack.push(parentContext);
         }
+
+        bool thisWasAlreadySet = false;
+
+        if (parentContext !is null) {
+            //writeln("running func:" ~ name ~ " parentThis:" ~ to!string(cast(void*)(parentThis)) ~ " parentContext:" ~ parentContext.inspectVars());
+            if (Glob._varExists("this")) thisWasAlreadySet = true;
+            Glob._varSet("this", parentThis, false);
+        }
+
+        //writeln("here 1");
 
         if (name=="" || name is null) Glob.contextStack.push(new Context());
         else Glob.contextStack.push(new Context(ContextType.functionContext));
 
-        if (parentContext !is null) {
-            Glob.varSet("this", parentThis, false, true);
-        }
+        //writeln("here 2");
 
         //writeln("Func:: pushing context");
 
@@ -140,6 +161,7 @@ class Func {
             write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
         }
 
+        //writeln("here 3");
         //writeln("executiing functions... ids = " ~ to!string(ids));
 
         if ((ids.length>0) && (values is null)) {
@@ -173,6 +195,8 @@ class Func {
             
         }
 
+        //writeln("here 4");
+
         if (values !is null) {
             if (values.type==aV) {
                 foreach (i, string ident; ids) {
@@ -193,13 +217,18 @@ class Func {
                 }
             }
         }
+
+        //writeln("here 5");
         
         //else Glob.varSet(ARGS, new Value(cast(Value[])([])));
 
         //writeln(Glob.inspectAllVars());
             
-        Value ret = block.execute();
+        Value ret = block.execute(v);
 
+        //writeln("here 6");
+
+        if (!thisWasAlreadySet) Glob._varUnset("this");
 
         //writeln("** Func:execute (after) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 
@@ -210,8 +239,11 @@ class Func {
             Glob.contextStack.pop();
         }
 
+        //writeln("here 7");
 
         Glob.contextStack.pop();
+
+        //writeln("here 8");
         //writeln("Func:: popping context");
         //writeln(Glob.inspectAllVars());
         //writeln("** Func:execute (after) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
@@ -230,7 +262,15 @@ class Func {
         return execute(values);
     }
 
-    Value executeMemoized(Expressions ex, string memo) {
+    Value executeWithRef(Expressions ex,Value* v=null) {
+        //Func* f = cast(Func*)(&this);
+        //writeln("Executing: " ~ to!string(f));
+        Value values = ex.evaluate(true);
+
+        return execute(values,v);
+    }
+
+    Value executeMemoized(Expressions ex, string memo,Value* v=null) {
         Value values = ex.evaluate(true);
 
         //writeln("Glob.memoized before: ");
@@ -241,7 +281,7 @@ class Func {
 
         if ((hsh in Glob.memoized) is null) {
             //writeln("memoized value not found, calculating");
-            Value ret = execute(values);
+            Value ret = execute(values,v);
             Glob.memoized[hsh] = ret;
             //writeln("stored: ");
             //writeln(Glob.memoized);
@@ -333,5 +373,13 @@ class Func {
         else {
             writeln("  " ~ leftJustify(name,20) ~ " [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
         }
+    }
+
+    Func dup() {
+        Func ret = new Func(name,block,valueConstraints,ids);
+        ret.parentContext = parentContext.dup;
+        ret.parentThis = parentThis.dup;
+
+        return ret;
     }
 }

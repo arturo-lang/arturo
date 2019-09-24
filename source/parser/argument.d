@@ -134,8 +134,11 @@ class Argument {
 
 	Value getValue() {
 		if (type==ArgumentType.identifierArgument) {
+			//writeln("looking for " ~ value.content.s);
 			Var symbol = Glob.varGet(value.content.s);
-
+			//writeln("symbol: " ~ to!string(symbol));
+			//writeln("HERE");
+			//writeln("symbol value: " ~ to!string(symbol.value));
 			if (symbol !is null) return symbol.value;
 			else throw new ERR_SymbolNotFound(value.content.s);
 			//else {

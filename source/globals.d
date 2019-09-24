@@ -18,6 +18,7 @@ import std.stdio;
 import std.string;
 import std.typetuple;
 
+import parser.expressions;
 import parser.statements;
 
 import value;
@@ -156,6 +157,7 @@ class Globals : Context {
     int retCounter;
     Stack!(int) retStack;
     Stack!(Statements) blockStack;
+    Expressions[string] classdefs;
 
     this(string[] args) {
         super();
@@ -177,6 +179,8 @@ class Globals : Context {
 
         isRepl = false;
         trace = false;
+
+        //classdefs = [];
 
         retCounter = -1;
     }
@@ -248,7 +252,7 @@ class Globals : Context {
         while (parts.length>0) {
             string nextKey = parts[0];
 
-            writeln("nextKey: " ~ nextKey);
+            //writeln("nextKey: " ~ nextKey);
 
             if (mainValue.type==dV) {
                 if ((parts.length==1) && (mainValue.getValueFromDict(nextKey) !is null)) return mainValue;
@@ -274,6 +278,7 @@ class Globals : Context {
     }
 
     void varSet(string n, Value v, bool immut = false, bool redefine = false) {
+        //writeln("SETTING:" ~ n);
         if (redefine) {
             contextStack.lastItem()._varSet(n,v,immut);
         }
@@ -281,10 +286,13 @@ class Globals : Context {
             Var existingVar = varGet(n);
 
             if (existingVar !is null) {
+                //writeln("ALREADY EXISTED:" ~ n);
                 existingVar.value = v;
             }
             else {
+                //writeln("SETTING TO TOP STACK:" ~ n);
                 contextStack.lastItem()._varSet(n,v,immut);
+                writeln(v.stringify());
             }
         }
     } 
@@ -301,21 +309,27 @@ class Globals : Context {
         // until reaching root (global), finding it, 
         // or crossing the first function-type block
         foreach_reverse (i, Context ctx; contextStack.list) {
+            //writeln(i);
              // if we reach global, that's it
             if (ctx is this) return null;
 
             if (ctx._varExists(n)) return ctx._varGet(n);
 
              // if it is a function and still not found, don't go any further
-            if (ctx.type==ContextType.functionContext) return null; 
+            if (ctx.type==ContextType.functionContext && contextStack.list[i-1].type!=ContextType.dictionaryContext) {
+                return null;
+            } 
         }
         return null;
     }
 
     string inspectAllVars() {
         string[] ret;
+        
         foreach (i, st; contextStack.list) {
-            ret ~= "[" ~ to!string(i) ~ "]: " ~ st.type ~ " -> " ~ st.inspectVars();
+            //writeln(st.inspectVars());
+            //writeln("---");
+            ret ~= "\n[" ~ to!string(i) ~ "]: " ~ st.type ~ " -> " ~ "\n" ~ st.inspectVars();
         }
 
         return ret.join(" | ");

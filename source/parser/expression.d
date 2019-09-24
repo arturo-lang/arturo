@@ -212,6 +212,7 @@ class Expression {
 
 	Value evaluate()
 	{
+		//writeln("Evaluating expression.type: " ~ type);
 		switch (type) {
 			case ExpressionType.argumentExpression:		return arg.getValue();
 			case ExpressionType.normalExpression:		return evaluateNormalExpression();

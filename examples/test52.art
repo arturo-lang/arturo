@@ -26,10 +26,9 @@ person #{
 	name ""
 	surname ""
 
-	new: {
+	init: {
 		name @0
 		surname @1
-
 		this
 	}
 
@@ -53,17 +52,41 @@ info.funb
 
 print global
 
-clientA $(person.new "john" "doe")
-print "new client (A): "  + clientA
+clientA $(new person)
+clientA $(clientA.init "john" "zafeiropoulos")
+
+//clientA $(new person #("john" "zafeiropoulos"))
+print clientA
+
+clientB $(new person)
+clientB $(clientB.init "natalia" "baena")
+//clientB $(new person #("natalia" "baena"))
+print clientB
+
+print "one more time..."
+print clientB
+
+print clientA
+
+print "let's say hello to them"
 clientA.printHello
-clientB $(person.new "jane" "doe")
-print "new client (B): " + clientB
 clientB.printHello
 
-print "new client (A): "  + clientA
-print "new client (B): " + clientB
+print "one more time..."
+print clientA
+print clientB
 
-clientC $(exec $(get $(copy person) "new") #("boom" "doe"))
-print "new client (A): "  + clientA
-print "new client (B): " + clientB
-print "new client (B): " + clientC
+//clientA $(person.new "john" "doe")
+//print "new client (A): "  + clientA
+//clientA.printHello
+//clientB $(person.new "jane" "doe")
+//print "new client (B): " + clientB
+//clientB.printHello
+
+//print "new client (A): "  + clientA
+//print "new client (B): " + clientB
+
+//clientC $(exec $(get $(copy person) "new") #("boom" "doe"))
+//print "new client (A): "  + clientA
+//print "new client (B): " + clientB
+//print "new client (B): " + clientC

@@ -120,7 +120,7 @@ class Statement {
 		return Glob.funcGet(id).execute(expressions);
 	}
 
-	Value executeUserFunctionCall(Func* f) {
+	Value executeUserFunctionCall(Func* f,Value* v) {
 		//writeln("About to execute(pointer): " ~ to!string(f));
 		if (Glob.memoize.canFind(to!string(f))) {
 			//Glob.retStack.push(Glob.retCounter+1);
@@ -128,7 +128,7 @@ class Statement {
 			//writeln("** \tretStack: pushed " ~ to!string(Glob.retCounter+1));
 			Glob.blockStack.push((*f).block);
 
-			Value ret = (*f).executeMemoized(expressions,to!string(f));
+			Value ret = (*f).executeMemoized(expressions,to!string(f),v);
 
 			if (Glob.blockStack.lastItem() is (*f).block) {
 				//writeln("STACK found unaltered (no return occured). I have to pop it");
@@ -142,10 +142,11 @@ class Statement {
 			//writeln("** Statement:executeUserFunctionCall : name=" ~ (*f).name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
 			//writeln("** \tretStack: pushed " ~ to!string(Glob.retCounter+1));
 			//Stack!(int) stackBefore = Glob.retStack;
+			//writeln("In statement:executeUserFunctionCall");
 			Glob.blockStack.push((*f).block);
 			//writeln("** Statement:executeUserFunctionCall - PUSHing block");
 			//writeln("** blockStack: " ~ Glob.blockStack.list.map!(b=> to!string(&b)).array.join(", "));
-			Value ret = (*f).execute(expressions);
+			Value ret = (*f).executeWithRef(expressions,v);
 			//writeln("got result: " ~ ret.stringify());
 			if (Glob.blockStack.lastItem() is (*f).block) {
 				//writeln("STACK found unaltered (no return occured). I have to pop it");
@@ -175,25 +176,44 @@ class Statement {
 */
 	Value executeAssignment(Value* v) {
 
+		//writeln("Executing assignment");
 		if (v is null) {
+
+			//writeln("ASSIGNMENT: (before)" ~ id);
+
+			if (expressions.lst.length==1 && expressions.lst[0].type==ExpressionType.dictionaryExpression) {
+				//writeln("FOUND CLASS_DEF: " ~ id);
+				Glob.classdefs[id] = expressions;
+			}
 			//writeln("Found assignment: " ~ id);
 			Value ev = expressions.evaluate();
+			//writeln("assigning: " ~ to!string(cast(void*)(ev)));
+			//ev = new Value(ev);
+			//writeln("assigning (new): " ~ to!string(cast(void*)(ev)));
+			//writeln("ASSIGNMENT: " ~ id ~ " ==> (0x" ~ to!string(cast(void*)ev) ~ ") = " ~ ev.stringify());
 			if (ev.type==fV) {
 				ev.content.f.name = id;
 			}
 			Glob.varSet(id,ev,immut);
-			debug writeln("value= (" ~ id ~ ") -> " ~	ev.stringify());
+			//debug writeln("value= (" ~ id ~ ") -> " ~	ev.stringify());
 			
 
 			return ev;
 		}
 		else {
+			//writeln("ASSIGNMENT [internal for 0x" ~ to!string(cast(void*)*v) ~ "]: (before)" ~ id);
 			//writeln("Executing inner assignment: " ~ id);
 			Value ev = expressions.evaluate();
+
+			//writeln("ASSIGNMENT [internal for 0x" ~ to!string(cast(void*)*v) ~ "] : " ~ id ~ " ==> (0x" ~ to!string(cast(void*)ev) ~ ") = " ~ ev.stringify());
 			//return ev;
 			//writeln("setting: " ~ ev.stringify ~ " for: " ~ id ~ " object: " ~ v.stringify());
 			if (v.type==dV) { // is dictionary
 				//writeln("is dictionary");
+				//writeln("setting value: " ~ id ~ " to: " ~ ev.stringify() ~ " for: " ~ to!string(cast(void*)(*v)));
+				if (ev.type==fV) {
+					ev.content.f.name = id;
+				}
 				v.setValueForDict(id, ev);
 			}
 			else { // is array
@@ -206,7 +226,9 @@ class Statement {
 	}
 
 	Value execute(Value* v) {
-		//writeln("Executing statement: " ~ id);
+		//if (v is null) writeln("Executing statement: " ~ id ~ ", value: null");
+		//else  writeln("Executing statement: " ~ id ~ ", value: " ~ to!string(cast(void*)(*v)));
+
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
@@ -223,7 +245,7 @@ class Statement {
 							if (sym is null) return executeAssignment(v);
 							else {
 								if (sym.value.type==fV) {
-									if (sym.immut && !immut) return executeUserFunctionCall(&sym.value.content.f);
+									if (sym.immut && !immut) return executeUserFunctionCall(&sym.value.content.f,v);
 									else throw new ERR_ModifyingImmutableVariableError(id);
 								}
 								else {
@@ -245,7 +267,7 @@ class Statement {
 						}
 						else {
 							if ((sym !is null) && (sym.value.type==fV)) {
-								if (sym.immut) return executeUserFunctionCall(&sym.value.content.f);
+								if (sym.immut) return executeUserFunctionCall(&sym.value.content.f,v);
 								else return sym.value;
 							}
 							else return new Expression(new Argument("id",id)).evaluate();

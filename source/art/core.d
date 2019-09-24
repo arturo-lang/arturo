@@ -47,12 +47,84 @@ class And_ : Func {
 	}
 }
 
-class Copy_ : Func {
-	this() { super("copy","copy given object and return duplicate",[[xV]],[xV]); }
+class Vars_ : Func {
+	this() { super("vars","get pointer location for object",[[],[sV]]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		//return new Value("BOOM");
+		return new Value(Glob.inspectAllVars());
+	}
+}
+
+class Pointer_ : Func {
+	this() { super("pointer","get pointer location for object",[[xV],[sV]]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
-		return new Value(v[0]);
+		return new Value(to!string(cast(void*)v[0]));
+	}
+}
+
+class New_ : Func {
+	this() { super("new","copy given object and return a new duplicate. one",[[sV],[sV,aV]],[xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias classdef = S!(v,0);
+
+		Value ret = Glob.classdefs[classdef].evaluate();
+
+		//writeln("new instance: <" ~ to!string(cast(void*)(ret)) ~ ">");
+
+		foreach (Var va; ret.content.d.variables) {
+			
+			if (va.value.type==fV) {
+				//writeln("it's a function");
+				//writeln("original object's parentThis: " ~ to!string(cast(void*)v[0].content.d._varGet(va.name).value.content.f.parentThis));
+				//writeln("parentThis was: " ~ to!string(cast(void*)va.value.content.f.parentThis));
+				//writeln("setting parentThis of: " ~ va.name ~ " ---> " ~ to!string(cast(void*)(va.value)) ~ "(func: " ~ to!string(cast(void*)(va.value.content.f)) ~ ") to: " ~ to!string(cast(void*)(ret)));
+				//va.value.content.f.parentThis = ret;
+				//va.value.content.f.parentContext = ret.content.d;
+			}
+			else {
+				//writeln("found normal non-func var: " ~ va.name);
+			}
+		}
+
+		if (ret.content.d._varExists("init")) {
+
+			Func func = ret.content.d._varGet("init").value.content.f;
+
+			if (v.length==2) {
+				func.execute(v[1]);
+				if (func.parentThis !is null) { return ret; }
+			}
+			else {
+				func.execute();
+				if (func.parentThis !is null) { return ret; }
+			}
+		}
+
+		return ret;
+		/*return ret;*/
+
+/*
+		Value ret = Value.dictionary();
+		foreach (Var va; v[0].content.d.variables) {
+			ret.content.d._varSet(va.name,new Value(va.value));
+		}
+
+		writeln("ret: " ~ to!string(cast(void*)(ret)));
+		writeln("parentContext: " ~ to!string(cast(void*)(ret.content.d)));
+
+		foreach (Var va; ret.content.d.variables) {
+			writeln("Variable: " ~ to!string(cast(void*)(va)) ~ ", value: " ~ to!string(cast(void*)(va.value)));
+		}
+
+		//Value va = new Value();
+		//writeln("returning: " ~ to!string(&va));
+
+		return ret;*/
 	}
 }
 

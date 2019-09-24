@@ -202,7 +202,7 @@ class Value {
             case ValueType.realValue : content.r = v.content.r; break;
             case ValueType.stringValue : content.s = v.content.s; break;
             case ValueType.booleanValue : content.b = v.content.b; break;
-            case ValueType.functionValue : content.f = v.content.f; break;
+            case ValueType.functionValue : content.f = v.content.f; /* = v.content.f; content.f.parentThis = v.content.f.parentThis; content.f.parentContext = v.content.f.parentContext; */break;
             case ValueType.arrayValue : 
                 content.a = [];
                 foreach (Value vv; v.content.a) content.a ~= new Value(vv);
@@ -210,7 +210,14 @@ class Value {
             case ValueType.dictionaryValue :
                 content.d = new Context(ContextType.dictionaryContext);
                 foreach (Var va; v.content.d.variables)
-                    content.d._varSet(va.name, va.value); break;
+                {
+                    content.d._varSet(va.name, va.value); 
+                    if (va.value.type==fV) {
+                        va.value.content.f.parentThis = this;
+                        va.value.content.f.parentContext = content.d;
+                    }
+                }
+                break;
             default: break;
         }
     }
@@ -225,7 +232,7 @@ class Value {
             case ValueType.realValue : content.r = v.content.r; break;
             case ValueType.stringValue : content.s = v.content.s; break;
             case ValueType.booleanValue : content.b = v.content.b; break;
-            case ValueType.functionValue : content.f = cast(Func)(v.content.f); break;
+            case ValueType.functionValue : content.f = cast(Func)(v.content.f); content.f.parentThis = cast(Value)v.content.f.parentThis; content.f.parentContext = cast(Context)v.content.f.parentContext; break;
             case ValueType.arrayValue : 
                 content.a = [];
                 foreach (const Value vv; v.content.a) content.a ~= new Value(vv);
@@ -358,10 +365,12 @@ class Value {
     }
 
     void setValueForDict(string key, Value val) {
-        //writeln("in setValueForDict: before");
+        //writeln("in setValueForDict: " ~ key);
         content.d._varSet(key, val);
 
         if (val.type==fV) {
+            //writeln("SETVALUEFORDICT: setting key=" ~ key ~ " val=" ~ val.stringify() ~ " with parentContext/This: " ~ stringify());
+            //writeln("it's a function, setting parentThis: " ~ stringify());
             val.content.f.parentThis = this;
             val.content.f.parentContext = content.d;
         }
@@ -1561,6 +1570,40 @@ class Value {
         }
     }
 
+    string stringifyb(bool withquotes=true) { 
+        switch (type) {
+            case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
+            case ValueType.realValue        : return to!string(content.r);
+            case ValueType.booleanValue     : return to!string(content.b);
+            case ValueType.stringValue      : if (withquotes) { return "\"" ~ content.s ~ "\""; } else { return content.s; }
+            case ValueType.functionValue    : return "<function: 0x" ~ to!string(&content.f) ~ ">";
+            case ValueType.arrayValue       : 
+                string ret = "#(";
+                string[] items;
+                foreach (Value v; content.a) {
+                    items ~= v.stringifyb();
+                }
+                ret ~= items.join(" ");
+                ret ~= ")";
+                return ret;
+            case ValueType.dictionaryValue  :
+                string ret = "#{ ";
+                string[] items;
+                auto sortedKeys = content.d.variables.keys.array.sort();
+                foreach (string key; sortedKeys) {
+                //foreach (Value k, Value v; content.d) {
+                    //items ~= k.content.s ~ " " ~ v.stringify();
+                    Value v = getValueFromDict(key);
+                    items ~= key ~ " " ~ v.stringifyb();
+                }
+                ret ~= items.join(", ");
+                ret ~= " }";
+                return ret;
+            case ValueType.noValue          : return "null";
+            default                         : return "NULL";
+        }
+    }
+
     const string stringifyImmut() {
         switch (type) {
             case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
@@ -1717,6 +1760,31 @@ class Value {
             case ValueType.noValue          :   return "NIL";
             default                         :   return "";
         }
+    }
+
+    Value dup() {
+        Value ret = new Value();
+        ret.type = type;
+
+        switch (type)
+        {
+            case ValueType.numberValue : if (isBig) { ret.content.bi = content.bi; } else { ret.content.i = content.i; } break;
+            case ValueType.realValue : ret.content.r = content.r; break;
+            case ValueType.stringValue : ret.content.s = content.s.dup; break;
+            case ValueType.booleanValue : ret.content.b = content.b; break;
+            case ValueType.functionValue : ret.content.f = content.f.dup; break;
+            case ValueType.arrayValue : 
+                ret.content.a = [];
+                foreach (Value vv; content.a) content.a ~= vv.dup();
+                break;
+            case ValueType.dictionaryValue :
+                content.d = new Context(ContextType.dictionaryContext);
+                foreach (Var va; content.d.variables)
+                    content.d._varSet(va.name, va.value.dup); break;
+            default: break;
+        }
+
+        return ret;
     }
 
     ~this()
