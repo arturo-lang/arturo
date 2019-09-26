@@ -37,7 +37,7 @@ import panic;
 // Functions
 
 class All_ : Func {
-	this() { super("all","check if all elements of array are true or pass the condition of given function",[[aV],[aV,fV]],[bV]); }
+	this() { super("array:all","check if all elements of array are true or pass the condition of given function",[[aV],[aV,fV]],[bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -67,7 +67,7 @@ class All_ : Func {
 }
 
 class Any_ : Func {
-	this() { super("any","check if any of the array's elements is true or passes the condition of given function",[[aV],[aV,fV]],[bV]); }
+	this() { super("array:any","check if any of the array's elements is true or passes the condition of given function",[[aV],[aV,fV]],[bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -97,7 +97,7 @@ class Any_ : Func {
 }
 
 class Avg_ : Func {
-	this() { super("avg","get average value from array",[[aV]],[nV,rV]); }
+	this() { super("array:avg","get average value from array",[[aV]],[nV,rV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -118,7 +118,7 @@ class Avg_ : Func {
 }
 
 class Count_ : Func {
-	this() { super("count","count how many of the array's elements is true or passes the condition of given function",[[aV],[aV,fV]],[nV]); }
+	this() { super("array:count","count how many of the array's elements is true or passes the condition of given function",[[aV],[aV,fV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -148,7 +148,7 @@ class Count_ : Func {
 }
 
 class Difference_ : Func {
-	this() { super("difference","get difference of two given arrays",[[aV,aV]],[aV]); }
+	this() { super("array:difference","get difference of two given arrays",[[aV,aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
@@ -161,7 +161,7 @@ class Difference_ : Func {
 }
 
 class Filter_ : Func {
-	this() { super("filter","get array after filtering each element using given function",[[aV,fV]],[aV]); }
+	this() { super("array:filter","get array after filtering each element using given function",[[aV,fV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -182,7 +182,7 @@ class Filter_ : Func {
 }
 
 class First_ : Func {
-	this() { super("first","get first element from array",[[aV]],[xV]); }
+	this() { super("array:first","get first element from array",[[aV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -193,7 +193,7 @@ class First_ : Func {
 }
 
 class Fold_ : Func {
-	this() { super("fold","fold array using seed value and the given function",[[aV,xV,fV]],[xV]); }
+	this() { super("array:fold","fold array using seed value and the given function",[[aV,xV,fV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -208,7 +208,7 @@ class Fold_ : Func {
 }
 
 class Gcd_ : Func {
-	this() { super("gcd","calculate greatest common divisor of values from array",[[aV]],[nV]); }
+	this() { super("array:gcd","calculate greatest common divisor of values from array",[[aV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -226,7 +226,7 @@ class Gcd_ : Func {
 }
 
 class Intersection_ : Func {
-	this() { super("intersection","get intersection of two given arrays",[[aV,aV]],[aV]); }
+	this() { super("array:intersection","get intersection of two given arrays",[[aV,aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
@@ -239,7 +239,7 @@ class Intersection_ : Func {
 }
 
 class Join_ : Func {
-	this() { super("join","get string by joining array elements with given delimiter",[[aV,sV]],[sV]); }
+	this() { super("array:join","get string by joining array elements with given delimiter",[[aV,sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -252,7 +252,7 @@ class Join_ : Func {
 }
 
 class Last_ : Func {
-	this() { super("last","get last element from array",[[aV]],[xV]); }
+	this() { super("array:last","get last element from array",[[aV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -263,7 +263,7 @@ class Last_ : Func {
 }
 
 class Map_ : Func {
-	this() { super("map","get array after executing given function for each element",[[aV,fV]],[aV]); }
+	this() { super("array:map","get array after executing given function for each element",[[aV,fV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -278,7 +278,7 @@ class Map_ : Func {
 }
 
 class Max_ : Func {
-	this() { super("max","get maximum value from array",[[aV]],[nV,rV]); }
+	this() { super("array:max","get maximum value from array",[[aV]],[nV,rV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -299,7 +299,7 @@ class Max_ : Func {
 }
 
 class Median_ : Func {
-	this() { super("median","get median value from array",[[aV]],[nV,rV]); }
+	this() { super("array:median","get median value from array",[[aV]],[nV,rV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		Value arr = v[0];
@@ -320,7 +320,7 @@ class Median_ : Func {
 }
 
 class Min_ : Func {
-	this() { super("min","get minimum value from array",[[aV]],[nV,rV]); }
+	this() { super("array:min","get minimum value from array",[[aV]],[nV,rV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -341,7 +341,7 @@ class Min_ : Func {
 }
 
 class Permutations_ : Func {
-	this() { super("permutations","get all permutations for given array",[[aV]],[aV]); }
+	this() { super("array:permutations","get all permutations for given array",[[aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		Value cp = new Value(v[0]);
@@ -357,7 +357,7 @@ class Permutations_ : Func {
 }
 
 class Product_ : Func {
-	this() { super("product","return product of elements of given array",[[aV]],[nV]); }
+	this() { super("array:product","return product of elements of given array",[[aV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -374,7 +374,7 @@ class Product_ : Func {
 }
 
 class Range_ : Func {
-	this() { super("range","get array from given range (from..to) with optional step",[[nV,nV],[nV,nV,nV]],[aV]); }
+	this() { super("array:range","get array from given range (from..to) with optional step",[[nV,nV],[nV,nV,nV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias from = I!(v,0);
@@ -394,7 +394,7 @@ class Range_ : Func {
 }
 
 class Reverse_ : Func {
-	this() { super("reverse","reverse given array",[[aV]],[aV]); }
+	this() { super("array:reverse","reverse given array",[[aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -407,7 +407,7 @@ class Reverse_ : Func {
 }
 
 class Sample_ : Func {
-	this() { super("sample","get random sample from given array",[[aV],[aV,nV]],[xV,aV,noV]); }
+	this() { super("array:sample","get random sample from given array",[[aV],[aV,nV]],[xV,aV,noV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -427,7 +427,7 @@ class Sample_ : Func {
 }
 
 class Shuffle_ : Func {
-	this() { super("shuffle","shuffle given array",[[aV]],[aV]); }
+	this() { super("array:shuffle","shuffle given array",[[aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -439,7 +439,7 @@ class Shuffle_ : Func {
 }
 
 class Sort_ : Func {
-	this() { super("sort","sort given array",[[aV]],[aV]); }
+	this() { super("array:sort","sort given array",[[aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		Value arr = v[0];
@@ -452,7 +452,7 @@ class Sort_ : Func {
 }
 
 class Sum_ : Func {
-	this() { super("sum","return sum of elements of given array",[[aV]],[nV]); }
+	this() { super("array:sum","return sum of elements of given array",[[aV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -469,7 +469,7 @@ class Sum_ : Func {
 }
 
 class Tail_ : Func {
-	this() { super("tail","get last section of array excluding the first element",[[aV]],[aV]); }
+	this() { super("array:tail","get last section of array excluding the first element",[[aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -480,7 +480,7 @@ class Tail_ : Func {
 }
 
 class Union_ : Func {
-	this() { super("union","get union of two given arrays",[[aV,aV]],[aV]); }
+	this() { super("array:union","get union of two given arrays",[[aV,aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
@@ -495,7 +495,7 @@ class Union_ : Func {
 }
 
 class Unique_ : Func {
-	this() { super("unique","get array by removing duplicates",[[aV]],[aV]); }
+	this() { super("array:unique","get array by removing duplicates",[[aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
@@ -505,7 +505,7 @@ class Unique_ : Func {
 }
 
 class Zip_ : Func {
-	this() { super("zip","return array of element pairs using given arrays",[[aV,aV]],[aV]); }
+	this() { super("array:zip","return array of element pairs using given arrays",[[aV,aV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
