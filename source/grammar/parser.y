@@ -123,6 +123,7 @@ int yywrap() {
 %token <str> COLON ":"
 %token <str> EXCL "!"
 %token <str> SEMICOLON ";"
+%token <str> TILDE "~"
 
 %token <str> NEW_LINE "End Of Line"
 
@@ -142,6 +143,7 @@ int yywrap() {
 %locations
 %define parse.error verbose
 
+%right TILDE
 %nonassoc EQ_OP LE_OP GE_OP LT_OP GT_OP NE_OP 
 
 %left PLUS_SG MINUS_SG

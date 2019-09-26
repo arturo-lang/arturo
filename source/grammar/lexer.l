@@ -102,6 +102,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 ","													{ count(); return COMMA; }
 "!"													{ count(); return EXCL; }
 ";"													{ count(); return SEMICOLON; }
+"~"													{ count(); return TILDE; }
 
 \n 													{ count(); return NEW_LINE; }
 
