@@ -42,7 +42,7 @@ DIGIT				[0-9]
 DIGIT_HEX			[a-fA-F0-9]
 DIGIT_BIN			[01]
 LETTER				[a-zA-Z_@]
-LETTER_OR_MISC		[a-zA-Z_\.]
+LETTER_OR_MISC		[a-zA-Z_]
 
 /****************************************
  Tokens

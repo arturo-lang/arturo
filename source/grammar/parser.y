@@ -27,13 +27,21 @@ char* yyfilename;
 
 extern void* _program;
 
+extern void* new_IdentifierWithId(char* s);
+extern void add_IdToIdentifier(char* s, void* iden);
+extern void add_NumToIdentifier(char* l, void* iden);
+extern void add_ExprToIdentifier(void* e, void* iden);
+extern void* new_Identifiers();
+extern void add_Identifier(void* i, void* iden);
+
 extern void* new_Argument(char* t, char* v);
+extern void* new_ArgumentFromIdentifier(void* iden);
 extern int argument_Interpolated(void* a);
 extern void* new_Expression(void* l, char* op, void* r, int tp);
 extern void* new_ExpressionFromArgument(void* a);
 extern void* new_ExpressionFromStatement(void* s);
 extern void* new_ExpressionFromStatementBlock(void* st);
-extern void* new_ExpressionFromStatementBlockWithArguments(void* st,char* ids);
+extern void* new_ExpressionFromStatementBlockWithArguments(void* st,void* ids);
 extern void* new_ExpressionFromDictionary(void* st);
 extern void* new_ExpressionFromArray(void* ar);
 extern void* new_Statement(char* id);
@@ -148,15 +156,18 @@ int yywrap() {
 // Building blocks
 //==============================
 
-identifier 				: 	ID 
-						| 	IF 																	{ $$ = "if"; }
+identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID); }
+						| 	IF 																	{ $$ = new_IdentifierWithId("if"); }
+						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
+						|	identifier[previous] DOT NUMBER										{ void* i = $previous; printf("found dot.number\n"); add_NumToIdentifier($NUMBER, i); printf("post: found dot.number\n"); $$ = i; }
+						//| 	identifier[previous] DOT LSQUARE expression RSQUARE 				{ void* i = $previous; add_ExprToIdentifier($expression, i); $$ = i; }
 						;
 
-identifiers				: 	identifiers[previous] COMMA identifier 								{ char* ss = malloc((strlen($previous)+strlen($identifier)+1)*sizeof(char)); sprintf(ss, "%s,%s", $previous, $identifier); $$=ss; }
-						|	identifier 															{ $$ = $identifier; }
+identifiers				: 	identifiers[previous] COMMA identifier 								{ void* i = $previous; add_Identifier(i, $identifier); $$ = i; }
+						|	identifier 															{ void* i = new_Identifiers(); add_Identifier(i, $identifier); $$ = i; }
 						;
 
-argument				:	identifier 															{ $$ = new_Argument("id", $identifier); }
+argument				:	identifier 															{ $$ = new_ArgumentFromIdentifier($identifier); }
 						| 	NUMBER 																{ $$ = new_Argument("number", $NUMBER); }
 						|	STRING 																{ $$ = new_Argument("string", $STRING); }
 						|	BOOLEAN 															{ $$ = new_Argument("boolean", $BOOLEAN); }
@@ -200,7 +211,7 @@ expression_list			:	expression 															{ void* e = new_Expressions(); add
 
 statement				: 	expression 															{ $$ = new_StatementFromExpression($expression); POS($$); }
 						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions("return", subex); }
-						|	identifier expression_list											{ $$ = new_StatementWithExpressions($identifier, $expression_list); POS($$); }
+						|	identifier expression_list											{ printf("statement!!\n"); $$ = new_StatementWithExpressions($identifier, $expression_list); printf("post: statement!!\n"); POS($$); }
 						|	identifier COLON expression_list									{ $$ = new_ImmutableStatementWithExpressions($identifier, $expression_list); POS($$); }
 						;
 
