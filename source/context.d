@@ -171,20 +171,38 @@ class Context {
     }
 
     void funcSet(Func f) {
-        functions[f.name] = f;
+        functions[f.getFullName()] = f;
     }
 
     void funcSet(string n, Statements s = null) {
-        functions[n] = new Func(n,s);
+        Func f = new Func(n,s);
+        funcSet(f);
     }
 
     Func funcGet(string n) {
-        if (funcExists(n)) return functions[n];
-        else throw new ERR_FunctionNotFound(n);
+        if (funcExists(n)) {
+            if ((n in functions)!=null) return functions[n];
+            else {
+                foreach (Func f; functions) {
+                    if (f.name==n) return  f;
+                }
+            }
+        }
+
+        throw new ERR_FunctionNotFound(n);
     }
 
     bool funcExists(string n) {
-        return ((n in functions)!=null);
+        bool fullNameExists = ((n in functions)!=null);
+
+        if (fullNameExists) return true;
+        else {
+            foreach (Func f; functions) {
+                if (f.name==n) return  true;
+            }
+        }
+        
+        return false;
     }
 
     string inspectVars() {

@@ -30,7 +30,7 @@ import globals;
 // Functions
 
 class Env_ : Func {
-	this() { super("env","get system environment variables as a dictionary",[[]],[dV]); }
+	this(string ns="") { super(ns ~ "env","get system environment variables as a dictionary",[[]],[dV]); }
 	override Value execute(Expressions ex) {
 		string[string] ret = environment.toAA();
 
@@ -39,7 +39,7 @@ class Env_ : Func {
 }
 
 class Shell_ : Func {
-	this() { super("shell","execute given shell command",[[sV]],[sV,bV]); }
+	this(string ns="") { super(ns ~ "shell","execute given shell command",[[sV]],[sV,bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias command = S!(v,0);
@@ -54,7 +54,7 @@ class Shell_ : Func {
 }
 
 class Spawn_ : Func {
-	this() { super("spawn","spawn process using given string and get process id",[[sV]],[nV]); }
+	this(string ns="") { super(ns ~ "spawn","spawn process using given string and get process id",[[sV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);

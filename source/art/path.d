@@ -31,44 +31,29 @@ import globals;
 
 // Functions
 
-class Is__Directory_ : Func {
-	this() { super("is.directory","check if given path is a directory",[[sV]],[bV]); }
+class Create__Dir_ : Func {
+	this(string ns="") { super(ns ~ "createDir","create directory at given path",[[sV]],[bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
-		auto ret = path.isDir();
+		mkdir(path);
 
-		return new Value(ret);
+		return new Value(true);
 	}
 }
 
-class Is__File_ : Func {
-	this() { super("is.file","check if given path is a file",[[sV]],[bV]); }
+class Current__Dir_ : Func {
+	this(string ns="") { super(ns ~ "currentDir","get current directory path",[[]],[sV]); }
 	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias path = S!(v,0);
+		auto dirPath = getcwd();
 
-		auto ret = path.isFile();
-
-		return new Value(ret);
+		return new Value(dirPath);
 	}
 }
 
-class Is__Symlink_ : Func {
-	this() { super("is.symlink","check if given path is a symlink",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias path = S!(v,0);
-
-		auto ret = path.isSymlink();
-
-		return new Value(ret);
-	}
-}
-
-class Path__Contents_ : Func {
-	this() { super("path.contents","get array of directory contents at given path",[[],[sV]],[aV]); }
+class Dir_ : Func {
+	this(string ns="") { super(ns ~ "dir","get array of directory contents at given path",[[],[sV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		string dirPath;
@@ -91,29 +76,8 @@ class Path__Contents_ : Func {
 	}
 }
 
-class Path__Create_ : Func {
-	this() { super("path.create","create directory at given path",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias path = S!(v,0);
-
-		mkdir(path);
-
-		return new Value(true);
-	}
-}
-
-class Path__Current_ : Func {
-	this() { super("path.current","get current directory path",[[]],[sV]); }
-	override Value execute(Expressions ex) {
-		auto dirPath = getcwd();
-
-		return new Value(dirPath);
-	}
-}
-
-class Path__Directory_ : Func {
-	this() { super("path.directory","get directory from given path",[[sV]],[sV]); }
+class Get__Dir_ : Func {
+	this(string ns="") { super(ns ~ "getDir","get directory from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
@@ -124,8 +88,8 @@ class Path__Directory_ : Func {
 	}
 }
 
-class Path__Extension_ : Func {
-	this() { super("path.extension","get extension from given path",[[sV]],[sV]); }
+class Get__Ext_ : Func {
+	this(string ns="") { super(ns ~ "getExt","get extension from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
@@ -136,8 +100,8 @@ class Path__Extension_ : Func {
 	}
 }
 
-class Path__Filename_ : Func {
-	this() { super("path.filename","get filename from given path",[[sV]],[sV]); }
+class Get__Filename_ : Func {
+	this(string ns="") { super(ns ~ "getFilename","get filename from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
@@ -148,8 +112,44 @@ class Path__Filename_ : Func {
 	}
 }
 
-class Path__Normalize_ : Func {
-	this() { super("path.normalize","get normalized path from given path",[[sV]],[sV]); }
+class Is__Directory_ : Func {
+	this(string ns="") { super(ns ~ "isDirectory","check if given path is a directory",[[sV]],[bV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias path = S!(v,0);
+
+		auto ret = path.isDir();
+
+		return new Value(ret);
+	}
+}
+
+class Is__File_ : Func {
+	this(string ns="") { super(ns ~ "isFile","check if given path is a file",[[sV]],[bV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias path = S!(v,0);
+
+		auto ret = path.isFile();
+
+		return new Value(ret);
+	}
+}
+
+class Is__Symlink_ : Func {
+	this(string ns="") { super(ns ~ "isSymlink","check if given path is a symlink",[[sV]],[bV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias path = S!(v,0);
+
+		auto ret = path.isSymlink();
+
+		return new Value(ret);
+	}
+}
+
+class Normalize__Path_ : Func {
+	this(string ns="") { super(ns ~ "normalizePath","get normalized path from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);

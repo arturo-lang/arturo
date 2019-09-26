@@ -129,7 +129,10 @@ class Statement {
 	}
 
 	Value executeFunctionCall() {
-		return Glob.funcGet(id.getId()).execute(expressions);
+		string functionToExec = id.getId();
+		writeln("calling func: " ~ functionToExec);
+		
+		return Glob.funcGet(functionToExec).execute(expressions);
 	}
 
 	Value executeUserFunctionCall(Func* f,Value* v) {

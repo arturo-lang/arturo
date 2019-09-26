@@ -30,8 +30,8 @@ import var;
 
 // Functions
 
-class Exists_ : Func {
-	this() { super("exists","check if given symbol exists",[[sV]],[bV]); }
+class Symbol__Exists_ : Func {
+	this(string ns="") { super(ns ~ "symbolExists","check if given symbol exists",[[sV]],[bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias symbolName = S!(v,0);
@@ -42,7 +42,7 @@ class Exists_ : Func {
 }
 
 class Object_ : Func {
-	this() { super("object","get object for given symbol name",[[sV]],[xV,noV]); }
+	this(string ns="") { super(ns ~ "object","get object for given symbol name",[[sV]],[xV,noV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias symbolName = S!(v,0);
@@ -55,7 +55,7 @@ class Object_ : Func {
 }
 
 class Type_ : Func {
-	this() { super("type","get type for given object",[[xV]],[sV]); }
+	this(string ns="") { super(ns ~ "type","get type for given object",[[xV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 

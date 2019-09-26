@@ -33,7 +33,7 @@ import globals;
 // Functions
 
 class CSV__Parse_ : Func {
-	this() { super("csv.parse","get object by parsing given CSV string, optionally using headers",[[sV],[sV,bV]],[aV]); }
+	this(string ns="") { super(ns ~ "parse","get object by parsing given CSV string, optionally using headers",[[sV],[sV,bV]],[aV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);

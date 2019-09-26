@@ -31,7 +31,7 @@ import globals;
 // Functions
 
 class XML__Check_ : Func {
-	this() { super("xml.check","check integrity of XML input using given string",[[sV]],[bV]); }
+	this(string ns="") { super(ns ~ "check","check integrity of XML input using given string",[[sV]],[bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);

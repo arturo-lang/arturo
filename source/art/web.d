@@ -33,7 +33,7 @@ import func;
 // Functions
 
 class Web__Post_ : Func {
-	this() { super("web.post","perform POST request using given URL and data",[[sV,sV]],[sV]); }
+	this(string ns="") { super(ns ~ "post","perform POST request using given URL and data",[[sV,sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias url = S!(v,0);
@@ -45,8 +45,8 @@ class Web__Post_ : Func {
 	}
 }
 
-class Web__Read_ : Func {
-	this() { super("web.read","download string contents from webpage using given URL",[[sV]],[sV]); }
+class Web__Download_ : Func {
+	this(string ns="") { super(ns ~ "download","download string contents from webpage using given URL",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias url = S!(v,0);

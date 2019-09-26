@@ -37,7 +37,7 @@ string registerMathFunc(string func, string funcName = null) {
 	if (funcName !is null) ff = funcName;
 	return "
 		class " ~ capitalize(func) ~ "_ : Func {
-			this() { super(\"" ~ func ~ "\",\"get '" ~ func ~ "' for given number\",[[nV],[rV]],[rV]); }
+			this(string ns=\"\") { super(ns ~ \"" ~ func ~ "\",\"get '" ~ func ~ "' for given number\",[[nV],[rV]],[rV]); }
 			override Value execute(Expressions ex) {
 				Value[] v = validate(ex);
 
@@ -60,7 +60,7 @@ string registerMathFunc(string func, string funcName = null) {
 // Functions
 
 class Even_ : Func {
-	this() { super("even","check if given number is even",[[nV]],[bV]); }
+	this(string ns="") { super(ns ~ "even","check if given number is even",[[nV]],[bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias num = I!(v,0);
@@ -71,7 +71,7 @@ class Even_ : Func {
 
 
 class Odd_ : Func {
-	this() { super("odd","check if given number is odd",[[nV]],[bV]); }
+	this(string ns="") { super(ns ~ "odd","check if given number is odd",[[nV]],[bV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias num = I!(v,0);
@@ -82,7 +82,7 @@ class Odd_ : Func {
 
 
 class Random_ : Func {
-	this() { super("random","generate random number in given range (from..to)",[[nV,nV]],[nV]); }
+	this(string ns="") { super(ns ~ "random","generate random number in given range (from..to)",[[nV,nV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias numFrom = I!(v,0);

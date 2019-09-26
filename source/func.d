@@ -60,6 +60,8 @@ class Func {
     Context parentContext;
     Value parentThis;
 
+    string namespace;
+
     // system functions
     this (string n, string descr, ValueType[][] vc = [], ValueType[] rets = []) {
         name = n;
@@ -85,6 +87,17 @@ class Func {
 
         parentContext = null;
         parentThis = null;
+
+        if (n.indexOf(":")!=-1) {
+            string[] parts = n.split(":");
+            namespace = parts[0];
+            name = parts[1];
+
+            //writeln("Creating function. Namespace: " ~ namespace ~ ", Name: " ~ name);
+        } 
+        else {
+            namespace = null;
+        }
     }
 
     // user functions
@@ -116,6 +129,15 @@ class Func {
 
         parentContext = null;
         parentThis = null;
+
+        if (n.indexOf(":")!=-1) {
+            string[] parts = n.split(":");
+            namespace = parts[0];
+            name = parts[1];
+        } 
+        else {
+            namespace = null;
+        }
     }
 
     this (Func f) {
@@ -128,6 +150,18 @@ class Func {
         ids = f.ids;
         parentContext = f.parentContext;
         parentThis = f.parentThis;
+        namespace = f.namespace;
+    }
+
+    string getFullName() {
+        string ret = "";
+
+        //writeln("Reading function. Namespace: " ~ namespace ~ ", Name: " ~ name);
+
+        if (namespace !is null) ret ~=  namespace ~ ":";
+        if (name !is null) ret ~= name;
+
+        return ret;
     }
 
     Value execute(Value values = null, Value* v=null) {
@@ -364,14 +398,16 @@ class Func {
 
     void inspect(bool full=false) {
         if (full) {
-            writeln("  Function : \x1B[37m\x1B[1m" ~ name ~ "\x1B[0m");
+            writeln("  Function : \x1B[37m\x1B[1m" ~ getFullName() ~ "\x1B[0m");
             writeln("         # | " ~ description);
             writeln();
             writeln("     usage | " ~ name ~ " [" ~  getAcceptedConstraintsDescription() ~ "]");
             writeln("        -> | " ~  getReturnValuesDescription());
         }
         else {
-            writeln("  " ~ leftJustify(name,20) ~ " [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
+            //writeln("Printing function. Namespace: " ~ namespace ~ ", Name: " ~ name);
+            //writeln("Printing function. FullName: " ~ getFullName());
+            writeln("  " ~ leftJustify(getFullName(),30) ~ " [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
         }
     }
 

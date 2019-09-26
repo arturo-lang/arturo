@@ -113,7 +113,11 @@ class Identifier {
 	}
 
 	string getId() {
-		return pathContents[0].id;
+		string ret = "";
+		if (namespace !is null) ret ~= namespace ~ ":";
+		ret ~= pathContents[0].id;
+		
+		return ret;
 	}
 
 	string inspect() {

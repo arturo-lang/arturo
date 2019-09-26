@@ -33,7 +33,7 @@ import panic;
 // Functions
 
 class To__Bin_ : Func {
-	this() { super("convert:toBin","convert given number to its corresponding binary string value",[[nV]],[sV]); }
+	this(string ns="") { super(ns ~ "toBin","convert given number to its corresponding binary string value",[[nV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -46,7 +46,7 @@ class To__Bin_ : Func {
 }
 
 class To__Hex_ : Func {
-	this() { super("convert:toHex","convert given number to its corresponding hexadecimal string value",[[nV]],[sV]); }
+	this(string ns="") { super(ns ~ "toHex","convert given number to its corresponding hexadecimal string value",[[nV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -59,7 +59,7 @@ class To__Hex_ : Func {
 }
 
 class To__Number_ : Func {
-	this() { super("convert:toNumber","convert given value to its corresponding number value",[[rV],[sV],[bV]],[nV,rV]); }
+	this(string ns="") { super(ns ~ "toNumber","convert given value to its corresponding number value",[[rV],[sV],[bV]],[nV,rV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -84,7 +84,7 @@ class To__Number_ : Func {
 }
 
 class To__Oct_ : Func {
-	this() { super("convert:toOct","convert given number to its corresponding octal string value",[[nV]],[sV]); }
+	this(string ns="") { super(ns ~ "toOct","convert given number to its corresponding octal string value",[[nV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -97,7 +97,7 @@ class To__Oct_ : Func {
 }
 
 class To__String_ : Func {
-	this() { super("convert:toString","convert given number/boolean/array/dictionary to its corresponding string value",[[nV],[rV],[bV],[aV],[dV]],[sV]); }
+	this(string ns="") { super(ns ~ "toString","convert given number/boolean/array/dictionary to its corresponding string value",[[nV],[rV],[bV],[aV],[dV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 

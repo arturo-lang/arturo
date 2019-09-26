@@ -33,8 +33,8 @@ import globals;
 
 // Functions
 
-class Convert__Markdown_ : Func {
-	this() { super("convert.markdown","convert given markdown string to html",[[sV]],[sV]); }
+class Markdown__To__Html_ : Func {
+	this(string ns="") { super(ns ~ "markdownToHtml","convert given markdown string to html",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);

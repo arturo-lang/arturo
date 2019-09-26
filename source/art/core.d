@@ -35,7 +35,7 @@ import panic;
 import var;
 
 class And_ : Func {
-	this() { super("and","bitwise/logical AND",[[bV,bV],[nV,nV]],[bV,nV]); }
+	this(string ns="") { super(ns ~ "and","bitwise/logical AND",[[bV,bV],[nV,nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -56,7 +56,7 @@ class And_ : Func {
 }
 
 class Vars_ : Func {
-	this() { super("vars","get pointer location for object",[[],[sV]]); }
+	this(string ns="") { super(ns ~ "vars","get pointer location for object",[[],[sV]]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		//return new Value("BOOM");
@@ -65,7 +65,7 @@ class Vars_ : Func {
 }
 
 class Pointer_ : Func {
-	this() { super("pointer","get pointer location for object",[[xV],[sV]]); }
+	this(string ns="") { super(ns ~ "pointer","get pointer location for object",[[xV],[sV]]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -74,7 +74,7 @@ class Pointer_ : Func {
 }
 
 class New_ : Func {
-	this() { super("new","copy given object and return a new duplicate. one",[[sV],[sV,aV]],[xV]); }
+	this(string ns="") { super(ns ~ "new","copy given object and return a new duplicate. one",[[sV],[sV,aV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -98,7 +98,7 @@ class New_ : Func {
 }
 
 class Exec_ : Func {
-	this() { super("exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
+	this(string ns="") { super(ns ~ "exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias func = F!(v,0);
@@ -112,7 +112,7 @@ class Exec_ : Func {
 }
 
 class If_ : Func {
-	this() { super("if","if condition is true, execute given function - else optionally execute alternative function",[[bV,fV], [bV,fV,fV]],[xV]); }
+	this(string ns="") { super(ns ~ "if","if condition is true, execute given function - else optionally execute alternative function",[[bV,fV], [bV,fV,fV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias condition = B!(v,0);
@@ -133,7 +133,7 @@ class If_ : Func {
 }
 
 class Import_ : Func {
-	this() { super("import","import external source file from path",[[sV]],[xV]); }
+	this(string ns="") { super(ns ~ "import","import external source file from path",[[sV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -154,7 +154,7 @@ class Import_ : Func {
 }
 
 class Input_ : Func {
-	this() { super("input","read line from stdin",[[]],[sV,xV]); }
+	this(string ns="") { super(ns ~ "input","read line from stdin",[[]],[sV,xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		
@@ -166,7 +166,7 @@ class Input_ : Func {
 }
 
 class Lazy_ : Func {
-	this() { super("lazy","get a lazy-evaluated expression",[[xV]],[fV]); }
+	this(string ns="") { super(ns ~ "lazy","get a lazy-evaluated expression",[[xV]],[fV]); }
 	override Value execute(Expressions ex) {
 		Statements sts = new Statements(new Statement(ex.lst[0]));
 		return new Value(sts);
@@ -174,7 +174,7 @@ class Lazy_ : Func {
 }
 
 class Loop_ : Func {
-	this() { super("loop","execute given function for each element in array or dictionary, or while condition is true",[[aV,fV],[dV,fV],[bV,fV]],[xV]); }
+	this(string ns="") { super(ns ~ "loop","execute given function for each element in array or dictionary, or while condition is true",[[aV,fV],[dV,fV],[bV,fV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -218,7 +218,7 @@ class Loop_ : Func {
 }
 
 class Memoize_ : Func {
-	this() { super("memoize","get a memoized function",[[fV]],[fV]); }
+	this(string ns="") { super(ns ~ "memoize","get a memoized function",[[fV]],[fV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -230,7 +230,7 @@ class Memoize_ : Func {
 }
 
 class Not_ : Func {
-	this() { super("not","bitwise/logical NOT",[[bV],[nV]],[bV,nV]); }
+	this(string ns="") { super(ns ~ "not","bitwise/logical NOT",[[bV],[nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -246,7 +246,7 @@ class Not_ : Func {
 }
 
 class Or_ : Func {
-	this() { super("or","bitwise/logical OR",[[bV,bV],[nV,nV]],[bV,nV]); }
+	this(string ns="") { super(ns ~ "or","bitwise/logical OR",[[bV,bV],[nV,nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -267,7 +267,7 @@ class Or_ : Func {
 }
 
 class Panic_ : Func {
-	this() { super("panic","exit program printing given error message",[[sV]],[]); }
+	this(string ns="") { super(ns ~ "panic","exit program printing given error message",[[sV]],[]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias msg = S!(v,0);
@@ -277,7 +277,7 @@ class Panic_ : Func {
 }
 
 class Print_ : Func {
-	this() { super("print","print value of given expression to screen, optionally suppressing newlines",[[xV],[xV,bV]],[xV]); }
+	this(string ns="") { super(ns ~ "print","print value of given expression to screen, optionally suppressing newlines",[[xV],[xV,bV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		Value item = v[0];
@@ -294,7 +294,7 @@ class Print_ : Func {
 }
 
 class Return_ : Func {
-	this() { super("return","return given value",[[xV]],[xV]); }
+	this(string ns="") { super(ns ~ "return","return given value",[[xV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -304,7 +304,7 @@ class Return_ : Func {
 }
 
 class Shl_ : Func {
-	this() { super("shl","bitwise left shift",[[nV,nV]],[nV]); }
+	this(string ns="") { super(ns ~ "shl","bitwise left shift",[[nV,nV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -316,7 +316,7 @@ class Shl_ : Func {
 }
 
 class Shr_ : Func {
-	this() { super("shr","bitwise right shift",[[nV,nV]],[nV]); }
+	this(string ns="") { super(ns ~ "shr","bitwise right shift",[[nV,nV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -328,7 +328,7 @@ class Shr_ : Func {
 }
 
 class Test_ : Func {
-	this() { super("test__","test function - dev only",[[sV]],[]); }
+	this(string ns="") { super(ns ~ "test__","test function - dev only",[[sV]],[]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
@@ -343,7 +343,7 @@ class Test_ : Func {
 }
 
 class Trace_ : Func {
-	this() { super("trace","trace executing of given expression",[[xV]],[xV]); }
+	this(string ns="") { super(ns ~ "trace","trace executing of given expression",[[xV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Glob.trace = true;
 		Value[] v = validate(ex);
@@ -354,7 +354,7 @@ class Trace_ : Func {
 }
 
 class Xor_ : Func {
-	this() { super("xor","bitwise/logical XOR",[[bV,bV],[nV,nV]],[bV,nV]); }
+	this(string ns="") { super(ns ~ "xor","bitwise/logical XOR",[[bV,bV],[nV,nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
