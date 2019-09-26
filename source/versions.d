@@ -19,7 +19,7 @@ import helpers.terminal;
 // Constants
 
 const string ART_NAME           = "Arturo";
-const string ART_VERSION        = "0.2";
+const string ART_VERSION        = "0.3";
 const string ART_COPYRIGHT      = "2019";
 const string ART_AUTHOR         = "Yanis Zafirópulos";
 const string ART_BUILD          = import("build.txt");

@@ -1,6 +1,7 @@
 {
 	"name": "arturo",
 	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
+	"homepage" : "http://arturo-lang.io",
 	"authors": [
 		"drkameleon"
 	],
