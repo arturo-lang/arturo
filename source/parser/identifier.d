@@ -70,11 +70,21 @@ union PathContent
 class Identifier {
 	PathContentType[] pathContentTypes;
 	PathContent[] pathContents;
+	string namespace;
 
 	this(string s) {
-		writeln("IN IDENTIFIER constructor: " ~ s);
+		string cleanstr = s;
+		if (s.indexOf(":")!=-1) {
+			string[] parts = s.split(":");
+			namespace = parts[0];
+			cleanstr = parts[1];
+		}
+		else {
+			namespace = null;
+		}
+		writeln("IN IDENTIFIER constructor: " ~ cleanstr);
 		pathContentTypes = [ idPC ];
-		PathContent pc = {s};
+		PathContent pc = {cleanstr};
 		pathContents = [ pc ];
 		//pathContents = [];
 		//pathContents ~= {s};

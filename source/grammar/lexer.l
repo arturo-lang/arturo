@@ -42,14 +42,16 @@ DIGIT				[0-9]
 DIGIT_HEX			[a-fA-F0-9]
 DIGIT_BIN			[01]
 LETTER				[a-zA-Z_@]
-LETTER_OR_MISC		[a-zA-Z_]
+LETTER_OR_MISC		[a-zA-Z_:]
 
 /****************************************
  Tokens
  ****************************************/
 /*
 "~"													{ count(); return ID; }
+":"													{ count(); return COLON; }
 */
+
 
 %%
 
@@ -99,7 +101,6 @@ LETTER_OR_MISC		[a-zA-Z_]
 "]"													{ count(); return RSQUARE; }
 ","													{ count(); return COMMA; }
 "!"													{ count(); return EXCL; }
-":"													{ count(); return COLON; }
 ";"													{ count(); return SEMICOLON; }
 
 \n 													{ count(); return NEW_LINE; }
