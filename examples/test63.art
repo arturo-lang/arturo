@@ -1,3 +1,44 @@
 
 
 print $(reverse #(1 2 3))
+
+addNumbers { @0+@1 }
+
+
+print $(!addNumbers 1 2 3)
+
+loop $(range 1 10) {
+	print "num =  " +  @
+}
+
+dict #{
+	name "john"
+	surname "zafeiropoulos"
+	address #("one" "two" "three")
+
+	func {
+		print "In func"
+	}
+
+	arr #([x]{ print "something:" })
+}
+
+//dictTwo =  $(new "dict")
+
+//print dict
+//print dict.name
+
+//print $(syms)
+a 3
+
+print dict
+print dict.name
+print dict.surname
+print dict.address.1
+print dict.address.[a-10+9]
+
+!dict.func
+!dict.arr.0 "done"
+
+//print dictTwo
+//print dictTwo.name
