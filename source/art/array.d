@@ -117,6 +117,36 @@ class Avg_ : Func {
 	}
 }
 
+class Count_ : Func {
+	this() { super("count","count how many of the array's elements is true or passes the condition of given function",[[aV],[aV,fV]],[nV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias arr = A!(v,0);
+
+		if (v.length==2) {
+			alias func = F!(v,1);
+
+			int oks = 0;
+			foreach (Value item; arr) {
+				Value val = func.execute(item);
+				if (val.type!=bV) throw new ERR_ExpectedValueTypeError("count", "boolean", to!string(item.type));
+				if (B!(val)) oks += 1;
+			}
+			
+			return new Value(oks);
+		}
+		else {
+			int oks = 0;
+			foreach (Value item; arr) {
+				if (item.type!=bV) throw new ERR_ExpectedValueTypeError("count", "boolean", to!string(item.type));
+				if (B!(item)) oks+=1;
+			}
+			return new Value(oks);
+		}
+	}
+}
+
 class Difference_ : Func {
 	this() { super("difference","get difference of two given arrays",[[aV,aV]],[aV]); }
 	override Value execute(Expressions ex) {
