@@ -72,102 +72,15 @@ class Context {
     }
 
     Var _varGet(string n) {
-        // check if path item
-        if (n.indexOf(".")!=-1) {
-            string[] parts = n.split(".");
-            string mainObject = parts[0];
-            Var main = Glob.varGet(mainObject);
-            if (main is null) return null;
-            Value mainValue = main.value;
-
-            parts.popFront();
-
-            while (parts.length>0) {
-                string nextKey = parts[0];
-
-                if (mainValue.type==dV) {
-                    Value nextKeyValue = mainValue.getValueFromDict(nextKey);
-                    if (nextKeyValue is null) return null;
-                    else mainValue = nextKeyValue;
-                }
-                else if (mainValue.type==aV) {
-                    if (isNumeric(nextKey) && to!int(nextKey)<mainValue.content.a.length)
-                        mainValue = mainValue.content.a[to!int(nextKey)];
-                    else return null;
-                }
-
-                parts.popFront();
-            }
-
-            return new Var(n,mainValue,true);
-        }
-        else return variables[n];
+        return variables[n];
     }
 
     bool _varExists(string n) {
-        // check if path item
-        if (n.indexOf(".")!=-1) {
-            string[] parts = n.split(".");
-            string mainObject = parts[0];
-            Var main = Glob.varGet(mainObject);
-            if (main is null) return false;
-            Value mainValue = main.value;
-
-            parts.popFront();
-
-            while (parts.length>0) {
-                string nextKey = parts[0];
-
-                if (mainValue.type==dV) {
-                    Value nextKeyValue = mainValue.getValueFromDict(nextKey);
-                    if (nextKeyValue is null) return false;
-                    else mainValue = nextKeyValue;
-                }
-                else if (mainValue.type==aV) {
-                    if (isNumeric(nextKey) && to!int(nextKey)<mainValue.content.a.length)
-                        mainValue = mainValue.content.a[to!int(nextKey)];
-                    else return false;
-                }
-
-                parts.popFront();
-            }
-
-            return true;
-        }
-        else return ((n in variables)!=null);
+        return ((n in variables)!=null);
     }
 
     const bool _varExistsImmut(string n) {
-        // check if path item
-        if (n.indexOf(".")!=-1) {
-            string[] parts = n.split(".");
-            string mainObject = parts[0];
-            Var main = Glob.varGet(mainObject);
-            if (main is null) return false;
-            Value mainValue = main.value;
-
-            parts.popFront();
-
-            while (parts.length>0) {
-                string nextKey = parts[0];
-
-                if (mainValue.type==dV) {
-                    Value nextKeyValue = mainValue.getValueFromDict(nextKey);
-                    if (nextKeyValue is null) return false;
-                    else mainValue = nextKeyValue;
-                }
-                else if (mainValue.type==aV) {
-                    if (isNumeric(nextKey) && to!int(nextKey)<mainValue.content.a.length)
-                        mainValue = mainValue.content.a[to!int(nextKey)];
-                    else return false;
-                }
-
-                parts.popFront();
-            }
-
-            return true;
-        }
-        else return ((n in variables)!=null);
+        return ((n in variables)!=null);
     }
 
     void funcSet(Func f) {
