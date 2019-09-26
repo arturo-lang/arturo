@@ -62,6 +62,8 @@ class Func {
 
     string namespace;
 
+    bool isVariadic;
+
     // system functions
     this (string n, string descr, ValueType[][] vc = [], ValueType[] rets = []) {
         name = n;
@@ -71,13 +73,19 @@ class Func {
         description = descr;
 
         minArgs = -1;
-        maxArgs = 100;  
+        maxArgs = 100; 
+
+        isVariadic = false;
 
         if (vc!=[]) {
             valueConstraints = vc;
             minArgs = 100;
             maxArgs = 0;
             foreach (ValueType[] constraints; valueConstraints) {
+                if (constraints.canFind(vV))  {
+                    isVariadic = true;
+                    maxArgs = 100;
+                }
                 if (constraints.length<minArgs) minArgs = constraints.length;
                 if (constraints.length>maxArgs) maxArgs = constraints.length;
             }
@@ -113,11 +121,17 @@ class Func {
         minArgs = -1;
         maxArgs = 100;
 
+        isVariadic = false;
+
         if (vc!=[]) {
             valueConstraints = vc;
             minArgs = 100;
             maxArgs = 0;
             foreach (ValueType[] constraints; valueConstraints) {
+                if (constraints.canFind(vV))  {
+                    isVariadic = true;
+                    maxArgs = 100;
+                }
                 if (constraints.length<minArgs) minArgs = constraints.length;
                 if (constraints.length>maxArgs) maxArgs = constraints.length;
             }
@@ -342,7 +356,10 @@ class Func {
 
     Value[] validate(Expressions ex) {
         if (ex.lst.length < minArgs) throw new ERR_FunctionCallErrorNotEnough(name, minArgs, ex.lst.length);
-        if (ex.lst.length > maxArgs) throw new ERR_FunctionCallErrorTooMany(name, maxArgs, ex.lst.length);
+
+        if (!isVariadic) {
+            if (ex.lst.length > maxArgs) throw new ERR_FunctionCallErrorTooMany(name, maxArgs, ex.lst.length);
+        }
 
         Value[] ret;
         //string[] retString;
@@ -352,26 +369,33 @@ class Func {
             //retString ~= vv.stringify();
         }
 
-        
-
-        foreach (ValueType[] constraints; valueConstraints.filter!(c => c.length == ex.lst.length)) {
-            bool passingConstraint = true;
-            foreach (i, ValueType constraint; constraints) {
-                if (constraint != xV) {
-                    if (constraint != ret[i].type) {
-                        passingConstraint = false;
+        if (!isVariadic) {
+            foreach (ValueType[] constraints; valueConstraints.filter!(c => c.length == ex.lst.length)) {
+                bool passingConstraint = true;
+                foreach (i, ValueType constraint; constraints) {
+                    if (constraint != xV) {
+                        if (constraint != ret[i].type) {
+                            passingConstraint = false;
+                        }
                     }
                 }
+                if (passingConstraint) return ret;
             }
-            if (passingConstraint) return ret;
         }
-        /*
-        string[] acceptedConstraints = [];
-        foreach (ValueType[] constraints; valueConstraints) {
-            acceptedConstraints ~= constraints.map!(c => "" ~ c).array.join("/");
-            debug writeln(constraints.map!(c => "" ~ c).array.join("/"));
+        else {
+            foreach (ValueType[] constraints; valueConstraints) {
+                bool passingConstraint = true;
+                foreach (i, ValueType constraint; constraints) {
+                    if (constraint != xV && constraint != vV) {
+                        if (constraint != ret[i].type) {
+                            passingConstraint = false;
+                        }
+                    }
+                }
+                if (passingConstraint) return ret;
+            }
         }
-    */
+
         string givenTypes = ret.map!(c => "" ~ c.type).array.join("/");
 
         throw new ERR_FunctionCallConstraintsError(name,getAcceptedConstraintsDescription(),givenTypes);
@@ -394,6 +418,13 @@ class Func {
 
     string markdownish() {
         return "| **" ~ name ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
+    }
+
+    string sublimeish() {
+        if (getFullName()!=name)
+            return getFullName() ~ "|" ~ name ~ "|";
+        else
+            return name;
     }
 
     void inspect(bool full=false) {
