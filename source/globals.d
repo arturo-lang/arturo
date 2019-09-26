@@ -52,6 +52,8 @@ import art.yaml;
 
 import stack;
 
+import parser.identifier;
+
 // Globals
 
 Globals Glob;
@@ -297,13 +299,72 @@ class Globals : Context {
         }
     } 
 
+    Var varGetByIdentifier(Identifier iden) {
+        Var ret = varGet(iden.pathContents[0].id);
+        Value currentValue = ret.value;
+        if (iden.pathContents.length==1) { return ret; }
+
+        string varName = iden.pathContents[0].id;
+
+        PathContentType[] types = iden.pathContentTypes[1..$];
+        PathContent[] parts = iden.pathContents[1..$];
+
+        for (auto i=0; i<parts.length; i++) {
+            auto ppart = parts[i];
+            auto ptype = types[i];
+
+            if (currentValue.type==dV) {
+                if (ptype==numPC) return null;
+
+                string subKey = ppart.id;
+
+                if (ptype==exprPC) {
+                    Value sub = ppart.expr.evaluate();
+                    if (sub.type!=sV) return null;
+                    subKey = sub.content.s;
+                }
+                
+                varName ~= "." ~ subKey;
+                
+                Value nextKeyValue = currentValue.getValueFromDict(subKey);
+
+                if (nextKeyValue is null) return null;
+                else currentValue = nextKeyValue;
+            }
+            else if (currentValue.type==aV) {
+                if (ptype==idPC) return null;
+
+                long subKey = ppart.num;
+
+                if (ptype==exprPC) {
+                    Value sub = ppart.expr.evaluate();
+                    if (sub.type!=nV) return null;
+                    subKey = sub.content.i;
+                }
+
+                if (subKey>=currentValue.content.a.length) return null;
+
+                varName ~= "." ~ to!string(subKey);
+
+                currentValue =  currentValue.content.a[subKey];
+                
+            }
+            else return null;
+        }
+
+        return new Var(varName,currentValue,true);
+    }
+
     Var varGet(string n) {
         //writeln("in varGet: " ~ n);
         // if it's an ARGS variable, return it from top-most context
         if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
 
+        //writeln("in varGet: " ~ n);
         // if it's a global, return it now
         if (this._varExists(n)) return this._varGet(n); 
+
+        //writeln("in varGet: " ~ n);
 
         // else search back into the context stack
         // until reaching root (global), finding it, 
@@ -347,7 +408,8 @@ class Globals : Context {
         foreach (string funcString; sortedFunctions) {
             Func f = contextStack.lastItem().functions[funcString];
             //writeln(f.markdownish());
-            f.inspect();
+            writeln(f.sublimeish());
+            //f.inspect();
         }
     }
 
