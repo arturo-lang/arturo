@@ -23,7 +23,8 @@ import parser.expression;
 import parser.expressions;
 import parser.statements;
 
-import vibe.textfilter.markdown;
+//import vibe.textfilter.markdown;
+import dmarkdown.markdown;
 
 import value;
 
@@ -37,7 +38,7 @@ class Convert__Markdown_ : Func {
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
-
+		
 		auto converted = filterMarkdown(input);
 
 		return new Value(converted);

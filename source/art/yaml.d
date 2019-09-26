@@ -148,6 +148,7 @@ class Yaml__Parse_ : Func {
 	this() { super("yaml.parse","get object by parsing given YAML string",[[sV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
+
 		alias input = S!(v,0);
 
 		Node root = Loader.fromString(input).load();
