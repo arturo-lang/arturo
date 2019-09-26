@@ -98,7 +98,6 @@ class Compiler {
 
             sourceTree = cast(Program)(_program);
             debug inspect();
-            writeln("HERE");
             Value v = sourceTree.execute();
             debug Glob.inspect();
 
