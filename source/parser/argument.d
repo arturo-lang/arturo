@@ -79,10 +79,10 @@ class Argument {
 	Identifier identifier;
 
 	this(Identifier iden) {
-		writeln("In argument constructor");
+		//writeln("In argument constructor");
 		type = ArgumentType.identifierArgument;
 		identifier = iden;
-		writeln("AFTER");
+		//writeln("AFTER");
 	}
 
 	this(string t, string v) {
@@ -145,19 +145,10 @@ class Argument {
 
 	Value getValue() {
 		if (type==ArgumentType.identifierArgument) {
-			writeln(identifier.inspect());
-			//writeln("looking for " ~ value.content.s);
-			Var symbol = Glob.varGet(identifier.getId());
-			//Var symbol = Glob.varGet(value.content.s);
-			//writeln("symbol: " ~ to!string(symbol));
-			//writeln("HERE");
-			//writeln("symbol value: " ~ to!string(symbol.value));
+			Var symbol = Glob.varGetByIdentifier(identifier);
+
 			if (symbol !is null) return symbol.value;
-			else throw new ERR_SymbolNotFound(value.content.s);
-			//else {
-			//	if (value.content.s.indexOf(".")!=-1) return getDottedItem(value.content.s);
-			//	else 
-			//}
+			else throw new ERR_SymbolNotFound(identifier.getFullIdentifier());
 		}
 		else {
 			
