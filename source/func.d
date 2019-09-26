@@ -417,7 +417,7 @@ class Func {
     }
 
     string markdownish() {
-        return "| **" ~ name ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
+        return "| **" ~ getFullName() ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
     }
 
     string sublimeish() {
