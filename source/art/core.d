@@ -55,57 +55,16 @@ class And_ : Func {
 	}
 }
 
-class Vars_ : Func {
-	this(string ns="") { super(ns ~ "vars","get pointer location for object",[[],[sV]]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		//return new Value("BOOM");
-		return new Value(Glob.inspectAllVars());
-	}
-}
-
-class Pointer_ : Func {
-	this(string ns="") { super(ns ~ "pointer","get pointer location for object",[[xV],[sV]]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-
-		return new Value(to!string(cast(void*)v[0]));
-	}
-}
-
-class New_ : Func {
-	this(string ns="") { super(ns ~ "new","copy given object and return a new duplicate. one",[[sV],[sV,aV]],[xV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-
-		alias symdef = S!(v,0);
-
-		Value ret = Glob.symboldefs[symdef].evaluate();
-
-		if (ret.type==dV) {
-
-			if (ret.content.d._varExists("init")) {
-
-				Func func = ret.content.d._varGet("init").value.content.f;
-
-				v.length==2 ? func.execute(v[1]) : func.execute();
-			}
-
-		}
-
-		return ret;
-	}
-}
-
 class Exec_ : Func {
-	this(string ns="") { super(ns ~ "exec","execute given function with optional array of arguments",[[fV],[fV,aV]],[xV]); }
+	this(string ns="") { super(ns ~ "exec","execute given function with optional array of arguments",[[fV],[fV,vV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias func = F!(v,0);
 
 		Value args = null;
-		if (v.length==2) 
-			args = v[1];
+		if (v.length>=2) {
+			args = new Value(v[1..$]);
+		}
 
 		return func.execute(args);
 	}
@@ -224,6 +183,30 @@ class Memoize_ : Func {
 
 		Value ret = new Value(v[0]);
 		Glob.memoize ~= to!string(&ret.content.f);
+
+		return ret;
+	}
+}
+
+class New_ : Func {
+	this(string ns="") { super(ns ~ "new","copy given object and return a new duplicate. one",[[sV],[sV,aV]],[xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias symdef = S!(v,0);
+
+		Value ret = Glob.symboldefs[symdef].evaluate();
+
+		if (ret.type==dV) {
+
+			if (ret.content.d._varExists("init")) {
+
+				Func func = ret.content.d._varGet("init").value.content.f;
+
+				v.length==2 ? func.execute(v[1]) : func.execute();
+			}
+
+		}
 
 		return ret;
 	}
