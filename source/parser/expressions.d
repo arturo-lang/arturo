@@ -33,14 +33,14 @@ class Expressions {
 	Expression[] lst;
 
 	this() {
-		writeln("Expressions constructor");
+		//writeln("Expressions constructor");
 		lst = [];
 	}
 
 	void add(Expression ex) {
-		writeln("Adding expression to expression_list");
+		//writeln("Adding expression to expression_list");
 		lst ~= ex;
-		writeln("done.-");
+		//writeln("done.-");
 	}
 
 	Value evaluate(bool forceArray=false) {
