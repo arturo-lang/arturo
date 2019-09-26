@@ -177,3 +177,19 @@ class Size_ : Func {
 		return new Value(0);
 	}
 }
+
+class Slice_ : Func {
+	this() { super("slice","get slice of array/string given a starting and/or end point",[[aV,nV],[aV,nV,nV],[sV,nV],[sV,nV,nV]],[aV,sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value item = v[0];
+
+		switch (item.type) {
+			case sV: return (v.length==3 ? new Value(S!(item)[I!(v,1)..I!(v,2)]) : new Value(S!(item)[I!(v,1)..$]));
+			case aV: return (v.length==3 ? new Value(A!(item)[I!(v,1)..I!(v,2)]) : new Value(A!(item)[I!(v,1)..$]));
+			default: break;
+		}
+
+		return new Value();
+	}
+}
