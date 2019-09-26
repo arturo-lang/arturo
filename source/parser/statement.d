@@ -92,6 +92,7 @@ class Statement {
 	this(Expression ex) {
 		writeln("new statement from expression:  ");
 		if (ex.type==aE) {
+			writeln("argument expression");
 			if (ex.arg.type==ArgumentType.stringArgument) {
 				id = new Identifier("print");
 				expressions = new Expressions();
@@ -104,6 +105,7 @@ class Statement {
 				
 			}
 			else if (ex.arg.type==ArgumentType.identifierArgument) {
+				writeln("id argument");
 				id = ex.arg.identifier;//new Identifier(ex.arg.value.content.s);
 				expressions = new Expressions();
 				type = StatementType.normalStatement;
@@ -111,16 +113,19 @@ class Statement {
 				hasExpressions = false;
 			}
 			else {
+				writeln("other argument");
 				id = null;
 				expression = ex;
 				type = StatementType.expressionStatement;
 			}
 		}
 		else {
+			writeln("other expression");
 			id = null;
 			expression = ex;
 			type = StatementType.expressionStatement;
 		}
+		writeln("new statement from expression: POST");
 	}
 
 	Value executeFunctionCall() {
@@ -233,8 +238,8 @@ class Statement {
 	}
 
 	Value execute(Value* v) {
-		if (v is null) writeln("Executing statement: " ~ id.inspect() ~ ", value: null");
-		else  writeln("Executing statement: " ~ id.inspect() ~ ", value: " ~ to!string(cast(void*)(*v)));
+		//if (v is null) writeln("Executing statement: " ~ id.inspect() ~ ", value: null");
+		//else  writeln("Executing statement: " ~ id.inspect() ~ ", value: " ~ to!string(cast(void*)(*v)));
 
 		try {
 			switch (type) {

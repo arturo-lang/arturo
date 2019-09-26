@@ -1564,6 +1564,7 @@ class Value {
                 }
                 ret ~= items.join(", ");
                 ret ~= " }";
+                if (ret=="#{  }") ret = "#{}";
                 return ret;
             case ValueType.noValue          : return "null";
             default                         : return "NULL";
@@ -1598,6 +1599,7 @@ class Value {
                 }
                 ret ~= items.join(", ");
                 ret ~= " }";
+            
                 return ret;
             case ValueType.noValue          : return "null";
             default                         : return "NULL";
