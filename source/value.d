@@ -47,6 +47,7 @@ alias dV = ValueType.dictionaryValue;
 alias fV = ValueType.functionValue;
 alias xV = ValueType.anyValue;
 alias noV = ValueType.noValue;
+alias vV = ValueType.variadicValue;
 
 // Definitions
 
@@ -60,7 +61,8 @@ enum ValueType : string
     dictionaryValue = "Dictionary",
     functionValue = "Function",
     noValue = "Null",
-    anyValue = "Any"
+    anyValue = "Any",
+    variadicValue = "Any..."
 }
 
 union ValueContent
