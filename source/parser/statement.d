@@ -130,7 +130,7 @@ class Statement {
 
 	Value executeFunctionCall() {
 		string functionToExec = id.getId();
-		writeln("calling func: " ~ functionToExec);
+		//writeln("calling func: " ~ functionToExec);
 		
 		return Glob.funcGet(functionToExec).execute(expressions);
 	}
@@ -191,10 +191,10 @@ class Statement {
 */
 	Value executeAssignment(Value* v) {
 
-		writeln("Executing assignment");
+		//writeln("Executing assignment");
 		if (v is null) {
 
-			writeln("ASSIGNMENT: (before)" ~ id.getId());
+			//writeln("ASSIGNMENT: (before)" ~ id.getId());
 
 			if (expressions.lst.length==1) {
 				//writeln("FOUND CLASS_DEF: " ~ id);
@@ -254,7 +254,7 @@ class Statement {
 						
 						Var sym = Glob.varGet(id.getId());
 
-						writeln("sym :" ~ to!string(sym));
+						//writeln("sym :" ~ to!string(sym));
 						
 						if (hasExpressions) {
 							if (sym is null) return executeAssignment(v);
