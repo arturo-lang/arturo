@@ -1,0 +1,75 @@
+#!../arturo/arturo
+"========================="
+"Brainf*ck compiler"
+"In Art:uro"
+"========================="
+
+tape                    #(0)
+dataPointer             0  
+instructionPointer      0
+
+// Look for jumps in code an register them
+// in the jumps table
+
+precomputeJumps {
+    stack                   #()
+    jumphash                #{}
+    instrPointer            0
+
+    loop instrPointer<codeLength {
+        command $(get $(characters code) instrPointer)
+        if command="[" { stack stack+instrPointer } {
+            if command="]" {
+                target $(last stack)
+                deleteBy stack $(size stack)-1
+                set jumphash $(toString target) instrPointer
+                set jumphash $(toString instrPointer) target
+            }
+        }
+        instrPointer instrPointer+1
+    }
+    jumphash
+}
+
+// Check if current state is valid
+
+stateIsValid {
+    all #(0<=dataPointer dataPointer<$(size tape) 0<=instructionPointer instructionPointer<codeLength)
+}
+
+// Compile the program
+
+interpret {
+    print jumps
+    loop $(!stateIsValid) {
+        command $(get $(characters code) instructionPointer)
+
+        | command="+" { set tape dataPointer tape.[dataPointer]+1 }
+        | command="-" { set tape dataPointer tape.[dataPointer]-1 }
+        | command=">" { dataPointer dataPointer+1, if dataPointer=$(size tape) { tape tape+0 } }
+        | command="<" { dataPointer dataPointer-1 }
+        | command="." { print $(char tape.[dataPointer]) true }
+        | command="," { 
+            inp $(toNumber input)
+            | inp=13 { inp 10 }
+            | inp=3  { panic "something went wrong!" }
+            set tape dataPointer inp
+        }
+        | command="[" {
+            if tape.[dataPointer]=0 { instructionPointer jumps.[$(toString instructionPointer)] }
+        }
+        | command="]" {
+            if tape.[dataPointer]!=0 { instructionPointer jumps.[$(toString instructionPointer)] }
+        }
+        
+        instructionPointer instructionPointer+1
+    }   
+}
+
+if $(size @)<1 { panic "Not enough arguments - Usage: bfc <script>" }
+
+code                    $(read @0)
+codeLength              $(size code)
+jumps                   $(!precomputeJumps)
+
+!interpret
