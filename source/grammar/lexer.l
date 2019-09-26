@@ -84,6 +84,10 @@ LETTER_OR_MISC		[a-zA-Z_]
 "%"													{ count(); return MOD_SG; }
 "^"													{ count(); return POW_SG; }
 
+"#("												{ count(); return BEGIN_ARR; }
+"#{"												{ count(); return BEGIN_DICT; }
+"$("												{ count(); return BEGIN_INLINE; }
+
 "."													{ count(); return DOT; }
 "#"													{ count(); return HASH; }
 "$"													{ count(); return DOLLAR; }

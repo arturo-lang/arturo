@@ -106,8 +106,11 @@ int yywrap() {
 %token <str> MOD_SG "%"
 %token <str> POW_SG "^"
 
+%token <str> BEGIN_ARR "#("
+%token <str> BEGIN_DICT "#{"
+%token <str> BEGIN_INLINE "$("
+
 %token <str> DOT "."
-//%token <str> AT "@"
 %token <str> HASH "#"
 %token <str> DOLLAR "$"
 %token <str> LPAREN "("
@@ -159,12 +162,13 @@ int yywrap() {
 identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID); }
 						| 	IF 																	{ $$ = new_IdentifierWithId("if"); }
 						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
-						|	identifier[previous] DOT NUMBER										{ void* i = $previous; printf("found dot.number\n"); add_NumToIdentifier($NUMBER, i); printf("post: found dot.number\n"); $$ = i; }
+						|	identifier[previous] DOT NUMBER										{ void* i = $previous; add_NumToIdentifier($NUMBER, i); $$ = i; }
 						//| 	identifier[previous] DOT LSQUARE expression RSQUARE 				{ void* i = $previous; add_ExprToIdentifier($expression, i); $$ = i; }
 						;
 
 identifiers				: 	identifiers[previous] COMMA identifier 								{ void* i = $previous; add_Identifier(i, $identifier); $$ = i; }
 						|	identifier 															{ void* i = new_Identifiers(); add_Identifier(i, $identifier); $$ = i; }
+						|	/* Nothing */														{ $$ = new_Identifiers(); }
 						;
 
 argument				:	identifier 															{ $$ = new_ArgumentFromIdentifier($identifier); }
@@ -174,10 +178,7 @@ argument				:	identifier 															{ $$ = new_ArgumentFromIdentifier($ident
 						|	NULLV	 															{ $$ = new_Argument("null", $NULLV); }
 						;
 
-expression				: 	argument 															{ 
-																								  /*if (argument_Interpolated($argument)) { printf("string interpolation found!"); }*/ 
-																								  $$ = new_ExpressionFromArgument($argument); 
-																								}
+expression				: 	argument 															{ $$ = new_ExpressionFromArgument($argument); }
 						|	LPAREN expression[main] RPAREN 										{ $$ = $main; }
 						|	expression[left] PLUS_SG expression[right] 							{ $$ = new_Expression($left, $2, $right, 0); }
 						| 	expression[left] MINUS_SG expression[right] 						{ $$ = new_Expression($left, $2, $right, 0); }
@@ -191,15 +192,12 @@ expression				: 	argument 															{
 						|	expression[left] LT_OP expression[right]							{ $$ = new_Expression($left, $2, $right, 1); } 
 						|	expression[left] GT_OP expression[right]							{ $$ = new_Expression($left, $2, $right, 1); } 
 						|	expression[left] NE_OP expression[right]							{ $$ = new_Expression($left, $2, $right, 1); } 
-						|	HASH LCURLY statements RCURLY										{ $$ = new_ExpressionFromDictionary($statements); }
-						//|	HASH LCURLY RCURLY													{ $$ = new_ExpressionFromDictionary(new_Statements()); }
-						| 	LSQUARE RSQUARE LCURLY statements RCURLY							{ $$ = new_ExpressionFromStatementBlock($statements); }
-						| 	LSQUARE identifiers RSQUARE LCURLY statements RCURLY				{ $$ = new_ExpressionFromStatementBlockWithArguments($statements, $identifiers); }
+						|	BEGIN_ARR expression_list RPAREN									{ $$ = new_ExpressionFromArray($expression_list); }
+						|	BEGIN_ARR RPAREN													{ void* e = new_Expressions(); $$ = new_ExpressionFromArray(e); }
+						|	BEGIN_DICT statements RCURLY										{ $$ = new_ExpressionFromDictionary($statements); }
+						|	BEGIN_INLINE statement RPAREN 										{ $$ = new_ExpressionFromStatement($statement); }
 						|	LCURLY statements RCURLY											{ $$ = new_ExpressionFromStatementBlock($statements); }
-						//|	LCURLY RCURLY														{ $$ = new_ExpressionFromStatementBlock(new_Statements()); }
-						|	DOLLAR LPAREN statement RPAREN 										{ $$ = new_ExpressionFromStatement($statement); }
-						|	HASH LPAREN expression_list RPAREN									{ $$ = new_ExpressionFromArray($expression_list); }
-						|	HASH LPAREN RPAREN													{ $$ = new_ExpressionFromArray(new_Expressions()); }
+						| 	LSQUARE identifiers RSQUARE LCURLY statements RCURLY				{ $$ = new_ExpressionFromStatementBlockWithArguments($statements, $identifiers); }
 						;
 
 
@@ -211,7 +209,7 @@ expression_list			:	expression 															{ void* e = new_Expressions(); add
 
 statement				: 	expression 															{ $$ = new_StatementFromExpression($expression); POS($$); }
 						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions("return", subex); }
-						|	identifier expression_list											{ printf("statement!!\n"); $$ = new_StatementWithExpressions($identifier, $expression_list); printf("post: statement!!\n"); POS($$); }
+						|	identifier expression_list											{ $$ = new_StatementWithExpressions($identifier, $expression_list); POS($$); }
 						|	identifier COLON expression_list									{ $$ = new_ImmutableStatementWithExpressions($identifier, $expression_list); POS($$); }
 						;
 
