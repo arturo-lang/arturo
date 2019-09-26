@@ -35,15 +35,23 @@ import panic;
 import var;
 
 class And_ : Func {
-	this() { super("and","if all conditions are true, return true, otherwise return false",[[bV,bV]],[bV]); }
+	this() { super("and","bitwise/logical AND",[[bV,bV],[nV,nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
-		foreach (Value condition; v) {
-			if (!B!(condition)) return new Value(false);
-		}
+		if (v[0].type==bV) {
+			foreach (Value condition; v) {
+				if (!B!(condition)) return new Value(false);
+			}
 
-		return new Value(true);
+			return new Value(true);
+		}
+		else {
+			alias num1 = I!(v,0);
+			alias num2 = I!(v,1);
+
+			return new Value(num1 & num2);
+		}
 	}
 }
 
@@ -222,24 +230,39 @@ class Memoize_ : Func {
 }
 
 class Not_ : Func {
-	this() { super("not","if the conditions is true, return false, otherwise return true",[[bV]],[bV]); }
+	this() { super("not","bitwise/logical NOT",[[bV],[nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
-		return new Value(!B!(v,0));
+		if (v[0].type==bV) {
+			return new Value(!B!(v,0));
+		}
+		else {
+			alias num = I!(v,0);
+
+			return new Value(~num);
+		}
 	}
 }
 
 class Or_ : Func {
-	this() { super("or","if any one of the conditions is true, return true, otherwise return false",[[bV,bV]],[bV]); }
+	this() { super("or","bitwise/logical OR",[[bV,bV],[nV,nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
-		foreach (Value condition; v) {
-			if (B!(condition)) return new Value(true);
-		}
+		if (v[0].type==bV) {
+			foreach (Value condition; v) {
+				if (B!(condition)) return new Value(true);
+			}
 
-		return new Value(false);
+			return new Value(false);
+		}
+		else {
+			alias num1 = I!(v,0);
+			alias num2 = I!(v,1);
+
+			return new Value(num1 | num2);
+		}
 	}
 }
 
@@ -307,13 +330,22 @@ class Trace_ : Func {
 }
 
 class Xor_ : Func {
-	this() { super("xor","if only one of the conditions is true, return true, otherwise return false",[[bV,bV]],[bV]); }
+	this() { super("xor","bitwise/logical XOR",[[bV,bV],[nV,nV]],[bV,nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		alias condition1 = B!(v,0);
-		alias condition2 = B!(v,1);
 
-		if ((condition1 && !condition2) || (!condition1 && condition2)) return new Value(true);
-		else return new Value(false);
+		if (v[0].type==bV) {
+			alias condition1 = B!(v,0);
+			alias condition2 = B!(v,1);
+
+			if ((condition1 && !condition2) || (!condition1 && condition2)) return new Value(true);
+			else return new Value(false);
+		}
+		else {
+			alias num1 = I!(v,0);
+			alias num2 = I!(v,1);
+
+			return new Value(num1 ^ num2);
+		}
 	}
 }
