@@ -82,7 +82,7 @@ class Expression {
 	}
 
 	this(Expression l, string op, Expression r, int tp) {
-		writeln("Expression constructor: expression");
+		//writeln("Expression constructor: expression");
 		if (tp==0) type = ExpressionType.normalExpression;
 		else type = ExpressionType.comparisonExpression;
 
@@ -96,7 +96,7 @@ class Expression {
 	}
 
 	this(Argument a) {
-		writeln("Expression constructor: Argument");
+		//writeln("Expression constructor: Argument");
 		type = ExpressionType.argumentExpression;
 
 		arg = a;
@@ -106,7 +106,7 @@ class Expression {
 	}
 
 	this(Statement s) {
-		writeln("Expression constructor: Statement");
+		//writeln("Expression constructor: Statement");
 		type = ExpressionType.functionExpression;
 
 		arg = null;
@@ -115,7 +115,7 @@ class Expression {
 	}
 
 	this(Statements st, bool isDictionary=false, Identifiers ids = null) {
-		writeln("Expression constructor: block");
+		//writeln("Expression constructor: block");
 		if (isDictionary) type = ExpressionType.dictionaryExpression;
 		else type = ExpressionType.blockExpression;
 
