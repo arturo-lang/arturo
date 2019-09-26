@@ -160,7 +160,7 @@ class Argument {
 			//}
 		}
 		else {
-			/*
+			
 			if (isStringInterpolated()) {
 				string interpol = value.content.s;
 
@@ -181,7 +181,7 @@ class Argument {
 				value = new Value(finalString);
 				return value;
 			}
-			else */return value;
+			else return value;
 		}
 	}
 
