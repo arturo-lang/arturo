@@ -1363,6 +1363,58 @@ class Value {
         return new Value(); // Control never reaches this point
     }
 
+    Value opBinary(string op)(in Value rhs) const if (op == "<<") 
+    {
+        if (type==ValueType.numberValue)
+        {
+            if (isBig) {
+                BigInt lhs = content.bi;
+
+                if (rhs.type==ValueType.numberValue) {
+                    if (rhs.isBig) { return new Value(lhs << rhs.content.bi); }
+                    else { return new Value(lhs << rhs.content.i); }
+                }
+                else throw new ERR_OperationNotPermitted("(<<)","Number",rhs.type);
+            }
+            else {
+                long lhs = content.i;
+
+                if (rhs.type==ValueType.numberValue) {
+                    if (rhs.isBig) { return new Value(lhs << rhs.content.bi); }
+                    else { return new Value(lhs << rhs.content.i); }
+                }
+                else throw new ERR_OperationNotPermitted("(<<)","Number",rhs.type);
+            }
+        }
+        else throw new ERR_OperationNotPermitted("(<<)",type,rhs.type);
+    }
+
+    Value opBinary(string op)(in Value rhs) const if (op == ">>") 
+    {
+        if (type==ValueType.numberValue)
+        {
+            if (isBig) {
+                BigInt lhs = content.bi;
+
+                if (rhs.type==ValueType.numberValue) {
+                    if (rhs.isBig) { return new Value(lhs >> rhs.content.bi); }
+                    else { return new Value(lhs >> rhs.content.i); }
+                }
+                else throw new ERR_OperationNotPermitted("(>>)","Number",rhs.type);
+            }
+            else {
+                long lhs = content.i;
+
+                if (rhs.type==ValueType.numberValue) {
+                    if (rhs.isBig) { return new Value(lhs >> rhs.content.bi); }
+                    else { return new Value(lhs >> rhs.content.i); }
+                }
+                else throw new ERR_OperationNotPermitted("(>>)","Number",rhs.type);
+            }
+        }
+        else throw new ERR_OperationNotPermitted("(>>)",type,rhs.type);
+    }
+
     Value opBinary(string op)(in Value rhs) const if (op == "&") 
     {
         if (type==ValueType.numberValue)

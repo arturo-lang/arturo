@@ -303,6 +303,30 @@ class Return_ : Func {
 	}
 }
 
+class Shl_ : Func {
+	this() { super("shl","bitwise left shift",[[nV,nV]],[nV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias num1 = I!(v,0);
+		alias num2 = I!(v,1);
+
+		return new Value(num1 << num2);
+	}
+}
+
+class Shr_ : Func {
+	this() { super("shr","bitwise right shift",[[nV,nV]],[nV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		alias num1 = I!(v,0);
+		alias num2 = I!(v,1);
+
+		return new Value(num1 >> num2);
+	}
+}
+
 class Test_ : Func {
 	this() { super("test__","test function - dev only",[[sV]],[]); }
 	override Value execute(Expressions ex) {
