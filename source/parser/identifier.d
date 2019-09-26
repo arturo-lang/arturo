@@ -82,31 +82,45 @@ class Identifier {
 		else {
 			namespace = null;
 		}
-		writeln("IN IDENTIFIER constructor: " ~ cleanstr);
-		pathContentTypes = [ idPC ];
-		PathContent pc = {cleanstr};
-		pathContents = [ pc ];
-		//pathContents = [];
-		//pathContents ~= {s};
-		//pathContents = [  ];
+		//writeln("IN IDENTIFIER constructor: " ~ cleanstr);
+
+		if (s.indexOf(ARGS)!=-1) {
+			auto m = matchFirst(s, regex(ARGS ~ "(?P<index>[0-9]+)"));
+			if (m["index"]!=[]) {
+				pathContentTypes = [ idPC,  numPC ];
+				PathContent pc = { id:ARGS };
+				PathContent nc = { num:to!int(m["index"]) };
+				pathContents = [ pc, nc ];
+			}
+			else {
+				pathContentTypes = [ idPC ];
+				PathContent pc = { ARGS };
+				pathContents = [ pc ];
+			}
+		
+		} else {
+			pathContentTypes = [ idPC ];
+			PathContent pc = {cleanstr};
+			pathContents = [ pc ];
+		}
 	}
 
 	void add(string s) {
-		writeln("IN IDENTIFIER add: " ~ s);
+		//writeln("IN IDENTIFIER add: " ~ s);
 		pathContentTypes ~= idPC;
 		PathContent pc = {id:s};
 		pathContents ~= pc;
 	}
 
 	void add(int l) {
-		writeln("IN IDENTIFIER add: " ~ to!string(l));
+		//writeln("IN IDENTIFIER add: " ~ to!string(l));
 		pathContentTypes ~= numPC;
 		PathContent pc = {num:l};
 		pathContents ~= pc;
 	}
 
 	void add(Expression e) {
-		writeln("IN IDENTIFIER add: expr");
+		//writeln("IN IDENTIFIER add: expr");
 		pathContentTypes ~= exprPC;
 		PathContent pc = {expr:e};
 		pathContents ~= pc;
@@ -120,17 +134,38 @@ class Identifier {
 		return ret;
 	}
 
-	string inspect() {
-		string[] ret = [];
-		writeln("here");
+	string getFullIdentifier() {
+		string[] ret;
 		for (size_t i=0; i<pathContentTypes.length; i++) {
 			PathContentType pct = pathContentTypes[i];
 			PathContent pc = pathContents[i];
 
-			ret ~= to!string(pct) ~ ":" ~ pc.id;
+			switch (pct) {
+				case idPC: ret ~= pc.id;  break;
+				case numPC: ret ~= to!string(pc.num); break;
+				case exprPC: ret ~= "<expr>"; break;
+				default: break;
+			}
 		}
 
-		writeln("here");
+		return ret.join(".");
+	}
+
+	string inspect() {
+		string[] ret = [];
+		//writeln("here");
+		for (size_t i=0; i<pathContentTypes.length; i++) {
+			PathContentType pct = pathContentTypes[i];
+			PathContent pc = pathContents[i];
+			switch (pct) {
+				case idPC: ret ~= to!string(pct) ~ ":" ~ pc.id;  break;
+				case numPC: ret ~= to!string(pct) ~ ":" ~ to!string(pc.num); break;
+				case exprPC: ret ~= "<expr>"; break;
+				default: break;
+			}
+		}
+
+		//writeln("here");
 
 		return ret.join(", ");
 	}
