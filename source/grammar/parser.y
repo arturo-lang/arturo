@@ -151,6 +151,7 @@ int yywrap() {
 %left POW_SG
 
 %start program
+
 %%
 
 /****************************************
@@ -163,9 +164,10 @@ int yywrap() {
 
 identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID); }
 						| 	IF 																	{ $$ = new_IdentifierWithId("if"); }
+						|	EXCL																{ $$ = new_IdentifierWithId("exec"); }
 						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
 						|	identifier[previous] DOT NUMBER										{ void* i = $previous; add_NumToIdentifier($NUMBER, i); $$ = i; }
-						//| 	identifier[previous] DOT LSQUARE expression RSQUARE 				{ void* i = $previous; add_ExprToIdentifier($expression, i); $$ = i; }
+						| 	identifier[previous] DOT LSQUARE expression RSQUARE					{ void* i = $previous; add_ExprToIdentifier($expression, i); $$ = i; }
 						;
 
 identifiers				: 	identifiers[previous] COMMA identifier 								{ void* i = $previous; add_Identifier(i, $identifier); $$ = i; }
