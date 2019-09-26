@@ -12,23 +12,23 @@ module art.web;
 // Imports
 
 import std.conv;
-import std.file;
+//import std.file;
 import std.net.curl;
-import std.stdio;
-import std.string;
+//import std.stdio;
+//import std.string;
 
-import parser.expression;
+//import parser.expression;
 import parser.expressions;
-import parser.statements;
+//import parser.statements;
 
-import compiler;
+//import compiler;
 
 import value;
 
 import func;
-import globals;
+//import globals;
 
-import panic;
+//import panic;
 
 // Functions
 
