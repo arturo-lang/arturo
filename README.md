@@ -97,7 +97,7 @@ addNumbers [x,y]{
 ### Fibonacci
 
 ```
-maxLimit 20 // $(to.number @0)
+maxLimit 20 // $(toNumber @0)
 
 fib $(memoize [x]{
 	if x<2 { 1 }{
