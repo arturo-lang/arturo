@@ -70,8 +70,8 @@ class Statement {
 	Position pos;
 
 	this(Identifier i) {
-		writeln("HERE");
-		writeln("new statement:  " ~ i.inspect());
+		//writeln("HERE");
+		//writeln("new statement:  " ~ i.inspect());
 		id = i;
 		expressions = new Expressions();
 		type = StatementType.normalStatement;
@@ -79,8 +79,8 @@ class Statement {
 	}
 
 	this(Identifier i, Expressions ex, bool isImmutable=false) {
-		writeln("HEERE:");
-		writeln("new statement:  " ~ i.inspect());
+		//writeln("HEERE:");
+		//writeln("new statement:  " ~ i.inspect());
 		id = i;
 		expressions = ex;
 
@@ -90,9 +90,9 @@ class Statement {
 	}
 
 	this(Expression ex) {
-		writeln("new statement from expression:  ");
+		//writeln("new statement from expression:  ");
 		if (ex.type==aE) {
-			writeln("argument expression");
+			//writeln("argument expression");
 			if (ex.arg.type==ArgumentType.stringArgument) {
 				id = new Identifier("print");
 				expressions = new Expressions();
@@ -105,7 +105,7 @@ class Statement {
 				
 			}
 			else if (ex.arg.type==ArgumentType.identifierArgument) {
-				writeln("id argument");
+				//writeln("id argument");
 				id = ex.arg.identifier;//new Identifier(ex.arg.value.content.s);
 				expressions = new Expressions();
 				type = StatementType.normalStatement;
@@ -113,19 +113,19 @@ class Statement {
 				hasExpressions = false;
 			}
 			else {
-				writeln("other argument");
+				//writeln("other argument");
 				id = null;
 				expression = ex;
 				type = StatementType.expressionStatement;
 			}
 		}
 		else {
-			writeln("other expression");
+			//writeln("other expression");
 			id = null;
 			expression = ex;
 			type = StatementType.expressionStatement;
 		}
-		writeln("new statement from expression: POST");
+		//writeln("new statement from expression: POST");
 	}
 
 	Value executeFunctionCall() {
