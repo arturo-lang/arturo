@@ -16,6 +16,8 @@ import std.conv;
 import std.array;
 
 import parser.argument;
+import parser.identifier;
+import parser.identifiers;
 import parser.expressions;
 import parser.statement;
 import parser.statements;
@@ -31,7 +33,7 @@ extern (C) {
 	void* new_ExpressionFromArgument(Argument a) { return cast(void*)(new Expression(a)); }
 	void* new_ExpressionFromStatement(Statement s) { return cast(void*)(new Expression(s)); }
 	void* new_ExpressionFromStatementBlock(Statements st) { return cast(void*)(new Expression(st)); }
-	void* new_ExpressionFromStatementBlockWithArguments(Statements st,char* ids) { return cast(void*)(new Expression(st,false,to!string(ids))); }
+	void* new_ExpressionFromStatementBlockWithArguments(Statements st,Identifiers ids) { return cast(void*)(new Expression(st,false,ids)); }
 	void* new_ExpressionFromDictionary(Statements st) { return cast(void*)(new Expression(st,true)); }
 	void* new_ExpressionFromArray(Expressions ar) { return cast(void*)(new Expression(ar)); }
 }
@@ -72,6 +74,7 @@ class Expression {
 	Statement statement;
 	Statements statements;
 	string[] function_arguments;
+	Identifiers identifiers;
 	Expressions expressions;
 
 	this() {
@@ -79,6 +82,7 @@ class Expression {
 	}
 
 	this(Expression l, string op, Expression r, int tp) {
+		writeln("Expression constructor: expression");
 		if (tp==0) type = ExpressionType.normalExpression;
 		else type = ExpressionType.comparisonExpression;
 
@@ -92,14 +96,17 @@ class Expression {
 	}
 
 	this(Argument a) {
+		writeln("Expression constructor: Argument");
 		type = ExpressionType.argumentExpression;
 
 		arg = a;
 		statement = null;
 		statements = null;
+		writeln("HERE");
 	}
 
 	this(Statement s) {
+		writeln("Expression constructor: Statement");
 		type = ExpressionType.functionExpression;
 
 		arg = null;
@@ -107,7 +114,8 @@ class Expression {
 		statements = null;
 	}
 
-	this(Statements st, bool isDictionary=false, string ids = null) {
+	this(Statements st, bool isDictionary=false, Identifiers ids = null) {
+		writeln("Expression constructor: block");
 		if (isDictionary) type = ExpressionType.dictionaryExpression;
 		else type = ExpressionType.blockExpression;
 
@@ -116,7 +124,8 @@ class Expression {
 		statements = st;
 
 		if (ids !is null) {
-			function_arguments = ids.split(",");
+			identifiers = ids;
+			function_arguments = []; // ids.split(",");
 		}
 		else {
 			function_arguments = [];
