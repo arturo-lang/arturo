@@ -102,7 +102,6 @@ class Expression {
 		arg = a;
 		statement = null;
 		statements = null;
-		writeln("HERE");
 	}
 
 	this(Statement s) {
