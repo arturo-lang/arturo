@@ -18,6 +18,8 @@ import std.string;
 import std.algorithm;
 import std.regex;
 
+import parser.identifier;
+
 import value;
 
 import globals;
@@ -33,6 +35,7 @@ import var;
 
 extern (C) {
 	void* new_Argument(char* t, char* v) { return cast(void*)(new Argument(to!string(t),to!string(v))); }
+	void* new_ArgumentFromIdentifier(Identifier iden) { return cast(void*)(new Argument(iden)); }
 	int argument_Interpolated(void* a) { return (cast(Argument)(a)).isStringInterpolated(); }
 }
 
@@ -73,6 +76,14 @@ class Argument {
 
 	ArgumentType type;
 	Value value;
+	Identifier identifier;
+
+	this(Identifier iden) {
+		writeln("In argument constructor");
+		type = ArgumentType.identifierArgument;
+		identifier = iden;
+		writeln("AFTER");
+	}
 
 	this(string t, string v) {
 		debug writeln("NEW argument (type: " ~ t ~ ", value: " ~ v ~ ")");
@@ -134,8 +145,10 @@ class Argument {
 
 	Value getValue() {
 		if (type==ArgumentType.identifierArgument) {
+			writeln(identifier.inspect());
 			//writeln("looking for " ~ value.content.s);
-			Var symbol = Glob.varGet(value.content.s);
+			Var symbol = Glob.varGet(identifier.getId());
+			//Var symbol = Glob.varGet(value.content.s);
 			//writeln("symbol: " ~ to!string(symbol));
 			//writeln("HERE");
 			//writeln("symbol value: " ~ to!string(symbol.value));

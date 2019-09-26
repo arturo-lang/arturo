@@ -17,6 +17,7 @@ import std.conv;
 import std.stdio;
 import std.string;
 
+import parser.identifier;
 import parser.argument;
 import parser.expression;
 import parser.expressions;
@@ -38,10 +39,10 @@ import stack;
 // C Interface
 
 extern (C) {
-	void* new_Statement(char* id) { return cast(void*)(new Statement(to!string(id))); }
+	void* new_Statement(Identifier id) { return cast(void*)(new Statement(id)); }
 	void* new_StatementFromExpression(Expression ex) { return cast(void*)(new Statement(ex)); }
-	void* new_StatementWithExpressions(char* id, Expressions ex) { return cast(void*)(new Statement(to!string(id),ex)); }
-	void* new_ImmutableStatementWithExpressions(char* id, Expressions ex) { return cast(void*)(new Statement(to!string(id),ex,true)); }
+	void* new_StatementWithExpressions(Identifier id, Expressions ex) { return cast(void*)(new Statement(id,ex)); }
+	void* new_ImmutableStatementWithExpressions(Identifier id, Expressions ex) { return cast(void*)(new Statement(id,ex,true)); }
 	void set_Position(Statement x, Position p) { x.pos = p; }
 }
 
@@ -58,23 +59,28 @@ enum StatementType : string
 
 class Statement {
 
-	string id;
+	Identifier id;
 	Expressions expressions;
 	StatementType type;
 	Expression expression;
 	bool immut;
 	bool hasExpressions;
 
+
 	Position pos;
 
-	this(string i) {
+	this(Identifier i) {
+		writeln("HERE");
+		writeln("new statement:  " ~ i.inspect());
 		id = i;
 		expressions = new Expressions();
 		type = StatementType.normalStatement;
 		hasExpressions = false;
 	}
 
-	this(string i, Expressions ex, bool isImmutable=false) {
+	this(Identifier i, Expressions ex, bool isImmutable=false) {
+		writeln("HEERE:");
+		writeln("new statement:  " ~ i.inspect());
 		id = i;
 		expressions = ex;
 
@@ -84,9 +90,10 @@ class Statement {
 	}
 
 	this(Expression ex) {
+		writeln("new statement from expression:  ");
 		if (ex.type==aE) {
 			if (ex.arg.type==ArgumentType.stringArgument) {
-				id = "print";
+				id = new Identifier("print");
 				expressions = new Expressions();
 				expressions.add(ex);
 
@@ -97,7 +104,7 @@ class Statement {
 				
 			}
 			else if (ex.arg.type==ArgumentType.identifierArgument) {
-				id = ex.arg.value.content.s;
+				id = ex.arg.identifier;//new Identifier(ex.arg.value.content.s);
 				expressions = new Expressions();
 				type = StatementType.normalStatement;
 				immut = false;
@@ -117,7 +124,7 @@ class Statement {
 	}
 
 	Value executeFunctionCall() {
-		return Glob.funcGet(id).execute(expressions);
+		return Glob.funcGet(id.getId()).execute(expressions);
 	}
 
 	Value executeUserFunctionCall(Func* f,Value* v) {
@@ -176,14 +183,14 @@ class Statement {
 */
 	Value executeAssignment(Value* v) {
 
-		//writeln("Executing assignment");
+		writeln("Executing assignment");
 		if (v is null) {
 
-			//writeln("ASSIGNMENT: (before)" ~ id);
+			writeln("ASSIGNMENT: (before)" ~ id.getId());
 
-			if (expressions.lst.length==1 && expressions.lst[0].type==ExpressionType.dictionaryExpression) {
+			if (expressions.lst.length==1) {
 				//writeln("FOUND CLASS_DEF: " ~ id);
-				Glob.classdefs[id] = expressions;
+				Glob.symboldefs[id.getId()] = expressions;
 			}
 			//writeln("Found assignment: " ~ id);
 			Value ev = expressions.evaluate();
@@ -192,9 +199,9 @@ class Statement {
 			//writeln("assigning (new): " ~ to!string(cast(void*)(ev)));
 			//writeln("ASSIGNMENT: " ~ id ~ " ==> (0x" ~ to!string(cast(void*)ev) ~ ") = " ~ ev.stringify());
 			if (ev.type==fV) {
-				ev.content.f.name = id;
+				ev.content.f.name = id.getId();
 			}
-			Glob.varSet(id,ev,immut);
+			Glob.varSet(id.getId(),ev,immut);
 			//debug writeln("value= (" ~ id ~ ") -> " ~	ev.stringify());
 			
 
@@ -212,12 +219,12 @@ class Statement {
 				//writeln("is dictionary");
 				//writeln("setting value: " ~ id ~ " to: " ~ ev.stringify() ~ " for: " ~ to!string(cast(void*)(*v)));
 				if (ev.type==fV) {
-					ev.content.f.name = id;
+					ev.content.f.name = id.getId();
 				}
-				v.setValueForDict(id, ev);
+				v.setValueForDict(id.getId(), ev);
 			}
 			else { // is array
-				v.content.a[(new Value(id)).content.i] = ev;
+				v.content.a[(new Value(id.getId())).content.i] = ev;
 			}
 			//writeln("HERE");
 			return ev;
@@ -226,40 +233,40 @@ class Statement {
 	}
 
 	Value execute(Value* v) {
-		//if (v is null) writeln("Executing statement: " ~ id ~ ", value: null");
-		//else  writeln("Executing statement: " ~ id ~ ", value: " ~ to!string(cast(void*)(*v)));
+		if (v is null) writeln("Executing statement: " ~ id.inspect() ~ ", value: null");
+		else  writeln("Executing statement: " ~ id.inspect() ~ ", value: " ~ to!string(cast(void*)(*v)));
 
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
 
-					if (Glob.funcExists(id)) return executeFunctionCall();  // system function
+					if (Glob.funcExists(id.getId())) return executeFunctionCall();  // system function
 					else {
-						bool isDictionaryKey = id.indexOf(".")!=-1;
+						bool isDictionaryKey = id.getId().indexOf(".")!=-1;
 						
-						Var sym = Glob.varGet(id);
+						Var sym = Glob.varGet(id.getId());
 
-						//writeln("sym :" ~ to!string(sym));
+						writeln("sym :" ~ to!string(sym));
 						
 						if (hasExpressions) {
 							if (sym is null) return executeAssignment(v);
 							else {
 								if (sym.value.type==fV) {
 									if (sym.immut && !immut) return executeUserFunctionCall(&sym.value.content.f,v);
-									else throw new ERR_ModifyingImmutableVariableError(id);
+									else throw new ERR_ModifyingImmutableVariableError(id.getId());
 								}
 								else {
 									if (isDictionaryKey) { 
-										Value symParent = Glob.getParentDictForSymbol(id);
+										Value symParent = Glob.getParentDictForSymbol(id.getId());
 										if (symParent !is null) {
-											auto ids = id.split(".");
-											id = ids[ids.length-1];
+											auto ids = id.getId().split(".");
+											id = new Identifier(ids[ids.length-1]);
 											return executeAssignment(&symParent);
 										}
-										else throw new ERR_SymbolNotFound(id);
+										else throw new ERR_SymbolNotFound(id.getId());
 									}
 									else {
-										if (sym.immut) throw new ERR_ModifyingImmutableVariableError(id);
+										if (sym.immut) throw new ERR_ModifyingImmutableVariableError(id.getId());
 										else return executeAssignment(v);
 									}
 								}
@@ -270,7 +277,7 @@ class Statement {
 								if (sym.immut) return executeUserFunctionCall(&sym.value.content.f,v);
 								else return sym.value;
 							}
-							else return new Expression(new Argument("id",id)).evaluate();
+							else return new Expression(new Argument(id)).evaluate();
 						}
 					}
 
@@ -286,7 +293,7 @@ class Statement {
 	}
 
 	void inspect() {
-		writeln("statement: " ~ id ~ " with expressions:");
+		writeln("statement: " ~ id.getId() ~ " with expressions:");
 		//expressions.inspect();
 	}
 
