@@ -1,0 +1,77 @@
+#!../arturo/arturo
+"========================="
+"Brainf*ck compiler"
+"In Art:uro"
+"========================="
+
+Brainfuck #{
+
+    tape                    #(0)
+    dataPointer             0  
+    instructionPointer      0
+    code                    ""
+    codeLength              0
+    jumps                   #{}
+
+    init: [file]{
+        code $(file.read file)
+        codeLength $(size code)
+        jumps $(precomputeJumps)
+    }
+
+    precomputeJumps: {
+        stack                   #()
+        jumphash                #{}
+        instrPointer            0
+
+        loop instrPointer<codeLength {
+            command $(get $(characters code) instrPointer)
+            if command="[" { stack stack+instrPointer } {
+                if command="]" {
+                    target $(last stack)
+                    delete.by stack $(size stack)-1
+                    set jumphash $(to.string target) instrPointer
+                    set jumphash $(to.string instrPointer) target
+                }
+            }
+            instrPointer instrPointer+1
+        }
+        jumphash
+    }
+
+    stateIsValid: {
+        all #(0<=dataPointer dataPointer<$(size tape) 0<=instructionPointer instructionPointer<codeLength)
+    }
+
+    go: {
+        loop $(stateIsValid) {
+            command $(get $(characters code) instructionPointer)
+
+            | command="+" { set tape dataPointer $(get tape dataPointer)+1 }
+            | command="-" { set tape dataPointer $(get tape dataPointer)-1 }
+            | command=">" { dataPointer dataPointer+1, if dataPointer=$(size tape) { tape tape+0 } }
+            | command="<" { dataPointer dataPointer-1 }
+            | command="." { print $(char $(get tape dataPointer)) true }
+            | command="," { 
+                inp $(to.number input)
+                | inp=13 { inp 10 }
+                | inp=3  { panic "something went wrong!" }
+                set tape dataPointer inp
+            }
+            | command="[" {
+                if $(get tape dataPointer)=0 { instructionPointer $(get jumps $(to.string instructionPointer)) }
+            }
+            | command="]" {
+                if $(get tape dataPointer)!=0 { instructionPointer $(get jumps $(to.string instructionPointer)) }
+            }
+            
+            instructionPointer
+        }   
+    }
+
+}
+
+if $(size @)<1 { panic "Not enough arguments - Usage: bfc <script>" }
+
+compiler $(new "Brainfuck" #(@0))
+compiler.go
