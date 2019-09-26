@@ -1,34 +1,35 @@
 {
+	"name": "arturo",
+	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
 	"authors": [
 		"drkameleon"
 	],
-	"copyright": "Copyright © 2019, drkameleon",
+	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
+	"license": "MIT",
 	"dependencies": {
-		"dyaml": "~>0.8.0",
-		"vibe-d": "~>0.8.5"
+		"dmarkdown": "~>0.3.0",
+		"dyaml": "~>0.8.0"
 	},
-	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
 	"dflags-dmd": [
 		"-J source/resources",
 		"-noboundscheck"
 	],
-	"dflags-ldc2": [
+	"dflags-ldc": [
+		"-J=source/resources",
 		"-flto=full"
+	],
+	"sourceFiles": [
+		"obj/lexer.o",
+		"obj/parser.o"
 	],
 	"lflags-dmd": [
 		"-lcurl"
 	],
-	"license": "MIT",
-	"name": "arturo",
 	"preBuildCommands": [
 		"scripts/make_parser.sh",
 		"scripts/update_build.sh"
 	],
 	"postBuildCommands": [
 		"strip arturo"
-	],
-	"sourceFiles": [
-		"obj/lexer.o",
-		"obj/parser.o"
 	]
 }

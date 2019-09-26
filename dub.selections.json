@@ -5,6 +5,7 @@
 		"botan": "1.12.10",
 		"botan-math": "1.0.3",
 		"diet-ng": "1.6.0",
+		"dmarkdown": "0.3.0",
 		"dyaml": "0.8.0",
 		"eventcore": "0.8.46",
 		"libasync": "0.8.4",
