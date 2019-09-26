@@ -35,9 +35,9 @@ Functions - or blocks of statements enclosed in `{}` - can be anything. Assign t
 
 As already mentioned, everything is a statement of the form `ID <expressions>`. So, how does this work?
 
-- Is your ID predefined? Then if it's a function it'll perform a function call. If it's a different symbol, you'll redefine it.
-- Is your ID not defined? Then the right-hand values will be assigned to your ID, pretty much like a regular variable assignment/initialization.
-- Do you want to define a constant?  Just suffix your ID with `:` when using it for the first time
+- Is it the first time you are declaring this symbol? Then, the right-hand value will be assigned.
+- Is it not the first time? Then again, the right-hand value will be assigned.
+- Do you want to call a function you have declared, by name? Just prefix it with an exclamation mark. E.g.: `!myFunc "some arg" "another arg"`
 - Do you want to use the result of a function call as part of an expression? Just enclose the function call in `$(...)`	E.g.: `print $(reverse #(1 2 3))`
 
 Simple, isn't it?
@@ -81,7 +81,7 @@ dict 	#{
 ### Declaring a function
 
 ```
-addNumbers: {
+addNumbers {
 	@0 + @1
 }
 ```
@@ -89,7 +89,7 @@ addNumbers: {
 or...
 
 ```
-addNumbers: [x,y]{
+addNumbers [x,y]{
 	x + y
 }
 ```
@@ -99,14 +99,14 @@ addNumbers: [x,y]{
 ```
 maxLimit 20 // $(to.number @0)
 
-fib: $(memoize [x]{
+fib $(memoize [x]{
 	if x<2 { 1 }{
-		$(fib x-1) + $(fib x-2)
+		$(!fib x-1) + $(!fib x-2)
 	} 
 })
 
 loop $(range 0 maxLimit) {
-	print $(fib @)
+	print $(!fib @)
 }
 ```
 
@@ -115,143 +115,155 @@ The Library
 
 | Function | Description | Syntax |
 | :---         | :---      | :---  |
-| **acos** | get 'acos' for given number | [Number or Real] -> Real |
-| **acosh** | get 'acosh' for given number | [Number or Real] -> Real |
-| **all** | check if all elements of array are true or pass the condition of given function | [Array or Array/Function] -> Boolean |
-| **and** | if all conditions are true, return true, otherwise return false | [Boolean/Boolean] -> Boolean |
-| **any** | check if any of the array's elements is true or passes the condition of given function | [Array or Array/Function] -> Boolean |
-| **asin** | get 'asin' for given number | [Number or Real] -> Real |
-| **asinh** | get 'asinh' for given number | [Number or Real] -> Real |
-| **atan** | get 'atan' for given number | [Number or Real] -> Real |
-| **atanh** | get 'atanh' for given number | [Number or Real] -> Real |
-| **avg** | get average value from array | [Array] -> Number or Real |
-| **capitalize** | capitalize given string | [String] -> String |
-| **ceil** | get 'ceil' for given number | [Number or Real] -> Real |
-| **characters** | get string characters as an array | [String] -> Array |
-| **contains** | check if collection contains given element | [String/String or Array/Any or Dictionary/Any] -> Boolean |
-| **convert.markdown** | convert given markdown string to html | [String] -> String |
-| **cos** | get 'cos' for given number | [Number or Real] -> Real |
-| **cosh** | get 'cosh' for given number | [Number or Real] -> Real |
-| **csv.parse** | get object by parsing given CSV string, optionally using headers | [String or String/Boolean] -> Array |
-| **date.now** | get current date into string | [] -> String |
-| **datetime.now** | get current date and time into string | [] -> String |
-| **day** | get day from date string | [String] -> String |
-| **delete** | delete collection element by using given value | [Array/Any or Dictionary/Any] -> Array or Dictionary |
-| **delete.by** | delete collection element by using given index/key | [Array/Number or Dictionary/String] -> Array or Dictionary |
-| **difference** | get difference of two given arrays | [Array/Array] -> Array |
-| **ends.with** | check if string ends with given string | [String/String] -> Boolean |
-| **env** | get system environment variables as a dictionary | [] -> Dictionary |
-| **even** | check if given number is even | [Number] -> Boolean |
-| **exec** | execute given function with optional array of arguments | [Function or Function/Array] -> Any |
-| **exists** | check if given symbol exists | [String] -> Boolean |
-| **exp** | get 'exp' for given number | [Number or Real] -> Real |
-| **file.exists** | check if file exists at given path | [String] -> Boolean |
-| **file.read** | read string from file at given path | [String] -> String |
-| **file.write** | write string to file at given path | [String/String] -> Null |
-| **filter** | get array after filtering each element using given function | [Array/Function] -> Array |
-| **first** | get first element from array | [Array] -> Any |
-| **floor** | get 'floor' for given number | [Number or Real] -> Real |
-| **fold** | fold array using seed value and the given function | [Array/Any/Function] -> Any |
-| **gcd** | calculate greatest common divisor of values from array | [Array] -> Number |
-| **get** | get element from collection using given index/key | [Array/Number or Dictionary/String] -> Any |
-| **has.key** | check if dictionary has key | [Dictionary/String] -> Boolean |
-| **hash** | get hash value for given value | [Any] -> String |
-| **if** | if condition is true, execute given function - else optionally execute alternative function | [Boolean/Function or Boolean/Function/Function] -> Any |
-| **import** | import external source file from path | [String] -> Any |
-| **input** | read line from stdin | [] -> String or Any |
-| **intersection** | get intersection of two given arrays | [Array/Array] -> Array |
-| **is.alpha** | check if all characters in given string are ASCII letters | [String] -> Boolean |
-| **is.alphanumeric** | check if all characters in given string are ASCII letters or digits | [String] -> Boolean |
-| **is.control** | check if all characters in given string are control characters | [String] -> Boolean |
-| **is.digit** | check if all characters in given string are digits | [String] -> Boolean |
-| **is.directory** | check if given path is a directory | [String] -> Boolean |
-| **is.empty** | check if collection is empty | [String or Array or Dictionary] -> Boolean |
-| **is.file** | check if given path is a file | [String] -> Boolean |
-| **is.lowercase** | check if all characters in given string are lowercase | [String] -> Boolean |
-| **is.match** | check if string matches given regex | [String/String] -> Boolean |
-| **is.symlink** | check if given path is a symlink | [String] -> Boolean |
-| **is.uppercase** | check if all characters in given string are uppercase | [String] -> Boolean |
-| **is.whitespace** | check if all characters in given string are whitespace | [String] -> Boolean |
-| **join** | get string by joining array elements with given delimiter | [Array/String] -> String |
-| **json.generate** | get JSON string from given object | [Any] -> String |
-| **json.parse** | get object by parsing given JSON string | [String] -> Any |
-| **keys** | get array of dictionary keys | [Dictionary] -> Array |
-| **last** | get last element from array | [Array] -> Any |
-| **lazy** | get a lazy-evaluated expression | [Any] -> Function |
-| **levenshtein** | get Levenshtein distance between two given strings | [String/String] -> Number |
-| **lines** | get lines from string as an array | [String] -> Array |
-| **ln** | get 'ln' for given number | [Number or Real] -> Real |
-| **log10** | get 'log10' for given number | [Number or Real] -> Real |
-| **loop** | execute given function for each element in array or dictionary, or while condition is true | [Array/Function or Dictionary/Function or Boolean/Function] -> Any |
-| **lowercase** | lowercase given string | [String] -> String |
-| **map** | get array after executing given function for each element | [Array/Function] -> Array |
-| **matches** | get array of matches for string using given regex | [String/String] -> Array |
-| **max** | get maximum value from array | [Array] -> Number or Real |
-| **md5** | get MD5 hash of given string data | [String] -> String |
-| **median** | get median value from array | [Array] -> Number or Real |
-| **memoize** | get a memoized function | [Function] -> Function |
-| **min** | get minimum value from array | [Array] -> Number or Real |
-| **month** | get month from date string | [String] -> String |
-| **not** | if the conditions is true, return false, otherwise return true | [Boolean] -> Boolean |
-| **object** | get object for given symbol name | [String] -> Any or Null |
-| **odd** | check if given number is odd | [Number] -> Boolean |
-| **or** | if any one of the conditions is true, return true, otherwise return false | [Boolean/Boolean] -> Boolean |
-| **pad.center** | center justify string by adding padding | [String/Number] -> String |
-| **pad.left** | left justify string by adding padding | [String/Number] -> String |
-| **pad.right** | right justify string by adding padding | [String/Number] -> String |
-| **panic** | exit program printing given error message | [String] ->  |
-| **path.contents** | get array of directory contents at given path | [ or String] -> Array |
-| **path.create** | create directory at given path | [String] -> Boolean |
-| **path.current** | get current directory path | [] -> String |
-| **path.directory** | get directory from given path | [String] -> String |
-| **path.extension** | get extension from given path | [String] -> String |
-| **path.filename** | get filename from given path | [String] -> String |
-| **path.normalize** | get normalized path from given path | [String] -> String |
-| **permutations** | get all permutations for given array | [Array] -> Array |
-| **print** | print value of given expression to screen | [Any] -> Any |
-| **product** | return product of elements of given array | [Array] -> Number |
-| **random** | generate random number in given range (from..to) | [Number/Number] -> Number |
-| **range** | get array from given range (from..to) with optional step | [Number/Number or Number/Number/Number] -> Array |
-| **replace** | get string by replacing occurences of string with another string | [String/String/String] -> String |
-| **return** | return given value | [Any] -> Any |
-| **reverse** | reverse given array | [Array] -> Array |
-| **round** | get 'round' for given number | [Number or Real] -> Real |
-| **sample** | get random sample from given array | [Array or Array/Number] -> Any or Array or Null |
-| **set** | set collection element using given index/key | [Array/Number/Any or Dictionary/String/Any] -> Array or Dictionary |
-| **sha256** | get SHA256 hash of given string data | [String] -> String |
-| **sha512** | get SHA512 hash of given string data | [String] -> String |
-| **shell** | execute given shell command | [String] -> String or Boolean |
-| **shuffle** | shuffle given array | [Array] -> Array |
-| **sin** | get 'sin' for given number | [Number or Real] -> Real |
-| **sinh** | get 'sinh' for given number | [Number or Real] -> Real |
-| **size** | get size of collection | [String or Array or Dictionary] -> Number |
-| **sort** | sort given array | [Array] -> Array |
-| **spawn** | spawn process using given string and get process id | [String] -> Number |
-| **split** | split string by given separator or regex | [String/String] -> Array |
-| **sqrt** | get 'sqrt' for given number | [Number or Real] -> Real |
-| **starts.with** | check if string starts with given string | [String/String] -> Boolean |
-| **strip** | strip spaces from given string | [String] -> String |
-| **sum** | return sum of elements of given array | [Array] -> Number |
-| **tail** | get last section of array excluding the first element | [Array] -> Array |
-| **tan** | get 'tan' for given number | [Number or Real] -> Real |
-| **tanh** | get 'tanh' for given number | [Number or Real] -> Real |
-| **time.now** | get current time into string | [] -> String |
-| **to.number** | convert given value to its corresponding number value | [Real or String or Boolean] -> Number or Real |
-| **to.string** | convert given number/boolean/array/dictionary to its corresponding string value | [Number or Real or Boolean or Array or Dictionary] -> String |
-| **trace** | trace executing of given expression | [Any] -> Any |
-| **type** | get type for given object | [Any] -> String |
-| **union** | get union of two given arrays | [Array/Array] -> Array |
-| **unique** | get array by removing duplicates | [Array] -> Array |
-| **uppercase** | uppercase given string | [String] -> String |
-| **uuid** | generate random UUID string | [] -> String |
-| **web.post** | perform POST request using given URL and data | [String/String] -> String |
-| **web.read** | download string contents from webpage using given URL | [String] -> String |
-| **words** | get words from string as an array | [String] -> Array |
-| **xml.check** | check integrity of XML input using given string | [String] -> Boolean |
-| **xor** | if only one of the conditions is true, return true, otherwise return false | [Boolean/Boolean] -> Boolean |
-| **yaml.generate** | get YAML string from given object | [Any] -> String |
-| **yaml.parse** | get object by parsing given YAML string | [String] -> Any |
-| **zip** | return array of element pairs using given arrays | [Array/Array] -> Array |
+| **array:all** | check if all elements of array are true or pass the condition of given function | [Array or Array/Function] -> Boolean |
+| **array:any** | check if any of the array's elements is true or passes the condition of given function | [Array or Array/Function] -> Boolean |
+| **array:avg** | get average value from array | [Array] -> Number or Real |
+| **array:count** | count how many of the array's elements is true or passes the condition of given function | [Array or Array/Function] -> Number |
+| **array:difference** | get difference of two given arrays | [Array/Array] -> Array |
+| **array:filter** | get array after filtering each element using given function | [Array/Function] -> Array |
+| **array:first** | get first element from array | [Array] -> Any |
+| **array:fold** | fold array using seed value and the given function | [Array/Any/Function] -> Any |
+| **array:gcd** | calculate greatest common divisor of values from array | [Array] -> Number |
+| **array:intersection** | get intersection of two given arrays | [Array/Array] -> Array |
+| **array:join** | get string by joining array elements with given delimiter | [Array/String] -> String |
+| **array:last** | get last element from array | [Array] -> Any |
+| **array:map** | get array after executing given function for each element | [Array/Function] -> Array |
+| **array:max** | get maximum value from array | [Array] -> Number or Real |
+| **array:median** | get median value from array | [Array] -> Number or Real |
+| **array:min** | get minimum value from array | [Array] -> Number or Real |
+| **array:permutations** | get all permutations for given array | [Array] -> Array |
+| **array:product** | return product of elements of given array | [Array] -> Number |
+| **array:range** | get array from given range (from..to) with optional step | [Number/Number or Number/Number/Number] -> Array |
+| **array:reverse** | reverse given array | [Array] -> Array |
+| **array:sample** | get random sample from given array | [Array or Array/Number] -> Any or Array or Null |
+| **array:shuffle** | shuffle given array | [Array] -> Array |
+| **array:sort** | sort given array | [Array] -> Array |
+| **array:sum** | return sum of elements of given array | [Array] -> Number |
+| **array:tail** | get last section of array excluding the first element | [Array] -> Array |
+| **array:union** | get union of two given arrays | [Array/Array] -> Array |
+| **array:unique** | get array by removing duplicates | [Array] -> Array |
+| **array:zip** | return array of element pairs using given arrays | [Array/Array] -> Array |
+| **collection:contains** | check if collection contains given element | [String/String or Array/Any or Dictionary/Any] -> Boolean |
+| **collection:delete** | delete collection element by using given value | [Array/Any or Dictionary/Any] -> Array or Dictionary |
+| **collection:deleteBy** | delete collection element by using given index/key | [Array/Number or Dictionary/String] -> Array or Dictionary |
+| **collection:find** | return index of string/element within string/array, or -1 if not found | [String/String or Array/Any] -> Number |
+| **collection:get** | get element from collection using given index/key | [Array/Number or Dictionary/String] -> Any |
+| **collection:isEmpty** | check if collection is empty | [String or Array or Dictionary] -> Boolean |
+| **collection:set** | set collection element using given index/key | [Array/Number/Any or Dictionary/String/Any] -> Array or Dictionary |
+| **collection:size** | get size of collection | [String or Array or Dictionary] -> Number |
+| **collection:slice** | get slice of array/string given a starting and/or end point | [Array/Number or Array/Number/Number or String/Number or String/Number/Number] -> Array or String |
+| **convert:toBin** | convert given number to its corresponding binary string value | [Number] -> String |
+| **convert:toHex** | convert given number to its corresponding hexadecimal string value | [Number] -> String |
+| **convert:toNumber** | convert given value to its corresponding number value | [Real or String or Boolean] -> Number or Real |
+| **convert:toOct** | convert given number to its corresponding octal string value | [Number] -> String |
+| **convert:toString** | convert given number/boolean/array/dictionary to its corresponding string value | [Number or Real or Boolean or Array or Dictionary] -> String |
+| **core:and** | bitwise/logical AND | [Boolean/Boolean or Number/Number] -> Boolean or Number |
+| **core:exec** | execute given function with optional array of arguments | [Function or Function/Any...] -> Any |
+| **core:if** | if condition is true, execute given function - else optionally execute alternative function | [Boolean/Function or Boolean/Function/Function] -> Any |
+| **core:import** | import external source file from path | [String] -> Any |
+| **core:input** | read line from stdin | [] -> String or Any |
+| **core:lazy** | get a lazy-evaluated expression | [Any] -> Function |
+| **core:loop** | execute given function for each element in array or dictionary, or while condition is true | [Array/Function or Dictionary/Function or Boolean/Function] -> Any |
+| **core:memoize** | get a memoized function | [Function] -> Function |
+| **core:new** | copy given object and return a new duplicate. one | [String or String/Array] -> Any |
+| **core:not** | bitwise/logical NOT | [Boolean or Number] -> Boolean or Number |
+| **core:or** | bitwise/logical OR | [Boolean/Boolean or Number/Number] -> Boolean or Number |
+| **core:panic** | exit program printing given error message | [String] ->  |
+| **core:print** | print value of given expression to screen, optionally suppressing newlines | [Any or Any/Boolean] -> Any |
+| **core:return** | return given value | [Any] -> Any |
+| **core:shl** | bitwise left shift | [Number/Number] -> Number |
+| **core:shr** | bitwise right shift | [Number/Number] -> Number |
+| **core:trace** | trace executing of given expression | [Any] -> Any |
+| **core:xor** | bitwise/logical XOR | [Boolean/Boolean or Number/Number] -> Boolean or Number |
+| **crypto:hash** | get hash value for given value | [Any] -> String |
+| **crypto:md5** | get MD5 hash of given string data | [String] -> String |
+| **crypto:sha256** | get SHA256 hash of given string data | [String] -> String |
+| **crypto:sha512** | get SHA512 hash of given string data | [String] -> String |
+| **csv:parse** | get object by parsing given CSV string, optionally using headers | [String or String/Boolean] -> Array |
+| **date:dateNow** | get current date into string | [] -> String |
+| **date:datetimeNow** | get current date and time into string | [] -> String |
+| **date:day** | get day from date string | [String] -> String |
+| **date:month** | get month from date string | [String] -> String |
+| **date:timeNow** | get current time into string | [] -> String |
+| **dictionary:hasKey** | check if dictionary has key | [Dictionary/String] -> Boolean |
+| **dictionary:keys** | get array of dictionary keys | [Dictionary] -> Array |
+| **file:exists** | check if file exists at given path | [String] -> Boolean |
+| **file:read** | read string from file at given path | [String] -> String |
+| **file:write** | write string to file at given path | [String/String] -> Null |
+| **html:markdownToHtml** | convert given markdown string to html | [String] -> String |
+| **json:generate** | get JSON string from given object | [Any] -> String |
+| **json:parse** | get object by parsing given JSON string | [String] -> Any |
+| **number:acos** | get 'acos' for given number | [Number or Real] -> Real |
+| **number:acosh** | get 'acosh' for given number | [Number or Real] -> Real |
+| **number:asin** | get 'asin' for given number | [Number or Real] -> Real |
+| **number:asinh** | get 'asinh' for given number | [Number or Real] -> Real |
+| **number:atan** | get 'atan' for given number | [Number or Real] -> Real |
+| **number:atanh** | get 'atanh' for given number | [Number or Real] -> Real |
+| **number:ceil** | get 'ceil' for given number | [Number or Real] -> Real |
+| **number:cos** | get 'cos' for given number | [Number or Real] -> Real |
+| **number:cosh** | get 'cosh' for given number | [Number or Real] -> Real |
+| **number:even** | check if given number is even | [Number] -> Boolean |
+| **number:exp** | get 'exp' for given number | [Number or Real] -> Real |
+| **number:floor** | get 'floor' for given number | [Number or Real] -> Real |
+| **number:ln** | get 'ln' for given number | [Number or Real] -> Real |
+| **number:log10** | get 'log10' for given number | [Number or Real] -> Real |
+| **number:odd** | check if given number is odd | [Number] -> Boolean |
+| **number:random** | generate random number in given range (from..to) | [Number/Number] -> Number |
+| **number:round** | get 'round' for given number | [Number or Real] -> Real |
+| **number:sin** | get 'sin' for given number | [Number or Real] -> Real |
+| **number:sinh** | get 'sinh' for given number | [Number or Real] -> Real |
+| **number:sqrt** | get 'sqrt' for given number | [Number or Real] -> Real |
+| **number:tan** | get 'tan' for given number | [Number or Real] -> Real |
+| **number:tanh** | get 'tanh' for given number | [Number or Real] -> Real |
+| **path:createDir** | create directory at given path | [String] -> Boolean |
+| **path:currentDir** | get current directory path | [] -> String |
+| **path:dir** | get array of directory contents at given path | [ or String] -> Array |
+| **path:getDir** | get directory from given path | [String] -> String |
+| **path:getExt** | get extension from given path | [String] -> String |
+| **path:getFilename** | get filename from given path | [String] -> String |
+| **path:isDirectory** | check if given path is a directory | [String] -> Boolean |
+| **path:isFile** | check if given path is a file | [String] -> Boolean |
+| **path:isSymlink** | check if given path is a symlink | [String] -> Boolean |
+| **path:normalizePath** | get normalized path from given path | [String] -> String |
+| **reflection:object** | get object for given symbol name | [String] -> Any or Null |
+| **reflection:pointer** | get pointer location for object | [Any or String] ->  |
+| **reflection:symbolExists** | check if given symbol exists | [String] -> Boolean |
+| **reflection:syms** | get list of declared symbols | [ or String] ->  |
+| **reflection:type** | get type for given object | [Any] -> String |
+| **string:capitalize** | capitalize given string | [String] -> String |
+| **string:char** | get ASCII character from given char code | [Number] -> String |
+| **string:characters** | get string characters as an array | [String] -> Array |
+| **string:endsWith** | check if string ends with given string | [String/String] -> Boolean |
+| **string:isAlpha** | check if all characters in given string are ASCII letters | [String] -> Boolean |
+| **string:isAlphanumeric** | check if all characters in given string are ASCII letters or digits | [String] -> Boolean |
+| **string:isControl** | check if all characters in given string are control characters | [String] -> Boolean |
+| **string:isDigit** | check if all characters in given string are digits | [String] -> Boolean |
+| **string:isLowercase** | check if all characters in given string are lowercase | [String] -> Boolean |
+| **string:isMatch** | check if string matches given regex | [String/String] -> Boolean |
+| **string:isUppercase** | check if all characters in given string are uppercase | [String] -> Boolean |
+| **string:isWhitespace** | check if all characters in given string are whitespace | [String] -> Boolean |
+| **string:levenshtein** | get Levenshtein distance between two given strings | [String/String] -> Number |
+| **string:lines** | get lines from string as an array | [String] -> Array |
+| **string:lowercase** | lowercase given string | [String] -> String |
+| **string:matches** | get array of matches for string using given regex | [String/String] -> Array |
+| **string:padCenter** | center justify string by adding padding | [String/Number] -> String |
+| **string:padLeft** | left justify string by adding padding | [String/Number] -> String |
+| **string:padRight** | right justify string by adding padding | [String/Number] -> String |
+| **string:replace** | get string by replacing occurences of string with another string | [String/String/String] -> String |
+| **string:split** | split string by given separator or regex | [String/String] -> Array |
+| **string:startsWith** | check if string starts with given string | [String/String] -> Boolean |
+| **string:strip** | strip spaces from given string | [String] -> String |
+| **string:uppercase** | uppercase given string | [String] -> String |
+| **string:uuid** | generate random UUID string | [] -> String |
+| **string:words** | get words from string as an array | [String] -> Array |
+| **system:env** | get system environment variables as a dictionary | [] -> Dictionary |
+| **system:shell** | execute given shell command | [String] -> String or Boolean |
+| **system:spawn** | spawn process using given string and get process id | [String] -> Number |
+| **web:download** | download string contents from webpage using given URL | [String] -> String |
+| **web:post** | perform POST request using given URL and data | [String/String] -> String |
+| **xml:check** | check integrity of XML input using given string | [String] -> Boolean |
+| **yaml:generate** | get YAML string from given object | [Any] -> String |
+| **yaml:parse** | get object by parsing given YAML string | [String] -> Any |
 
 Build Instructions
 ------------------------------
