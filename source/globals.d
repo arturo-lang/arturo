@@ -157,7 +157,7 @@ class Globals : Context {
     int retCounter;
     Stack!(int) retStack;
     Stack!(Statements) blockStack;
-    Expressions[string] classdefs;
+    Expressions[string] symboldefs;
 
     this(string[] args) {
         super();
@@ -292,7 +292,7 @@ class Globals : Context {
             else {
                 //writeln("SETTING TO TOP STACK:" ~ n);
                 contextStack.lastItem()._varSet(n,v,immut);
-                writeln(v.stringify());
+                //writeln(v.stringify());
             }
         }
     } 
@@ -309,7 +309,6 @@ class Globals : Context {
         // until reaching root (global), finding it, 
         // or crossing the first function-type block
         foreach_reverse (i, Context ctx; contextStack.list) {
-            //writeln(i);
              // if we reach global, that's it
             if (ctx is this) return null;
 
