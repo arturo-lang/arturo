@@ -1,0 +1,18 @@
+print "done"
+a 10
+//a 10
+//a.b 12
+//a.z 10
+//a.2 23
+print a//$(vars)
+print $(vars)
+
+a a+10
+print a
+arr #(1 2 3)
+print arr
+dict #{
+	name "john"
+	surname "zafeiropoulos"
+}
+print dict

@@ -18,12 +18,12 @@ client #{
 	}
 }
 
-clients #()
+//clients #()
 
 loop $(range 1 10) {
 	clients clients + $(new "client" #("name_"+@ "surname_"+@ "email_"+@))
 }
 
-print clients
+//print clients
 
-exec $(get $(get clients 2) "sayHi")
+//exec $(get $(get clients 2) "sayHi")
