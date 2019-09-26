@@ -46,7 +46,7 @@ class Contains_ : Func {
 			default: break;
 		}
 
-		return new Value(0);
+		return new Value();
 	}
 }
 
@@ -88,6 +88,22 @@ class Delete__By_ : Func {
 			}
 			else throw new ERR_IndexNotFound(index, to!string(item));
 		}
+	}
+}
+
+class Find_ : Func {
+	this() { super("find","return index of string/element within string/array, or -1 if not found",[[sV,sV],[aV,xV]],[nV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value item = v[0];
+
+		switch (item.type) {
+			case sV: return new Value(S!(item).countUntil(S!(v,1)));
+			case aV: return new Value(A!(item).countUntil(v[1]));
+			default: break;
+		}
+
+		return new Value();
 	}
 }
 
