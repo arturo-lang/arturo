@@ -54,11 +54,29 @@ class Object_ : Func {
 	}
 }
 
+class Pointer_ : Func {
+	this(string ns="") { super(ns ~ "pointer","get pointer location for object",[[xV],[sV]]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		return new Value(to!string(cast(void*)v[0]));
+	}
+}
+
 class Type_ : Func {
 	this(string ns="") { super(ns ~ "type","get type for given object",[[xV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
 		return new Value(v[0].type);
+	}
+}
+
+class Syms_ : Func {
+	this(string ns="") { super(ns ~ "syms","get list of declared symbols",[[],[sV]]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		return new Value(Glob.inspectAllVars());
 	}
 }
