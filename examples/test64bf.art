@@ -5,7 +5,7 @@
 "========================="
 
 tape                    #(0)
-dataPointer             0  
+dataPointer             0
 instructionPointer      0
 
 // Look for jumps in code an register them
@@ -49,7 +49,7 @@ interpret {
         | command=">" { dataPointer dataPointer+1, if dataPointer=$(size tape) { tape tape+0 } }
         | command="<" { dataPointer dataPointer-1 }
         | command="." { print $(char tape.[dataPointer]) true }
-        | command="," { 
+        | command="," {
             inp $(toNumber input)
             | inp=13 { inp 10 }
             | inp=3  { panic "something went wrong!" }
@@ -61,9 +61,9 @@ interpret {
         | command="]" {
             if tape.[dataPointer]!=0 { instructionPointer jumps.[$(toString instructionPointer)] }
         }
-        
+
         instructionPointer instructionPointer+1
-    }   
+    }
 }
 
 if $(size @)<1 { panic "Not enough arguments - Usage: bfc <script>" }
