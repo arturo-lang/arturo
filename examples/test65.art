@@ -1,0 +1,20 @@
+a 10
+b "string"
+c 1 2 3
+d #("one" "two" "three")
+e $(range 1 10)
+f {
+	print "something"
+}
+g {
+	print @0+@1
+}
+h [x,y]{
+	x+y
+}
+i #{
+	name "john"
+	surname "zafeiropoulos"
+}
+
+print $(syms)
