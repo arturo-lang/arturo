@@ -100,8 +100,6 @@ class Func {
             string[] parts = n.split(":");
             namespace = parts[0];
             name = parts[1];
-
-            //writeln("Creating function. Namespace: " ~ namespace ~ ", Name: " ~ name);
         } 
         else {
             namespace = null;
@@ -110,8 +108,6 @@ class Func {
 
     // user functions
     this (string n, Statements b = null, ValueType[][] vc = [], string[] idents = []) {
-        //Func f = this;
-        //writeln("Creating: " ~ to!string(&f));
         name = n;
         block = b;
 
@@ -170,8 +166,6 @@ class Func {
     string getFullName() {
         string ret = "";
 
-        //writeln("Reading function. Namespace: " ~ namespace ~ ", Name: " ~ name);
-
         if (namespace !is null) ret ~=  namespace ~ ":";
         if (name !is null) ret ~= name;
 
@@ -179,38 +173,23 @@ class Func {
     }
 
     Value execute(Value values = null, Value* v=null) {
-        //writeln("about to execute function with values");
-
-        //writeln("** Func:execute (before) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
-
         if (parentContext !is null) { 
-            //writeln("parentContext found!!");
             Glob.contextStack.push(parentContext);
         }
 
         bool thisWasAlreadySet = false;
 
         if (parentContext !is null) {
-            //writeln("running func:" ~ name ~ " parentThis:" ~ to!string(cast(void*)(parentThis)) ~ " parentContext:" ~ parentContext.inspectVars());
             if (Glob._varExists("this")) thisWasAlreadySet = true;
             Glob._varSet("this", parentThis, false);
         }
 
-        //writeln("here 1");
-
         if (name=="" || name is null) Glob.contextStack.push(new Context());
         else Glob.contextStack.push(new Context(ContextType.functionContext));
-
-        //writeln("here 2");
-
-        //writeln("Func:: pushing context");
 
         if (Glob.trace && name !is null && name.strip()!="") {
             write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
         }
-
-        //writeln("here 3");
-        //writeln("executiing functions... ids = " ~ to!string(ids));
 
         if ((ids.length>0) && (values is null)) {
             string funcName;
@@ -243,8 +222,6 @@ class Func {
             
         }
 
-        //writeln("here 4");
-
         if (values !is null) {
             if (values.type==aV) {
                 foreach (i, string ident; ids) {
@@ -265,54 +242,27 @@ class Func {
                 }
             }
         }
-
-        //writeln("here 5");
-        
-        //else Glob.varSet(ARGS, new Value(cast(Value[])([])));
-
-        //writeln(Glob.inspectAllVars());
             
         Value ret = block.execute(v);
 
-        //writeln("here 6");
-
         if (!thisWasAlreadySet) Glob._varUnset("this");
 
-        //writeln("** Func:execute (after) : name=" ~ name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
-
-        //int popped = Glob.retStack.pop();
-        //writeln("POPPING STACK FROM FUNC!");
         if (parentContext !is null) { 
-            //writeln("parentContext found!!");
             Glob.contextStack.pop();
         }
 
-        //writeln("here 7");
-
         Glob.contextStack.pop();
-
-        //writeln("here 8");
-        //writeln("Func:: popping context");
-        //writeln(Glob.inspectAllVars());
-        //writeln("** Func:execute (after) : name=" ~ name ~ ", contextStack=" ~ to!string(Glob.contextStack.size()));
-        //writeln(Glob.inspectAllVars());
-
-        //writeln("** \tretStack: popped " ~ to!string(popped));
 
         return ret;
     }
 
     Value execute(Expressions ex) {
-        //Func* f = cast(Func*)(&this);
-        //writeln("Executing: " ~ to!string(f));
         Value values = ex.evaluate(true);
 
         return execute(values);
     }
 
     Value executeWithRef(Expressions ex,Value* v=null) {
-        //Func* f = cast(Func*)(&this);
-        //writeln("Executing: " ~ to!string(f));
         Value values = ex.evaluate(true);
 
         return execute(values,v);
@@ -321,22 +271,15 @@ class Func {
     Value executeMemoized(Expressions ex, string memo,Value* v=null) {
         Value values = ex.evaluate(true);
 
-        //writeln("Glob.memoized before: ");
-        //writeln(Glob.memoized);
-
         string hsh = memo ~ "_" ~ values.hash();
-        //writeln("Hash: " ~ hsh);
 
         if ((hsh in Glob.memoized) is null) {
-            //writeln("memoized value not found, calculating");
             Value ret = execute(values,v);
             Glob.memoized[hsh] = ret;
-            //writeln("stored: ");
-            //writeln(Glob.memoized);
+
             return ret;
         }
         else {
-            //writeln("memoized value found, returning");
             return Glob.memoized[hsh];
         }
     }
@@ -362,11 +305,10 @@ class Func {
         }
 
         Value[] ret;
-        //string[] retString;
+        
         foreach (Expression e; ex.lst) {
             Value vv = e.evaluate();
             ret ~= vv;
-            //retString ~= vv.stringify();
         }
 
         if (!isVariadic) {
@@ -436,8 +378,6 @@ class Func {
             writeln("        -> | " ~  getReturnValuesDescription());
         }
         else {
-            //writeln("Printing function. Namespace: " ~ namespace ~ ", Name: " ~ name);
-            //writeln("Printing function. FullName: " ~ getFullName());
             writeln("  " ~ leftJustify(getFullName(),30) ~ " [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
         }
     }
