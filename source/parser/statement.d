@@ -164,7 +164,12 @@ class Statement {
 			if (ev.type==fV) {
 				ev.content.f.name = id.getId();
 			}
-			Glob.varSet(id.getId(),ev,immut);			
+
+			bool success = Glob.varSetByIdentifier(id,ev,immut);			
+
+			if (!success) {
+				throw new ERR_CannotPerformAssignmentError(id.getFullIdentifier());
+			}
 
 			return ev;
 		}
@@ -190,63 +195,21 @@ class Statement {
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
-					writeln("Executing normal statement: " ~ id.inspect());
-
 					if (Glob.funcExists(id.getId())) return executeFunctionCall();  // system function
 					else {
 
 						if (!hasExpressions) {
-							// it's an id-expression, return it's value
-							writeln("it's an id-expression");
+							// it's an id-expression, return its value
 							return new Expression(new Argument(id)).evaluate();
 						}
 						else {
 							// it's an assignment
-							writeln("it's an assignment");
 							return executeAssignment(v);
 						}
-
-						/*
-						bool isDictionaryKey = id.getId().indexOf(".")!=-1;
-						
-						Var sym = Glob.varGet(id.getId());
-						
-						if (hasExpressions) {
-							if (sym is null) return executeAssignment(v);
-							else {
-								if (sym.value.type==fV) {
-									if (sym.immut && !immut) return executeUserFunctionCall(&sym.value.content.f,v);
-									else throw new ERR_ModifyingImmutableVariableError(id.getId());
-								}
-								else {
-									if (isDictionaryKey) { 
-										Value symParent = Glob.getParentDictForSymbol(id.getId());
-										if (symParent !is null) {
-											auto ids = id.getId().split(".");
-											id = new Identifier(ids[ids.length-1]);
-											return executeAssignment(&symParent);
-										}
-										else throw new ERR_SymbolNotFound(id.getId());
-									}
-									else {
-										if (sym.immut) throw new ERR_ModifyingImmutableVariableError(id.getId());
-										else return executeAssignment(v);
-									}
-								}
-							}
-						}
-						else {
-							if ((sym !is null) && (sym.value.type==fV)) {
-								if (sym.immut) return executeUserFunctionCall(&sym.value.content.f,v);
-								else return sym.value;
-							}
-							else return new Expression(new Argument(id)).evaluate();
-						}
-						*/
 					}
 
 				case StatementType.expressionStatement:
-					writeln("Executing expression statement");
+					// it's an expression, return its value
 					return expression.evaluate();
 				default:
 					return new Value();
