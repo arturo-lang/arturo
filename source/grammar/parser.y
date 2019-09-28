@@ -150,6 +150,9 @@ int yywrap() {
 %left MULT_SG DIV_SG MOD_SG 
 %left POW_SG
 
+%nonassoc REDUCE
+%nonassoc ID
+
 %start program
 
 %%
@@ -178,6 +181,8 @@ identifiers				: 	identifiers[previous] COMMA identifier 								{ void* i = $pr
 argument				:	identifier 															{ $$ = new_ArgumentFromIdentifier($identifier); }
 						| 	NUMBER 																{ $$ = new_Argument("number", $NUMBER); }
 						|	STRING 																{ $$ = new_Argument("string", $STRING); }
+						|	TILDE %prec REDUCE													{ $$ = new_Argument("string", ""); }
+						|	TILDE ID 															{ $$ = new_Argument("string", $ID); }
 						|	BOOLEAN 															{ $$ = new_Argument("boolean", $BOOLEAN); }
 						|	NULLV	 															{ $$ = new_Argument("null", $NULLV); }
 						;
