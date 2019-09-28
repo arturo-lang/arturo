@@ -196,20 +196,27 @@ class New_ : Func {
 
 		alias symdef = S!(v,0);
 
-		Value ret = Glob.symboldefs[new Identifier(symdef)].evaluate();
+		Expressions symbolDefExs = Glob.getSymbolDef(symdef);
 
-		if (ret.type==dV) {
+		if (symbolDefExs !is null) {
+			Value ret = symbolDefExs.evaluate();
 
-			if (ret.content.d._varExists("init")) {
+			if (ret.type==dV) {
 
-				Func func = ret.content.d._varGet("init").value.content.f;
+				if (ret.content.d._varExists("init")) {
 
-				v.length==2 ? func.execute(v[1]) : func.execute();
+					Func func = ret.content.d._varGet("init").value.content.f;
+
+					v.length==2 ? func.execute(v[1]) : func.execute();
+				}
+
 			}
 
+			return ret;
 		}
-
-		return ret;
+		else {
+			return new Value();
+		}
 	}
 }
 

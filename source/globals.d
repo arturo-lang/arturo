@@ -186,6 +186,13 @@ class Globals : Context {
         retCounter = -1;
     }
 
+    Expressions getSymbolDef(string id) {
+        foreach (Identifier iden, Expressions ex; symboldefs) {
+            if (iden.pathContents[0].id==id) return ex;
+        }
+        return null;
+    }
+
     Value getParentDictForSymbol(string s) {
         string[] parts = s.split(".");
         string mainObject = parts[0];
