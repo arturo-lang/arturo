@@ -133,7 +133,7 @@ class Func {
                 if (constraints.length>maxArgs) maxArgs = constraints.length;
             }
 
-            debug writeln("setting func: " ~ name ~ " minArgs: " ~ to!string(minArgs) ~ ", maxArgs: " ~ to!string(maxArgs));
+            //debug writeln("setting func: " ~ name ~ " minArgs: " ~ to!string(minArgs) ~ ", maxArgs: " ~ to!string(maxArgs));
         }
 
         ids = idents;
@@ -290,7 +290,7 @@ class Func {
         string[] acceptedConstraints = [];
         foreach (ValueType[] constraints; valueConstraints) {
             acceptedConstraints ~= constraints.map!(c => "" ~ c).array.join("/");
-            debug writeln(constraints.map!(c => "" ~ c).array.join("/"));
+            //debug writeln(constraints.map!(c => "" ~ c).array.join("/"));
         }
         return acceptedConstraints.join(" or ");
     }
