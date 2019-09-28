@@ -121,6 +121,12 @@ class Expression {
 		if (ids !is null) {
 			identifiers = ids;
 			function_arguments = [];
+			// #CHK: what happens if identifier is not a single ID? - eg a number, or a path
+			foreach (Identifier id; identifiers.lst) {
+				if (id.pathContentTypes[0]==idPC) {
+					function_arguments ~= id.getId();
+				}
+			}
 		}
 		else {
 			function_arguments = [];
