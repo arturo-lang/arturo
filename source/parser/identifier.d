@@ -125,7 +125,7 @@ class Identifier {
 
 	string getId() {
 		string ret = "";
-		
+
 		if (namespace !is null) ret ~= namespace ~ ":";
 		ret ~= pathContents[0].id;
 		
@@ -159,7 +159,7 @@ class Identifier {
 			switch (pct) {
 				case idPC: ret ~= to!string(pct) ~ ":" ~ pc.id;  break;
 				case numPC: ret ~= to!string(pct) ~ ":" ~ to!string(pc.num); break;
-				case exprPC: ret ~= "<expr>"; break;
+				case exprPC: ret ~= to!string(pct) ~ ":" ~ pc.expr.evaluate().stringify(); break;
 				default: break;
 			}
 		}
