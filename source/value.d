@@ -1748,6 +1748,29 @@ class Value {
     }
 
     ~this() {
-        debug writeln("Destroying: " ~ to!string(this));
+        //debug writeln("Destroying: " ~ to!string(this));
     }
+}
+
+///////////////////////
+/// Unittests
+///////////////////////
+
+unittest {
+    // constructors
+    assert((new Value(2)).content.i==2);
+    assert((new Value("test")).content.s=="test");
+    assert((new Value(BigInt("1231312312312312312312313"))).content.bi==BigInt("1231312312312312312312313"));
+    assert((new Value(true)).content.b==true);
+}
+
+unittest {
+    // opEquals
+    assert((new Value(2))==(new Value(2)));
+    assert((new Value("test"))==(new Value("test")));
+    assert((new Value("test"))==(new Value("test")));
+    assert((new Value(BigInt("1231312312312312312312313")))==(new Value(BigInt("1231312312312312312312313"))));
+    assert((new Value(true))==(new Value(true)));
+    assert((new Value([new Value(1),new Value("test"),new Value(true)]))==(new Value([new Value(1),new Value("test"),new Value(true)])));
+    assert((new Value(["one","two","three"]))==(new Value([new Value("one"),new Value("two"),new Value("three")])));
 }
