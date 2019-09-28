@@ -18,6 +18,7 @@ import std.stdio;
 import std.string;
 import std.typetuple;
 
+import parser.identifier;
 import parser.statements;
 
 import value;
