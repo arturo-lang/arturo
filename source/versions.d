@@ -34,10 +34,8 @@ version(Windows)    { const string ART_BUILD_OS = "Windows"; }
 version(FreeBSD)    { const string ART_BUILD_OS = "FreeBSD"; }
 version(Solaris)    { const string ART_BUILD_OS = "Solaris"; }
 
-const string VERSION_TEMPLATE       = "\x1B[32m\x1B[1m%s %s\x1B[0m (%s build %s) [%s-%s]";
-
-const string LOGO_TEMPLATE          = "\x1B[32m\x1B[1m%s %s\x1B[0m (%s build %s) [%s-%s]
-(c) %s %s";
+const string VERSION_TEMPLATE       = import("version_template.txt").replace("\\x1B","\x1B");
+const string LOGO_TEMPLATE          = import("logo_template.txt").replace("\\x1B","\x1B");
 
 // Functions
 
