@@ -6,7 +6,7 @@ obj/
 /arturo
 /test.d
 /test
-update_build_number.awk
+/scripts/update_build_number.awk
 arturo.so
 arturo.dylib
 arturo.dll
