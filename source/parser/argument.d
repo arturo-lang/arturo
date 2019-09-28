@@ -117,12 +117,10 @@ class Argument {
 			else throw new ERR_SymbolNotFound(identifier.getFullIdentifier());
 		}
 		else {
-			
 			if (isStringInterpolated()) {
 				string interpol = value.content.s;
 
-				string replacer(Captures!(string) m)
-    			{
+				string replacer(Captures!(string) m) {
     				_program = cast(void*)(new Program());
        		 		yy_scan_buffer(cast(char*)(toStringz(m.hit~'\0')),m.hit.length+2);
 					int parseResult = yyparse();
@@ -136,23 +134,21 @@ class Argument {
     
     			string finalString = replaceAll!(replacer)(interpol,regex("`([^`]+)`"));
 				value = new Value(finalString);
+
 				return value;
 			}
 			else return value;
 		}
 	}
 
-	string formatString(string s)
-	{
+	string formatString(string s) {
 		string f = s;
 
-		if (f[0]=='"') // double-quoted
-		{
+		if (f[0]=='"') { // double-quoted string
 			f = chompPrefix(chomp(f,"\""),"\"");
 			f = replace(f, "\\\"", "\"");
 		}
-		else
-		{
+		else {
 			f = chompPrefix(chomp(f,"'"),"'");
 			f = replace(f, "\\'", "'");
 		}
