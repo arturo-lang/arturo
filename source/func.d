@@ -19,6 +19,7 @@ import std.stdio;
 import std.string;
 import std.typecons;
 
+import parser.identifier;
 import parser.expression;
 import parser.expressions;
 import parser.statements;
@@ -223,19 +224,20 @@ class Func {
         }
 
         if (values !is null) {
+            //writeln("executing function: " ~ name ~ " with ids: " ~ to!string(ids));
             if (values.type==aV) {
                 foreach (i, string ident; ids) {
-                    Glob.varSet(ident, values.content.a[i], true, true);
+                    Glob.varSetByIdentifier(new Identifier(ident), values.content.a[i], true);
                 }   
             }
             else {
                 if (ids.length==1) {
-                    Glob.varSet(ids[0], values, true, true);
+                    Glob.varSetByIdentifier(new Identifier(ids[0]), values, true);
                 }
             }
 
             if (values !is null) {
-                Glob.varSet(ARGS, values, false, true);
+                Glob.varSetByIdentifier(new Identifier(ARGS), values, true);
                 if (Glob.trace) {
                     if (values.type==aV)
                         writeln(values.content.a.map!(v=>v.stringify()).array.join(", "));
