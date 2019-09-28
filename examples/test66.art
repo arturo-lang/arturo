@@ -1,3 +1,4 @@
+#!/usr/bin/env arturo
 "====================================================================================="
 " Testing assignments, functions, class instances and return "
 "====================================================================================="
@@ -72,10 +73,9 @@ class #{
 	}
 }
 
-
 !class.func
 
-instance $(new ~class #("john" "doe" "johndoe@gmail.com"))
+instance $(new ~class "john" "doe" "johndoe@gmail.com")
 
 !instance.func
 !instance.sayHello

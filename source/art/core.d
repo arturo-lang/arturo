@@ -190,7 +190,7 @@ class Memoize_ : Func {
 }
 
 class New_ : Func {
-	this(string ns="") { super(ns ~ "new","copy given object and return a new duplicate. one",[[sV],[sV,aV]],[xV]); }
+	this(string ns="") { super(ns ~ "new","copy given object and return a new duplicate one",[[sV],[sV,vV]],[xV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 
@@ -207,7 +207,12 @@ class New_ : Func {
 
 					Func func = ret.content.d._varGet("init").value.content.f;
 
-					v.length==2 ? func.execute(v[1]) : func.execute();
+					Value args = null;
+					if (v.length>=2) {
+						args = new Value(v[1..$]);
+					}
+
+					func.execute(args);
 				}
 
 			}
