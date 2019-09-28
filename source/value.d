@@ -158,8 +158,7 @@ class Value {
         content.f = new Func("", v, [], ids); 
     }
 
-    this(Value[] v)
-    {
+    this(Value[] v) {
         type = ValueType.arrayValue;
         content.a = [];
         foreach (Value i; v) {
@@ -167,8 +166,7 @@ class Value {
         }
     }
 
-    this(Value[Value] v)
-    {
+    this(Value[Value] v) {
         type = ValueType.dictionaryValue;
         content.d =  new Context(ContextType.dictionaryContext);
         foreach (Value k, Value c; v) {
@@ -176,8 +174,7 @@ class Value {
         }
     }
 
-    this(string[] v)
-    {
+    this(string[] v) {
         type = ValueType.arrayValue;
         content.a = [];
         foreach (string s; v) {
@@ -185,8 +182,7 @@ class Value {
         }
     }
 
-    this(string[string] v)
-    {
+    this(string[string] v) {
         type = ValueType.dictionaryValue;
         content.d = new Context(ContextType.dictionaryContext);
         foreach (string k, string c; v) {
@@ -194,8 +190,7 @@ class Value {
         }
     }
 
-    this(Value v)
-    {
+    this(Value v) {
         type = v.type;
 
         switch (type)
@@ -224,8 +219,7 @@ class Value {
         }
     }
 
-    this(const Value v) 
-    {
+    this(const Value v) {
         type = v.type;
 
         switch (type)
@@ -254,8 +248,7 @@ class Value {
         return v;
     }
 
-    bool arrayContains(Value item)
-    {
+    bool arrayContains(Value item) {
         foreach (Value v; content.a)
             if (v==item) return true;
 
@@ -309,15 +302,6 @@ class Value {
 
         return this;
     }
-/*
-    const Value removeValueFromDictImmut(const Value object) {
-        Value ret = new Value(this);
-        foreach (Var va; content.d.variables) {
-            if (va.value==object) content.d._varUnset(va.name);
-        }
-
-        return ret;
-    }*/
 
     const Value removeIndexFromArrayImmut(long index) {
         Value ret = new Value(this);
@@ -336,15 +320,13 @@ class Value {
         return this;
     }
 
-    Value getValueFromDictValue(Value key)
-    {
+    Value getValueFromDictValue(Value key) {
         if (content.d._varExists(key.content.s))
             return content.d._varGet(key.content.s).value;
         else return null;
     }
 
-    Value getValueFromDict(string key)
-    {
+    Value getValueFromDict(string key) {
         if (content.d._varExists(key)) {
             return content.d._varGet(key).value;
         }
@@ -352,8 +334,7 @@ class Value {
         return null;
     }
 
-    const Value getValueFromDictImmut(string key)
-    {
+    const Value getValueFromDictImmut(string key) {
         Value cp = new Value(this);
         if (cp.content.d._varExists(key)) {
             return cp.content.d._varGet(key).value;
@@ -367,16 +348,12 @@ class Value {
     }
 
     void setValueForDict(string key, Value val) {
-        //writeln("in setValueForDict: " ~ key);
         content.d._varSet(key, val);
 
         if (val.type==fV) {
-            //writeln("SETVALUEFORDICT: setting key=" ~ key ~ " val=" ~ val.stringify() ~ " with parentContext/This: " ~ stringify());
-            //writeln("it's a function, setting parentThis: " ~ stringify());
             val.content.f.parentThis = this;
             val.content.f.parentContext = content.d;
         }
-        //writeln("in setValueForDict: after");
     }
 
     void setValueForDictRegardless(string key, Value val) {
@@ -424,32 +401,13 @@ class Value {
     /************************************
      ARITHMETIC OPERATIONS
      ************************************/
-     /*
-    Value opUnary(string op)() const if (op == "-")
-    {
-        if (type==ValueType.numberValue)
-        {
-            return new Value(-1 * content.i);
-        }
-        else if (type==ValueType.realValue)
-        {
-            return new Value(-1 * content.r);
-        }
 
-        //throw new ERR_UndefinedOperation(op,this,new Value("u-"));
-
-        return new Value(0);
-    }*/
-
-    Value opBinary(string op)(in Value rhs) const if (op == "+")
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "+") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(BigInt(lhs + rhs.content.bi)); } else { return new Value(BigInt(lhs + rhs.content.i)); }
                     case ValueType.realValue        : throw new ERR_OperationNotPermitted("(+)","Big Number","Real");
                     case ValueType.stringValue      : return new Value(to!string(lhs) ~ rhs.content.s);
@@ -465,8 +423,7 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(BigInt(lhs + rhs.content.bi)); } 
                                                       else { 
                                                         bool overflow;
@@ -490,12 +447,10 @@ class Value {
                 }
             }
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue) {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.realValue        : return new Value(lhs + rhs.content.r);
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(+)","Real","Big Number"); } else { return new Value(lhs + rhs.content.i); }
                 case ValueType.stringValue      : return new Value(to!string(lhs) ~ rhs.content.s);
@@ -507,12 +462,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.stringValue)
-        {
+        else if (type==ValueType.stringValue) {
             string lhs = content.s;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { return new Value(lhs ~ to!string(rhs.content.bi)); } else { return new Value(lhs ~ to!string(rhs.content.i)); }
                 case ValueType.realValue        : return new Value(lhs ~ to!string(rhs.content.r));
                 case ValueType.stringValue      : return new Value(lhs ~ rhs.content.s);
@@ -524,12 +477,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.booleanValue)
-        {
+        else if (type==ValueType.booleanValue) {
             bool lhs = content.b;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { return new Value(to!int(lhs) + rhs.content.bi); }    
                                                   else { 
                                                     bool overflow;
@@ -547,26 +498,20 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.arrayValue)
-        {
+        else if (type==ValueType.arrayValue) {
             Value newV = new Value(cast(Value)(this));
-            if (rhs.type!=ValueType.arrayValue)
-            {
+            if (rhs.type!=ValueType.arrayValue) {
                 newV.content.a ~= cast(Value)rhs;
             }
-            else
-            {
-                foreach (const Value vv; rhs.content.a)
-                {
+            else {
+                foreach (const Value vv; rhs.content.a) {
                     newV.content.a ~= cast(Value)vv;
                 }
             }
             return newV;
         }
-        else if (type==ValueType.dictionaryValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.dictionaryValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(+)","Dictionary","Number"); 
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(+)","Dictionary","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(+)","Dictionary","String");
@@ -578,10 +523,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.functionValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.functionValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(+)","Function","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(+)","Function","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(+)","Function","String");
@@ -593,23 +536,19 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.noValue)
-        {
+        else if (type==ValueType.noValue) {
             return new Value(); // null
         }
 
         return new Value(); // Control never reaches this point
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "-")
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "-") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(BigInt(lhs - rhs.content.bi)); } else { return new Value(BigInt(lhs - rhs.content.i)); }
                     case ValueType.realValue        : throw new ERR_OperationNotPermitted("(-)","Big Number","Real");
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(-)","Number","String");
@@ -624,8 +563,7 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(BigInt(lhs - rhs.content.bi)); } 
                                                       else { 
                                                         bool overflow;
@@ -649,12 +587,10 @@ class Value {
                 }
             }
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue) {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(-)","Real","Big Number"); } else { return new Value(lhs - rhs.content.i); }
                 case ValueType.realValue        : return new Value(lhs - rhs.content.r);
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(-)","Real","String");
@@ -666,12 +602,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.stringValue)
-        {
+        else if (type==ValueType.stringValue) {
             string lhs = content.s;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { return new Value(replace(lhs, to!string(rhs.content.bi),"")); } else { return new Value(replace(lhs, to!string(rhs.content.i),"")); }
                 case ValueType.realValue        : return new Value(replace(lhs, to!string(rhs.content.r),""));
                 case ValueType.stringValue      : return new Value(replace(lhs, rhs.content.s,""));
@@ -683,12 +617,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.booleanValue)
-        {
+        else if (type==ValueType.booleanValue) {
             bool lhs = content.b;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { return new Value(to!int(lhs) - rhs.content.bi); }    
                                                   else { 
                                                     bool overflow;
@@ -706,20 +638,16 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.arrayValue)
-        {
+        else if (type==ValueType.arrayValue) {
             return removeValueFromArrayImmut(rhs);
         }
-        else if (type==ValueType.dictionaryValue)
-        {   
+        else if (type==ValueType.dictionaryValue) {   
             Value cp = new Value(this);
             Value cprhs = new Value(rhs);
             return cp.removeValueFromDict(cprhs);
         }
-        else if (type==ValueType.functionValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.functionValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(-)","Function","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(-)","Function","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(-)","Function","String");
@@ -731,23 +659,19 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.noValue)
-        {
+        else if (type==ValueType.noValue) {
             return new Value(); // null
         }
 
         return new Value(); // Control never reaches this point
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "*")
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "*") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(BigInt(lhs * rhs.content.bi)); } else { return new Value(BigInt(lhs * rhs.content.i)); }
                     case ValueType.realValue        : throw new ERR_OperationNotPermitted("(-)","Big Number","Real");
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(*)","Big Number","String");
@@ -762,8 +686,7 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(BigInt(lhs * rhs.content.bi)); } 
                                                       else { 
                                                         bool overflow;
@@ -783,12 +706,10 @@ class Value {
             }
             
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue) {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(*)","Real","Big Number"); } else { return new Value(lhs * rhs.content.i); }
                 case ValueType.realValue        : return new Value(lhs * rhs.content.r);
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(*)","Real","String");
@@ -801,12 +722,10 @@ class Value {
             }
         }
 
-        else if (type==ValueType.stringValue)
-        {
+        else if (type==ValueType.stringValue) {
             string lhs = content.s;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(*)","String","Big Number"); } else { return new Value(replicate(lhs,rhs.content.i)); } 
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(*)","String","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(*)","String","String");
@@ -818,12 +737,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.booleanValue)
-        {
+        else if (type==ValueType.booleanValue) {
             bool lhs = content.b;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { return new Value(to!int(lhs) - rhs.content.bi); }    
                                                   else { 
                                                     bool overflow;
@@ -841,12 +758,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.arrayValue)
-        {
+        else if (type==ValueType.arrayValue) {
             Value[] lhs = cast(Value[])(content.a);
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(*)","Array","Big Number"); } else { return new Value(replicate(lhs,rhs.content.i)); }
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(*)","Array","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(*)","Array","String");
@@ -858,10 +773,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.dictionaryValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.dictionaryValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(*)","Dictionary","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(*)","Dictionary","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(*)","Dictionary","String");
@@ -873,10 +786,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.functionValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.functionValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(*)","Function","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(*)","Function","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(*)","Function","String");
@@ -888,23 +799,19 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.noValue)
-        {
+        else if (type==ValueType.noValue) {
             return new Value(); // null
         }
 
         return new Value(); // Control never reaches this point
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "/")
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "/") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(lhs / rhs.content.bi); } else { return new Value(lhs / rhs.content.i); }
                     case ValueType.realValue        : throw new ERR_OperationNotPermitted("(/)","Big Number","Real");
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(/)","Number","String");
@@ -919,8 +826,7 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(lhs / rhs.content.bi); } else { return new Value(lhs / rhs.content.i); }
                     case ValueType.realValue        : return new Value(lhs / rhs.content.r);
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(/)","Number","String");
@@ -934,12 +840,10 @@ class Value {
             }
             
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue)  {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(/)","Real","Big Number"); } else { return new Value(lhs / rhs.content.i); }
                 case ValueType.realValue        : return new Value(lhs / rhs.content.r);
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(/)","Real","String");
@@ -951,12 +855,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.stringValue)
-        {
+        else if (type==ValueType.stringValue) {
             string lhs = content.s;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : Value[] ret;
                                                   string resp = "";
                                                   if (rhs.isBig) {
@@ -981,12 +883,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.booleanValue)
-        {
+        else if (type==ValueType.booleanValue) {
             bool lhs = content.b;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(/)","Boolean","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(/)","Boolean","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(/)","Boolean","String");
@@ -998,12 +898,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.arrayValue)
-        {
+        else if (type==ValueType.arrayValue) {
             Value[] lhs = cast(Value[])(content.a);
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : Value[] ret;
                                                   string resp = "";
                                                   if (rhs.isBig) {
@@ -1027,10 +925,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.dictionaryValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.dictionaryValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(/)","Dictionary","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(/)","Dictionary","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(/)","Dictionary","String");
@@ -1042,10 +938,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.functionValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.functionValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(/)","Function","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(/)","Function","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(/)","Function","String");
@@ -1057,23 +951,19 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.noValue)
-        {
+        else if (type==ValueType.noValue) {
             return new Value(); // null
         }
 
         return new Value(); // Control never reaches this point
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "%")
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "%") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(lhs % rhs.content.bi); } else { return new Value(lhs % rhs.content.i); }
                     case ValueType.realValue        : throw new ERR_OperationNotPermitted("(%)","Big Number","Real");
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(%)","Number","String");
@@ -1088,8 +978,7 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return new Value(lhs % rhs.content.bi); } else { return new Value(lhs % rhs.content.i); }
                     case ValueType.realValue        : return new Value(lhs % rhs.content.r);
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(%)","Number","String");
@@ -1103,12 +992,10 @@ class Value {
             }
             
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue) {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(%)","Real","Big Number"); } else { return new Value(lhs % rhs.content.i); }
                 case ValueType.realValue        : return new Value(lhs % rhs.content.r);
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(%)","Real","String");
@@ -1120,12 +1007,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.stringValue)
-        {
+        else if (type==ValueType.stringValue) {
             string lhs = content.s;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) {
                                                     long len = lhs.length % rhs.content.bi;
                                                     return new Value(lhs[$-len..$]);
@@ -1143,12 +1028,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.booleanValue)
-        {
+        else if (type==ValueType.booleanValue) {
             bool lhs = content.b;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(%)","Boolean","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(%)","Boolean","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(%)","Boolean","String");
@@ -1160,12 +1043,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.arrayValue)
-        {
+        else if (type==ValueType.arrayValue) {
             Value[] lhs = cast(Value[])(content.a);
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) {
                                                     long len = lhs.length % rhs.content.bi;
                                                     return new Value(lhs[$-len..$]);
@@ -1184,10 +1065,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.dictionaryValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.dictionaryValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(%)","Dictionary","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(%)","Dictionary","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(%)","Dictionary","String");
@@ -1199,10 +1078,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.functionValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.functionValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(%)","Function","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(%)","Function","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(%)","Function","String");
@@ -1214,23 +1091,20 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.noValue)
-        {
+        else if (type==ValueType.noValue) {
             return new Value(); // null
         }
 
         return new Value(); // Control never reaches this point
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "^^")
-    {
+    Value opBinary(string op)(in Value rhs) const if (op == "^^") {
         if (type==ValueType.numberValue)
         {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(^)","Big Number","Big Number"); } else { throw new ERR_OperationNotPermitted("(^)","Big Number","Number"); }
                     case ValueType.realValue        : throw new ERR_OperationNotPermitted("(^)","Big Number","Real");
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Number","String");
@@ -1245,8 +1119,7 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(^)","Number","Big Number"); } else { return new Value(lhs ^^ rhs.content.i); }
                     case ValueType.realValue        : return new Value(lhs ^^ rhs.content.r);
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Number","String");
@@ -1260,12 +1133,10 @@ class Value {
             }
             
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue) {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(^)","Real","Big Number"); } else { return new Value(lhs ^^ rhs.content.i); }
                 case ValueType.realValue        : return new Value(lhs ^^ rhs.content.r);
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Real","String");
@@ -1277,12 +1148,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.stringValue)
-        {
+        else if (type==ValueType.stringValue) {
             string lhs = content.s;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(^)","String","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(^)","String","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","String","String");
@@ -1293,12 +1162,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.booleanValue)
-        {
+        else if (type==ValueType.booleanValue) {
             bool lhs = content.b;
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(^)","Boolean","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(^)","Boolean","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Boolean","String");
@@ -1310,12 +1177,10 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.arrayValue)
-        {
+        else if (type==ValueType.arrayValue) {
             Value[] lhs = cast(Value[])(content.a);
 
-            switch (rhs.type)
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(^)","Array","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(^)","Array","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Array","String");
@@ -1327,10 +1192,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.dictionaryValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.dictionaryValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(^)","Dictionary","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(^)","Dictionary","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Dictionary","String");
@@ -1342,10 +1205,8 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.functionValue)
-        {
-            switch (rhs.type)
-            {
+        else if (type==ValueType.functionValue) {
+            switch (rhs.type) {
                 case ValueType.numberValue      : throw new ERR_OperationNotPermitted("(^)","Function","Number");
                 case ValueType.realValue        : throw new ERR_OperationNotPermitted("(^)","Function","Real");
                 case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Function","String");
@@ -1357,18 +1218,15 @@ class Value {
                 default                         : break;
             }
         }
-        else if (type==ValueType.noValue)
-        {
+        else if (type==ValueType.noValue) {
             return new Value(); // null
         }
 
         return new Value(); // Control never reaches this point
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "<<") 
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "<<") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
@@ -1391,10 +1249,8 @@ class Value {
         else throw new ERR_OperationNotPermitted("(<<)",type,rhs.type);
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == ">>") 
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == ">>") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
@@ -1417,10 +1273,8 @@ class Value {
         else throw new ERR_OperationNotPermitted("(>>)",type,rhs.type);
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "&") 
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "&") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
@@ -1443,10 +1297,8 @@ class Value {
         else throw new ERR_OperationNotPermitted("(&)",type,rhs.type);
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "|") 
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "|") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
@@ -1469,10 +1321,8 @@ class Value {
         else throw new ERR_OperationNotPermitted("(|)",type,rhs.type);
     }
 
-    Value opBinary(string op)(in Value rhs) const if (op == "^") 
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opBinary(string op)(in Value rhs) const if (op == "^") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
@@ -1495,10 +1345,8 @@ class Value {
         else throw new ERR_OperationNotPermitted("(^)",type,rhs.type);
     }
 
-    Value opUnary(string op)() const if (op == "~") 
-    {
-        if (type==ValueType.numberValue)
-        {
+    Value opUnary(string op)() const if (op == "~") {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
@@ -1513,17 +1361,14 @@ class Value {
         else throw new ERR_OperationNotPermitted("(~)",type,"");
     }
 
-    override bool opEquals(Object rh)
-    {
+    override bool opEquals(Object rh) {
         Value rhs = cast(Value)(rh);
 
-        if (type==ValueType.numberValue)
-        {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return (lhs==rhs.content.bi); } else { return (lhs==rhs.content.i); }
                     case ValueType.realValue        : return false; //return (lhs == rhs.content.r);
                     case ValueType.booleanValue     : return false; //return (lhs == rhs.content.b);
@@ -1534,8 +1379,7 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { return (lhs==rhs.content.bi); } else { return (lhs==rhs.content.i); }
                     case ValueType.realValue        : return (lhs == rhs.content.r);
                     case ValueType.booleanValue     : return (lhs == rhs.content.b);
@@ -1543,22 +1387,18 @@ class Value {
                 }
             }
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue) {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { return false; /*return (lhs==rhs.content.bi);*/ } else { return (lhs==rhs.content.i); }
                 case ValueType.realValue        : return (lhs == rhs.content.r);
                 case ValueType.booleanValue     : return (lhs == rhs.content.b);
                 default                         : return false;
             }
         }
-        else if (type==ValueType.stringValue)
-        {
-            if (rhs.type==ValueType.stringValue)
-            {
+        else if (type==ValueType.stringValue) {
+            if (rhs.type==ValueType.stringValue) {
                 return (content.s == rhs.content.s);
             }
             else return false;
@@ -1598,8 +1438,7 @@ class Value {
             return true;
         }
         else if (type==ValueType.functionValue) {
-            if (rhs.type==ValueType.functionValue)
-            {
+            if (rhs.type==ValueType.functionValue) {
                 return (content.f == rhs.content.f);
             }
             else return false;
@@ -1612,17 +1451,14 @@ class Value {
         return (false);
     }
 
-    int opCmp(in Value rhs)
-    {
+    int opCmp(in Value rhs) {
         if (this==rhs) return 0;
 
-        if (type==ValueType.numberValue)
-        {
+        if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { if (lhs > rhs.content.bi) return 1; else return -1; } else { if (lhs > rhs.content.i) return 1; else return -1; }
                     case ValueType.realValue        : throw new ERR_CannotCompareTypesError("Big Number",rhs.type); /*if (lhs > rhs.content.r) return 1; else return -1;*/
                     default                         : throw new ERR_CannotCompareTypesError(type,rhs.type);
@@ -1631,39 +1467,32 @@ class Value {
             else {
                 long lhs = content.i;
 
-                switch (rhs.type) 
-                {
+                switch (rhs.type) {
                     case ValueType.numberValue      : if (rhs.isBig) { if (lhs > rhs.content.bi) return 1; else return -1; } else { if (lhs > rhs.content.i) return 1; else return -1; }
                     case ValueType.realValue        : if (lhs > rhs.content.r) return 1; else return -1;
                     default                         : throw new ERR_CannotCompareTypesError(type,rhs.type);
                 }
             }
         }
-        else if (type==ValueType.realValue)
-        {
+        else if (type==ValueType.realValue) {
             real lhs = content.r;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_CannotCompareTypesError(type,"Big Number"); } else { if (lhs > rhs.content.i) return 1; else return -1; }
                 case ValueType.realValue        : if (lhs > rhs.content.r) return 1; else return -1;
                 default                         : throw new ERR_CannotCompareTypesError(type,rhs.type);
             }
         }
-        else if (type==ValueType.stringValue)
-        {
+        else if (type==ValueType.stringValue) {
             string lhs = content.s;
 
-            switch (rhs.type) 
-            {
+            switch (rhs.type) {
                 case ValueType.stringValue      : if (lhs > rhs.content.s) return 1; else return -1;
                 default                         : throw new ERR_CannotCompareTypesError(type,rhs.type);
             }
         }
 
         throw new ERR_CannotCompareTypesError(type,rhs.type);
-        
-        //return -1; 
     }
 
     string str() {
@@ -1707,8 +1536,6 @@ class Value {
                 string[] items;
                 auto sortedKeys = content.d.variables.keys.array.sort();
                 foreach (string key; sortedKeys) {
-                //foreach (Value k, Value v; content.d) {
-                    //items ~= k.content.s ~ " " ~ v.stringify();
                     Value v = getValueFromDict(key);
                     items ~= key ~ " " ~ v.stringify();
                 }
@@ -1742,8 +1569,6 @@ class Value {
                 string[] items;
                 auto sortedKeys = content.d.variables.keys.array.sort();
                 foreach (string key; sortedKeys) {
-                //foreach (Value k, Value v; content.d) {
-                    //items ~= k.content.s ~ " " ~ v.stringify();
                     Value v = getValueFromDict(key);
                     items ~= key ~ " " ~ v.stringifyb();
                 }
@@ -1777,8 +1602,6 @@ class Value {
                 string[] items;
                 auto sortedKeys = content.d.variables.keys.array.sort();
                 foreach (string key; sortedKeys) {
-                //foreach (Value k, Value v; content.d) {
-                    //items ~= k.content.s ~ " " ~ v.stringify();
                     Value v = getValueFromDictImmut(key);
                     items ~= key ~ " " ~ v.stringifyImmut();
                 }
@@ -1791,21 +1614,14 @@ class Value {
     }
 
     void print() {
-        /*
-        JSONValue j = generateJsonValue(this);
-        string ret = j.toString();
-        write(ret);
-        */
-        switch (type)
-        {
+        switch (type) {
             case ValueType.numberValue      :   if (isBig) { write(to!string(content.bi)); } else { write(to!string(content.i)); } break;
             case ValueType.realValue        :   write(to!string(content.r)); break;
             case ValueType.booleanValue     :   write(to!string(content.b)); break;
             case ValueType.stringValue      :   write(content.s); break;
             case ValueType.arrayValue       :
                 write("[");
-                for (int i=0; i<content.a.length; i++)
-                {
+                for (int i=0; i<content.a.length; i++) {
                     content.a[i].print();
                     if (i!=content.a.length-1) write(",");
                 }
@@ -1814,8 +1630,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 write("[");
                 int i;
-                foreach (Var v; content.d.variables)
-                {
+                foreach (Var v; content.d.variables) {
                     write(v.name);
                     write(" : ");
                     v.value.print();
@@ -1830,16 +1645,14 @@ class Value {
 
     override string toString() {
         string ret = "";
-        switch (type)
-        {
+        switch (type) {
             case ValueType.numberValue      :   if (isBig) { ret ~= "bigint(" ~ to!string(content.bi) ~ ")"; } else { ret ~= "int(" ~ to!string(content.i) ~ ")"; } break;
             case ValueType.realValue        :   ret ~= "real(" ~ to!string(content.r) ~ ")"; break;
             case ValueType.booleanValue     :   ret ~= "bool(" ~ to!string(content.b) ~ ")"; break;
             case ValueType.stringValue      :   ret ~= "str(" ~ to!string("\"" ~ content.s ~ "\"") ~ ")"; break;
             case ValueType.arrayValue       :
                 ret ~= "array([";
-                for (int i=0; i<content.a.length; i++)
-                {
+                for (int i=0; i<content.a.length; i++) {
                     ret ~= content.a[i].toString();
                     if (i!=content.a.length-1) ret ~= ", ";
                 }
@@ -1848,8 +1661,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 ret ~= "dict([";
                 int i;
-                foreach (Var v; content.d.variables)
-                {
+                foreach (Var v; content.d.variables) {
                     ret ~= v.name ~ ":" ~ v.value.toString();
                     if (i!=content.d.variables.length-1) ret ~= ", ";
                     i++;
@@ -1863,16 +1675,14 @@ class Value {
 
     const string toString() {
         string ret = "";
-        switch (type)
-        {
+        switch (type) {
             case ValueType.numberValue      :   if (isBig) { ret ~= "bigint(" ~ to!string(content.bi) ~ ")"; } else { ret ~= "int(" ~ to!string(content.i) ~ ")"; } break;
             case ValueType.realValue        :   ret ~= "real(" ~ to!string(content.r) ~ ")"; break;
             case ValueType.booleanValue     :   ret ~= "bool(" ~ to!string(content.b) ~ ")"; break;
             case ValueType.stringValue      :   ret ~= "str(" ~ to!string("\"" ~ content.s ~ "\"") ~ ")"; break;
             case ValueType.arrayValue       :
                 ret ~= "array([";
-                for (int i=0; i<content.a.length; i++)
-                {
+                for (int i=0; i<content.a.length; i++) {
                     ret ~= content.a[i].toString();
                     if (i!=content.a.length-1) ret ~= ", ";
                 }
@@ -1881,8 +1691,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 ret ~= "dict([";
                 int i;
-                foreach (const Var v; content.d.variables)
-                {
+                foreach (const Var v; content.d.variables) {
                     ret ~= v.name ~ ":" ~ v.value.toString();
                     if (i!=content.d.variables.length-1) ret ~= ", ";
                     i++;
@@ -1918,8 +1727,7 @@ class Value {
         Value ret = new Value();
         ret.type = type;
 
-        switch (type)
-        {
+        switch (type) {
             case ValueType.numberValue : if (isBig) { ret.content.bi = content.bi; } else { ret.content.i = content.i; } break;
             case ValueType.realValue : ret.content.r = content.r; break;
             case ValueType.stringValue : ret.content.s = content.s.dup; break;
@@ -1939,8 +1747,7 @@ class Value {
         return ret;
     }
 
-    ~this()
-    {
+    ~this() {
         debug writeln("Destroying: " ~ to!string(this));
     }
 }
