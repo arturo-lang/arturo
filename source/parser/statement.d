@@ -70,8 +70,6 @@ class Statement {
 	Position pos;
 
 	this(Identifier i) {
-		//writeln("HERE");
-		//writeln("new statement:  " ~ i.inspect());
 		id = i;
 		expressions = new Expressions();
 		type = StatementType.normalStatement;
@@ -79,8 +77,6 @@ class Statement {
 	}
 
 	this(Identifier i, Expressions ex, bool isImmutable=false) {
-		//writeln("HEERE:");
-		//writeln("new statement:  " ~ i.inspect());
 		id = i;
 		expressions = ex;
 
@@ -90,9 +86,8 @@ class Statement {
 	}
 
 	this(Expression ex) {
-		//writeln("new statement from expression:  ");
 		if (ex.type==aE) {
-			//writeln("argument expression");
+		
 			if (ex.arg.type==ArgumentType.stringArgument) {
 				id = new Identifier("print");
 				expressions = new Expressions();
@@ -105,127 +100,79 @@ class Statement {
 				
 			}
 			else if (ex.arg.type==ArgumentType.identifierArgument) {
-				//writeln("id argument");
-				id = ex.arg.identifier;//new Identifier(ex.arg.value.content.s);
+				id = ex.arg.identifier;
 				expressions = new Expressions();
 				type = StatementType.normalStatement;
 				immut = false;
 				hasExpressions = false;
 			}
 			else {
-				//writeln("other argument");
 				id = null;
 				expression = ex;
 				type = StatementType.expressionStatement;
 			}
 		}
 		else {
-			//writeln("other expression");
 			id = null;
 			expression = ex;
 			type = StatementType.expressionStatement;
 		}
-		//writeln("new statement from expression: POST");
 	}
 
 	Value executeFunctionCall() {
 		string functionToExec = id.getId();
-		//writeln("calling func: " ~ functionToExec);
 		
 		return Glob.funcGet(functionToExec).execute(expressions);
 	}
 
 	Value executeUserFunctionCall(Func* f,Value* v) {
-		//writeln("About to execute(pointer): " ~ to!string(f));
 		if (Glob.memoize.canFind(to!string(f))) {
-			//Glob.retStack.push(Glob.retCounter+1);
-			//writeln("** Statement:executeUserFunctionCall : name=" ~ (*f).name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
-			//writeln("** \tretStack: pushed " ~ to!string(Glob.retCounter+1));
+
 			Glob.blockStack.push((*f).block);
 
 			Value ret = (*f).executeMemoized(expressions,to!string(f),v);
 
 			if (Glob.blockStack.lastItem() is (*f).block) {
-				//writeln("STACK found unaltered (no return occured). I have to pop it");
 				Glob.blockStack.pop();
 			}
-			//Glob.retStack.pop();
+
 			return ret;
 		}
 		else {
-			//Glob.retStack.push(Glob.retCounter+1);
-			//writeln("** Statement:executeUserFunctionCall : name=" ~ (*f).name ~ ", retCounter=" ~ to!string(Glob.retCounter) ~ ", retStack=" ~ Glob.retStack.str());
-			//writeln("** \tretStack: pushed " ~ to!string(Glob.retCounter+1));
-			//Stack!(int) stackBefore = Glob.retStack;
-			//writeln("In statement:executeUserFunctionCall");
 			Glob.blockStack.push((*f).block);
-			//writeln("** Statement:executeUserFunctionCall - PUSHing block");
-			//writeln("** blockStack: " ~ Glob.blockStack.list.map!(b=> to!string(&b)).array.join(", "));
+		
 			Value ret = (*f).executeWithRef(expressions,v);
-			//writeln("got result: " ~ ret.stringify());
+			
 			if (Glob.blockStack.lastItem() is (*f).block) {
-				//writeln("STACK found unaltered (no return occured). I have to pop it");
 				Glob.blockStack.pop();
 			}
-			//if (Glob.retStack.size()==stackBefore.size()) {
-				//writeln("STACK found unaltered (no return occured) (before:" ~ to!string(stackBefore.size()) ~ ", after: " ~ to!string(Glob.retStack.size()) ~ " - popping");
-				//Glob.retStack.pop();
-			//}
+
 			return ret;
 		}
-		/*
-		Value func;
 
-		if (Glob.varExists(id)) func = Glob.varGet(id);
-		else if (id.indexOf(".")!=-1) func = getDottedItem(id);
-		else throw new ERR_FunctionNotFound(id);
+	}
 
-		if (func.type!=fV) throw new ERR_FunctionNotFound(id);
-		else return func.content.f.execute(expressions);*/
-	}
-/*
-	Value executeUserFunctionCall(Func f) {
-		writeln("About to execute: " ~ to!string(&f));
-		return f.execute(expressions);
-	}
-*/
 	Value executeAssignment(Value* v) {
 
-		//writeln("Executing assignment");
 		if (v is null) {
-
-			//writeln("ASSIGNMENT: (before)" ~ id.getId());
-
 			if (expressions.lst.length==1) {
-				//writeln("FOUND CLASS_DEF: " ~ id);
 				Glob.symboldefs[id.getId()] = expressions;
 			}
-			//writeln("Found assignment: " ~ id);
+		
 			Value ev = expressions.evaluate();
-			//writeln("assigning: " ~ to!string(cast(void*)(ev)));
-			//ev = new Value(ev);
-			//writeln("assigning (new): " ~ to!string(cast(void*)(ev)));
-			//writeln("ASSIGNMENT: " ~ id ~ " ==> (0x" ~ to!string(cast(void*)ev) ~ ") = " ~ ev.stringify());
+			
 			if (ev.type==fV) {
 				ev.content.f.name = id.getId();
 			}
-			Glob.varSet(id.getId(),ev,immut);
-			//debug writeln("value= (" ~ id ~ ") -> " ~	ev.stringify());
-			
+			Glob.varSet(id.getId(),ev,immut);			
 
 			return ev;
 		}
 		else {
-			//writeln("ASSIGNMENT [internal for 0x" ~ to!string(cast(void*)*v) ~ "]: (before)" ~ id);
-			//writeln("Executing inner assignment: " ~ id);
 			Value ev = expressions.evaluate();
 
-			//writeln("ASSIGNMENT [internal for 0x" ~ to!string(cast(void*)*v) ~ "] : " ~ id ~ " ==> (0x" ~ to!string(cast(void*)ev) ~ ") = " ~ ev.stringify());
-			//return ev;
-			//writeln("setting: " ~ ev.stringify ~ " for: " ~ id ~ " object: " ~ v.stringify());
 			if (v.type==dV) { // is dictionary
-				//writeln("is dictionary");
-				//writeln("setting value: " ~ id ~ " to: " ~ ev.stringify() ~ " for: " ~ to!string(cast(void*)(*v)));
+				
 				if (ev.type==fV) {
 					ev.content.f.name = id.getId();
 				}
@@ -234,15 +181,12 @@ class Statement {
 			else { // is array
 				v.content.a[(new Value(id.getId())).content.i] = ev;
 			}
-			//writeln("HERE");
+
 			return ev;
-			//return new Value(0);
 		}
 	}
 
 	Value execute(Value* v) {
-		//if (v is null) writeln("Executing statement: " ~ id.inspect() ~ ", value: null");
-		//else  writeln("Executing statement: " ~ id.inspect() ~ ", value: " ~ to!string(cast(void*)(*v)));
 
 		try {
 			switch (type) {
@@ -253,8 +197,6 @@ class Statement {
 						bool isDictionaryKey = id.getId().indexOf(".")!=-1;
 						
 						Var sym = Glob.varGet(id.getId());
-
-						//writeln("sym :" ~ to!string(sym));
 						
 						if (hasExpressions) {
 							if (sym is null) return executeAssignment(v);
@@ -302,7 +244,6 @@ class Statement {
 
 	void inspect() {
 		writeln("statement: " ~ id.getId() ~ " with expressions:");
-		//expressions.inspect();
 	}
 
 }
