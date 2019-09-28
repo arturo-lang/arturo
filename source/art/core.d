@@ -18,6 +18,7 @@ import std.file;
 import std.stdio;
 import std.string;
 
+import parser.identifier;
 import parser.expression;
 import parser.expressions;
 import parser.statement;
