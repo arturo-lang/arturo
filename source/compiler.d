@@ -78,11 +78,8 @@ class Compiler {
         }
         catch (Exception e)
         {
-            //writeln("exception!");
             return new Value();
-        //  Panic.runtimeError(e.msg);
         }
-        //return new Value(0);
     }
 
     Value compileFromFile(string source) {
@@ -101,14 +98,10 @@ class Compiler {
             Value v = sourceTree.execute();
             debug Glob.inspect();
 
-            //Glob.contextStack.print();
-            //Glob.blockStack.print();
-            
             return v;
         }
         catch (Exception e) {
             debug writeln("caught exception (compiler level): " ~ e.msg);
-            //Panic.runtimeError(e.msg);
         }
         return new Value(0);
     }
@@ -117,23 +110,18 @@ class Compiler {
         string input = readText(source) ~ "\n";
 
         yylineno = 0;
-        //try {
-            yy_scan_buffer(cast(char*)(toStringz(input~'\0')),input.length+2);
-            yyparse();
 
-            sourceTree = cast(Program)(_program);
-            Value v = sourceTree.execute();
-            return v;
-        //}
-        //catch (Exception e) {
-        //  Panic.runtimeError(e.msg);
-        //}
-        //return new Value(0);
+        yy_scan_buffer(cast(char*)(toStringz(input~'\0')),input.length+2);
+        yyparse();
+
+        sourceTree = cast(Program)(_program);
+        Value v = sourceTree.execute();
+        
+        return v;
     }
 
     void inspect() {
         sourceTree.inspect();
         Glob.inspect();
-        //methodPaths();
     }
 }
