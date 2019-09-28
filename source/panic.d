@@ -253,8 +253,6 @@ class Panic
         else {
             if (expected=="") writeln(format(PARSE_ERROR_POS_TEMPLATE_REPL, getErrorString("Problem parsing input",null,["Found"],[given])));
             else writeln(format(PARSE_ERROR_POS_TEMPLATE_REPL, getErrorString("Problem parsing input",null,["Expected","Found"],[expected,given])));
-
-            //throw new Exception(msg);
         }
     }
 
