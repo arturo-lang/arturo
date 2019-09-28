@@ -31,7 +31,7 @@ class Program {
     Statements statements;
 
     this() {
-        debug writeln("NEW program");
+        
     }
 
     void setStatements(Statements st) {
