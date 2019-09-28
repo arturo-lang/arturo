@@ -195,7 +195,7 @@ class New_ : Func {
 
 		alias symdef = S!(v,0);
 
-		Value ret = Glob.symboldefs[symdef].evaluate();
+		Value ret = Glob.symboldefs[new Identifier(symdef)].evaluate();
 
 		if (ret.type==dV) {
 

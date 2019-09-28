@@ -18,6 +18,7 @@ import std.stdio;
 import std.string;
 import std.typetuple;
 
+import parser.identifier;
 import parser.expressions;
 import parser.statements;
 
@@ -159,7 +160,7 @@ class Globals : Context {
     int retCounter;
     Stack!(int) retStack;
     Stack!(Statements) blockStack;
-    Expressions[string] symboldefs;
+    Expressions[Identifier] symboldefs;
 
     this(string[] args) {
         super();
@@ -240,6 +241,8 @@ class Globals : Context {
 
     Var varGetByIdentifier(Identifier iden) {
         Var ret = varGet(iden.pathContents[0].id);
+        if (ret is null) return null;
+
         Value currentValue = ret.value;
         if (iden.pathContents.length==1) { return ret; }
 
