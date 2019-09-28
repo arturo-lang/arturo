@@ -58,18 +58,6 @@ enum ArgumentType : string
 	identifierArgument = "identifier"
 }
 
-// C Interface
-/*
-extern (C) struct yy_buffer_state;
-extern (C) int yyparse();
-extern (C) yy_buffer_state* yy_scan_string(const char*);
-extern (C) yy_buffer_state* yy_scan_buffer(char *, size_t);
-extern (C) extern __gshared FILE* yyin;
-extern (C) extern __gshared const(char)* yyfilename;
-extern (C) extern __gshared int yycgiMode;
-extern (C) extern __gshared int yylineno;*/
-//extern (C) __gshared void* _program;
-
 // Functions
 
 class Argument {
@@ -79,15 +67,11 @@ class Argument {
 	Identifier identifier;
 
 	this(Identifier iden) {
-		//writeln("In argument constructor");
 		type = ArgumentType.identifierArgument;
 		identifier = iden;
-		//writeln("AFTER");
 	}
 
 	this(string t, string v) {
-		debug writeln("NEW argument (type: " ~ t ~ ", value: " ~ v ~ ")");
-
 		if (t=="string") {
 			type = ArgumentType.stringArgument;
 			value = new Value(formatString(v));
@@ -114,24 +98,6 @@ class Argument {
 		else if (t=="null") {
 			type = ArgumentType.nullArgument;
 			value = new Value();
-		}
-		else {
-			type = ArgumentType.identifierArgument;
-			if (v.indexOf(ARGS)!=-1) {
-				//writeln("found ARGS");
-				auto m = matchFirst(v, regex(ARGS ~ "(?P<index>[0-9]+)"));
-				//writeln(m);
-				if (m["index"]!=[]) {
-					//writeln(".. with shortcut:" ~ v);
-					value = new Value(ARGS ~ "." ~ m["index"]);
-				}
-				else {
-					//writeln(".. without shortcut");
-					value = new Value(v);
-				}
-			
-			}
-			else value = new Value(v);
 		}
 	}
 
