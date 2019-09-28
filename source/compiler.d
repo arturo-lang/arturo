@@ -71,7 +71,7 @@ class Compiler {
 
             if (parseResult==0) {
                 sourceTree = cast(Program)(_program);
-                debug inspect();
+                //debug inspect();
                 return sourceTree.execute();
             }
             else return new Value();
@@ -94,14 +94,14 @@ class Compiler {
             yyparse();
 
             sourceTree = cast(Program)(_program);
-            debug inspect();
+            //debug inspect();
             Value v = sourceTree.execute();
-            debug Glob.inspect();
+            //debug Glob.inspect();
 
             return v;
         }
         catch (Exception e) {
-            debug writeln("caught exception (compiler level): " ~ e.msg);
+            //debug writeln("caught exception (compiler level): " ~ e.msg);
         }
         return new Value(0);
     }
