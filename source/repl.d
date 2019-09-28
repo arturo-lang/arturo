@@ -90,11 +90,18 @@ class Repl {
         writeln("?symbols              show defined symbols");
         writeln("?functions            show defined system functions");
         writeln();
-        writeln("?write.to <file>      write console buffer to file");
+        writeln("?read <file>          read source from file");
+        writeln("?write <file>         write console buffer to file");
         writeln();
         writeln("?clear                clear console window");
         writeln("?help                 show this help page");
         writeln("?exit                 exit interactive console");
+    }
+
+    void readSourceFrom(string source) {
+        Value ret = compiler.compileFromFile(source);
+        write("=> ");
+        writeln(ret.stringify());
     }
 
     void writeLinesTo(string[] ls, string filename) {
@@ -165,7 +172,8 @@ class Repl {
                         case "?info": parts.popFront(); showInfo(parts[0]); break;
                         case "?symbols": Glob.inspectSymbols(); break;
                         case "?functions": Glob.inspectFunctions(); break;
-                        case "?write.to": parts.popFront(); writeLinesTo(lines,parts[0]); break;
+                        case "?read": parts.popFront(); readSourceFrom(parts[0]); break;
+                        case "?write": parts.popFront(); writeLinesTo(lines,parts[0]); break;
                         case "?clear" : clearConsole(); break;
                         case "?help": showHelp(); break;
                         case "?exit": getter.dispose(); exitConsole(); break;
