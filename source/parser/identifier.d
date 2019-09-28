@@ -82,7 +82,6 @@ class Identifier {
 		else {
 			namespace = null;
 		}
-		//writeln("IN IDENTIFIER constructor: " ~ cleanstr);
 
 		if (s.indexOf(ARGS)!=-1) {
 			auto m = matchFirst(s, regex(ARGS ~ "(?P<index>[0-9]+)"));
@@ -106,21 +105,18 @@ class Identifier {
 	}
 
 	void add(string s) {
-		//writeln("IN IDENTIFIER add: " ~ s);
 		pathContentTypes ~= idPC;
 		PathContent pc = {id:s};
 		pathContents ~= pc;
 	}
 
 	void add(int l) {
-		//writeln("IN IDENTIFIER add: " ~ to!string(l));
 		pathContentTypes ~= numPC;
 		PathContent pc = {num:l};
 		pathContents ~= pc;
 	}
 
 	void add(Expression e) {
-		//writeln("IN IDENTIFIER add: expr");
 		pathContentTypes ~= exprPC;
 		PathContent pc = {expr:e};
 		pathContents ~= pc;
@@ -153,7 +149,7 @@ class Identifier {
 
 	string inspect() {
 		string[] ret = [];
-		//writeln("here");
+
 		for (size_t i=0; i<pathContentTypes.length; i++) {
 			PathContentType pct = pathContentTypes[i];
 			PathContent pc = pathContents[i];
@@ -164,8 +160,6 @@ class Identifier {
 				default: break;
 			}
 		}
-
-		//writeln("here");
 
 		return ret.join(", ");
 	}
