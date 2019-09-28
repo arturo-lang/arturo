@@ -1,0 +1,39 @@
+"====================================================================================="
+" Testing assignments, functions, class instances and return "
+"====================================================================================="
+
+a 10
+b "str"
+c #(1 2 3)
+d #("one" "two" "three")
+e #{
+	name "john"
+	surname "zafeiropoulos"
+	add {
+		@0 + @1
+	}
+}
+
+f { print "something!" }
+
+//g [x] { print "[g] num=" + x}
+h { print "[h] @ = " + @0 }
+
+print $(syms)
+
+b "boom"
+
+d.0 "uno"
+
+e.name "changed!"
+e.age 33
+
+print $(syms)
+
+!f
+//!g 10
+!h 11
+
+
+
+
