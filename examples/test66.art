@@ -34,6 +34,36 @@ print $(syms)
 !g 10
 !h 11
 
+print $(!e.add 1 2)
+
+e.add { 2*(@0 + @1) }
+
+print $(!e.add 1 2)
+
+class #{
+	name "john"
+	surname "doe"
+	email "johndoe@gmail.com"
+
+	init {
+
+	}
+
+	func {
+		print $(syms)
+		print "this.name = " + this.name
+		print "name = " + name
+	}
+}
+
+!class.func
+
+instance $(new "class")
+
+"here"
+
+!instance.func
+
 
 
 
