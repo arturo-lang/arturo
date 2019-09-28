@@ -20,8 +20,7 @@ import std.stdio;
 class Stack(T)
 {
     T[] list;
-    this()
-    {
+    this() {
 
     }
 
@@ -35,43 +34,33 @@ class Stack(T)
         return ret;
     }
 
-    void push(T v)
-    {
-        //writeln("pushing element to: " ~ to!string(this));
+    void push(T v) {
         list ~= v;
     }
 
-    T pop()
-    {
-        //writeln("poppin element from: " ~ to!string(this));
-        if (!isEmpty())
-        {
+    T pop() {
+        if (!isEmpty()) {
             T item = list[list.length-1];
             list.popBack();
 
             return item;
         }
-        else
-            return cast(T)(null);
+        else return cast(T)(null);
     }
 
-    bool isEmpty()
-    {
+    bool isEmpty() {
         return list.length==0;
     }
 
-    ulong size()
-    {
+    ulong size() {
         return list.length;
     }
 
-    T lastItem()
-    {
+    T lastItem() {
         return list[list.length-1];
     }
 
-    void print()
-    {
+    void print() {
         writeln("-----------/--/---------STACK--------/--/-----------");
         writeln("Stack size : " ~ to!string(list.length));
         foreach (i, T value; list)
@@ -92,8 +81,7 @@ class Stack(T)
         return ret.join(", ");
     }
 
-    void printPath()
-    {
+    void printPath() {
         string ret = "";
         foreach (i, T value; list)
         {
