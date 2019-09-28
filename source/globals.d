@@ -239,6 +239,72 @@ class Globals : Context {
         }
     } 
 
+    bool varSetByIdentifier(Identifier iden, Value v, bool redefine = false) {
+        Var existingVar = varGetByIdentifier(iden);
+        bool varAlreadyExisting = existingVar !is null;
+
+        if (iden.pathContents.length==1) { // no index
+            string varName = iden.pathContents[0].id;
+
+            if (redefine) {
+                contextStack.lastItem()._varSet(varName,v);
+            }
+            else {
+                if (varAlreadyExisting) {
+                    existingVar.value = v;
+                }
+                else {
+                    contextStack.lastItem()._varSet(varName,v);
+                }
+            }
+            return true;
+        }
+        else {
+            Var rootVar = varGetByIdentifier(iden.getIdentifierRoot());
+
+            if (rootVar is null) return false;
+            else {
+                Value rootValue = rootVar.value;
+
+                PathContentType last_pct = iden.pathContentTypes[iden.pathContentTypes.length-1];
+                PathContent last_pc = iden.pathContents[iden.pathContents.length-1];
+
+                if (rootValue.type==dV) { // is dictionary
+                    if (last_pct==numPC) return false;
+
+                    string subKey; 
+                    if (last_pct==idPC) { subKey = last_pc.id; }
+                    else if (last_pct==exprPC) {
+                        Value sub = last_pc.expr.evaluate();
+                        if (sub.type!=sV) return false;
+
+                        subKey = sub.content.s;
+                    }
+
+                    rootValue.setValueForDict(subKey, v);
+
+                    return true;
+                }
+                else if (rootValue.type==aV) { // is array
+                    long subKey;
+                    if (last_pct==numPC) { subKey = last_pc.num; }
+                    else if (last_pct==exprPC) {
+                        Value sub = last_pc.expr.evaluate();
+                        if (sub.type!=nV) return false;
+                        subKey = sub.content.i;
+                    }
+
+                    if (subKey>=rootValue.content.a.length) return false;
+
+                    rootValue.content.a[subKey] =  v;
+
+                    return true;
+                }
+                else return false;
+            }
+        }
+    }
+
     Var varGetByIdentifier(Identifier iden) {
         Var ret = varGet(iden.pathContents[0].id);
         if (ret is null) return null;
@@ -258,9 +324,9 @@ class Globals : Context {
             if (currentValue.type==dV) {
                 if (ptype==numPC) return null;
 
-                string subKey = ppart.id;
-
-                if (ptype==exprPC) {
+                string subKey; 
+                if (ptype==idPC) subKey= ppart.id;
+                else if (ptype==exprPC) {
                     Value sub = ppart.expr.evaluate();
                     if (sub.type!=sV) return null;
                     subKey = sub.content.s;
@@ -276,9 +342,10 @@ class Globals : Context {
             else if (currentValue.type==aV) {
                 if (ptype==idPC) return null;
 
-                long subKey = ppart.num;
+                long subKey;
 
-                if (ptype==exprPC) {
+                if (ptype==numPC) { subKey = ppart.num; }
+                else if (ptype==exprPC) {
                     Value sub = ppart.expr.evaluate();
                     if (sub.type!=nV) return null;
                     subKey = sub.content.i;
