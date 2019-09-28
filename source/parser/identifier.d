@@ -123,6 +123,22 @@ class Identifier {
 		pathContents ~= pc;
 	}
 
+	Identifier getIdentifierRoot() {
+		Identifier ret = new Identifier(pathContents[0].id);
+
+		ret.namespace = namespace;
+
+		for (size_t i=1; i<pathContentTypes.length-1; i++) {
+			PathContentType pct = pathContentTypes[i];
+			PathContent pc = pathContents[i];
+
+			ret.pathContents ~= pc;
+			ret.pathContentTypes ~= pct;
+		}
+
+		return ret;
+	}
+
 	string getId() {
 		string ret = "";
 
@@ -142,7 +158,7 @@ class Identifier {
 			switch (pct) {
 				case idPC: ret ~= pc.id;  break;
 				case numPC: ret ~= to!string(pc.num); break;
-				case exprPC: ret ~= "<expr>"; break;
+				case exprPC: ret ~= "[" ~ pc.expr.evaluate().stringify() ~ "]"; break;
 				default: break;
 			}
 		}
