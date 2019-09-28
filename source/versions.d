@@ -35,6 +35,7 @@ version(FreeBSD)    { const string ART_BUILD_OS = "FreeBSD"; }
 version(Solaris)    { const string ART_BUILD_OS = "Solaris"; }
 
 const string VERSION_TEMPLATE       = import("version_template.txt").replace("\\x1B","\x1B");
+
 const string LOGO_TEMPLATE          = import("logo_template.txt").replace("\\x1B","\x1B");
 
 // Functions
