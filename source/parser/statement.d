@@ -156,7 +156,7 @@ class Statement {
 
 		if (v is null) {
 			if (expressions.lst.length==1) {
-				Glob.symboldefs[id.getId()] = expressions;
+				Glob.symboldefs[id] = expressions;
 			}
 		
 			Value ev = expressions.evaluate();
@@ -187,13 +187,26 @@ class Statement {
 	}
 
 	Value execute(Value* v) {
-
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
+					writeln("Executing normal statement: " ~ id.inspect());
 
 					if (Glob.funcExists(id.getId())) return executeFunctionCall();  // system function
 					else {
+
+						if (!hasExpressions) {
+							// it's an id-expression, return it's value
+							writeln("it's an id-expression");
+							return new Expression(new Argument(id)).evaluate();
+						}
+						else {
+							// it's an assignment
+							writeln("it's an assignment");
+							return executeAssignment(v);
+						}
+
+						/*
 						bool isDictionaryKey = id.getId().indexOf(".")!=-1;
 						
 						Var sym = Glob.varGet(id.getId());
@@ -229,9 +242,11 @@ class Statement {
 							}
 							else return new Expression(new Argument(id)).evaluate();
 						}
+						*/
 					}
 
 				case StatementType.expressionStatement:
+					writeln("Executing expression statement");
 					return expression.evaluate();
 				default:
 					return new Value();
