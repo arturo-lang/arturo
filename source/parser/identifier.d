@@ -97,7 +97,8 @@ class Identifier {
 				pathContents = [ pc ];
 			}
 		
-		} else {
+		} 
+		else {
 			pathContentTypes = [ idPC ];
 			PathContent pc = {cleanstr};
 			pathContents = [ pc ];
@@ -124,6 +125,7 @@ class Identifier {
 
 	string getId() {
 		string ret = "";
+		
 		if (namespace !is null) ret ~= namespace ~ ":";
 		ret ~= pathContents[0].id;
 		
@@ -132,6 +134,7 @@ class Identifier {
 
 	string getFullIdentifier() {
 		string[] ret;
+
 		for (size_t i=0; i<pathContentTypes.length; i++) {
 			PathContentType pct = pathContentTypes[i];
 			PathContent pc = pathContents[i];
