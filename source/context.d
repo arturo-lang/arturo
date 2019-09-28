@@ -66,9 +66,7 @@ class Context {
     }
 
     void _varSet(string n, Value v, bool immut = false) {
-        //writeln("in _varSet: before");
         variables[n] = new Var(n,v,immut);
-        //writeln("in _varSet: after");
     }
 
     Var _varGet(string n) {
@@ -121,10 +119,7 @@ class Context {
     string inspectVars() {
         string[] ret;
         foreach (string name, Var v; variables) {
-            //writeln("name=" ~ name);
-            //if (name!="this") {
-                ret ~= "\t" ~ name ~ ": (0x" ~ to!string(cast(void*)v) ~ "|0x" ~ to!string(cast(void*)v.value) ~ ") = " ~ v.value.stringify();
-            //}
+            ret ~= "\t" ~ name ~ ": (0x" ~ to!string(cast(void*)v) ~ "|0x" ~ to!string(cast(void*)v.value) ~ ") = " ~ v.value.stringify();
         }
 
         return ret.join("\n");
