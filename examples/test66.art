@@ -16,7 +16,7 @@ e #{
 
 f { print "something!" }
 
-//g [x] { print "[g] num=" + x}
+g [x]{ print "[g] num=" + x}
 h { print "[h] @ = " + @0 }
 
 print $(syms)
@@ -31,7 +31,7 @@ e.age 33
 print $(syms)
 
 !f
-//!g 10
+!g 10
 !h 11
 
 
