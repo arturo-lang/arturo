@@ -82,7 +82,6 @@ class Expression {
 	}
 
 	this(Expression l, string op, Expression r, int tp) {
-		//writeln("Expression constructor: expression");
 		if (tp==0) type = ExpressionType.normalExpression;
 		else type = ExpressionType.comparisonExpression;
 
@@ -96,7 +95,6 @@ class Expression {
 	}
 
 	this(Argument a) {
-		//writeln("Expression constructor: Argument");
 		type = ExpressionType.argumentExpression;
 
 		arg = a;
@@ -105,7 +103,6 @@ class Expression {
 	}
 
 	this(Statement s) {
-		//writeln("Expression constructor: Statement");
 		type = ExpressionType.functionExpression;
 
 		arg = null;
@@ -114,7 +111,6 @@ class Expression {
 	}
 
 	this(Statements st, bool isDictionary=false, Identifiers ids = null) {
-		//writeln("Expression constructor: block");
 		if (isDictionary) type = ExpressionType.dictionaryExpression;
 		else type = ExpressionType.blockExpression;
 
@@ -124,7 +120,7 @@ class Expression {
 
 		if (ids !is null) {
 			identifiers = ids;
-			function_arguments = []; // ids.split(",");
+			function_arguments = [];
 		}
 		else {
 			function_arguments = [];
@@ -153,7 +149,7 @@ class Expression {
 			case "/"	: return lValue/rValue;
 			case "%"	: return lValue%rValue;
 			case "^"	: return lValue^^rValue;
-			case ""		: return lValue; //#CHNG
+			case ""		: return lValue;
 			default		: break;
 		}
 
@@ -195,17 +191,11 @@ class Expression {
 
 		Glob.contextStack.push(res.content.d);
 
-		//Glob.contextStack.push(new Context());
-		//Glob.varSet(THIS, res);
-		//Glob.inspect();
-
 		foreach (Statement s; statements.lst) {
 			s.execute(&res);
 		}
 
 		Glob.contextStack.pop();
-
-		//Glob.contextStack.pop();
 
 		return res;
 	}
@@ -220,7 +210,6 @@ class Expression {
 
 	Value evaluate()
 	{
-		//writeln("Evaluating expression.type: " ~ type);
 		switch (type) {
 			case ExpressionType.argumentExpression:		return arg.getValue();
 			case ExpressionType.normalExpression:		return evaluateNormalExpression();
