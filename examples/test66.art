@@ -41,9 +41,9 @@ e.add { 2*(@0 + @1) }
 print $(!e.add 1 2)
 
 class #{
-	name ""
-	surname ""
-	email ""
+	name ~
+	surname ~
+	email ~
 
 	init [n,s,em]{
 		name n
@@ -75,7 +75,7 @@ class #{
 
 !class.func
 
-instance $(new "class" #("john" "doe" "johndoe@gmail.com"))
+instance $(new ~class #("john" "doe" "johndoe@gmail.com"))
 
 !instance.func
 !instance.sayHello
