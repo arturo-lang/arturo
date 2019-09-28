@@ -29,7 +29,7 @@ class Var {
 
     this(string n, Value v, bool isImmutable = false) {
         name = n;
-        value = v; // new Value(v); 
+        value = v;
         immut = isImmutable;
     }
 
