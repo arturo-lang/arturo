@@ -139,10 +139,10 @@ class Expression {
 	Value evaluateNormalExpression() {
 		Value lValue = left.evaluate();
 		Value rValue; 
+		
 		if (right) rValue = right.evaluate();
 
-		switch (operator)
-		{
+		switch (operator) {
 			case "+"	: return lValue+rValue;
 			case "-"	: return lValue-rValue;
 			case "*"	: return lValue*rValue;
@@ -161,8 +161,7 @@ class Expression {
 		Value rValue;
 		if (right) rValue = right.evaluate();
 
-		switch (operator)
-		{
+		switch (operator) {
 			case "="	: return new Value(lValue==rValue);
 			case "!="	: return new Value(lValue!=rValue);
 			case ">"	: return new Value(lValue>rValue);
@@ -208,8 +207,7 @@ class Expression {
 		return new Value(statements, function_arguments);
 	}
 
-	Value evaluate()
-	{
+	Value evaluate() {
 		switch (type) {
 			case ExpressionType.argumentExpression:		return arg.getValue();
 			case ExpressionType.normalExpression:		return evaluateNormalExpression();
