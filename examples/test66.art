@@ -41,29 +41,54 @@ e.add { 2*(@0 + @1) }
 print $(!e.add 1 2)
 
 class #{
-	name "john"
-	surname "doe"
-	email "johndoe@gmail.com"
+	name ""
+	surname ""
+	email ""
 
-	init {
-
+	init [n,s,em]{
+		name n
+		surname s
+		email em
 	}
 
 	func {
 		print $(syms)
 		print "this.name = " + this.name
 		print "name = " + name
+
+		print "this.surname = " + this.surname
+		print "surname = " + surname
+	}
+
+	sayHello {
+		print "Hi " + name + "!!!"
+	}
+
+	changeName [newName] {
+		print $(syms)
+		this.name newName
+
+		!this.sayHello
 	}
 }
 
+
 !class.func
 
-instance $(new "class")
+instance $(new "class" #("john" "doe" "johndoe@gmail.com"))
 
-"here"
+!instance.func
+!instance.sayHello
+
+instance.surname "zafeiropoulos"
 
 !instance.func
 
+print $(syms)
 
+!instance.changeName "george"
+print instance
 
+!instance.changeName "james"
+print instance
 
