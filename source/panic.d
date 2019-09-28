@@ -182,6 +182,15 @@ class ERR_ModifyingImmutableVariableError : Exception {
     }
 }
 
+class ERR_CannotPerformAssignmentError : Exception {
+    this(string id) {
+        super( getErrorString("Could not perform assignment - perhaps variable doesn't exist?",null,
+            ["Identifier"],
+            [id] )
+        );
+    }
+}
+
 class ERR_DatabaseError : Exception {
     this(string msg) {
         super( getErrorString("Database error",null,
