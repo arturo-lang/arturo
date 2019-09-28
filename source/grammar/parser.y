@@ -214,7 +214,7 @@ expression_list			:	expression 															{ void* e = new_Expressions(); add
 statement				: 	expression 															{ $$ = new_StatementFromExpression($expression); POS($$); }
 						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions("return", subex); }
 						|	identifier expression_list											{ $$ = new_StatementWithExpressions($identifier, $expression_list); POS($$); }
-						|	identifier TILDE expression_list									{ $$ = new_ImmutableStatementWithExpressions($identifier, $expression_list); POS($$); }
+						//|	identifier TILDE expression_list									{ $$ = new_ImmutableStatementWithExpressions($identifier, $expression_list); POS($$); }
 						;
 
 statements 				:	statements[previous] NEW_LINE statement 							{ void* s = $previous; if ($statement!=NULL) { add_Statement(s, $statement); } $$ = s; }
