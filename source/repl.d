@@ -44,7 +44,7 @@ const string REPL_PROMPT            =   "\x1B[38;5;208m\x1B[1m$ :%s\x1B[0m\x1B[3
 class ReplLineGetter : LineGetter {
     mixin LineGetterConstructors;
 
-    string[] funcs = mixin(getSystemFuncsArray()); //["?info","?symbols","?functions","?clear","?help","?exit","acos","acosh","all","any","asin","asinh","atan","atanh","capitalize","ceil","characters","contains","cos","cosh","date.now","datetime.now","day","endsWith","exec","exp","file.exists","file.read","file.write","filter","first","floor","foreach","get","if","import","is.directory","is.file","is.match","is.symlink","json.generate","json.parse","justify.center","justify.left","justify.right","keys","last","lines","ln","log10","loop","lowercase","map","markdown","matches","max","md5","min","month","object","path.contents","path.create","path.current","path.directory","path.extension","path.filename","path.normalize","print","random","range","replace","return","reverse","round","set","sha256","sha512","shell","sin","sinh","size","sort","split","sqrt","startsWith","strip","tail","tan","tanh","time.now","to.number","trace","type","uppercase","uuid","web.read","words","xml.check","yaml.generate","yaml.parse"];
+    string[] funcs = mixin(getSystemFuncsArray()); 
     override protected string[] tabComplete(in dchar[] candidate) {
         import std.file, std.conv, std.algorithm, std.string;
         const(dchar)[] soFar = candidate;
@@ -143,25 +143,6 @@ class Repl {
             auto input = strip(getter.getline());
             writeln();
 
-            /*
-            bool commandReady = false;
-            int leftbracks = 0;
-            if (to!string(input[$-1])!="{") commandReady = true;
-            else leftbracks = 1;
-
-            while (!commandReady) {
-                input ~= "\n";
-                getter.prompt = "\x1B[38;5;208m\x1B[1m$ :" ~ format("%03s",lineCounter) ~ "\x1B[0m\x1B[38;5;208m\x1B[1m-\x1B[0m ";
-                auto nextInput = strip(stdin.readln());
-
-                if (to!string(nextInput[$-1])=="{") leftbracks += 1;
-                if (to!string(nextInput[$-1])=="}") leftbracks -= 1;
-
-                input ~= nextInput;
-
-                if (leftbracks == 0) commandReady = true;
-            }
-            */
             if (input.strip!="") {
             
                 if (input.startsWith("?"))
@@ -189,9 +170,6 @@ class Repl {
                     Value ret = compiler.compileFromString(input);
                     terminal.write("=> ");
                     terminal.writeln(ret.stringify());
-
-                    //ret.print();
-                    //writeln("");
                 }
 
             }
