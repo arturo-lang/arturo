@@ -61,7 +61,7 @@ Globals Glob;
 // Constants
 
 const string ARGS                                       = "@";
-//const string THIS                                         = "this";
+const string THIS                                       = "this";
 
 // Utilities
 
@@ -182,63 +182,8 @@ class Globals : Context {
         isRepl = false;
         trace = false;
 
-        //classdefs = [];
-
         retCounter = -1;
     }
-/*
-    Value getSymbolParent(string s) {
-        string[] parts = s.split(".");
-        string mainObject = parts[0];
-        Value main;
-
-        if (varExists(mainObject)) main = varGet(mainObject);
-        else return null;
-
-        parts.popFront();
-
-        while (parts.length>0) {
-            string nextKey = parts[0];
-
-            if (main.type==dV) {
-                if ((parts.length==1) && (main.getValueFromDict(nextKey) !is null)) return main;
-
-                Value nextKeyValue = main.getValueFromDict(nextKey);
-                if (nextKeyValue !is null)
-                    main = nextKeyValue;
-                else return null;
-            }
-            else if (main.type==aV) {
-                if ((parts.length==1) && (isNumeric(nextKey)) && (main.content.a.length<to!int(nextKey))) return main;
-
-                if (isNumeric(nextKey) && main.content.a.length<to!int(nextKey)) 
-                    main = main.content.a[to!int(nextKey)];
-                else return null;
-            }
-            else return null;
-
-            parts.popFront();
-        }
-
-        return null;
-    }
-
-    Context contextForSymbol(string n) {
-        Stack!(Context) copied = contextStack.copy();
-        Context currentContext = copied.pop();
-
-        while (currentContext !is null) {
-            if (currentContext._varExists(n)) {
-                return currentContext;
-            }
-
-            currentContext = copied.pop();
-            
-        }
-
-        return null;
-    }
-*/
 
     Value getParentDictForSymbol(string s) {
         string[] parts = s.split(".");
@@ -253,8 +198,6 @@ class Globals : Context {
 
         while (parts.length>0) {
             string nextKey = parts[0];
-
-            //writeln("nextKey: " ~ nextKey);
 
             if (mainValue.type==dV) {
                 if ((parts.length==1) && (mainValue.getValueFromDict(nextKey) !is null)) return mainValue;
@@ -280,7 +223,6 @@ class Globals : Context {
     }
 
     void varSet(string n, Value v, bool immut = false, bool redefine = false) {
-        //writeln("SETTING:" ~ n);
         if (redefine) {
             contextStack.lastItem()._varSet(n,v,immut);
         }
@@ -288,13 +230,10 @@ class Globals : Context {
             Var existingVar = varGet(n);
 
             if (existingVar !is null) {
-                //writeln("ALREADY EXISTED:" ~ n);
                 existingVar.value = v;
             }
             else {
-                //writeln("SETTING TO TOP STACK:" ~ n);
                 contextStack.lastItem()._varSet(n,v,immut);
-                //writeln(v.stringify());
             }
         }
     } 
@@ -356,15 +295,11 @@ class Globals : Context {
     }
 
     Var varGet(string n) {
-        //writeln("in varGet: " ~ n);
         // if it's an ARGS variable, return it from top-most context
         if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
 
-        //writeln("in varGet: " ~ n);
         // if it's a global, return it now
         if (this._varExists(n)) return this._varGet(n); 
-
-        //writeln("in varGet: " ~ n);
 
         // else search back into the context stack
         // until reaching root (global), finding it, 
@@ -387,8 +322,6 @@ class Globals : Context {
         string[] ret;
         
         foreach (i, st; contextStack.list) {
-            //writeln(st.inspectVars());
-            //writeln("---");
             ret ~= "\n[" ~ to!string(i) ~ "]: " ~ st.type ~ " -> " ~ "\n" ~ st.inspectVars();
         }
 
