@@ -149,6 +149,7 @@ int yywrap() {
 %left PLUS_SG MINUS_SG
 %left MULT_SG DIV_SG MOD_SG 
 %left POW_SG
+%left IMPLIES
 
 %nonassoc REDUCE
 %nonassoc ID
@@ -211,15 +212,14 @@ expression				: 	argument 															{ $$ = new_ExpressionFromArgument($argu
 
 
 expression_list			:	expression 															{ void* e = new_Expressions(); add_Expression(e, $expression); $$ = e; }
-						| 	IMPLIES expression													{ void* e = new_Expressions(); void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions("return", subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
+						| 	IMPLIES expression													{ void* e = new_Expressions(); void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return"), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
 						| 	expression_list[previous] expression 								{ void* e = $previous; add_Expression(e, $expression); $$ = e; }
-						| 	expression_list[previous] IMPLIES expression 						{ void* e = $previous; void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions("return", subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
+						| 	expression_list[previous] IMPLIES expression 						{ void* e = $previous; void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return"), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
 						;
 
 statement				: 	expression 															{ $$ = new_StatementFromExpression($expression); POS($$); }
-						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions("return", subex); }
+						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions(new_IdentifierWithId("return"), subex); }
 						|	identifier expression_list											{ $$ = new_StatementWithExpressions($identifier, $expression_list); POS($$); }
-						//|	identifier TILDE expression_list									{ $$ = new_ImmutableStatementWithExpressions($identifier, $expression_list); POS($$); }
 						;
 
 statements 				:	statements[previous] NEW_LINE statement 							{ void* s = $previous; if ($statement!=NULL) { add_Statement(s, $statement); } $$ = s; }
