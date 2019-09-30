@@ -244,18 +244,49 @@ class Func {
                 }
             }
         }
+
+        try {
+            // ADDED
+            debug writeln("FUNC::execute  -> pushing block to stack and executing: " ~ name);
+            Glob.blockStack.push(block);
+
+            debug writeln("contextStack: " ~ Glob.contextStack.str());
             
-        Value ret = block.execute(v);
+            Value ret = block.execute(v);
 
-        if (!thisWasAlreadySet) Glob._varUnset("this");
+            // ADDED
+            debug writeln("FUNC::execute -> popping block from stack after executing: " ~ name);
+            if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is block) {
+                Glob.blockStack.pop();
+            }
 
-        if (parentContext !is null) { 
-            Glob.contextStack.pop();
+            // cleanup
+
+            if (!thisWasAlreadySet) Glob._varUnset("this");
+
+            debug writeln("contextStack: " ~ Glob.contextStack.str());
+
+            if (parentContext !is null && Glob.contextStack.size() > 1) { 
+                debug writeln("POP: contextStack");
+                Glob.contextStack.pop();
+            }
+
+            debug writeln("contextStack: " ~ Glob.contextStack.str());
+
+            if (Glob.contextStack.size() > 1) {
+                debug writeln("POP: contextStack");
+                Glob.contextStack.pop();
+            }
+
+            debug writeln("contextStack: " ~ Glob.contextStack.str());
+
+            return ret;
+
         }
-
-        Glob.contextStack.pop();
-
-        return ret;
+        catch(Exception e) {
+            debug writeln("FUNC::execute  (" ~ name ~ ")-> got exception; reTHROW");
+            throw e;
+        }
     }
 
     Value execute(Expressions ex) {

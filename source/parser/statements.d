@@ -66,20 +66,24 @@ class Statements {
 			catch (Exception e) {
 
 				if (cast(ReturnResult)(e) !is null) {
+					debug write("BLOCK::execute -> got Return: ");
+					if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is this) {
+						debug writeln("It's last item - return it");
 
-					if (Glob.blockStack.lastItem() is this) {
 						Glob.blockStack.pop();
-						Glob.contextStack.pop();
+						//Glob.contextStack.pop();
 						//writeln("Return:: popping context");
 						//writeln(Glob.inspectAllVars());
 						Value va = (cast(ReturnResult)(e)).val;
 						return va;
 					}
 					else {
+						debug  writeln("Not last item - reTHROW");
 						//writeln("Return:: popping context (throw)"); 					
 						throw e;
 					}
 				} else {
+					debug writeln("BLOCK::execute -> got Exception");
 					Panic.runtimeError(e.msg, s.pos);
 				}
 			}

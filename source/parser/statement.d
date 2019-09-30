@@ -139,9 +139,12 @@ class Statement {
 			return ret;
 		}
 		else {
+			writeln("pushing block to stack and executing: " ~ id.inspect());
 			Glob.blockStack.push((*f).block);
 		
 			Value ret = (*f).executeWithRef(expressions,v);
+
+			writeln("after executing: " ~ id.inspect());
 			
 			if (Glob.blockStack.lastItem() is (*f).block) {
 				Glob.blockStack.pop();
@@ -216,6 +219,7 @@ class Statement {
 			}
 		}
 		catch (Exception e) {
+			debug writeln("STATEMENT::execute  (" ~ id.inspect() ~ ")-> got exception; reTHROW");
 			throw e;
 		}
 	}
