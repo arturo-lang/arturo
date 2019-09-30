@@ -1,0 +1,20 @@
+fun {
+	print $(syms)
+	print "something"
+	return 2
+	print "should NOT be printed!!!"
+}
+
+funb {
+	print "in funB"
+	return $(!fun)
+	print "should NOT be printed!!!"
+}
+
+a $(!funb)
+
+print $(syms)
+
+print "A = " + a
+
+//print "a = " + a
