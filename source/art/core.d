@@ -55,33 +55,6 @@ class And_ : Func {
 		}
 	}
 }
-/*
-		if (Glob.memoize.canFind(to!string(f))) {
-
-			Glob.blockStack.push((*f).block);
-
-			Value ret = (*f).executeMemoized(expressions,to!string(f),v);
-
-			if (Glob.blockStack.lastItem() is (*f).block) {
-				Glob.blockStack.pop();
-			}
-
-			return ret;
-		}
-		else {
-			writeln("pushing block to stack and executing: " ~ id.inspect());
-			Glob.blockStack.push((*f).block);
-		
-			Value ret = (*f).executeWithRef(expressions,v);
-
-			writeln("after executing: " ~ id.inspect());
-			
-			if (Glob.blockStack.lastItem() is (*f).block) {
-				Glob.blockStack.pop();
-			}
-
-			return ret;
-		}*/
 
 class Exec_ : Func {
 	this(string ns="") { super(ns ~ "exec","execute given function with optional array of arguments",[[fV],[fV,vV]],[xV]); }

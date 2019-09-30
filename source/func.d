@@ -247,7 +247,7 @@ class Func {
 
         try {
             // ADDED
-            debug writeln("FUNC::execute  -> pushing block to stack and executing: " ~ name);
+            //writeln("FUNC::execute  -> pushing block to stack and executing: " ~ name);
             Glob.blockStack.push(block);
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());
@@ -255,9 +255,33 @@ class Func {
             Value ret = block.execute(v);
 
             // ADDED
-            debug writeln("FUNC::execute -> popping block from stack after executing: " ~ name);
             if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is block) {
+                //writeln("FUNC::execute -> popping block from stack after executing: " ~ name);
                 Glob.blockStack.pop();
+            } else {
+                // something was returned before
+                if (name=="" || name is null) {
+                    //writeln("FUNC::execute -> reTHROW (not named block)");
+                    if (!thisWasAlreadySet) Glob._varUnset("this");
+
+                    debug writeln("contextStack: " ~ Glob.contextStack.str());
+
+                    if (parentContext !is null && Glob.contextStack.size() > 1) { 
+                        debug writeln("POP: contextStack");
+                        Glob.contextStack.pop();
+                    }
+
+                    debug writeln("contextStack: " ~ Glob.contextStack.str());
+
+                    if (Glob.contextStack.size() > 1) {
+                        debug writeln("POP: contextStack");
+                        Glob.contextStack.pop();
+                    }
+
+                    debug writeln("contextStack: " ~ Glob.contextStack.str());
+
+                    throw new ReturnResult(ret);
+                }
             }
 
             // cleanup

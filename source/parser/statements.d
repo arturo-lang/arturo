@@ -70,6 +70,7 @@ class Statements {
 					if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is this) {
 						debug writeln("It's last item - return it");
 
+						//writeln("STATEMENTS::execute -> popping block from stack after executing");
 						Glob.blockStack.pop();
 						//Glob.contextStack.pop();
 						//writeln("Return:: popping context");
@@ -78,7 +79,7 @@ class Statements {
 						return va;
 					}
 					else {
-						debug  writeln("Not last item - reTHROW");
+						debug writeln("Not last item - reTHROW");
 						//writeln("Return:: popping context (throw)"); 					
 						throw e;
 					}
