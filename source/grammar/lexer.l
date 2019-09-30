@@ -33,6 +33,7 @@ extern void panic_ParseError(const char* m, const char* f, int line);
  ****************************************/
 
 %option yylineno
+%x C_COMMENT
 
 /****************************************
  Building blocks
@@ -57,6 +58,12 @@ LETTER_OR_MISC		[a-zA-Z_:]
 
 \"(\\.|[^\\"])*\"									{ count(); return STRING; }
 '(\\.|[^\\'])+'										{ count(); return STRING; }
+
+
+"/*"            									{ BEGIN(C_COMMENT); }
+<C_COMMENT>"*/" 									{ BEGIN(INITIAL); }
+<C_COMMENT>\n   									{ yylineno++; }
+<C_COMMENT>.   	 									{ }
 
 "//".*                                  			{ count(); /* Single-line comment. Ignore. */ }
 "#!".*                                  			{ count(); /* She-bang line. Ignore. */ }
