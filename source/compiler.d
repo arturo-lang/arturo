@@ -48,11 +48,11 @@ extern (C) extern __gshared int yycgiMode;
 extern (C) extern __gshared int yylineno;
 extern (C) __gshared void* _program;
 
+Program sourceTree;
+
 // Functions
 
 class Compiler {
-
-    Program sourceTree;
 
     this(bool main=true, string[] args = []) {
         _program = cast(void*)(new Program());
