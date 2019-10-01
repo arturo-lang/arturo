@@ -195,7 +195,7 @@ class Value {
 
         switch (type)
         {
-            case ValueType.numberValue : if (isBig) { content.bi = v.content.bi; } else { content.i = v.content.i; } break;
+            case ValueType.numberValue : if (v.isBig) { isBig = true; content.bi = v.content.bi; } else { content.i = v.content.i; } break;
             case ValueType.realValue : content.r = v.content.r; break;
             case ValueType.stringValue : content.s = v.content.s; break;
             case ValueType.booleanValue : content.b = v.content.b; break;
@@ -667,6 +667,19 @@ class Value {
     }
 
     Value opBinary(string op)(in Value rhs) const if (op == "*") {
+        /*
+        if (isBig) {
+            write("multiplying: (big) " ~ stringifyImmut());
+        }
+        else {
+            write("multiplying: " ~ stringifyImmut());
+        }
+        if (rhs.isBig) {
+            writeln(" with: (big) " ~ rhs.stringifyImmut());
+        }
+        else {
+            writeln(" with: " ~ rhs.stringifyImmut());
+        }*/
         if (type==ValueType.numberValue) {
             if (isBig) {
                 BigInt lhs = content.bi;
