@@ -29,7 +29,8 @@
 		"-J=source/resources",
 		"-flto=full",
 		"-O3",
-		"-Os"
+		"-Os",
+		"-boundscheck=off"
 	],
 	"sourceFiles": [
 		"obj/lexer.o",
