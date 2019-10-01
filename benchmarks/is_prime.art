@@ -1,0 +1,13 @@
+maxLimit 5000
+
+isPrime [n]{ 
+	if n<2 { return false }
+	loop $(range 2 n-1) [x]{
+		if n%x=0 { return false }
+	}
+	true
+}  
+
+loop $(range 0 maxLimit) {
+	print $(!isPrime @)
+}
