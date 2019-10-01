@@ -4,11 +4,6 @@
 
 benchmarksDir "benchmarks"
 
-parseTime [output]{
-	m $(matches output "/real\s+0m([0-9\.]+s)/")
-	return m.0.1
-}
-
 ""
 "-------------------------------------------------------------------------------------------------------------------"
 print $(padLeft "Algorithm" 30) + $(padLeft "Arturo" 20) + $(padLeft "Ruby" 20) + $(padLeft "Python" 20) + $(padLeft "PHP" 20)
@@ -24,23 +19,10 @@ loop $(sort $(dir "../"+benchmarksDir)) [file]{
 		pyPath		benchmarksDir + "/" + title + ".py"
 		phpPath		benchmarksDir + "/" + title + ".php"
 
-		artResult 	$(shell "time ./arturo " + artPath)
-		print $(padLeft $(!parseTime artResult) 20) true
-
-		if $(exists "../"+rbPath) {
-			rbResult 	$(shell "time ruby " + rbPath)
-			print $(padLeft $(!parseTime rbResult) 20) true
-		} { print $(padLeft "" 20) true }
-
-		if $(exists "../"+pyPath) {
-			pyResult	$(shell "time python " + pyPath)
-			print $(padLeft $(!parseTime pyResult) 20) true
-		} { print $(padLeft "" 20) true }
-
-		if $(exists "../"+phpPath) {
-			phpResult	$(shell "time php " + phpPath)
-			print $(padLeft $(!parseTime phpResult) 20) true
-		} { print $(padLeft "" 20) true }
+		print $(padLeft $(toString $(timer { $(shell "./arturo " + artPath) })) 20) true
+		print $(padLeft $(if $(exists "../"+rbPath) { toString $(timer { $(shell "ruby " + rbPath) }) } { "" }) 20) true
+		print $(padLeft $(if $(exists "../"+pyPath) { toString $(timer { $(shell "python " + pyPath) }) } { "" }) 20) true
+		print $(padLeft $(if $(exists "../"+phpPath) { toString $(timer { $(shell "php " + phpPath) }) } { "" }) 20) true
 
 		print ""
 	}
