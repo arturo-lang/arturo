@@ -16,6 +16,7 @@ import core.time;
 import std.algorithm;
 import std.conv;
 import std.datetime;
+import std.datetime.stopwatch : benchmark, StopWatch;
 import std.file;
 import std.stdio;
 import std.string;
@@ -108,15 +109,21 @@ class Time__Now_ : Func {
 }
 
 class Timer_ : Func {
-	this(string ns="") { super(ns ~ "timer","time the execution of a given function",[[fV]],[nV]); }
+	this(string ns="") { super(ns ~ "timer","time the execution of a given function in milliseconds",[[fV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias func = F!(v,0);
 
-		auto before = MonoTime.currTime;
-		func.execute();
-		auto timeElapsed = MonoTime.currTime - before;
+		StopWatch sw;
 
-		return new Value(to!string(timeElapsed));
+		sw.start();
+		func.execute();
+		sw.stop();
+
+		TickDuration duration = cast(TickDuration)sw.peek();
+		long ret = duration.msecs;
+		//ret = ret.msecs;
+
+		return new Value(ret);
 	}
 }
