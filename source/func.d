@@ -175,7 +175,33 @@ class Func {
         return ret;
     }
 
-    Value execute(Value values = null, Value* v=null) {
+    Value execute(Value values = null, Value* v=null, string memo=null) {
+        //writeln(Glob.memoize);
+        string hsh = null;
+        if (memo !is null) { 
+            if (Glob.memoize.canFind(memo)) {
+                hsh = memo ~ "_" ~ values.hash();
+
+                if ((hsh in Glob.memoized) !is null) {
+                    //writeln("Found memoized result for: " ~ values.stringify());
+                    return Glob.memoized[hsh];
+                }
+            }
+        }
+        /*
+        if (Glob.memoize.canFind(to!string(f))) {
+
+            Glob.blockStack.push((*f).block);
+
+            Value ret = (*f).executeMemoized(expressions,to!string(f),v);
+
+            if (Glob.blockStack.lastItem() is (*f).block) {
+                Glob.blockStack.pop();
+            }
+
+            return ret;
+        }
+        */
         //writeln("FUNC::execute [begin] -> " ~ name);
         if (parentContext !is null) { 
             Glob.contextStack.push(parentContext);
@@ -318,6 +344,11 @@ class Func {
             debug writeln("contextStack: " ~ Glob.contextStack.str());
 
             //writeln("FUNC::execute [end] -> " ~ name);
+
+            if (hsh !is null) {
+                //writeln("STORE memoized result for: " ~ values.stringify());
+                Glob.memoized[hsh] = ret;
+            }
 
             return ret;
 
