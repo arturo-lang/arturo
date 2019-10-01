@@ -11,6 +11,7 @@ arturo.so
 arturo.dylib
 arturo.dll
 arturo.a
+libarturo.a
 arturo.lib
 arturo-test-*
 *.exe
