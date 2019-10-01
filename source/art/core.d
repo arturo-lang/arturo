@@ -67,7 +67,7 @@ class Exec_ : Func {
 			args = new Value(v[1..$]);
 		}
 
-		Value ret = func.execute(args);
+		Value ret = func.execute(args,null,to!string(cast(void*)func));
 
 		return ret;
 	}
@@ -185,7 +185,7 @@ class Memoize_ : Func {
 		Value[] v = validate(ex);
 
 		Value ret = new Value(v[0]);
-		Glob.memoize ~= to!string(&ret.content.f);
+		Glob.memoize ~= to!string(cast(void*)ret.content.f);
 
 		return ret;
 	}
