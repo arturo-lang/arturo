@@ -11,6 +11,8 @@ module art.system;
 
 // Imports
 
+import core.thread;
+
 import std.algorithm;
 import std.conv;
 import std.file;
@@ -28,6 +30,18 @@ import func;
 import globals;
 
 // Functions
+
+class Delay_ : Func {
+	this(string ns="") { super(ns ~ "delay","create system delay with a given duration in milliseconds",[[nV]],[]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias duration = I!(v,0);
+
+		Thread.sleep( dur!("msecs")( duration ));
+
+		return new Value();
+	}
+}
 
 class Env_ : Func {
 	this(string ns="") { super(ns ~ "env","get system environment variables as a dictionary",[[]],[dV]); }
