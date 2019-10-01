@@ -7,6 +7,16 @@
 	],
 	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
 	"license": "MIT",
+	"configurations": [
+		{
+            "name": "application",
+            "targetType": "executable"
+        },
+        {
+            "name": "library",
+            "targetType": "staticLibrary",
+        }
+    ],
 	"dependencies": {
 		"dmarkdown": "~>0.3.0",
 		"dyaml": "~>0.8.0"
@@ -17,13 +27,18 @@
 	],
 	"dflags-ldc": [
 		"-J=source/resources",
-		"-flto=full"
+		"-flto=full",
+		"-O3",
+		"-Os"
 	],
 	"sourceFiles": [
 		"obj/lexer.o",
 		"obj/parser.o"
 	],
 	"lflags-dmd": [
+		"-lcurl"
+	],
+	"lflags-ldc": [
 		"-lcurl"
 	],
 	"preBuildCommands": [
