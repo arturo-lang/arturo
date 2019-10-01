@@ -1,0 +1,30 @@
+/*
+function changes(amount::Int, coins::Array{Int})::Int128
+    ways = zeros(Int128, amount + 1)
+    ways[1] = 1
+    for coin in coins, j in coin+1:amount+1
+        ways[j] += ways[j - coin]
+    end
+    return ways[amount + 1]
+end
+ 
+@show changes(100, [1, 5, 10, 25])
+@show changes(100000, [1, 5, 10, 25, 50, 100])
+
+for j in xrange(coin, amount + 1):
+            ways[j] += ways[j - coin]
+*/
+changes [amount,coins]{
+	ways #(0)*(amount+1)
+	ways.0 1
+
+	loop coins [coin]{
+		loop $(range coin amount) [j]{
+			ways.[j] ways.[j]+ways.[j-coin]
+		}
+	}
+	return ways.[amount]
+}
+
+print $(!changes 100 #(1 5 10 25))
+print $(!changes 100000 #(1 5 10 25 50 100))
