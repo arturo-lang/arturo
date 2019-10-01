@@ -14,7 +14,7 @@ parseTime [output]{
 print $(padLeft "Algorithm" 30) + $(padLeft "Arturo" 20) + $(padLeft "Ruby" 20) + $(padLeft "Python" 20) + $(padLeft "PHP" 20)
 "-------------------------------------------------------------------------------------------------------------------"
 
-loop $(dir "../"+benchmarksDir) [file]{
+loop $(sort $(dir "../"+benchmarksDir)) [file]{
 	if $(contains file ".art") {
 		title 		$(replace file ".art" "")
 		print $(padLeft title 30) true
@@ -27,14 +27,20 @@ loop $(dir "../"+benchmarksDir) [file]{
 		artResult 	$(shell "time ./arturo " + artPath)
 		print $(padLeft $(!parseTime artResult) 20) true
 
-		rbResult 	$(shell "time ruby " + rbPath)
-		print $(padLeft $(!parseTime rbResult) 20) true
+		if $(exists "../"+rbPath) {
+			rbResult 	$(shell "time ruby " + rbPath)
+			print $(padLeft $(!parseTime rbResult) 20) true
+		} { print $(padLeft "" 20) true }
 
-		pyResult	$(shell "time python " + pyPath)
-		print $(padLeft $(!parseTime pyResult) 20) true
+		if $(exists "../"+pyPath) {
+			pyResult	$(shell "time python " + pyPath)
+			print $(padLeft $(!parseTime pyResult) 20) true
+		} { print $(padLeft "" 20) true }
 
-		phpResult	$(shell "time php " + phpPath)
-		print $(padLeft $(!parseTime phpResult) 20) true
+		if $(exists "../"+phpPath) {
+			phpResult	$(shell "time php " + phpPath)
+			print $(padLeft $(!parseTime phpResult) 20) true
+		} { print $(padLeft "" 20) true }
 
 		print ""
 	}
