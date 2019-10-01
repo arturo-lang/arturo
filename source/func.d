@@ -32,6 +32,8 @@ import panic;
 
 import context;
 
+import compiler;
+
 // Definitions
 
 enum FuncType
@@ -174,6 +176,7 @@ class Func {
     }
 
     Value execute(Value values = null, Value* v=null) {
+        //writeln("FUNC::execute [begin] -> " ~ name);
         if (parentContext !is null) { 
             Glob.contextStack.push(parentContext);
         }
@@ -254,13 +257,23 @@ class Func {
             
             Value ret = block.execute(v);
 
+            if (sourceTree.statements is block) {
+                //writeln("FUNC====> STATEMENTS is ROOT");
+            }
+            else {
+                //writeln("FUNC====> Statements is some random block");
+            }
+
             // ADDED
             if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is block) {
                 //writeln("FUNC::execute -> popping block from stack after executing: " ~ name);
                 Glob.blockStack.pop();
             } else {
                 // something was returned before
-                if (name=="" || name is null) {
+                if ((name=="" || name is null) && (Glob.blockStack.size()>0)) {
+
+                    //writeln("Glob.globStack => " ~ Glob.blockStack.str());
+
                     //writeln("FUNC::execute -> reTHROW (not named block)");
                     if (!thisWasAlreadySet) Glob._varUnset("this");
 
@@ -304,11 +317,13 @@ class Func {
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());
 
+            //writeln("FUNC::execute [end] -> " ~ name);
+
             return ret;
 
         }
         catch(Exception e) {
-            debug writeln("FUNC::execute  (" ~ name ~ ")-> got exception; reTHROW");
+            //debug writeln("FUNC::execute  (" ~ name ~ ")-> got exception; reTHROW");
             throw e;
         }
     }
