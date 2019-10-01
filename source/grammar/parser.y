@@ -85,6 +85,7 @@ int yywrap() {
 %token <str> ID "ID"
 %token <str> FUNCTION_ID "Function Identifier"
 %token <str> NUMBER "Number"
+%token <str> FLOAT "Float"
 %token <str> STRING "String Literal"
 %token <str> NULLV "Null"
 %token <str> BOOLEAN "Boolean"
@@ -154,6 +155,9 @@ int yywrap() {
 %nonassoc REDUCE
 %nonassoc ID
 
+%left NUMBER
+%left FLOAT
+
 %start program
 
 %%
@@ -171,6 +175,7 @@ identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID); }
 						|	EXCL																{ $$ = new_IdentifierWithId("exec"); }
 						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
 						|	identifier[previous] DOT NUMBER										{ void* i = $previous; add_NumToIdentifier($NUMBER, i); $$ = i; }
+						|	identifier[previous] DOT FLOAT										{ void* i = $previous; add_NumToIdentifier($FLOAT, i); $$ = i; }
 						| 	identifier[previous] DOT LSQUARE expression RSQUARE					{ void* i = $previous; add_ExprToIdentifier($expression, i); $$ = i; }
 						;
 
@@ -181,6 +186,7 @@ identifiers				: 	identifiers[previous] COMMA identifier 								{ void* i = $pr
 
 argument				:	identifier 															{ $$ = new_ArgumentFromIdentifier($identifier); }
 						| 	NUMBER 																{ $$ = new_Argument("number", $NUMBER); }
+						|	FLOAT 																{ $$ = new_Argument("number", $FLOAT); }
 						|	STRING 																{ $$ = new_Argument("string", $STRING); }
 						|	TILDE %prec REDUCE													{ $$ = new_Argument("string", "\"\""); }
 						|	TILDE ID 															{ $$ = new_Argument("string", $ID); }
