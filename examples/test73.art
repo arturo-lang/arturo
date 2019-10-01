@@ -1,0 +1,5 @@
+isPrime [n]{ and n>1 $(all $(range 2 n-1) {n%@>0}) }
+primes [upTo]{ filter $(range 1 upTo) isPrime }
+
+arg $(toNumber @0)
+print $(!primes arg)

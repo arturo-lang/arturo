@@ -1,0 +1,58 @@
+a -> 10
+b -> "str"
+c -> {
+	""+"something: " + @
+}
+
+print $(!a)
+print $(!b)
+print $(!$(!c) 10)
+
+funA {
+	print "in funA"
+	if true -> $(loop true -> 5) // return 5
+}
+
+funB {
+	print "in funB"
+	if true -> 6 + $(!funA) // return 
+}
+
+funC {
+	print "in funC"
+	if true -> 7 + $(!funB) // return
+}
+
+print "funC = " + $(!funC)
+
+//(0..100).select { |x| x**2 > 3 }.map { |x| 2*x }
+
+print $(map $(filter $(range 0 100) { return $(even @) }) { 2*@ })
+
+loop $(range 1 10) {
+	print @
+	if @=5 { -> ~no }
+}
+print "here"
+a ~yes
+b ~no
+print a
+
+fibby [n]{
+	//print ~HERE
+	fibs #(0)*100
+	//print fibs
+	fibs.1 1
+	//print fibs
+	fibs.2 1
+	//print fibs
+	loop $(range 3 n) [i]{
+		fibs.[i] fibs.[i-1]+fibs.[i-2]
+	}
+	//print fibs
+	return fibs.[n]
+}
+
+loop $(range 1 20) {
+	print $(!fibby @)
+}
