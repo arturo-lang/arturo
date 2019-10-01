@@ -39,7 +39,7 @@ extern (C) {
 	void* new_IdentifierWithId(char* t) { return cast(void*)(new Identifier(to!string(t))); }
 
 	void add_IdToIdentifier(char* s, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(to!string(s)); }
-	void add_NumToIdentifier(char* l, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(to!int(to!string(l))); }
+	void add_NumToIdentifier(char* l, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(to!string(l)); }
 	void add_ExprToIdentifier(Expression e, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(cast(Expression)e); }
 }
 
@@ -106,9 +106,23 @@ class Identifier {
 	}
 
 	void add(string s) {
-		pathContentTypes ~= idPC;
-		PathContent pc = {id:s};
-		pathContents ~= pc;
+		if (isNumeric(s)) {
+			if (s.indexOf(".")!=-1) {
+				string[] parts = s.split(".");
+
+				foreach (part; parts) {
+					add(to!int(part));
+				}
+			}
+			else {
+				add(to!int(s));
+			}
+		}
+		else {
+			pathContentTypes ~= idPC;
+			PathContent pc = {id:s};
+			pathContents ~= pc;
+		}
 	}
 
 	void add(int l) {
