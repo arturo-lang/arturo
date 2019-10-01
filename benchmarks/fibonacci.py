@@ -1,4 +1,4 @@
-maxLimit = 30
+maxLimit = 28
 
 def fibo(x):
 	if (x<2):
