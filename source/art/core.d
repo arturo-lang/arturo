@@ -283,6 +283,8 @@ class Print_ : Func {
 		if (item.type==sV) write(item.content.s);
 		else write(item.stringify);
 
+		stdout.flush();
+
 		if (v.length==2) {
 			if (!B!(v,1)) writeln();
 		} else writeln();
