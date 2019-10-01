@@ -242,9 +242,16 @@ class Matches_ : Func {
 
 		auto rx = regex(pattern,"gm");
 
-		Value[] ret = match(input,rx).map!(m=> new Value(m.hit)).array;
+		auto matches = matchAll(input,rx);
 
+		Value[] ret = matches.map!(m=> new Value(cast(string[])m.array)).array;
 		return new Value(ret);
+
+		//Value[] ret = match(input,rx).map!(m=> new Value(m.hit)).array;
+
+		//return new Value(ret);
+
+		//return new Value(match(input,rx).array);
 	}
 }
 
