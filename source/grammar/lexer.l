@@ -74,7 +74,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ count(); return ID; }
 {DIGIT}+											{ count(); return NUMBER; }
-{DIGIT}+\.{DIGIT}+									{ count(); return NUMBER; }
+{DIGIT}+\.{DIGIT}+									{ count(); return FLOAT; }
 
 "|"													{ count(); return IF; }
 "->"												{ count(); return IMPLIES; }
