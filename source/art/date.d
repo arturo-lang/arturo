@@ -11,6 +11,8 @@ module art.date;
 
 // Imports
 
+import core.time;
+
 import std.algorithm;
 import std.conv;
 import std.datetime;
@@ -102,5 +104,19 @@ class Time__Now_ : Func {
 		auto timeStr = time.toISOExtString();
 
 		return new Value(timeStr);
+	}
+}
+
+class Timer_ : Func {
+	this(string ns="") { super(ns ~ "timer","time the execution of a given function",[[fV]],[nV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias func = F!(v,0);
+
+		auto before = MonoTime.currTime;
+		func.execute();
+		auto timeElapsed = MonoTime.currTime - before;
+
+		return new Value(to!string(timeElapsed));
 	}
 }
