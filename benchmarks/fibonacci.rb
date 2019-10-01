@@ -1,4 +1,4 @@
-maxLimit = 20 # ARGV[0].to_i
+maxLimit = 37
 
 def fibo(x)
 	if (x<2)
