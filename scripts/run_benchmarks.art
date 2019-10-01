@@ -2,16 +2,44 @@
 "Art:uro | Running benchmarks..."
 "=========================================="
 
-loop $(path.contents "../benchmarks") {
-	if $(contains @ ".art") {
-		title 		$(replace @ ".art" "")
-		srcPath		"benchmarks/" + @
-		rbPath 		"benchmarks/" + title + ".rb"
+benchmarksDir "benchmarks"
 
-		srcResult 	$(shell "time ./arturo " + srcPath + " &2>1")
-		rbResult 	$(shell "time ruby " + rbPath + " &2>1")
+parseTime [output]{
+	m $(matches output "/real\s+0m([0-9\.]+s)/")
+	return m.0.1
+}
 
-		print srcResult
-		print rbResult
+""
+"-------------------------------------------------------------------------------------------------------------------"
+print $(padLeft "Algorithm" 30) + $(padLeft "Arturo" 20) + $(padLeft "Ruby" 20) + $(padLeft "Python" 20) + $(padLeft "PHP" 20)
+"-------------------------------------------------------------------------------------------------------------------"
+
+loop $(dir "../"+benchmarksDir) [file]{
+	if $(contains file ".art") {
+		title 		$(replace file ".art" "")
+		print $(padLeft title 30) true
+
+		artPath		benchmarksDir + "/" + file
+		rbPath 		benchmarksDir + "/" + title + ".rb"
+		pyPath		benchmarksDir + "/" + title + ".py"
+		phpPath		benchmarksDir + "/" + title + ".php"
+
+		artResult 	$(shell "time ./arturo " + artPath)
+		print $(padLeft $(!parseTime artResult) 20) true
+
+		rbResult 	$(shell "time ruby " + rbPath)
+		print $(padLeft $(!parseTime rbResult) 20) true
+
+		pyResult	$(shell "time python " + pyPath)
+		print $(padLeft $(!parseTime pyResult) 20) true
+
+		phpResult	$(shell "time php " + phpPath)
+		print $(padLeft $(!parseTime phpResult) 20) true
+
+		print ""
 	}
 }
+
+""
+"All benchmarks completed."
+""
