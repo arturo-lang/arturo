@@ -203,7 +203,9 @@ class Fold_ : Func {
 		foreach (Value item; arr) 
 			seed = func.execute(new Value([seed,item]));
 
-		return new Value(seed);
+		Value ret = new Value(seed);
+
+		return ret;
 	}
 }
 
