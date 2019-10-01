@@ -23,6 +23,8 @@ import panic;
 
 import globals;
 
+import compiler;
+
 // C Interface
 
 extern (C) {
@@ -66,6 +68,12 @@ class Statements {
 			catch (Exception e) {
 
 				if (cast(ReturnResult)(e) !is null) {
+					if (sourceTree.statements is this) {
+						//writeln("STATEMENTS is ROOT");
+					}
+					else {
+						//writeln("Statements is some random block");
+					}
 					debug write("BLOCK::execute -> got Return: ");
 					if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is this) {
 						debug writeln("It's last item - return it");
@@ -79,6 +87,8 @@ class Statements {
 						return va;
 					}
 					else {
+
+						//writeln("STATEMENTS::execute -> reTHROW");
 						debug writeln("Not last item - reTHROW");
 						//writeln("Return:: popping context (throw)"); 					
 						throw e;
