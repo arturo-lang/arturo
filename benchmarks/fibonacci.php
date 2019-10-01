@@ -1,5 +1,5 @@
 <?php
-$maxLimit = 37;
+$maxLimit = 30;
 
 function fibo($x) {
 	if ($x<2) { return 1; }
