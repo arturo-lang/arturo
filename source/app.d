@@ -14,6 +14,7 @@ import std.conv;
 import std.file;
 import std.getopt;
 import std.stdio;
+import std.string;
 import std.system;
 
 import compiler;
@@ -24,6 +25,11 @@ import value;
 import panic;
 
 import versions;
+
+extern (C) void ART_Compile(char[] s) {
+    Compiler comp = new Compiler();
+    comp.compileFromString(to!string(s));
+}
 
 // Main
 
