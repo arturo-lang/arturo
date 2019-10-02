@@ -81,6 +81,8 @@ union ValueContent
 
 auto I(alias symbol,int index)(){ return symbol[index].content.i; }
 auto I(alias symbol)(){ return symbol.content.i; }
+auto II(alias symbol,int index)(){ return to!int(symbol[index].content.i); }
+auto II(alias symbol)(){ return to!int(symbol.content.i); }
 auto BI(alias symbol,int index)(){ return symbol[index].content.bi; }
 auto BI(alias symbol)(){ return symbol.content.bi; }
 
