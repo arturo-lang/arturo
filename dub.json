@@ -1,26 +1,24 @@
 {
-	"name": "arturo",
-	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
-	"homepage" : "http://arturo-lang.io",
 	"authors": [
 		"drkameleon"
 	],
-	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
-	"license": "MIT",
 	"configurations": [
 		{
-            "name": "application",
-            "targetType": "executable"
-        },
-        {
-            "name": "library",
-            "targetType": "staticLibrary",
-        }
-    ],
+			"name": "application",
+			"targetType": "executable"
+		},
+		{
+			"name": "library",
+			"targetType": "staticLibrary"
+		}
+	],
+	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
 	"dependencies": {
 		"dmarkdown": "~>0.3.0",
-		"dyaml": "~>0.8.0"
+		"dyaml": "~>0.8.0",
+		"tkd": "~>1.1.13"
 	},
+	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
 	"dflags-dmd": [
 		"-J source/resources",
 		"-noboundscheck"
@@ -32,21 +30,24 @@
 		"-Os",
 		"-boundscheck=off"
 	],
-	"sourceFiles": [
-		"obj/lexer.o",
-		"obj/parser.o"
-	],
+	"homepage": "http://arturo-lang.io",
 	"lflags-dmd": [
 		"-lcurl"
 	],
 	"lflags-ldc": [
 		"-lcurl"
 	],
+	"license": "MIT",
+	"name": "arturo",
+	"postBuildCommands": [
+		"strip arturo"
+	],
 	"preBuildCommands": [
 		"scripts/make_parser.sh",
 		"scripts/update_build.sh"
 	],
-	"postBuildCommands": [
-		"strip arturo"
+	"sourceFiles": [
+		"obj/lexer.o",
+		"obj/parser.o"
 	]
 }
