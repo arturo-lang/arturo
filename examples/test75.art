@@ -1,0 +1,10 @@
+
+
+showWindow #{
+	:title			"Arturo + GUI"
+
+	:geometry		#(500 300 100 100)
+	:layout			#()
+}
+
+print $(syms)
