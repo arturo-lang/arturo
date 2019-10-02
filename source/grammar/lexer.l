@@ -45,6 +45,8 @@ DIGIT_BIN			[01]
 LETTER				[a-zA-Z_@]
 LETTER_OR_MISC		[a-zA-Z_:]
 
+
+
 /****************************************
  Tokens
  ****************************************/
@@ -73,6 +75,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ count(); return ID; }
+":"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return ID; }
 {DIGIT}+											{ count(); return NUMBER; }
 {DIGIT}+\.{DIGIT}+									{ count(); return FLOAT; }
 
