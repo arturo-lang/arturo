@@ -350,6 +350,8 @@ class Permutations_ : Func {
 
 		Value[] ret;
 
+		ret ~= new Value(cp.content.a);
+
 		while (nextPermutation(cp.content.a)) {
 			ret ~= new Value(cp.content.a);
 		}
