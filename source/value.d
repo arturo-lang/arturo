@@ -21,6 +21,7 @@ import std.digest.sha;
 import std.range;
 import std.stdio;
 import std.string;
+import std.variant;
 
 import parser.statements;
 
@@ -33,6 +34,8 @@ import panic;
 
 import context;
 import globals;
+
+import gobject.ObjectG;
 
 import var;
 
@@ -48,6 +51,8 @@ alias fV = ValueType.functionValue;
 alias xV = ValueType.anyValue;
 alias noV = ValueType.noValue;
 alias vV = ValueType.variadicValue;
+alias oV = ValueType.objectValue;
+alias goV = ValueType.gobjectValue;
 
 // Definitions
 
@@ -62,7 +67,9 @@ enum ValueType : string
     functionValue = "Function",
     noValue = "Null",
     anyValue = "Any",
-    variadicValue = "Any..."
+    variadicValue = "Any...",
+    objectValue = "Object",
+    gobjectValue = "GObject"
 }
 
 union ValueContent
@@ -75,6 +82,9 @@ union ValueContent
     Func f;
     Value[] a;
     Context d;
+    Variant o;
+    ObjectG go;
+
 }
 
 // Aliases
@@ -98,6 +108,10 @@ auto A(alias symbol,int index)(){ return symbol[index].content.a; }
 auto A(alias symbol)(){ return symbol.content.a; }
 auto D(alias symbol,int index)(){ return symbol[index].content.d; }
 auto D(alias symbol)(){ return symbol.content.d; }
+auto O(alias symbol,int index)(){ return symbol[index].content.o; }
+auto O(alias symbol)(){ return symbol.content.o; }
+auto GO(alias symbol,int index)(){ return symbol[index].content.go; }
+auto GO(alias symbol)(){ return symbol.content.go; }
 
 // Functions
 
@@ -192,6 +206,16 @@ class Value {
         }
     }
 
+    this(Variant o) {
+        type = ValueType.objectValue;
+        content.o = o;
+    }
+
+    this(ObjectG og) {
+        type = ValueType.gobjectValue;
+        content.go = og;
+    }
+
     this(Value v) {
         type = v.type;
 
@@ -242,6 +266,8 @@ class Value {
             default: break;
         }
     }
+
+
 
     static Value dictionary() {
         Value v = new Value();
@@ -1559,6 +1585,8 @@ class Value {
                 if (ret=="#{  }") ret = "#{}";
                 return ret;
             case ValueType.noValue          : return "null";
+            case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
+            case ValueType.gobjectValue      : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
             default                         : return "NULL";
         }
     }
@@ -1592,6 +1620,8 @@ class Value {
             
                 return ret;
             case ValueType.noValue          : return "null";
+            case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
+            case ValueType.gobjectValue      : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
             default                         : return "NULL";
         }
     }
