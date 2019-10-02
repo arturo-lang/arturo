@@ -27,4 +27,5 @@ changes [amount,coins]{
 }
 
 print $(!changes 100 #(1 5 10 25))
-print $(!changes 100000 #(1 5 10 25 50 100))
+thread { print $(!changes 100000 #(1 5 10 25 50 100)) }
+loop true {}
