@@ -15,8 +15,11 @@
 		"openssl": "1.1.6+1.0.1g",
 		"stdx-allocator": "2.77.5",
 		"taggedalgebraic": "0.11.4",
+		"tcltk": "8.6.5",
 		"tinyendian": "0.2.0",
+		"tkd": "1.1.13",
 		"vibe-core": "1.6.2",
-		"vibe-d": "0.8.5"
+		"vibe-d": "0.8.5",
+		"x11": "1.0.21"
 	}
 }
