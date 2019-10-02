@@ -78,3 +78,17 @@ class Spawn_ : Func {
 		return new Value(pid.processID());
 	}
 }
+
+class Thread_ : Func {
+	this(string ns="") { super(ns ~ "thread","create a background threaded process using given function",[[fV]],[]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias func = S!(v,0);
+
+		new Thread ({
+			func.execute();
+		});
+
+		return new Value();
+	}
+}
