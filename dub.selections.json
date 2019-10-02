@@ -8,6 +8,7 @@
 		"dmarkdown": "0.3.0",
 		"dyaml": "0.8.0",
 		"eventcore": "0.8.46",
+		"gtk-d": "3.9.0",
 		"libasync": "0.8.4",
 		"libevent": "2.0.2+2.0.16",
 		"memutils": "0.4.13",

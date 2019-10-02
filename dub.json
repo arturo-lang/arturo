@@ -16,7 +16,7 @@
 	"dependencies": {
 		"dmarkdown": "~>0.3.0",
 		"dyaml": "~>0.8.0",
-		"tkd": "~>1.1.13"
+		"gtk-d": "~>3.9.0"
 	},
 	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
 	"dflags-dmd": [
