@@ -75,9 +75,15 @@ class Identifier {
 	this(string s) {
 		string cleanstr = s;
 		if (s.indexOf(":")!=-1) {
-			string[] parts = s.split(":");
-			namespace = parts[0];
-			cleanstr = parts[1];
+			if (s.startsWith(":")) {
+				namespace = null;
+				cleanstr = s;
+			}
+			else {
+				string[] parts = s.split(":");
+				namespace = parts[0];
+				cleanstr = parts[1];
+			}
 		}
 		else {
 			namespace = null;
