@@ -40,6 +40,7 @@ import art.csv;
 import art.date;
 import art.dictionary;
 import art.file;
+import art.gui;
 import art.html;
 import art.json;
 import art.number;
@@ -99,6 +100,7 @@ string registerSystemFuncs() {
         "art.date",
         "art.dictionary", 
         "art.file", 
+        "art.gui",
         "art.html",
         "art.json", 
         "art.number",
@@ -129,6 +131,7 @@ string getSystemFuncsArray() {
         "art.date",
         "art.dictionary", 
         "art.file", 
+        "art.gui",
         "art.html",
         "art.json", 
         "art.number",
