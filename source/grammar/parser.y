@@ -170,7 +170,7 @@ int yywrap() {
 // Building blocks
 //==============================
 
-identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID); }
+identifier 				: 	ID 																	{ printf("found ID: %s\n",$ID);$$ = new_IdentifierWithId($ID); }
 						| 	IF 																	{ $$ = new_IdentifierWithId("if"); }
 						|	EXCL																{ $$ = new_IdentifierWithId("exec"); }
 						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
