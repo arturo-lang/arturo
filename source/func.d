@@ -55,7 +55,7 @@ class Func {
     ValueType[][] valueConstraints;
     ValueType[] returnValues;
 
-    void delegate() innerFunc;
+    void delegate(Value) innerFunc;
     bool hasInnerFunc;
 
     ulong minArgs;
@@ -173,7 +173,7 @@ class Func {
         namespace = f.namespace;
     }
 
-    this (void delegate() inner) {
+    this (void delegate(Value) inner) {
         hasInnerFunc = true;
         innerFunc = inner;
     }
@@ -188,7 +188,7 @@ class Func {
     }
 
     Value executeInnerFunc(Value values = null) {
-        innerFunc();
+        innerFunc(values);
 
         return new Value();
     }
