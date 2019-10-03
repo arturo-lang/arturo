@@ -43,7 +43,7 @@ import gtk.ApplicationWindow;
 // Functions
 
 class Gui__App_ : Func {
-	this(string ns="") { super(ns ~ "app","start GUI mode with given string id",[[sV]],[dV]); }
+	this(string ns="") { super(ns ~ "app","create GUI app with given string id",[[sV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias appId = S!(v,0);
@@ -52,10 +52,15 @@ class Gui__App_ : Func {
 
 		Value[string] obj;
 
-		obj["_object"] = new Value(app);
-		obj["id"] = new Value(appId);
+		writeln("HERE");
 
-		return new Value(obj);
+		obj["_object"] = new Value(app);
+		writeln("HERE");
+		obj["id"] = new Value(appId);
+		writeln("HERE");
+		Value ret = new Value(obj);
+		writeln("HERE");
+		return ret;
 	}
 }
 
