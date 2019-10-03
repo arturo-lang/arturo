@@ -39,23 +39,65 @@ import gobject.ObjectG;
 import gtk.Application;
 import gio.Application : GioApplication = Application;
 import gtk.ApplicationWindow;
+import gtk.Button;
+import gtk.Container;
+import gtk.Widget;
 
 // Functions
 
 class Gui__App_ : Func {
-	this(string ns="") { super(ns ~ "app","create GUI app with given string id",[[sV]],[dV]); }
+	this(string ns="") { super(ns ~ "app","create GUI app with given string id and initialization function",[[sV,fV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias appId = S!(v,0);
+		alias callback = F!(v,1);
 
 		Application app = new Application("io.arturo-lang.app." ~ appId, GApplicationFlags.FLAGS_NONE);
 
 		Value obj = Value.dictionary();
 
 		obj["_object"] = new Value(app);
+		obj["_callback"] = new Value(callback);
 		obj["id"] = new Value(appId);
 
+		app.addOnActivate(delegate void(GioApplication appli) { 
+			callback.execute(obj);
+		});
+
+		return new Value(app.run([]));
+	}
+}
+
+class Gui__Button_ : Func {
+	this(string ns="") { super(ns ~ "button","create GUI button with given label using settings",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias label = S!(v,0);
+		Value setup = v[1];
+
+		Value obj = Value.dictionary();
+
+		Button button = new Button(label);
+
+		obj["_object"] = new Value(button);
+		obj["label"] = new Value(label);
+
 		return obj;
+	}
+}
+
+class Gui__AddToContainer_ : Func {
+	this(string ns="") { super(ns ~ "addToContainer","add GUI element to given container",[[dV,dV]],[]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value elem = v[0];
+		Value container = v[1];
+
+		auto c = cast(Container)container["_object"].content.go;
+		auto e = cast(Widget)elem["_object"].content.go;
+		c.add(e);
+
+		return new Value();
 	}
 }
 
@@ -71,7 +113,30 @@ class Gui__Window_ : Func {
 		ApplicationWindow window = new ApplicationWindow(cast(Application)app["_object"].content.go);
 		obj["_object"] = new Value(window);
 
+		if (":title" in setup) { 
+			obj["title"] = setup[":title"]; 
+			window.setTitle(setup[":title"].content.s); 
+		}
+
+		if (":size" in setup) { 
+			obj["size"] = setup[":size"]; 
+			window.setDefaultSize(to!int(setup[":size"][0].content.i),to!int(setup[":size"][1].content.i)); 
+		}
+
 		return obj;
+	}
+}
+
+class Gui__Show__Window_ : Func {
+	this(string ns="") { super(ns ~ "showWindow","show GUI window for given app using settings",[[dV]],[]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value window = v[0];
+
+		auto w = cast(ApplicationWindow)window["_object"].content.go;
+		w.showAll();
+
+		return new Value();
 	}
 }
 
