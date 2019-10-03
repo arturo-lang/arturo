@@ -4,9 +4,15 @@ app "test" {
 		:size 	#(500 300)
 	})
 
-	butt $(button "myButton" #{})
+	butt1 $(button "myButton1" #{})
+	butt2 $(button "myButton2" #{})
 
-	addToContainer butt win
+	vb1 $(vbox)
+
+	addToContainer butt1 vb1
+	addToContainer butt2 vb1
+
+	addToContainer vb1 win
 
 	showWindow win
 
