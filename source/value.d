@@ -210,7 +210,7 @@ class Value {
         type = ValueType.dictionaryValue;
         content.d = new Context(ContextType.dictionaryContext);
         foreach (string key, Value val; v) {
-            content.d._varSet(key, new Value(v));
+            content.d._varSet(key, new Value(val));
         }
     }
 
