@@ -1,4 +1,4 @@
-app "test" {
+main $(app "test" {
 
 	win $(window @ #{
 		:title 	"Arturo & Gtk+ GUI"
@@ -6,10 +6,17 @@ app "test" {
 	})
 
 	butt1 $(button "myButton1" #{ 
-		:onClick { print "button 1 clicked" } 
+		:onClick { 
+			print "button 1 clicked" 
+			print $(syms)
+		} 
 	})
-	butt2 $(button "myButton2" #{})
-	butt3 $(button "myButton3" #{})
+	butt2 $(button "myButton2" #{
+		:onClick { print "button 2 clicked" } 
+	})
+	butt3 $(button "myButton3" #{
+		:onClick { print "button 3 clicked" } 
+	})
 
 	vb $(vbox)
 
@@ -18,7 +25,13 @@ app "test" {
 	!vb.add butt2
 	!vb.add butt3
 
+	fld1 $(field "some input" #{})
+	!vb.add fld1
+
 	!win.add vb
 	!win.show
 
-}
+	print $(syms)
+})
+
+!main.run
