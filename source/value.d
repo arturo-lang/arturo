@@ -208,7 +208,7 @@ class Value {
 
     this(Value[string] v) {
         type = ValueType.dictionaryValue;
-        content.d = new Contextt(ContextType.dictionaryContext);
+        content.d = new Context(ContextType.dictionaryContext);
         foreach (string key, Value val; v) {
             content.d._varSet(key, new Value(v));
         }
