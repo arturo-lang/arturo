@@ -10,3 +10,5 @@ myApp $(gui:app "TestApp" {
 })
 
 run myApp
+
+myApp 
