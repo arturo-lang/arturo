@@ -302,6 +302,10 @@ class Value {
         return content.d._varExists(item.content.s);
     }
 
+    bool dictionaryContainsKey(string key) {
+        return content.d._varExists(key);
+    }
+
     Value[] arrayValues() {
         return content.a;
     }
@@ -475,6 +479,13 @@ class Value {
         else return null;
     }
 
+
+    bool opBinary(string op)(in string rhs) const if (op == "in") {
+        if (type==dV) {
+            return dictionaryContainsKey(rhs);
+        }
+        else return false;
+    }
     /************************************
      ARITHMETIC OPERATIONS
      ************************************/
