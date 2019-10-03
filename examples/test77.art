@@ -1,1 +1,13 @@
-a $(gui:app "done")  
+app "test" {
+	win $(window @ #{
+		:title 	"Arturo & Gtk+ GUI"
+		:size 	#(500 300)
+	})
+
+	butt $(button "myButton" #{})
+
+	addToContainer butt win
+
+	showWindow win
+
+}
