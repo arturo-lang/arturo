@@ -214,6 +214,11 @@ class Value {
         }
     }
 
+    this(Func f) {
+        type = ValueType.functionValue;
+        content.f = f;
+    }
+
     this(Variant o) {
         type = ValueType.objectValue;
         content.o = o;
@@ -305,6 +310,11 @@ class Value {
     bool dictionaryContainsKey(string key) {
         return content.d._varExists(key);
     }
+
+    const bool dictionaryContainsKey(const string key) {
+        return content.d._varExistsImmut(key);
+    }
+
 
     Value[] arrayValues() {
         return content.a;
@@ -480,7 +490,7 @@ class Value {
     }
 
 
-    bool opBinary(string op)(in string rhs) const if (op == "in") {
+    bool opBinaryRight(string op)(in string rhs) const if (op == "in") {
         if (type==dV) {
             return dictionaryContainsKey(rhs);
         }
