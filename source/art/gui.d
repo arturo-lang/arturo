@@ -42,6 +42,23 @@ import gtk.ApplicationWindow;
 
 // Functions
 
+class Gui__App_ : Func {
+	this(string ns="") { super(ns ~ "app","start GUI mode with given string id",[[sV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias appId = S!(v,0);
+
+		Application app = new Application("io.arturo-lang.app." ~ appId, GApplicationFlags.FLAGS_NONE);
+
+		Value[string] obj;
+
+		obj["_object"] = new Value(app);
+		obj["id"] = new Value(appId);
+
+		return new Value(obj);
+	}
+}
+
 /*
 
 class GUI__Start_ : Func {
