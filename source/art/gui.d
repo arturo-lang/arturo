@@ -41,6 +41,7 @@ import gio.Application : GioApplication = Application;
 import gtk.ApplicationWindow;
 import gtk.Button;
 import gtk.Container;
+import gtk.Entry;
 import gtk.HBox;
 import gtk.Label;
 import gtk.VBox;
@@ -63,11 +64,13 @@ class Gui__App_ : Func {
 		obj["_callback"] = new Value(callback);
 		obj["id"] = new Value(appId);
 
+		obj["run"] = new Value(new Func((Value vs){ return new Value(app.run([])); }));
+
 		app.addOnActivate(delegate void(GioApplication appli) { 
 			callback.execute(obj);
 		});
 
-		return new Value(app.run([]));
+		return obj;
 	}
 }
 
@@ -110,6 +113,24 @@ class Gui__Label_ : Func {
 
 		obj["_object"] = new Value(label);
 		obj["text"] = new Value(text);
+
+		return obj;
+	}
+}
+
+class Gui__Field_ : Func {
+	this(string ns="") { super(ns ~ "field","create GUI field with given caption using settings",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias text = S!(v,0);
+		Value setup = v[1];
+
+		Value obj = Value.dictionary();
+
+		Entry entry = new Entry(text);
+
+		obj["_object"] = new Value(entry);
+		obj["text"] = new Value(new Func((Value vs){ return new Value(entry.getText()); }));
 
 		return obj;
 	}
@@ -168,8 +189,9 @@ class Gui__Window_ : Func {
 		obj["add"] = new Value(new Func((Value vs){ 
 			auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
 			window.add(e);
+			return new Value();
 		}));
-		obj["show"] = new Value(new Func((Value vs){ window.showAll(); }));
+		obj["show"] = new Value(new Func((Value vs){ window.showAll(); return new Value(); }));
 
 		return obj;
 	}
@@ -182,12 +204,13 @@ class Gui__Vbox_ : Func {
 
 		Value obj = Value.dictionary();
 
-		VBox box = new VBox(true,10);
+		VBox box = new VBox(true,20);
 
 		obj["_object"] = new Value(box);
 		obj["add"] = new Value(new Func((Value vs){ 
 			auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
-			box.packStart(e,true,true,10);
+			box.packStart(e,true,true,20);
+			return new Value();
 		}));
 
 		return obj;
@@ -207,6 +230,7 @@ class Gui__Hbox_ : Func {
 		obj["add"] = new Value(new Func((Value vs){ 
 			auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
 			box.packStart(e,true,true,10);
+			return new Value();
 		}));
 
 		return obj;
