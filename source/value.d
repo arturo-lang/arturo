@@ -206,6 +206,14 @@ class Value {
         }
     }
 
+    this(Value[string] v) {
+        type = ValueType.dictionaryValue;
+        content.d = new Contextt(ContextType.dictionaryContext);
+        foreach (string key, Value val; v) {
+            content.d._varSet(key, new Value(v));
+        }
+    }
+
     this(Variant o) {
         type = ValueType.objectValue;
         content.o = o;
@@ -241,6 +249,13 @@ class Value {
                     }
                 }
                 break;
+            case ValueType.objectValue :
+                content.o = v.content.o;
+                break;
+            case ValueType.gobjectValue :
+                content.go = v.content.go;
+                break;
+
             default: break;
         }
     }
