@@ -59,6 +59,22 @@ class Gui__App_ : Func {
 	}
 }
 
+class Gui__Window_ : Func {
+	this(string ns="") { super(ns ~ "window","create GUI window for given app using settings",[[dV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value app = v[0];
+		Value setup = v[1];
+
+		Value obj = Value.dictionary();
+
+		ApplicationWindow window = new ApplicationWindow(cast(Application)app["_object"].content.go);
+		obj["_object"] = new Value(window);
+
+		return obj;
+	}
+}
+
 /*
 
 class GUI__Start_ : Func {
