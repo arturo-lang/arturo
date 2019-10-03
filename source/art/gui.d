@@ -50,17 +50,12 @@ class Gui__App_ : Func {
 
 		Application app = new Application("io.arturo-lang.app." ~ appId, GApplicationFlags.FLAGS_NONE);
 
-		Value[string] obj;
-
-		writeln("HERE");
+		Value obj = Value.dictionary();
 
 		obj["_object"] = new Value(app);
-		writeln("HERE");
 		obj["id"] = new Value(appId);
-		writeln("HERE");
-		Value ret = new Value(obj);
-		writeln("HERE");
-		return ret;
+
+		return obj;
 	}
 }
 
