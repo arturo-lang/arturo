@@ -55,6 +55,9 @@ class Func {
     ValueType[][] valueConstraints;
     ValueType[] returnValues;
 
+    void delegate() innerFunc;
+    bool hasInnerFunc;
+
     ulong minArgs;
     ulong maxArgs;
 
@@ -69,6 +72,7 @@ class Func {
 
     // system functions
     this (string n, string descr, ValueType[][] vc = [], ValueType[] rets = []) {
+        hasInnerFunc = false;
         name = n;
         block = null;
         type = FuncType.systemFunc;
@@ -111,6 +115,7 @@ class Func {
 
     // user functions
     this (string n, Statements b = null, ValueType[][] vc = [], string[] idents = []) {
+        hasInnerFunc = false;
         name = n;
         block = b;
 
@@ -154,6 +159,8 @@ class Func {
     }
 
     this (Func f) {
+        innerFunc = f.innerFunc;
+        hasInnerFunc = f.hasInnerFunc;
         name = f.name;
         block = f.block;
         type = f.type;
@@ -166,6 +173,11 @@ class Func {
         namespace = f.namespace;
     }
 
+    this (void delegate() inner) {
+        hasInnerFunc = true;
+        innerFunc = inner;
+    }
+
     string getFullName() {
         string ret = "";
 
@@ -175,7 +187,15 @@ class Func {
         return ret;
     }
 
+    Value executeInnerFunc(Value values = null) {
+        innerFunc();
+
+        return new Value();
+    }
+
     Value execute(Value values = null, Value* v=null, string memo=null) {
+        if (hasInnerFunc) return executeInnerFunc(values);
+
         //writeln(Glob.memoize);
         string hsh = null;
         if (memo !is null) { 
