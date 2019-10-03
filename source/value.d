@@ -442,6 +442,40 @@ class Value {
     }
 
     /************************************
+     INDEX OPERATOR OVERLOADING
+     ************************************/
+
+    Value opIndex(size_t i) {
+        if (type==aV) {
+            return content.a[i];
+        }
+        else return null;
+    }
+
+    Value opIndex(string k) {
+        if (type==dV) {
+            return getValueFromDict(k);
+        }
+        else return null;
+    }
+
+    Value opIndexAssign(Value v, size_t i) {
+        if (type==aV) {
+            content.a[i] = v;
+            return v;
+        }
+        else return null;
+    }
+
+    Value opIndexAssign(Value v, string k) {
+        if (type==dV) {
+            setValueForDict(k,v);
+            return v;
+        }
+        else return null;
+    }
+
+    /************************************
      ARITHMETIC OPERATIONS
      ************************************/
 
