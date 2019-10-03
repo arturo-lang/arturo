@@ -1,19 +1,24 @@
 app "test" {
+
 	win $(window @ #{
 		:title 	"Arturo & Gtk+ GUI"
 		:size 	#(500 300)
 	})
 
-	butt1 $(button "myButton1" #{})
+	butt1 $(button "myButton1" #{ 
+		:onClick { print "button 1 clicked" } 
+	})
 	butt2 $(button "myButton2" #{})
+	butt3 $(button "myButton3" #{})
 
-	vb1 $(vbox)
+	vb $(vbox)
 
-	addToContainer butt1 vb1
-	addToContainer butt2 vb1
+	!vb.add $(label "<b>Hello GUI World!</b>" #{})
+	!vb.add butt1
+	!vb.add butt2
+	!vb.add butt3
 
-	addToContainer vb1 win
-
-	showWindow win
+	!win.add vb
+	!win.show
 
 }
