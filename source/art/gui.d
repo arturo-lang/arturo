@@ -42,6 +42,8 @@ import gtk.ApplicationWindow;
 
 // Functions
 
+/*
+
 class GUI__Start_ : Func {
 	this(string ns="") { super(ns ~ "app","start GUI mode with given string id",[[sV,fV]],[oV]); }
 	override Value execute(Expressions ex) {
@@ -102,7 +104,7 @@ class GUI__ShowWindow_ : Func {
 		
 		//return new Value(guiApp.run([]));
 	}
-}
+}*/
 /*
 class Label_ : Func {
 	this(string ns="") { super(ns ~ "label","get GUI label using configuration",[[dV]],[]); }
