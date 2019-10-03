@@ -41,6 +41,9 @@ import gio.Application : GioApplication = Application;
 import gtk.ApplicationWindow;
 import gtk.Button;
 import gtk.Container;
+import gtk.HBox;
+import gtk.Label;
+import gtk.VBox;
 import gtk.Widget;
 
 // Functions
@@ -72,19 +75,38 @@ class Gui__Button_ : Func {
 	this(string ns="") { super(ns ~ "button","create GUI button with given label using settings",[[sV,dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		alias label = S!(v,0);
+		alias text = S!(v,0);
 		Value setup = v[1];
 
 		Value obj = Value.dictionary();
 
-		Button button = new Button(label);
+		Button button = new Button(text);
 
 		obj["_object"] = new Value(button);
-		obj["label"] = new Value(label);
+		obj["text"] = new Value(text);
 
 		return obj;
 	}
 }
+
+class Gui__Label_ : Func {
+	this(string ns="") { super(ns ~ "label","create GUI label with given caption using settings",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias text = S!(v,0);
+		Value setup = v[1];
+
+		Value obj = Value.dictionary();
+
+		Label label = new Label(text);
+
+		obj["_object"] = new Value(label);
+		obj["text"] = new Value(text);
+
+		return obj;
+	}
+}
+
 
 class Gui__AddToContainer_ : Func {
 	this(string ns="") { super(ns ~ "addToContainer","add GUI element to given container",[[dV,dV]],[]); }
@@ -95,7 +117,19 @@ class Gui__AddToContainer_ : Func {
 
 		auto c = cast(Container)container["_object"].content.go;
 		auto e = cast(Widget)elem["_object"].content.go;
-		c.add(e);
+
+		if (cast(ApplicationWindow)c !is null) { 
+			//writeln("container is window");
+			(cast(ApplicationWindow)c).add(e);
+		}
+		if (cast(VBox)c !is null) { 
+			//writeln("container is vbox");
+			(cast(VBox)c).packStart(e,true,true,10);
+		}
+		if (cast(HBox)c !is null) { 
+			//writeln("container is vbox");
+			(cast(HBox)c).packStart(e,true,true,10);
+		}
 
 		return new Value();
 	}
@@ -139,6 +173,37 @@ class Gui__Show__Window_ : Func {
 		return new Value();
 	}
 }
+
+class Gui__Vbox_ : Func {
+	this(string ns="") { super(ns ~ "vbox","show GUI window for given app using settings",[[]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		Value obj = Value.dictionary();
+
+		VBox box = new VBox(true,10);
+
+		obj["_object"] = new Value(box);
+
+		return obj;
+	}
+}
+
+class Gui__Hbox_ : Func {
+	this(string ns="") { super(ns ~ "hbox","show GUI window for given app using settings",[[]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+
+		Value obj = Value.dictionary();
+
+		HBox box = new HBox(true,10);
+
+		obj["_object"] = new Value(box);
+
+		return obj;
+	}
+}
+
 
 /*
 
