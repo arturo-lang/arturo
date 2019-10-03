@@ -85,6 +85,13 @@ class Gui__Button_ : Func {
 		obj["_object"] = new Value(button);
 		obj["text"] = new Value(text);
 
+		if (":onClick" in setup) { 
+			obj["onClick"] = setup[":onClick"]; 
+			button.addOnClicked(delegate void(Button b) {
+				obj["onClick"].content.f.execute();
+			});
+		}
+
 		return obj;
 	}
 }
@@ -99,6 +106,7 @@ class Gui__Label_ : Func {
 		Value obj = Value.dictionary();
 
 		Label label = new Label(text);
+		label.setMarkup(text);
 
 		obj["_object"] = new Value(label);
 		obj["text"] = new Value(text);
@@ -157,20 +165,13 @@ class Gui__Window_ : Func {
 			window.setDefaultSize(to!int(setup[":size"][0].content.i),to!int(setup[":size"][1].content.i)); 
 		}
 
+		obj["add"] = new Value(new Func((Value vs){ 
+			auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
+			window.add(e);
+		}));
+		obj["show"] = new Value(new Func((Value vs){ window.showAll(); }));
+
 		return obj;
-	}
-}
-
-class Gui__Show__Window_ : Func {
-	this(string ns="") { super(ns ~ "showWindow","show GUI window for given app using settings",[[dV]],[]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		Value window = v[0];
-
-		auto w = cast(ApplicationWindow)window["_object"].content.go;
-		w.showAll();
-
-		return new Value();
 	}
 }
 
@@ -184,6 +185,10 @@ class Gui__Vbox_ : Func {
 		VBox box = new VBox(true,10);
 
 		obj["_object"] = new Value(box);
+		obj["add"] = new Value(new Func((Value vs){ 
+			auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
+			box.packStart(e,true,true,10);
+		}));
 
 		return obj;
 	}
@@ -199,6 +204,10 @@ class Gui__Hbox_ : Func {
 		HBox box = new HBox(true,10);
 
 		obj["_object"] = new Value(box);
+		obj["add"] = new Value(new Func((Value vs){ 
+			auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
+			box.packStart(e,true,true,10);
+		}));
 
 		return obj;
 	}
