@@ -47,7 +47,15 @@ import gtk.Label;
 import gtk.VBox;
 import gtk.Widget;
 
-// Utilities
+// Constants
+
+enum _ID										= "_id";
+enum _TYPE                                      = "_type";
+enum _OBJECT                                   	= "_object";
+
+enum _EVENT_ONCLICK								= ":onClick";
+
+// Mixins
 
 string initObject(string objectClass, string objectType) {
 	return "
@@ -57,36 +65,21 @@ string initObject(string objectClass, string objectType) {
 
 	// create placeholder item
 	" ~ objectClass ~ " " ~ objectType ~ ";
-	obj[\"_type\"] = new Value(\"" ~ objectType ~ "\");
-	obj[\"_object\"] = new Value(" ~ objectType ~ ");";
+	obj[\"" ~ _ID ~ "\"] = new Value();
+	obj[\"" ~ _TYPE ~ "\"] = new Value(\"" ~ objectType ~ "\");
+	obj[\"" ~ _OBJECT ~ "\"] = new Value(" ~ objectType ~ ");";
 }
-/*
-Widget processChildNode(Value child) {
-	if (child["_type"].content.s=="button") {
-		Button butt = new Button(child["text"].content.s);	
-		butt.addOnClicked(delegate void(Button b) {
-			child[":onClick"].content.f.execute();
-		});
-		child["_object"] = new Value(butt);
-		return cast(Widget)butt;
-	}
-	else if (child["_type"].content.s=="vbox") {
-		VBox vbox = new VBox(true,20);
-		processChildrenNodes(vbox,child[CHILDREN].content.a);
-		child["_object"] = new Value(vbox);
-		return cast(Widget)vbox;
-	}
-	return null;
-}*/
+
+// Utilities
 
 Widget processButton(Value obj) {
 	// create the button
 	Button button = new Button(obj["text"].content.s);	
-	obj["_object"] = new Value(button);
+	obj[_OBJECT] = new Value(button);
 
 	// process properties
 	button.addOnClicked(delegate void(Button b) {
-		obj[":onClick"].content.f.execute();
+		obj[_EVENT_ONCLICK].content.f.execute();
 	});
 
 	return cast(Widget)button;
@@ -95,7 +88,7 @@ Widget processButton(Value obj) {
 Widget processVBox(Value obj) {
 	// create the VBox
 	VBox vbox = new VBox(true,20);
-	obj["_object"] = new Value(vbox);
+	obj[_OBJECT] = new Value(vbox);
 
 	// process children
 	processChildrenNodes(vbox,obj[CHILDREN].content.a);
@@ -103,24 +96,10 @@ Widget processVBox(Value obj) {
 	return cast(Widget)vbox;
 }
 
-void processChildrenNodes(Container cont, Value[] children) {
-	foreach (Value child; children) {
-		Widget wdgt;
-
-		switch (child["_type"].content.s) {
-			case "button": wdgt = processButton(child); break;
-			case "vbox": wdgt = processVBox(child); break;
-			default: wdgt = null;
-		}
-
-		if (wdgt !is null) cont.add(wdgt);
-	}
-}
-
 Value processWindow(Value obj, Application app) {
 	// create the window
 	ApplicationWindow window = new ApplicationWindow(app);
-	obj["_object"] = new Value(window);
+	obj[_OBJECT] = new Value(window);
 	
 	// process properties
 	if (":title" in obj) { 
@@ -139,36 +118,53 @@ Value processWindow(Value obj, Application app) {
 	return obj;
 }
 
+/////
+
+void processChildrenNodes(Container cont, Value[] children) {
+	foreach (Value child; children) {
+		Widget wdgt;
+
+		switch (child[_TYPE].content.s) {
+			case "button": wdgt = processButton(child); break;
+			case "vbox": wdgt = processVBox(child); break;
+			default: wdgt = null;
+		}
+
+		if (wdgt !is null) cont.add(wdgt);
+	}
+}
+
 // Functions
 
 class Gui__App_ : Func {
-	this(string ns="") { super(ns ~ "app","create GUI app with given string id and mainWindow",[[sV,dV]],[nV]); }
+	this(string ns="") { super(ns ~ "app","create GUI app with given string id and mainWindow",[[sV,dV,dV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias appId = S!(v,0);
 		Value mainWindow =v[1];
+		Value config = v[2];
 
-		Application app = new Application("io.arturo-lang.app." ~ appId, GApplicationFlags.FLAGS_NONE);
+		mixin(initObject("Application","app"));
 
-		Value obj = Value.dictionary();
+		// setup object
 
-		obj["_type"] = new Value("app");
-		obj["_object"] = new Value(app);
-		obj["window"] = mainWindow;
-		//obj["_callback"] = new Value(callback);
 		obj["id"] = new Value(appId);
+		obj["window"] = mainWindow;
 
-		obj["run"] = new Value(new Func((Value vs){ return new Value(app.run([])); }));
+		// create the application
 
-		app.addOnActivate(delegate void(GioApplication appli) { 
-			//writeln(obj["window"].stringify());
+		app = new Application("io.arturo-lang.app." ~ appId, GApplicationFlags.FLAGS_NONE);
+		obj[_OBJECT] = new Value(app);
+
+		// process properties
+
+		app.addOnActivate(delegate void(GioApplication a) { 
 			obj["window"]["show"].content.f.execute(new Value([obj]));
-			//callback.execute(obj);
 		});
 
-		return new Value(app.run([]));
+		// run application and return
 
-		//return obj;
+		return new Value(app.run([]));
 	}
 }
 
@@ -225,7 +221,8 @@ class Gui__Window_ : Func {
 
 		obj["close"] = new Value(new Func((Value vs){ 
 			(cast(ApplicationWindow)(obj["_object"].content.go)).close(); 
-			return new Value(); }));
+			return new Value(); 
+		}));
 
 		obj["show"] = new Value(new Func((Value vs){ 
 			return processWindow(obj, cast(Application)vs.content.a[0]["_object"].content.go);
