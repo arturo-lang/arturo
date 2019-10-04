@@ -95,7 +95,7 @@ class Gui__App_ : Func {
 		obj["run"] = new Value(new Func((Value vs){ return new Value(app.run([])); }));
 
 		app.addOnActivate(delegate void(GioApplication appli) { 
-			writeln(obj["window"].stringify());
+			//writeln(obj["window"].stringify());
 			obj["window"]["show"].content.f.execute(new Value([obj]));
 			//callback.execute(obj);
 		});
@@ -109,20 +109,20 @@ class Gui__App_ : Func {
 Widget processChild(Value child) {
 	if (child["_type"].content.s=="button") {
 			
-			writeln("it's a button");
-			writeln(&child["onClick"].content.f);
+			//writeln("it's a button");
+			//writeln(&child["onClick"].content.f);
 			Button butt = new Button(child["text"].content.s);
-			writeln("BUTT:");
-			writeln(cast(void*)butt);		
+			//writeln("BUTT:");
+			//writeln(cast(void*)butt);		
 			butt.addOnClicked(delegate void(Button b) {
-				writeln(cast(void*)b);
-				writeln(&child["onClick"].content.f);
+				//writeln(cast(void*)b);
+				//writeln(&child["onClick"].content.f);
 				child["onClick"].content.f.execute();
 			});
 			child["_object"] = new Value(butt);
-			writeln("FUNC:");
-			writeln(&child["onClick"].content.f);
-			writeln(&butt);
+			//writeln("FUNC:");
+			//writeln(&child["onClick"].content.f);
+			//writeln(&butt);
 			return cast(Widget)butt;
 		}
 		else if (child["_type"].content.s=="vbox") {
@@ -156,6 +156,10 @@ class Gui__Window_ : Func {
 		ApplicationWindow window;// = new ApplicationWindow(cast(Application)app["_object"].content.go);
 		obj["_type"] = new Value("window");
 		obj["_object"] = new Value(window);
+
+		if ("_" in setup) {
+			obj["_"] = setup["_"];
+		}
 
 		if (":title" in setup) { 
 			obj["title"] = setup[":title"]; 
@@ -192,7 +196,7 @@ class Gui__Window_ : Func {
 			if ("title" in obj) { window.setTitle(obj["title"].content.s); }
 			if ("size" in obj) { window.setDefaultSize(to!int(obj["size"][0].content.i),to!int(obj["size"][1].content.i)); }
 
-			writeln("adding children");
+			//writeln("adding children");
 			addChildren(window, obj["children"].content.a);
 			/*
 			foreach (Value child; obj["children"].content.a) {
