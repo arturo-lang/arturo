@@ -72,6 +72,20 @@ string initObject(string objectClass, string objectType) {
 
 // Utilities
 
+Value processApp(Value obj) {
+	// create the application
+	Application app = new Application("io.arturo-lang.app." ~ obj["id"].content.s, GApplicationFlags.FLAGS_NONE);
+	obj[_OBJECT] = new Value(app);
+
+	// process properties
+
+	app.addOnActivate(delegate void(GioApplication a) { 
+		obj["window"]["show"].content.f.execute(new Value([obj]));
+	});
+
+	return new Value(app.run([]));
+}
+
 Widget processButton(Value obj) {
 	// create the button
 	Button button = new Button(obj["text"].content.s);	
@@ -151,20 +165,11 @@ class Gui__App_ : Func {
 		obj["id"] = new Value(appId);
 		obj["window"] = mainWindow;
 
-		// create the application
+		obj["run"] = new Value(new Func((Value vs){ 
+			return processApp(obj);
+		}));
 
-		app = new Application("io.arturo-lang.app." ~ appId, GApplicationFlags.FLAGS_NONE);
-		obj[_OBJECT] = new Value(app);
-
-		// process properties
-
-		app.addOnActivate(delegate void(GioApplication a) { 
-			obj["window"]["show"].content.f.execute(new Value([obj]));
-		});
-
-		// run application and return
-
-		return new Value(app.run([]));
+		return obj;
 	}
 }
 
