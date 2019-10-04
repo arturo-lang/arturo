@@ -30,7 +30,9 @@ vb $(vbox #{
 
 !mainWindow.add vb
 
-gui:app "testApp" mainWindow
+main $(gui:app "testApp" mainWindow #{})
+print $(syms)
+!main.run
 //!main.run
 
 /*
