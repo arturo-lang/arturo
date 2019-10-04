@@ -1,0 +1,35 @@
+mainWindow $(window #{
+	:title 	"Arturo & Gtk+ GUI"
+	:size 	#(500 300)
+})
+
+closeButton1 $(button "my button1" #{ 
+	:onClick { print "button1 clicked!" } 
+})
+
+closeButton2 $(button "my button3" #{ 
+	:onClick { print "something", print "button2 clicked!" } 
+})
+
+closeButton3 $(button "my button3" #{ 
+	:onClick { print "something", print "button3 clicked!" } 
+})
+
+vb $(vbox #{
+	:children #(closeButton1 closeButton2 closeButton3)
+})
+
+!mainWindow.add vb
+
+gui:app "testApp" mainWindow
+//!main.run
+
+/*
+main $(app "testApp" $(window #{
+	:title 	"Arturo & Gtk+ GUI"
+	:size 	#(500 300)
+	:children #( $(button "my button" #{ 
+		:onClick { print "button clicked!" } 
+	}))
+}))
+!main.run*/
