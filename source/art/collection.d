@@ -33,6 +33,27 @@ import panic;
 
 // Functions
 
+class Add_ : Func {
+	this(string ns="") { super(ns ~ "add","add element to collection",[[aV,xV],[dV,xV]],[aV,dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value collection = v[0];
+		Value item = v[1];
+
+		if (collection.type==aV) {
+			collection.addValueToArray(item);
+		}
+		else { // dictionary
+			if (CHILDREN !in collection) {
+				collection[CHILDREN] = Value.array();
+				collection[CHILDREN].addValueToArray(item);
+			}
+		}
+
+		return collection;
+	}
+}
+
 class Contains_ : Func {
 	this(string ns="") { super(ns ~ "contains","check if collection contains given element",[[sV,sV],[aV,xV],[dV,xV]],[bV]); }
 	override Value execute(Expressions ex) {
