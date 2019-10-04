@@ -1709,7 +1709,7 @@ class Value {
                 string[] items;
                 auto sortedKeys = content.d.variables.keys.array.sort();
                 foreach (string key; sortedKeys) {
-                    if (!filterHiddenKeys && (filterHiddenKeys && !key.startsWith("_"))) {
+                    if (!filterHiddenKeys || (filterHiddenKeys && !key.startsWith("_"))) {
                         Value v = getValueFromDict(key);
                         items ~= key ~ " " ~ v.stringify();
                     }
