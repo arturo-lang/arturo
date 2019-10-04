@@ -53,7 +53,7 @@ alias noV = ValueType.noValue;
 alias vV = ValueType.variadicValue;
 alias oV = ValueType.objectValue;
 alias goV = ValueType.gobjectValue;
-
+        
 // Definitions
 
 enum ValueType : string
@@ -1643,22 +1643,22 @@ class Value {
         }
     }
 
-    string logify(int prepend=0) {
+    string logify(int prepend=0, bool isKeyVal=false) {
         switch (type) {
-            case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
-            case ValueType.realValue        : return to!string(content.r);
-            case ValueType.booleanValue     : return to!string(content.b);
-            case ValueType.stringValue      : return "\"" ~ content.s ~ "\"";
+            case ValueType.numberValue      : if (isBig) { return "\x1B[0;35m" ~ to!string(content.bi) ~ "\x1B[0;37m"; } else { return "\x1B[0;35m" ~ to!string(content.i) ~ "\x1B[0;37m"; }
+            case ValueType.realValue        : return "\x1B[0;35m" ~ to!string(content.r) ~ "\x1B[0;37m";
+            case ValueType.booleanValue     : return "\x1B[0;35m" ~ to!string(content.b) ~ "\x1B[0;37m";
+            case ValueType.stringValue      : return "\x1B[0;33m" ~ "\"" ~ content.s ~ "\"" ~ "\x1B[0;37m";
             case ValueType.functionValue    : return "<function: 0x" ~ to!string(&content.f) ~ ">";
             case ValueType.arrayValue       : 
                 string ret = "#(\n";
                 string[] items;
                 if (content.a.length==0) return "#()";
                 foreach (Value v; content.a) {
-                    items ~= replicate("\t",prepend) ~ "\t" ~ v.logify(prepend+1) ~ "\n";
+                    items ~= replicate("\t",prepend)  ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ v.logify(prepend+1,isKeyVal) ~ "\n";
                 }
                 ret ~= items.join("");
-                ret ~= replicate("\t",prepend) ~ ")";
+                ret ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ ")";
                 return ret;
             case ValueType.dictionaryValue  :
                 string ret = "#{\n";
@@ -1667,15 +1667,23 @@ class Value {
                 if (sortedKeys.length==0) return "#{}";
                 foreach (string key; sortedKeys) {
                     Value v = getValueFromDict(key);
-                    items ~= replicate("\t",prepend) ~ "\t" ~ "\x1B[1;32m" ~ key ~ "\x1B[0;32m" ~ " " ~ v.logify(prepend+1) ~ "\n";
+                    if (key.startsWith(":")) {
+                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ "\x1B[1;32m" ~ leftJustify(key,16) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
+                    }
+                    else if (key.startsWith("_")) {
+                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ "\x1B[1;38;5;242m" ~ leftJustify(key,16) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
+                    }
+                    else {
+                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ "\x1B[1;37m" ~ leftJustify(key,16) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
+                    }
                 }
                 ret ~= items.join("");
-                ret ~= replicate("\t",prepend) ~ "}";
+                ret ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "}";
                 if (ret=="#{  }") ret = "#{}";
                 return ret;
             case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
             case ValueType.gobjectValue     : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
-            case ValueType.noValue          : return "null";
+            case ValueType.noValue          : return "\x1B[0;31m" ~ "null" ~ "\x1B[0;37m";
             default                         : return "NULL"; // should never reach this point
         }
     }
