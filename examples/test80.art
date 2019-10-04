@@ -28,4 +28,5 @@ mainWindow $(window #{
 })
 
 mainApp $(app "test1" mainWindow #{})
+log mainApp
 !mainApp.run
