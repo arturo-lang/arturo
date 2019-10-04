@@ -47,6 +47,86 @@ import gtk.Label;
 import gtk.VBox;
 import gtk.Widget;
 
+// Utilities
+
+Widget processChildNode(Value child) {
+	writeln("CHILD: HERE");
+	if (child["_type"].content.s=="button") {
+		writeln("CHILD(button): HERE");
+			
+			//writeln("it's a button");
+			//writeln(&child["onClick"].content.f);
+			Button butt = new Button(child["text"].content.s);
+			writeln("CHILD(button): HERE");
+			//writeln("BUTT:");
+			//writeln(cast(void*)butt);		
+			butt.addOnClicked(delegate void(Button b) {
+				writeln(cast(void*)b);
+				writeln(&child[":onClick"].content.f);
+				child[":onClick"].content.f.execute();
+			});
+			writeln("CHILD(button): HERE");
+			child["_object"] = new Value(butt);
+			writeln("CHILD(button): HERE");
+			//writeln("FUNC:");
+			//writeln(&child["onClick"].content.f);
+			//writeln(&butt);
+			return cast(Widget)butt;
+		}
+		else if (child["_type"].content.s=="vbox") {
+			writeln("CHILD(vbox): HERE");
+			VBox vbox = new VBox(true,20);
+writeln("CHILD(vbox): HERE");
+			processChildrenNodes(vbox,child[CHILDREN].content.a);
+			writeln("CHILD(vbox): HERE");
+			child["_object"] = new Value(vbox);
+			writeln("CHILD(vbox): HERE");
+			return cast(Widget)vbox;
+			//cont.add(cast(VBox)child["_object"].content.go);
+		}
+		return null;
+}
+
+void processChildrenNodes(Container cont, Value[] children) {
+	foreach (Value child; children) {
+		writeln("processing child: " ~ child.stringify());
+		cont.add(processChildNode(child));
+	}
+}
+
+Value showWindow(Value obj, Application app) {
+	// create the window
+	writeln("HERE");
+	ApplicationWindow window = new ApplicationWindow(app);
+	writeln("HERE");
+	obj["_object"] = new Value(window);
+	writeln("HERE");
+	obj["WORKED"] = new Value("yes!");
+	writeln("HERE");
+	
+	// process properties
+	if (":title" in obj) { 
+		window.setTitle(obj[":title"].content.s); 
+	}
+	writeln("HERE");
+	if (":size" in obj) { 
+		window.setDefaultSize(to!int(obj[":size"][0].content.i),to!int(obj[":size"][1].content.i)); 
+	}
+	writeln("HERE");
+
+	// process children nodes
+	processChildrenNodes(window, obj[CHILDREN].content.a);
+
+	writeln("HERE");
+
+	// show the window
+	window.showAll();
+
+	writeln("HERE");
+
+	return new Value();
+}
+
 // Functions
 /*
 class Gui__App_ : Func {
@@ -106,124 +186,34 @@ class Gui__App_ : Func {
 	}
 }
 
-Widget processChild(Value child) {
-	if (child["_type"].content.s=="button") {
-			
-			//writeln("it's a button");
-			//writeln(&child["onClick"].content.f);
-			Button butt = new Button(child["text"].content.s);
-			//writeln("BUTT:");
-			//writeln(cast(void*)butt);		
-			butt.addOnClicked(delegate void(Button b) {
-				//writeln(cast(void*)b);
-				//writeln(&child["onClick"].content.f);
-				child["onClick"].content.f.execute();
-			});
-			child["_object"] = new Value(butt);
-			//writeln("FUNC:");
-			//writeln(&child["onClick"].content.f);
-			//writeln(&butt);
-			return cast(Widget)butt;
-		}
-		else if (child["_type"].content.s=="vbox") {
-			VBox vbox = new VBox(true,20);
-
-			addChildren(vbox,child["children"].content.a);
-			
-			child["_object"] = new Value(vbox);
-			return cast(Widget)vbox;
-			//cont.add(cast(VBox)child["_object"].content.go);
-		}
-		return null;
-}
-
-void addChildren(Container cont, Value[] children) {
-	foreach (Value child; children) {
-		writeln("processing child: " ~ child.stringify());
-		cont.add(processChild(child));
-	}
-}
-
 class Gui__Window_ : Func {
 	this(string ns="") { super(ns ~ "window","create GUI window for given app using settings",[[dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		//Value app = v[0];
-		Value setup = v[0];
+		Value config = v[0];
 
-		Value obj = Value.dictionary();
+		// copy config to new object
+		Value obj = new Value(config);
+		if (CHILDREN !in obj) obj[CHILDREN] = Value.array();
 
-		ApplicationWindow window;// = new ApplicationWindow(cast(Application)app["_object"].content.go);
+		// create placeholder item
+		ApplicationWindow window;
 		obj["_type"] = new Value("window");
 		obj["_object"] = new Value(window);
 
-		if ("_" in setup) {
-			obj["_"] = setup["_"];
-		}
-
-		if (":title" in setup) { 
-			obj["title"] = setup[":title"]; 
-			//window.setTitle(setup[":title"].content.s); 
-		}
-
-		if (":size" in setup) { 
-			obj["size"] = setup[":size"]; 
-			//window.setDefaultSize(to!int(setup[":size"][0].content.i),to!int(setup[":size"][1].content.i)); 
-		}
-
-		if (":children" in setup) { 
-			obj["children"] = setup[":children"]; 
-		}
-		else {
-			obj["children"] = new Value(cast(Value[])[]);
-		}
+		// setup object
 
 		obj["add"] = new Value(new Func((Value vs){ 
-			obj["children"].addValueToArray(vs.content.a[0]);
+			obj[CHILDREN].addValueToArray(vs.content.a[0]);
 			return new Value();
-			//auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
-			//window.add(e);
-			//return new Value();
 		}));
-		//obj["show"] = new Value(new Func((Value vs){ (cast(ApplicationWindow)obj["_object"]).showAll(); return new Value(); }));
 
-		obj["close"] = new Value(new Func((Value vs){ writeln("closing mainWindow"); (cast(ApplicationWindow)(obj["_object"].content.go)).close(); writeln("closed window"); return new Value(); }));
+		obj["close"] = new Value(new Func((Value vs){ 
+			(cast(ApplicationWindow)(obj["_object"].content.go)).close(); 
+			return new Value(); }));
 
 		obj["show"] = new Value(new Func((Value vs){ 
-
-			window = new ApplicationWindow(cast(Application)vs.content.a[0]["_object"].content.go);
-			obj["_object"] = new Value(window);
-			if ("title" in obj) { window.setTitle(obj["title"].content.s); }
-			if ("size" in obj) { window.setDefaultSize(to!int(obj["size"][0].content.i),to!int(obj["size"][1].content.i)); }
-
-			//writeln("adding children");
-			addChildren(window, obj["children"].content.a);
-			/*
-			foreach (Value child; obj["children"].content.a) {
-				writeln("processing child: " ~ child.stringify());
-				if (child["_type"].content.s=="button") {
-					Button butt = new Button(child["text"].content.s);
-					
-					butt.addOnClicked(delegate void(Button b) {
-						child["onClick"].content.f.execute();
-					});
-					child["_object"] = new Value(butt);
-					window.add(cast(Button)child["_object"].content.go);
-				}
-				else if (child["_type"].content.s=="vbox") {
-					VBox vbox = new VBox(true,20);
-
-					foreach (Value subchild; child["children"].content.a) {
-						//add them somehow (external function?)
-					}
-
-					child["_object"] = new Value(vbox);
-					window.add(cast(VBox)child["_object"].content.go);
-				}
-			}*/
-
-			window.showAll();
-			return new Value();
+			return showWindow(obj, cast(Application)vs.content.a[0]["_object"].content.go);
 		}));
 
 		return obj;
@@ -235,23 +225,20 @@ class Gui__Button_ : Func {
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias text = S!(v,0);
-		Value setup = v[1];
+		Value config = v[1];
 
-		Value obj = Value.dictionary();
+		// copy config to new object
+		Value obj = new Value(config);
+		if (CHILDREN !in obj) obj[CHILDREN] = Value.array();
 
-		Button button;// = new Button(text);
-
+		// create placeholder item
+		Button button;
 		obj["_type"] = new Value("button");
 		obj["_object"] = new Value(button);
-		obj["text"] = new Value(text);
 
-		if (":onClick" in setup) { 
-			obj["onClick"] = setup[":onClick"]; 
-			//button.addOnClicked(delegate void(Button b) {
-			//	obj["onClick"].content.f.execute();
-			//}
-			//);
-		}
+		// setup object
+
+		obj["text"] = new Value(text);
 
 		return obj;
 	}
@@ -261,26 +248,22 @@ class Gui__Vbox_ : Func {
 	this(string ns="") { super(ns ~ "vbox","show GUI window for given app using settings",[[dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		Value setup = v[0];
+		Value config = v[0];
 
-		Value obj = Value.dictionary();
+		// copy config to new object
+		Value obj = new Value(config);
+		if (CHILDREN !in obj) obj[CHILDREN] = Value.array();
 
-		VBox box;// = new VBox(true,20);
-
+		// create placeholder item
+		VBox vbox;
 		obj["_type"] = new Value("vbox");
-		obj["_object"] = new Value(box);
-		if (":children" in setup) { 
-			obj["children"] = setup[":children"]; 
-		}
-		else {
-			obj["children"] = new Value(cast(Value[])[]);
-		}
+		obj["_object"] = new Value(vbox);
+
+		// setup object
+
 		obj["add"] = new Value(new Func((Value vs){ 
-			obj["children"].addValueToArray(vs.content.a[0]);
+			obj[CHILDREN].addValueToArray(vs.content.a[0]);
 			return new Value();
-			//auto e = cast(Widget)vs.content.a[0]["_object"].content.go;
-			//box.packStart(e,true,true,20);
-			//return new Value();
 		}));
 
 		return obj;
