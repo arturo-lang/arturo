@@ -57,6 +57,12 @@ enum _ID										= "_id";
 enum _TYPE                                      = "_type";
 enum _OBJECT                                   	= "_object";
 
+enum _APPID										= ":appId";
+enum _RESIZABLE									= ":resizable";
+enum _SIZE 										= ":size";
+enum _TITLE										= ":title";
+enum _WINDOW 									= ":window";
+
 enum _EVENT_ONCLICK								= ":onClick";
 enum _EVENT_ONPRESSED							= ":onPressed";
 enum _EVENT_ONRELEASED							= ":onReleased";
@@ -99,13 +105,13 @@ void verifyObjectType(string func,Value dict, string type) {
 
 Value processApp(Value obj) {
 	// create the application
-	Application app = new Application(GUI_APP_PREFIX ~ obj["id"].content.s, GApplicationFlags.FLAGS_NONE);
+	Application app = new Application(GUI_APP_PREFIX ~ obj[_APPID].content.s, GApplicationFlags.FLAGS_NONE);
 	obj[_OBJECT] = new Value(app);
 
 	// process properties
 
 	app.addOnActivate(delegate void(GioApplication a) { 
-		obj["window"]["show"].content.f.execute(new Value([obj]));
+		obj[_WINDOW]["show"].content.f.execute(new Value([obj]));
 	});
 
 	return new Value(app.run([]));
@@ -113,7 +119,7 @@ Value processApp(Value obj) {
 
 Widget processButton(Value obj) {
 	// create the button
-	Button button = new Button(obj["text"].content.s);	
+	Button button = new Button(obj[_TITLE].content.s);	
 	obj[_OBJECT] = new Value(button);
 
 	// process properties
@@ -155,11 +161,16 @@ Value processWindow(Value obj, Application app) {
 	obj[_OBJECT] = new Value(window);
 	
 	// process properties
-	if (obj.hasKey(":title",[sV])) { 
-		window.setTitle(obj[":title"].content.s); 
+	if (obj.hasKey(_TITLE,[sV])) { 
+		window.setTitle(obj[_TITLE].content.s); 
 	}
-	if (obj.hasKey(":size",[aV])) { 
-		window.setDefaultSize(to!int(obj[":size"][0].content.i), to!int(obj[":size"][1].content.i)); 
+
+	if (obj.hasKey(_SIZE,[aV])) { 
+		window.setDefaultSize(to!int(obj[_SIZE][0].content.i), to!int(obj[_SIZE][1].content.i)); 
+	}
+
+	if (obj.hasKey(_RESIZABLE,[bV])) { 
+		window.setResizable(obj[_RESIZABLE].content.b);
 	}
 
 	// process children
@@ -204,8 +215,8 @@ class Gui__App_ : Func {
 
 		// setup object
 
-		obj["id"] = new Value(appId);
-		obj["window"] = mainWindow;
+		obj[_APPID] = new Value(appId);
+		obj[_WINDOW] = mainWindow;
 
 		obj["run"] = new Value(new Func((Value vs){ 
 			return processApp(obj);
@@ -219,14 +230,14 @@ class Gui__Button_ : Func {
 	this(string ns="") { super(ns ~ "button","create GUI button with given label and configuration",[[sV,dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
-		alias text = S!(v,0);
+		alias title = S!(v,0);
 		Value config = v[1];
 
 		mixin(initObject("Button","button"));
 
 		// setup object
 
-		obj["text"] = new Value(text);
+		obj[_TITLE] = new Value(title);
 
 		return obj;
 	}
@@ -241,12 +252,6 @@ class Gui__Vbox_ : Func {
 		mixin(initObject("VBox","vbox"));
 
 		// setup object
-/*
-		obj["add"] = new Value(new Func((Value vs){ 
-			obj[CHILDREN].addValueToArray(vs.content.a[0]);
-			return new Value();
-		}));
-		*/
 
 		return obj;
 	}
@@ -261,12 +266,6 @@ class Gui__Window_ : Func {
 		mixin(initObject("ApplicationWindow","window"));
 
 		// setup object
-
-/*
-		obj["add"] = new Value(new Func((Value vs){ 
-			obj[CHILDREN].addValueToArray(vs.content.a[0]);
-			return new Value();
-		}));*/
 
 		obj["close"] = new Value(new Func((Value vs){ 
 			(cast(ApplicationWindow)(obj["_object"].content.go)).close(); 
