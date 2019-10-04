@@ -60,6 +60,18 @@ class Context {
         return ret;
     }
 
+    string[] _varKeys() {
+        return variables.keys;
+    }
+
+    Value[] _varValues() {
+        Value[] ret;
+        foreach (string k, Var v; variables) {
+            ret ~= v.value;
+        }
+        return ret;
+    }
+
     void  _varUnset(string n) {
         if (_varExists(n))  {
             variables.remove(n);
