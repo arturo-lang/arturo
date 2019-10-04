@@ -1,13 +1,20 @@
 mainWindow $(window #{
 	:title 	"Arturo & Gtk+ GUI"
 	:size 	#(500 300)
+
+	button "someButton" #{
+
+	}
+	//:children #($(button "my button1" #{ 
+	//	:onClick { print "button1 clicked!", print $(syms) } 
+	//}))
 })
 
 closeButton1 $(button "my button1" #{ 
-	:onClick { print "button1 clicked!" } 
+	:onClick { print "button1 clicked!", print $(syms), !mainWindow.close } 
 })
 
-closeButton2 $(button "my button3" #{ 
+closeButton2 $(button "my button2" #{ 
 	:onClick { print "something", print "button2 clicked!" } 
 })
 
