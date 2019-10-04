@@ -21,24 +21,24 @@ import globals;
 
 // Constants
 
-const string SPACER                                         = "               ";
+enum SPACER                                         = "               ";
 
-const string PARSE_ERROR_POS_TEMPLATE                       = "\x1B[4;1;35mSyntax Error\x1B[0;32m   \x1B[1m@ File:\x1B[0;32m %s, \x1B[1mLine:\x1B[0;32m %d\x1B[0;37m\n" ~ 
+enum PARSE_ERROR_POS_TEMPLATE                       = "\x1B[4;1;35mSyntax Error\x1B[0;32m   \x1B[1m@ File:\x1B[0;32m %s, \x1B[1mLine:\x1B[0;32m %d\x1B[0;37m\n" ~ 
                                                               SPACER ~ "\x1B[1m#\x1B[0;37m %s\n\n";
-const string PARSE_ERROR_POS_TEMPLATE_REPL                  = "\x1B[4;1;35mSyntax Error\x1B[0;32m   " ~ 
+enum PARSE_ERROR_POS_TEMPLATE_REPL                  = "\x1B[4;1;35mSyntax Error\x1B[0;32m   " ~ 
                                                               "\x1B[1m#\x1B[0;37m %s";
-const string RUNTIME_ERROR_POS_TEMPLATE                     = "\x1B[4;1;35mRuntime Error\x1B[0;32m  \x1B[1m@ File:\x1B[0;32m %s, \x1B[1mLine:\x1B[0;32m %d\x1B[0;37m\n" ~ 
+enum RUNTIME_ERROR_POS_TEMPLATE                     = "\x1B[4;1;35mRuntime Error\x1B[0;32m  \x1B[1m@ File:\x1B[0;32m %s, \x1B[1mLine:\x1B[0;32m %d\x1B[0;37m\n" ~ 
                                                               SPACER ~ "\x1B[1m#\x1B[0;37m %s\n\n";
-const string RUNTIME_ERROR_POS_TEMPLATE_REPL                = "\x1B[4;1;35mRuntime Error\x1B[0;32m  " ~ 
+enum RUNTIME_ERROR_POS_TEMPLATE_REPL                = "\x1B[4;1;35mRuntime Error\x1B[0;32m  " ~ 
                                                               "\x1B[1m#\x1B[0;37m %s";
-const string CONSOLE_ERROR_POS_TEMPLATE_REPL                = "\x1B[4;1;35mConsole Error\x1B[0;32m  " ~ 
+enum CONSOLE_ERROR_POS_TEMPLATE_REPL                = "\x1B[4;1;35mConsole Error\x1B[0;32m  " ~ 
                                                               "\x1B[1m#\x1B[0;37m %s\n\n" ~ 
                                                               SPACER ~ "  For more info type '?help'";
 
 
-const string GENERIC_ERROR_TEMPLATE                         = "\x1B[1;37m%s:\x1B[0;37m %s\n\n" ~ SPACER ~ "  %s";
-const string GENERIC_ERROR_TEMPLATE_WITHOUT_DETAILS         = "\x1B[1;37m%s:\x1B[0;37m %s";
-const string GENERIC_ERROR_TEMPLATE_WITHOUT_REFERENCE       = "\x1B[1;37m%s\x1B[0;37m\n\n" ~ SPACER ~ "  %s";
+enum GENERIC_ERROR_TEMPLATE                         = "\x1B[1;37m%s:\x1B[0;37m %s\n\n" ~ SPACER ~ "  %s";
+enum GENERIC_ERROR_TEMPLATE_WITHOUT_DETAILS         = "\x1B[1;37m%s:\x1B[0;37m %s";
+enum GENERIC_ERROR_TEMPLATE_WITHOUT_REFERENCE       = "\x1B[1;37m%s\x1B[0;37m\n\n" ~ SPACER ~ "  %s";
 
 // C Interface
 
