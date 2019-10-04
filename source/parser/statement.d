@@ -196,15 +196,12 @@ class Statement {
 
 	void assignExpressionValueToParentDict(Value result, Value* parentDict) {
 		// if it doesn't already have a children's key, create it
-		writeln("assigning expression: " ~ result.stringify() ~ " to: " ~ (*parentDict).stringify());
-		if ("_" !in *parentDict) {
-			(*parentDict)["_"] = Value.array();
+		if (CHILDREN !in *parentDict) {
+			(*parentDict)[CHILDREN] = Value.array();
 		}
 
-		writeln("new parentDict: " ~ (*parentDict).stringify());
-
 		// add result to parentDict
-		(*parentDict)["_"].addValueToArray(result);
+		(*parentDict)[CHILDREN].addValueToArray(result);
 	}
 
 	Value execute(Value* v) {
