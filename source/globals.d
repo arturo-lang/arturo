@@ -420,7 +420,7 @@ class Globals : Context {
         foreach (string funcString; sortedFunctions) {
             Func f = contextStack.lastItem().functions[funcString];
             //writeln(f.markdownish());
-            //writeln(f.sublimeish());
+            writeln(f.sublimeish());
             f.inspect();
         }
     }
