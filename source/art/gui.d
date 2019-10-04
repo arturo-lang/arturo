@@ -58,6 +58,8 @@ enum _TYPE                                      = "_type";
 enum _OBJECT                                   	= "_object";
 
 enum _EVENT_ONCLICK								= ":onClick";
+enum _EVENT_ONPRESSED							= ":onPressed";
+enum _EVENT_ONRELEASED							= ":onReleased";
 
 // Utilities
 
@@ -118,6 +120,18 @@ Widget processButton(Value obj) {
 	if (obj.hasKey(_EVENT_ONCLICK, [fV])) {
 		button.addOnClicked(delegate void(Button b) {
 			obj[_EVENT_ONCLICK].content.f.execute();
+		});
+	}
+
+	if (obj.hasKey(_EVENT_ONPRESSED, [fV])) {
+		button.addOnPressed(delegate void(Button b) {
+			obj[_EVENT_ONPRESSED].content.f.execute();
+		});
+	}
+
+	if (obj.hasKey(_EVENT_ONRELEASED, [fV])) {
+		button.addOnReleased(delegate void(Button b) {
+			obj[_EVENT_ONRELEASED].content.f.execute();
 		});
 	}
 
