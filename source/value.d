@@ -1643,36 +1643,39 @@ class Value {
         }
     }
 
-    string logify(bool withquotes=true) {
+    string logify(int prepend=0) {
         switch (type) {
             case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
             case ValueType.realValue        : return to!string(content.r);
             case ValueType.booleanValue     : return to!string(content.b);
-            case ValueType.stringValue      : if (withquotes) { return "\"" ~ content.s ~ "\""; } else { return content.s; }
+            case ValueType.stringValue      : return "\"" ~ content.s ~ "\"";
             case ValueType.functionValue    : return "<function: 0x" ~ to!string(&content.f) ~ ">";
             case ValueType.arrayValue       : 
-                string ret = "#(";
+                string ret = "#(\n";
                 string[] items;
+                if (content.a.length==0) return "#()";
                 foreach (Value v; content.a) {
-                    items ~= "\t" ~ v.stringify();
+                    items ~= replicate("\t",prepend) ~ "\t" ~ v.logify(prepend+1) ~ "\n";
                 }
-                ret ~= items.join(" ");
-                ret ~= ")";
+                ret ~= items.join("");
+                ret ~= replicate("\t",prepend) ~ ")";
                 return ret;
             case ValueType.dictionaryValue  :
-                string ret = "#{ ";
+                string ret = "#{\n";
                 string[] items;
                 auto sortedKeys = content.d.variables.keys.array.sort();
+                if (sortedKeys.length==0) return "#{}";
                 foreach (string key; sortedKeys) {
                     Value v = getValueFromDict(key);
-                    items ~= "\t" ~ key ~ " " ~ v.stringify();
+                    items ~= replicate("\t",prepend) ~ "\t" ~ "\x1B[1;32m" ~ key ~ "\x1B[0;32m" ~ " " ~ v.logify(prepend+1) ~ "\n";
                 }
-                ret ~= items.join(", ");
-                ret ~= " }";
+                ret ~= items.join("");
+                ret ~= replicate("\t",prepend) ~ "}";
                 if (ret=="#{  }") ret = "#{}";
                 return ret;
             case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
             case ValueType.gobjectValue     : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
+            case ValueType.noValue          : return "null";
             default                         : return "NULL"; // should never reach this point
         }
     }
