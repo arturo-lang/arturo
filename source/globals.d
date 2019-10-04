@@ -62,9 +62,9 @@ Globals Glob;
 
 // Constants
 
-const string ARGS                                       = "@";
-const string CHILDREN                                   = "_";
-const string THIS                                       = "this";
+enum ARGS                                       = "@";
+enum CHILDREN                                   = "_";
+enum THIS                                       = "this";
 
 // Utilities
 
