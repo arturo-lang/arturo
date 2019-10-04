@@ -135,6 +135,18 @@ class Lazy_ : Func {
 	}
 }
 
+class Log_ : Func {
+	this(string ns="") { super(ns ~ "log","print value of given expression to screen, in a readable format",[[xV]],[xV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value item = v[0];
+
+		writeln(item.logify());
+
+		return v[0];
+	}
+}
+
 class Loop_ : Func {
 	this(string ns="") { super(ns ~ "loop","execute given function for each element in array or dictionary, or while condition is true",[[aV,fV],[dV,fV],[bV,fV]],[xV]); }
 	override Value execute(Expressions ex) {
