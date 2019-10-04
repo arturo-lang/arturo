@@ -9,6 +9,5 @@ myApp $(gui:app "TestApp" {
 	show mainWindow
 })
 
-run myApp
 
 myApp 
