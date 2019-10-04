@@ -169,7 +169,7 @@ class Repl {
 
                     Value ret = compiler.compileFromString(input);
                     terminal.write("=> ");
-                    terminal.writeln(ret.stringify());
+                    terminal.writeln(ret.stringify(true,true));
                 }
 
             }
