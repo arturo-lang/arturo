@@ -303,6 +303,10 @@ class Value {
         return false;
     }
 
+    void addValueToArray(Value item) {
+        content.a ~= item;
+    }
+
     bool dictionaryContains(Value item) {
         return content.d._varExists(item.content.s);
     }
