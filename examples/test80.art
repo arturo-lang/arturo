@@ -12,6 +12,12 @@ mainWindow $(window #{
 			:onClick { 
 				print "button1 clicked"
 			}
+			:onPressed {
+				print "button1 pressed"
+			}
+			:onReleased {
+				print "button1 released"
+			}
 		}
 		button "button2" #{
 			:onClick {
