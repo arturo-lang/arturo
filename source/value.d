@@ -472,6 +472,14 @@ class Value {
         else return null;
     }
 
+    bool hasKey(string key, ValueType[] vts) {
+        if (key in this) {
+            if (vts.canFind(this[key].type)) return true;
+            else throw new ERR_ExpectedValueTypeError(key, vts[0], this[key].type);
+        }
+        else return false;
+    }
+
     /************************************
      INDEX OPERATOR OVERLOADING
      ************************************/
@@ -513,6 +521,7 @@ class Value {
         }
         else return false;
     }
+
     /************************************
      ARITHMETIC OPERATIONS
      ************************************/
