@@ -55,6 +55,17 @@ enum _OBJECT                                   	= "_object";
 
 enum _EVENT_ONCLICK								= ":onClick";
 
+// Utilities
+
+string getUUID() {
+    Xorshift192 gen;
+
+    gen.seed(unpredictableSeed);
+    auto genUuid = randomUUID(gen);
+
+    return genUuid.toString();
+}
+
 // Mixins
 
 string initObject(string objectClass, string objectType) {
@@ -65,7 +76,7 @@ string initObject(string objectClass, string objectType) {
 
 	// create placeholder item
 	" ~ objectClass ~ " " ~ objectType ~ ";
-	obj[\"" ~ _ID ~ "\"] = new Value();
+	obj[\"" ~ _ID ~ "\"] = new Value(getUUID());
 	obj[\"" ~ _TYPE ~ "\"] = new Value(\"" ~ objectType ~ "\");
 	obj[\"" ~ _OBJECT ~ "\"] = new Value(" ~ objectType ~ ");";
 }
