@@ -18,25 +18,25 @@ import helpers.terminal;
 
 // Constants
 
-const string ART_NAME           = "Arturo";
-const string ART_VERSION        = "0.3.3";
-const string ART_COPYRIGHT      = "2019";
-const string ART_AUTHOR         = "Yanis Zafirópulos";
-const string ART_BUILD          = import("build.txt");
-const string ART_BUILD_DATE     = import("build_date.txt").strip;
+enum ART_NAME           = "Arturo";
+enum ART_VERSION        = "0.3.3";
+enum ART_COPYRIGHT      = "2019";
+enum ART_AUTHOR         = "Yanis Zafirópulos";
+enum ART_BUILD          = import("build.txt");
+enum ART_BUILD_DATE     = import("build_date.txt").strip;
 
-version(X86)    { const string ART_BUILD_BITS = "x86"; }
-version(X86_64) { const string ART_BUILD_BITS = "x86_64"; }
+version(X86)        { enum ART_BUILD_BITS = "x86"; }
+version(X86_64)     { enum ART_BUILD_BITS = "x86_64"; }
 
-version(OSX)        { const string ART_BUILD_OS = "macOS"; }
-version(linux)      { const string ART_BUILD_OS = "Linux"; }
-version(Windows)    { const string ART_BUILD_OS = "Windows"; }
-version(FreeBSD)    { const string ART_BUILD_OS = "FreeBSD"; }
-version(Solaris)    { const string ART_BUILD_OS = "Solaris"; }
+version(OSX)        { enum ART_BUILD_OS = "macOS"; }
+version(linux)      { enum ART_BUILD_OS = "Linux"; }
+version(Windows)    { enum ART_BUILD_OS = "Windows"; }
+version(FreeBSD)    { enum ART_BUILD_OS = "FreeBSD"; }
+version(Solaris)    { enum ART_BUILD_OS = "Solaris"; }
 
-const string VERSION_TEMPLATE       = import("version_template.txt").replace("\\x1B","\x1B");
+enum VERSION_TEMPLATE       = import("version_template.txt").replace("\\x1B","\x1B");
 
-const string LOGO_TEMPLATE          = import("logo_template.txt").replace("\\x1B","\x1B");
+enum LOGO_TEMPLATE          = import("logo_template.txt").replace("\\x1B","\x1B");
 
 // Functions
 
