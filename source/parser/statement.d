@@ -194,26 +194,46 @@ class Statement {
 		}
 	}
 
+	void assignExpressionValueToParentDict(Value result, Value* parentDict) {
+		// if it doesn't already have a children's key, create it
+		writeln("assigning expression: " ~ result.stringify() ~ " to: " ~ (*parentDict).stringify());
+		if ("_" !in *parentDict) {
+			(*parentDict)["_"] = Value.array();
+		}
+
+		writeln("new parentDict: " ~ (*parentDict).stringify());
+
+		// add result to parentDict
+		(*parentDict)["_"].addValueToArray(result);
+	}
+
 	Value execute(Value* v) {
+		Value ret;
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
-					if (Glob.funcExists(id.getId())) return executeFunctionCall();  // system function
+					if (Glob.funcExists(id.getId())) {
+						// it's a system func. call it and return its value
+						ret = executeFunctionCall();
+					}
 					else {
 
 						if (!hasExpressions) {
-							// it's an id-expression, return its value
-							return new Expression(new Argument(id)).evaluate();
+							// it's a single-id expression, return its value
+							ret = new Expression(new Argument(id)).evaluate();
 						}
 						else {
-							// it's an assignment
+							// it's an assignment - return the result immediately,
+							// no further processing needed
 							return executeAssignment(v);
 						}
 					}
+					break;
 
 				case StatementType.expressionStatement:
 					// it's an expression, return its value
-					return expression.evaluate();
+					ret = expression.evaluate();
+					break;
 				default:
 					return new Value();
 			}
@@ -222,6 +242,16 @@ class Statement {
 			debug writeln("STATEMENT::execute  (" ~ id.inspect() ~ ")-> got exception; reTHROW");
 			throw e;
 		}
+
+		if (v !is null) {
+			// if we are in a dictionary and it was not an assignment
+			// (in which case we've already return the result)
+			// add the expression value to the dictionary's "children" property
+
+			assignExpressionValueToParentDict(ret,v);
+		}
+
+		return ret;
 	}
 
 	void inspect() {
