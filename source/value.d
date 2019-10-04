@@ -1688,7 +1688,7 @@ class Value {
         }
     }
 
-    string stringify(bool withquotes=true) {
+    string stringify(bool withquotes=true, bool filterHiddenKeys=false) {
         switch (type) {
             case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
             case ValueType.realValue        : return to!string(content.r);
@@ -1709,8 +1709,10 @@ class Value {
                 string[] items;
                 auto sortedKeys = content.d.variables.keys.array.sort();
                 foreach (string key; sortedKeys) {
-                    Value v = getValueFromDict(key);
-                    items ~= key ~ " " ~ v.stringify();
+                    if (!filterHiddenKeys && (filterHiddenKeys && !key.startsWith("_"))) {
+                        Value v = getValueFromDict(key);
+                        items ~= key ~ " " ~ v.stringify();
+                    }
                 }
                 ret ~= items.join(", ");
                 ret ~= " }";
