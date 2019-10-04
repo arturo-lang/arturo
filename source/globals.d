@@ -63,6 +63,7 @@ Globals Glob;
 // Constants
 
 const string ARGS                                       = "@";
+const string CHILDREN                                   = "_";
 const string THIS                                       = "this";
 
 // Utilities
