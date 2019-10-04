@@ -36,6 +36,8 @@ import globals;
 
 import gobject.ObjectG;
 
+import panic;
+
 import gtk.Application;
 import gio.Application : GioApplication = Application;
 import gtk.ApplicationWindow;
@@ -48,6 +50,8 @@ import gtk.VBox;
 import gtk.Widget;
 
 // Constants
+
+enum GUI_APP_PREFIX								= "io.arturo-lang.app.";
 
 enum _ID										= "_id";
 enum _TYPE                                      = "_type";
@@ -83,9 +87,17 @@ string initObject(string objectClass, string objectType) {
 
 // Utilities
 
+void verifyObjectType(string func,Value dict, string type) {
+	if (_TYPE !in dict) 
+		throw new ERR_ErroneousObjectTypeError(func,type,"null");
+	
+	if (dict[_TYPE].content.s!=type)
+		throw new ERR_ErroneousObjectTypeError(func,type,dict[_TYPE].content.s);
+}
+
 Value processApp(Value obj) {
 	// create the application
-	Application app = new Application("io.arturo-lang.app." ~ obj["id"].content.s, GApplicationFlags.FLAGS_NONE);
+	Application app = new Application(GUI_APP_PREFIX ~ obj["id"].content.s, GApplicationFlags.FLAGS_NONE);
 	obj[_OBJECT] = new Value(app);
 
 	// process properties
@@ -103,9 +115,11 @@ Widget processButton(Value obj) {
 	obj[_OBJECT] = new Value(button);
 
 	// process properties
-	button.addOnClicked(delegate void(Button b) {
-		obj[_EVENT_ONCLICK].content.f.execute();
-	});
+	if (obj.hasKey(_EVENT_ONCLICK, [fV])) {
+		button.addOnClicked(delegate void(Button b) {
+			obj[_EVENT_ONCLICK].content.f.execute();
+		});
+	}
 
 	return cast(Widget)button;
 }
@@ -127,10 +141,10 @@ Value processWindow(Value obj, Application app) {
 	obj[_OBJECT] = new Value(window);
 	
 	// process properties
-	if (":title" in obj) { 
+	if (obj.hasKey(":title",[sV])) { 
 		window.setTitle(obj[":title"].content.s); 
 	}
-	if (":size" in obj) { 
+	if (obj.hasKey(":size",[aV])) { 
 		window.setDefaultSize(to!int(obj[":size"][0].content.i), to!int(obj[":size"][1].content.i)); 
 	}
 
@@ -162,12 +176,15 @@ void processChildrenNodes(Container cont, Value[] children) {
 // Functions
 
 class Gui__App_ : Func {
-	this(string ns="") { super(ns ~ "app","create GUI app with given string id and mainWindow",[[sV,dV,dV]],[nV]); }
+	this(string ns="") { super(ns ~ "app","create GUI app with given string ID, mainWindow and configuration",[[sV,dV,dV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias appId = S!(v,0);
 		Value mainWindow =v[1];
 		Value config = v[2];
+
+		// first verify the object arguments
+		verifyObjectType("gui:app",mainWindow,"window");
 
 		mixin(initObject("Application","app"));
 
@@ -185,7 +202,7 @@ class Gui__App_ : Func {
 }
 
 class Gui__Button_ : Func {
-	this(string ns="") { super(ns ~ "button","create GUI button with given label using settings",[[sV,dV]],[dV]); }
+	this(string ns="") { super(ns ~ "button","create GUI button with given label and configuration",[[sV,dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias text = S!(v,0);
@@ -202,7 +219,7 @@ class Gui__Button_ : Func {
 }
 
 class Gui__Vbox_ : Func {
-	this(string ns="") { super(ns ~ "vbox","show GUI window for given app using settings",[[dV]],[dV]); }
+	this(string ns="") { super(ns ~ "vbox","create GUI vertical box with given configuration",[[dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		Value config = v[0];
@@ -210,18 +227,19 @@ class Gui__Vbox_ : Func {
 		mixin(initObject("VBox","vbox"));
 
 		// setup object
-
+/*
 		obj["add"] = new Value(new Func((Value vs){ 
 			obj[CHILDREN].addValueToArray(vs.content.a[0]);
 			return new Value();
 		}));
+		*/
 
 		return obj;
 	}
 }
 
 class Gui__Window_ : Func {
-	this(string ns="") { super(ns ~ "window","create GUI window for given app using settings",[[dV]],[dV]); }
+	this(string ns="") { super(ns ~ "window","create GUI window for given app and configuration",[[dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		Value config = v[0];
@@ -230,10 +248,11 @@ class Gui__Window_ : Func {
 
 		// setup object
 
+/*
 		obj["add"] = new Value(new Func((Value vs){ 
 			obj[CHILDREN].addValueToArray(vs.content.a[0]);
 			return new Value();
-		}));
+		}));*/
 
 		obj["close"] = new Value(new Func((Value vs){ 
 			(cast(ApplicationWindow)(obj["_object"].content.go)).close(); 
