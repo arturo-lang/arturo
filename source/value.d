@@ -287,7 +287,12 @@ class Value {
         }
     }
 
-
+    static Value array() {
+        Value v = new Value();
+        v.type = ValueType.arrayValue;
+        v.content.a = [];
+        return v;
+    }
 
     static Value dictionary() {
         Value v = new Value();
