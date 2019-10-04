@@ -320,6 +320,14 @@ class Value {
         return content.d._varExists(key);
     }
 
+    string[] dictionaryKeys() {
+        return content.d._varKeys();
+    }
+
+    Value[] dictionaryValues() {
+        return content.d._varValues();
+    }
+
     const bool dictionaryContainsKey(const string key) {
         return content.d._varExistsImmut(key);
     }
