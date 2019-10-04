@@ -39,7 +39,7 @@ import versions;
 
 // Constants
 
-const string REPL_PROMPT            =   "\x1B[38;5;208m\x1B[1m$ :%s\x1B[0m\x1B[38;5;208m\x1B[1m>\x1B[0m ";
+enum REPL_PROMPT            =   "\x1B[38;5;208m\x1B[1m$ :%s\x1B[0m\x1B[38;5;208m\x1B[1m>\x1B[0m ";
 
 class ReplLineGetter : LineGetter {
     mixin LineGetterConstructors;
