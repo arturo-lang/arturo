@@ -66,7 +66,7 @@ enum ARGS                                       = "@";
 enum CHILDREN                                   = "_";
 enum THIS                                       = "this";
 
-// Utilities
+// Mixins
 
 template StaticFilter(alias Pred, T...) {
     static if (T.length == 0) alias TypeTuple!() StaticFilter;
@@ -148,8 +148,6 @@ string getSystemFuncsArray() {
             methods ~= "\"" ~ className.toLower.replace("__",".").replace("_","") ~ "\"";
 
     return "[\"?info\",\"?functions\",\"?symbols\",\"?write.to\",\"?clear\",\"?help\",\"?exit\"," ~ methods.join(",") ~ "]";
-
-    //return ret;
 }
 
 // Functions
