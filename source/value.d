@@ -39,6 +39,10 @@ import gobject.ObjectG;
 
 import var;
 
+// Constants
+
+enum LOGIFY_PADDING = 16;
+
 // Aliases
 
 alias nV = ValueType.numberValue;
@@ -1664,10 +1668,10 @@ class Value {
                 string[] items;
                 if (content.a.length==0) return "#()";
                 foreach (Value v; content.a) {
-                    items ~= replicate("\t",prepend)  ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ v.logify(prepend+1,isKeyVal) ~ "\n";
+                    items ~= replicate("\t",prepend)  ~ replicate(" ",isKeyVal ? LOGIFY_PADDING : 0) ~ "\t" ~ v.logify(prepend+1,isKeyVal) ~ "\n";
                 }
                 ret ~= items.join("");
-                ret ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ ")";
+                ret ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? LOGIFY_PADDING : 0) ~ ")";
                 return ret;
             case ValueType.dictionaryValue  :
                 string ret = "#{\n";
@@ -1677,17 +1681,17 @@ class Value {
                 foreach (string key; sortedKeys) {
                     Value v = getValueFromDict(key);
                     if (key.startsWith(":")) {
-                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ "\x1B[1;32m" ~ leftJustify(key,16) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
+                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? LOGIFY_PADDING : 0) ~ "\t" ~ "\x1B[1;32m" ~ leftJustify(key,LOGIFY_PADDING) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
                     }
                     else if (key.startsWith("_")) {
-                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ "\x1B[1;38;5;242m" ~ leftJustify(key,16) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
+                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? LOGIFY_PADDING : 0) ~ "\t" ~ "\x1B[1;38;5;242m" ~ leftJustify(key,LOGIFY_PADDING) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
                     }
                     else {
-                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "\t" ~ "\x1B[1;37m" ~ leftJustify(key,16) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
+                        items ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? LOGIFY_PADDING : 0) ~ "\t" ~ "\x1B[1;37m" ~ leftJustify(key,LOGIFY_PADDING) ~ "\x1B[0;37m" ~ "" ~ v.logify(prepend+1,true) ~ "\n";
                     }
                 }
                 ret ~= items.join("");
-                ret ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? 16 : 0) ~ "}";
+                ret ~= replicate("\t",prepend) ~ replicate(" ",isKeyVal ? LOGIFY_PADDING : 0) ~ "}";
                 if (ret=="#{  }") ret = "#{}";
                 return ret;
             case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
