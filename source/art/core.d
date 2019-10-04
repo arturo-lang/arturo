@@ -293,7 +293,7 @@ class Print_ : Func {
 		Value item = v[0];
 
 		if (item.type==sV) write(item.content.s);
-		else write(item.stringify);
+		else write(item.stringify(true,true));
 
 		stdout.flush();
 
