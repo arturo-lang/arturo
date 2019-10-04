@@ -164,6 +164,15 @@ class ERR_FunctionCallErrorTooMany : Exception {
     }
 } 
 
+class ERR_ErroneousObjectTypeError : Exception {
+    this(string funcName, string expected, string given) {
+        super( getErrorString("Erroneous object type for ",funcName,
+            ["Expected", "Given"],
+            [expected, given] )
+        );
+    }
+}
+
 class ERR_FunctionCallValueError : Exception {
     this(string funcName, int arg, string expected, string given) {
         super( getErrorString("Error calling function",funcName,
