@@ -2,9 +2,9 @@ mainWindow $(window #{
 	:title 	"Arturo & Gtk+ GUI"
 	:size 	#(500 300)
 
-	button "someButton" #{
+	//button "someButton" #{
 
-	}
+	//}
 	//:children #($(button "my button1" #{ 
 	//	:onClick { print "button1 clicked!", print $(syms) } 
 	//}))
@@ -23,7 +23,9 @@ closeButton3 $(button "my button3" #{
 })
 
 vb $(vbox #{
-	:children #(closeButton1 closeButton2 closeButton3)
+	closeButton1
+	closeButton2 
+	closeButton3
 })
 
 !mainWindow.add vb
