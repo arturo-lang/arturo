@@ -1643,6 +1643,40 @@ class Value {
         }
     }
 
+    string logify(bool withquotes=true) {
+        switch (type) {
+            case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
+            case ValueType.realValue        : return to!string(content.r);
+            case ValueType.booleanValue     : return to!string(content.b);
+            case ValueType.stringValue      : if (withquotes) { return "\"" ~ content.s ~ "\""; } else { return content.s; }
+            case ValueType.functionValue    : return "<function: 0x" ~ to!string(&content.f) ~ ">";
+            case ValueType.arrayValue       : 
+                string ret = "#(";
+                string[] items;
+                foreach (Value v; content.a) {
+                    items ~= "\t" ~ v.stringify();
+                }
+                ret ~= items.join(" ");
+                ret ~= ")";
+                return ret;
+            case ValueType.dictionaryValue  :
+                string ret = "#{ ";
+                string[] items;
+                auto sortedKeys = content.d.variables.keys.array.sort();
+                foreach (string key; sortedKeys) {
+                    Value v = getValueFromDict(key);
+                    items ~= "\t" ~ key ~ " " ~ v.stringify();
+                }
+                ret ~= items.join(", ");
+                ret ~= " }";
+                if (ret=="#{  }") ret = "#{}";
+                return ret;
+            case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
+            case ValueType.gobjectValue     : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
+            default                         : return "NULL"; // should never reach this point
+        }
+    }
+
     string stringify(bool withquotes=true) {
         switch (type) {
             case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
@@ -1674,7 +1708,7 @@ class Value {
             case ValueType.noValue          : return "null";
             case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
             case ValueType.gobjectValue      : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
-            default                         : return "NULL";
+            default                         : return "NULL"; // should never reach this point
         }
     }
 
