@@ -150,6 +150,20 @@ Widget processButton(Value obj) {
 	return cast(Widget)button;
 }
 
+
+Value processFrame(Value obj, Application app) {
+	// create the frame
+	Frame frame = new Frame(obj[_TITLE].content.s);
+	obj[_OBJECT] = new Value(frame);
+	
+	// process properties
+
+	// process children
+	processChildrenNodes(frame,obj[CHILDREN].content.a);
+
+	return obj;
+}
+
 Widget processHBox(Value obj) {
 	// create the HBox
 	HBox hbox = new HBox(true,20);
@@ -232,6 +246,7 @@ void processChildrenNodes(Container cont, Value[] children) {
 
 		switch (child[_TYPE].content.s) {
 			case "button": wdgt = processButton(child); break;
+			case "frame": wdgt = processFrame(child); break;
 			case "hbox": wdgt = processHBox(child); break;
 			case "label": wdgt = processLabel(child); break;
 			case "vbox": wdgt = processVBox(child); break;
@@ -286,6 +301,24 @@ class Gui__Button_ : Func {
 		return obj;
 	}
 }
+
+class Gui__Frame_ : Func {
+	this(string ns="") { super(ns ~ "frame","create GUI frame with given title and configuration",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias title = S!(v,0);
+		Value config = v[1];
+
+		mixin(initObject("Frame","frame"));
+
+		// setup object
+
+		obj[_TITLE] = new Value(title);
+
+		return obj;
+	}
+}
+
 
 class Gui__Hbox_ : Func {
 	this(string ns="") { super(ns ~ "hbox","create GUI horizontal box with given configuration",[[dV]],[dV]); }
