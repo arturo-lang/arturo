@@ -4,34 +4,64 @@
  ***************************/
 
 mainWindow $(window #{
-	:title 		"My Arturo App"
+	:title 		"My Test App"
 	:size 		#(500 300)
-	:resizable	false
+	:resizable	true
 
-	vbox #{
-		button "button1" #{
-			:onClick 	{ print "button1 clicked" }
-			:onPressed 	{ print "button1 pressed" }
-			:onReleased { print "button1 released" }
-		}
+	tabs #{
+		vbox #{
+			:title "tab 1"
 
-		button "button2" #{
-			:onClick {
-				print "button2 clicked"
+			button "button1" #{
+				:onClick 	{ print "button1 clicked" }
+				:onPressed 	{ print "button1 pressed" }
+				:onReleased { print "button1 released" }
+			}
+
+			button "button2" #{
+				:onClick {
+					print "button2 clicked"
+				}
+			}
+
+			button "close window" #{
+				:onClick {
+					print "closeButton1 clicked"
+					!mainWindow.close
+				}
+			}
+
+			label "<b>done</b>" #{
+				:justify "center"
+				:selectable true
 			}
 		}
 
-		button "close window" #{
-			:onClick {
-				print "button3 clicked"
-				!mainWindow.close
+		vbox #{
+			:title "tab 2"
+
+			button "button3" #{
+				:onClick 	{ print "button3 clicked" }
+				:onPressed 	{ print "button3 pressed" }
+				:onReleased { print "button3 released" }
 			}
+
+			button "button4" #{
+				:onClick {
+					print "button4 clicked"
+				}
+			}
+
+			button "close window" #{
+				:onClick {
+					print "closeButton2 clicked"
+					!mainWindow.close
+				}
+			}
+
+			textfield "some input" #{}
 		}
 
-		label "<b>d</b>one" #{
-			:justify "boom"
-			:selectable true
-		}
 	}
 })
 
