@@ -4,26 +4,23 @@
  ***************************/
 
 mainWindow $(window #{
-	:title 	"My Arturo App"
-	:size 	#(500 300)
+	:title 		"My Arturo App"
+	:size 		#(500 300)
+	:resizable	false
 
 	vbox #{
 		button "button1" #{
-			:onClick { 
-				print "button1 clicked"
-			}
-			:onPressed {
-				print "button1 pressed"
-			}
-			:onReleased {
-				print "button1 released"
-			}
+			:onClick 	{ print "button1 clicked" }
+			:onPressed 	{ print "button1 pressed" }
+			:onReleased { print "button1 released" }
 		}
+
 		button "button2" #{
 			:onClick {
 				print "button2 clicked"
 			}
 		}
+
 		button "close window" #{
 			:onClick {
 				print "button3 clicked"

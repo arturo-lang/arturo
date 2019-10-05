@@ -60,7 +60,7 @@
 		  is outside the scope of this module (unless I can do it really small.)
 	)
 +/
-module helpers.terminal;
+module external.terminal;
 
 import std.conv;
 
