@@ -421,7 +421,7 @@ class Globals : Context {
             Func f = contextStack.lastItem().functions[funcString];
             //writeln(f.markdownish());
             writeln(f.sublimeish());
-            f.inspect();
+            //f.inspect();
         }
     }
 
