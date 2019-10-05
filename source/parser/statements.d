@@ -93,7 +93,8 @@ class Statements {
 						//writeln("Return:: popping context (throw)"); 					
 						throw e;
 					}
-				} else {
+				} 
+				else {
 					debug writeln("BLOCK::execute -> got Exception");
 					Panic.runtimeError(e.msg, s.pos);
 				}
