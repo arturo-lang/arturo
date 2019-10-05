@@ -144,6 +144,16 @@ Widget processButton(Value obj) {
 	return cast(Widget)button;
 }
 
+Widget processLabel(Value obj) {
+	// create the button
+	Label label = new Label(obj[_TITLE].content.s);	
+	obj[_OBJECT] = new Value(label);
+
+	// process properties
+
+	return cast(Widget)label;
+}
+
 Widget processVBox(Value obj) {
 	// create the VBox
 	VBox vbox = new VBox(true,20);
@@ -190,6 +200,7 @@ void processChildrenNodes(Container cont, Value[] children) {
 
 		switch (child[_TYPE].content.s) {
 			case "button": wdgt = processButton(child); break;
+			case "label": wdgt = processLabel(child); break;
 			case "vbox": wdgt = processVBox(child); break;
 			default: wdgt = null;
 		}
@@ -201,7 +212,7 @@ void processChildrenNodes(Container cont, Value[] children) {
 // Functions
 
 class Gui__App_ : Func {
-	this(string ns="") { super(ns ~ "app","create GUI app with given string ID, mainWindow and configuration",[[sV,dV,dV]],[nV]); }
+	this(string ns="") { super(ns ~ "app","create GUI app with given string ID, main window and configuration",[[sV,dV,dV]],[nV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias appId = S!(v,0);
@@ -227,13 +238,30 @@ class Gui__App_ : Func {
 }
 
 class Gui__Button_ : Func {
-	this(string ns="") { super(ns ~ "button","create GUI button with given label and configuration",[[sV,dV]],[dV]); }
+	this(string ns="") { super(ns ~ "button","create GUI button with given title and configuration",[[sV,dV]],[dV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias title = S!(v,0);
 		Value config = v[1];
 
 		mixin(initObject("Button","button"));
+
+		// setup object
+
+		obj[_TITLE] = new Value(title);
+
+		return obj;
+	}
+}
+
+class Gui__Label_ : Func {
+	this(string ns="") { super(ns ~ "label","create GUI label with given title and configuration",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias title = S!(v,0);
+		Value config = v[1];
+
+		mixin(initObject("Label","label"));
 
 		// setup object
 
