@@ -58,6 +58,7 @@ enum _TYPE                                      = "_type";
 enum _OBJECT                                   	= "_object";
 
 enum _APPID										= ":appId";
+enum _JUSTIFY									= ":justify";
 enum _RESIZABLE									= ":resizable";
 enum _SIZE 										= ":size";
 enum _TITLE										= ":title";
@@ -147,7 +148,7 @@ Widget processButton(Value obj) {
 Widget processHBox(Value obj) {
 	// create the HBox
 	HBox hbox = new HBox(true,20);
-	obj[_OBJECT] = new Value(vbox);
+	obj[_OBJECT] = new Value(hbox);
 
 	// process children
 	processChildrenNodes(hbox,obj[CHILDREN].content.a);
@@ -161,6 +162,17 @@ Widget processLabel(Value obj) {
 	obj[_OBJECT] = new Value(label);
 
 	// process properties
+	label.setMarkup(obj[_TITLE].content.s);
+
+	if (obj.hasKey(_JUSTIFY,[sV])) { 
+		switch (obj[_JUSTIFY].content.s) {
+			case "left": label.setJustify(GtkJustification.LEFT); break;
+			case "center": label.setJustify(GtkJustification.CENTER); break;
+			case "right": label.setJustify(GtkJustification.RIGHT); break;
+			case "fill": label.setJustify(GtkJustification.FILL); break;
+			default: Panic.runtimeWarning((new WARN_ErroneousParameterValueIgnored(_JUSTIFY, obj[_JUSTIFY].content.s)).msg); break;
+		}
+	}
 
 	return cast(Widget)label;
 }
