@@ -13,6 +13,7 @@ module globals;
 
 import std.algorithm;
 import std.array;
+import std.ascii;
 import std.conv;
 import std.stdio;
 import std.string;
@@ -256,14 +257,16 @@ class Globals : Context {
             string varName = iden.pathContents[0].id;
 
             if (redefine) {
-                contextStack.lastItem()._varSet(varName,v);
+                if (isUpper(varName[0])) _varSet(varName,v); // set global var
+                else contextStack.lastItem()._varSet(varName,v);
             }
             else {
                 if (varAlreadyExisting) {
                     existingVar.value = v;
                 }
                 else {
-                    contextStack.lastItem()._varSet(varName,v);
+                    if (isUpper(varName[0])) _varSet(varName,v); // set global var
+                    else contextStack.lastItem()._varSet(varName,v);
                 }
             }
             return true;
@@ -420,8 +423,8 @@ class Globals : Context {
         foreach (string funcString; sortedFunctions) {
             Func f = contextStack.lastItem().functions[funcString];
             //writeln(f.markdownish());
-            //writeln(f.sublimeish());
-            f.inspect();
+            writeln(f.sublimeish());
+            //f.inspect();
         }
     }
 
