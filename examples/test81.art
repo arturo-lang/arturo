@@ -1,0 +1,39 @@
+/***************************
+ Arturo + GUI
+ @file: test81.art
+ ***************************/
+
+mainWindow $(window #{
+	:title 		"My Arturo App"
+	:size 		#(500 300)
+	:resizable	false
+
+	vbox #{
+		button "button1" #{
+			:onClick 	{ print "button1 clicked" }
+			:onPressed 	{ print "button1 pressed" }
+			:onReleased { print "button1 released" }
+		}
+
+		button "button2" #{
+			:onClick {
+				print "button2 clicked"
+			}
+		}
+
+		button "close window" #{
+			:onClick {
+				print "button3 clicked"
+				!mainWindow.close
+			}
+		}
+
+		label "<b>d</b>one" #{
+			:justify "boom"
+		}
+	}
+})
+
+mainApp $(app "test1" mainWindow #{})
+log mainApp
+!mainApp.run
