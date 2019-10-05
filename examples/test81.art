@@ -30,6 +30,7 @@ mainWindow $(window #{
 
 		label "<b>d</b>one" #{
 			:justify "boom"
+			:selectable true
 		}
 	}
 })

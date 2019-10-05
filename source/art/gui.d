@@ -60,6 +60,7 @@ enum _OBJECT                                   	= "_object";
 enum _APPID										= ":appId";
 enum _JUSTIFY									= ":justify";
 enum _RESIZABLE									= ":resizable";
+enum _SELECTABLE 								= ":selectable";
 enum _SIZE 										= ":size";
 enum _TITLE										= ":title";
 enum _WINDOW 									= ":window";
@@ -67,6 +68,10 @@ enum _WINDOW 									= ":window";
 enum _EVENT_ONCLICK								= ":onClick";
 enum _EVENT_ONPRESSED							= ":onPressed";
 enum _EVENT_ONRELEASED							= ":onReleased";
+
+// Aliases
+
+void WARN_PARAM(string prm, string val) { Panic.runtimeWarning((new WARN_ErroneousParameterValueIgnored(prm, val)).msg); }
 
 // Utilities
 
@@ -170,8 +175,12 @@ Widget processLabel(Value obj) {
 			case "center": label.setJustify(GtkJustification.CENTER); break;
 			case "right": label.setJustify(GtkJustification.RIGHT); break;
 			case "fill": label.setJustify(GtkJustification.FILL); break;
-			default: Panic.runtimeWarning((new WARN_ErroneousParameterValueIgnored(_JUSTIFY, obj[_JUSTIFY].content.s)).msg); break;
+			default: WARN_PARAM(_JUSTIFY, obj[_JUSTIFY].content.s);
 		}
+	}
+
+	if (obj.hasKey(_SELECTABLE,[bV])) { 
+		label.setSelectable(obj[_SELECTABLE].content.b);
 	}
 
 	return cast(Widget)label;
