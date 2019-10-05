@@ -35,6 +35,9 @@ enum CONSOLE_ERROR_POS_TEMPLATE_REPL                = "\x1B[4;1;35mConsole Error
                                                               "\x1B[1m#\x1B[0;37m %s\n\n" ~ 
                                                               SPACER ~ "  For more info type '?help'";
 
+enum RUNTIME_WARNING_POS_TEMPLATE                   = "\x1B[4;1;36mW a r n i n g !\x1B[0;32m  " ~ 
+                                                              "\x1B[1m#\x1B[0;37m %s";                                                              
+
 
 enum GENERIC_ERROR_TEMPLATE                         = "\x1B[1;37m%s:\x1B[0;37m %s\n\n" ~ SPACER ~ "  %s";
 enum GENERIC_ERROR_TEMPLATE_WITHOUT_DETAILS         = "\x1B[1;37m%s:\x1B[0;37m %s";
@@ -71,6 +74,15 @@ string getErrorString(string msg, string symbol, string[] entryStrings, string[]
 }
 
 // Functions
+
+class WARN_ErroneousParameterValueIgnored : Exception {
+    this(string param, string value) {
+        super( getErrorString("Erroneous parameter value will be ignored ", null,
+            ["Parameter", "Value"],
+            [param, value] )
+        );
+    }
+}
 
 class ERR_FunctionNotFound : Exception {
     this(string symbol) {
@@ -285,6 +297,10 @@ class Panic
 
             throw new Exception(msg);
         }
+    }
+
+    static void runtimeWarning(string msg) {
+        writeln(format(RUNTIME_WARNING_POS_TEMPLATE, msg));
     }
 
     static void consoleError(string msg) {
