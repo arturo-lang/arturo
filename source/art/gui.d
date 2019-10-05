@@ -41,12 +41,18 @@ import panic;
 import gtk.Application;
 import gio.Application : GioApplication = Application;
 import gtk.ApplicationWindow;
+import gtk.Box;
 import gtk.Button;
 import gtk.Container;
 import gtk.Entry;
+import gtk.Frame;
 import gtk.HBox;
+import gtk.HPaned;
 import gtk.Label;
+import gtk.Notebook;
+import gtk.Paned;
 import gtk.VBox;
+import gtk.VPaned;
 import gtk.Widget;
 
 // Constants
@@ -58,6 +64,7 @@ enum _TYPE                                      = "_type";
 enum _OBJECT                                   	= "_object";
 
 enum _APPID										= ":appId";
+enum _EDITABLE									= ":editable";
 enum _JUSTIFY									= ":justify";
 enum _RESIZABLE									= ":resizable";
 enum _SELECTABLE 								= ":selectable";
@@ -151,7 +158,7 @@ Widget processButton(Value obj) {
 }
 
 
-Value processFrame(Value obj, Application app) {
+Widget processFrame(Value obj) {
 	// create the frame
 	Frame frame = new Frame(obj[_TITLE].content.s);
 	obj[_OBJECT] = new Value(frame);
@@ -161,7 +168,7 @@ Value processFrame(Value obj, Application app) {
 	// process children
 	processChildrenNodes(frame,obj[CHILDREN].content.a);
 
-	return obj;
+	return cast(Widget)frame;
 }
 
 Widget processHBox(Value obj) {
@@ -173,6 +180,17 @@ Widget processHBox(Value obj) {
 	processChildrenNodes(hbox,obj[CHILDREN].content.a);
 	
 	return cast(Widget)hbox;
+}
+
+Widget processHPane(Value obj) {
+	// create the HPaned
+	HPaned hpane = new HPaned();
+	obj[_OBJECT] = new Value(hpane);
+
+	// process children
+	processChildrenNodes(hpane,obj[CHILDREN].content.a);
+	
+	return cast(Widget)hpane;
 }
 
 Widget processLabel(Value obj) {
@@ -200,6 +218,30 @@ Widget processLabel(Value obj) {
 	return cast(Widget)label;
 }
 
+Widget processTabs(Value obj) {
+	// create the Notebook
+	Notebook tabs = new Notebook();
+	obj[_OBJECT] = new Value(tabs);
+
+	// process children
+	processChildrenNodes(tabs,obj[CHILDREN].content.a);
+	
+	return cast(Widget)tabs;
+}
+
+Widget processTextfield(Value obj) {
+	// create the button
+	Entry textfield = new Entry(obj[_TITLE].content.s);	
+	obj[_OBJECT] = new Value(textfield);
+
+	// process properties
+	if (obj.hasKey(_EDITABLE,[bV])) { 
+		textfield.setEditable(obj[_EDITABLE].content.b);
+	}
+
+	return cast(Widget)textfield;
+}
+
 Widget processVBox(Value obj) {
 	// create the VBox
 	VBox vbox = new VBox(true,20);
@@ -209,6 +251,17 @@ Widget processVBox(Value obj) {
 	processChildrenNodes(vbox,obj[CHILDREN].content.a);
 	
 	return cast(Widget)vbox;
+}
+
+Widget processVPane(Value obj) {
+	// create the VPaned
+	VPaned vpane = new VPaned();
+	obj[_OBJECT] = new Value(vpane);
+
+	// process children
+	processChildrenNodes(vpane,obj[CHILDREN].content.a);
+	
+	return cast(Widget)vpane;
 }
 
 Value processWindow(Value obj, Application app) {
@@ -241,19 +294,45 @@ Value processWindow(Value obj, Application app) {
 /////
 
 void processChildrenNodes(Container cont, Value[] children) {
-	foreach (Value child; children) {
+	foreach (i, Value child; children) {
 		Widget wdgt;
 
 		switch (child[_TYPE].content.s) {
 			case "button": wdgt = processButton(child); break;
+			case "textfield": wdgt = processTextfield(child); break;
 			case "frame": wdgt = processFrame(child); break;
 			case "hbox": wdgt = processHBox(child); break;
+			case "hpane": wdgt = processHPane(child); break;
 			case "label": wdgt = processLabel(child); break;
+			case "tabs": wdgt = processTabs(child); break;
 			case "vbox": wdgt = processVBox(child); break;
+			case "vpane": wdgt = processVPane(child); break;
 			default: wdgt = null;
 		}
 
-		if (wdgt !is null) cont.add(wdgt);
+		if (wdgt !is null) {
+			if (cast(Box)cont !is null) {
+				(cast(Box)cont).packStart(wdgt,true,true,0);
+			}
+			else if (cast(Paned)cont !is null) {
+				if (i==0) (cast(Paned)cont).pack1(wdgt,true,false);
+				else if (i==1) (cast(Paned)cont).pack2(wdgt,true,false);
+				else {
+					WARN_PARAM(CHILDREN, ">2 children");
+				}
+			}
+			else if (cast(Notebook)cont !is null) {
+				string tabTitle = "";
+				if (child.hasKey(_TITLE,[sV])) { 
+					tabTitle = child[_TITLE].content.s;
+				}
+
+				(cast(Notebook)cont).appendPage(wdgt,tabTitle);
+			}
+			else {
+				cont.add(wdgt);
+			}
+		}
 	}
 }
 
@@ -334,6 +413,20 @@ class Gui__Hbox_ : Func {
 	}
 }
 
+class Gui__Hpane_ : Func {
+	this(string ns="") { super(ns ~ "hpane","create GUI horizontal pane with given configuration",[[dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value config = v[0];
+
+		mixin(initObject("HPaned","hpane"));
+
+		// setup object
+
+		return obj;
+	}
+}
+
 class Gui__Label_ : Func {
 	this(string ns="") { super(ns ~ "label","create GUI label with given title and configuration",[[sV,dV]],[dV]); }
 	override Value execute(Expressions ex) {
@@ -351,6 +444,47 @@ class Gui__Label_ : Func {
 	}
 }
 
+class Gui__Tabs_ : Func {
+	this(string ns="") { super(ns ~ "tabs","create GUI tabbed view with given configuration",[[dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value config = v[0];
+
+		mixin(initObject("Notebook","tabs"));
+
+		// setup object
+
+		return obj;
+	}
+}
+
+class Gui__Textfield_ : Func {
+	this(string ns="") { super(ns ~ "textfield","create GUI textfield with given title and configuration",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias title = S!(v,0);
+		Value config = v[1];
+
+		mixin(initObject("Entry","textfield"));
+
+		// setup object
+
+		obj[_TITLE] = new Value(title);
+
+		obj["get"] = new Value(new Func((Value vs){ 
+			string ret = (cast(Entry)(obj["_object"].content.go)).getText(); 
+			return new Value(ret); 
+		}));
+
+		obj["set"] = new Value(new Func((Value vs){ 
+			(cast(Entry)(obj["_object"].content.go)).setText(vs.content.a[0].content.s); 
+			return new Value(); 
+		}));
+
+		return obj;
+	}
+}
+
 class Gui__Vbox_ : Func {
 	this(string ns="") { super(ns ~ "vbox","create GUI vertical box with given configuration",[[dV]],[dV]); }
 	override Value execute(Expressions ex) {
@@ -358,6 +492,20 @@ class Gui__Vbox_ : Func {
 		Value config = v[0];
 
 		mixin(initObject("VBox","vbox"));
+
+		// setup object
+
+		return obj;
+	}
+}
+
+class Gui__Vpane_ : Func {
+	this(string ns="") { super(ns ~ "vpane","create GUI vertical pane with given configuration",[[dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value config = v[0];
+
+		mixin(initObject("VPaned","vpane"));
 
 		// setup object
 
