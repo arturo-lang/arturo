@@ -14,7 +14,7 @@ module versions;
 import std.stdio;
 import std.string;
 
-import helpers.terminal;
+import external.terminal;
 
 // Constants
 
