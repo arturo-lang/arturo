@@ -144,6 +144,17 @@ Widget processButton(Value obj) {
 	return cast(Widget)button;
 }
 
+Widget processHBox(Value obj) {
+	// create the HBox
+	HBox hbox = new HBox(true,20);
+	obj[_OBJECT] = new Value(vbox);
+
+	// process children
+	processChildrenNodes(hbox,obj[CHILDREN].content.a);
+	
+	return cast(Widget)hbox;
+}
+
 Widget processLabel(Value obj) {
 	// create the button
 	Label label = new Label(obj[_TITLE].content.s);	
@@ -200,6 +211,7 @@ void processChildrenNodes(Container cont, Value[] children) {
 
 		switch (child[_TYPE].content.s) {
 			case "button": wdgt = processButton(child); break;
+			case "hbox": wdgt = processHBox(child); break;
 			case "label": wdgt = processLabel(child); break;
 			case "vbox": wdgt = processVBox(child); break;
 			default: wdgt = null;
@@ -249,6 +261,20 @@ class Gui__Button_ : Func {
 		// setup object
 
 		obj[_TITLE] = new Value(title);
+
+		return obj;
+	}
+}
+
+class Gui__Hbox_ : Func {
+	this(string ns="") { super(ns ~ "hbox","create GUI horizontal box with given configuration",[[dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value config = v[0];
+
+		mixin(initObject("HBox","hbox"));
+
+		// setup object
 
 		return obj;
 	}
