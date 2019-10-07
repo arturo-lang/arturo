@@ -121,10 +121,25 @@ class Statement {
 
 	Value executeFunctionCall() {
 		string functionToExec = id.getId();
-		
-		return Glob.funcGet(functionToExec).execute(expressions);
-	}
 
+		if (expressions.hasHashId()) {
+			Identifier hashId = expressions.extractHashId();
+
+			Value ret = Glob.funcGet(functionToExec).execute(expressions);
+
+			bool success = Glob.varSetByIdentifier(hashId,ret,immut);			
+
+			if (!success) {
+				throw new ERR_CannotPerformAssignmentError(id.getFullIdentifier());
+			}
+
+			return ret;
+		}
+		else {
+			return Glob.funcGet(functionToExec).execute(expressions);
+		}
+	}
+/*
 	Value executeUserFunctionCall(Func* f,Value* v) {
 		if (Glob.memoize.canFind(to!string(f))) {
 
@@ -153,7 +168,7 @@ class Statement {
 			return ret;
 		}
 
-	}
+	}*/
 
 	Value executeAssignment(Value* v) {
 
@@ -244,7 +259,11 @@ class Statement {
 			// if we are in a dictionary and it was not an assignment
 			// (in which case we've already return the result)
 			// add the expression value to the dictionary's "children" property
-
+			
+			//bool dont = false;
+			//if (id !is null && id.getId()[0]==':') dont=true;
+			
+			//if (!dont) 
 			assignExpressionValueToParentDict(ret,v);
 		}
 
