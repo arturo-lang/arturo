@@ -42,7 +42,7 @@ extern void panic_ParseError(const char* m, const char* f, int line);
 DIGIT				[0-9]
 DIGIT_HEX			[a-fA-F0-9]
 DIGIT_BIN			[01]
-LETTER				[a-zA-Z_@]
+LETTER				[a-zA-Z_&]
 LETTER_OR_MISC		[a-zA-Z_:]
 
 
@@ -53,6 +53,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 /*
 "~"													{ count(); return ID; }
 ":"													{ count(); return COLON; }
+"#"													{ count(); return HASH; }
 */
 
 
@@ -76,6 +77,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ count(); return ID; }
 ":"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return ID; }
+"@"{LETTER}*										{ count(); return HASH_ID; }
 {DIGIT}+											{ count(); return NUMBER; }
 {DIGIT}+\.{DIGIT}+									{ count(); return FLOAT; }
 
@@ -101,7 +103,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 "$("												{ count(); return BEGIN_INLINE; }
 
 "."													{ count(); return DOT; }
-"#"													{ count(); return HASH; }
+
 "$"													{ count(); return DOLLAR; }
 "("													{ count(); return LPAREN; }
 ")"													{ count(); return RPAREN; }
