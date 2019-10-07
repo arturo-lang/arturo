@@ -27,7 +27,7 @@ char* yyfilename;
 
 extern void* _program;
 
-extern void* new_IdentifierWithId(char* s);
+extern void* new_IdentifierWithId(char* s, int hsh);
 extern void add_IdToIdentifier(char* s, void* iden);
 extern void add_NumToIdentifier(char* l, void* iden);
 extern void add_ExprToIdentifier(void* e, void* iden);
@@ -83,6 +83,7 @@ int yywrap() {
  ****************************************/
 
 %token <str> ID "ID"
+%token <str> HASH_ID "@ID"
 %token <str> FUNCTION_ID "Function Identifier"
 %token <str> NUMBER "Number"
 %token <str> FLOAT "Float"
@@ -170,9 +171,10 @@ int yywrap() {
 // Building blocks
 //==============================
 
-identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID); }
-						| 	IF 																	{ $$ = new_IdentifierWithId("if"); }
-						|	EXCL																{ $$ = new_IdentifierWithId("exec"); }
+identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID,0); }
+						| 	HASH_ID																{ $$ = new_IdentifierWithId($HASH_ID,1); }
+						| 	IF 																	{ $$ = new_IdentifierWithId("if",0); }
+						|	EXCL																{ $$ = new_IdentifierWithId("exec",0); }
 						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
 						|	identifier[previous] DOT NUMBER										{ void* i = $previous; add_NumToIdentifier($NUMBER, i); $$ = i; }
 						|	identifier[previous] DOT FLOAT										{ void* i = $previous; add_NumToIdentifier($FLOAT, i); $$ = i; }
@@ -218,13 +220,13 @@ expression				: 	argument 															{ $$ = new_ExpressionFromArgument($argu
 
 
 expression_list			:	expression 															{ void* e = new_Expressions(); add_Expression(e, $expression); $$ = e; }
-						| 	IMPLIES expression													{ void* e = new_Expressions(); void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return"), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
+						| 	IMPLIES expression													{ void* e = new_Expressions(); void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return",0), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
 						| 	expression_list[previous] expression 								{ void* e = $previous; add_Expression(e, $expression); $$ = e; }
-						| 	expression_list[previous] IMPLIES expression 						{ void* e = $previous; void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return"), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
+						| 	expression_list[previous] IMPLIES expression 						{ void* e = $previous; void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return",0), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e; }
 						;
 
 statement				: 	expression 															{ $$ = new_StatementFromExpression($expression); POS($$); }
-						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions(new_IdentifierWithId("return"), subex); }
+						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions(new_IdentifierWithId("return",0), subex); }
 						|	identifier expression_list											{ $$ = new_StatementWithExpressions($identifier, $expression_list); POS($$); }
 						;
 
