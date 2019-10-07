@@ -122,15 +122,10 @@ class Statement {
 	Value executeFunctionCall() {
 		string functionToExec = id.getId();
 
-		writeln("Executing system func: " ~ functionToExec);
-
 		if (expressions.hasHashId()) {
 			size_t exsBefore = expressions.lst.length;
 			Identifier hashId = expressions.extractHashId();
 			size_t exsAfter = expressions.lst.length;
-
-			writeln("has hash id: " ~ hashId.getId());
-			writeln("exsBefore: " ~ to!string(exsBefore) ~ ", exsAfter: " ~ to!string(exsAfter));
 
 			Value ret = Glob.funcGet(functionToExec).execute(expressions);
 
@@ -143,40 +138,9 @@ class Statement {
 			return ret;
 		}
 		else {
-			writeln("no hash id found");
 			return Glob.funcGet(functionToExec).execute(expressions);
 		}
 	}
-/*
-	Value executeUserFunctionCall(Func* f,Value* v) {
-		if (Glob.memoize.canFind(to!string(f))) {
-
-			Glob.blockStack.push((*f).block);
-
-			Value ret = (*f).executeMemoized(expressions,to!string(f),v);
-
-			if (Glob.blockStack.lastItem() is (*f).block) {
-				Glob.blockStack.pop();
-			}
-
-			return ret;
-		}
-		else {
-			writeln("pushing block to stack and executing: " ~ id.inspect());
-			Glob.blockStack.push((*f).block);
-		
-			Value ret = (*f).executeWithRef(expressions,v);
-
-			writeln("after executing: " ~ id.inspect());
-			
-			if (Glob.blockStack.lastItem() is (*f).block) {
-				Glob.blockStack.pop();
-			}
-
-			return ret;
-		}
-
-	}*/
 
 	Value executeAssignment(Value* v) {
 
@@ -237,14 +201,11 @@ class Statement {
 						ret = executeFunctionCall();
 					}
 					else {
-						writeln("here1 : " ~ id.getId());
 						if (!hasExpressions) {
-							writeln("here2 : " ~ id.getId());
 							// it's a single-id expression, return its value
 							ret = new Expression(new Argument(id)).evaluate();
 						}
 						else {
-							writeln("here3 : " ~ id.getId());
 							// it's an assignment - return the result immediately,
 							// no further processing needed
 							return executeAssignment(v);
@@ -253,7 +214,6 @@ class Statement {
 					break;
 
 				case StatementType.expressionStatement:
-					writeln("here4 : " ~ id.getId());
 					// it's an expression, return its value
 					ret = expression.evaluate();
 					break;
