@@ -1,0 +1,31 @@
+window @mainWindow #{
+	:title	"Number Adder - in Art:"
+	:size	#(500 300)
+
+	vbox #{
+	 	label "Enter <b>two</b> numbers and add them up!" #{}
+		hbox #{
+			textfield @Num1 "0" #{}
+			textfield @Num2 "0" #{}
+		}
+
+		textfield @Result "" #{}
+
+		button "calculate" #{
+			:onClick	{
+				print "button clicked!"
+
+				one $(toNumber $(!Num1.get))
+				two $(toNumber $(!Num2.get))
+
+				!Result.set $(toString one+two)
+			}
+		}
+	}
+
+
+})
+
+app @main "TestApp" mainWindow #{}
+log $(syms)
+!main.run
