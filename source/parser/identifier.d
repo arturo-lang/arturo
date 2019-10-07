@@ -108,7 +108,7 @@ class Identifier {
 		} 
 		else {
 			if (isHash) {
-				cleanstr = cleanstr.replace("#","");
+				cleanstr = cleanstr.replace("@","");
 			}
 
 			pathContentTypes = [ idPC ];
