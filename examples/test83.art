@@ -5,11 +5,11 @@ mainWindow $(window #{
 	vbox #{
 	 	label "Enter <b>two</b> numbers and add them up!" #{}
 		hbox #{
-			Num1 $(textfield "0" #{})
-			Num2 $(textfield "0" #{})
+			$(textfield @mainWindow "0" #{}))
+			$(Num2 $(textfield "0" #{}))
 		}
 
-		$(result $(textfield "" #{}))
+		$(Result $(textfield "" #{}))
 
 		button "calculate" #{
 			:onClick	{
@@ -18,7 +18,7 @@ mainWindow $(window #{
 				one $(toNumber $(!Num1.get))
 				two $(toNumber $(!Num2.get))
 
-				!mainWindow._.0.result.set $(toString one+two)
+				!Result.set $(toString one+two)
 			}
 		}
 	}
