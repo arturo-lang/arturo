@@ -1,0 +1,60 @@
+MainWindow window @{
+	:title	"Number Adder - in Art:"
+	:size	#(500 300)
+
+	container ~ vbox #{
+	 	label "Enter <b>two</b> numbers and add them up!" #{}
+		hbox #{
+			Num1 $(textfield  "0" #{})
+			Num2 $(textfield  "0" #{})
+		}
+
+		@result textfield "" #{}
+
+		@calcButton button "calculate" #{
+			:onClick	{
+				print "button clicked!"
+
+				one $(toNumber $(!num1.get))
+				two $(toNumber $(!num2.get))
+
+				!result.set $(toString one+two)
+			}
+		}
+	}
+}
+
+app @mainApp "testApp" mainWindow #{}
+!mainapp.run
+
+mainWindow $(window #{
+	:title	"Number Adder - in Art:"
+	:size	#(500 300)
+
+	vbox #{
+	 	label "Enter <b>two</b> numbers and add them up!" #{}
+		hbox #{
+			$(Num1 $(textfield "0" #{}))
+			$(Num2 $(textfield "0" #{}))
+		}
+
+		$(Result $(textfield "" #{}))
+
+		button "calculate" #{
+			:onClick	{
+				print "button clicked!"
+
+				one $(toNumber $(!Num1.get))
+				two $(toNumber $(!Num2.get))
+
+				!Result.set $(toString one+two)
+			}
+		}
+	}
+
+
+})
+
+mainApp $(app "TestApp" mainWindow #{})
+log $(syms)
+!mainApp.run
