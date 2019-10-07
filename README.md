@@ -82,7 +82,7 @@ dict 	#{
 
 ```
 addNumbers {
-	@0 + @1
+	&0 + &1
 }
 ```
 
@@ -97,7 +97,7 @@ addNumbers [x,y]{
 ### Fibonacci
 
 ```
-maxLimit 20 // $(toNumber &0)
+maxLimit 20 $(toNumber &0)
 
 fib $(memoize [x]{
 	if x<2 { 1 }{
@@ -175,7 +175,6 @@ The Library
 | **core:return** | return given value | [Any] -> Any |
 | **core:shl** | bitwise left shift | [Number/Number] -> Number |
 | **core:shr** | bitwise right shift | [Number/Number] -> Number |
-| **core:test__** | test function - dev only | [String] ->  |
 | **core:trace** | trace executing of given expression | [Any] -> Any |
 | **core:xor** | bitwise/logical XOR | [Boolean/Boolean or Number/Number] -> Boolean or Number |
 | **crypto:hash** | get hash value for given value | [Any] -> String |
