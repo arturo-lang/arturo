@@ -5,7 +5,7 @@ mainWindow $(window #{
 	vbox #{
 	 	label "Enter <b>two</b> numbers and add them up!" #{}
 		hbox #{
-			$(textfield @mainWindow "0" #{}))
+			textfield #num1 "0" #{}))
 			$(Num2 $(textfield "0" #{}))
 		}
 

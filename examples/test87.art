@@ -8,7 +8,7 @@ window @mainWindow #{
 			textfield @Num1 "0" #{}
 			textfield @Num2 "0" #{}
 		}
-
+ 
 		textfield @Result "" #{}
 
 		button "calculate" #{
@@ -22,9 +22,11 @@ window @mainWindow #{
 			}
 		}
 	}
+}
 
+// this is a comment
 
-})
+loop $(range 1 10) { print & }
 
 app @main "TestApp" mainWindow #{}
 log $(syms)
