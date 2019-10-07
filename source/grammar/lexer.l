@@ -77,7 +77,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ count(); return ID; }
 ":"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return ID; }
-"@"{LETTER}*										{ count(); return HASH_ID; }
+"@"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return HASH_ID; }
 {DIGIT}+											{ count(); return NUMBER; }
 {DIGIT}+\.{DIGIT}+									{ count(); return FLOAT; }
 
