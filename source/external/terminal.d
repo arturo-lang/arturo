@@ -1533,7 +1533,7 @@ struct RealTimeConsoleInput {
 
 			// try to ensure the terminal is in UTF-8 mode
 			if(terminal.terminalInFamily("xterm", "screen", "linux") && !terminal.isMacTerminal()) {
-				terminal.writeStringRaw("\033%G");
+				terminal.writeStringRaw("\033%");
 			}
 
 			terminal.flush();
