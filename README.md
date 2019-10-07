@@ -143,6 +143,7 @@ The Library
 | **array:union** | get union of two given arrays | [Array/Array] -> Array |
 | **array:unique** | get array by removing duplicates | [Array] -> Array |
 | **array:zip** | return array of element pairs using given arrays | [Array/Array] -> Array |
+| **collection:add** | add element to collection | [Array/Any or Dictionary/Any] -> Array or Dictionary |
 | **collection:contains** | check if collection contains given element | [String/String or Array/Any or Dictionary/Any] -> Boolean |
 | **collection:delete** | delete collection element by using given value | [Array/Any or Dictionary/Any] -> Array or Dictionary |
 | **collection:deleteBy** | delete collection element by using given index/key | [Array/Number or Dictionary/String] -> Array or Dictionary |
@@ -163,9 +164,10 @@ The Library
 | **core:import** | import external source file from path | [String] -> Any |
 | **core:input** | read line from stdin | [] -> String or Any |
 | **core:lazy** | get a lazy-evaluated expression | [Any] -> Function |
+| **core:log** | print value of given expression to screen, in a readable format | [Any] -> Any |
 | **core:loop** | execute given function for each element in array or dictionary, or while condition is true | [Array/Function or Dictionary/Function or Boolean/Function] -> Any |
 | **core:memoize** | get a memoized function | [Function] -> Function |
-| **core:new** | copy given object and return a new duplicate. one | [String or String/Array] -> Any |
+| **core:new** | copy given object and return a new duplicate one | [String or String/Any...] -> Any |
 | **core:not** | bitwise/logical NOT | [Boolean or Number] -> Boolean or Number |
 | **core:or** | bitwise/logical OR | [Boolean/Boolean or Number/Number] -> Boolean or Number |
 | **core:panic** | exit program printing given error message | [String] ->  |
@@ -173,6 +175,7 @@ The Library
 | **core:return** | return given value | [Any] -> Any |
 | **core:shl** | bitwise left shift | [Number/Number] -> Number |
 | **core:shr** | bitwise right shift | [Number/Number] -> Number |
+| **core:test__** | test function - dev only | [String] ->  |
 | **core:trace** | trace executing of given expression | [Any] -> Any |
 | **core:xor** | bitwise/logical XOR | [Boolean/Boolean or Number/Number] -> Boolean or Number |
 | **crypto:hash** | get hash value for given value | [Any] -> String |
@@ -185,11 +188,23 @@ The Library
 | **date:day** | get day from date string | [String] -> String |
 | **date:month** | get month from date string | [String] -> String |
 | **date:timeNow** | get current time into string | [] -> String |
+| **date:timer** | time the execution of a given function in milliseconds | [Function] -> Number |
 | **dictionary:hasKey** | check if dictionary has key | [Dictionary/String] -> Boolean |
 | **dictionary:keys** | get array of dictionary keys | [Dictionary] -> Array |
 | **file:exists** | check if file exists at given path | [String] -> Boolean |
 | **file:read** | read string from file at given path | [String] -> String |
 | **file:write** | write string to file at given path | [String/String] -> Null |
+| **gui:app** | create GUI app with given string ID, main window and configuration | [String/Dictionary/Dictionary] -> Number |
+| **gui:button** | create GUI button with given title and configuration | [String/Dictionary] -> Dictionary |
+| **gui:frame** | create GUI frame with given title and configuration | [String/Dictionary] -> Dictionary |
+| **gui:hbox** | create GUI horizontal box with given configuration | [Dictionary] -> Dictionary |
+| **gui:hpane** | create GUI horizontal pane with given configuration | [Dictionary] -> Dictionary |
+| **gui:label** | create GUI label with given title and configuration | [String/Dictionary] -> Dictionary |
+| **gui:tabs** | create GUI tabbed view with given configuration | [Dictionary] -> Dictionary |
+| **gui:textfield** | create GUI textfield with given title and configuration | [String/Dictionary] -> Dictionary |
+| **gui:vbox** | create GUI vertical box with given configuration | [Dictionary] -> Dictionary |
+| **gui:vpane** | create GUI vertical pane with given configuration | [Dictionary] -> Dictionary |
+| **gui:window** | create GUI window for given app and configuration | [Dictionary] -> Dictionary |
 | **html:markdownToHtml** | convert given markdown string to html | [String] -> String |
 | **json:generate** | get JSON string from given object | [Any] -> String |
 | **json:parse** | get object by parsing given JSON string | [String] -> Any |
@@ -256,9 +271,11 @@ The Library
 | **string:uppercase** | uppercase given string | [String] -> String |
 | **string:uuid** | generate random UUID string | [] -> String |
 | **string:words** | get words from string as an array | [String] -> Array |
+| **system:delay** | create system delay with a given duration in milliseconds | [Number] ->  |
 | **system:env** | get system environment variables as a dictionary | [] -> Dictionary |
 | **system:shell** | execute given shell command | [String] -> String or Boolean |
 | **system:spawn** | spawn process using given string and get process id | [String] -> Number |
+| **system:thread** | create a background threaded process using given function | [Function] ->  |
 | **web:download** | download string contents from webpage using given URL | [String] -> String |
 | **web:post** | perform POST request using given URL and data | [String/String] -> String |
 | **xml:check** | check integrity of XML input using given string | [String] -> Boolean |
