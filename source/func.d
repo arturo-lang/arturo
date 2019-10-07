@@ -419,6 +419,7 @@ class Func {
     }
 
     Value[] validate(Expressions ex) {
+        writeln("validating expressions");
         if (ex.lst.length < minArgs) throw new ERR_FunctionCallErrorNotEnough(name, minArgs, ex.lst.length);
 
         if (!isVariadic) {
