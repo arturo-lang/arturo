@@ -63,7 +63,7 @@ Globals Glob;
 
 // Constants
 
-enum ARGS                                       = "@";
+enum ARGS                                       = "&";
 enum CHILDREN                                   = "_";
 enum THIS                                       = "this";
 
