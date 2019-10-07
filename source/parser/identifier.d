@@ -36,7 +36,7 @@ import var;
 // C Interface
 
 extern (C) {
-	void* new_IdentifierWithId(char* t) { return cast(void*)(new Identifier(to!string(t))); }
+	void* new_IdentifierWithId(char* t, int hsh) { return cast(void*)(new Identifier(to!string(t), to!bool(hsh))); }
 
 	void add_IdToIdentifier(char* s, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(to!string(s)); }
 	void add_NumToIdentifier(char* l, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(to!string(l)); }
@@ -71,9 +71,11 @@ class Identifier {
 	PathContentType[] pathContentTypes;
 	PathContent[] pathContents;
 	string namespace;
+	bool isHash;
 
-	this(string s) {
+	this(string s, bool hsh = false) {
 		string cleanstr = s;
+		isHash = hsh;
 		if (s.indexOf(":")!=-1) {
 			if (s.startsWith(":")) {
 				namespace = null;
@@ -105,6 +107,10 @@ class Identifier {
 		
 		} 
 		else {
+			if (isHash) {
+				cleanstr = cleanstr.replace("#","");
+			}
+
 			pathContentTypes = [ idPC ];
 			PathContent pc = {cleanstr};
 			pathContents = [ pc ];
