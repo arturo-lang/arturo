@@ -105,10 +105,10 @@ class Context {
 
     Func funcGet(string n) {
         if (funcExists(n)) {
-            if ((n in functions)!=null) return functions[n];
+            if ((n in functions)!=null) { return functions[n]; }
             else {
                 foreach (Func f; functions) {
-                    if (f.name==n) return  f;
+                    if (f.name==n) { return  f; }
                 }
             }
         }
