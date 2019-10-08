@@ -381,14 +381,15 @@ class Globals : Context {
         if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
 
         // if it's a global, return it now
-        if (this._varExists(n)) return this._varGet(n); 
+        // ADDED: isUpper part
+        if (this._varExists(n) && n[0].isUpper()) return this._varGet(n); 
 
         // else search back into the context stack
         // until reaching root (global), finding it, 
         // or crossing the first function-type block
         foreach_reverse (i, Context ctx; contextStack.list) {
-             // if we reach global, that's it
-            if (ctx is this) return null;
+            // if we reach global, that's it
+            // REMOVED: if (ctx is this) return null;
 
             if (ctx._varExists(n)) return ctx._varGet(n);
 

@@ -1,23 +1,25 @@
-/* if2 (condition1isTrue) (condition2isTrue)
-     bothConditionsAreTrue();
-  else1
-     firstConditionIsTrue();
-  else2
-     secondConditionIsTrue();
-  else
-     noConditionIsTrue();*/
 
-if2 [cond1,cond2,both,one,two,none]{
-	if $(and cond1 cond2) {
-		!both
-	} {
-		if cond1 { !one } {
-			if cond2 { !two } {
-				!none
-			}
+if2 {
+	print $(syms)
+	if $(and &0 &1) {
+		!&2
+	} { 
+		print $(syms)
+		print "we are here"
+		print &
+		if &0 { 
+			!&3 
+		} {
+			if &1 { 
+				!&4
+			} { 
+				!&5 
+			} 
 		}
 	}
 }
+
+print $(syms)
 
 !if2 true false { 
 	print "both" 
