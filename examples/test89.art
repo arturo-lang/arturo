@@ -1,0 +1,22 @@
+/* if2 (condition1isTrue) (condition2isTrue)
+     bothConditionsAreTrue();
+  else1
+     firstConditionIsTrue();
+  else2
+     secondConditionIsTrue();
+  else
+     noConditionIsTrue();*/
+
+if2 [cond1 cond2 doBoth do1 do2 else] {
+	if $(and cond1 cond2) {
+		!doBoth
+	} {
+		if cond1 { !do1 } {
+			if cond2 { !do2 } {
+				!else
+			}
+		}
+	}
+}
+
+if2 true true { print "both" } { print "only first" } { print "only second" } { print "none" }
