@@ -1,6 +1,6 @@
 maxLimit 5000
 
-isPrime [n]{ 
+is_Prime [n]{ 
 	if n<2 { return false }
 	loop $(range 2 n-1) [x]{
 		if n%x=0 { return false }
@@ -9,5 +9,5 @@ isPrime [n]{
 }  
 
 loop $(range 0 maxLimit) {
-	print $(!isPrime @)
+	print $(!is_Prime &)
 }
