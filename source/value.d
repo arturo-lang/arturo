@@ -1246,7 +1246,7 @@ class Value {
                 BigInt lhs = content.bi;
 
                 switch (rhs.type) {
-                    case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(^)","Big Number","Big Number"); } else { throw new ERR_OperationNotPermitted("(^)","Big Number","Number"); }
+                    case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(^)","Big Number","Big Number"); } else { return new Value(lhs ^^ rhs.content.i); }
                     case ValueType.realValue        : throw new ERR_OperationNotPermitted("(^)","Big Number","Real");
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Number","String");
                     case ValueType.booleanValue     : throw new ERR_OperationNotPermitted("(^)","Number","Boolean");
@@ -1261,7 +1261,7 @@ class Value {
                 long lhs = content.i;
 
                 switch (rhs.type) {
-                    case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(^)","Number","Big Number"); } else { return new Value(lhs ^^ rhs.content.i); }
+                    case ValueType.numberValue      : if (rhs.isBig) { throw new ERR_OperationNotPermitted("(^)","Number","Big Number"); } else { return new Value(BigInt(lhs) ^^ rhs.content.i); }
                     case ValueType.realValue        : return new Value(lhs ^^ rhs.content.r);
                     case ValueType.stringValue      : throw new ERR_OperationNotPermitted("(^)","Number","String");
                     case ValueType.booleanValue     : throw new ERR_OperationNotPermitted("(^)","Number","Boolean");
