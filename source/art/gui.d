@@ -165,7 +165,7 @@ Widget processCheckbox(Value obj) {
 
 	// process properties
 	if (obj.hasKey(_EVENT_ONCLICK, [fV])) {
-		checkbox.addOnClicked(delegate void(CheckButton b) {
+		checkbox.addOnClicked(delegate void(Button b) {
 			obj[_EVENT_ONCLICK].content.f.execute();
 		});
 	}
@@ -412,12 +412,12 @@ class Gui__Checkbox_ : Func {
 		obj[_TITLE] = new Value(title);
 
 		obj["get"] = new Value(new Func((Value vs){ 
-			bool ret = (cast(Entry)(obj["_object"].content.go)).getActive(); 
+			bool ret = (cast(CheckButton)(obj["_object"].content.go)).getActive(); 
 			return new Value(ret); 
 		}));
 
 		obj["set"] = new Value(new Func((Value vs){ 
-			(cast(Entry)(obj["_object"].content.go)).setActive(vs.content.a[0].content.b); 
+			(cast(CheckButton)(obj["_object"].content.go)).setActive(vs.content.a[0].content.b); 
 			return new Value(); 
 		}));
 
@@ -485,12 +485,12 @@ class Gui__Label_ : Func {
 		obj[_TITLE] = new Value(title);
 
 		obj["get"] = new Value(new Func((Value vs){ 
-			string ret = (cast(Entry)(obj["_object"].content.go)).getText(); 
+			string ret = (cast(Label)(obj["_object"].content.go)).getText(); 
 			return new Value(ret); 
 		}));
 
 		obj["set"] = new Value(new Func((Value vs){ 
-			(cast(Entry)(obj["_object"].content.go)).setMarkup(vs.content.a[0].content.s); 
+			(cast(Label)(obj["_object"].content.go)).setMarkup(vs.content.a[0].content.s); 
 			return new Value(); 
 		}));
 
