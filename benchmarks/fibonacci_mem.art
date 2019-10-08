@@ -1,11 +1,11 @@
 maxLimit 5000
 
-fib $(memoize [x]{
+Fib $(memoize [x]{
 	if x<2 { 1 }{
-		$(!fib x-1) + $(!fib x-2)
+		$(!Fib x-1) + $(!Fib x-2)
 	} 
 })
 
 loop $(range 0 maxLimit) {
-	print $(!fib @)
+	print $(!Fib &)
 }
