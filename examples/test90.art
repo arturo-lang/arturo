@@ -1,0 +1,7 @@
+
+loop $(range 0 5) {
+	loop $(range 0 &) {
+		print "*" true
+	}
+	""
+}
