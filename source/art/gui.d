@@ -43,6 +43,7 @@ import gio.Application : GioApplication = Application;
 import gtk.ApplicationWindow;
 import gtk.Box;
 import gtk.Button;
+import gkt.CheckButton;
 import gtk.Container;
 import gtk.Entry;
 import gtk.Frame;
@@ -155,6 +156,21 @@ Widget processButton(Value obj) {
 	}
 
 	return cast(Widget)button;
+}
+
+Widget processCheckbox(Value obj) {
+	// create the checkbox
+	CheckButton checkbox = new CheckButton(obj[_TITLE].content.s);	
+	obj[_OBJECT] = new Value(checkbox);
+
+	// process properties
+	if (obj.hasKey(_EVENT_ONCLICK, [fV])) {
+		checkbox.addOnClicked(delegate void(CheckButton b) {
+			obj[_EVENT_ONCLICK].content.f.execute();
+		});
+	}
+
+	return cast(Widget)checkbox;
 }
 
 
@@ -299,6 +315,7 @@ void processChildrenNodes(Container cont, Value[] children) {
 
 		switch (child[_TYPE].content.s) {
 			case "button": wdgt = processButton(child); break;
+			case "checkbox": wdgt = processCheckbox(child); break;
 			case "textfield": wdgt = processTextfield(child); break;
 			case "frame": wdgt = processFrame(child); break;
 			case "hbox": wdgt = processHBox(child); break;
@@ -381,6 +398,33 @@ class Gui__Button_ : Func {
 	}
 }
 
+class Gui__Checkbox_ : Func {
+	this(string ns="") { super(ns ~ "checkbox","create GUI checkbox with given title and configuration",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias title = S!(v,0);
+		Value config = v[1];
+
+		mixin(initObject("CheckButton","checkbox"));
+
+		// setup object
+
+		obj[_TITLE] = new Value(title);
+
+		obj["get"] = new Value(new Func((Value vs){ 
+			bool ret = (cast(Entry)(obj["_object"].content.go)).getActive(); 
+			return new Value(ret); 
+		}));
+
+		obj["set"] = new Value(new Func((Value vs){ 
+			(cast(Entry)(obj["_object"].content.go)).setActive(vs.content.a[0].content.b); 
+			return new Value(); 
+		}));
+
+		return obj;
+	}
+}
+
 class Gui__Frame_ : Func {
 	this(string ns="") { super(ns ~ "frame","create GUI frame with given title and configuration",[[sV,dV]],[dV]); }
 	override Value execute(Expressions ex) {
@@ -439,6 +483,16 @@ class Gui__Label_ : Func {
 		// setup object
 
 		obj[_TITLE] = new Value(title);
+
+		obj["get"] = new Value(new Func((Value vs){ 
+			string ret = (cast(Entry)(obj["_object"].content.go)).getText(); 
+			return new Value(ret); 
+		}));
+
+		obj["set"] = new Value(new Func((Value vs){ 
+			(cast(Entry)(obj["_object"].content.go)).setMarkup(vs.content.a[0].content.s); 
+			return new Value(); 
+		}));
 
 		return obj;
 	}
