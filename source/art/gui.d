@@ -43,7 +43,7 @@ import gio.Application : GioApplication = Application;
 import gtk.ApplicationWindow;
 import gtk.Box;
 import gtk.Button;
-import gkt.CheckButton;
+import gtk.CheckButton;
 import gtk.Container;
 import gtk.Entry;
 import gtk.Frame;
