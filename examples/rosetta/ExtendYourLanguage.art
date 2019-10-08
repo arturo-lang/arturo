@@ -1,12 +1,3 @@
-/* if2 (condition1isTrue) (condition2isTrue)
-     bothConditionsAreTrue();
-  else1
-     firstConditionIsTrue();
-  else2
-     secondConditionIsTrue();
-  else
-     noConditionIsTrue();*/
-
 if2 [cond1,cond2,both,one,two,none]{
 	if $(and cond1 cond2) {
 		!both
