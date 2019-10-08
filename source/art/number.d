@@ -32,6 +32,49 @@ import panic;
 
 // Utilities
 
+bool isProbablePrime(in ulong n, in uint k=10) @safe {
+    static ulong modPow(ulong b, ulong e, in ulong m)
+    pure nothrow @safe @nogc {
+        ulong result = 1;
+        while (e > 0) {
+            if ((e & 1) == 1)
+                result = (result * b) % m;
+            b = (b ^^ 2) % m;
+            e >>= 1;
+        }
+        return result;
+    }
+ 
+    if (n < 2 || n % 2 == 0)
+        return n == 2;
+ 
+    ulong d = n - 1;
+    ulong s = 0;
+    while (d % 2 == 0) {
+        d /= 2;
+        s++;
+    }
+    assert(2 ^^ s * d == n - 1);
+ 
+    outer:
+    foreach (immutable _; 0 .. k) {
+        immutable ulong a = uniform(2, n);
+        ulong x = modPow(a, d, n);
+        if (x == 1 || x == n - 1)
+            continue;
+        foreach (immutable __; 1 .. s) {
+            x = modPow(x, 2, n);
+            if (x == 1)
+                return false;
+            if (x == n - 1)
+                continue outer;
+        }
+        return false;
+    }
+ 
+    return true;
+}
+
 string registerMathFunc(string func, string funcName = null) {
 	string ff = func;
 	if (funcName !is null) ff = funcName;
@@ -66,6 +109,16 @@ class Even_ : Func {
 		alias num = I!(v,0);
 
 		return new Value(num%2==0);
+	}
+}
+
+class Is__Prime_ : Func {
+	this(string ns="") { super(ns ~ "isPrime","check if given number is prime (uses the Miller-Rabin algorithm)",[[nV]],[bV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias num = I!(v,0);
+
+		return new Value(isProbablePrime(num));
 	}
 }
 
