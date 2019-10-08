@@ -390,8 +390,14 @@ class Range_ : Func {
 		if (ex.lst.length==3) 
 			step = I!(v,2);
 
-		for (long i=from; i<=to; i+=step)
-			ret ~= new Value(i);
+		if (from<to) {
+			for (long i=from; i<=to; i+=step)
+				ret ~= new Value(i);
+		}
+		else {
+			for (long i=to; from>=to; i-=step)
+				ret ~= new Value(i);
+		}
 
 		return new Value(ret);
 	}
