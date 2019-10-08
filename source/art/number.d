@@ -11,6 +11,7 @@ module art.number;
 
 // Imports
 
+import std.bigint;
 import std.conv;
 import std.math;
 import std.random;
@@ -32,47 +33,15 @@ import panic;
 
 // Utilities
 
-bool isProbablePrime(in ulong n, in uint k=10) @safe {
-    static ulong modPow(ulong b, ulong e, in ulong m)
-    pure nothrow @safe @nogc {
-        ulong result = 1;
-        while (e > 0) {
-            if ((e & 1) == 1)
-                result = (result * b) % m;
-            b = (b ^^ 2) % m;
-            e >>= 1;
-        }
-        return result;
-    }
- 
-    if (n < 2 || n % 2 == 0)
-        return n == 2;
- 
-    ulong d = n - 1;
-    ulong s = 0;
-    while (d % 2 == 0) {
-        d /= 2;
-        s++;
-    }
-    assert(2 ^^ s * d == n - 1);
- 
-    outer:
-    foreach (immutable _; 0 .. k) {
-        immutable ulong a = uniform(2, n);
-        ulong x = modPow(a, d, n);
-        if (x == 1 || x == n - 1)
-            continue;
-        foreach (immutable __; 1 .. s) {
-            x = modPow(x, 2, n);
-            if (x == 1)
-                return false;
-            if (x == n - 1)
-                continue outer;
-        }
-        return false;
-    }
- 
-    return true;
+bool isPrime(ulong n) {
+	if (n<2) return false;
+	if (n==2 || n==3) return true;
+	if (n%2==0) return false;
+
+	for (auto x=3; x<=to!ulong(sqrt(to!real(n))); x+=2) {
+		if (n%x==0) return false;
+	}
+	return true;
 }
 
 string registerMathFunc(string func, string funcName = null) {
@@ -118,7 +87,7 @@ class Is__Prime_ : Func {
 		Value[] v = validate(ex);
 		alias num = I!(v,0);
 
-		return new Value(isProbablePrime(num));
+		return new Value(isPrime(num));
 	}
 }
 
@@ -139,7 +108,7 @@ class Random_ : Func {
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
 		alias numFrom = I!(v,0);
-		alias numTo = I!(v,0);
+		alias numTo = I!(v,1);
 
 		long ret = uniform(numFrom,numTo);
 
