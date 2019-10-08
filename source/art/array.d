@@ -395,7 +395,7 @@ class Range_ : Func {
 				ret ~= new Value(i);
 		}
 		else {
-			for (long i=to; from>=to; i-=step)
+			for (long i=to; i>=to; i-=step)
 				ret ~= new Value(i);
 		}
 
