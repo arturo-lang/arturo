@@ -1,0 +1,9 @@
+loop $(range 1 100) {
+	if &%15=0 { "FizzBuzz" } {
+		if &%3=0 { "Fizz" } {
+			if &%5=0 { "Buzz" } {
+				print &
+			}
+		}
+	}
+}
