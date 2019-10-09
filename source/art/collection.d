@@ -167,6 +167,21 @@ class Is__Empty_ : Func {
 	}
 }
 
+class Reverse_ : Func {
+	this(string ns="") { super(ns ~ "reverse","reverse given array or string",[[aV],[sV]],[aV,sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		Value item = v[0];
+
+		switch (item.type) {
+			case sV: return new Value(S!(item).split("").map!(s=> new Value(to!string(s))).array.reverse.map!(m=> m.content.s).array.join(""));
+			case aV: return new Value(A!(item).reverse);
+			default: break;
+		}
+		return new Value();
+	}
+}
+
 class Set_ : Func {
 	this(string ns="") { super(ns ~ "set","set collection element using given index/key",[[aV,nV,xV],[dV,sV,xV]],[aV,dV]); }
 	override Value execute(Expressions ex) {
