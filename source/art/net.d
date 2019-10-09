@@ -4,10 +4,10 @@
  * Programming Language + Interpreter
  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
- * @file: art/web.d
+ * @file: art/net.d
  *****************************************************************/
 
-module art.web;
+module art.net;
 
 // Imports
 
@@ -31,8 +31,8 @@ import func;
 //import panic;
 
 // Functions
-/*
-class Web__Post_ : Func {
+
+class Net__Post_ : Func {
 	this(string ns="") { super(ns ~ "post","perform POST request using given URL and data",[[sV,sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
@@ -45,7 +45,7 @@ class Web__Post_ : Func {
 	}
 }
 
-class Web__Download_ : Func {
+class Net__Download_ : Func {
 	this(string ns="") { super(ns ~ "download","download string contents from webpage using given URL",[[sV]],[sV]); }
 	override Value execute(Expressions ex) {
 		Value[] v = validate(ex);
@@ -56,4 +56,3 @@ class Web__Download_ : Func {
 		return new Value(contents);
 	}
 }
-*/
