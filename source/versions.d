@@ -19,7 +19,7 @@ import external.terminal;
 // Constants
 
 enum ART_NAME           = "Arturo";
-enum ART_VERSION        = "0.3.5";
+enum ART_VERSION        = "0.3.6";
 enum ART_COPYRIGHT      = "2019";
 enum ART_AUTHOR         = "Yanis Zafirópulos";
 enum ART_BUILD          = import("build.txt");
