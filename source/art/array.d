@@ -403,19 +403,6 @@ class Range_ : Func {
 	}
 }
 
-class Reverse_ : Func {
-	this(string ns="") { super(ns ~ "reverse","reverse given array",[[aV]],[aV]); }
-	override Value execute(Expressions ex) {
-		Value[] v = validate(ex);
-		alias arr = A!(v,0);
-
-		Value[] vs = arr;
-		Value[] ret = vs.reverse;
-
-		return new Value(ret);
-	}
-}
-
 class Sample_ : Func {
 	this(string ns="") { super(ns ~ "sample","get random sample from given array",[[aV],[aV,nV]],[xV,aV,noV]); }
 	override Value execute(Expressions ex) {
