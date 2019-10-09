@@ -33,6 +33,51 @@ import globals;
 
 // Utilities
 
+enum ColorType {
+    fgBlack = 30,
+    fgRed,
+    fgGreen,
+    fgYellow,
+    fgBlue,
+    fgMagenta,
+    fgCyan,
+    fgWhite
+}
+ 
+
+enum ColorTypeStr : string {
+    fgBlack = "black",
+    fgRed = "red",
+    fgGreen = "green",
+    fgYellow = "yellow",
+    fgBlue = "blue",
+    fgMagenta = "magenta",
+    fgCyan = "cyan",
+    fgWhite = "white"
+}
+ 
+string getColoredString(string text, string ink) {
+	ColorType ct;
+
+	switch (ink) {
+		case "black": ct=ColorType.fgBlack; break;
+		case "red": ct=ColorType.fgRed; break;
+		case "green": ct=ColorType.fgGreen; break;
+		case "yellow": ct=ColorType.fgYellow; break;
+		case "blue": ct=ColorType.fgBlue; break;
+		case "magenta": ct=ColorType.fgMagenta; break;
+		case "cyan": ct=ColorType.fgCyan; break;
+		case "white": ct=ColorType.fgWhite; break;
+		default: ct=ColorType.fgWhite; 
+	}
+
+    return "\033["
+        ~ ct.to!int.to!string
+        ~ "m"
+        ~ text
+        ~ "\033[0m";
+}
+
 string isRegex(string s) {
 	if (s[0]=='/' && s[$-1]=='/') return chomp(chompPrefix(s,"/"),"/");
 	else return null;
@@ -69,6 +114,19 @@ class Characters_ : Func {
 		alias input = S!(v,0);
 
 		Value[] ret = input.split("").map!(s=> new Value(to!string(s))).array;
+
+		return new Value(ret);
+	}
+}
+
+class Color_ : Func {
+	this(string ns="") { super(ns ~ "color","get colored string using color",[[sV,sV]],[sV]); }
+	override Value execute(Expressions ex) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+		alias color = S!(v,1);
+
+		string ret = getColoredString(input,color);
 
 		return new Value(ret);
 	}
