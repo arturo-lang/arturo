@@ -1,0 +1,73 @@
+/*********************************
+ * Brainf*ck compiler
+ * In Art:uro
+ *********************************/
+
+Tape                    #(0)
+DataPointer             0
+InstructionPointer      0
+
+// Look for jumps in code an register them
+// in the Jumps table
+
+precomputeJumps {
+    stack                   #()
+    jumphash                #{}
+    instrPointer            0
+
+    loop instrPointer<CodeLength {
+        command $(get $(characters Code) instrPointer)
+        if command="[" { stack stack+instrPointer } {
+            if command="]" {
+                target $(last stack)
+                deleteBy stack $(size stack)-1
+                set jumphash $(toString target) instrPointer
+                set jumphash $(toString instrPointer) target
+            }
+        }
+        instrPointer instrPointer+1
+    }
+    jumphash
+}
+
+// Check if current state is valid
+
+StateIsValid {
+    all #(0<=DataPointer DataPointer<$(size Tape) 0<=InstructionPointer InstructionPointer<CodeLength)
+}
+
+// Compile the program
+
+interpret {
+    loop $(!StateIsValid) {
+        command $(get $(characters Code) InstructionPointer)
+
+        | command="+" { set Tape DataPointer Tape.[DataPointer]+1 }
+        | command="-" { set Tape DataPointer Tape.[DataPointer]-1 }
+        | command=">" { DataPointer DataPointer+1, if DataPointer=$(size Tape) { Tape Tape+0 } }
+        | command="<" { DataPointer DataPointer-1 }
+        | command="." { print $(char Tape.[DataPointer]) true }
+        | command="," {
+            inp $(toNumber input)
+            | inp=13 { inp 10 }
+            | inp=3  { panic "something went wrong!" }
+            set Tape DataPointer inp
+        }
+        | command="[" {
+            if Tape.[DataPointer]=0 { InstructionPointer Jumps.[$(toString InstructionPointer)] }
+        }
+        | command="]" {
+            if Tape.[DataPointer]!=0 { InstructionPointer Jumps.[$(toString InstructionPointer)] }
+        }
+
+        InstructionPointer InstructionPointer+1
+    }
+}
+
+if $(size &)<1 { panic "Not enough arguments - Usage: bfc <script>" }
+
+Code                    $(read &0)
+CodeLength              $(size Code)
+Jumps                   $(!precomputeJumps)
+
+!interpret
