@@ -290,7 +290,7 @@ class Max_ : Func {
 		foreach (Value item; arr) {
 			if (item.type!=nV && item.type!=rV) throw new ERR_ExpectedValueTypeError("max","number",item.type);
 			
-			if (maxValue is null) maxValue = item;
+			if (maxValue.type==noV) maxValue = item;
 			else {
 				if (item>maxValue) maxValue = item;
 			}
@@ -332,7 +332,7 @@ class Min_ : Func {
 		foreach (Value item; arr) {
 			if (item.type!=nV && item.type!=rV) throw new ERR_ExpectedValueTypeError("min","number",item.type);
 
-			if (minValue is null) minValue = item;
+			if (minValue.type==noV) minValue = item;
 			else {
 				if (item<minValue) minValue = item;
 			}
