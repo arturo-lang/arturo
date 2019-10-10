@@ -33,7 +33,7 @@ import globals;
 
 class Create__Dir_ : Func {
 	this(string ns="") { super(ns ~ "createDir","create directory at given path",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
@@ -45,7 +45,7 @@ class Create__Dir_ : Func {
 
 class Current__Dir_ : Func {
 	this(string ns="") { super(ns ~ "currentDir","get current directory path",[[]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		auto dirPath = getcwd();
 
 		return new Value(dirPath);
@@ -54,7 +54,7 @@ class Current__Dir_ : Func {
 
 class Dir_ : Func {
 	this(string ns="") { super(ns ~ "dir","get array of directory contents at given path",[[],[sV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		string dirPath;
 
@@ -78,7 +78,7 @@ class Dir_ : Func {
 
 class Get__Dir_ : Func {
 	this(string ns="") { super(ns ~ "getDir","get directory from given path",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
@@ -90,7 +90,7 @@ class Get__Dir_ : Func {
 
 class Get__Ext_ : Func {
 	this(string ns="") { super(ns ~ "getExt","get extension from given path",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
@@ -102,7 +102,7 @@ class Get__Ext_ : Func {
 
 class Get__Filename_ : Func {
 	this(string ns="") { super(ns ~ "getFilename","get filename from given path",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
@@ -114,7 +114,7 @@ class Get__Filename_ : Func {
 
 class Is__Directory_ : Func {
 	this(string ns="") { super(ns ~ "isDirectory","check if given path is a directory",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
@@ -126,7 +126,7 @@ class Is__Directory_ : Func {
 
 class Is__File_ : Func {
 	this(string ns="") { super(ns ~ "isFile","check if given path is a file",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
@@ -138,7 +138,7 @@ class Is__File_ : Func {
 
 class Is__Symlink_ : Func {
 	this(string ns="") { super(ns ~ "isSymlink","check if given path is a symlink",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 
@@ -150,7 +150,7 @@ class Is__Symlink_ : Func {
 
 class Normalize__Path_ : Func {
 	this(string ns="") { super(ns ~ "normalizePath","get normalized path from given path",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
 

@@ -38,7 +38,7 @@ import panic;
 
 class All_ : Func {
 	this(string ns="") { super(ns ~ "all","check if all elements of array are true or pass the condition of given function",[[aV],[aV,fV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
@@ -68,7 +68,7 @@ class All_ : Func {
 
 class Any_ : Func {
 	this(string ns="") { super(ns ~ "any","check if any of the array's elements is true or passes the condition of given function",[[aV],[aV,fV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
@@ -98,7 +98,7 @@ class Any_ : Func {
 
 class Avg_ : Func {
 	this(string ns="") { super(ns ~ "avg","get average value from array",[[aV]],[nV,rV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
@@ -119,7 +119,7 @@ class Avg_ : Func {
 
 class Count_ : Func {
 	this(string ns="") { super(ns ~ "count","count how many of the array's elements is true or passes the condition of given function",[[aV],[aV,fV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
@@ -149,7 +149,7 @@ class Count_ : Func {
 
 class Difference_ : Func {
 	this(string ns="") { super(ns ~ "difference","get difference of two given arrays",[[aV,aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
 		alias arr2 = A!(v,1);
@@ -162,7 +162,7 @@ class Difference_ : Func {
 
 class Filter_ : Func {
 	this(string ns="") { super(ns ~ "filter","get array after filtering each element using given function",[[aV,fV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 		alias func = F!(v,1);
@@ -183,7 +183,7 @@ class Filter_ : Func {
 
 class First_ : Func {
 	this(string ns="") { super(ns ~ "first","get first element from array",[[aV]],[xV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -194,7 +194,7 @@ class First_ : Func {
 
 class Fold_ : Func {
 	this(string ns="") { super(ns ~ "fold","fold array using seed value and the given function",[[aV,xV,fV]],[xV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 		alias func = F!(v,2);
@@ -211,7 +211,7 @@ class Fold_ : Func {
 
 class Gcd_ : Func {
 	this(string ns="") { super(ns ~ "gcd","calculate greatest common divisor of values from array",[[aV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
@@ -229,7 +229,7 @@ class Gcd_ : Func {
 
 class Intersection_ : Func {
 	this(string ns="") { super(ns ~ "intersection","get intersection of two given arrays",[[aV,aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
 		alias arr2 = A!(v,1);
@@ -242,7 +242,7 @@ class Intersection_ : Func {
 
 class Join_ : Func {
 	this(string ns="") { super(ns ~ "join","get string by joining array elements with given delimiter",[[aV,sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 		alias delim = S!(v,1);
@@ -255,7 +255,7 @@ class Join_ : Func {
 
 class Last_ : Func {
 	this(string ns="") { super(ns ~ "last","get last element from array",[[aV]],[xV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -266,7 +266,7 @@ class Last_ : Func {
 
 class Map_ : Func {
 	this(string ns="") { super(ns ~ "map","get array after executing given function for each element",[[aV,fV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 		alias func = F!(v,1);
@@ -281,7 +281,7 @@ class Map_ : Func {
 
 class Max_ : Func {
 	this(string ns="") { super(ns ~ "max","get maximum value from array",[[aV]],[nV,rV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
@@ -302,7 +302,7 @@ class Max_ : Func {
 
 class Median_ : Func {
 	this(string ns="") { super(ns ~ "median","get median value from array",[[aV]],[nV,rV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value arr = v[0];
 
@@ -323,7 +323,7 @@ class Median_ : Func {
 
 class Min_ : Func {
 	this(string ns="") { super(ns ~ "min","get minimum value from array",[[aV]],[nV,rV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
@@ -344,7 +344,7 @@ class Min_ : Func {
 
 class Permutations_ : Func {
 	this(string ns="") { super(ns ~ "permutations","get all permutations for given array",[[aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value cp = new Value(v[0]);
 
@@ -362,7 +362,7 @@ class Permutations_ : Func {
 
 class Product_ : Func {
 	this(string ns="") { super(ns ~ "product","return product of elements of given array",[[aV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -379,7 +379,7 @@ class Product_ : Func {
 
 class Range_ : Func {
 	this(string ns="") { super(ns ~ "range","get array from given range (from..to) with optional step",[[nV,nV],[nV,nV,nV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias from = I!(v,0);
 		alias to = I!(v,1);
@@ -405,7 +405,7 @@ class Range_ : Func {
 
 class Sample_ : Func {
 	this(string ns="") { super(ns ~ "sample","get random sample from given array",[[aV],[aV,nV]],[xV,aV,noV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -425,7 +425,7 @@ class Sample_ : Func {
 
 class Shuffle_ : Func {
 	this(string ns="") { super(ns ~ "shuffle","shuffle given array",[[aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -437,7 +437,7 @@ class Shuffle_ : Func {
 
 class Sort_ : Func {
 	this(string ns="") { super(ns ~ "sort","sort given array",[[aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value arr = v[0];
 
@@ -450,7 +450,7 @@ class Sort_ : Func {
 
 class Sum_ : Func {
 	this(string ns="") { super(ns ~ "sum","return sum of elements of given array",[[aV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -467,7 +467,7 @@ class Sum_ : Func {
 
 class Tail_ : Func {
 	this(string ns="") { super(ns ~ "tail","get last section of array excluding the first element",[[aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -478,7 +478,7 @@ class Tail_ : Func {
 
 class Union_ : Func {
 	this(string ns="") { super(ns ~ "union","get union of two given arrays",[[aV,aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
 		alias arr2 = A!(v,1);
@@ -493,7 +493,7 @@ class Union_ : Func {
 
 class Unique_ : Func {
 	this(string ns="") { super(ns ~ "unique","get array by removing duplicates",[[aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr = A!(v,0);
 
@@ -503,7 +503,7 @@ class Unique_ : Func {
 
 class Zip_ : Func {
 	this(string ns="") { super(ns ~ "zip","return array of element pairs using given arrays",[[aV,aV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias arr1 = A!(v,0);
 		alias arr2 = A!(v,1);

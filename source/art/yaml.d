@@ -130,7 +130,7 @@ Node generateYAMLValue(Value input)
 
 class Yaml__Generate_ : Func {
 	this(string ns="") { super(ns ~ "generate","get YAML string from given object",[[xV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		Node y = generateYAMLValue(v[0]);
@@ -146,7 +146,7 @@ class Yaml__Generate_ : Func {
 
 class Yaml__Parse_ : Func {
 	this(string ns="") { super(ns ~ "parse","get object by parsing given YAML string",[[sV]],[xV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		alias input = S!(v,0);

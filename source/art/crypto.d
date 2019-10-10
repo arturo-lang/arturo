@@ -35,7 +35,7 @@ import panic;
 
 class Hash_ : Func {
 	this(string ns="") { super(ns ~ "hash","get hash value for given value",[[xV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		return new Value(v[0].hash());
@@ -44,7 +44,7 @@ class Hash_ : Func {
 
 class MD5_ : Func {
 	this(string ns="") { super(ns ~ "md5","get MD5 hash of given string data",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -59,7 +59,7 @@ class MD5_ : Func {
 
 class SHA256_ : Func {
 	this(string ns="") { super(ns ~ "sha256","get SHA256 hash of given string data",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -73,7 +73,7 @@ class SHA256_ : Func {
 
 class SHA512_ : Func {
 	this(string ns="") { super(ns ~ "sha512","get SHA512 hash of given string data",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 

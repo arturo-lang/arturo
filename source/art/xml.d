@@ -32,7 +32,7 @@ import globals;
 
 class XML__Check_ : Func {
 	this(string ns="") { super(ns ~ "check","check integrity of XML input using given string",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 

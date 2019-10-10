@@ -33,7 +33,7 @@ import globals;
 
 class File__Exists_ : Func {
 	this(string ns="") { super(ns ~ "exists","check if file exists at given path",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias filePath = S!(v,0);
 
@@ -45,7 +45,7 @@ class File__Exists_ : Func {
 
 class File__Read_ : Func {
 	this(string ns="") { super(ns ~ "read","read string from file at given path",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias filePath = S!(v,0);
 		
@@ -57,7 +57,7 @@ class File__Read_ : Func {
 
 class File__Write_ : Func {
 	this(string ns="") { super(ns ~ "write","write string to file at given path",[[sV,sV]],[noV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias filePath = S!(v,0);
 		alias fileContent = S!(v,1);

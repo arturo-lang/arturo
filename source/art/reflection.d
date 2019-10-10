@@ -32,7 +32,7 @@ import var;
 
 class Symbol__Exists_ : Func {
 	this(string ns="") { super(ns ~ "symbolExists","check if given symbol exists",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias symbolName = S!(v,0);
 
@@ -43,7 +43,7 @@ class Symbol__Exists_ : Func {
 
 class Object_ : Func {
 	this(string ns="") { super(ns ~ "object","get object for given symbol name",[[sV]],[xV,noV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias symbolName = S!(v,0);
 
@@ -56,7 +56,7 @@ class Object_ : Func {
 
 class Pointer_ : Func {
 	this(string ns="") { super(ns ~ "pointer","get pointer location for object",[[xV],[sV]]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		return new Value(to!string(cast(void*)v[0]));
@@ -65,7 +65,7 @@ class Pointer_ : Func {
 
 class Type_ : Func {
 	this(string ns="") { super(ns ~ "type","get type for given object",[[xV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		return new Value(v[0].type);
@@ -74,7 +74,7 @@ class Type_ : Func {
 
 class Syms_ : Func {
 	this(string ns="") { super(ns ~ "syms","get list of declared symbols",[[],[sV]]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		return new Value(Glob.inspectAllVars());

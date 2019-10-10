@@ -35,7 +35,7 @@ import var;
 
 class Has__Key : Func {
 	this(string ns="") { super(ns ~ "hasKey","check if dictionary has key",[[dV,sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias dict = D!(v,0);
 		alias key = S!(v,1);
@@ -46,7 +46,7 @@ class Has__Key : Func {
 
 class Keys : Func {
 	this(string ns="") { super(ns ~ "keys","get array of dictionary keys",[[dV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias dict = D!(v,0);
 

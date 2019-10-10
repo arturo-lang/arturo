@@ -33,7 +33,7 @@ import globals;
 
 class Delay_ : Func {
 	this(string ns="") { super(ns ~ "delay","create system delay with a given duration in milliseconds",[[nV]],[]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias duration = I!(v,0);
 
@@ -45,7 +45,7 @@ class Delay_ : Func {
 
 class Env_ : Func {
 	this(string ns="") { super(ns ~ "env","get system environment variables as a dictionary",[[]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		string[string] ret = environment.toAA();
 
 		return new Value(ret);
@@ -54,7 +54,7 @@ class Env_ : Func {
 
 class Shell_ : Func {
 	this(string ns="") { super(ns ~ "shell","execute given shell command",[[sV]],[sV,bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias command = S!(v,0);
 
@@ -69,7 +69,7 @@ class Shell_ : Func {
 
 class Spawn_ : Func {
 	this(string ns="") { super(ns ~ "spawn","spawn process using given string and get process id",[[sV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -81,7 +81,7 @@ class Spawn_ : Func {
 
 class Thread_ : Func {
 	this(string ns="") { super(ns ~ "thread","create a background threaded process using given function",[[fV]],[]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias func = S!(v,0);
 

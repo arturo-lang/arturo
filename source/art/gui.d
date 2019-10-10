@@ -357,7 +357,7 @@ void processChildrenNodes(Container cont, Value[] children) {
 
 class Gui__App_ : Func {
 	this(string ns="") { super(ns ~ "app","create GUI app with given string ID, main window and configuration",[[sV,dV,dV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias appId = S!(v,0);
 		Value mainWindow =v[1];
@@ -383,7 +383,7 @@ class Gui__App_ : Func {
 
 class Gui__Button_ : Func {
 	this(string ns="") { super(ns ~ "button","create GUI button with given title and configuration",[[sV,dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias title = S!(v,0);
 		Value config = v[1];
@@ -400,7 +400,7 @@ class Gui__Button_ : Func {
 
 class Gui__Checkbox_ : Func {
 	this(string ns="") { super(ns ~ "checkbox","create GUI checkbox with given title and configuration",[[sV,dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias title = S!(v,0);
 		Value config = v[1];
@@ -427,7 +427,7 @@ class Gui__Checkbox_ : Func {
 
 class Gui__Frame_ : Func {
 	this(string ns="") { super(ns ~ "frame","create GUI frame with given title and configuration",[[sV,dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias title = S!(v,0);
 		Value config = v[1];
@@ -445,7 +445,7 @@ class Gui__Frame_ : Func {
 
 class Gui__Hbox_ : Func {
 	this(string ns="") { super(ns ~ "hbox","create GUI horizontal box with given configuration",[[dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value config = v[0];
 
@@ -459,7 +459,7 @@ class Gui__Hbox_ : Func {
 
 class Gui__Hpane_ : Func {
 	this(string ns="") { super(ns ~ "hpane","create GUI horizontal pane with given configuration",[[dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value config = v[0];
 
@@ -473,7 +473,7 @@ class Gui__Hpane_ : Func {
 
 class Gui__Label_ : Func {
 	this(string ns="") { super(ns ~ "label","create GUI label with given title and configuration",[[sV,dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias title = S!(v,0);
 		Value config = v[1];
@@ -500,7 +500,7 @@ class Gui__Label_ : Func {
 
 class Gui__Tabs_ : Func {
 	this(string ns="") { super(ns ~ "tabs","create GUI tabbed view with given configuration",[[dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value config = v[0];
 
@@ -514,7 +514,7 @@ class Gui__Tabs_ : Func {
 
 class Gui__Textfield_ : Func {
 	this(string ns="") { super(ns ~ "textfield","create GUI textfield with given title and configuration",[[sV,dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias title = S!(v,0);
 		Value config = v[1];
@@ -541,7 +541,7 @@ class Gui__Textfield_ : Func {
 
 class Gui__Vbox_ : Func {
 	this(string ns="") { super(ns ~ "vbox","create GUI vertical box with given configuration",[[dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value config = v[0];
 
@@ -555,7 +555,7 @@ class Gui__Vbox_ : Func {
 
 class Gui__Vpane_ : Func {
 	this(string ns="") { super(ns ~ "vpane","create GUI vertical pane with given configuration",[[dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value config = v[0];
 
@@ -569,7 +569,7 @@ class Gui__Vpane_ : Func {
 
 class Gui__Window_ : Func {
 	this(string ns="") { super(ns ~ "window","create GUI window for given app and configuration",[[dV]],[dV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		Value config = v[0];
 

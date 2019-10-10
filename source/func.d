@@ -377,7 +377,7 @@ class Func {
         }
     }
 
-    Value execute(Expressions ex) {
+    Value execute(Expressions ex, string hId=null) {
         Value values = ex.evaluate(true);
 
         return execute(values);

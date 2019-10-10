@@ -34,7 +34,7 @@ import globals;
 
 class Date__Now_ : Func {
 	this(string ns="") { super(ns ~ "dateNow","get current date into string",[[]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		SysTime now = Clock.currTime();
 
 		auto date = cast(Date)(now);
@@ -46,7 +46,7 @@ class Date__Now_ : Func {
 
 class DateTime__Now_ : Func {
 	this(string ns="") { super(ns ~ "datetimeNow","get current date and time into string",[[]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		SysTime now = Clock.currTime();
 
 		auto datetime = now;
@@ -58,7 +58,7 @@ class DateTime__Now_ : Func {
 
 class Day_ : Func {
 	this(string ns="") { super(ns ~ "day","get day from date string",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		try {
@@ -78,7 +78,7 @@ class Day_ : Func {
 
 class Month_ : Func {
 	this(string ns="") { super(ns ~ "month","get month from date string",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		try {
@@ -98,7 +98,7 @@ class Month_ : Func {
 
 class Time__Now_ : Func {
 	this(string ns="") { super(ns ~ "timeNow","get current time into string",[[]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		SysTime now = Clock.currTime();
 
 		auto time = cast(TimeOfDay)now;
@@ -110,7 +110,7 @@ class Time__Now_ : Func {
 
 class Timer_ : Func {
 	this(string ns="") { super(ns ~ "timer","time the execution of a given function in milliseconds",[[fV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias func = F!(v,0);
 

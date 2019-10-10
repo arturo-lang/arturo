@@ -87,7 +87,7 @@ string isRegex(string s) {
 
 class Capitalize_ : Func {
 	this(string ns="") { super(ns ~ "capitalize","capitalize given string",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -97,7 +97,7 @@ class Capitalize_ : Func {
 
 class Char_ : Func {
 	this(string ns="") { super(ns ~ "char","get ASCII character from given char code",[[nV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias charCode = I!(v,0);
 
@@ -109,7 +109,7 @@ class Char_ : Func {
 
 class Characters_ : Func {
 	this(string ns="") { super(ns ~ "characters","get string characters as an array",[[sV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -121,7 +121,7 @@ class Characters_ : Func {
 
 class Color_ : Func {
 	this(string ns="") { super(ns ~ "color","get colored string using color",[[sV,sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias color = S!(v,1);
@@ -134,7 +134,7 @@ class Color_ : Func {
 
 class Ends__With_ : Func {
 	this(string ns="") { super(ns ~ "endsWith","check if string ends with given string",[[sV,sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias what = S!(v,1);
@@ -145,7 +145,7 @@ class Ends__With_ : Func {
 
 class Is__Alpha_ : Func {
 	this(string ns="") { super(ns ~ "isAlpha","check if all characters in given string are ASCII letters",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -158,7 +158,7 @@ class Is__Alpha_ : Func {
 
 class Is__Alphanumeric_ : Func {
 	this(string ns="") { super(ns ~ "isAlphanumeric","check if all characters in given string are ASCII letters or digits",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -171,7 +171,7 @@ class Is__Alphanumeric_ : Func {
 
 class Is__Control_ : Func {
 	this(string ns="") { super(ns ~ "isControl","check if all characters in given string are control characters",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -184,7 +184,7 @@ class Is__Control_ : Func {
 
 class Is__Digit_ : Func {
 	this(string ns="") { super(ns ~ "isDigit","check if all characters in given string are digits",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -197,7 +197,7 @@ class Is__Digit_ : Func {
 
 class Is__Lowercase_ : Func {
 	this(string ns="") { super(ns ~ "isLowercase","check if all characters in given string are lowercase",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -210,7 +210,7 @@ class Is__Lowercase_ : Func {
 
 class Is__Match_ : Func {
 	this(string ns="") { super(ns ~ "isMatch","check if string matches given regex",[[sV,sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias patt = S!(v,1);
@@ -228,7 +228,7 @@ class Is__Match_ : Func {
 
 class Is__Uppercase_ : Func {
 	this(string ns="") { super(ns ~ "isUppercase","check if all characters in given string are uppercase",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -241,7 +241,7 @@ class Is__Uppercase_ : Func {
 
 class Is__Whitespace_ : Func {
 	this(string ns="") { super(ns ~ "isWhitespace","check if all characters in given string are whitespace",[[sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -254,7 +254,7 @@ class Is__Whitespace_ : Func {
 
 class Levenshtein_ : Func {
 	this(string ns="") { super(ns ~ "levenshtein","get Levenshtein distance between two given strings",[[sV,sV]],[nV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias str1 = S!(v,0);
 		alias str2 = S!(v,1);
@@ -267,7 +267,7 @@ class Levenshtein_ : Func {
 
 class Lines_ : Func {
 	this(string ns="") { super(ns ~ "lines","get lines from string as an array",[[sV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -279,7 +279,7 @@ class Lines_ : Func {
 
 class Lowercase_ : Func {
 	this(string ns="") { super(ns ~ "lowercase","lowercase given string",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -289,7 +289,7 @@ class Lowercase_ : Func {
 
 class Matches_ : Func {
 	this(string ns="") { super(ns ~ "matches","get array of matches for string using given regex",[[sV,sV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias patt = S!(v,1);
@@ -315,7 +315,7 @@ class Matches_ : Func {
 
 class Pad__Center_ : Func {
 	this(string ns="") { super(ns ~ "padCenter","center justify string by adding padding",[[sV,nV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias padding = I!(v,1);
@@ -328,7 +328,7 @@ class Pad__Center_ : Func {
 
 class Pad__Left_ : Func {
 	this(string ns="") { super(ns ~ "padLeft","left justify string by adding padding",[[sV,nV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias padding = I!(v,1);
@@ -341,7 +341,7 @@ class Pad__Left_ : Func {
 
 class Pad__Right_ : Func {
 	this(string ns="") { super(ns ~ "padRight","right justify string by adding padding",[[sV,nV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias padding = I!(v,1);
@@ -354,7 +354,7 @@ class Pad__Right_ : Func {
 
 class Replace__ : Func {
 	this(string ns="") { super(ns ~ "replace","get string by replacing occurences of string with another string",[[sV,sV,sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias what = S!(v,1);
@@ -366,7 +366,7 @@ class Replace__ : Func {
 
 class Split_ : Func {
 	this(string ns="") { super(ns ~ "split","split string by given separator or regex",[[sV,sV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias separator = S!(v,1);
@@ -388,7 +388,7 @@ class Split_ : Func {
 
 class Starts__With_ : Func {
 	this(string ns="") { super(ns ~ "startsWith","check if string starts with given string",[[sV,sV]],[bV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		alias what = S!(v,1);
@@ -399,7 +399,7 @@ class Starts__With_ : Func {
 
 class Strip_ : Func {
 	this(string ns="") { super(ns ~ "strip","strip spaces from given string",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -409,7 +409,7 @@ class Strip_ : Func {
 
 class Uppercase_ : Func {
 	this(string ns="") { super(ns ~ "uppercase","uppercase given string",[[sV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
@@ -419,7 +419,7 @@ class Uppercase_ : Func {
 
 class Uuid_ : Func {
 	this(string ns="") { super(ns ~ "uuid","generate random UUID string",[[]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		auto uuid = randomUUID();
 		Xorshift192 gen;
 
@@ -432,7 +432,7 @@ class Uuid_ : Func {
 
 class Words_ : Func {
 	this(string ns="") { super(ns ~ "words","get words from string as an array",[[sV]],[aV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 

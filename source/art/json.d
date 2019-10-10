@@ -103,7 +103,7 @@ JSONValue generateJsonValue(Value input)
 
 class Json__Generate_ : Func {
 	this(string ns="") { super(ns ~ "generate","get JSON string from given object",[[xV]],[sV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
 		JSONValue j = generateJsonValue(v[0]);
@@ -115,7 +115,7 @@ class Json__Generate_ : Func {
 
 class Json__Parse_ : Func {
 	this(string ns="") { super(ns ~ "parse","get object by parsing given JSON string",[[sV]],[xV]); }
-	override Value execute(Expressions ex) {
+	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
