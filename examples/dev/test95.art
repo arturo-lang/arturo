@@ -1,0 +1,14 @@
+
+//------------------------------------
+#include "external.art"
+#include "test95a.art"
+#define x 10
+//------------------------------------
+
+page @index #{
+	print "done"
+}
+
+!index.render
+
+#include "test95a.art"
