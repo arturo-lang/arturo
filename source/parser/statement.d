@@ -125,15 +125,17 @@ class Statement {
 		if (expressions.hasHashId()) {
 			size_t exsBefore = expressions.lst.length;
 			Identifier hashId = expressions.extractHashId();
+
 			size_t exsAfter = expressions.lst.length;
 
-			Value ret = Glob.funcGet(functionToExec).execute(expressions);
+			Value ret = Glob.funcGet(functionToExec).execute(expressions,hashId.getId());
 
-			bool success = Glob.varSetByIdentifier(hashId,ret,immut);			
+			Glob._varSet(hashId.getId(),ret,immut);
+			/*bool success = Glob.varSetByIdentifier(hashId,ret,immut);			
 
 			if (!success) {
 				throw new ERR_CannotPerformAssignmentError(id.getFullIdentifier());
-			}
+			}*/
 
 			return ret;
 		}
