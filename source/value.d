@@ -332,6 +332,19 @@ class Value {
         return content.d._varValues();
     }
 
+    Value[string] dictionaryKeyValues(bool clean=false) {
+        Value[string] ret;
+        foreach (Var va; content.d.variables)
+        {
+            if (!clean) ret[va.name] = va.value;
+            else {
+                if (!va.name.startsWith("_") && !va.name.startsWith(":")) 
+                    ret[va.name] = va.value;
+            }
+        }
+        return ret;
+    }
+
     const bool dictionaryContainsKey(const string key) {
         return content.d._varExistsImmut(key);
     }
