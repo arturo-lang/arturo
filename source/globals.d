@@ -38,6 +38,7 @@ import art.convert;
 import art.core;
 import art.crypto;
 import art.csv;
+import art.database;
 import art.date;
 import art.dictionary;
 import art.file;
@@ -100,6 +101,7 @@ string registerSystemFuncs() {
         "art.core", 
         "art.crypto",
         "art.csv",
+        "art.database",
         "art.date",
         "art.dictionary", 
         "art.file", 
@@ -132,6 +134,7 @@ string getSystemFuncsArray() {
         "art.core", 
         "art.crypto",
         "art.csv",
+        "art.database",
         "art.date",
         "art.dictionary", 
         "art.file", 
@@ -149,7 +152,7 @@ string getSystemFuncsArray() {
         "art.yaml"
         ])
         foreach (string className; classMembers!(moduleName))
-            methods ~= "\"" ~ className.toLower.replace("__",".").replace("_","") ~ "\"";
+            methods ~= "\"" ~ className.toLower.replace("__",":").replace("_","") ~ "\"";
 
     return "[\"?info\",\"?functions\",\"?symbols\",\"?write.to\",\"?clear\",\"?help\",\"?exit\"," ~ methods.join(",") ~ "]";
 }
