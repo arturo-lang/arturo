@@ -11,12 +11,14 @@ module art.web;
 
 // Imports
 
+import std.algorithm;
+import std.array;
 import std.conv;
 //import std.file;
 import std.net.curl;
 import std.stdio;
 import std.random;
-//import std.string;
+import std.string;
 import std.uuid;
 //import parser.expression;
 import parser.expressions;
@@ -275,9 +277,37 @@ Value renderA(Value obj) {
 	return new Value(ret);
 }
 
+Value renderCSS(Value obj) {
+	string ret;
+	if (obj[_CONTENT].content.s.indexOf(".css")!=-1) {
+		ret = "<link rel='stylesheet' href='" ~ obj[_CONTENT].content.s ~ "'>";
+	}
+	else {
+		ret = "<style>" ~ obj[_CONTENT].content.s ~ "</style>";
+	}
+	return new Value(ret);
+}
+
+Value renderJS(Value obj) {
+	string ret;
+	if (obj[_CONTENT].content.s.indexOf(".js")!=-1) {
+		ret = "<script src='" ~ obj[_CONTENT].content.s ~ "'></script>";
+	}
+	else {
+		ret = "<script type='text/javascript'>" ~ obj[_CONTENT].content.s ~ "</script>";
+	}
+	return new Value(ret);
+}
+
+Value renderBr(Value obj) {
+	string ret = "<br>";
+
+	return new Value(ret);
+}
+
 Value renderPage(Value obj) {
 	string ret = "";
-	if (obj.hasKey(_TITLE, [sV])) {
+	if (obj.hasKey(_TYPE, [sV])) {
 		switch (obj[_TYPE].content.s) {
 			case "html5": ret ~= "<!DOCTYPE html>"; break;
 			case "html4": ret ~= "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">"; break;
@@ -288,8 +318,6 @@ Value renderPage(Value obj) {
 
 	ret ~= "<html";
 	mixin(addCommonAttributes());
-
-
 
 	ret ~= processChildrenNodes(obj[CHILDREN].content.a).content.s;
 
@@ -323,6 +351,9 @@ Value processChildrenNodes(Value[] children) {
 				case "ul": ret ~= renderUl(child).content.s; break;
 				case "li": ret ~= renderLi(child).content.s; break;
 				case "a": ret ~= renderA(child).content.s; break;
+				case "css": ret ~= renderCSS(child).content.s; break;
+				case "js": ret ~= renderJS(child).content.s; break;
+				case "br": ret ~= renderBr(child).content.s; break;
 				default: ret ~= "";
 			}
 
@@ -660,3 +691,59 @@ class Web__A_ : Func {
 	}
 }
 
+class Web__Css_ : Func {
+	this(string ns="") { super(ns ~ "css","create a link or style tag, with the given CSS source",[[sV]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias source = S!(v,0);
+
+		mixin(initObject("css",666));
+
+		// setup object
+
+		obj[_CONTENT] = new Value(source);
+
+		obj["render"] = new Value(new Func((Value vs){ 
+			return renderCSS(obj);
+		}));
+
+		return obj;
+	}
+}
+
+class Web__Js_ : Func {
+	this(string ns="") { super(ns ~ "js","create a script tag, with the given JavaScript source",[[sV]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias source = S!(v,0);
+
+		mixin(initObject("js",666));
+
+		// setup object
+
+		obj[_CONTENT] = new Value(source);
+
+		obj["render"] = new Value(new Func((Value vs){ 
+			return renderJS(obj);
+		}));
+
+		return obj;
+	}
+}
+
+class Web__Br_ : Func {
+	this(string ns="") { super(ns ~ "br","create a line break tag",[[]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		mixin(initObject("br",666));
+
+		// setup object
+
+		obj["render"] = new Value(new Func((Value vs){ 
+			return renderBr(obj);
+		}));
+
+		return obj;
+	}
+}
