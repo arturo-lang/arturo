@@ -17,3 +17,4 @@ arturo-test-*
 *.o
 *.obj
 *.lst
+*.db
