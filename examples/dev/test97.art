@@ -1,0 +1,12 @@
+create @db "test"
+
+!db.createTable "users" #{
+	name		"TEXT" 		#{ :primary true }
+	surname		"TEXT"
+	age			"INTEGER"
+}
+
+!db.users.add #{ name "john", surname "doe", age 33 }
+!db.users.add #{ name "jane", surname "doe", age 33 }
+
+log $(!db.query "SELECT * FROM users;" )
