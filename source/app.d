@@ -34,6 +34,7 @@ extern (C) void ART_Compile(char[] s) {
 // Main
 
 void main(string[] args) {
+    string includePath;
     bool interactiveCmd;
     bool versionCmd;
     bool helpCmd;
@@ -41,6 +42,7 @@ void main(string[] args) {
     try {
         auto cmdline = getopt(
             args,
+            "include|i",    "Set include path", &includePath,
             "console|c",    "Interactive console mode (REPL)", &interactiveCmd,
             "version|v",    "Show version information", &versionCmd
         );
@@ -69,7 +71,7 @@ void main(string[] args) {
                 args.popFront();
 
                 Compiler compiler = new Compiler(true, args);
-                Value v = compiler.compileFromFile(input);
+                Value v = compiler.compileFromFile(input,includePath);
             }
             else {
                 throw new Exception("Not enough arguments");
