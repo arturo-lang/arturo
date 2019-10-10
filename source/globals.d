@@ -44,6 +44,7 @@ import art.file;
 import art.gui;
 import art.html;
 import art.json;
+import art.net;
 import art.number;
 import art.path;
 import art.reflection;
@@ -105,6 +106,7 @@ string registerSystemFuncs() {
         "art.gui",
         "art.html",
         "art.json", 
+        "art.net",
         "art.number",
         "art.path",
         "art.reflection", 
@@ -136,6 +138,7 @@ string getSystemFuncsArray() {
         "art.gui",
         "art.html",
         "art.json", 
+        "art.net",
         "art.number",
         "art.path",
         "art.reflection", 
