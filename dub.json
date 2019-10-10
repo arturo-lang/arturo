@@ -32,10 +32,12 @@
 	],
 	"homepage": "http://arturo-lang.io",
 	"lflags-dmd": [
-		"-lcurl"
+		"-lcurl",
+		"-lsqlite3"
 	],
 	"lflags-ldc": [
-		"-lcurl"
+		"-lcurl",
+		"-lsqlite3"
 	],
 	"license": "MIT",
 	"name": "arturo",
