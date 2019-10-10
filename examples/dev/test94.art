@@ -18,6 +18,8 @@ web:page @index #{
 
 		meta "author" "drkameleon"
 		meta "description" "a great website"
+
+		css "css/styles.css"
 	}
 
 	body #{
@@ -34,7 +36,7 @@ web:page @index #{
 			h1 "Welcome to our home page" #{ :class "mainHeader" }
 
 			p #{
-				b "this is a subheader"
+				b "this is a subheader", br
 
 				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 				Sed dictum nunc odio, non interdum nisi ullamcorper ut. C
@@ -51,6 +53,11 @@ web:page @index #{
 				i sociosqu ad litora torquent per conubia nostra, per inc" + ""
 			}
 		}
+
+		js "js/scripts.js"
+		js "
+			console.log('Yep, it worked!');
+		"
 	}
 
 }
