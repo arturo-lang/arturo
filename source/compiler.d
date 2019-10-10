@@ -27,6 +27,8 @@ import parser.expressions;
 import parser.statement;
 import parser.statements;
 
+import external.warp.omain;
+
 import globals;
 import env;
 
@@ -82,9 +84,22 @@ class Compiler {
         }
     }
 
-    Value compileFromFile(string source) {
+    Value compileFromFile(string source, string includePath = null) {
         Glob.env = new Env(getcwd(), dirName(source));
-        string input = readText(source) ~ "\n";
+        //writeln("=================================");
+        //writeln("Before: " ~ readText(source));
+        string preprocessed;
+        if (includePath) {
+            //writeln("IncludePath: " ~ includePath);
+            preprocessed = external.warp.omain.start(["",source,"--I",includePath]);
+        }
+        else {
+            preprocessed = external.warp.omain.start(["",source]);
+        }
+        //writeln("=================================");
+        //writeln("After: " ~ preprocessed);
+        string input = preprocessed ~ "\n";
+        //string input = readText(source) ~ "\n";
 
         yylineno = 0;
 
