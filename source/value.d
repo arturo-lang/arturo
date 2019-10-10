@@ -86,7 +86,7 @@ union ValueContent
     Func f;
     Value[] a;
     Context d;
-    Variant o;
+    void* o;
     ObjectG go;
 
 }
@@ -223,7 +223,7 @@ class Value {
         content.f = f;
     }
 
-    this(Variant o) {
+    this(void* o) {
         type = ValueType.objectValue;
         content.o = o;
     }
