@@ -1,0 +1,61 @@
+// Functions
+
+getLinkFor [item]{
+	"/" + item + ".art"
+}
+
+// Data
+
+menuItems #("home" "about")
+
+////
+
+web:page @index #{
+	:type "html5"
+
+	head #{ 
+		:title "My super-webpage" 
+
+		meta "author" "drkameleon"
+		meta "description" "a great website"
+	}
+
+	body #{
+		:class "index"
+
+		div @sidebar #{
+			ul #{
+				li #{ a menuItems.0 $(!getLinkFor menuItems.0) }
+				li #{ a menuItems.1 $(!getLinkFor menuItems.1) }
+			}
+		}
+
+		div @main #{
+			h1 "Welcome to our home page" #{ :class "mainHeader" }
+
+			p #{
+				b "this is a subheader"
+
+				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+				Sed dictum nunc odio, non interdum nisi ullamcorper ut. C
+				ras molestie diam quis neque aliquet sollicitudin. Mauris
+				in eros sit amet neque rhoncus mollis. Class aptent tacit
+				i sociosqu ad litora torquent per conubia nostra, per inc" + ""
+			}
+
+			p #{
+				"Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+				Sed dictum nunc odio, non interdum nisi ullamcorper ut. C
+				ras molestie diam quis neque aliquet sollicitudin. Mauris
+				in eros sit amet neque rhoncus mollis. Class aptent tacit
+				i sociosqu ad litora torquent per conubia nostra, per inc" + ""
+			}
+		}
+	}
+
+}
+
+// Render it!
+
+print $(!index.render)
+log index
