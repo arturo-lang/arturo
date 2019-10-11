@@ -114,7 +114,9 @@ The Library
 ------------------------------
 
 #### Main
+
 The functions below are reserved keywords and can be used at any time, without the use of a namespace
+
 |  Library  | Function | Description | Syntax |
 | :---      | :---     | :---        | :---   |
 | array | **all** | check if all elements of array are true or pass the condition of given function | [Array or Array/Function] -> Boolean |
@@ -257,8 +259,11 @@ The functions below are reserved keywords and can be used at any time, without t
 | system | **shell** | execute given shell command | [String] -> String or Boolean |
 | system | **spawn** | spawn process using given string and get process id | [String] -> Number |
 | system | **thread** | create a background threaded process using given function | [Function] ->  |
+
 #### More
+
 The functions below have to be used with their namespace
+
 |  Library  | Function | Description | Syntax |
 | :---      | :---     | :---        | :---   |
 | crypto | **hash** | get hash value for given value | [Any] -> String |
