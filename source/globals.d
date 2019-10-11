@@ -198,7 +198,7 @@ class Globals : Context {
 
         warningsOn = false;
 
-        activeNamespaces = ["core"];
+        activeNamespaces = ["array","collection","convert","core","date","dictionary","file","number","path","string","system"];
     }
 
     Expressions getSymbolDef(string id) {
@@ -443,7 +443,7 @@ class Globals : Context {
 
     void getFunctionsMarkdown() {
         // core
-        string[] coreNamespaces = ["array","collection","convert","core","date","dictionary","file","number","path","string","system"];
+        string[] coreNamespaces = activeNamespaces;
         Func[][string] coreFuncs;
         Func[][string] moreFuncs;
         foreach (Func f; functions) {
