@@ -174,6 +174,14 @@ class Identifier {
 		return ret;
 	}
 
+	string getJustId() {
+		string ret = "";
+
+		ret ~= pathContents[0].id;
+		
+		return ret;
+	}
+
 	string getFullIdentifier() {
 		string[] ret;
 
@@ -189,7 +197,8 @@ class Identifier {
 			}
 		}
 
-		return ret.join(".");
+		if (namespace is null) return ret.join(".");
+		else return "[" ~ namespace ~ ":]" ~ ret.join(".");
 	}
 
 	string inspect() {
