@@ -35,9 +35,10 @@ Functions - or blocks of statements enclosed in `{}` - can be anything. Assign t
 
 As already mentioned, everything is a statement of the form `ID <expressions>`. So, how does this work?
 
-- Is it the first time you are declaring this symbol? Then, the right-hand value will be assigned.
-- Is it not the first time? Then again, the right-hand value will be assigned.
-- Do you want to call a function you have declared, by name? Just prefix it with an exclamation mark. E.g.: `!myFunc "some arg" "another arg"`
+As already mentioned, everything is a statement of the form `ID <expressions>`. So, how does this work?
+
+- Is the ID a new or non-function existing symbol? Then, the right-hand value will be assigned to it
+- Is it a function? Then it will be called, with the right-hand values as arguments
 - Do you want to use the result of a function call as part of an expression? Just enclose the function call in `$(...)`	E.g.: `print $(reverse #(1 2 3))`
 
 Simple, isn't it?
