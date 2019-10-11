@@ -170,6 +170,7 @@ class Globals : Context {
     Stack!(int) retStack;
     Stack!(Statements) blockStack;
     Expressions[Identifier] symboldefs;
+    bool warningsOn;
 
     this(string[] args) {
         super();
@@ -193,6 +194,8 @@ class Globals : Context {
         trace = false;
 
         retCounter = -1;
+
+        warningsOn = true;
     }
 
     Expressions getSymbolDef(string id) {
