@@ -113,7 +113,7 @@ loop $(range 0 maxLimit) {
 The Library
 ------------------------------
 
-#### Main
+### Main
 
 The functions below are reserved keywords and can be used at any time, without the use of a namespace
 
@@ -260,7 +260,7 @@ The functions below are reserved keywords and can be used at any time, without t
 | system | **spawn** | spawn process using given string and get process id | [String] -> Number |
 | system | **thread** | create a background threaded process using given function | [Function] ->  |
 
-#### More
+### More
 
 The functions below have to be used with their namespace
 
