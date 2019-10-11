@@ -483,11 +483,20 @@ class Func {
         return "| **" ~ getFullName() ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
     }
 
+    string markdownishWithNamespace() {
+        return "| " ~ namespace ~ " | **" ~ name ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
+    }
+
     string sublimeish() {
         if (getFullName()!=name)
             return getFullName() ~ "|" ~ name ~ "|";
         else
             return name;
+    }
+
+    string sublimeishWithNamespace(bool isCore) {
+        if (isCore) return namespace ~ ":" ~ name ~ "|" ~ name ~ "|";
+        else return namespace ~ ":" ~ name ~ "|";
     }
 
     void inspect(bool full=false) {
