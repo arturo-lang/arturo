@@ -315,45 +315,6 @@ class Return_ : Func {
 	}
 }
 
-class Shl_ : Func {
-	this(string ns="") { super(ns ~ "shl","bitwise left shift",[[nV,nV]],[nV]); }
-	override Value execute(Expressions ex, string hId=null) {
-		Value[] v = validate(ex);
-
-		alias num1 = I!(v,0);
-		alias num2 = I!(v,1);
-
-		return new Value(num1 << num2);
-	}
-}
-
-class Shr_ : Func {
-	this(string ns="") { super(ns ~ "shr","bitwise right shift",[[nV,nV]],[nV]); }
-	override Value execute(Expressions ex, string hId=null) {
-		Value[] v = validate(ex);
-
-		alias num1 = I!(v,0);
-		alias num2 = I!(v,1);
-
-		return new Value(num1 >> num2);
-	}
-}
-
-class Test_ : Func {
-	this(string ns="") { super(ns ~ "test__","test function - dev only",[[sV]],[]); }
-	override Value execute(Expressions ex, string hId=null) {
-		Value[] v = validate(ex);
-		alias input = S!(v,0);
-		
-		Var va = Glob.varGet(input);
-
-		if (va !is null) va.inspect();
-		else writeln("variable not found");
-
-		return new Value(666);
-	}
-}
-
 class Trace_ : Func {
 	this(string ns="") { super(ns ~ "trace","trace executing of given expression",[[xV]],[xV]); }
 	override Value execute(Expressions ex, string hId=null) {
