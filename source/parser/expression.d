@@ -206,7 +206,7 @@ class Expression {
 	}
 
 	Value evaluateFunctionExpression() {
-		return statement.execute(null);
+		return statement.execute(null,true);
 	}
 
 	Value evaluateBlockExpression() {
