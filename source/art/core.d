@@ -326,6 +326,46 @@ class Trace_ : Func {
 	}
 }
 
+class Unuse_ : Func {
+	this(string ns="") { super(ns ~ "unuse","stop using given namespace(s)",[[sV],[aV]],[]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		if (v[0].type==sV) {
+			Glob.activeNamespaces = Glob.activeNamespaces.remove!(a => a == v[0].content.s);
+		}
+		else {
+			foreach (Value ns; v[0].content.a) {
+				Glob.activeNamespaces = Glob.activeNamespaces.remove!(a => a == ns.content.s);
+			}
+		}
+
+		Glob.activeNamespaces = Glob.activeNamespaces.uniq.array;
+
+		return new Value();
+	}
+}
+
+class Use_ : Func {
+	this(string ns="") { super(ns ~ "use","use given namespace(s)",[[sV],[aV]],[]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		if (v[0].type==sV) {
+			Glob.activeNamespaces ~= S!(v,0);
+		}
+		else {
+			foreach (Value ns; v[0].content.a) {
+				Glob.activeNamespaces ~= ns.content.s;
+			}
+		}
+
+		Glob.activeNamespaces = Glob.activeNamespaces.uniq.array;
+
+		return new Value();
+	}
+}
+
 class Xor_ : Func {
 	this(string ns="") { super(ns ~ "xor","bitwise/logical XOR",[[bV,bV],[nV,nV]],[bV,nV]); }
 	override Value execute(Expressions ex, string hId=null) {
