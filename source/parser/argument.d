@@ -69,6 +69,7 @@ class Argument {
 	this(Identifier iden) {
 		type = ArgumentType.identifierArgument;
 		identifier = iden;
+		//writeln("Argument(Identifier) @ Found identifier: " ~ identifier.getFullIdentifier());
 	}
 
 	this(string t, string v) {

@@ -78,6 +78,7 @@ class Statement {
 		expressions = new Expressions();
 		type = StatementType.normalStatement;
 		hasExpressions = false;
+		//writeln("Statement(Identifier) @ Found identifier: " ~ id.getFullIdentifier());
 	}
 
 	this(Identifier i, Expressions ex, bool isImmutable=false) {
@@ -87,6 +88,7 @@ class Statement {
 		immut = isImmutable;
 
 		hasExpressions = true;
+		//writeln("Statement(Identifier,Expressions) @ Found identifier: " ~ id.getFullIdentifier());
 	}
 
 	this(Expression ex) {
@@ -123,28 +125,21 @@ class Statement {
 		}
 	}
 
-	Value executeFunctionCall() {
-		string functionToExec = id.getId();
-
+	Value executeFunctionCall(Func f) {
 		if (expressions.hasHashId()) {
 			size_t exsBefore = expressions.lst.length;
 			Identifier hashId = expressions.extractHashId();
 
 			size_t exsAfter = expressions.lst.length;
 
-			Value ret = Glob.funcGet(functionToExec).execute(expressions,hashId.getId());
+			Value ret = f.execute(expressions,hashId.getId());
 
 			Glob._varSet(hashId.getId(),ret,immut);
-			/*bool success = Glob.varSetByIdentifier(hashId,ret,immut);			
-
-			if (!success) {
-				throw new ERR_CannotPerformAssignmentError(id.getFullIdentifier());
-			}*/
 
 			return ret;
 		}
 		else {
-			return Glob.funcGet(functionToExec).execute(expressions);
+			return f.execute(expressions);
 		}
 	}
 
@@ -204,9 +199,10 @@ class Statement {
 		try {
 			switch (type) {
 				case StatementType.normalStatement:
-					if (Glob.funcExists(id.getId())) {
+					Func f;
+					if ((f=Glob.funcGet(id.getJustId(),id.namespace)) !is null) {
 						// it's a system func. call it and return its value
-						ret = executeFunctionCall();
+						ret = executeFunctionCall(f);
 					}
 					else {
 						if (!hasExpressions) {
