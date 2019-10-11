@@ -195,7 +195,7 @@ class Globals : Context {
 
         retCounter = -1;
 
-        warningsOn = true;
+        warningsOn = false;
     }
 
     Expressions getSymbolDef(string id) {

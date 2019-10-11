@@ -84,8 +84,9 @@ class Compiler {
         }
     }
 
-    Value compileFromFile(string source, string includePath = null) {
+    Value compileFromFile(string source, string includePath = null, bool warningsOn = false) {
         Glob.env = new Env(getcwd(), dirName(source));
+        Glob.warningsOn = warningsOn;
         //writeln("=================================");
         //writeln("Before: " ~ readText(source));
         string preprocessed;
