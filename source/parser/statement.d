@@ -143,6 +143,28 @@ class Statement {
 		}
 	}
 
+	Value executeUserFunctionCall(Func f) {
+		Value args = Value.array();
+		if (expressions !is null) args = expressions.evaluate(true);
+
+		if (expressions.hasHashId()) {
+			size_t exsBefore = expressions.lst.length;
+			Identifier hashId = expressions.extractHashId();
+
+			size_t exsAfter = expressions.lst.length;
+
+			Value ret = f.execute(args,null,to!string(cast(void*)f));
+
+			Glob._varSet(hashId.getId(),ret,immut);
+
+			return ret;
+		}
+		else {
+			return f.execute(args,null,to!string(cast(void*)f));
+		}
+		
+	}
+
 	Value executeAssignment(Value* v, bool isInExpression=false) {
 
 		if (v is null) {
@@ -197,6 +219,87 @@ class Statement {
 
 		Value ret;
 		try {
+			switch(type) {
+				case StatementType.normalStatement:
+					//writeln(id.getFullIdentifier() ~ " : normal statement");
+					Func f;
+					if ((f=Glob.funcGet(id.getJustId(),id.namespace)) !is null) {
+						//writeln(id.getFullIdentifier() ~ " : system func call");
+						// SYSTEM FUNCTION CALL
+						ret = executeFunctionCall(f);
+					}
+					else {
+						Var va;
+
+						if ((va=Glob.varGetByIdentifier(id)) !is null) {
+							// Variable already exists
+
+							if (va.value.type==fV) {
+								//writeln(id.getFullIdentifier() ~ " : user func call");
+								// USER FUNCTION CALL
+								ret = executeUserFunctionCall(va.value.content.f);
+							} 
+							else {
+								if (hasExpressions) {
+									//writeln(id.getFullIdentifier() ~ " : re-assignment");
+									// RE-ASSIGNMENT (of existing variable)
+									return executeAssignment(v,isInExpression);
+								}
+								else {
+									//writeln(id.getFullIdentifier() ~ " : expression (single-id)");
+									// it's a single-id expression, return its value
+									ret = new Expression(new Argument(id)).evaluate();
+								}
+							}
+						}
+						else {
+							if (hasExpressions) {
+								//writeln(id.getFullIdentifier() ~ " : assignment");
+								// ASSIGNMENT (first)
+								return executeAssignment(v,isInExpression);
+							}
+							else {
+								// throw error
+								//writeln(id.getFullIdentifier() ~ " : NOT FOUND!");
+								throw new ERR_SymbolNotFound(id.getFullIdentifier());
+							}
+						}
+					}
+					break;
+				case StatementType.expressionStatement:
+					//writeln("null : expression statement");
+					// it's an expression, return its value
+					ret = expression.evaluate();
+					break;
+				default:
+					// CONTROL NEVER REACHES THIS POINT
+					return new Value();
+			}
+		}
+		catch (Exception e) {
+			throw e;
+		}
+
+		if (v !is null) {
+			// if we are in a dictionary and it was not an assignment
+			// (in which case we've already return the result)
+			// add the expression value to the dictionary's "children" property
+			
+			//bool dont = false;
+			//if (id !is null && id.getId()[0]==':') dont=true;
+			
+			//if (!dont) 
+			assignExpressionValueToParentDict(ret,v);
+		}
+
+		return ret;
+	}
+/*
+	Value execute(Value* v, bool isInExpression=false) {
+		if (isInExpression) WARN_ASSIGN(id.getId());
+
+		Value ret;
+		try {
 			switch (type) {
 				case StatementType.normalStatement:
 					Func f;
@@ -244,7 +347,7 @@ class Statement {
 
 		return ret;
 	}
-
+	*/
 	void inspect() {
 		writeln("statement: " ~ id.getId() ~ " with expressions:");
 	}
