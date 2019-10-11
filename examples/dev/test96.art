@@ -2,3 +2,8 @@ print "Testing databases"
 
 db $(database "boom")
 !db.query "INSERT INTO contacts (id,first_name) VALUES (10,'fdsf1sfd2312');" 
+
+db database "boom"
+db.query
+
+myfunc [x]{}

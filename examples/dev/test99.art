@@ -1,0 +1,2 @@
+print "done"
+reverse #(1 2 3)

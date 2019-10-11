@@ -10,7 +10,7 @@ menuItems #("home" "about")
 
 ////
 
-web:page @index #{
+page @index #{
 	:type "html5"
 
 	head #{ 
