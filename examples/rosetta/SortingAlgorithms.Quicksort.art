@@ -3,7 +3,7 @@ QuickSort [arr]{
 
 	pivot $(first arr), arrTail $(tail arr)
 
-	$(!QuickSort $(filter arrTail { & <= pivot })) + pivot + $(!QuickSort $(filter arrTail { & > pivot }))
+	$(QuickSort $(filter arrTail { & <= pivot })) + pivot + $(QuickSort $(filter arrTail { & > pivot }))
 }
 
-print $(!QuickSort #(3 1 2 8 5 7 9 4 6))
+print $(QuickSort #(3 1 2 8 5 7 9 4 6))

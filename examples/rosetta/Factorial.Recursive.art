@@ -1,5 +1,5 @@
 Factorial [n]{ 
 	if n>0 { 
-		n * $(!Factorial n-1) 
+		n * $(Factorial n-1) 
 	} { 1 } 
 }

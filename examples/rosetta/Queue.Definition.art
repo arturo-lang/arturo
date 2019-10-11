@@ -6,7 +6,7 @@ Queue #{
 	}
 
 	pop {
-		if $(!empty) {
+		if $(empty) {
 			panic "trying to pop from an empty queue!"
 		}
 
@@ -26,11 +26,11 @@ Queue #{
 
 q $(new ~Queue)
 
-!q.push "one"
-!q.push "two"
-!q.push "three"
+q.push "one"
+q.push "two"
+q.push "three"
 
-!q.inspect
+q.inspect
 
-print "popped = " + $(!q.pop)
-print "is it empty? = " + $(!q.empty)
+print "popped = " + $(q.pop)
+print "is it empty? = " + $(q.empty)

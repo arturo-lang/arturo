@@ -15,20 +15,20 @@ printAll [args]{
 getNumber { 3 }
 
 // Calling a function that requires no arguments
-!printHello
+printHello
 
 // Calling a function with a fixed number of arguments
-!sayHello "John"
+sayHello "John"
 
 // Calling a function with a variable number of arguments
-!printAll #("one" "two" "three")
+printAll #("one" "two" "three")
 
 // Using a function in statement context
-if true { !printHello }
+if true { printHello }
 
 // Using a function in first-class context within an expression
-if $(!getNumber)=3 { "yep, it worked" }
+if $(getNumber)=3 { "yep, it worked" }
 
 // Obtaining the return value of a function:
-num $(!getNumber)
+num $(getNumber)
 

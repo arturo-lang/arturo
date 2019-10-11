@@ -4,4 +4,4 @@ logic [a,b]{
 	print "NOT a = " + $(not a)
 }
 
-!logic true false
+logic true false
