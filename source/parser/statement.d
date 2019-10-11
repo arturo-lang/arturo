@@ -46,6 +46,10 @@ extern (C) {
 	void set_Position(Statement x, Position p) { x.pos = p; }
 }
 
+// alias
+
+void WARN_ASSIGN(string sym) { Panic.runtimeWarning((new WARN_AssignmentInsideExpression(sym)).msg); }
+
 // Definitions
 
 enum StatementType : string
@@ -144,7 +148,7 @@ class Statement {
 		}
 	}
 
-	Value executeAssignment(Value* v) {
+	Value executeAssignment(Value* v, bool isInExpression=false) {
 
 		if (v is null) {
 			if (expressions.lst.length==1) {
@@ -193,7 +197,9 @@ class Statement {
 		(*parentDict)[CHILDREN].addValueToArray(result);
 	}
 
-	Value execute(Value* v) {
+	Value execute(Value* v, bool isInExpression=false) {
+		if (isInExpression) WARN_ASSIGN(id.getId());
+
 		Value ret;
 		try {
 			switch (type) {
@@ -210,7 +216,7 @@ class Statement {
 						else {
 							// it's an assignment - return the result immediately,
 							// no further processing needed
-							return executeAssignment(v);
+							return executeAssignment(v,isInExpression);
 						}
 					}
 					break;
