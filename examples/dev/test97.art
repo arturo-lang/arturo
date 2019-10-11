@@ -1,4 +1,4 @@
-create @db "test"
+database:create @db "test"
 
 !db.createTable "users" #{
 	name		"TEXT" 		#{ :primary true }
