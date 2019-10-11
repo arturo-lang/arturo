@@ -102,8 +102,8 @@ class Context {
         Func f = new Func(n,s);
         funcSet(f);
     }
-
-    Func funcGet(string n) {
+    /*
+    Func funcGet(string n, string ns) {
         if (funcExists(n)) {
             if ((n in functions)!=null) { return functions[n]; }
             else {
@@ -114,19 +114,27 @@ class Context {
         }
 
         throw new ERR_FunctionNotFound(n);
-    }
+    }*/
 
-    bool funcExists(string n) {
-        bool fullNameExists = ((n in functions)!=null);
-
-        if (fullNameExists) return true;
+    Func funcGet(string n, string ns) {
+        if (ns !is null) {
+            foreach (Func f; functions) {
+                if (f.name==n && f.namespace==ns) {
+                    return f;
+                }
+            }
+            return null;
+        }
         else {
             foreach (Func f; functions) {
-                if (f.name==n) return  true;
+                if (Glob.activeNamespaces.canFind(f.namespace)) {
+                    if (f.name==n) {
+                        return f;
+                    }
+                }
             }
+            return null;
         }
-        
-        return false;
     }
 
     string inspectVars() {
