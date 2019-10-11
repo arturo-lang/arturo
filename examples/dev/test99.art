@@ -1,2 +1,14 @@
 print "done"
 reverse #(1 2 3)
+
+doSth: [x]{
+
+}
+
+a 10
+b: $(a)
+
+print "done"
+print: done
+
+a $(print 10)
