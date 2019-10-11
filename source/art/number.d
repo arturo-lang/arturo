@@ -116,6 +116,30 @@ class Random_ : Func {
 	}
 }
 
+class Shl_ : Func {
+	this(string ns="") { super(ns ~ "shl","bitwise left shift",[[nV,nV]],[nV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		alias num1 = I!(v,0);
+		alias num2 = I!(v,1);
+
+		return new Value(num1 << num2);
+	}
+}
+
+class Shr_ : Func {
+	this(string ns="") { super(ns ~ "shr","bitwise right shift",[[nV,nV]],[nV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		alias num1 = I!(v,0);
+		alias num2 = I!(v,1);
+
+		return new Value(num1 >> num2);
+	}
+}
+
 mixin(registerMathFunc("sin"));
 mixin(registerMathFunc("cos"));
 mixin(registerMathFunc("tan"));
