@@ -1,3 +1,5 @@
+use ~gui
+
 window @mainWindow #{
 	:title 	"Hello World"
 	:size 	#(200 200)
@@ -6,4 +8,4 @@ window @mainWindow #{
 }
 
 app @main "TestHello" mainWindow #{}
-!main.run
+main.run

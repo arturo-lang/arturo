@@ -17,6 +17,6 @@ Person #{
 person $(new ~Person "John" "Doe")
 
 // use an inner function
-!person.sayHello
+person.sayHello
 
 log person

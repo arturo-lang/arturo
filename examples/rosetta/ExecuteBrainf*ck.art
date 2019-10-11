@@ -39,7 +39,7 @@ StateIsValid {
 // Compile the program
 
 interpret {
-    loop $(!StateIsValid) {
+    loop $(StateIsValid) {
         command $(get $(characters Code) InstructionPointer)
 
         | command="+" { set Tape DataPointer Tape.[DataPointer]+1 }
@@ -68,6 +68,6 @@ if $(size &)<1 { panic "Not enough arguments - Usage: bfc <script>" }
 
 Code                    $(read &0)
 CodeLength              $(size Code)
-Jumps                   $(!precomputeJumps)
+Jumps                   $(precomputeJumps)
 
-!interpret
+interpret
