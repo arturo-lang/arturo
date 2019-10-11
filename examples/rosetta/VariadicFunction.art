@@ -4,4 +4,4 @@ printAll [args]{
 	}
 }
 
-!printAll #("one" "two" "three")
+printAll #("one" "two" "three")
