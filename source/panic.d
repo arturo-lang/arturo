@@ -84,6 +84,15 @@ class WARN_ErroneousParameterValueIgnored : Exception {
     }
 }
 
+class WARN_AssignmentInsideExpression : Exception {
+    this(string symbol) {
+        super( getErrorString("Found assignment inside expression ", null,
+            ["Symbol"],
+            [symbol] )
+        );
+    }
+}
+
 class ERR_FunctionNotFound : Exception {
     this(string symbol) {
         super( getErrorString("Function not found", symbol, [], []) );
@@ -300,7 +309,9 @@ class Panic
     }
 
     static void runtimeWarning(string msg) {
-        writeln(format(RUNTIME_WARNING_POS_TEMPLATE, msg));
+        if (Glob.warningsOn) {
+            writeln(format(RUNTIME_WARNING_POS_TEMPLATE, msg));
+        }
     }
 
     static void consoleError(string msg) {
