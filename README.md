@@ -45,6 +45,8 @@ Simple, isn't it?
 Getting Started
 ------------------------------
 
+> ℹ️ For more examples, you may have a look into the folder /examples/rosetta ([all also published @ Rosetta Code](https://rosettacode.org/wiki/Category:Arturo)) or try them out online [via the official Arturo website](https://www.arturo-lang.io).
+
 ### Hello World
 
 ```
