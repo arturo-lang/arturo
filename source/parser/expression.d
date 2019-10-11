@@ -206,6 +206,7 @@ class Expression {
 	}
 
 	Value evaluateFunctionExpression() {
+		// true -> statement executed inside a statement
 		return statement.execute(null,true);
 	}
 
