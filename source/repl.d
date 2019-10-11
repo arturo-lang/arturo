@@ -32,6 +32,8 @@ import compiler;
 
 import program;
 
+import func;
+
 import value;
 
 import panic;
@@ -113,8 +115,16 @@ class Repl {
     }
 
     void showInfo(string id) {
-        if (Glob.funcExists(id)) {
-            Glob.funcGet(id).inspect(true);
+        string name = id;
+        string namespace = null;
+        if (id.indexOf(":")!=-1) {
+            namespace = id.split(":")[0].strip;
+            name = id.split(":")[1].strip;
+        }
+
+        Func f;
+        if ((f = Glob.funcGet(name,namespace)) !is null) {
+            f.inspect(true);
         }
         else if (Glob.varGet(id) !is null) {
             Glob.varGet(id).inspect(true);
