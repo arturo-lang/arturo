@@ -71,7 +71,10 @@ class Expressions {
 		
 			return new Value(res);
 		} 
-		else return lst[0].evaluate();
+		else {
+			if (lst.length==1) return lst[0].evaluate();
+			else return Value.array();
+		}
 	}
 
 }
