@@ -25,10 +25,20 @@ import value;
 import panic;
 
 import versions;
+import globals;
+
+// Interface
 
 extern (C) void ART_Compile(char[] s) {
     Compiler comp = new Compiler();
     comp.compileFromString(to!string(s));
+}
+
+// Utilities
+
+void showDocumentation() {
+    Globals g = new Globals([]);
+    g.getFunctionsMarkdown();
 }
 
 // Main
@@ -39,6 +49,7 @@ void main(string[] args) {
     bool warnings;
     bool versionCmd;
     bool helpCmd;
+    bool doc;
 
     try {
         auto cmdline = getopt(
@@ -46,12 +57,18 @@ void main(string[] args) {
             "include|i",    "Set include path", &includePath,
             "warnings|w",   "Turn warnings ON", &warnings,
             "console|c",    "Interactive console mode (REPL)", &interactiveCmd,
-            "version|v",    "Show version information", &versionCmd
+            "version|v",    "Show version information", &versionCmd,
+            "doc|d",        "Show documentation", &doc
         );
 
         if (cmdline.helpWanted) {
             showLogo();
             defaultGetoptPrinter("\nusage: arturo [options] filename [args] ...\n", cmdline.options);
+            exit(0);
+        }
+
+        if (doc) {
+            showDocumentation();
             exit(0);
         }
 

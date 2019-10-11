@@ -171,6 +171,7 @@ class Globals : Context {
     Stack!(Statements) blockStack;
     Expressions[Identifier] symboldefs;
     bool warningsOn;
+    string[] activeNamespaces;
 
     this(string[] args) {
         super();
@@ -196,6 +197,8 @@ class Globals : Context {
         retCounter = -1;
 
         warningsOn = false;
+
+        activeNamespaces = ["core"];
     }
 
     Expressions getSymbolDef(string id) {
@@ -436,6 +439,61 @@ class Globals : Context {
             //writeln(f.sublimeish());
             f.inspect();
         }
+    }
+
+    void getFunctionsMarkdown() {
+        // core
+        string[] coreNamespaces = ["array","collection","convert","core","date","dictionary","file","number","path","string","system"];
+        Func[][string] coreFuncs;
+        Func[][string] moreFuncs;
+        foreach (Func f; functions) {
+            if (coreNamespaces.canFind(f.namespace)) {
+                coreFuncs[f.namespace] ~= f;
+            }
+            else {
+                moreFuncs[f.namespace] ~= f;
+            }
+        }
+        writeln("#### Main");
+        writeln("The functions below are reserved keywords and can be used at any time, without the use of a namespace");
+        writeln("|  Library  | Function | Description | Syntax |");
+        writeln("| :---      | :---     | :---        | :---   |");
+        foreach (string ns; coreNamespaces.sort()) {
+            Func[] funcs = coreFuncs[ns].sort!((f1,f2) => f1.name<f2.name).array;
+
+            foreach (Func f; funcs) {
+                writeln(f.markdownishWithNamespace());
+            }
+        }
+        string[] moreNamespaces;
+        foreach (string ns, Func[] f; moreFuncs) {
+            if (!moreNamespaces.canFind(ns)) moreNamespaces ~= ns;
+        }
+
+        writeln("#### More");
+        writeln("The functions below have to be used with their namespace");
+        writeln("|  Library  | Function | Description | Syntax |");
+        writeln("| :---      | :---     | :---        | :---   |");
+        foreach (string ns; moreNamespaces.sort()) {
+            Func[] funcs = moreFuncs[ns].sort!((f1,f2) => f1.name<f2.name).array;
+
+            foreach (Func f; funcs) {
+                writeln(f.markdownishWithNamespace());
+            }
+        }
+
+        string[] sblm;
+        foreach(string ns, Func[] f; coreFuncs) {
+            foreach (Func ff; f) {
+                sblm ~= ff.sublimeishWithNamespace(true);
+            }
+        }
+        foreach(string ns, Func[] f; moreFuncs) {
+            foreach (Func ff; f) {
+                sblm ~= ff.sublimeishWithNamespace(false);
+            }
+        }
+        writeln(sblm.join(""));
     }
 
     void inspect() {
