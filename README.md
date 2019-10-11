@@ -6,7 +6,7 @@
 
 ---
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square) ![Language](https://img.shields.io/badge/Language-D-red.svg?style=flat-square)
+![GitHub](https://img.shields.io/github/license/arturo-lang/arturo) ![Language](https://img.shields.io/badge/Language-D-red.svg?style=flat-square) ![DUB](https://img.shields.io/dub/v/arturo) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo)
 
 The Language
 ------------------------------
