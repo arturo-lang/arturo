@@ -1,0 +1,11 @@
+proc {
+	print "I'm in proc!"
+}
+
+repeat [func,times]{
+	loop $(range 0 times-1) {
+		func
+	}
+}
+
+repeat proc 3
