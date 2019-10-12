@@ -13,12 +13,16 @@ module art.number;
 
 import core.bitop;
 
+import std.algorithm;
+import std.array;
 import std.bigint;
 import std.conv;
 import std.math;
 import std.random;
+import std.range;
 import std.stdio;
 import std.string;
+import std.traits;
 
 import parser.expression;
 import parser.expressions;
@@ -34,6 +38,24 @@ import globals;
 import panic;
 
 // Utilities
+
+Unqual!T[] primeFactors(T)(in T number) pure nothrow
+in {
+    assert(number > 1);
+} body {
+    typeof(return) result;
+    Unqual!T n = number;
+ 
+    for (Unqual!T i = 2; n % i == 0; n /= i)
+        result ~= i;
+    for (Unqual!T i = 3; n >= i * i; i += 2)
+        for (; n % i == 0; n /= i)
+            result ~= i;
+ 
+    if (n != 1)
+        result ~= n;
+    return result;
+}
 
 bool isPrime(ulong n) {
 	if (n<2) return false;
@@ -93,7 +115,6 @@ class Is__Prime_ : Func {
 	}
 }
 
-
 class Odd_ : Func {
 	this(string ns="") { super(ns ~ "odd","check if given number is odd",[[nV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
@@ -101,6 +122,24 @@ class Odd_ : Func {
 		alias num = I!(v,0);
 
 		return new Value(num%2!=0);
+	}
+}
+
+class Prime__Factors_ : Func {
+	this(string ns="") { super(ns ~ "primeFactors","get list of prime factors for given number",[[nV]],[aV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		Value ret;
+
+		if (v[0].isBig) {
+			ret = new Value(primeFactors(v[0].content.bi).array.map!(a => new Value(a)).array);
+		}
+		else {
+			ret = new Value(primeFactors(v[0].content.i).array.map!(a => new Value(a)).array);
+		}
+
+		return ret;
 	}
 }
 
