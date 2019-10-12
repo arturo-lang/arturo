@@ -11,6 +11,7 @@ module art.crypto;
 
 // Imports
 
+import std.base64;
 import std.conv;
 import std.digest.md;
 import std.digest.sha;
@@ -32,6 +33,31 @@ import globals;
 import panic;
 
 // Functions
+
+class Encode__Base64_ : Func {
+	this(string ns="") { super(ns ~ "encodeBase64","encode given object to base64",[[sV]],[sV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+
+		string encoded = Base64.encode(cast(ubyte[])input);
+
+		return new Value(encoded);
+	}
+}
+
+class Decode__Base64_ : Func {
+	this(string ns="") { super(ns ~ "decodeBase64","decode given object from base64",[[sV]],[sV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+
+		auto decoded = cast(string)Base64.decode(input);
+
+		return new Value(decoded);
+	}
+}
+
 
 class Hash_ : Func {
 	this(string ns="") { super(ns ~ "hash","get hash value for given value",[[xV]],[sV]); }
