@@ -1,0 +1,13 @@
+Point #{
+	x 0
+	y 0
+
+	init {
+		x &0
+		y &1
+	}
+}
+
+point $(new ~Point 10 20)
+
+print point
