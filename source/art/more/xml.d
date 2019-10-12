@@ -28,7 +28,42 @@ import value;
 import func;
 import globals;
 
+import dxml.dom;
+
+// Utilities
+
+Value getNode(DOMEntity!string nd) {
+	writeln("name: " ~ nd.name);
+	if (nd.children.length>0) writeln("has children");
+	if (nd.attributes.length>0) writeln("has attributes");
+	
+	foreach (DOMEntity!string item; nd.children) {
+		if (item.children.length>0) getNode(item);
+		else writeln(item);
+	}
+	return new Value();
+}
+
 // Functions
+
+class XML__Test_ : Func {
+	this(string ns="") { super(ns ~ "test","check integrity of XML input using given string",[[]],[bV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		auto xml = "<root>\n" ~
+           "    <foo>some text<whatever/></foo>\n" ~
+           "    <bar/>\n" ~
+           "    <baz></baz>\n" ~
+           "</root>";
+
+        auto dom = parseDOM(xml);
+        getNode(dom);
+        //writeln(dom.children);
+
+        return new Value();
+	}
+}
 
 class XML__Check_ : Func {
 	this(string ns="") { super(ns ~ "check","check integrity of XML input using given string",[[sV]],[bV]); }
