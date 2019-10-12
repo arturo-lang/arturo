@@ -1,12 +1,12 @@
-FileExtensions #("zip" "rar" "7z" "gz" "archive" "A##" "tar.bz2")
+FileExtensions #("zip" "rar" "7z" "gz" "archive" "A##")
 
 hasExtension [file]{
-	return $(contains FileExtensions $(replace $(getExt file) "." ""))
+	lowercased $(map FileExtensions { lowercase & })
+	return $(contains lowercased $(lowercase $(replace $(getExtension file) "." "")))
 }
 
-files #("MyData.a##" "MyData.tar.Gz" "MyData.gzip" "MyData.7z.backup" "MyData..." "MyData" "MyData_v1.0.tar.bz2" "MyData_v1.0.bz2")
+files #("MyData.a##" "MyData.tar.Gz" "MyData.gzip" "MyData.7z.backup" "MyData..." "MyData")
 
 loop files {
 	print & + " => hasExtension: " + $(hasExtension &)
 }
-
