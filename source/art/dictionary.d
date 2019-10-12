@@ -57,3 +57,17 @@ class Keys : Func {
 		return new Value(ret);
 	}
 }
+
+class Values : Func {
+	this(string ns="") { super(ns ~ "values","get array of dictionary values",[[dV]],[aV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias dict = D!(v,0);
+
+		Value[] ret;
+		foreach (Var va; dict.variables)
+			ret ~= va.value;
+
+		return new Value(ret);
+	}
+}
