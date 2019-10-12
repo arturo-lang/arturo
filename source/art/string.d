@@ -360,7 +360,13 @@ class Replace__ : Func {
 		alias what = S!(v,1);
 		alias repl = S!(v,2);
 
-		return new Value(input.replace(what,repl));
+		string ret;
+
+		string pattern;
+		if ((pattern=isRegex(what)) !is null) ret = input.replace(regex(pattern,"gm"),repl);
+		else ret = input.replace(what,repl);
+
+		return new Value(ret);
 	}
 }
 
