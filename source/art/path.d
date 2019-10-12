@@ -88,8 +88,8 @@ class Get__Dir_ : Func {
 	}
 }
 
-class Get__Ext_ : Func {
-	this(string ns="") { super(ns ~ "getExt","get extension from given path",[[sV]],[sV]); }
+class Get__Extension_ : Func {
+	this(string ns="") { super(ns ~ "getExtension","get extension from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias path = S!(v,0);
