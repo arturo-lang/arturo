@@ -113,7 +113,6 @@ class Compiler {
             //debug inspect();
             Value v = sourceTree.execute();
             //debug Glob.inspect();
-
             return v;
         }
         catch (Exception e) {
