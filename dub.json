@@ -15,6 +15,7 @@
 	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
 	"dependencies": {
 		"dmarkdown": "~>0.3.0",
+		"dxml": "~>0.4.1",
 		"dyaml": "~>0.8.0",
 		"gtk-d": "~>3.9.0"
 	},
