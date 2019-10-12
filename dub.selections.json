@@ -6,6 +6,7 @@
 		"botan-math": "1.0.3",
 		"diet-ng": "1.6.0",
 		"dmarkdown": "0.3.0",
+		"dxml": "0.4.1",
 		"dyaml": "0.8.0",
 		"eventcore": "0.8.46",
 		"gtk-d": "3.9.0",
