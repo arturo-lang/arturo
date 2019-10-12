@@ -11,6 +11,8 @@ module art.number;
 
 // Imports
 
+import core.bitop;
+
 import std.bigint;
 import std.conv;
 import std.math;
