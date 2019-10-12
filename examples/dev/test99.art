@@ -12,3 +12,11 @@ print "done"
 print: done
 
 a $(print 10)
+
+
+
+-
+num 10
+func {
+	print $(doSth b)
+}
