@@ -1,0 +1,6 @@
+
+factors [num] {
+	filter $(range 1 36) { num%&=0 }
+}
+
+print $(factors 36)

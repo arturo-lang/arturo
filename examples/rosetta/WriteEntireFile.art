@@ -1,0 +1,2 @@
+contents "Hello World!"
+file:write "output.txt" contents
