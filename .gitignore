@@ -1,6 +1,7 @@
 .dub
 docs.json
 __dummy.html
+examples/dev
 docs/
 /arturo
 /test.d
