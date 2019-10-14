@@ -134,22 +134,42 @@ class Color_ : Func {
 }
 
 class Decode__URL_ : Func {
-	this(string ns="") { super(ns ~ "decodeUrl","decode the given URL into a UTF-8 string url",[[sV]],[sV]); }
+	this(string ns="") { super(ns ~ "decodeUrl","decode the given URL into a UTF-8 string url, optionally ignoring invalid characters",[[sV],[sV,bV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
-		
-		return new Value(input.decode);
+
+		if (v.length==2) {
+			if (!B!(v,1)) {
+				return new Value(input.decode);
+			}
+			else {
+				return new Value(input.decodeComponent);
+			}
+		}
+		else {
+			return new Value(input.decodeComponent);
+		}
 	}
 }
 
 class Encode__URL_ : Func {
-	this(string ns="") { super(ns ~ "encodeUrl","encode the given UTF-8 string url into a URL",[[sV]],[sV]); }
+	this(string ns="") { super(ns ~ "encodeUrl","encode the given UTF-8 string url into a URL, optionally ignoring invalid characters",[[sV],[sV,bV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 		
-		return new Value(input.encode);
+		if (v.length==2) {
+			if (!B!(v,1)) {
+				return new Value(input.encode);
+			}
+			else {
+				return new Value(input.encodeComponent);
+			}
+		}
+		else {
+			return new Value(input.encodeComponent);
+		}
 	}
 }
 
