@@ -11,6 +11,7 @@ module art.convert;
 
 // Imports
 
+import std.bigint;
 import std.conv;
 import std.file;
 import std.format;
@@ -63,22 +64,35 @@ class To__Number_ : Func {
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
-		if (v[0].type==rV) {
-			alias input = R!(v,0);
+		try {
 
-			return new Value(to!long(input));
+			if (v[0].type==rV) {
+				alias input = R!(v,0);
+
+				return new Value(to!long(input));
+			}
+			else if (v[0].type==sV) {
+				alias input = S!(v,0);
+
+				if (input.indexOf(".")!=-1) return new Value(to!real(input));
+				else return new Value(to!long(input));
+			}
+			else {
+				alias input = B!(v,0);
+
+				if (input) return new Value(1);
+				else return new Value(0);
+			}
 		}
-		else if (v[0].type==sV) {
-			alias input = S!(v,0);
+		catch (Exception ex) {
+			if (v[0].type==sV) {
+				alias input = S!(v,0);
 
-			if (input.indexOf(".")!=-1) return new Value(to!real(input));
-			else return new Value(to!long(input));
-		}
-		else {
-			alias input = B!(v,0);
-
-			if (input) return new Value(1);
-			else return new Value(0);
+				return new Value(BigInt(input));
+			}
+			else {
+				return new Value();
+			}
 		}
 	}
 }
