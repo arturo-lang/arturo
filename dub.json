@@ -17,7 +17,9 @@
 		"dmarkdown": "~>0.3.0",
 		"dxml": "~>0.4.1",
 		"dyaml": "~>0.8.0",
-		"gtk-d": "~>3.9.0"
+		"gtk-d": "~>3.9.0",
+		"urld": "~>2.1.1",
+		"vibe-d:inet": "~>0.8.6"
 	},
 	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
 	"dflags-dmd": [
