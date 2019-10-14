@@ -140,7 +140,7 @@ class Decode__URL_ : Func {
 		alias input = S!(v,0);
 
 		if (v.length==2) {
-			if (!B!(v,1)) {
+			if (B!(v,1)) {
 				return new Value(input.decode);
 			}
 			else {
@@ -160,7 +160,7 @@ class Encode__URL_ : Func {
 		alias input = S!(v,0);
 		
 		if (v.length==2) {
-			if (!B!(v,1)) {
+			if (B!(v,1)) {
 				return new Value(input.encode);
 			}
 			else {
