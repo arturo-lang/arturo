@@ -1,0 +1,14 @@
+loop $(range 150 400) [a]{
+	loop $(range a 500) [b]{
+		loop $(range b 500) [c]{
+			if a^2+b^2=c^2 {
+				print #(a b c)
+				if $(sum #(a b c))=1000 { 
+					print "Found!!"
+					print #(a b c)
+					print "product: " + $(product #(a b c))
+				}
+			}
+		}
+	}
+}
