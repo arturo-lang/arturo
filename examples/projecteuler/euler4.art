@@ -1,0 +1,17 @@
+isPalindrome $(memoize [n]{ $(toString n)=$(reverse $(toString n)) })
+
+maxPalindrome 0
+
+loop $(range 1 999) [a]{
+	loop $(range 1 999) [b]{
+		if a<=b {
+			if $(isPalindrome $(p a*b)) {
+				if p>maxPalindrome {
+					maxPalindrome p
+				}
+			}
+		}
+	}
+}
+
+print maxPalindrome

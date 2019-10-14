@@ -1,0 +1,6 @@
+primesBelow [n]{
+	return #(2) + $(filter $(range 3 n-1 2) { isPrime & })
+}
+
+
+print $(sum $(primesBelow 2000000))
