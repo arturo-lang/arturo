@@ -29,6 +29,8 @@ import value;
 import func;
 import globals;
 
+import url;
+
 // Functions
 
 class Create__Dir_ : Func {
@@ -109,6 +111,31 @@ class Get__Filename_ : Func {
 		auto ret = baseName(path);
 
 		return new Value(ret);
+	}
+}
+
+class Get__URL__Components_ : Func {
+	this(string ns="") { super(ns ~ "getUrlComponents","get URL components from given URL",[[sV]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias urlPath = S!(v,0);
+
+		URL u = parseURL(urlPath);
+
+		Value ret = Value.dictionary();
+		ret["scheme"] = new Value(u.scheme);
+		ret["fragment"] = new Value(u.fragment);
+		ret["domain"] = new Value(u.host);
+		ret["password"] = new Value(u.pass);
+		ret["path"] = new Value(u.path);
+		ret["port"] = new Value(to!string(u.port));
+		ret["query"] = Value.dictionary();
+		foreach (key, value; u.queryParams) {
+			ret["query"][key] = new Value(value);
+		}
+		ret["user"] = new Value(u.user);
+
+		return ret;
 	}
 }
 
