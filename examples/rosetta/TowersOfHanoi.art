@@ -1,0 +1,9 @@
+Hanoi [n,from,to,via]{
+	if n>0 {
+		Hanoi n-1 from via to
+		print "Move disk " + n + " from " + from + " to " + to
+		Hanoi n-1 via to from
+	}
+}
+ 
+Hanoi 3 "L" "M" "R"
