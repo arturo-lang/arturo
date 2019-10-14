@@ -20,6 +20,7 @@ import std.random;
 import std.regex;
 import std.stdio;
 import std.string;
+import std.uri;
 import std.uuid;
 
 import parser.expression;
@@ -129,6 +130,26 @@ class Color_ : Func {
 		string ret = getColoredString(input,color);
 
 		return new Value(ret);
+	}
+}
+
+class Decode__URL_ : Func {
+	this(string ns="") { super(ns ~ "decodeUrl","decode the given URL into a UTF-8 string url",[[sV]],[sV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+		
+		return new Value(input.decode);
+	}
+}
+
+class Encode__URL_ : Func {
+	this(string ns="") { super(ns ~ "encodeUrl","encode the given UTF-8 string url into a URL",[[sV]],[sV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias input = S!(v,0);
+		
+		return new Value(input.encode);
 	}
 }
 
