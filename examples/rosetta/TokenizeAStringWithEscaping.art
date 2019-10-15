@@ -21,52 +21,6 @@ tokenize [s,sep,esc]{
 	}
 	print ""
 }
-/*
-function tokenize(str,sep,esc,  chr,escaping,field,i) {
-    printf(">%s<\n",str)
-    printf("%02d: >",++field)
-    for (i=1; i<=length(str); i++) {
-      chr = substr(str,i,1)
-      if (escaping == 1) {
-        printf("%s",chr)
-        escaping = 0
-      }
-      else if (chr == sep) {
-        printf("<\n%02d: >",++field)
-      }
-      else if (chr == esc) {
-        escaping = 1
-      }
-      else {
-        printf("%s",chr)
-      }
-    }
-    printf("<\n")
-}*/
-
 
 str "one^|uno||three^^^^|four^^^|^cuatro|" 
 print $(tokenize str "|" "^")
-
-/*
-"one|uno"
-""
-"three^^"
-"four^|cuatro"
-""
-
-final $(replace str "/\^\|/" "__")
-final $(replace final "/\|[\|$]/" "|%|")
-print final
-print $(split final "|")
-/*
-final $(replace str "^^" "__")
-print final
-final $(split final "/(?<!\^)\|/")
-print final
-final $(map final { replace $(replace & "__" "^") "/\^(.)/" "$1" })
-
-print final
-*/
-
-  
