@@ -1,0 +1,16 @@
+Person #{
+	name ""
+	surname ""
+
+	init [n,s]{
+		name n
+		surname s
+	}
+
+	sayHello {
+		print "Hello " + name + "!"
+	}
+}
+
+person $(new ~Person "John" "Doe")
+person.sayHello
