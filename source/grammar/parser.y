@@ -173,7 +173,7 @@ int yywrap() {
 
 identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID,0); }
 						| 	HASH_ID																{ $$ = new_IdentifierWithId($HASH_ID,1); }
-						//|	EXCL																{ $$ = new_IdentifierWithId("exec",0); }
+						|	EXCL																{ $$ = new_IdentifierWithId("let",0); }
 						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
 						|	identifier[previous] DOT NUMBER										{ void* i = $previous; add_NumToIdentifier($NUMBER, i); $$ = i; }
 						|	identifier[previous] DOT FLOAT										{ void* i = $previous; add_NumToIdentifier($FLOAT, i); $$ = i; }
