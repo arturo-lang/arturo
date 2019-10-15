@@ -9,5 +9,5 @@ is_Prime [n]{
 }  
 
 loop $(range 0 maxLimit) {
-	print $(!is_Prime &)
+	print $(is_Prime &)
 }
