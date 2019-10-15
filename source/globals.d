@@ -119,7 +119,7 @@ string registerSystemFuncs() {
         "art.yaml"
         ])
         foreach (string className; classMembers!(moduleName))
-            ret ~= "funcSet(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
+            ret ~= "_varSet(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
 
     return ret;
 }
