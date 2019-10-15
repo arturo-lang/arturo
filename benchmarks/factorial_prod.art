@@ -3,5 +3,5 @@ maxLimit 1000
 factorial [n]{ product $(range 1 n) }  
 
 loop $(range 0 maxLimit) {
-	print $(!factorial &)
+	print $(factorial &)
 }
