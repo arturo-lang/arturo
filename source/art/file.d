@@ -43,6 +43,18 @@ class File__Exists_ : Func {
 	}
 }
 
+class File__Filesize_ : Func {
+	this(string ns="") { super(ns ~ "filesize","get file size of file at given path",[[sV]],[nV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias filePath = S!(v,0);
+		
+		string path = Glob.env.fileFolder ~ "/" ~ filePath;
+
+		return new Value(getSize(path));
+	}
+}
+
 class File__Read_ : Func {
 	this(string ns="") { super(ns ~ "read","read string from file at given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
