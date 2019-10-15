@@ -4,6 +4,20 @@
 
 benchmarksDir "benchmarks"
 
+mm $(matches $(shell "./arturo -v") "/build (\d+)/")
+version mm.0.1
+
+output ""
+store [line]{
+	output output+line
+	if line!="" { 
+		print line true 
+	} {
+		output output + "\n"
+		print ""
+	}
+}
+
 ""
 "-------------------------------------------------------------------------------------------------------------------"
 print $(padLeft "Algorithm" 30) + $(padLeft "Arturo" 20) + $(padLeft "Ruby" 20) + $(padLeft "Python" 20) + $(padLeft "PHP" 20)
@@ -12,22 +26,24 @@ print $(padLeft "Algorithm" 30) + $(padLeft "Arturo" 20) + $(padLeft "Ruby" 20) 
 loop $(sort $(dir "../"+benchmarksDir)) [file]{
 	if $(contains file ".art") {
 		title 		$(replace file ".art" "")
-		print $(padLeft title 30) true
+		store $(padLeft title 30)
 
 		artPath		benchmarksDir + "/" + file
 		rbPath 		benchmarksDir + "/" + title + ".rb"
 		pyPath		benchmarksDir + "/" + title + ".py"
 		phpPath		benchmarksDir + "/" + title + ".php"
 
-		print $(padLeft $(toString $(timer { $(shell "./arturo " + artPath) })) 20) true
-		print $(padLeft $(if $(exists "../"+rbPath) { toString $(timer { $(shell "ruby " + rbPath) }) } { "" }) 20) true
-		print $(padLeft $(if $(exists "../"+pyPath) { toString $(timer { $(shell "python " + pyPath) }) } { "" }) 20) true
-		print $(padLeft $(if $(exists "../"+phpPath) { toString $(timer { $(shell "php " + phpPath) }) } { "" }) 20) true
+		store $(padLeft $(toString $(timer { $(shell "./arturo " + artPath) })) 20)
+		store $(padLeft $(if $(exists "../"+rbPath) { toString $(timer { $(shell "ruby " + rbPath) }) } { "" }) 20)
+		store $(padLeft $(if $(exists "../"+pyPath) { toString $(timer { $(shell "python " + pyPath) }) } { "" }) 20)
+		store $(padLeft $(if $(exists "../"+phpPath) { toString $(timer { $(shell "php " + phpPath) }) } { "" }) 20)
 
-		print ""
+		store ""
 	}
 }
 
 ""
 "All benchmarks completed."
 ""
+
+write "../"+benchmarksDir+"/build" + version + ".txt" output
