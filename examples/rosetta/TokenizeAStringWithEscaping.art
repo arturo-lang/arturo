@@ -1,3 +1,4 @@
+
 tokenize [s,sep,esc]{
 	escaping 0
 	loop $(range 0 $(size s)-1) [i]{
