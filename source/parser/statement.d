@@ -125,6 +125,41 @@ class Statement {
 		}
 	}
 
+	Value executeFunction(Func f) {
+		if (expressions.hasHashId) {
+			if (f.type==FuncType.systemFunc) {
+				Identifier hashId = expressions.extractHashId();
+				Value ret = f.execute(expressions,hashId.getId());
+
+				Glob._varSet(hashId.getId(),ret,immut);
+
+				return ret;
+			}
+			else {
+				Value args = Value.array();
+				if (expressions !is null) args = expressions.evaluate(true);
+
+				Identifier hashId = expressions.extractHashId();
+				Value ret = f.execute(args,null,to!string(cast(void*)f));
+
+				Glob._varSet(hashId.getId(),ret,immut);
+
+				return ret;
+			}
+		}
+		else {
+			if (f.type==FuncType.systemFunc) {
+				return f.execute(expressions);
+			}
+			else {
+				Value args = Value.array();
+				if (expressions !is null) args = expressions.evaluate(true);
+
+				return f.execute(args,null,to!string(cast(void*)f));
+			}
+		}
+	}
+/*
 	Value executeFunctionCall(Func f) {
 		if (expressions.hasHashId()) {
 			size_t exsBefore = expressions.lst.length;
@@ -163,7 +198,7 @@ class Statement {
 			return f.execute(args,null,to!string(cast(void*)f));
 		}
 		
-	}
+	}*/
 
 	Value executeAssignment(Value* v, bool isInExpression=false) {
 
@@ -226,7 +261,7 @@ class Statement {
 					if ((f=Glob.funcGet(id.getJustId(),id.namespace)) !is null) {
 						//writeln(id.getFullIdentifier() ~ " : system func call");
 						// SYSTEM FUNCTION CALL
-						ret = executeFunctionCall(f);
+						ret = executeFunction(f); //executeFunctionCall(f);
 					}
 					else {
 						Var va;
@@ -237,7 +272,8 @@ class Statement {
 							if (va.value.type==fV) {
 								//writeln(id.getFullIdentifier() ~ " : user func call");
 								// USER FUNCTION CALL
-								ret = executeUserFunctionCall(va.value.content.f);
+								ret = executeFunction(va.value.content.f);
+								//ret = executeUserFunctionCall(va.value.content.f);
 							} 
 							else {
 								if (hasExpressions) {
