@@ -46,4 +46,4 @@ loop $(sort $(dir "../"+benchmarksDir)) [file]{
 "All benchmarks completed."
 ""
 
-write "../"+benchmarksDir+"/build" + version + ".txt" output
+write "../"+benchmarksDir+"/results/build" + version + ".txt" output
