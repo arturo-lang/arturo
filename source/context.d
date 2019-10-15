@@ -78,6 +78,10 @@ class Context {
         }
     }
 
+    void _varSet(Func f) {
+        _varSet(f.name, new Value(f));
+    }
+
     void _varSet(string n, Value v, bool immut = false) {
         variables[n] = new Var(n,v,immut);
     }
