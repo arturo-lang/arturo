@@ -91,7 +91,7 @@ int yywrap() {
 %token <str> NULLV "Null"
 %token <str> BOOLEAN "Boolean"
 
-%token <str> IF "| (if)"
+%token <str> PIPE "|"
 %token <str> IMPLIES "->"
 
 %token <str> EQ_OP "="
@@ -173,8 +173,7 @@ int yywrap() {
 
 identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID,0); }
 						| 	HASH_ID																{ $$ = new_IdentifierWithId($HASH_ID,1); }
-						| 	IF 																	{ $$ = new_IdentifierWithId("if",0); }
-						|	EXCL																{ $$ = new_IdentifierWithId("exec",0); }
+						//|	EXCL																{ $$ = new_IdentifierWithId("exec",0); }
 						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
 						|	identifier[previous] DOT NUMBER										{ void* i = $previous; add_NumToIdentifier($NUMBER, i); $$ = i; }
 						|	identifier[previous] DOT FLOAT										{ void* i = $previous; add_NumToIdentifier($FLOAT, i); $$ = i; }
@@ -228,6 +227,7 @@ expression_list			:	expression 															{ void* e = new_Expressions(); add
 statement				: 	expression 															{ $$ = new_StatementFromExpression($expression); POS($$); }
 						|   IMPLIES expression 													{ void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions(new_IdentifierWithId("return",0), subex); }
 						|	identifier expression_list											{ $$ = new_StatementWithExpressions($identifier, $expression_list); POS($$); }
+						|	identifier PIPE statement[previous]									{ void* e = new_Expressions(); add_Expression(e, new_ExpressionFromStatement($previous)); $$ = new_StatementWithExpressions($identifier,e); POS($$); }
 						;
 
 statements 				:	statements[previous] NEW_LINE statement 							{ void* s = $previous; if ($statement!=NULL) { add_Statement(s, $statement); } $$ = s; }
