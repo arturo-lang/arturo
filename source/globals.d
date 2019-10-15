@@ -389,6 +389,13 @@ class Globals : Context {
     }
 
     Var varGet(string n) {
+        
+        foreach_reverse (i, Context ctx; contextStack.list) {
+            if (ctx._varExists(n)) return ctx._varGet(n);
+
+        }
+        return null;
+        /*
         // if it's an ARGS variable, return it from top-most context
         if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
 
@@ -410,7 +417,7 @@ class Globals : Context {
                 return null;
             } 
         }
-        return null;
+        return null;*/
     }
 
     string inspectAllVars() {
