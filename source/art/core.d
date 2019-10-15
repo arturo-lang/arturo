@@ -25,6 +25,7 @@ import parser.statement;
 import parser.statements;
 
 import compiler;
+import context;
 
 import value;
 
@@ -115,6 +116,27 @@ class Import_ : Func {
 	}
 }
 
+class Inherit_ : Func {
+	this(string ns="") { super(ns ~ "inherit","inherit existing class/dictionary",[[sV,dV]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias symdef = S!(v,0);
+		alias object = D!(v,1);
+
+		Expressions symbolDefExs = Glob.getSymbolDef(symdef);
+
+		if (symbolDefExs is null) return new Value();
+
+		Value ret = symbolDefExs.evaluate();
+		
+		foreach (Var va; object.variables) {
+			ret.setValueForDict(va.name, va.value);
+		}
+
+		return ret;
+	}
+}
+
 class Input_ : Func {
 	this(string ns="") { super(ns ~ "input","read line from stdin",[[]],[sV,xV]); }
 	override Value execute(Expressions ex, string hId=null) {
@@ -132,6 +154,19 @@ class Lazy_ : Func {
 	override Value execute(Expressions ex, string hId=null) {
 		Statements sts = new Statements(new Statement(ex.lst[0]));
 		return new Value(sts);
+	}
+}
+
+class Let_ : Func {
+	this(string ns="") { super(ns ~ "let","assign right-hand value to symbol using string name",[[sV,xV]],[]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias symbol = S!(v,0);
+		Value value = v[1];
+
+		Glob.contextStack.lastItem()._varSet(symbol, value);
+		
+		return value;
 	}
 }
 
