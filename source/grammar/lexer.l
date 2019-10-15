@@ -81,7 +81,7 @@ LETTER_OR_MISC		[a-zA-Z_:]
 {DIGIT}+											{ count(); return NUMBER; }
 {DIGIT}+\.{DIGIT}+									{ count(); return FLOAT; }
 
-"|"													{ count(); return IF; }
+"|"													{ count(); return PIPE; }
 "->"												{ count(); return IMPLIES; }
 
 "="													{ count(); return EQ_OP; }
