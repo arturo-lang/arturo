@@ -1,0 +1,5 @@
+factorial                     21929               344                 261                 84                  
+factorial_prod                712                 351                 154                 74                  
+fibonacci                     90161               150                 260                 209                 
+fibonacci_mem                 707                 6958                66                  89                  
+is_prime                      22713               166                 174                 149                 
