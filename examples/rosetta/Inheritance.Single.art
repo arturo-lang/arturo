@@ -1,0 +1,26 @@
+Animal #{
+	numberOfFeet 0
+}
+
+Dog $(inherit ~Animal #{
+	numberOfFeet 4
+	breed ""
+	name ""
+
+	init {
+		// some initialization for Dog's
+	}
+	
+})
+
+Lab $(inherit ~Dog #{
+	breed "labrador"
+
+	init [n]{
+		name n
+	}
+})
+
+myLab $(new ~Lab "Max")
+
+log myLab
