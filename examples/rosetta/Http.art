@@ -1,0 +1,3 @@
+use ~net
+
+print $(download "http://google.com")

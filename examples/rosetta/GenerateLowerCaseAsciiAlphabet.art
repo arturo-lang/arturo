@@ -1,0 +1,3 @@
+lcase $(map $(range 97 122) { char & })
+
+print lcase
