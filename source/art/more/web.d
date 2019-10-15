@@ -305,6 +305,46 @@ Value renderBr(Value obj) {
 	return new Value(ret);
 }
 
+Value renderTable(Value obj) {
+	string ret = "<table";
+	mixin(addCommonAttributes());
+
+	ret ~= processChildrenNodes(obj[CHILDREN].content.a).content.s;
+
+	ret ~= "</table>";
+
+	return new Value(ret);
+}
+
+Value renderRow(Value obj) {
+	string ret = "<tr";
+	mixin(addCommonAttributes());
+
+	ret ~= processChildrenNodes(obj[CHILDREN].content.a).content.s;
+
+	ret ~= "</tr>";
+
+	return new Value(ret);
+}
+
+Value renderCell(Value obj) {
+	string tag = "td";
+	if (obj.hasKey(":header", [bV])) {
+		if (obj[":header"].content.b) {
+			tag = "th";
+		}
+	}
+	string ret = "<" ~ tag;
+	mixin(addCommonAttributes());
+
+	ret ~= obj[_CONTENT].content.s;
+
+	ret ~= "</" ~ tag ~ ">";
+
+	return new Value(ret);
+}
+
+
 Value renderPage(Value obj) {
 	string ret = "";
 	if (obj.hasKey(_TYPE, [sV])) {
@@ -354,6 +394,9 @@ Value processChildrenNodes(Value[] children) {
 				case "css": ret ~= renderCSS(child).content.s; break;
 				case "js": ret ~= renderJS(child).content.s; break;
 				case "br": ret ~= renderBr(child).content.s; break;
+				case "table": ret ~= renderTable(child).content.s; break;
+				case "row": ret ~= renderRow(child).content.s; break;
+				case "cell": ret ~= renderCell(child).content.s; break;
 				default: ret ~= "";
 			}
 
@@ -742,6 +785,60 @@ class Web__Br_ : Func {
 
 		obj["render"] = new Value(new Func((Value vs){ 
 			return renderBr(obj);
+		}));
+
+		return obj;
+	}
+}
+
+class Web__Table_ : Func {
+	this(string ns="") { super(ns ~ "table","create table with contents",[[dV]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		mixin(initObject("table",0));
+
+		// setup object
+
+		obj["render"] = new Value(new Func((Value vs){ 
+			return renderTable(obj);
+		}));
+
+		return obj;
+	}
+}
+
+class Web__Row_ : Func {
+	this(string ns="") { super(ns ~ "row","create table row with contents",[[dV]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+
+		mixin(initObject("row",0));
+
+		// setup object
+
+		obj["render"] = new Value(new Func((Value vs){ 
+			return renderRow(obj);
+		}));
+
+		return obj;
+	}
+}
+
+class Web__Cell_ : Func {
+	this(string ns="") { super(ns ~ "cell","create table cell with contents",[[sV],[sV,dV]],[dV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		alias title = S!(v,0);
+
+		mixin(initObject("cell",1));
+
+		// setup object
+
+		obj[_CONTENT] = new Value(title);
+
+		obj["render"] = new Value(new Func((Value vs){ 
+			return renderRow(obj);
 		}));
 
 		return obj;
