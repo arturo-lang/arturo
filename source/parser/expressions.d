@@ -33,28 +33,36 @@ extern (C) {
 class Expressions {
 
 	Expression[] lst;
+	bool hasHashId;
 
 	this() {
 		lst = [];
+		hasHashId = false;
 	}
 
 	void add(Expression ex) {
+		if (lst==[]) {
+			if (ex.type==ExpressionType.argumentExpression && 
+				ex.arg.type==ArgumentType.identifierArgument &&
+				ex.arg.identifier.isHash) {
+				hasHashId = true;
+			}
+		}
 		lst ~= ex;
 	}
-
+/*
 	bool hasHashId() {
 		if (lst.length>0) {
 			Expression ex = lst[0];
 
-			if (ex.type==ExpressionType.argumentExpression) {
-				if (ex.arg.type==ArgumentType.identifierArgument) {
-					if (ex.arg.identifier.isHash) return true;
-				}
-			}
+			if (ex.type==ExpressionType.argumentExpression && 
+				ex.arg.type==ArgumentType.identifierArgument &&
+				ex.arg.identifier.isHash) return true;
+
 		}
 		return false;
 	}
-
+*/
 	Identifier extractHashId() {
 		Expression hashEx = lst[0];
 
