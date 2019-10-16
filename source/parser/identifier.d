@@ -20,18 +20,13 @@ import std.string;
 import std.algorithm;
 import std.regex;
 
-import value;
-
-import globals;
-
-import panic;
-
-import program;
-import compiler;
-
 import parser.expression;
 
-import var;
+import compiler;
+import globals;
+import panic;
+import program;
+import value;
 
 // C Interface
 
@@ -76,29 +71,11 @@ class Identifier {
 	string simpleId;
 
 	this(string s, bool hsh = false) {
-		//writeln("IN IDENTIFIER constructor");
-		//writeln("Identifier: " ~ s);
+
 		isSimple = true;
 		string cleanstr = s;
 		isHash = hsh;
 		simpleId = s;
-		/*
-		if (s.indexOf(":")!=-1) {
-			simpleId = s;
-			if (s.startsWith(":")) {
-				namespace = null;
-				cleanstr = s;
-			}
-			else {
-				string[] parts = s.split(":");
-				namespace = parts[0];
-				cleanstr = parts[1];
-			}
-		}
-		else {
-			simpleId = s;
-			namespace = null;
-		}*/
 
 		if (s.indexOf(ARGS)!=-1) {
 			auto m = matchFirst(s, regex(ARGS ~ "(?P<index>[0-9]+)"));
@@ -128,7 +105,6 @@ class Identifier {
 			pathContents = [ pc ];
 			simpleId = cleanstr;
 		}
-		//writeln("After Identifier: " ~ s);
 	}
 
 	void add(string s) {
@@ -224,8 +200,7 @@ class Identifier {
 		for (size_t i=0; i<pathContentTypes.length; i++) {
 			PathContentType pct = pathContentTypes[i];
 			PathContent pc = pathContents[i];
-			//if (pct is null) writeln("YUHUUUU!");
-			//writeln(to!string(pct));
+
 			switch (pct) {
 				case idPC: ret ~= to!string(pct) ~ ":" ~ pc.id;  break;
 				case numPC: ret ~= to!string(pct) ~ ":" ~ to!string(pc.num); break;

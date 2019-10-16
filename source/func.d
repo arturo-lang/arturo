@@ -19,20 +19,16 @@ import std.stdio;
 import std.string;
 import std.typecons;
 
-import parser.identifier;
 import parser.expression;
 import parser.expressions;
+import parser.identifier;
 import parser.statements;
 
-import value;
-
-import globals;
-
-import panic;
-
-import context;
-
 import compiler;
+import context;
+import globals;
+import panic;
+import value;
 
 // Definitions
 

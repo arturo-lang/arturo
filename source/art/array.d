@@ -26,13 +26,10 @@ import parser.expressions;
 import parser.statements;
 
 import compiler;
-
-import value;
-
 import func;
 import globals;
-
 import panic;
+import value;
 
 // Functions
 

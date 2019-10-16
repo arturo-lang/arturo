@@ -12,7 +12,6 @@ module repl;
 // Imports
 
 import core.memory;
-
 import core.stdc.stdlib;
 
 import std.array;
@@ -27,17 +26,12 @@ import external.terminal;
 import parser.identifier;
 import parser.statements;
 
-import globals;
-
 import compiler;
-
-import program;
-
 import func;
-
-import value;
-
+import globals;
 import panic;
+import program;
+import value;
 import versions;
 
 // Constants
@@ -47,7 +41,7 @@ enum REPL_PROMPT            =   "\x1B[38;5;208m\x1B[1m$ :%s\x1B[0m\x1B[38;5;208m
 class ReplLineGetter : LineGetter {
     mixin LineGetterConstructors;
 
-    string[] funcs = mixin(getSystemFuncsArray()); 
+    string[] funcs = mixin(getSystemFuncs(false)); 
     override protected string[] tabComplete(in dchar[] candidate) {
         import std.file, std.conv, std.algorithm, std.string;
         const(dchar)[] soFar = candidate;
@@ -131,17 +125,6 @@ class Repl {
                 Glob._inspectSymbol(id,va,true);
             }
         }
-        /*
-        Func f;
-        if ((f = Glob.funcGet(name,namespace)) !is null) {
-            f.inspect(true);
-        }
-        else if (Glob.getSymbol(id) !is null) {
-            Glob.varGet(id).inspect(true);
-        }
-        else {
-            Panic.consoleError((new ERR_ConsoleIdentifierNotFoundError(id)).msg);
-        }*/
     }
     void start() {
         string[] lines;

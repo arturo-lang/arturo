@@ -26,15 +26,12 @@ import parser.statements;
 
 import compiler;
 import context;
-
-import value;
-
 import func;
 import globals;
-
+import value;
 import panic;
 
-import var;
+// Functions
 
 class And_ : Func {
 	this(string ns="") { super(ns ~ "and","bitwise/logical AND",[[bV,bV],[nV,nV]],[bV,nV]); }

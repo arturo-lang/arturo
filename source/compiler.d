@@ -29,13 +29,10 @@ import parser.statements;
 
 import external.warp.omain;
 
-import globals;
 import env;
-
-import program;
-
+import globals;
 import panic;
-
+import program;
 import value;
 
 // C Interface

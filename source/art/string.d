@@ -27,10 +27,9 @@ import parser.expression;
 import parser.expressions;
 import parser.statements;
 
-import value;
-
 import func;
 import globals;
+import value;
 
 // Utilities
 

@@ -14,24 +14,17 @@ module art.web;
 import std.algorithm;
 import std.array;
 import std.conv;
-//import std.file;
 import std.net.curl;
 import std.stdio;
 import std.random;
 import std.string;
 import std.uuid;
-//import parser.expression;
+
 import parser.expressions;
-//import parser.statements;
-
-//import compiler;
-
-import value;
 
 import func;
 import globals;
-
-//import panic;
+import value;
 
 // Constants
 

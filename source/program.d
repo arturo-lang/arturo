@@ -12,6 +12,7 @@ module program;
 // Imports
 
 import core.memory;
+
 import std.stdio;
 
 import parser.statements;

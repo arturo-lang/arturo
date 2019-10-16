@@ -12,23 +12,12 @@ module art.net;
 // Imports
 
 import std.conv;
-//import std.file;
 import std.net.curl;
-//import std.stdio;
-//import std.string;
 
-//import parser.expression;
 import parser.expressions;
-//import parser.statements;
-
-//import compiler;
-
-import value;
 
 import func;
-//import globals;
-
-//import panic;
+import value;
 
 // Functions
 

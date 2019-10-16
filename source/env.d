@@ -13,9 +13,8 @@ module env;
 
 import std.stdio;
 
-import value;
-
 import panic;
+import value;
 
 // Functions
 

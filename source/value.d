@@ -18,26 +18,22 @@ import std.array;
 import std.bigint;
 import std.conv;
 import std.digest.sha;
+import std.json;
 import std.range;
 import std.stdio;
 import std.string;
 import std.variant;
 
-import parser.statements;
-
-import func;
-
-import art.json;
-import std.json;
-
-import panic;
-
-import context;
-import globals;
-
 import gobject.ObjectG;
 
-import var;
+import parser.statements;
+
+import art.json;
+
+import context;
+import func;
+import globals;
+import panic;
 
 // Constants
 

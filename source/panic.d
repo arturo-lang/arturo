@@ -9,11 +9,12 @@
 
 // Imports
 
-import std.array;
-import std.stdio;
 import core.stdc.stdlib;
-import std.string;
+
+import std.array;
 import std.conv;
+import std.stdio;
+import std.string;
 
 import parser.position;
 

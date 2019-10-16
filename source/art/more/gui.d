@@ -25,18 +25,7 @@ import std.string;
 import std.uuid;
 import std.variant;
 
-import parser.expression;
-import parser.expressions;
-import parser.statements;
-
-import value;
-
-import func;
-import globals;
-
 import gobject.ObjectG;
-
-import panic;
 
 import gtk.Application;
 import gio.Application : GioApplication = Application;
@@ -55,6 +44,15 @@ import gtk.Paned;
 import gtk.VBox;
 import gtk.VPaned;
 import gtk.Widget;
+
+import parser.expression;
+import parser.expressions;
+import parser.statements;
+
+import func;
+import globals;
+import panic;
+import value;
 
 // Constants
 
