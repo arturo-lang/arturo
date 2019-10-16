@@ -12,6 +12,11 @@
 			"targetType": "staticLibrary"
 		}
 	],
+	"buildTypes": {
+		"debuglldb": {
+			"buildOptions": ["debugInfo", "debugInfoC", "alwaysStackFrame", "profileGC"]
+		}
+	},
 	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
 	"dependencies": {
 		"dmarkdown": "~>0.3.0",
