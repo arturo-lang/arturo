@@ -112,9 +112,9 @@ class Argument {
 
 	Value getValue() {
 		if (type==ArgumentType.identifierArgument) {
-			Var symbol = Glob.varGetByIdentifier(identifier);
+			Value symbolValue;
 
-			if (symbol !is null) return symbol.value;
+			if ((symbolValue = Glob.getSymbol(identifier)) !is null) return symbolValue;
 			else throw new ERR_SymbolNotFound(identifier.getFullIdentifier());
 		}
 		else {

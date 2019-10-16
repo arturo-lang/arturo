@@ -17,6 +17,7 @@ import std.file;
 import std.stdio;
 import std.string;
 
+import parser.identifier;
 import parser.expression;
 import parser.expressions;
 import parser.statements;
@@ -36,7 +37,7 @@ class Symbol__Exists_ : Func {
 		Value[] v = validate(ex);
 		alias symbolName = S!(v,0);
 
-		if (Glob.varGet(symbolName) !is null) return new Value(true);
+		if (Glob.getSymbol(new Identifier(symbolName)) !is null) return new Value(true);
 		else return new Value(false);
 	}
 }
@@ -47,9 +48,9 @@ class Object_ : Func {
 		Value[] v = validate(ex);
 		alias symbolName = S!(v,0);
 
-		Var symbol = Glob.varGet(symbolName);
+		Value symbolValue;
 
-		if (symbol !is null) return symbol.value;
+		if ((symbolValue = Glob.getSymbol(new Identifier(symbolName))) !is null) return symbolValue;
 		else return new Value();
 	}
 }

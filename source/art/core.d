@@ -129,8 +129,8 @@ class Inherit_ : Func {
 
 		Value ret = symbolDefExs.evaluate();
 		
-		foreach (Var va; object.variables) {
-			ret.setValueForDict(va.name, va.value);
+		foreach (string nm, Value va; object.symbols) {
+			ret.setValueForDict(nm, va);
 		}
 
 		return ret;
@@ -158,13 +158,13 @@ class Lazy_ : Func {
 }
 
 class Let_ : Func {
-	this(string ns="") { super(ns ~ "let","assign right-hand value to symbol using string name",[[sV,xV]],[]); }
+	this(string ns="") { super(ns ~ "let","force assign right-hand value to symbol using string name",[[sV,xV]],[]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias symbol = S!(v,0);
 		Value value = v[1];
 
-		Glob.contextStack.lastItem()._varSet(symbol, value);
+		Glob.setSymbol(new Identifier(symbol),value,true);
 		
 		return value;
 	}
@@ -204,8 +204,8 @@ class Loop_ : Func {
 			alias func = F!(v,1);
 
 			Value ret;
-			foreach (Var va; dict.variables) {
-				ret = func.execute(new Value([new Value(va.name),va.value]));
+			foreach (string nm, Value va; dict.symbols) {
+				ret = func.execute(new Value([new Value(nm),va]));
 			}
 
 			return ret;
@@ -252,9 +252,10 @@ class New_ : Func {
 
 			if (ret.type==dV) {
 
-				if (ret.content.d._varExists("init")) {
+				Value initFunc;
+				if ((initFunc=ret.content.d._getSymbol("init")) !is null) {
 
-					Func func = ret.content.d._varGet("init").value.content.f;
+					Func func = initFunc.content.f;
 
 					Value args = null;
 					if (v.length>=2) {
@@ -367,15 +368,13 @@ class Unuse_ : Func {
 		Value[] v = validate(ex);
 
 		if (v[0].type==sV) {
-			Glob.activeNamespaces = Glob.activeNamespaces.remove!(a => a == v[0].content.s);
+			Glob.removeNamespaces([v[0].content.s]);
 		}
 		else {
 			foreach (Value ns; v[0].content.a) {
-				Glob.activeNamespaces = Glob.activeNamespaces.remove!(a => a == ns.content.s);
+				Glob.removeNamespaces([ns.content.s]);
 			}
 		}
-
-		Glob.activeNamespaces = Glob.activeNamespaces.uniq.array;
 
 		return new Value();
 	}
@@ -387,15 +386,13 @@ class Use_ : Func {
 		Value[] v = validate(ex);
 
 		if (v[0].type==sV) {
-			Glob.activeNamespaces ~= S!(v,0);
+			Glob.addNamespaces([v[0].content.s]);
 		}
 		else {
 			foreach (Value ns; v[0].content.a) {
-				Glob.activeNamespaces ~= ns.content.s;
+				Glob.addNamespaces([ns.content.s]);
 			}
 		}
-
-		Glob.activeNamespaces = Glob.activeNamespaces.uniq.array;
 
 		return new Value();
 	}
