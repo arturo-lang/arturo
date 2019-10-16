@@ -43,27 +43,40 @@ enum ContextType : string
 // Functions
 
 class Context {
-    Func[string] functions;
-    Var[string] variables;
-    ContextType type;
-    Env env;
-
     Value[string] symbols;
+    ContextType type;
+
+    // Func[string] functions;
+    // Var[string] variables;
+    //Env env;
 
     this(ContextType xctype=ContextType.blockContext) {
-        env = new Env();
+        //env = new Env();
         type = xctype;
     }
 
-    Value _getSym(string sym) {
+    Context dup() {
+        Context ret = new Context(type);
+        ret.symbols = symbols.dup;
+        return ret;
+    }
+
+    Value _getSymbol(string sym) {
         if (sym in symbols) return symbols[sym];
         else return null;
     }
 
-    Value _setSym(string sym, Value v) {
+    void _setSymbol(string sym, Value v) {
         symbols[sym] = v;
     }
 
+    void  _unsetSymbol(string sym) {
+        if (sym in symbols)  {
+            symbols.remove(sym);
+        }
+    }
+
+/*
     Context dup() {
         Context ret = new Context(type);
         ret.functions = functions.dup;
@@ -116,7 +129,7 @@ class Context {
     void funcSet(string n, Statements s = null) {
         Func f = new Func(n,s);
         funcSet(f);
-    }
+    }*/
     /*
     Func funcGet(string n, string ns) {
         if (funcExists(n)) {
@@ -130,7 +143,7 @@ class Context {
 
         throw new ERR_FunctionNotFound(n);
     }*/
-
+/*
     Func funcGet(string n, string ns) {
         if (ns !is null) {
             foreach (Func f; functions) {
@@ -150,20 +163,23 @@ class Context {
             }
             return null;
         }
-    }
+    }*/
 
     string inspectVars() {
+       /* 
         string[] ret;
-        foreach (string name, Var v; variables) {
-            ret ~= "\t" ~ name ~ ": (0x" ~ to!string(cast(void*)v) ~ "|0x" ~ to!string(cast(void*)v.value) ~ ") = " ~ v.value.stringify();
+        foreach (string nm, Value va; symbols) {
+            ret ~= "\t" ~ nm ~ ": (0x" ~ to!string(cast(void*)va) ~ ") = " ~ va.stringify();
         }
 
-        return ret.join("\n");
+        return ret.join("\n");*/
+        return "TOFIX @ context.d";
     }
 
     void _inspect() {
-        env.inspect();
-        foreach (string name, Var v; variables) {
+        /*
+        //env.inspect();
+        foreach (string nm, Value va; symbols) {
             v.inspect();
         }
         string[] s = [];
@@ -174,6 +190,42 @@ class Context {
         }
 
         // For sublime-syntax (system functions scope)
-        writeln(s.sort().join("|"));
+        writeln(s.sort().join("|"));*/
+    }
+
+    void _inspectSymbol(string nm, Value va, bool full=false){
+        if (full) {
+            writeln("  Symbol : \x1B[37m\x1B[1m" ~ nm ~ "\x1B[0m");
+            writeln("       # | 0x" ~ to!string(&va));
+        
+            writeln();
+        
+            writeln("    type | " ~ va.type);
+        
+            writeln("      -> | " ~  va.stringify());
+        }
+        else {
+            writeln("  " ~ leftJustify(nm,20) ~ " -> " ~ va.stringify());
+        }
+    }
+
+    void _inspectSymbols(bool includeUserSymbols=true, bool includeSystemFunctions=false){
+        auto sortedSymbols = symbols.keys.sort();
+        foreach (string nm; sortedSymbols) {
+            Value va = symbols[nm];
+
+            if (va.type==fV) {
+                if ((includeUserSymbols && va.content.f.type!=FuncType.systemFunc) ||
+                    (includeSystemFunctions && va.content.f.type==FuncType.systemFunc))
+                    
+                    if (nm.indexOf(":")!=-1) 
+                        va.content.f.inspect(nm);
+            }
+            else {
+                if (includeUserSymbols)
+                    _inspectSymbol(nm,va);
+            }
+            
+        }
     }
 }
