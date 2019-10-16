@@ -9,5 +9,5 @@ def product(myList) :
 def factorial(x):
 	return product(range(1,x+1))
 
-for n in range(maxLimit+1):
+for n in range(1,maxLimit+1):
 	print factorial(n)

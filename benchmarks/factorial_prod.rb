@@ -10,6 +10,6 @@ def factorial(x)
 	return product((1..x))
 end
 
-(0..maxLimit).each{|n|
+(1..maxLimit).each{|n|
 	puts factorial(n)
 }
