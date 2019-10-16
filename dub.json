@@ -14,7 +14,7 @@
 	],
 	"buildTypes": {
 		"debuglldb": {
-			"buildOptions": ["debugInfo", "debugInfoC", "alwaysStackFrame", "profileGC"]
+			"buildOptions": ["debugInfo", "debugInfoC", "alwaysStackFrame"]
 		}
 	},
 	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
