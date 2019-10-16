@@ -23,15 +23,6 @@ import parser.identifier;
 import parser.expressions;
 import parser.statements;
 
-import value;
-
-import context;
-import env;
-import func;
-import var;
-
-import panic;
-
 import art.array;
 import art.collection;
 import art.convert;
@@ -55,9 +46,12 @@ import art.web;
 import art.xml;
 import art.yaml;
 
+import context;
+import env;
+import func;
+import panic;
 import stack;
-
-import parser.identifier;
+import value;
 
 // Globals
 
@@ -90,9 +84,8 @@ template classMembers(string moduleName) {
     mixin("alias extractClasses!(moduleName, __traits(allMembers, " ~ moduleName ~ ")) classMembers;");
 }
 
-string registerSystemFuncs() {
-    string ret = "";
-    string[] methods;
+string getSystemFuncs(bool forRegistration=true) {
+    string[] ret = [];
 
     static foreach(string moduleName; [
         "art.array", 
@@ -117,93 +110,74 @@ string registerSystemFuncs() {
         "art.web",
         "art.xml",
         "art.yaml"
-        ])
-        foreach (string className; classMembers!(moduleName))
-            ret ~= "setSystemFunctionSymbol(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
+        ]) {
+        foreach (string className; classMembers!(moduleName)) {
+            if (forRegistration) {
+                ret ~= ret ~= "setSystemFunctionSymbol(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
+            }
+            else {
+                string nm = className.toLower.replace("__",":").replace("_","");
+                ret ~= "\"" ~ className.toLower.replace("__",":").replace("_","") ~ "\"";
+                if (nm.indexOf(":")!=-1) {
+                    ret ~= "\"" ~ nm.split(":")[1] ~ "\"";
+                }
+            }
+        }
+    }
 
-    return ret;
-}
-
-string getSystemFuncsArray() {
-    string[] methods = [];
-
-    static foreach(string moduleName; [
-        "art.array", 
-        "art.collection", 
-        "art.convert",
-        "art.core", 
-        "art.crypto",
-        "art.csv",
-        "art.database",
-        "art.date",
-        "art.dictionary", 
-        "art.file", 
-        "art.gui",
-        "art.html",
-        "art.json", 
-        "art.net",
-        "art.number",
-        "art.path",
-        "art.reflection", 
-        "art.string", 
-        "art.system",
-        "art.web",
-        "art.xml",
-        "art.yaml"
-        ])
-        foreach (string className; classMembers!(moduleName))
-            methods ~= "\"" ~ className.toLower.replace("__",":").replace("_","") ~ "\"";
-
-    return "[\"?info\",\"?functions\",\"?symbols\",\"?write.to\",\"?clear\",\"?help\",\"?exit\"," ~ methods.join(",") ~ "]";
+    if (forRegistration) return ret.join("");
+    else return "[\"?info\",\"?functions\",\"?symbols\",\"?write.to\",\"?clear\",\"?help\",\"?exit\"," ~ ret.join(",") ~ "]";
 }
 
 // Functions
 
 class Globals : Context {
-    Stack!(Context) contextStack;
+
+    Stack!(Context)     contextStack;
+    Stack!(Statements)  blockStack;
+
+    Env env;
+
     bool isRepl;
     bool trace;
-    string[] memoize;
-    Value[string] memoized;
-    Statements parentBlock;
-    int retCounter;
-    Stack!(int) retStack;
-    Stack!(Statements) blockStack;
-    Expressions[Identifier] symboldefs;
     bool warningsOn;
-    string[] activeNamespaces;
-    Env env;
+
+    string[]                    memoize;
+    Value[string]               memoized;
+    Expressions[Identifier]     symboldefs;
+    string[]                    activeNamespaces;
+    
 
     this(string[] args) {
         super();
 
-        mixin(registerSystemFuncs());
+        // register system functions
+        mixin(getSystemFuncs(true));
 
+        // set up stacks
         contextStack = new Stack!(Context);
-        retStack = new Stack!(int);
         blockStack = new Stack!(Statements);
         contextStack.push(this);
 
-        Value[] ret = cast(Value[])([]);
+        // set command line arguments
+        setGlobalSymbol(ARGS, new Value(args));
 
-        foreach (string arg; args) {
-            ret ~= new Value(arg);  
-        }
+        // initialize environment
+        env = new Env();
 
-        setGlobalSymbol(ARGS, new Value(ret));
-
+        // set defaults
         isRepl = false;
         trace = false;
-
-        retCounter = -1;
-
         warningsOn = false;
 
+        // set namespaces
         activeNamespaces = [];
         addNamespaces(["array","collection","convert","core","date","dictionary","file","number","path","string","system"]);
-
-        env = new Env();
     }
+
+    //--------------------------------
+    // Namespace management
+    //--------------------------------
 
     void addNamespaces(string[] toAdd) {
         foreach (string namespace; toAdd) {
@@ -239,49 +213,20 @@ class Globals : Context {
         activeNamespaces = newNamespaces.uniq.array;
     }
 
+    //--------------------------------
+    // Symbol definitions index
+    //--------------------------------
+
     Expressions getSymbolDef(string id) {
         foreach (Identifier iden, Expressions ex; symboldefs) {
             if (iden.pathContents[0].id==id) return ex;
         }
         return null;
     }
-    /*
-    Value getParentDictForSymbol(string s) {
-        string[] parts = s.split(".");
-        string mainObject = parts[0];
-        Var main = varGet(mainObject);
 
-        if (main is null) return null;
-
-        Value mainValue = main.value;
-
-        parts.popFront();
-
-        while (parts.length>0) {
-            string nextKey = parts[0];
-
-            if (mainValue.type==dV) {
-                if ((parts.length==1) && (mainValue.getValueFromDict(nextKey) !is null)) return mainValue;
-
-                Value nextKeyValue = mainValue.getValueFromDict(nextKey);
-                if (nextKeyValue !is null)
-                    mainValue = nextKeyValue;
-                else return null;
-            }
-            else if (mainValue.type==aV) {
-                if ((parts.length==1) && (isNumeric(nextKey)) && to!int(nextKey)<(mainValue.content.a.length)) return mainValue;
-
-                if (isNumeric(nextKey) && mainValue.content.a.length<to!int(nextKey)) 
-                    mainValue = mainValue.content.a[to!int(nextKey)];
-                else return null;
-            }
-            else return null;
-
-            parts.popFront();
-        }
-
-        return null;
-    }*/
+    //--------------------------------
+    // Symbols get/set
+    //--------------------------------
 
     void setSystemFunctionSymbol(Func f) {
         setGlobalSymbol(f.name,new Value(f));
@@ -504,200 +449,21 @@ class Globals : Context {
 
         return ret;
     }
-/*
-    void varSet(string n, Value v, bool immut = false, bool redefine = false) {
-        if (redefine) {
-            contextStack.lastItem()._varSet(n,v,immut);
-        }
-        else {
-            Var existingVar = varGet(n);
 
-            if (existingVar !is null) {
-                existingVar.value = v;
-            }
-            else {
-                contextStack.lastItem()._varSet(n,v,immut);
-            }
-        }
-    } 
-
-    bool varSetByIdentifier(Identifier iden, Value v, bool redefine = false) {
-        Var existingVar = varGetByIdentifier(iden);
-        bool varAlreadyExisting = existingVar !is null;
-
-        if (iden.pathContents.length==1) { // no index
-            string varName = iden.pathContents[0].id;
-
-            if (redefine) {
-                if (isUpper(varName[0])) _varSet(varName,v); // set global var
-                else contextStack.lastItem()._varSet(varName,v);
-            }
-            else {
-                if (varAlreadyExisting) {
-                    existingVar.value = v;
-                }
-                else {
-                    if (isUpper(varName[0])) _varSet(varName,v); // set global var
-                    else contextStack.lastItem()._varSet(varName,v);
-                }
-            }
-            return true;
-        }
-        else {
-            Var rootVar = varGetByIdentifier(iden.getIdentifierRoot());
-
-            if (rootVar is null) return false;
-            else {
-                Value rootValue = rootVar.value;
-
-                PathContentType last_pct = iden.pathContentTypes[iden.pathContentTypes.length-1];
-                PathContent last_pc = iden.pathContents[iden.pathContents.length-1];
-
-                if (rootValue.type==dV) { // is dictionary
-                    if (last_pct==numPC) return false;
-
-                    string subKey; 
-                    if (last_pct==idPC) { subKey = last_pc.id; }
-                    else if (last_pct==exprPC) {
-                        Value sub = last_pc.expr.evaluate();
-                        if (sub.type!=sV) return false;
-
-                        subKey = sub.content.s;
-                    }
-
-                    rootValue.setValueForDict(subKey, v);
-
-                    return true;
-                }
-                else if (rootValue.type==aV) { // is array
-                    long subKey;
-                    if (last_pct==numPC) { subKey = last_pc.num; }
-                    else if (last_pct==exprPC) {
-                        Value sub = last_pc.expr.evaluate();
-                        if (sub.type!=nV) return false;
-                        subKey = sub.content.i;
-                    }
-
-                    if (subKey>=rootValue.content.a.length) return false;
-
-                    rootValue.content.a[subKey] =  v;
-
-                    return true;
-                }
-                else return false;
-            }
-        }
-    }
-
-    Var varGetByIdentifier(Identifier iden) {
-        //try {
-
-            //writeln("inspect: " ~ iden.inspect());
-        Var ret = varGet(iden.pathContents[0].id);
-        if (ret is null) return null;
-
-        Value currentValue = ret.value;
-        if (iden.pathContents.length==1) { return ret; }
-
-        string varName = iden.pathContents[0].id;
-
-        PathContentType[] types = iden.pathContentTypes[1..$];
-        PathContent[] parts = iden.pathContents[1..$];
-
-        for (auto i=0; i<parts.length; i++) {
-            auto ppart = parts[i];
-            auto ptype = types[i];
-
-            if (currentValue.type==dV) {
-                if (ptype==numPC) return null;
-
-                string subKey; 
-                if (ptype==idPC) subKey= ppart.id;
-                else if (ptype==exprPC) {
-                    Value sub = ppart.expr.evaluate();
-                    if (sub.type!=sV) return null;
-                    subKey = sub.content.s;
-                }
-                
-                varName ~= "." ~ subKey;
-                
-                Value nextKeyValue = currentValue.getValueFromDict(subKey);
-
-                if (nextKeyValue is null) return null;
-                else currentValue = nextKeyValue;
-            }
-            else if (currentValue.type==aV) {
-                if (ptype==idPC) return null;
-
-                long subKey;
-
-                if (ptype==numPC) { subKey = ppart.num; }
-                else if (ptype==exprPC) {
-                    Value sub = ppart.expr.evaluate();
-                    if (sub.type!=nV) return null;
-                    subKey = sub.content.i;
-                }
-
-                if (subKey>=currentValue.content.a.length) return null;
-
-                varName ~= "." ~ to!string(subKey);
-
-                currentValue =  currentValue.content.a[subKey];
-                
-            }
-            else return null;
-        }
-
-        return new Var(varName,currentValue,true);
-        //}
-        //catch (Exception ex) {
-        //    writeln("VARGET: EXCEPTION! ~ " ~ ex.msg);
-        //    return null;
-        //}
-    }
-
-    Var varGet(string n) {
-        
-        foreach_reverse (i, Context ctx; contextStack.list) {
-            if (ctx._varExists(n)) return ctx._varGet(n);
-
-        }
-        return null;
-
-        ////// OLD IMPLEMENTATION
-        
-        // if it's an ARGS variable, return it from top-most context
-        if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
-
-        // if it's a global, return it now
-        // ADDED: isUpper part
-        if (this._varExists(n) && n[0].isUpper()) return this._varGet(n); 
-
-        // else search back into the context stack
-        // until reaching root (global), finding it, 
-        // or crossing the first function-type block
-        foreach_reverse (i, Context ctx; contextStack.list) {
-            // if we reach global, that's it
-            // REMOVED: if (ctx is this) return null;
-
-            if (ctx._varExists(n)) return ctx._varGet(n);
-
-             // if it is a function and still not found, don't go any further
-            if (ctx.type==ContextType.functionContext && contextStack.list[i-1].type!=ContextType.dictionaryContext) {
-                return null;
-            } 
-        }
-        return null;
-    }*/
+    //--------------------------------
+    // Inspection
+    //--------------------------------
 
     string inspectAllVars() {
+        /*
         string[] ret;
         
         foreach (i, st; contextStack.list) {
             ret ~= "\n[" ~ to!string(i) ~ "]: " ~ st.type ~ " -> " ~ "\n" ~ st.inspectVars();
         }
 
-        return ret.join(" | ");
+        return ret.join(" | ");*/
+        return "TOFIX @ globals.d";
     }
 
     void inspectSymbols() {

@@ -16,14 +16,14 @@ import std.conv;
 import std.array;
 
 import parser.argument;
+import parser.expressions;
 import parser.identifier;
 import parser.identifiers;
-import parser.expressions;
 import parser.statement;
 import parser.statements;
 
-import globals;
 import context;
+import globals;
 import value;
 
 // C Interface

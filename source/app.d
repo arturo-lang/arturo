@@ -18,14 +18,11 @@ import std.string;
 import std.system;
 
 import compiler;
-import repl;
-
-import value;
-
-import panic;
-
-import versions;
 import globals;
+import panic;
+import repl;
+import value;
+import versions;
 
 // Interface
 

@@ -12,18 +12,16 @@ module parser.statements;
 // Imports
 
 import core.memory;
+
 import std.conv;
 import std.stdio;
 
 import parser.statement;
 
-import value;
-
-import panic;
-
-import globals;
-
 import compiler;
+import globals;
+import panic;
+import value;
 
 // C Interface
 

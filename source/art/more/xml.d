@@ -19,16 +19,15 @@ import std.stdio;
 import std.string;
 import std.xml;
 
+import dxml.dom;
+
 import parser.expression;
 import parser.expressions;
 import parser.statements;
 
-import value;
-
 import func;
 import globals;
-
-import dxml.dom;
+import value;
 
 // Utilities
 

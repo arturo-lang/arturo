@@ -17,24 +17,20 @@ import std.conv;
 import std.stdio;
 import std.string;
 
-import parser.identifier;
 import parser.argument;
 import parser.expression;
 import parser.expressions;
+import parser.identifier;
 import parser.statement;
 import parser.statements;
 import parser.position;
 
-import var;
-
-import value;
-import globals;
-
-import panic;
-
 import func;
-
+import globals;
+import panic;
 import stack;
+import value;
+import var;
 
 // C Interface
 

@@ -21,15 +21,11 @@ import std.typetuple;
 import parser.identifier;
 import parser.statements;
 
-import value;
-
 import env;
 import func;
-import var;
-
-import panic;
-
 import globals;
+import panic;
+import value;
 
 // Definitions
 
@@ -46,12 +42,7 @@ class Context {
     Value[string] symbols;
     ContextType type;
 
-    // Func[string] functions;
-    // Var[string] variables;
-    //Env env;
-
     this(ContextType xctype=ContextType.blockContext) {
-        //env = new Env();
         type = xctype;
     }
 
@@ -75,95 +66,6 @@ class Context {
             symbols.remove(sym);
         }
     }
-
-/*
-    Context dup() {
-        Context ret = new Context(type);
-        ret.functions = functions.dup;
-        ret.variables = variables.dup;
-        return ret;
-    }
-
-    string[] _varKeys() {
-        return variables.keys;
-    }
-
-    Value[] _varValues() {
-        Value[] ret;
-        foreach (string k, Var v; variables) {
-            ret ~= v.value;
-        }
-        return ret;
-    }
-
-    void  _varUnset(string n) {
-        if (_varExists(n))  {
-            variables.remove(n);
-        }
-    }
-
-    void _varSet(Func f) {
-        _varSet(f.name, new Value(f));
-    }
-
-    void _varSet(string n, Value v, bool immut = false) {
-        variables[n] = new Var(n,v,immut);
-    }
-
-    Var _varGet(string n) {
-        return variables[n];
-    }
-
-    bool _varExists(string n) {
-        return ((n in variables)!=null);
-    }
-
-    const bool _varExistsImmut(string n) {
-        return ((n in variables)!=null);
-    }
-
-    void funcSet(Func f) {
-        functions[f.getFullName()] = f;
-    }
-
-    void funcSet(string n, Statements s = null) {
-        Func f = new Func(n,s);
-        funcSet(f);
-    }*/
-    /*
-    Func funcGet(string n, string ns) {
-        if (funcExists(n)) {
-            if ((n in functions)!=null) { return functions[n]; }
-            else {
-                foreach (Func f; functions) {
-                    if (f.name==n) { return  f; }
-                }
-            }
-        }
-
-        throw new ERR_FunctionNotFound(n);
-    }*/
-/*
-    Func funcGet(string n, string ns) {
-        if (ns !is null) {
-            foreach (Func f; functions) {
-                if (f.name==n && f.namespace==ns) {
-                    return f;
-                }
-            }
-            return null;
-        }
-        else {
-            foreach (Func f; functions) {
-                if (Glob.activeNamespaces.canFind(f.namespace)) {
-                    if (f.name==n) {
-                        return f;
-                    }
-                }
-            }
-            return null;
-        }
-    }*/
 
     string inspectVars() {
        /* 

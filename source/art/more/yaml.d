@@ -18,21 +18,17 @@ import std.json;
 import std.stdio;
 import std.string;
 
+import dyaml;
+
 import parser.expression;
 import parser.expressions;
 import parser.statements;
 
 import compiler;
-
-import value;
-
 import func;
 import globals;
-
 import panic;
-
-import dyaml;
-
+import value;
 import var;
 
 // Constants

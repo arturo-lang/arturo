@@ -19,17 +19,15 @@ import std.stdio;
 import std.string;
 import std.xml;
 
+import dmarkdown.markdown;
+
 import parser.expression;
 import parser.expressions;
 import parser.statements;
 
-//import vibe.textfilter.markdown;
-import dmarkdown.markdown;
-
-import value;
-
 import func;
 import globals;
+import value;
 
 // Functions
 
