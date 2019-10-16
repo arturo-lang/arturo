@@ -210,6 +210,8 @@ class Identifier {
 		for (size_t i=0; i<pathContentTypes.length; i++) {
 			PathContentType pct = pathContentTypes[i];
 			PathContent pc = pathContents[i];
+			//if (pct is null) writeln("YUHUUUU!");
+			//writeln(to!string(pct));
 			switch (pct) {
 				case idPC: ret ~= to!string(pct) ~ ":" ~ pc.id;  break;
 				case numPC: ret ~= to!string(pct) ~ ":" ~ to!string(pc.num); break;

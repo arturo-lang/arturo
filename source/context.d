@@ -48,9 +48,20 @@ class Context {
     ContextType type;
     Env env;
 
+    Value[string] symbols;
+
     this(ContextType xctype=ContextType.blockContext) {
         env = new Env();
         type = xctype;
+    }
+
+    Value _getSym(string sym) {
+        if (sym in symbols) return symbols[sym];
+        else return null;
+    }
+
+    Value _setSym(string sym, Value v) {
+        symbols[sym] = v;
     }
 
     Context dup() {
