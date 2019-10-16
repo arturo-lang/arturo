@@ -74,6 +74,8 @@ class Identifier {
 	bool isHash;
 
 	this(string s, bool hsh = false) {
+		//writeln("IN IDENTIFIER constructor");
+		//writeln("Identifier: " ~ s);
 		string cleanstr = s;
 		isHash = hsh;
 		if (s.indexOf(":")!=-1) {
@@ -115,6 +117,7 @@ class Identifier {
 			PathContent pc = {cleanstr};
 			pathContents = [ pc ];
 		}
+		//writeln("After Identifier: " ~ s);
 	}
 
 	void add(string s) {
