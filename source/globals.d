@@ -119,7 +119,7 @@ string registerSystemFuncs() {
         "art.yaml"
         ])
         foreach (string className; classMembers!(moduleName))
-            ret ~= "_varSet(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
+            ret ~= "setSystemFunctionSymbol(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
 
     return ret;
 }
@@ -172,6 +172,7 @@ class Globals : Context {
     Expressions[Identifier] symboldefs;
     bool warningsOn;
     string[] activeNamespaces;
+    Env env;
 
     this(string[] args) {
         super();
@@ -189,7 +190,7 @@ class Globals : Context {
             ret ~= new Value(arg);  
         }
 
-        varSet(ARGS, new Value(ret));
+        setGlobalSymbol(ARGS, new Value(ret));
 
         isRepl = false;
         trace = false;
@@ -198,7 +199,44 @@ class Globals : Context {
 
         warningsOn = false;
 
-        activeNamespaces = ["array","collection","convert","core","date","dictionary","file","number","path","string","system"];
+        activeNamespaces = [];
+        addNamespaces(["array","collection","convert","core","date","dictionary","file","number","path","string","system"]);
+
+        env = new Env();
+    }
+
+    void addNamespaces(string[] toAdd) {
+        foreach (string namespace; toAdd) {
+            activeNamespaces ~= namespace;
+            foreach (string key; symbols.keys){
+                if (key.indexOf(namespace~":")!=-1) {
+                    auto parts = key.split(":");
+                    setGlobalSymbol(parts[1], symbols[key]);
+                }
+            }
+        }
+
+        activeNamespaces = activeNamespaces.uniq.array;
+    }
+
+    void removeNamespaces(string[] toRemove) {
+        string[] newNamespaces;
+
+        foreach (string namespace; activeNamespaces) {
+            if (!toRemove.canFind(namespace))
+                newNamespaces ~= namespace;
+        }
+
+        foreach (string namespace; toRemove) {
+            foreach (string key; symbols.keys){
+                if (key.indexOf(namespace~":")!=-1) {
+                    auto parts = key.split(":");
+                    unsetGlobalSymbol(parts[1]);
+                }
+            }
+        }
+
+        activeNamespaces = newNamespaces.uniq.array;
     }
 
     Expressions getSymbolDef(string id) {
@@ -207,7 +245,7 @@ class Globals : Context {
         }
         return null;
     }
-
+    /*
     Value getParentDictForSymbol(string s) {
         string[] parts = s.split(".");
         string mainObject = parts[0];
@@ -243,8 +281,230 @@ class Globals : Context {
         }
 
         return null;
+    }*/
+
+    void setSystemFunctionSymbol(Func f) {
+        setGlobalSymbol(f.name,new Value(f));
     }
 
+    void setGlobalSymbol(string sym, Value v) {
+        _setSymbol(sym,v);
+    }
+
+    void unsetGlobalSymbol(string sym) {
+        _unsetSymbol(sym);
+    }
+
+    bool setSymbol(Identifier i, Value v, bool redefine=false) {
+        
+        // it's a simple identifier
+        if (i.isSimple) {
+
+            if (redefine) {
+                // if we redefine the symbol, just put it on the topmost context
+                contextStack.lastItem()._setSymbol(i.simpleId,v);
+                return true;
+            }
+            else {
+                // first check if it exists
+                foreach_reverse (j, Context ctx; contextStack.list) {
+                    if (ctx._getSymbol(i.simpleId) !is null) {
+                        // re-assign it
+                        ctx._setSymbol(i.simpleId,v);
+                        return true;
+                    }
+                }
+
+                // symbol did not exist, put it on the topmost context
+                contextStack.lastItem()._setSymbol(i.simpleId,v);
+                return true;
+            }
+        }
+        // it's an indexed assignement
+        else {
+            Value root;
+
+            /////// 
+            // Process root
+            ////////////////
+
+            // Look up our root symbol down the stack
+            foreach_reverse (j, Context ctx; contextStack.list) {
+                if ((root = ctx._getSymbol(i.simpleId)) !is null) break;
+
+            }
+            // if not found, return false
+            if (root is null) return false;
+
+            /////// 
+            // Process ultimate index
+            ////////////////
+
+            // get symbol root (except the last element)
+            root = getSymbol(i.getIdentifierRoot());
+            if (root is null) return false;
+
+            // get the last index only
+            PathContentType last_pct = i.pathContentTypes[i.pathContentTypes.length-1];
+            PathContent last_pc = i.pathContents[i.pathContents.length-1];
+
+            // handle dictionaries
+            if (root.type==dV) {
+                // we cannot have numerical indexes in a dictionary
+                if (last_pct==numPC) return false;
+
+                // get the subkey
+                string subKey; 
+                if (last_pct==idPC) { subKey = last_pc.id; }
+                else if (last_pct==exprPC) {
+                    Value sub = last_pc.expr.evaluate();
+                    if (sub.type!=sV) return false;
+
+                    subKey = sub.content.s;
+                }
+
+                // set it
+                root.setSymbolForDict(subKey, v);
+
+                return true;
+            }
+            // handle arrays
+            else if (root.type==aV) {
+
+                // get the subkey
+                long subKey;
+                if (last_pct==numPC) { subKey = last_pc.num; }
+                else if (last_pct==exprPC) {
+                    Value sub = last_pc.expr.evaluate();
+                    if (sub.type!=nV) return false;
+                    subKey = sub.content.i;
+                }
+
+                // if index not found, return false
+                if (subKey>=root.content.a.length) return false;
+
+                root.content.a[subKey] =  v;
+
+                return true;
+            }
+            // handle strings
+            else if (root.type==sV) {
+
+                // get the subkey
+                long subKey;
+                if (last_pct==numPC) { subKey = last_pc.num; }
+                else if (last_pct==exprPC) {
+                    Value sub = last_pc.expr.evaluate();
+                    if (sub.type!=nV) return false;
+                    subKey = sub.content.i;
+                }
+
+                // if index not found, return false
+                if (subKey>=root.content.s.length) return false;
+
+                root.content.a[subKey] =  v;
+
+                return true;
+            }
+            // nothing else accepted, return false
+            else return false;
+        }
+    }
+
+    Value getSymbol(Identifier i) {
+        Value ret;
+
+        /////// 
+        // Process root
+        ////////////////
+
+        // Look up our root symbol down the stack
+        foreach_reverse (j, Context ctx; contextStack.list) {
+            if ((ret = ctx._getSymbol(i.simpleId)) !is null) break;
+
+        }
+        // if not found, return null
+        if (ret is null) return null;
+
+        // if it's a simple identifier, there's nothing more to do
+        if (i.isSimple) return ret;
+
+        /////// 
+        // Process all indexes
+        ////////////////
+
+        // get index paths, excluding the first element
+        PathContentType[] types = i.pathContentTypes[1..$];
+        PathContent[] parts = i.pathContents[1..$];
+
+        // loop through the parts
+        for (auto j=0; j<parts.length; j++) {
+            auto ppart = parts[j];
+            auto ptype = types[j];
+
+            // handle dictionaries
+            if (ret.type==dV) {
+                // we cannot have numerical indexes in a dictionary
+                if (ptype==numPC) return null;
+
+                // get the subkey
+                string subKey; 
+                if (ptype==idPC) subKey= ppart.id;
+                else if (ptype==exprPC) {
+                    Value sub = ppart.expr.evaluate();
+                    if (sub.type!=sV) return null;
+                    subKey = sub.content.s;
+                }
+                
+                // if index not found, return null
+                if ((ret = ret.getSymbolFromDict(subKey)) is null) return null;
+            }
+            // handle arrays
+            else if (ret.type==aV) {
+                // we cannot have string indexes in an array
+                if (ptype==idPC) return null;
+
+                // get the subkey
+                long subKey;
+                if (ptype==numPC) { subKey = ppart.num; }
+                else if (ptype==exprPC) {
+                    Value sub = ppart.expr.evaluate();
+                    if (sub.type!=nV) return null;
+                    subKey = sub.content.i;
+                }
+
+                // if index not found, return null
+                if (subKey>=ret.content.a.length) return null;
+
+                ret = ret.content.a[subKey];
+                
+            }
+            // handle strings
+            else if (ret.type==sV) {
+                if (ptype==idPC) return null;
+
+                long subKey;
+
+                if (ptype==numPC) { subKey = ppart.num; }
+                else if (ptype==exprPC) {
+                    Value sub = ppart.expr.evaluate();
+                    if (sub.type!=nV) return null;
+                    subKey = sub.content.i;
+                }
+
+                // if index not found, return null
+                if (subKey>=ret.content.s.length) return null;
+
+                ret = new Value(to!string(ret.content.s[subKey]));
+                
+            }
+            // nothing else to index, return null
+            else return null;
+        }
+
+        return ret;
+    }
+/*
     void varSet(string n, Value v, bool immut = false, bool redefine = false) {
         if (redefine) {
             contextStack.lastItem()._varSet(n,v,immut);
@@ -403,7 +663,9 @@ class Globals : Context {
 
         }
         return null;
-        /*
+
+        ////// OLD IMPLEMENTATION
+        
         // if it's an ARGS variable, return it from top-most context
         if (n==ARGS && contextStack.lastItem()._varExists(ARGS)) return contextStack.lastItem()._varGet(ARGS);
 
@@ -425,8 +687,8 @@ class Globals : Context {
                 return null;
             } 
         }
-        return null;*/
-    }
+        return null;
+    }*/
 
     string inspectAllVars() {
         string[] ret;
@@ -439,24 +701,15 @@ class Globals : Context {
     }
 
     void inspectSymbols() {
-        auto sortedSymbols = contextStack.lastItem().variables.keys.sort();
-        foreach (string symString; sortedSymbols) {
-            Var v = contextStack.lastItem().variables[symString];
-            v.inspect();
-        }
+        contextStack.lastItem()._inspectSymbols(true,false);
     }
 
     void inspectFunctions() {
-        auto sortedFunctions = contextStack.lastItem().functions.keys.sort();
-        foreach (string funcString; sortedFunctions) {
-            Func f = contextStack.lastItem().functions[funcString];
-            //writeln(f.markdownish());
-            //writeln(f.sublimeish());
-            f.inspect();
-        }
+        contextStack.lastItem()._inspectSymbols(false,true);
     }
 
     void getFunctionsMarkdown() {
+        /* 
         // core
         string[] coreNamespaces = activeNamespaces;
         Func[][string] coreFuncs;
@@ -508,7 +761,7 @@ class Globals : Context {
                 sblm ~= ff.sublimeishWithNamespace(false);
             }
         }
-        writeln(sblm.join(""));
+        writeln(sblm.join(""));*/
     }
 
     void inspect() {
