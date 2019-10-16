@@ -19,5 +19,5 @@ def fibo(n):
 
 fibo = memoize(fibo)
 
-for n in range(maxLimit+1):
+for n in range(1,maxLimit+2):
     print fibo(n)
