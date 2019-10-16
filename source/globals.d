@@ -330,6 +330,9 @@ class Globals : Context {
     }
 
     Var varGetByIdentifier(Identifier iden) {
+        //try {
+
+            //writeln("inspect: " ~ iden.inspect());
         Var ret = varGet(iden.pathContents[0].id);
         if (ret is null) return null;
 
@@ -386,6 +389,11 @@ class Globals : Context {
         }
 
         return new Var(varName,currentValue,true);
+        //}
+        //catch (Exception ex) {
+        //    writeln("VARGET: EXCEPTION! ~ " ~ ex.msg);
+        //    return null;
+        //}
     }
 
     Var varGet(string n) {
