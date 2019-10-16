@@ -3,6 +3,7 @@
 "=========================================="
 
 benchmarksDir "benchmarks"
+padding 12
 
 mm $(matches $(shell "./arturo -v") "/build (\d+)/")
 version mm.0.1
@@ -11,32 +12,61 @@ output ""
 store [line]{
 	output output+line
 	if line!="" { 
-		print line true 
+		if $(or $(contains line "Algorithm") $(contains line "---")) {
+			output output + "\n"
+			print line
+		} {
+			print line true 
+		}
 	} {
 		output output + "\n"
 		print ""
 	}
 }
 
+process [path,bin,expect]{
+	out ""
+	if $(exists "../"+path) {
+		execTime $(timer { out $(shell bin + " " + path) })
+		if out=false { return $(padLeft "X" padding) }
+
+		if $(strip out)=$(strip expect) {
+			return $(padLeft $(toString execTime) padding)
+		} {
+			return $(padLeft "X" padding)
+		}
+	} {
+		return $(padLeft "-" padding)
+	}
+}
+
 ""
-"-------------------------------------------------------------------------------------------------------------------"
-print $(padLeft "Algorithm" 30) + $(padLeft "Arturo" 20) + $(padLeft "Ruby" 20) + $(padLeft "Python" 20) + $(padLeft "PHP" 20)
-"-------------------------------------------------------------------------------------------------------------------"
+store "-------------------------------------------------------------------------------------------------------------------"
+store $(padLeft "Algorithm" 18) + " | " + $(padLeft "Arturo" padding) + $(padLeft "Ruby" padding) + $(padLeft "Python" padding) + $(padLeft "PHP" padding) + $(padLeft "Lua" padding) + $(padLeft "Tcl" padding)
+store "-------------------------------------------------------------------------------------------------------------------"
 
 loop $(sort $(dir "../"+benchmarksDir)) [file]{
 	if $(contains file ".art") {
 		title 		$(replace file ".art" "")
-		store $(padLeft title 30)
+		store $(padLeft title 18) + " | "
 
 		artPath		benchmarksDir + "/" + file
 		rbPath 		benchmarksDir + "/" + title + ".rb"
 		pyPath		benchmarksDir + "/" + title + ".py"
 		phpPath		benchmarksDir + "/" + title + ".php"
+		luaPath		benchmarksDir + "/" + title + ".lua"
+		tclPath		benchmarksDir + "/" + title + ".tcl"
 
-		store $(padLeft $(toString $(timer { $(shell "./arturo " + artPath) })) 20)
-		store $(padLeft $(if $(exists "../"+rbPath) { toString $(timer { $(shell "ruby " + rbPath) }) } { "" }) 20)
-		store $(padLeft $(if $(exists "../"+pyPath) { toString $(timer { $(shell "python " + pyPath) }) } { "" }) 20)
-		store $(padLeft $(if $(exists "../"+phpPath) { toString $(timer { $(shell "php " + phpPath) }) } { "" }) 20)
+		outPath		benchmarksDir + "/" + title + ".out"
+		expected	""
+		if $(exists "../"+outPath) { expected $(read "../"+outPath) }
+
+		store $(process artPath "./arturo" expected)
+		store $(process rbPath "ruby" expected)
+		store $(process pyPath "python" expected)
+		store $(process phpPath "php" expected)
+		store $(process luaPath "lua" expected)
+		store $(process tclPath "tclsh" expected)
 
 		store ""
 	}
