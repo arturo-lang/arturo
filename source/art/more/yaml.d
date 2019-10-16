@@ -113,9 +113,8 @@ Node generateYAMLValue(Value input)
 		case ValueType.dictionaryValue	: 	{
 			Node[Node] vals;
 
-			foreach (Var va; input.content.d.variables)
-			{
-				vals [ generateYAMLValue(new Value(va.name)) ] = generateYAMLValue(va.value);
+			foreach (string nm, Value va; input.content.d.symbols) {
+				vals [ generateYAMLValue(new Value(nm)) ] = generateYAMLValue(va);
 			}
 			ret = Node(vals, YAML_MAP);
 			return ret;

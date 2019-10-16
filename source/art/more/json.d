@@ -87,8 +87,8 @@ JSONValue generateJsonValue(Value input)
 		}
 		case ValueType.dictionaryValue	: 	{
 			JSONValue[string] result;
-			foreach (Var va; input.content.d.variables)
-				result [va.name] = generateJsonValue(va.value);
+			foreach (string nm, Value va; input.content.d.symbols)
+				result[nm] = generateJsonValue(va);
 
 			ret = result;
 			return ret;

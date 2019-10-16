@@ -24,6 +24,7 @@ import std.string;
 
 import external.terminal;
 
+import parser.identifier;
 import parser.statements;
 
 import globals;
@@ -90,7 +91,7 @@ class Repl {
         writeln("?info <id>            show infomation for given identifier");
         //writeln();
         writeln("?symbols              show defined symbols");
-        writeln("?functions            show defined system functions");
+        writeln("?functions            show system functions");
         writeln();
         writeln("?read <file>          read source from file");
         writeln("?write <file>         write console buffer to file");
@@ -115,23 +116,32 @@ class Repl {
     }
 
     void showInfo(string id) {
-        string name = id;
-        string namespace = null;
-        if (id.indexOf(":")!=-1) {
-            namespace = id.split(":")[0].strip;
-            name = id.split(":")[1].strip;
-        }
 
+        Value va;
+
+        if ((va = Glob.getSymbol(new Identifier(id))) is null) {
+            Panic.consoleError((new ERR_ConsoleIdentifierNotFoundError(id)).msg);
+        }
+        else {
+
+            if (va.type==fV) {
+                va.content.f.inspect(id,true);
+            }
+            else {
+                Glob._inspectSymbol(id,va,true);
+            }
+        }
+        /*
         Func f;
         if ((f = Glob.funcGet(name,namespace)) !is null) {
             f.inspect(true);
         }
-        else if (Glob.varGet(id) !is null) {
+        else if (Glob.getSymbol(id) !is null) {
             Glob.varGet(id).inspect(true);
         }
         else {
             Panic.consoleError((new ERR_ConsoleIdentifierNotFoundError(id)).msg);
-        }
+        }*/
     }
     void start() {
         string[] lines;

@@ -131,7 +131,7 @@ class Statement {
 				Identifier hashId = expressions.extractHashId();
 				Value ret = f.execute(expressions,hashId.getId());
 
-				Glob._varSet(hashId.getId(),ret,immut);
+				Glob.setGlobalSymbol(hashId.simpleId,ret);
 
 				return ret;
 			}
@@ -142,7 +142,7 @@ class Statement {
 				Identifier hashId = expressions.extractHashId();
 				Value ret = f.execute(args,null,to!string(cast(void*)f));
 
-				Glob._varSet(hashId.getId(),ret,immut);
+				Glob.setGlobalSymbol(hashId.simpleId,ret);
 
 				return ret;
 			}
@@ -211,11 +211,9 @@ class Statement {
 			
 			if (ev.type==fV) {
 				ev.content.f.name = id.getId();
-			}
+			}		
 
-			bool success = Glob.varSetByIdentifier(id,ev,immut);			
-
-			if (!success) {
+			if (!Glob.setSymbol(id,ev)) {
 				throw new ERR_CannotPerformAssignmentError(id.getFullIdentifier());
 			}
 
@@ -229,7 +227,7 @@ class Statement {
 				if (ev.type==fV) {
 					ev.content.f.name = id.getId();
 				}
-				v.setValueForDict(id.getId(), ev);
+				v.setSymbolForDict(id.getId(), ev);
 			}
 			else { // is array
 				v.content.a[(new Value(id.getId())).content.i] = ev;
@@ -265,15 +263,15 @@ class Statement {
 						ret = executeFunction(f); //executeFunctionCall(f);
 					}
 					else {*/
-					Var va;
+					Value va;
 
-					if ((va=Glob.varGetByIdentifier(id)) !is null) {
+					if ((va=Glob.getSymbol(id)) !is null) {
 						// Variable already exists
 
-						if (va.value.type==fV) {
+						if (va.type==fV) {
 							//writeln(id.getFullIdentifier() ~ " : user func call");
 							// USER FUNCTION CALL
-							ret = executeFunction(va.value.content.f);
+							ret = executeFunction(va.content.f);
 							//ret = executeUserFunctionCall(va.value.content.f);
 						} 
 						else {

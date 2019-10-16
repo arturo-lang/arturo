@@ -51,8 +51,8 @@ class Keys : Func {
 		alias dict = D!(v,0);
 
 		Value[] ret;
-		foreach (Var va; dict.variables)
-			ret ~= new Value(va.name);
+		foreach (string nm, Value va; dict.symbols)
+			ret ~= new Value(nm);
 
 		return new Value(ret);
 	}
@@ -65,8 +65,8 @@ class Values : Func {
 		alias dict = D!(v,0);
 
 		Value[] ret;
-		foreach (Var va; dict.variables)
-			ret ~= va.value;
+		foreach (string nm, Value va; dict.symbols)
+			ret ~= va;
 
 		return new Value(ret);
 	}

@@ -159,7 +159,7 @@ class Is__Empty_ : Func {
 		switch (item.type) {
 			case sV: return new Value(S!(item).length==0);
 			case aV: return new Value(A!(item).length==0);
-			case dV: return new Value(D!(item).variables.length==0);
+			case dV: return new Value(D!(item).symbols.length==0);
 			default: break;
 		}
 
@@ -222,7 +222,7 @@ class Size_ : Func {
 		switch (item.type) {
 			case sV: return new Value(S!(item).length);
 			case aV: return new Value(A!(item).length);
-			case dV: return new Value(D!(item).variables.length);
+			case dV: return new Value(D!(item).symbols.length);
 			default: break;
 		}
 

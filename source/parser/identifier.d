@@ -72,13 +72,19 @@ class Identifier {
 	PathContent[] pathContents;
 	string namespace;
 	bool isHash;
+	bool isSimple;
+	string simpleId;
 
 	this(string s, bool hsh = false) {
 		//writeln("IN IDENTIFIER constructor");
 		//writeln("Identifier: " ~ s);
+		isSimple = true;
 		string cleanstr = s;
 		isHash = hsh;
+		simpleId = s;
+		/*
 		if (s.indexOf(":")!=-1) {
+			simpleId = s;
 			if (s.startsWith(":")) {
 				namespace = null;
 				cleanstr = s;
@@ -90,8 +96,9 @@ class Identifier {
 			}
 		}
 		else {
+			simpleId = s;
 			namespace = null;
-		}
+		}*/
 
 		if (s.indexOf(ARGS)!=-1) {
 			auto m = matchFirst(s, regex(ARGS ~ "(?P<index>[0-9]+)"));
@@ -100,11 +107,14 @@ class Identifier {
 				PathContent pc = { id:ARGS };
 				PathContent nc = { num:to!int(m["index"]) };
 				pathContents = [ pc, nc ];
+				isSimple = false;
+				simpleId = ARGS;
 			}
 			else {
 				pathContentTypes = [ idPC ];
 				PathContent pc = { ARGS };
 				pathContents = [ pc ];
+				simpleId = ARGS;
 			}
 		
 		} 
@@ -116,11 +126,13 @@ class Identifier {
 			pathContentTypes = [ idPC ];
 			PathContent pc = {cleanstr};
 			pathContents = [ pc ];
+			simpleId = cleanstr;
 		}
 		//writeln("After Identifier: " ~ s);
 	}
 
 	void add(string s) {
+		isSimple = false;
 		if (isNumeric(s)) {
 			if (s.indexOf(".")!=-1) {
 				string[] parts = s.split(".");
@@ -141,12 +153,14 @@ class Identifier {
 	}
 
 	void add(int l) {
+		isSimple = false;
 		pathContentTypes ~= numPC;
 		PathContent pc = {num:l};
 		pathContents ~= pc;
 	}
 
 	void add(Expression e) {
+		isSimple = false;
 		pathContentTypes ~= exprPC;
 		PathContent pc = {expr:e};
 		pathContents ~= pc;

@@ -102,7 +102,7 @@ class Func {
 
         parentContext = null;
         parentThis = null;
-
+/*
         if (n.indexOf(":")!=-1) {
             string[] parts = n.split(":");
             namespace = parts[0];
@@ -110,7 +110,7 @@ class Func {
         } 
         else {
             namespace = null;
-        }
+        }*/
     }
 
     // user functions
@@ -228,8 +228,8 @@ class Func {
         bool thisWasAlreadySet = false;
 
         if (parentContext !is null) {
-            if (Glob._varExists("this")) thisWasAlreadySet = true;
-            Glob._varSet("this", parentThis, false);
+            if (Glob.getSymbol(new Identifier("this")) !is null) thisWasAlreadySet = true;
+            Glob.setGlobalSymbol("this", parentThis);
         }
 
         if (name=="" || name is null) Glob.contextStack.push(new Context());
@@ -274,17 +274,17 @@ class Func {
             //writeln("executing function: " ~ name ~ " with ids: " ~ to!string(ids));
             if (values.type==aV) {
                 foreach (i, string ident; ids) {
-                    Glob.varSetByIdentifier(new Identifier(ident), values.content.a[i], true);
+                    Glob.setSymbol(new Identifier(ident), values.content.a[i], true);
                 }   
             }
             else {
                 if (ids.length==1) {
-                    Glob.varSetByIdentifier(new Identifier(ids[0]), values, true);
+                    Glob.setSymbol(new Identifier(ids[0]), values, true);
                 }
             }
 
             if (values !is null) {
-                Glob.varSetByIdentifier(new Identifier(ARGS), values, true);
+                Glob.setSymbol(new Identifier(ARGS), values, true);
                 if (Glob.trace) {
                     if (values.type==aV)
                         writeln(values.content.a.map!(v=>v.stringify()).array.join(", "));
@@ -319,7 +319,7 @@ class Func {
                     //writeln("Glob.globStack => " ~ Glob.blockStack.str());
 
                     //writeln("FUNC::execute -> reTHROW (not named block)");
-                    if (!thisWasAlreadySet) Glob._varUnset("this");
+                    if (!thisWasAlreadySet) Glob.unsetGlobalSymbol("this");
 
                     debug writeln("contextStack: " ~ Glob.contextStack.str());
 
@@ -343,7 +343,7 @@ class Func {
 
             // cleanup
 
-            if (!thisWasAlreadySet) Glob._varUnset("this");
+            if (!thisWasAlreadySet) Glob.unsetGlobalSymbol("this");
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());
 
@@ -499,16 +499,22 @@ class Func {
         else return namespace ~ ":" ~ name ~ "|";
     }
 
-    void inspect(bool full=false) {
+    void inspect(string useName=this.name, bool full=false) {
         if (full) {
             writeln("  Function : \x1B[37m\x1B[1m" ~ getFullName() ~ "\x1B[0m");
             writeln("         # | " ~ description);
             writeln();
-            writeln("     usage | " ~ name ~ " [" ~  getAcceptedConstraintsDescription() ~ "]");
+            writeln("     usage | " ~ useName ~ " [" ~  getAcceptedConstraintsDescription() ~ "]");
             writeln("        -> | " ~  getReturnValuesDescription());
         }
         else {
-            writeln("  " ~ leftJustify(getFullName(),30) ~ " [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
+            write("  " ~ leftJustify(useName,30) ~ " ");
+
+            auto parts = useName.split(":");
+            if (Glob.activeNamespaces.canFind(parts[0])) write(" * ");
+            else write("   ");
+            
+            writeln("[" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription());
         }
     }
 
