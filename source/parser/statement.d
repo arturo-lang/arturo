@@ -250,57 +250,58 @@ class Statement {
 	}
 
 	Value execute(Value* v, bool isInExpression=false) {
-		if (isInExpression) WARN_ASSIGN(id.getId());
+		//if (isInExpression) WARN_ASSIGN(id.getId());
 
 		Value ret;
 		try {
 			switch(type) {
 				case StatementType.normalStatement:
 					//writeln(id.getFullIdentifier() ~ " : normal statement");
+					/*
 					Func f;
 					if ((f=Glob.funcGet(id.getJustId(),id.namespace)) !is null) {
 						//writeln(id.getFullIdentifier() ~ " : system func call");
 						// SYSTEM FUNCTION CALL
 						ret = executeFunction(f); //executeFunctionCall(f);
 					}
-					else {
-						Var va;
+					else {*/
+					Var va;
 
-						if ((va=Glob.varGetByIdentifier(id)) !is null) {
-							// Variable already exists
+					if ((va=Glob.varGetByIdentifier(id)) !is null) {
+						// Variable already exists
 
-							if (va.value.type==fV) {
-								//writeln(id.getFullIdentifier() ~ " : user func call");
-								// USER FUNCTION CALL
-								ret = executeFunction(va.value.content.f);
-								//ret = executeUserFunctionCall(va.value.content.f);
-							} 
-							else {
-								if (hasExpressions) {
-									//writeln(id.getFullIdentifier() ~ " : re-assignment");
-									// RE-ASSIGNMENT (of existing variable)
-									return executeAssignment(v,isInExpression);
-								}
-								else {
-									//writeln(id.getFullIdentifier() ~ " : expression (single-id)");
-									// it's a single-id expression, return its value
-									ret = new Expression(new Argument(id)).evaluate();
-								}
-							}
-						}
+						if (va.value.type==fV) {
+							//writeln(id.getFullIdentifier() ~ " : user func call");
+							// USER FUNCTION CALL
+							ret = executeFunction(va.value.content.f);
+							//ret = executeUserFunctionCall(va.value.content.f);
+						} 
 						else {
 							if (hasExpressions) {
-								//writeln(id.getFullIdentifier() ~ " : assignment");
-								// ASSIGNMENT (first)
+								//writeln(id.getFullIdentifier() ~ " : re-assignment");
+								// RE-ASSIGNMENT (of existing variable)
 								return executeAssignment(v,isInExpression);
 							}
 							else {
-								// throw error
-								//writeln(id.getFullIdentifier() ~ " : NOT FOUND!");
-								throw new ERR_SymbolNotFound(id.getFullIdentifier());
+								//writeln(id.getFullIdentifier() ~ " : expression (single-id)");
+								// it's a single-id expression, return its value
+								ret = new Expression(new Argument(id)).evaluate();
 							}
 						}
 					}
+					else {
+						if (hasExpressions) {
+							//writeln(id.getFullIdentifier() ~ " : assignment");
+							// ASSIGNMENT (first)
+							return executeAssignment(v,isInExpression);
+						}
+						else {
+							// throw error
+							//writeln(id.getFullIdentifier() ~ " : NOT FOUND!");
+							throw new ERR_SymbolNotFound(id.getFullIdentifier());
+						}
+					}
+					/*}*/
 					break;
 				case StatementType.expressionStatement:
 					//writeln("null : expression statement");
