@@ -19,6 +19,6 @@ end
 
 fibber = Fibber.new
 
-(0..maxLimit).each{|n|
+(1..maxLimit+1).each{|n|
   puts fibber.memo_fib(n)
 }
