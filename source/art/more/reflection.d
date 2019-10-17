@@ -53,7 +53,7 @@ class Object_ : Func {
 }
 
 class Pointer_ : Func {
-	this(string ns="") { super(ns ~ "pointer","get pointer location for object",[[xV],[sV]]); }
+	this(string ns="") { super(ns ~ "pointer","get pointer location of object",[[xV],[sV]]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
@@ -75,6 +75,8 @@ class Syms_ : Func {
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 
-		return new Value(Glob.inspectAllVars());
+		Glob.inspectAllContexts();
+
+		return new Value();
 	}
 }
