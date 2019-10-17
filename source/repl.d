@@ -41,7 +41,6 @@ enum REPL_PROMPT            =   "\x1B[38;5;208m\x1B[1m$ :%s\x1B[0m\x1B[38;5;208m
 class ReplLineGetter : LineGetter {
     mixin LineGetterConstructors;
 
-    string[] funcs = mixin(getSystemFuncs(false)); 
     override protected string[] tabComplete(in dchar[] candidate) {
         import std.file, std.conv, std.algorithm, std.string;
         const(dchar)[] soFar = candidate;
@@ -50,8 +49,10 @@ class ReplLineGetter : LineGetter {
             soFar = candidate[idx + 1 .. $];
 
         string[] list;
+
+        string[] autocompletionsArray = Glob.getAutocompletionsForRepl(); 
         
-        foreach(string name; funcs) {
+        foreach(string name; autocompletionsArray) {
             if(startsWith(name, soFar))
                 list ~= text(candidate, name[soFar.length .. $]);
         }
