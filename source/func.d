@@ -224,8 +224,8 @@ class Func {
         bool thisWasAlreadySet = false;
 
         if (parentContext !is null) {
-            if (Glob.getSymbol(new Identifier("this")) !is null) thisWasAlreadySet = true;
-            Glob.setGlobalSymbol("this", parentThis);
+            if (Glob.getSymbol(new Identifier(THIS)) !is null) thisWasAlreadySet = true;
+            Glob.setGlobalSymbol(THIS, parentThis);
         }
 
         if (name=="" || name is null) Glob.contextStack.push(new Context());
@@ -315,7 +315,7 @@ class Func {
                     //writeln("Glob.globStack => " ~ Glob.blockStack.str());
 
                     //writeln("FUNC::execute -> reTHROW (not named block)");
-                    if (!thisWasAlreadySet) Glob.unsetGlobalSymbol("this");
+                    if (!thisWasAlreadySet) Glob.unsetGlobalSymbol(THIS);
 
                     debug writeln("contextStack: " ~ Glob.contextStack.str());
 
@@ -339,7 +339,7 @@ class Func {
 
             // cleanup
 
-            if (!thisWasAlreadySet) Glob.unsetGlobalSymbol("this");
+            if (!thisWasAlreadySet) Glob.unsetGlobalSymbol(THIS);
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());
 
