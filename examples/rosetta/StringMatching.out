@@ -1,0 +1,4 @@
+'abcd' starts with 'ab' = true
+'abcd' contains 'bc' = true
+'bc' found in 'abcd' at location = 1
+'abcd' ends with 'zn' = false

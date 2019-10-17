@@ -1,0 +1,2 @@
+GB82 WEST 1234 5698 7654 32 => validation: true
+GB82 TEST 1234 5698 7654 32 => validation: false
