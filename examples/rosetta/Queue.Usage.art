@@ -1,4 +1,4 @@
-Queue #{
+queue #{
 	list #()
 
 	push {
@@ -24,7 +24,7 @@ Queue #{
 	}
 }
 
-q $(new ~Queue)
+q $(new ~queue)
 
 q.push "one"
 q.push "two"

@@ -1,4 +1,4 @@
-Point #{
+point #{
 	x 0
 	y 0
 
@@ -8,6 +8,6 @@ Point #{
 	}
 }
 
-point $(new ~Point 10 20)
+p $(new ~point 10 20)
 
-print point
+print p

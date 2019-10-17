@@ -1,5 +1,5 @@
 iRoot [b,n] {
-    | b<2 -> b
+    if b<2 -> b
 
     n1 n-1
     n2 n
@@ -12,7 +12,7 @@ iRoot [b,n] {
         d e
         e (n3*e + b/e^n1)/n2
     }
-    | d<e -> d
+    if d<e -> d
     return e
 }
 
