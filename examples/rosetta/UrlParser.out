@@ -1,0 +1,12 @@
+#{
+	[1;37mdomain          [0;37m[0;33m"example.com"[0;37m
+	[1;37mfragment        [0;37m[0;33m"nose"[0;37m
+	[1;37mpassword        [0;37m[0;33m""[0;37m
+	[1;37mpath            [0;37m[0;33m"/over/there"[0;37m
+	[1;37mport            [0;37m[0;33m"8042"[0;37m
+	[1;37mquery           [0;37m#{
+	                	[1;37mname            [0;37m[0;33m"ferret"[0;37m
+	                }
+	[1;37mscheme          [0;37m[0;33m"foo"[0;37m
+	[1;37muser            [0;37m[0;33m""[0;37m
+}
