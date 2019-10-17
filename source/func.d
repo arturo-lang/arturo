@@ -98,15 +98,7 @@ class Func {
 
         parentContext = null;
         parentThis = null;
-/*
-        if (n.indexOf(":")!=-1) {
-            string[] parts = n.split(":");
-            namespace = parts[0];
-            name = parts[1];
-        } 
-        else {
-            namespace = null;
-        }*/
+
     }
 
     // user functions
@@ -473,26 +465,6 @@ class Func {
         else {
             throw new ERR_FunctionCallValueError(name, i, vts.map!(v => "" ~ v).array.join(" or "), evaluated.type);
         }
-    }
-
-    string markdownish() {
-        return "| **" ~ getFullName() ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
-    }
-
-    string markdownishWithNamespace() {
-        return "| " ~ namespace ~ " | **" ~ name ~ "** | " ~ description ~ " | [" ~ getAcceptedConstraintsDescription() ~ "] -> " ~ getReturnValuesDescription() ~ " |";
-    }
-
-    string sublimeish() {
-        if (getFullName()!=name)
-            return getFullName() ~ "|" ~ name ~ "|";
-        else
-            return name;
-    }
-
-    string sublimeishWithNamespace(bool isCore) {
-        if (isCore) return namespace ~ ":" ~ name ~ "|" ~ name ~ "|";
-        else return namespace ~ ":" ~ name ~ "|";
     }
 
     void inspect(string useName=this.name, bool full=false) {
