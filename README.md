@@ -116,10 +116,6 @@ loop $(range 0 maxLimit) {
 The Library
 ------------------------------
 
-### Main
-
-The functions below are reserved keywords and can be used at any time, without the use of a namespace
-
 |  Library  | Function | Description | Syntax |
 | :---      | :---     | :---        | :---   |
 | array | **all** | check if all elements of array are true or pass the condition of given function | [Array or Array/Function] -> Boolean |
@@ -169,8 +165,10 @@ The functions below are reserved keywords and can be used at any time, without t
 | core | **exec** | execute given function with optional array of arguments | [Function or Function/Any...] -> Any |
 | core | **if** | if condition is true, execute given function - else optionally execute alternative function | [Boolean/Function or Boolean/Function/Function] -> Any |
 | core | **import** | import external source file from path | [String] -> Any |
+| core | **inherit** | inherit existing class/dictionary | [String/Dictionary] -> Dictionary |
 | core | **input** | read line from stdin | [] -> String or Any |
 | core | **lazy** | get a lazy-evaluated expression | [Any] -> Function |
+| core | **let** | force assign right-hand value to symbol using string name | [String/Any] ->  |
 | core | **log** | print value of given expression to screen, in a readable format | [Any] -> Any |
 | core | **loop** | execute given function for each element in array or dictionary, or while condition is true | [Array/Function or Dictionary/Function or Boolean/Function] -> Any |
 | core | **memoize** | get a memoized function | [Function] -> Function |
@@ -184,6 +182,15 @@ The functions below are reserved keywords and can be used at any time, without t
 | core | **unuse** | stop using given namespace(s) | [String or Array] ->  |
 | core | **use** | use given namespace(s) | [String or Array] ->  |
 | core | **xor** | bitwise/logical XOR | [Boolean/Boolean or Number/Number] -> Boolean or Number |
+| crypto | **decodeBase64** | decode given object from base64 | [String] -> String |
+| crypto | **encodeBase64** | encode given object to base64 | [String] -> String |
+| crypto | **hash** | get hash value for given value | [Any] -> String |
+| crypto | **md5** | get MD5 hash of given string data | [String] -> String |
+| crypto | **sha256** | get SHA256 hash of given string data | [String] -> String |
+| crypto | **sha512** | get SHA512 hash of given string data | [String] -> String |
+| csv | **parse** | get object by parsing given CSV string, optionally using headers | [String or String/Boolean] -> Array |
+| database | **create** | create new SQLite database using path | [String] -> Dictionary |
+| database | **open** | open SQLite database using path | [String] -> Dictionary |
 | date | **dateNow** | get current date into string | [] -> String |
 | date | **datetimeNow** | get current date and time into string | [] -> String |
 | date | **day** | get day from date string | [String] -> String |
@@ -192,9 +199,28 @@ The functions below are reserved keywords and can be used at any time, without t
 | date | **timer** | time the execution of a given function in milliseconds | [Function] -> Number |
 | dictionary | **hasKey** | check if dictionary has key | [Dictionary/String] -> Boolean |
 | dictionary | **keys** | get array of dictionary keys | [Dictionary] -> Array |
+| dictionary | **values** | get array of dictionary values | [Dictionary] -> Array |
 | file | **exists** | check if file exists at given path | [String] -> Boolean |
+| file | **filesize** | get file size of file at given path | [String] -> Number |
 | file | **read** | read string from file at given path | [String] -> String |
 | file | **write** | write string to file at given path | [String/String] -> Null |
+| gui | **app** | create GUI app with given string ID, main window and configuration | [String/Dictionary/Dictionary] -> Number |
+| gui | **button** | create GUI button with given title and configuration | [String/Dictionary] -> Dictionary |
+| gui | **checkbox** | create GUI checkbox with given title and configuration | [String/Dictionary] -> Dictionary |
+| gui | **frame** | create GUI frame with given title and configuration | [String/Dictionary] -> Dictionary |
+| gui | **hbox** | create GUI horizontal box with given configuration | [Dictionary] -> Dictionary |
+| gui | **hpane** | create GUI horizontal pane with given configuration | [Dictionary] -> Dictionary |
+| gui | **label** | create GUI label with given title and configuration | [String/Dictionary] -> Dictionary |
+| gui | **tabs** | create GUI tabbed view with given configuration | [Dictionary] -> Dictionary |
+| gui | **textfield** | create GUI textfield with given title and configuration | [String/Dictionary] -> Dictionary |
+| gui | **vbox** | create GUI vertical box with given configuration | [Dictionary] -> Dictionary |
+| gui | **vpane** | create GUI vertical pane with given configuration | [Dictionary] -> Dictionary |
+| gui | **window** | create GUI window for given app and configuration | [Dictionary] -> Dictionary |
+| html | **markdownToHtml** | convert given markdown string to html | [String] -> String |
+| json | **generate** | get JSON string from given object | [Any] -> String |
+| json | **parse** | get object by parsing given JSON string | [String] -> Any |
+| net | **download** | download string contents from webpage using given URL | [String] -> String |
+| net | **post** | perform POST request using given URL and data | [String/String] -> String |
 | number | **acos** | get 'acos' for given number | [Number or Real] -> Real |
 | number | **acosh** | get 'acosh' for given number | [Number or Real] -> Real |
 | number | **asin** | get 'asin' for given number | [Number or Real] -> Real |
@@ -211,6 +237,7 @@ The functions below are reserved keywords and can be used at any time, without t
 | number | **ln** | get 'ln' for given number | [Number or Real] -> Real |
 | number | **log10** | get 'log10' for given number | [Number or Real] -> Real |
 | number | **odd** | check if given number is odd | [Number] -> Boolean |
+| number | **primeFactors** | get list of prime factors for given number | [Number] -> Array |
 | number | **random** | generate random number in given range (from..to) | [Number/Number] -> Number |
 | number | **round** | get 'round' for given number | [Number or Real] -> Real |
 | number | **shl** | bitwise left shift | [Number/Number] -> Number |
@@ -224,16 +251,24 @@ The functions below are reserved keywords and can be used at any time, without t
 | path | **currentDir** | get current directory path | [] -> String |
 | path | **dir** | get array of directory contents at given path | [ or String] -> Array |
 | path | **getDir** | get directory from given path | [String] -> String |
-| path | **getExt** | get extension from given path | [String] -> String |
+| path | **getExtension** | get extension from given path | [String] -> String |
 | path | **getFilename** | get filename from given path | [String] -> String |
+| path | **getUrlComponents** | get URL components from given URL | [String] -> Dictionary |
 | path | **isDirectory** | check if given path is a directory | [String] -> Boolean |
 | path | **isFile** | check if given path is a file | [String] -> Boolean |
 | path | **isSymlink** | check if given path is a symlink | [String] -> Boolean |
 | path | **normalizePath** | get normalized path from given path | [String] -> String |
+| reflection | **object** | get object for given symbol name | [String] -> Any or Null |
+| reflection | **pointer** | get pointer location of object | [Any or String] ->  |
+| reflection | **symbolExists** | check if given symbol exists | [String] -> Boolean |
+| reflection | **syms** | get list of declared symbols | [ or String] ->  |
+| reflection | **type** | get type for given object | [Any] -> String |
 | string | **capitalize** | capitalize given string | [String] -> String |
 | string | **char** | get ASCII character from given char code | [Number] -> String |
 | string | **characters** | get string characters as an array | [String] -> Array |
 | string | **color** | get colored string using color | [String/String] -> String |
+| string | **decodeUrl** | decode the given URL into a UTF-8 string url, optionally ignoring invalid characters | [String or String/Boolean] -> String |
+| string | **encodeUrl** | encode the given UTF-8 string url into a URL, optionally ignoring invalid characters | [String or String/Boolean] -> String |
 | string | **endsWith** | check if string ends with given string | [String/String] -> Boolean |
 | string | **isAlpha** | check if all characters in given string are ASCII letters | [String] -> Boolean |
 | string | **isAlphanumeric** | check if all characters in given string are ASCII letters or digits | [String] -> Boolean |
@@ -262,46 +297,11 @@ The functions below are reserved keywords and can be used at any time, without t
 | system | **shell** | execute given shell command | [String] -> String or Boolean |
 | system | **spawn** | spawn process using given string and get process id | [String] -> Number |
 | system | **thread** | create a background threaded process using given function | [Function] ->  |
-
-### More
-
-The functions below have to be used with their namespace
-
-|  Library  | Function | Description | Syntax |
-| :---      | :---     | :---        | :---   |
-| crypto | **hash** | get hash value for given value | [Any] -> String |
-| crypto | **md5** | get MD5 hash of given string data | [String] -> String |
-| crypto | **sha256** | get SHA256 hash of given string data | [String] -> String |
-| crypto | **sha512** | get SHA512 hash of given string data | [String] -> String |
-| csv | **parse** | get object by parsing given CSV string, optionally using headers | [String or String/Boolean] -> Array |
-| database | **create** | create new SQLite database using path | [String] -> Dictionary |
-| database | **open** | open SQLite database using path | [String] -> Dictionary |
-| gui | **app** | create GUI app with given string ID, main window and configuration | [String/Dictionary/Dictionary] -> Number |
-| gui | **button** | create GUI button with given title and configuration | [String/Dictionary] -> Dictionary |
-| gui | **checkbox** | create GUI checkbox with given title and configuration | [String/Dictionary] -> Dictionary |
-| gui | **frame** | create GUI frame with given title and configuration | [String/Dictionary] -> Dictionary |
-| gui | **hbox** | create GUI horizontal box with given configuration | [Dictionary] -> Dictionary |
-| gui | **hpane** | create GUI horizontal pane with given configuration | [Dictionary] -> Dictionary |
-| gui | **label** | create GUI label with given title and configuration | [String/Dictionary] -> Dictionary |
-| gui | **tabs** | create GUI tabbed view with given configuration | [Dictionary] -> Dictionary |
-| gui | **textfield** | create GUI textfield with given title and configuration | [String/Dictionary] -> Dictionary |
-| gui | **vbox** | create GUI vertical box with given configuration | [Dictionary] -> Dictionary |
-| gui | **vpane** | create GUI vertical pane with given configuration | [Dictionary] -> Dictionary |
-| gui | **window** | create GUI window for given app and configuration | [Dictionary] -> Dictionary |
-| html | **markdownToHtml** | convert given markdown string to html | [String] -> String |
-| json | **generate** | get JSON string from given object | [Any] -> String |
-| json | **parse** | get object by parsing given JSON string | [String] -> Any |
-| net | **download** | download string contents from webpage using given URL | [String] -> String |
-| net | **post** | perform POST request using given URL and data | [String/String] -> String |
-| reflection | **object** | get object for given symbol name | [String] -> Any or Null |
-| reflection | **pointer** | get pointer location for object | [Any or String] ->  |
-| reflection | **symbolExists** | check if given symbol exists | [String] -> Boolean |
-| reflection | **syms** | get list of declared symbols | [ or String] ->  |
-| reflection | **type** | get type for given object | [Any] -> String |
 | web | **a** | create link with title, reference and configuration | [String/String or String/String/Dictionary] -> Dictionary |
 | web | **b** | create bold caption with title and given configuration | [String or String/Dictionary] -> Dictionary |
 | web | **body** | create web page body with given contents | [Dictionary] -> Dictionary |
 | web | **br** | create a line break tag | [] -> Dictionary |
+| web | **cell** | create table cell with contents | [String or String/Dictionary] -> Dictionary |
 | web | **css** | create a link or style tag, with the given CSS source | [String] -> Dictionary |
 | web | **div** | create div section with contents | [Dictionary] -> Dictionary |
 | web | **h1** | create H1 header with title and given configuration | [String or String/Dictionary] -> Dictionary |
@@ -317,8 +317,11 @@ The functions below have to be used with their namespace
 | web | **meta** | create a meta tag with given name and content | [String/String] -> Dictionary |
 | web | **p** | create paragraph with contents | [Dictionary] -> Dictionary |
 | web | **page** | create web page with given contents | [Dictionary] -> Dictionary |
+| web | **row** | create table row with contents | [Dictionary] -> Dictionary |
+| web | **table** | create table with contents | [Dictionary] -> Dictionary |
 | web | **ul** | create unordered list section with contents | [Dictionary] -> Dictionary |
 | xml | **check** | check integrity of XML input using given string | [String] -> Boolean |
+| xml | **test** | check integrity of XML input using given string | [] -> Boolean |
 | yaml | **generate** | get YAML string from given object | [Any] -> String |
 | yaml | **parse** | get object by parsing given YAML string | [String] -> Any |
 
