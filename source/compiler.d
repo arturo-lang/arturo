@@ -134,6 +134,6 @@ class Compiler {
 
     void inspect() {
         sourceTree.inspect();
-        Glob.inspect();
+        //Glob.inspect();
     }
 }
