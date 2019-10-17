@@ -14,9 +14,9 @@ store [line]{
 	if line!="" { 
 		if $(or $(contains line "Algorithm") $(contains line "---")) {
 			output output + "\n"
-			print line
+			print $(replace $(replace line "X" $(color "X" "red")) "|" $(color "|" "green"))
 		} {
-			print line true 
+			print $(replace $(replace line "X" $(color "X" "red")) "|" $(color "|" "green")) true 
 		}
 	} {
 		output output + "\n"
@@ -41,14 +41,14 @@ process [path,bin,expect]{
 }
 
 ""
-store "-------------------------------------------------------------------------------------------------------------------"
-store $(padLeft "Algorithm" 25) + " | " + $(padLeft "Arturo" padding) + $(padLeft "Ruby" padding) + $(padLeft "Python" padding) + $(padLeft "PHP" padding) + $(padLeft "Lua" padding) + $(padLeft "Tcl" padding)
-store "-------------------------------------------------------------------------------------------------------------------"
+store "--------------------------------------------------------------------------------------------------------"
+store $(padLeft "Algorithm" 25) + " |   " + $(padLeft "Arturo" padding) + $(padLeft "Ruby" padding) + $(padLeft "Python" padding) + $(padLeft "PHP" padding) + $(padLeft "Lua" padding) + $(padLeft "Tcl" padding)
+store "--------------------------------------------------------------------------------------------------------"
 
 loop $(sort $(dir "../"+benchmarksDir)) [file]{
 	if $(contains file ".art") {
 		title 		$(replace file ".art" "")
-		store $(padLeft title 25) + " | "
+		store $(padLeft title 25) + " |   "
 
 		artPath		benchmarksDir + "/" + file
 		rbPath 		benchmarksDir + "/" + title + ".rb"
