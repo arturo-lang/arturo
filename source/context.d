@@ -67,34 +67,6 @@ class Context {
         }
     }
 
-    string inspectVars() {
-       /* 
-        string[] ret;
-        foreach (string nm, Value va; symbols) {
-            ret ~= "\t" ~ nm ~ ": (0x" ~ to!string(cast(void*)va) ~ ") = " ~ va.stringify();
-        }
-
-        return ret.join("\n");*/
-        return "TOFIX @ context.d";
-    }
-
-    void _inspect() {
-        /*
-        //env.inspect();
-        foreach (string nm, Value va; symbols) {
-            v.inspect();
-        }
-        string[] s = [];
-        foreach (string name, Func f; functions) {
-            if (f.type==FuncType.systemFunc) s ~= name;
-
-            f.inspect();
-        }
-
-        // For sublime-syntax (system functions scope)
-        writeln(s.sort().join("|"));*/
-    }
-
     void _inspectSymbol(string nm, Value va, bool full=false){
         if (full) {
             writeln("  Symbol : \x1B[37m\x1B[1m" ~ nm ~ "\x1B[0m");
