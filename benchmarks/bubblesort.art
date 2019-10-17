@@ -1,0 +1,21 @@
+bubbleSort [items]{
+    loop $(range $(size items)-1 0) [n]{
+        swapped false
+        loop $(range 0 n-1) [i]{
+            if items.[i]>items.[i+1] {
+                tmp items.[i+1]
+                items.[i+1] items.[i]
+                items.[i] tmp
+                swapped true
+            }
+        }
+        if $(not swapped) { return items }
+    }
+    return items
+}
+
+list $(shuffle|range 1 2000)
+list $(bubbleSort list)
+loop list {
+    print &
+}
