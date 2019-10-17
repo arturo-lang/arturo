@@ -1,4 +1,4 @@
-Person #{
+person #{
 	name ""
 	surname ""
 
@@ -12,5 +12,5 @@ Person #{
 	}
 }
 
-person $(new ~Person "John" "Doe")
-person.sayHello
+p $(new ~person "John" "Doe")
+p.sayHello

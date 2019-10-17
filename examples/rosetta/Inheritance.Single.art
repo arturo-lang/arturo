@@ -1,8 +1,8 @@
-Animal #{
+animal #{
 	numberOfFeet 0
 }
 
-Dog $(inherit ~Animal #{
+dog $(inherit ~animal #{
 	numberOfFeet 4
 	breed ""
 	name ""
@@ -13,7 +13,7 @@ Dog $(inherit ~Animal #{
 	
 })
 
-Lab $(inherit ~Dog #{
+lab $(inherit ~dog #{
 	breed "labrador"
 
 	init [n]{
@@ -21,6 +21,6 @@ Lab $(inherit ~Dog #{
 	}
 })
 
-myLab $(new ~Lab "Max")
+myLab $(new ~lab "Max")
 
 log myLab

@@ -1,5 +1,5 @@
 // define a new class-type dictionary 
-Person #{
+person #{
 	name ""
 	surname ""
 
@@ -14,9 +14,9 @@ Person #{
 }
 
 // create a new Person object and initialize it
-person $(new ~Person "John" "Doe")
+p $(new ~person "John" "Doe")
 
 // use an inner function
-person.sayHello
+p.sayHello
 
 log person

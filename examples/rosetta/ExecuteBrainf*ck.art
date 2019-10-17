@@ -42,21 +42,21 @@ interpret {
     loop $(StateIsValid) {
         command $(get $(characters Code) InstructionPointer)
 
-        | command="+" { set Tape DataPointer Tape.[DataPointer]+1 }
-        | command="-" { set Tape DataPointer Tape.[DataPointer]-1 }
-        | command=">" { DataPointer DataPointer+1, if DataPointer=$(size Tape) { Tape Tape+0 } }
-        | command="<" { DataPointer DataPointer-1 }
-        | command="." { print $(char Tape.[DataPointer]) true }
-        | command="," {
+        if command="+" { set Tape DataPointer Tape.[DataPointer]+1 }
+        if command="-" { set Tape DataPointer Tape.[DataPointer]-1 }
+        if command=">" { DataPointer DataPointer+1, if DataPointer=$(size Tape) { Tape Tape+0 } }
+        if command="<" { DataPointer DataPointer-1 }
+        if command="." { print $(char Tape.[DataPointer]) true }
+        if command="," {
             inp $(toNumber input)
-            | inp=13 { inp 10 }
-            | inp=3  { panic "something went wrong!" }
+            if inp=13 { inp 10 }
+            if inp=3  { panic "something went wrong!" }
             set Tape DataPointer inp
         }
-        | command="[" {
+        if command="[" {
             if Tape.[DataPointer]=0 { InstructionPointer Jumps.[$(toString InstructionPointer)] }
         }
-        | command="]" {
+        if command="]" {
             if Tape.[DataPointer]!=0 { InstructionPointer Jumps.[$(toString InstructionPointer)] }
         }
 

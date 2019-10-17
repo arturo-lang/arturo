@@ -1,6 +1,6 @@
 // Let's define our class
 
-Person #{
+person #{
 	// first the class variables
 	name 	""
 	surname	""
@@ -20,17 +20,17 @@ Person #{
 }
 
 // Let's create a new Person object
-person $(new ~Person "John" "Doe" 33)
+p $(new ~person "John" "Doe" 33)
 
 // Let's invoke an object method
-person.sayHello
+p.sayHello
 
 // Let's access some object variable
-print "the person's age is: " + person.age
+print "the person's age is: " + p.age
 
 // Let's change some of the object's properties
-person.surname "boom"
+p.surname "boom"
 
 // And let's print our object again
 // to see what we've done
-log person
+log p
