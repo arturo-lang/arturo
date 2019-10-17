@@ -15,6 +15,7 @@ import std.algorithm;
 import std.array;
 import std.ascii;
 import std.conv;
+import std.container;
 import std.stdio;
 import std.string;
 import std.typetuple;
@@ -84,7 +85,7 @@ template classMembers(string moduleName) {
     mixin("alias extractClasses!(moduleName, __traits(allMembers, " ~ moduleName ~ ")) classMembers;");
 }
 
-string getSystemFuncs(bool forRegistration=true) {
+string registerSystemFuncs() {
     string[] ret = [];
 
     static foreach(string moduleName; [
@@ -110,23 +111,13 @@ string getSystemFuncs(bool forRegistration=true) {
         "art.web",
         "art.xml",
         "art.yaml"
-        ]) {
-        foreach (string className; classMembers!(moduleName)) {
-            if (forRegistration) {
-                ret ~= ret ~= "setSystemFunctionSymbol(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
+        ]) 
+            foreach (string className; classMembers!(moduleName)) {
+                ret ~= "setSystemFunctionSymbol(new " ~ className ~ "(\"" ~ moduleName.replace("art.","") ~ ":\"));";
+                
             }
-            else {
-                string nm = className.toLower.replace("__",":").replace("_","");
-                ret ~= "\"" ~ className.toLower.replace("__",":").replace("_","") ~ "\"";
-                if (nm.indexOf(":")!=-1) {
-                    ret ~= "\"" ~ nm.split(":")[1] ~ "\"";
-                }
-            }
-        }
-    }
 
-    if (forRegistration) return ret.join("");
-    else return "[\"?info\",\"?functions\",\"?symbols\",\"?write.to\",\"?clear\",\"?help\",\"?exit\"," ~ ret.join(",") ~ "]";
+    return ret.join("");
 }
 
 // Functions
@@ -146,13 +137,16 @@ class Globals : Context {
     Value[string]               memoized;
     Expressions[Identifier]     symboldefs;
     string[]                    activeNamespaces;
-    
+
+    //--------------------------------
+    // Initialization
+    //--------------------------------
 
     this(string[] args) {
         super();
 
         // register system functions
-        mixin(getSystemFuncs(true));
+        mixin(registerSystemFuncs());
 
         // set up stacks
         contextStack = new Stack!(Context);
@@ -451,19 +445,23 @@ class Globals : Context {
     }
 
     //--------------------------------
+    // Helper methods
+    //--------------------------------
+
+    string[] getAutocompletionsForRepl() {
+        return ["?info","?functions","?symbols","?read","?write","?clear","?help","?exit"] ~
+                symbols.keys;
+    }
+
+    //--------------------------------
     // Inspection
     //--------------------------------
 
-    string inspectAllVars() {
-        /*
-        string[] ret;
-        
+    void inspectAllContexts() {
         foreach (i, st; contextStack.list) {
-            ret ~= "\n[" ~ to!string(i) ~ "]: " ~ st.type ~ " -> " ~ "\n" ~ st.inspectVars();
+            writeln("[" ~ to!string(i) ~ ": " ~ st.type ~ "]");
+            st._inspectSymbols(true,false);
         }
-
-        return ret.join(" | ");*/
-        return "TOFIX @ globals.d";
     }
 
     void inspectSymbols() {
