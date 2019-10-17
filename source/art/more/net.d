@@ -40,8 +40,12 @@ class Net__Download_ : Func {
 		Value[] v = validate(ex);
 		alias url = S!(v,0);
 
-		string contents = to!string(std.net.curl.get(url));
-
-		return new Value(contents);
+		try {
+			string contents = to!string(std.net.curl.get(url));
+			return new Value(contents);
+		}
+		catch (Exception ex) {
+			return new Value();
+		}
 	}
 }
