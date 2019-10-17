@@ -453,6 +453,38 @@ class Globals : Context {
                 symbols.keys;
     }
 
+    void printSystemFunctionsForDocumentation(bool markdown=true) {
+        string[] ret;
+
+        if (markdown) {
+            writeln("|  Library  | Function | Description | Syntax |");
+            writeln("| :---      | :---     | :---        | :---   |");
+        }
+
+        auto sortedSymbols = symbols.keys.sort();
+        foreach (string nm; sortedSymbols) {
+            Value va = symbols[nm];
+
+            if (va.type==fV && va.content.f.type==FuncType.systemFunc) {
+                if (markdown && nm.indexOf(":")!=-1) {
+                    writeln("| " ~ nm.split(":")[0] ~ " | **" ~ nm.split(":")[1] ~ "** | " ~ va.content.f.description ~ " | [" ~ va.content.f.getAcceptedConstraintsDescription() ~ "] -> " ~ va.content.f.getReturnValuesDescription() ~ " |");
+                }
+                else {
+                    if (nm.indexOf(":")!=-1) {
+                        ret ~= nm.split(":")[0];
+                        ret ~= nm.split(":")[1];
+                        ret ~= nm;
+                    }
+                }
+            }
+        }
+
+        if (!markdown) {
+            writeln(ret.sort.uniq.array.join("|"));
+        }
+        
+    }
+
     //--------------------------------
     // Inspection
     //--------------------------------
@@ -472,74 +504,4 @@ class Globals : Context {
         contextStack.lastItem()._inspectSymbols(false,true);
     }
 
-    void getFunctionsMarkdown() {
-        /* 
-        // core
-        string[] coreNamespaces = activeNamespaces;
-        Func[][string] coreFuncs;
-        Func[][string] moreFuncs;
-        foreach (Func f; functions) {
-            if (coreNamespaces.canFind(f.namespace)) {
-                coreFuncs[f.namespace] ~= f;
-            }
-            else {
-                moreFuncs[f.namespace] ~= f;
-            }
-        }
-        writeln("#### Main");
-        writeln("The functions below are reserved keywords and can be used at any time, without the use of a namespace");
-        writeln("|  Library  | Function | Description | Syntax |");
-        writeln("| :---      | :---     | :---        | :---   |");
-        foreach (string ns; coreNamespaces.sort()) {
-            Func[] funcs = coreFuncs[ns].sort!((f1,f2) => f1.name<f2.name).array;
-
-            foreach (Func f; funcs) {
-                writeln(f.markdownishWithNamespace());
-            }
-        }
-        string[] moreNamespaces;
-        foreach (string ns, Func[] f; moreFuncs) {
-            if (!moreNamespaces.canFind(ns)) moreNamespaces ~= ns;
-        }
-
-        writeln("#### More");
-        writeln("The functions below have to be used with their namespace");
-        writeln("|  Library  | Function | Description | Syntax |");
-        writeln("| :---      | :---     | :---        | :---   |");
-        foreach (string ns; moreNamespaces.sort()) {
-            Func[] funcs = moreFuncs[ns].sort!((f1,f2) => f1.name<f2.name).array;
-
-            foreach (Func f; funcs) {
-                writeln(f.markdownishWithNamespace());
-            }
-        }
-
-        string[] sblm;
-        foreach(string ns, Func[] f; coreFuncs) {
-            foreach (Func ff; f) {
-                sblm ~= ff.sublimeishWithNamespace(true);
-            }
-        }
-        foreach(string ns, Func[] f; moreFuncs) {
-            foreach (Func ff; f) {
-                sblm ~= ff.sublimeishWithNamespace(false);
-            }
-        }
-        writeln(sblm.join(""));*/
-    }
-
-    void inspect() {
-        Stack!(Context) copied = contextStack.copy();
-        Context currentContext = copied.pop();
-        int level = 0;
-        while (currentContext !is null) {
-            writeln("----------------------");
-            writeln("context: " ~ to!string(level));
-            writeln("----------------------");
-            currentContext._inspect();
-        
-            currentContext = copied.pop();
-            level += 1;
-        }
-    }
 }
