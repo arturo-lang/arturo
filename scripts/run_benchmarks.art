@@ -51,11 +51,11 @@ loop $(sort $(dir "../"+benchmarksDir)) [file]{
 		store $(padLeft title 25) + " |   "
 
 		artPath		benchmarksDir + "/" + file
-		rbPath 		benchmarksDir + "/" + title + ".rb"
-		pyPath		benchmarksDir + "/" + title + ".py"
-		phpPath		benchmarksDir + "/" + title + ".php"
-		luaPath		benchmarksDir + "/" + title + ".lua"
-		tclPath		benchmarksDir + "/" + title + ".tcl"
+		rbPath 		benchmarksDir + "/" + title + ".rb_"
+		pyPath		benchmarksDir + "/" + title + ".py_"
+		phpPath		benchmarksDir + "/" + title + ".php_"
+		luaPath		benchmarksDir + "/" + title + ".lua_"
+		tclPath		benchmarksDir + "/" + title + ".tcl_"
 
 		outPath		benchmarksDir + "/" + title + ".out"
 		expected	""
