@@ -31,13 +31,6 @@ extern (C) void ART_Compile(char[] s) {
     comp.compileFromString(to!string(s));
 }
 
-// Utilities
-
-void showDocumentation() {
-    Globals g = new Globals([]);
-    g.getFunctionsMarkdown();
-}
-
 // Main
 
 void main(string[] args) {
@@ -46,7 +39,7 @@ void main(string[] args) {
     bool warnings;
     bool versionCmd;
     bool helpCmd;
-    bool doc;
+    bool dev;
 
     try {
         auto cmdline = getopt(
@@ -55,7 +48,7 @@ void main(string[] args) {
             "warnings|w",   "Turn warnings ON", &warnings,
             "console|c",    "Interactive console mode (REPL)", &interactiveCmd,
             "version|v",    "Show version information", &versionCmd,
-            "doc|d",        "Show documentation", &doc
+            "dev|d",        "Show developer utility", &dev
         );
 
         if (cmdline.helpWanted) {
@@ -64,8 +57,9 @@ void main(string[] args) {
             exit(0);
         }
 
-        if (doc) {
-            showDocumentation();
+        if (dev) {
+            (new Globals([])).printSystemFunctionsForDocumentation(true);
+            (new Globals([])).printSystemFunctionsForDocumentation(false);
             exit(0);
         }
 
