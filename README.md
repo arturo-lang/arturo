@@ -332,7 +332,8 @@ Build Instructions
 
 - Flex
 - Bison
-- D compiler (preferably DMD) + DUB
+- D compiler (DMD, or - for production builds - preferably LDC)
+- DUB package manager
 
 **Build:**
 
