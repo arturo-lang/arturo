@@ -17,8 +17,3 @@ loop $(range 1 9) [i]{
 	print str true
 	if $(isBalanced str) { print " OK" } { print " Not OK" }
 }
-/*
-foreach (immutable i; 1 .. 9) {
-        immutable s = iota(i * 2).map!(_ => "[]"[uniform(0, 2)]).array;
-        writeln(s.balancedParens('[', ']') ? " OK: " : "bad: ", s);
-    }*/
