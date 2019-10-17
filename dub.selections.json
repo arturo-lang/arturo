@@ -8,7 +8,7 @@
 		"dmarkdown": "0.3.0",
 		"dxml": "0.4.1",
 		"dyaml": "0.8.0",
-		"eventcore": "0.8.46",
+		"eventcore": "0.8.47",
 		"gtk-d": "3.9.0",
 		"libasync": "0.8.4",
 		"libevent": "2.0.2+2.0.16",
@@ -16,13 +16,13 @@
 		"mir-linux-kernel": "1.0.1",
 		"openssl": "1.1.6+1.0.1g",
 		"stdx-allocator": "2.77.5",
-		"taggedalgebraic": "0.11.4",
+		"taggedalgebraic": "0.11.5",
 		"tcltk": "8.6.5",
 		"tinyendian": "0.2.0",
 		"tkd": "1.1.13",
 		"urld": "2.1.1",
-		"vibe-core": "1.6.2",
-		"vibe-d": "0.8.5",
+		"vibe-core": "1.7.0",
+		"vibe-d": "0.8.6",
 		"x11": "1.0.21"
 	}
 }
