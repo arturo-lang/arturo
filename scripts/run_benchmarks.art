@@ -42,13 +42,13 @@ process [path,bin,expect]{
 
 ""
 store "-------------------------------------------------------------------------------------------------------------------"
-store $(padLeft "Algorithm" 18) + " | " + $(padLeft "Arturo" padding) + $(padLeft "Ruby" padding) + $(padLeft "Python" padding) + $(padLeft "PHP" padding) + $(padLeft "Lua" padding) + $(padLeft "Tcl" padding)
+store $(padLeft "Algorithm" 25) + " | " + $(padLeft "Arturo" padding) + $(padLeft "Ruby" padding) + $(padLeft "Python" padding) + $(padLeft "PHP" padding) + $(padLeft "Lua" padding) + $(padLeft "Tcl" padding)
 store "-------------------------------------------------------------------------------------------------------------------"
 
 loop $(sort $(dir "../"+benchmarksDir)) [file]{
 	if $(contains file ".art") {
 		title 		$(replace file ".art" "")
-		store $(padLeft title 18) + " | "
+		store $(padLeft title 25) + " | "
 
 		artPath		benchmarksDir + "/" + file
 		rbPath 		benchmarksDir + "/" + title + ".rb"
