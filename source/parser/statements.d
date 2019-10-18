@@ -47,6 +47,7 @@ class Statements {
 	Statement[] lst;
 
 	this() {
+		lst = [];
 	}
 
 	this(Statement st) {

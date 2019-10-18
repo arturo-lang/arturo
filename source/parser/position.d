@@ -26,6 +26,8 @@ class Position {
 	int line;
 	string filename;
 
+	@disable this();
+
 	this(int l, string f) {
 		line = l;
 		filename = f;

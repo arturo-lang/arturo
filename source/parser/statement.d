@@ -30,7 +30,6 @@ import globals;
 import panic;
 import stack;
 import value;
-import var;
 
 // C Interface
 
@@ -66,8 +65,9 @@ class Statement {
 	bool immut;
 	bool hasExpressions;
 
-
 	Position pos;
+
+	@disable this();
 
 	this(Identifier i) {
 		id = i;
@@ -325,60 +325,7 @@ class Statement {
 
 		return ret;
 	}
-/*
-	Value execute(Value* v, bool isInExpression=false) {
-		if (isInExpression) WARN_ASSIGN(id.getId());
 
-		Value ret;
-		try {
-			switch (type) {
-				case StatementType.normalStatement:
-					Func f;
-					if ((f=Glob.funcGet(id.getJustId(),id.namespace)) !is null) {
-						// it's a system func. call it and return its value
-						ret = executeFunctionCall(f);
-					}
-					else {
-						if (!hasExpressions) {
-							// it's a single-id expression, return its value
-							ret = new Expression(new Argument(id)).evaluate();
-						}
-						else {
-							// it's an assignment - return the result immediately,
-							// no further processing needed
-							return executeAssignment(v,isInExpression);
-						}
-					}
-					break;
-
-				case StatementType.expressionStatement:
-					// it's an expression, return its value
-					ret = expression.evaluate();
-					break;
-				default:
-					return new Value();
-			}
-		}
-		catch (Exception e) {
-			debug writeln("STATEMENT::execute  (" ~ id.inspect() ~ ")-> got exception; reTHROW");
-			throw e;
-		}
-
-		if (v !is null) {
-			// if we are in a dictionary and it was not an assignment
-			// (in which case we've already return the result)
-			// add the expression value to the dictionary's "children" property
-			
-			//bool dont = false;
-			//if (id !is null && id.getId()[0]==':') dont=true;
-			
-			//if (!dont) 
-			assignExpressionValueToParentDict(ret,v);
-		}
-
-		return ret;
-	}
-	*/
 	void inspect() {
 		writeln("statement: " ~ id.getId() ~ " with expressions:");
 	}

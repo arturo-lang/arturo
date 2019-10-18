@@ -53,8 +53,12 @@ class Context {
     }
 
     Value _getSymbol(string sym) {
-        if (sym in symbols) return symbols[sym];
-        else return null;
+        if (sym in symbols) {
+            return symbols[sym];
+        }
+        else {
+            return null;
+        }
     }
 
     void _setSymbol(string sym, Value v) {

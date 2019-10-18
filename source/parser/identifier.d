@@ -70,6 +70,8 @@ class Identifier {
 	bool isSimple;
 	string simpleId;
 
+	@disable this();
+
 	this(string s, bool hsh = false) {
 
 		isSimple = true;

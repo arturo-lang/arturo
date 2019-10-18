@@ -20,16 +20,11 @@ import std.regex;
 
 import parser.identifier;
 
-import value;
-
-import globals;
-
-import panic;
-
-import program;
 import compiler;
-
-import var;
+import globals;
+import panic;
+import program;
+import value;
 
 // C Interface
 
@@ -65,6 +60,8 @@ class Argument {
 	ArgumentType type;
 	Value value;
 	Identifier identifier;
+
+	@disable this();
 
 	this(Identifier iden) {
 		type = ArgumentType.identifierArgument;

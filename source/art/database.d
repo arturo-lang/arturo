@@ -27,7 +27,6 @@ import func;
 import globals;
 import panic;
 import value;
-import var;
 
 // Constants
 
