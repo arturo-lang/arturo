@@ -28,7 +28,8 @@
 		"release": {
 			"buildOptions": ["releaseMode", "optimize", "inline"],
 			"dflags-dmd": [
-				"-J source/resources"
+				"-J source/resources",
+				"-boundscheck=off"
 			],
 			"lflags-dmd": [
 				"-lcurl",
@@ -36,6 +37,7 @@
 			],
 			"dflags-ldc": [
 				"-J=source/resources",
+				"-boundscheck=off",
 				"-flto=full",
 				"-O5",
 				"-Os",
@@ -50,6 +52,7 @@
 			"buildOptions": ["profile", "optimize", "inline", "debugInfo"],
 			"dflags-dmd": [
 				"-J source/resources",
+				"-boundscheck=off",
 				"-wi"
 			],
 			"lflags-dmd": [
@@ -58,6 +61,7 @@
 			],
 			"dflags-ldc": [
 				"-J=source/resources",
+				"-boundscheck=off",
 				"-flto=full",
 				"-O5",
 				"-Os",
