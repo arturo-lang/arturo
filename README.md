@@ -104,12 +104,12 @@ maxLimit 20 $(toNumber &0)
 
 fib $(memoize [x]{
 	if x<2 { 1 }{
-		$(!fib x-1) + $(!fib x-2)
+		$(fib x-1) + $(fib x-2)
 	} 
 })
 
 loop $(range 0 maxLimit) {
-	print $(!fib &)
+	print $(fib &)
 }
 ```
 
