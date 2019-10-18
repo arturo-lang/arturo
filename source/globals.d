@@ -142,6 +142,8 @@ class Globals : Context {
     // Initialization
     //--------------------------------
 
+    @disable this();
+
     this(string[] args) {
         super();
 

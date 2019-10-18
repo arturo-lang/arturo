@@ -77,9 +77,7 @@ class Expression {
 	Identifiers identifiers;
 	Expressions expressions;
 
-	this() {
-
-	}
+	@disable this();
 
 	this(Expression l, string op, Expression r, int tp) {
 		if (tp==0) type = ExpressionType.normalExpression;

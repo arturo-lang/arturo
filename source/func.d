@@ -66,6 +66,8 @@ class Func {
 
     bool isVariadic;
 
+    @disable this();
+
     // system functions
     this (string n, string descr, ValueType[][] vc = [], ValueType[] rets = []) {
         hasInnerFunc = false;

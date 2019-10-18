@@ -17,11 +17,13 @@ import std.stdio;
 
 // Functions
 
+alias lastItem(X) = X.list[X.length-1];
+
 class Stack(T)
 {
     T[] list;
     this() {
-
+        list = [];
     }
 
     Stack!(T) copy() {
