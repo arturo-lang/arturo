@@ -1,7 +1,19 @@
 {
-	"authors": [
-		"drkameleon"
-	],
+	"name": "arturo",
+	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
+	"authors": [ "drkameleon" ],
+	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
+	"license": "MIT",
+	"homepage": "http://arturo-lang.io",
+
+	"dependencies": {
+		"dmarkdown": "~>0.3.0",
+		"dxml": "~>0.4.1",
+		"dyaml": "~>0.8.0",
+		"gtk-d": "~>3.9.0",
+		"urld": "~>2.1.1",
+		"vibe-d:inet": "~>0.8.6"
+	},
 	"configurations": [
 		{
 			"name": "application",
@@ -13,45 +25,53 @@
 		}
 	],
 	"buildTypes": {
-		"debuglldb": {
-			"buildOptions": ["debugInfo", "debugInfoC", "alwaysStackFrame"]
+		"release": {
+			"buildOptions": ["releaseMode", "optimize", "inline"],
+			"dflags-dmd": [
+				"-J source/resources"
+			],
+			"lflags-dmd": [
+				"-lcurl",
+				"-lsqlite3"
+			],
+			"dflags-ldc": [
+				"-J=source/resources",
+				"-flto=full",
+				"-O5",
+				"-Os",
+				"-Oz"
+			],
+			"lflags-ldc": [
+				"-lcurl",
+				"-lsqlite3"
+			]
+		},
+		"profile": {
+			"buildOptions": ["profile", "optimize", "inline", "debugInfo"],
+			"dflags-dmd": [
+				"-J source/resources",
+				"-wi"
+			],
+			"lflags-dmd": [
+				"-lcurl",
+				"-lsqlite3"
+			],
+			"dflags-ldc": [
+				"-J=source/resources",
+				"-flto=full",
+				"-O5",
+				"-Os",
+				"-Oz",
+				"-fprofile-instr-generate",
+				"-fdmd-trace-functions"
+			],
+			"lflags-ldc": [
+				"-lcurl",
+				"-lsqlite3"
+			]
 		}
 	},
-	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
-	"dependencies": {
-		"dmarkdown": "~>0.3.0",
-		"dxml": "~>0.4.1",
-		"dyaml": "~>0.8.0",
-		"gtk-d": "~>3.9.0",
-		"urld": "~>2.1.1",
-		"vibe-d:inet": "~>0.8.6"
-	},
-	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
-	"dflags-dmd": [
-		"-J source/resources",
-		"-noboundscheck"
-	],
-	"dflags-ldc": [
-		"-J=source/resources",
-		"-flto=full",
-		"-O3",
-		"-Os",
-		"-boundscheck=off"
-	],
-	"homepage": "http://arturo-lang.io",
-	"lflags-dmd": [
-		"-lcurl",
-		"-lsqlite3"
-	],
-	"lflags-ldc": [
-		"-lcurl",
-		"-lsqlite3"
-	],
-	"license": "MIT",
-	"name": "arturo",
-	"postBuildCommands": [
-		"strip arturo"
-	],
+	
 	"preBuildCommands": [
 		"scripts/make_parser.sh",
 		"scripts/update_build.sh"
@@ -59,5 +79,8 @@
 	"sourceFiles": [
 		"obj/lexer.o",
 		"obj/parser.o"
+	],
+	"postBuildCommands": [
+		"strip arturo"
 	]
 }
