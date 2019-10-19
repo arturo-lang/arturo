@@ -102,7 +102,7 @@ class Statement {
 				
 			}
 			else if (ex.arg.type==ArgumentType.identifierArgument) {
-				id = ex.arg.identifier;
+				id = ex.arg.content.i;
 				expressions = new Expressions();
 				type = StatementType.normalStatement;
 				immut = false;
