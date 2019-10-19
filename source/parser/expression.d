@@ -63,7 +63,7 @@ enum ExpressionType : string
 
 class Expression {
 
-	ExpressionType type;
+	immutable ExpressionType type;
 
 	Expression left;
 	string operator;
