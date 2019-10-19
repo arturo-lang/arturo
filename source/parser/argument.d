@@ -53,70 +53,102 @@ enum ArgumentType : string
 	identifierArgument = "identifier"
 }
 
+union ArgumentContent
+{
+	Identifier i;
+	Value v;
+}
+
+// Utilities
+
+string formatString(string s) @safe pure nothrow {
+	string f = s;
+
+	if (f[0]=='"') { // double-quoted string
+		f = chompPrefix(chomp(f,"\""),"\"");
+		f = replace(f, "\\\"", "\"");
+	}
+	else {
+		f = chompPrefix(chomp(f,"'"),"'");
+		f = replace(f, "\\'", "'");
+	}
+
+	f = replace(f, "\\t", "\t");
+	f = replace(f, "\\n", "\n");
+	f = replace(f, "\\x1B", "\x1B");
+
+	f = replace(f, "\\1", "\1");
+	f = replace(f, "\\2", "\2");
+	f = replace(f, "\\3", "\3");
+
+	return f;
+}
+
 // Functions
 
 class Argument {
 
-	ArgumentType type;
-	Value value;
-	Identifier identifier;
+	immutable ArgumentType type;
+	ArgumentContent content;
 
 	@disable this();
 
 	this(Identifier iden) {
 		type = ArgumentType.identifierArgument;
-		identifier = iden;
-		//writeln("Argument(Identifier) @ Found identifier: " ~ identifier.getFullIdentifier());
+		content.i = iden;
 	}
 
 	this(string t, string v) {
 		if (t=="string") {
 			type = ArgumentType.stringArgument;
-			value = new Value(formatString(v));
+			content.v = new Value(formatString(v));
 		}
 		else if (t=="number") {
 			type = ArgumentType.numberArgument;
-			if (v.indexOf(".")!=-1) value = new Value(to!real(v));
+
+			// real
+			if (v.indexOf(".")!=-1) content.v = new Value(to!real(v));
 			else {
 				try {
-					value = new Value(to!long(v));
+					// long
+					content.v = new Value(to!long(v));
 				}
 				catch (Exception ex) {
 					// long overflow
 					// let's store it as a BigInt Value
-					value = new Value(v, true);
+					content.v = new Value(v, true);
 				}
 			}
 		}
 		else if (t=="boolean") {
 			type = ArgumentType.booleanArgument;
-			if (v=="true") value = new Value(true);
-			else value = new Value(false);
+			if (v=="true") content.v = new Value(true);
+			else content.v = new Value(false);
 		}
 		else if (t=="null") {
 			type = ArgumentType.nullArgument;
-			value = new Value();
+			content.v = new Value();
 		}
 	}
 
-	bool isStringInterpolated() {
-		if (type==ArgumentType.stringArgument) {
-			if (value.content.s.indexOf("`")!=-1) return true;
+	bool isStringInterpolated() pure nothrow {
+		if (type==sA) {
+			if (content.v.content.s.indexOf("`")!=-1) return true;
 			else return false;
 		}
 		else return false;
 	}
 
 	Value getValue() {
-		if (type==ArgumentType.identifierArgument) {
+		if (type==iA) {
 			Value symbolValue;
 
-			if ((symbolValue = Glob.getSymbol(identifier)) !is null) return symbolValue;
-			else throw new ERR_SymbolNotFound(identifier.getFullIdentifier());
+			if ((symbolValue = Glob.getSymbol(content.i)) !is null) return symbolValue;
+			else throw new ERR_SymbolNotFound(content.i.getFullIdentifier());
 		}
 		else {
 			if (isStringInterpolated()) {
-				string interpol = value.content.s;
+				string interpol = content.v.content.s;
 
 				string replacer(Captures!(string) m) {
     				_program = cast(void*)(new Program());
@@ -131,38 +163,10 @@ class Argument {
     			}
     
     			string finalString = replaceAll!(replacer)(interpol,regex("`([^`]+)`"));
-				value = new Value(finalString);
-
-				return value;
+				
+				return new Value(finalString);
 			}
-			else return value;
+			else return content.v;
 		}
-	}
-
-	string formatString(string s) {
-		string f = s;
-
-		if (f[0]=='"') { // double-quoted string
-			f = chompPrefix(chomp(f,"\""),"\"");
-			f = replace(f, "\\\"", "\"");
-		}
-		else {
-			f = chompPrefix(chomp(f,"'"),"'");
-			f = replace(f, "\\'", "'");
-		}
-
-		f = replace(f, "\\t", "\t");
-		f = replace(f, "\\n", "\n");
-		f = replace(f, "\\x1B", "\x1B");
-
-		f = replace(f, "\\1", "\1");
-		f = replace(f, "\\2", "\2");
-		f = replace(f, "\\3", "\3");
-
-		return f;
-	}
-
-	void inspect() {
-		writeln("\targument (type: " ~ type ~ ", value: " ~ value.toString() ~ ")");
 	}
 }
