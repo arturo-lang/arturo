@@ -52,7 +52,7 @@ class Context {
         return ret;
     }
 
-    Value _getSymbol(string sym) {
+    Value _getSymbol(string sym) @safe nothrow {
         if (sym in symbols) {
             return symbols[sym];
         }
@@ -61,11 +61,11 @@ class Context {
         }
     }
 
-    void _setSymbol(string sym, Value v) {
+    void _setSymbol(string sym, Value v) @safe nothrow {
         symbols[sym] = v;
     }
 
-    void  _unsetSymbol(string sym) {
+    void  _unsetSymbol(string sym) @safe nothrow {
         if (sym in symbols)  {
             symbols.remove(sym);
         }
