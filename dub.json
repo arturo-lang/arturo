@@ -41,7 +41,8 @@
 				"-flto=full",
 				"-O5",
 				"-Os",
-				"-Oz"
+				"-Oz",
+				"-mcpu=native"
 			],
 			"lflags-ldc": [
 				"-lcurl",
