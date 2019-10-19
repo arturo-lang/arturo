@@ -148,7 +148,7 @@ class Globals : Context {
         super();
 
         // register system functions
-        // mixin(registerSystemFuncs());
+        mixin(registerSystemFuncs());
 
         // set up stacks
         contextStack = new Stack!(Context);
