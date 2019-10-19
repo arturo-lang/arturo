@@ -41,10 +41,10 @@ enum FuncType
 // Functions
 
 class Func {
-
+    immutable FuncType type;
+    immutable string description;
     string name;
-    string description;
-    FuncType type;
+    
     Statements block;
 
     ExpressionType[][] expressionConstraints;
@@ -107,6 +107,7 @@ class Func {
     this (string n, Statements b = null, ValueType[][] vc = [], string[] idents = []) {
         hasInnerFunc = false;
         name = n;
+        description = "";
         block = b;
 
         if (b is null) type = FuncType.systemFunc;
@@ -138,6 +139,7 @@ class Func {
         parentContext = null;
         parentThis = null;
 
+        /*
         if (n.indexOf(":")!=-1) {
             string[] parts = n.split(":");
             namespace = parts[0];
@@ -145,12 +147,13 @@ class Func {
         } 
         else {
             namespace = null;
-        }
+        }*/
     }
 
     this (Func f) {
         innerFunc = f.innerFunc;
         hasInnerFunc = f.hasInnerFunc;
+        description = f.description;
         name = f.name;
         block = f.block;
         type = f.type;
@@ -164,8 +167,10 @@ class Func {
     }
 
     this (Value delegate(Value) inner) {
+        description = "";
         hasInnerFunc = true;
         innerFunc = inner;
+        type = FuncType.systemFunc;
     }
 
     string getFullName() {
