@@ -148,7 +148,7 @@ class Globals : Context {
         super();
 
         // register system functions
-        mixin(registerSystemFuncs());
+        // mixin(registerSystemFuncs());
 
         // set up stacks
         contextStack = new Stack!(Context);
@@ -224,15 +224,18 @@ class Globals : Context {
     // Symbols get/set
     //--------------------------------
 
+    pragma(inline)
     void setSystemFunctionSymbol(Func f) {
         setGlobalSymbol(f.name,new Value(f));
     }
 
-    void setGlobalSymbol(string sym, Value v) {
+    pragma(inline)
+    void setGlobalSymbol(string sym, Value v) @safe nothrow {
         _setSymbol(sym,v);
     }
 
-    void unsetGlobalSymbol(string sym) {
+    pragma(inline)
+    void unsetGlobalSymbol(string sym) @safe nothrow {
         _unsetSymbol(sym);
     }
 
