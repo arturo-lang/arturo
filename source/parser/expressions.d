@@ -45,31 +45,19 @@ class Expressions {
 		if (lst==[]) {
 			if (ex.type==ExpressionType.argumentExpression && 
 				ex.arg.type==ArgumentType.identifierArgument &&
-				ex.arg.identifier.isHash) {
+				ex.arg.content.i.isHash) {
 				hasHashId = true;
 			}
 		}
 		lst ~= ex;
 	}
-/*
-	bool hasHashId() {
-		if (lst.length>0) {
-			Expression ex = lst[0];
 
-			if (ex.type==ExpressionType.argumentExpression && 
-				ex.arg.type==ArgumentType.identifierArgument &&
-				ex.arg.identifier.isHash) return true;
-
-		}
-		return false;
-	}
-*/
 	Identifier extractHashId() {
 		Expression hashEx = lst[0];
 
 		lst.popFront();
 
-		return hashEx.arg.identifier;
+		return hashEx.arg.content.i;
 	}
 
 	Value evaluate(bool forceArray=false) {
