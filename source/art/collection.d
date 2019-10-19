@@ -64,7 +64,7 @@ class Contains_ : Func {
 			default: break;
 		}
 
-		return new Value();
+		return NULLV;
 	}
 }
 
@@ -121,7 +121,7 @@ class Find_ : Func {
 			default: break;
 		}
 
-		return new Value();
+		return NULLV;
 	}
 }
 
@@ -160,7 +160,7 @@ class Is__Empty_ : Func {
 			default: break;
 		}
 
-		return new Value();
+		return NULLV;
 	}
 }
 
@@ -175,7 +175,7 @@ class Reverse_ : Func {
 			case aV: return new Value(A!(item).reverse);
 			default: break;
 		}
-		return new Value();
+		return NULLV;
 	}
 }
 
@@ -205,7 +205,7 @@ class Set_ : Func {
 				item.setValueForDict(index,v[2]);
 				return item;
 			}
-			//return new Value();
+			//return NULLV;
 		}
 	}
 }
@@ -239,6 +239,6 @@ class Slice_ : Func {
 			default: break;
 		}
 
-		return new Value();
+		return NULLV;
 	}
 }

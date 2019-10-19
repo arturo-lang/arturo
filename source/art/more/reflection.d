@@ -48,7 +48,7 @@ class Object_ : Func {
 		Value symbolValue;
 
 		if ((symbolValue = Glob.getSymbol(new Identifier(symbolName))) !is null) return symbolValue;
-		else return new Value();
+		else return NULLV;
 	}
 }
 
@@ -77,6 +77,6 @@ class Syms_ : Func {
 
 		Glob.inspectAllContexts();
 
-		return new Value();
+		return NULLV;
 	}
 }

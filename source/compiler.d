@@ -73,11 +73,11 @@ class Compiler {
                 //debug inspect();
                 return sourceTree.execute();
             }
-            else return new Value();
+            else return NULLV;
         }
         catch (Exception e)
         {
-            return new Value();
+            return NULLV;
         }
     }
 
@@ -115,7 +115,7 @@ class Compiler {
         catch (Exception e) {
             //debug writeln("caught exception (compiler level): " ~ e.msg);
         }
-        return new Value(0);
+        return NULLV;
     }
 
     Value compileImport(string source) {

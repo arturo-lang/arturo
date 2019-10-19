@@ -127,7 +127,7 @@ class Argument {
 		}
 		else if (t=="null") {
 			type = ArgumentType.nullArgument;
-			content.v = new Value();
+			content.v = NULLV;
 		}
 	}
 
@@ -147,7 +147,7 @@ class Argument {
 			else throw new ERR_SymbolNotFound(content.i.getFullIdentifier());
 		}
 		else {
-			if (isStringInterpolated()) {
+			/*if (isStringInterpolated()) {
 				string interpol = content.v.content.s;
 
 				string replacer(Captures!(string) m) {
@@ -166,7 +166,7 @@ class Argument {
 				
 				return new Value(finalString);
 			}
-			else return content.v;
+			else*/ return content.v;
 		}
 	}
 }

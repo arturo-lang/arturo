@@ -98,6 +98,7 @@ class Statements {
 					Panic.runtimeError(e.msg, s.pos);
 				}
 			}
+
 		}
 
 		return ret;

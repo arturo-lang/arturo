@@ -17,6 +17,7 @@ import std.net.curl;
 import parser.expressions;
 
 import func;
+import globals;
 import value;
 
 // Functions
@@ -45,7 +46,7 @@ class Net__Download_ : Func {
 			return new Value(contents);
 		}
 		catch (Exception ex) {
-			return new Value();
+			return NULLV;
 		}
 	}
 }

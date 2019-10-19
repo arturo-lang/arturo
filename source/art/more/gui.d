@@ -416,7 +416,7 @@ class Gui__Checkbox_ : Func {
 
 		obj["set"] = new Value(new Func((Value vs){ 
 			(cast(CheckButton)(obj["_object"].content.go)).setActive(vs.content.a[0].content.b); 
-			return new Value(); 
+			return NULLV; 
 		}));
 
 		return obj;
@@ -489,7 +489,7 @@ class Gui__Label_ : Func {
 
 		obj["set"] = new Value(new Func((Value vs){ 
 			(cast(Label)(obj["_object"].content.go)).setMarkup(vs.content.a[0].content.s); 
-			return new Value(); 
+			return NULLV; 
 		}));
 
 		return obj;
@@ -530,7 +530,7 @@ class Gui__Textfield_ : Func {
 
 		obj["set"] = new Value(new Func((Value vs){ 
 			(cast(Entry)(obj["_object"].content.go)).setText(vs.content.a[0].content.s); 
-			return new Value(); 
+			return NULLV; 
 		}));
 
 		return obj;
@@ -577,7 +577,7 @@ class Gui__Window_ : Func {
 
 		obj["close"] = new Value(new Func((Value vs){ 
 			(cast(ApplicationWindow)(obj["_object"].content.go)).close(); 
-			return new Value(); 
+			return NULLV; 
 		}));
 
 		obj["show"] = new Value(new Func((Value vs){ 

@@ -77,6 +77,6 @@ class File__Write_ : Func {
 
 		std.file.write(path, fileContent);
 
-		return new Value();
+		return NULLV;
 	}
 }

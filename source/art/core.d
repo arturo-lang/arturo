@@ -87,7 +87,7 @@ class If_ : Func {
 		}
 		else {
 			if (funcElse !is null) { return funcElse.execute(); }
-			else { return new Value(); }
+			else { return NULLV; }
 		}
 	}
 }
@@ -122,7 +122,7 @@ class Inherit_ : Func {
 
 		Expressions symbolDefExs = Glob.getSymbolDef(symdef);
 
-		if (symbolDefExs is null) return new Value();
+		if (symbolDefExs is null) return NULLV;
 
 		Value ret = symbolDefExs.evaluate();
 		
@@ -142,7 +142,7 @@ class Input_ : Func {
 		string input = readln();
 
 		if (input !is null) return new Value(input);
-		else return new Value();
+		else return NULLV;
 	}
 }
 
@@ -267,7 +267,7 @@ class New_ : Func {
 			return ret;
 		}
 		else {
-			return new Value();
+			return NULLV;
 		}
 	}
 }
@@ -373,7 +373,7 @@ class Unuse_ : Func {
 			}
 		}
 
-		return new Value();
+		return NULLV;
 	}
 }
 
@@ -391,7 +391,7 @@ class Use_ : Func {
 			}
 		}
 
-		return new Value();
+		return NULLV;
 	}
 }
 
