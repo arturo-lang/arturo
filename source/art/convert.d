@@ -88,7 +88,7 @@ class To__Number_ : Func {
 				return new Value(BigInt(input));
 			}
 			else {
-				return new Value();
+				return NULLV;
 			}
 		}
 	}

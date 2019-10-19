@@ -132,8 +132,7 @@ class Statement {
 				return ret;
 			}
 			else {
-				Value args = Value.array();
-				if (expressions !is null) args = expressions.evaluate(true);
+				Value args = (expressions is null) ? Value.array() : expressions.evaluate(true);
 
 				Identifier hashId = expressions.extractHashId();
 				Value ret = f.execute(args,null,to!string(cast(void*)f));
@@ -148,66 +147,24 @@ class Statement {
 				return f.execute(expressions);
 			}
 			else {
-				Value args = Value.array();
-				if (expressions !is null) args = expressions.evaluate(true);
+				Value args = (expressions is null) ? Value.array() : expressions.evaluate(true);
 
 				return f.execute(args,null,to!string(cast(void*)f));
 			}
 		}
 	}
-/*
-	Value executeFunctionCall(Func f) {
-		if (expressions.hasHashId()) {
-			size_t exsBefore = expressions.lst.length;
-			Identifier hashId = expressions.extractHashId();
-
-			size_t exsAfter = expressions.lst.length;
-
-			Value ret = f.execute(expressions,hashId.getId());
-
-			Glob._varSet(hashId.getId(),ret,immut);
-
-			return ret;
-		}
-		else {
-			return f.execute(expressions);
-		}
-	}
-
-	Value executeUserFunctionCall(Func f) {
-		Value args = Value.array();
-		if (expressions !is null) args = expressions.evaluate(true);
-
-		if (expressions.hasHashId()) {
-			size_t exsBefore = expressions.lst.length;
-			Identifier hashId = expressions.extractHashId();
-
-			size_t exsAfter = expressions.lst.length;
-
-			Value ret = f.execute(args,null,to!string(cast(void*)f));
-
-			Glob._varSet(hashId.getId(),ret,immut);
-
-			return ret;
-		}
-		else {
-			return f.execute(args,null,to!string(cast(void*)f));
-		}
-		
-	}*/
 
 	Value executeAssignment(Value* v, bool isInExpression=false) {
 
 		if (v is null) {
-			if (expressions.lst.length==1) {
-				Glob.symboldefs[id] = expressions;
-			}
 		
 			Value ev = expressions.evaluate();
-			
-			if (ev.type==fV) {
-				ev.content.f.name = id.getId();
-			}		
+
+			switch (ev.type) {
+				case dV: if (expressions.lst.length==1) Glob.symboldefs[id] = expressions; break;
+				case fV: ev.content.f.name = id.getId(); break;
+				default: break;
+			}	
 
 			if (!Glob.setSymbol(id,ev)) {
 				throw new ERR_CannotPerformAssignmentError(id.getFullIdentifier());
@@ -250,15 +207,7 @@ class Statement {
 		try {
 			switch(type) {
 				case StatementType.normalStatement:
-					//writeln(id.getFullIdentifier() ~ " : normal statement");
-					/*
-					Func f;
-					if ((f=Glob.funcGet(id.getJustId(),id.namespace)) !is null) {
-						//writeln(id.getFullIdentifier() ~ " : system func call");
-						// SYSTEM FUNCTION CALL
-						ret = executeFunction(f); //executeFunctionCall(f);
-					}
-					else {*/
+
 					Value va;
 
 					if ((va=Glob.getSymbol(id)) !is null) {
@@ -304,7 +253,7 @@ class Statement {
 					break;
 				default:
 					// CONTROL NEVER REACHES THIS POINT
-					return new Value();
+					return NULLV;
 			}
 		}
 		catch (Exception e) {

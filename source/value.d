@@ -35,6 +35,10 @@ import func;
 import globals;
 import panic;
 
+// Globals
+
+__gshared Value NULLV = new Value();
+
 // Constants
 
 enum LOGIFY_PADDING = 16;
@@ -564,7 +568,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(+)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(+)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(+)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
 
@@ -591,7 +595,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(+)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(+)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(+)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -607,7 +611,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(+)","Real","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(+)","Real","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(+)","Real","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -622,7 +626,7 @@ class Value {
                 case ValueType.arrayValue       : return new Value(lhs ~ rhs.stringifyImmut());
                 case ValueType.dictionaryValue  : return new Value(lhs ~ rhs.stringifyImmut());
                 case ValueType.functionValue    : return new Value(lhs ~ rhs.stringifyImmut());
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -643,7 +647,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(+)","Boolean","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(+)","Boolean","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(+)","Boolean","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -668,7 +672,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(+)","Dictionary","Array");
                 case ValueType.dictionaryValue  : return mergeDictWith(rhs);
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(+)","Dictionary","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -681,15 +685,15 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(+)","Function","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(+)","Function","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(+)","Function","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
         else if (type==ValueType.noValue) {
-            return new Value(); // null
+            return NULLV; // null
         }
 
-        return new Value(); // Control never reaches this point
+        return NULLV; // Control never reaches this point
     }
 
     Value opBinary(string op)(in Value rhs) const if (op == "-") {
@@ -705,7 +709,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(-)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(-)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(-)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -731,7 +735,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(-)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(-)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(-)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -747,7 +751,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(-)","Real","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(-)","Real","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(-)","Real","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -762,7 +766,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(-)","String","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(-)","String","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(-)","String","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -783,7 +787,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(-)","Boolean","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(-)","Boolean","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(-)","Boolean","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -804,15 +808,15 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(-)","Function","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(-)","Function","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(-)","Function","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
         else if (type==ValueType.noValue) {
-            return new Value(); // null
+            return NULLV; // null
         }
 
-        return new Value(); // Control never reaches this point
+        return NULLV; // Control never reaches this point
     }
 
     Value opBinary(string op)(in Value rhs) const if (op == "*") {
@@ -841,7 +845,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(*)","Big Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -862,7 +866,7 @@ class Value {
                     case ValueType.arrayValue       : return new Value(replicate(cast(Value[])(rhs.content.a),lhs));
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -879,7 +883,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(*)","Real","Real");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","Real","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","Real","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -895,7 +899,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(*)","String","String");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","String","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","String","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -916,7 +920,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(*)","Boolean","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","Boolean","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","Boolean","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -931,7 +935,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(*)","Array","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","Array","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","Array","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -944,7 +948,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(*)","Dictionary","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","Dictionary","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","Dictionary","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -957,15 +961,15 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(*)","Function","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(*)","Function","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(*)","Function","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
         else if (type==ValueType.noValue) {
-            return new Value(); // null
+            return NULLV; // null
         }
 
-        return new Value(); // Control never reaches this point
+        return NULLV; // Control never reaches this point
     }
 
     Value opBinary(string op)(in Value rhs) const if (op == "/") {
@@ -981,7 +985,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(/)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(/)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(/)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -996,7 +1000,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(/)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(/)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(/)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -1013,7 +1017,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(/)","Real","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(/)","Real","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(/)","Real","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1056,7 +1060,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(/)","Boolean","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(/)","Boolean","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(/)","Boolean","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1083,7 +1087,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(/)","Array","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(/)","Array","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(/)","Array","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1096,7 +1100,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(/)","Dictionary","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(/)","Dictionary","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(/)","Dictionary","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1109,15 +1113,15 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(/)","Function","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(/)","Function","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(/)","Function","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
         else if (type==ValueType.noValue) {
-            return new Value(); // null
+            return NULLV; // null
         }
 
-        return new Value(); // Control never reaches this point
+        return NULLV; // Control never reaches this point
     }
 
     Value opBinary(string op)(in Value rhs) const if (op == "%") {
@@ -1133,7 +1137,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(%)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(%)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(%)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -1148,7 +1152,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(%)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(%)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(%)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -1165,7 +1169,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(%)","Real","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(%)","Real","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(%)","Real","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1201,7 +1205,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(%)","Boolean","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(%)","Boolean","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(%)","Boolean","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1223,7 +1227,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(%)","Array","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(%)","Array","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(%)","Array","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1236,7 +1240,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(%)","Dictionary","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(%)","Dictionary","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(%)","Dictionary","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1249,15 +1253,15 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(%)","Function","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(%)","Function","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(%)","Function","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
         else if (type==ValueType.noValue) {
-            return new Value(); // null
+            return NULLV; // null
         }
 
-        return new Value(); // Control never reaches this point
+        return NULLV; // Control never reaches this point
     }
 
     Value opBinary(string op)(in Value rhs) const if (op == "^^") {
@@ -1274,7 +1278,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(^)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(^)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(^)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -1289,7 +1293,7 @@ class Value {
                     case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(^)","Number","Array");
                     case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(^)","Number","Dictionary");
                     case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(^)","Number","Function");
-                    case ValueType.noValue          : return new Value(); // null
+                    case ValueType.noValue          : return NULLV; // null
                     default                         : break;
                 }
             }
@@ -1306,7 +1310,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(^)","Real","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(^)","Real","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(^)","Real","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1335,7 +1339,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(^)","Boolean","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(^)","Boolean","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(^)","Boolean","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1350,7 +1354,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(^)","Array","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(^)","Array","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(^)","Array","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1363,7 +1367,7 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(^)","Dictionary","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(^)","Dictionary","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(^)","Dictionary","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
@@ -1376,15 +1380,15 @@ class Value {
                 case ValueType.arrayValue       : throw new ERR_OperationNotPermitted("(^)","Function","Array");
                 case ValueType.dictionaryValue  : throw new ERR_OperationNotPermitted("(^)","Function","Dictionary");
                 case ValueType.functionValue    : throw new ERR_OperationNotPermitted("(^)","Function","Function");
-                case ValueType.noValue          : return new Value(); // null
+                case ValueType.noValue          : return NULLV; // null
                 default                         : break;
             }
         }
         else if (type==ValueType.noValue) {
-            return new Value(); // null
+            return NULLV; // null
         }
 
-        return new Value(); // Control never reaches this point
+        return NULLV; // Control never reaches this point
     }
 
     Value opBinary(string op)(in Value rhs) const if (op == "<<") {

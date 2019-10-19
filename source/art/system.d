@@ -38,7 +38,7 @@ class Delay_ : Func {
 
 		Thread.sleep( dur!("msecs")( duration ));
 
-		return new Value();
+		return NULLV;
 	}
 }
 
@@ -88,6 +88,6 @@ class Thread_ : Func {
 			func.execute();
 		});
 
-		return new Value();
+		return NULLV;
 	}
 }

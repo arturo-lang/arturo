@@ -40,7 +40,7 @@ Value getNode(DOMEntity!string nd) {
 		if (item.children.length>0) getNode(item);
 		else writeln(item);
 	}
-	return new Value();
+	return NULLV;
 }
 
 // Functions
@@ -60,7 +60,7 @@ class XML__Test_ : Func {
         getNode(dom);
         //writeln(dom.children);
 
-        return new Value();
+        return NULLV;
 	}
 }
 
