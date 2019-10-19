@@ -1961,6 +1961,7 @@ class Value {
     }
 
     ~this() {
+        //writeln("Destructor called");
         //debug writeln("Destroying: " ~ to!string(this));
     }
 }
