@@ -282,7 +282,7 @@ class Max_ : Func {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
-		Value maxValue = new Value();
+		Value maxValue = NULLV;
 
 		foreach (Value item; arr) {
 			if (item.type!=nV && item.type!=rV) throw new ERR_ExpectedValueTypeError("max","number",item.type);
@@ -324,7 +324,7 @@ class Min_ : Func {
 		Value[] v = validate(ex);
 
 		alias arr = A!(v,0);
-		Value minValue = new Value();
+		Value minValue = NULLV;
 
 		foreach (Value item; arr) {
 			if (item.type!=nV && item.type!=rV) throw new ERR_ExpectedValueTypeError("min","number",item.type);
@@ -415,7 +415,7 @@ class Sample_ : Func {
 		else {
 			auto smpl = arr.randomSample(1).array;
 			if (smpl.length==1) return smpl[0];
-			else return new Value();
+			else return NULLV;
 		}
 	}
 }
@@ -459,6 +459,20 @@ class Sum_ : Func {
 		}
 
 		return ret;
+	}
+}
+
+class Swap_ : Func {
+	this(string ns="") { super(ns ~ "swap","swap array elements at given indices",[[aV,nV,nV]],[aV]); }
+	override Value execute(Expressions ex, string hId=null) {
+		Value[] v = validate(ex);
+		Value arr = v[0];
+		alias from = I!(v,1);
+		alias to = I!(v,2);
+
+		arr.content.a.swapAt(from,to);
+
+		return arr;
 	}
 }
 
