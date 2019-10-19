@@ -132,6 +132,6 @@ struct Val {
 											}
 */
 	~this() {
-		writeln("destructor called");
+		//writeln("destructor called");
 	}
 }
