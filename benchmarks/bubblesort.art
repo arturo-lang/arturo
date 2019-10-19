@@ -3,9 +3,7 @@ bubbleSort [items]{
         swapped false
         loop $(range 0 n-1) [i]{
             if items.[i]>items.[i+1] {
-                tmp items.[i+1]
-                items.[i+1] items.[i]
-                items.[i] tmp
+                swap items i i+1
                 swapped true
             }
         }
