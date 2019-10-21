@@ -19,3 +19,5 @@ arturo-test-*
 *.obj
 *.lst
 *.db
+trace.*
+*.profraw
