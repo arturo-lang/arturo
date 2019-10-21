@@ -244,7 +244,7 @@ class Statement {
 							throw new ERR_SymbolNotFound(id.getFullIdentifier());
 						}
 					}
-					/*}*/
+					
 					break;
 				case StatementType.expressionStatement:
 					//writeln("null : expression statement");
