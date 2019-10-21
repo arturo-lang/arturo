@@ -1,64 +1,19 @@
 {
-	"name": "arturo",
-	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
-	"authors": [ "drkameleon" ],
-	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
-	"license": "MIT",
-	"homepage": "http://arturo-lang.io",
-
-	"dependencies": {
-		"dmarkdown": "~>0.3.0",
-		"dxml": "~>0.4.1",
-		"dyaml": "~>0.8.0",
-		"gtk-d": "~>3.9.0",
-		"urld": "~>2.1.1",
-		"vibe-d:inet": "~>0.8.6"
-	},
-	"configurations": [
-		{
-			"name": "application",
-			"targetType": "executable"
-		},
-		{
-			"name": "library",
-			"targetType": "staticLibrary"
-		}
+	"authors": [
+		"drkameleon"
 	],
 	"buildTypes": {
-		"release": {
-			"buildOptions": ["releaseMode", "optimize", "inline"],
-			"dflags-dmd": [
-				"-J source/resources",
-				"-boundscheck=off"
-			],
-			"lflags-dmd": [
-				"-lcurl",
-				"-lsqlite3"
-			],
-			"dflags-ldc": [
-				"-J=source/resources",
-				"-boundscheck=off",
-				"-flto=full",
-				"-O5",
-				"-Os",
-				"-Oz",
-				"-mcpu=native"
-			],
-			"lflags-ldc": [
-				"-lcurl",
-				"-lsqlite3"
-			]
-		},
 		"profile": {
-			"buildOptions": ["profile", "optimize", "inline", "debugInfo"],
+			"buildOptions": [
+				"debugInfo",
+				"inline",
+				"optimize",
+				"profile"
+			],
 			"dflags-dmd": [
 				"-J source/resources",
 				"-boundscheck=off",
 				"-wi"
-			],
-			"lflags-dmd": [
-				"-lcurl",
-				"-lsqlite3"
 			],
 			"dflags-ldc": [
 				"-J=source/resources",
@@ -70,13 +25,71 @@
 				"-fprofile-instr-generate",
 				"-fdmd-trace-functions"
 			],
+			"lflags-dmd": [
+				"-lcurl",
+				"-lsqlite3"
+			],
+			"lflags-ldc": [
+				"-lcurl",
+				"-lsqlite3"
+			]
+		},
+		"release": {
+			"buildOptions": [
+				"releaseMode",
+				"inline",
+				"optimize"
+			],
+			"dflags-dmd": [
+				"-J source/resources",
+				"-boundscheck=off"
+			],
+			"dflags-ldc": [
+				"-J=source/resources",
+				"-boundscheck=off",
+				"-flto=full",
+				"-O5",
+				"-Os",
+				"-Oz",
+				"-mcpu=native"
+			],
+			"lflags-dmd": [
+				"-lcurl",
+				"-lsqlite3"
+			],
 			"lflags-ldc": [
 				"-lcurl",
 				"-lsqlite3"
 			]
 		}
 	},
-	
+	"configurations": [
+		{
+			"name": "application",
+			"targetType": "executable"
+		},
+		{
+			"name": "library",
+			"targetType": "staticLibrary"
+		}
+	],
+	"copyright": "Copyright © 2019, Yanis Zafirópulos (aka Dr.Kameleon)",
+	"dependencies": {
+		"dmarkdown": "~>0.3.0",
+		"dxml": "~>0.4.1",
+		"dyaml": "~>0.8.0",
+		"emsi_containers": "~>0.7.0",
+		"gtk-d": "~>3.9.0",
+		"urld": "~>2.1.1",
+		"vibe-d:inet": "~>0.8.6"
+	},
+	"description": "Simple, modern and powerful interpreted programming language for super-fast scripting",
+	"homepage": "http://arturo-lang.io",
+	"license": "MIT",
+	"name": "arturo",
+	"postBuildCommands": [
+		"strip arturo"
+	],
 	"preBuildCommands": [
 		"scripts/make_parser.sh",
 		"scripts/update_build.sh"
@@ -84,8 +97,5 @@
 	"sourceFiles": [
 		"obj/lexer.o",
 		"obj/parser.o"
-	],
-	"postBuildCommands": [
-		"strip arturo"
 	]
 }
