@@ -24,6 +24,7 @@ import std.stdio;
 import std.string;
 import std.variant;
 
+version(GTK)
 import gobject.ObjectG;
 
 import parser.statements;
@@ -87,6 +88,8 @@ union ValueContent
     Value[] a;
     Context d;
     void* o;
+
+    version (GTK)
     ObjectG go;
 
 }
@@ -227,7 +230,8 @@ class Value {
         type = ValueType.objectValue;
         content.o = o;
     }
-
+     
+    version (GTK)
     this(ObjectG og) {
         type = ValueType.gobjectValue;
         content.go = og;
@@ -261,9 +265,12 @@ class Value {
             case ValueType.objectValue :
                 content.o = v.content.o;
                 break;
+
+            version(GTK) {
             case ValueType.gobjectValue :
                 content.go = v.content.go;
                 break;
+            }
 
             default: break;
         }
@@ -1720,7 +1727,9 @@ class Value {
                 if (ret=="#{  }") ret = "#{}";
                 return ret;
             case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
+            version(GTK) {
             case ValueType.gobjectValue     : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
+            }
             case ValueType.noValue          : return "\x1B[0;31m" ~ "null" ~ "\x1B[0;37m";
             default                         : return "NULL"; // should never reach this point
         }
@@ -1760,7 +1769,9 @@ class Value {
                 break;
             case ValueType.noValue          : write("null"); break;
             case ValueType.objectValue      : write("<object: 0x" ~ to!string(&content.o) ~ ">"); break;
+            version(GTK) {
             case ValueType.gobjectValue     : write("<gobject: 0x" ~ to!string(&content.go) ~ ">"); break;
+            }
             default                         : write("NULL"); break; // should never reach this point
         }
     }
@@ -1799,7 +1810,9 @@ class Value {
                 break;
             case ValueType.noValue          : writeln("null"); break;
             case ValueType.objectValue      : writeln("<object: 0x" ~ to!string(&content.o) ~ ">"); break;
+            version(GTK) {
             case ValueType.gobjectValue     : writeln("<gobject: 0x" ~ to!string(&content.go) ~ ">"); break;
+            }
             default                         : writeln("NULL"); break; // should never reach this point
         }
     }
@@ -1836,7 +1849,9 @@ class Value {
                 return ret;
             case ValueType.noValue          : return "null";
             case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
+            version(GTK) {
             case ValueType.gobjectValue      : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
+            }
             default                         : return "NULL"; // should never reach this point
         }
     }
@@ -1871,7 +1886,9 @@ class Value {
                 return ret;
             case ValueType.noValue          : return "null";
             case ValueType.objectValue      : return "<object: 0x" ~ to!string(&content.o) ~ ">";
+            version(GTK) {
             case ValueType.gobjectValue      : return "<gobject: 0x" ~ to!string(&content.go) ~ ">";
+            }
             default                         : return "NULL";
         }
     }

@@ -201,7 +201,7 @@ class Func {
         }
         
         if (parentContext !is null) { 
-            Glob.contextStack.push(parentContext);
+            Glob.contextStack.list ~= parentContext; //push(parentContext);
         }
 
         bool thisWasAlreadySet = false;
@@ -211,8 +211,8 @@ class Func {
             Glob.setGlobalSymbol(THIS, parentThis);
         }
 
-        if (name=="" || name is null) Glob.contextStack.push(new Context());
-        else Glob.contextStack.push(new Context(ContextType.functionContext));
+        if (name=="" || name is null) Glob.contextStack.list ~= new Context(); //push(new Context());
+        else Glob.contextStack.list ~= new Context(ContextType.functionContext); //push(new Context(ContextType.functionContext));
 
         if (Glob.trace && name !is null && name.strip()!="") {
             write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
@@ -274,7 +274,7 @@ class Func {
         try {
             // ADDED
             //writeln("FUNC::execute  -> pushing block to stack and executing: " ~ name);
-            Glob.blockStack.push(block);
+            Glob.blockStack.list ~= block; //.push(block);
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());
             
@@ -288,12 +288,13 @@ class Func {
             }
 
             // ADDED
-            if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is block) {
+            if (!Glob.blockStack.list.empty()/*isEmpty()*/ && Glob.blockStack.list.back() is block /*lastItem() is block */) {
                 //writeln("FUNC::execute -> popping block from stack after executing: " ~ name);
-                Glob.blockStack.pop();
+                //Glob.blockStack.pop();
+                Glob.blockStack.list.removeBack();
             } else {
                 // something was returned before
-                if ((name=="" || name is null) && (Glob.blockStack.size()>0)) {
+                if ((name=="" || name is null) && (Glob.blockStack.list.length>0 /*size()>0*/)) {
 
                     //writeln("Glob.globStack => " ~ Glob.blockStack.str());
 
@@ -302,16 +303,18 @@ class Func {
 
                     debug writeln("contextStack: " ~ Glob.contextStack.str());
 
-                    if (parentContext !is null && Glob.contextStack.size() > 1) { 
+                    if (parentContext !is null && Glob.contextStack.list.length > 1 /*size()>1*/) { 
                         debug writeln("POP: contextStack");
-                        Glob.contextStack.pop();
+                        //Glob.contextStack.pop();
+                        Glob.contextStack.list.removeBack();
                     }
 
                     debug writeln("contextStack: " ~ Glob.contextStack.str());
 
-                    if (Glob.contextStack.size() > 1) {
+                    if (Glob.contextStack.list.length > 1 /*size()>1*/) {
                         debug writeln("POP: contextStack");
-                        Glob.contextStack.pop();
+                        //Glob.contextStack.pop();
+                        Glob.contextStack.list.removeBack();
                     }
 
                     debug writeln("contextStack: " ~ Glob.contextStack.str());
@@ -326,16 +329,18 @@ class Func {
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());
 
-            if (parentContext !is null && Glob.contextStack.size() > 1) { 
+            if (parentContext !is null && Glob.contextStack.list.length > 1 /*size()>1*/) { 
                 debug writeln("POP: contextStack");
-                Glob.contextStack.pop();
+                //Glob.contextStack.pop();
+                Glob.contextStack.list.removeBack();
             }
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());
 
-            if (Glob.contextStack.size() > 1) {
+            if (Glob.contextStack.list.length > 1 /*size()>1*/) {
                 debug writeln("POP: contextStack");
-                Glob.contextStack.pop();
+                //Glob.contextStack.pop();
+                Glob.contextStack.list.removeBack();
             }
 
             debug writeln("contextStack: " ~ Glob.contextStack.str());

@@ -255,7 +255,7 @@ class Globals : Context {
 
             if (redefine) {
                 // if we redefine the symbol, just put it on the topmost context
-                contextStack.lastItem()._setSymbol(i.simpleId,v);
+                contextStack.list.back()._setSymbol(i.simpleId,v);
                 return true;
             }
             else {
@@ -269,7 +269,7 @@ class Globals : Context {
                 }
 
                 // symbol did not exist, put it on the topmost context
-                contextStack.lastItem()._setSymbol(i.simpleId,v);
+                contextStack.list.back()._setSymbol(i.simpleId,v);
                 return true;
             }
         }
