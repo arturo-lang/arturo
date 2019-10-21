@@ -86,17 +86,19 @@ class Compiler {
         Glob.warningsOn = warningsOn;
         //writeln("=================================");
         //writeln("Before: " ~ readText(source));
-        string preprocessed;
+        string preprocessed = readText(source);
+        /*
         if (includePath) {
             //writeln("IncludePath: " ~ includePath);
             preprocessed = external.warp.omain.start(["",source,"--I",includePath]);
         }
         else {
             preprocessed = external.warp.omain.start(["",source]);
-        }
+        }*/
         //writeln("=================================");
         //writeln("After: " ~ preprocessed);
         string input = preprocessed ~ "\n";
+        //writeln(input);
         //string input = readText(source) ~ "\n";
 
         yylineno = 0;
