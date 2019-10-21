@@ -1726,6 +1726,84 @@ class Value {
         }
     }
 
+    void doWrite(bool filterHiddenKeys=false) {
+        switch (type) {
+            case ValueType.numberValue      : if (isBig) { write(content.bi); } else { write(content.i); } break;
+            case ValueType.realValue        : write(content.r); break;
+            case ValueType.booleanValue     : write(content.b); break;
+            case ValueType.stringValue      : write(content.s); break;
+            case ValueType.functionValue    : write("<function: 0x" ~ to!string(&content.f) ~ ">"); break;
+            case ValueType.arrayValue       : 
+                string ret = "#(";
+                string[] items;
+                foreach (Value v; content.a) {
+                    items ~= v.stringify();
+                }
+                ret ~= items.join(" ");
+                ret ~= ")";
+                write(ret);
+                break;
+            case ValueType.dictionaryValue  :
+                string ret = "#{ ";
+                string[] items;
+                auto sortedKeys = content.d.symbols.keys.array.sort();
+                foreach (string key; sortedKeys) {
+                    if (!filterHiddenKeys || (filterHiddenKeys && !key.startsWith("_"))) {
+                        Value v = getValueFromDict(key);
+                        items ~= key ~ " " ~ v.stringify();
+                    }
+                }
+                ret ~= items.join(", ");
+                ret ~= " }";
+                if (ret=="#{  }") ret = "#{}";
+                write(ret);
+                break;
+            case ValueType.noValue          : write("null"); break;
+            case ValueType.objectValue      : write("<object: 0x" ~ to!string(&content.o) ~ ">"); break;
+            case ValueType.gobjectValue     : write("<gobject: 0x" ~ to!string(&content.go) ~ ">"); break;
+            default                         : write("NULL"); break; // should never reach this point
+        }
+    }
+
+    void doWriteln(bool filterHiddenKeys=false) {
+        switch (type) {
+            case ValueType.numberValue      : if (isBig) { writeln(content.bi); } else { writeln(content.i); } break;
+            case ValueType.realValue        : writeln(content.r); break;
+            case ValueType.booleanValue     : writeln(content.b); break;
+            case ValueType.stringValue      : writeln(content.s); break;
+            case ValueType.functionValue    : writeln("<function: 0x" ~ to!string(&content.f) ~ ">"); break;
+            case ValueType.arrayValue       : 
+                string ret = "#(";
+                string[] items;
+                foreach (Value v; content.a) {
+                    items ~= v.stringify();
+                }
+                ret ~= items.join(" ");
+                ret ~= ")";
+                writeln(ret);
+                break;
+            case ValueType.dictionaryValue  :
+                string ret = "#{ ";
+                string[] items;
+                auto sortedKeys = content.d.symbols.keys.array.sort();
+                foreach (string key; sortedKeys) {
+                    if (!filterHiddenKeys || (filterHiddenKeys && !key.startsWith("_"))) {
+                        Value v = getValueFromDict(key);
+                        items ~= key ~ " " ~ v.stringify();
+                    }
+                }
+                ret ~= items.join(", ");
+                ret ~= " }";
+                if (ret=="#{  }") ret = "#{}";
+                writeln(ret);
+                break;
+            case ValueType.noValue          : writeln("null"); break;
+            case ValueType.objectValue      : writeln("<object: 0x" ~ to!string(&content.o) ~ ">"); break;
+            case ValueType.gobjectValue     : writeln("<gobject: 0x" ~ to!string(&content.go) ~ ">"); break;
+            default                         : writeln("NULL"); break; // should never reach this point
+        }
+    }
+
     string stringify(bool withquotes=true, bool filterHiddenKeys=false) {
         switch (type) {
             case ValueType.numberValue      : if (isBig) { return to!string(content.bi); } else { return to!string(content.i); }
