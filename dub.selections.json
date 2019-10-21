@@ -8,6 +8,7 @@
 		"dmarkdown": "0.3.0",
 		"dxml": "0.4.1",
 		"dyaml": "0.8.0",
+		"emsi_containers": "0.7.0",
 		"eventcore": "0.8.47",
 		"gtk-d": "3.9.0",
 		"libasync": "0.8.4",
