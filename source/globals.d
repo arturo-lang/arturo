@@ -186,6 +186,8 @@ class Globals : Context {
             }
         }
 
+        rehashGlobalSymbols();
+
         activeNamespaces = activeNamespaces.uniq.array;
     }
 
@@ -206,6 +208,8 @@ class Globals : Context {
             }
         }
 
+        rehashGlobalSymbols();
+
         activeNamespaces = newNamespaces.uniq.array;
     }
 
@@ -223,6 +227,11 @@ class Globals : Context {
     //--------------------------------
     // Symbols get/set
     //--------------------------------
+
+    pragma(inline)
+    void rehashGlobalSymbols() nothrow {
+        _rehash();
+    }
 
     pragma(inline)
     void setSystemFunctionSymbol(Func f) {
