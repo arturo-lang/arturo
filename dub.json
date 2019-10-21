@@ -8,22 +8,25 @@
 				"debugInfo",
 				"inline",
 				"optimize",
-				"profile"
+				"profile",
+				"profileGC",
+				"noBoundsCheck",
+				"ignoreUnknownPragmas",
+				"coverage",
+				"warnings"
 			],
 			"dflags-dmd": [
-				"-J source/resources",
-				"-boundscheck=off",
-				"-wi"
+				"-J source/resources"
 			],
 			"dflags-ldc": [
 				"-J=source/resources",
-				"-boundscheck=off",
 				"-flto=full",
 				"-O5",
 				"-Os",
 				"-Oz",
 				"-fprofile-instr-generate",
-				"-fdmd-trace-functions"
+				"-fdmd-trace-functions",
+				"-fcoverage-mapping"
 			],
 			"lflags-dmd": [
 				"-lcurl",
@@ -38,15 +41,15 @@
 			"buildOptions": [
 				"releaseMode",
 				"inline",
-				"optimize"
+				"optimize",
+				"noBoundsCheck",
+				"ignoreUnknownPragmas"
 			],
 			"dflags-dmd": [
-				"-J source/resources",
-				"-boundscheck=off"
+				"-J source/resources"
 			],
 			"dflags-ldc": [
 				"-J=source/resources",
-				"-boundscheck=off",
 				"-flto=full",
 				"-O5",
 				"-Os",
@@ -54,18 +57,30 @@
 				"-mcpu=native"
 			],
 			"lflags-dmd": [
-				"-lcurl",
-				"-lsqlite3"
+				"-lcurl"
 			],
 			"lflags-ldc": [
-				"-lcurl",
-				"-lsqlite3"
+				"-lcurl"
 			]
 		}
 	},
 	"configurations": [
 		{
 			"name": "application",
+			"targetType": "executable",
+			"versions": ["GTK","SQLITE"],
+			"dependencies": {
+				"gtk-d": "~>3.9.0"
+			},
+			"lflags-dmd": [
+				"-lsqlite3"
+			],
+			"lflags-ldc": [
+				"-lsqlite3"
+			]
+		},
+		{
+			"name": "light",
 			"targetType": "executable"
 		},
 		{
@@ -79,7 +94,6 @@
 		"dxml": "~>0.4.1",
 		"dyaml": "~>0.8.0",
 		"emsi_containers": "~>0.7.0",
-		"gtk-d": "~>3.9.0",
 		"urld": "~>2.1.1",
 		"vibe-d:inet": "~>0.8.6"
 	},
