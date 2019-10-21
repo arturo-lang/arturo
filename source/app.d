@@ -57,11 +57,6 @@ void main(string[] args) {
             exit(0);
         }
 
-        if (test) {
-            runTests();
-            exit(0);
-        }
-
         if (dev) {
             (new Globals([])).printSystemFunctionsForDocumentation(true);
             (new Globals([])).printSystemFunctionsForDocumentation(false);
