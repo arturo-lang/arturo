@@ -18,6 +18,8 @@ import std.stdio;
 import std.string;
 import std.typetuple;
 
+//import containers.hashmap;
+
 import parser.identifier;
 import parser.statements;
 
@@ -39,6 +41,7 @@ enum ContextType : string
 // Functions
 
 class Context {
+    //HashMap!(string, Value) symbols;
     Value[string] symbols;
     ContextType type;
 
@@ -48,11 +51,18 @@ class Context {
 
     Context dup() {
         Context ret = new Context(type);
+        /*
+        writeln("DUP: context");
+        foreach (string k,Value v; symbols) {
+            ret.symbols[k] = v;
+        }*/
         ret.symbols = symbols.dup;
         return ret;
     }
 
-    Value _getSymbol(string sym) @safe nothrow {
+    Value _getSymbol(string sym) @safe {
+        /*return symbols.get(sym,null);*/
+
         if (sym in symbols) {
             return symbols[sym];
         }
@@ -66,9 +76,12 @@ class Context {
     }
 
     void  _unsetSymbol(string sym) @safe nothrow {
-        if (sym in symbols)  {
-            symbols.remove(sym);
-        }
+        /*symbols.remove(sym);*/
+        symbols.remove(sym);
+    }
+
+    void _rehash() nothrow {
+        symbols.rehash();
     }
 
     void _inspectSymbol(string nm, Value va, bool full=false){
