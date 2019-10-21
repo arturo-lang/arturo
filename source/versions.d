@@ -34,6 +34,12 @@ version(Windows)    { enum ART_BUILD_OS = "Windows"; }
 version(FreeBSD)    { enum ART_BUILD_OS = "FreeBSD"; }
 version(Solaris)    { enum ART_BUILD_OS = "Solaris"; }
 
+version(DigitalMars)    { enum ART_BUILD_COMPILER = "dmd"; }
+version(LDC)            { enum ART_BUILD_COMPILER = "ldc"; }
+
+version(GTK)        { enum ART_BUILD_GTK    = "+gtk"; }     else { enum ART_BUILD_GTK = ""; }
+version(SQLITE)     { enum ART_BUILD_SQLITE = "+sqlite"; }  else { enum ART_BUILD_SQLITE = ""; }
+
 enum VERSION_TEMPLATE       = import("version_template.txt").replace("\\x1B","\x1B");
 
 enum LOGO_TEMPLATE          = import("logo_template.txt").replace("\\x1B","\x1B");
@@ -42,16 +48,22 @@ enum LOGO_TEMPLATE          = import("logo_template.txt").replace("\\x1B","\x1B"
 
 void showVersion() {
     writeln(format(VERSION_TEMPLATE,
-        ART_NAME, ART_VERSION, ART_BUILD_DATE, ART_BUILD, ART_BUILD_BITS, ART_BUILD_OS));
+        ART_NAME, ART_VERSION, ART_BUILD_DATE, ART_BUILD, ART_BUILD_BITS, 
+        ART_BUILD_GTK ~ ART_BUILD_SQLITE, ART_BUILD_COMPILER,
+        ART_BUILD_OS));
 }
 
 void showLogo(Terminal* t = null) {
     if (t is null)
         writeln(format(LOGO_TEMPLATE,
-            ART_NAME, ART_VERSION, ART_BUILD_DATE, ART_BUILD, ART_BUILD_BITS, ART_BUILD_OS,
+            ART_NAME, ART_VERSION, ART_BUILD_DATE, ART_BUILD, ART_BUILD_BITS, 
+            ART_BUILD_GTK ~ ART_BUILD_SQLITE, ART_BUILD_COMPILER,
+            ART_BUILD_OS,
             ART_COPYRIGHT, ART_AUTHOR));
     else
         t.writeln(format(LOGO_TEMPLATE,
-            ART_NAME, ART_VERSION, ART_BUILD_DATE, ART_BUILD, ART_BUILD_BITS, ART_BUILD_OS,
+            ART_NAME, ART_VERSION, ART_BUILD_DATE, ART_BUILD, ART_BUILD_BITS, 
+            ART_BUILD_GTK ~ ART_BUILD_SQLITE, ART_BUILD_COMPILER,
+            ART_BUILD_OS,
             ART_COPYRIGHT, ART_AUTHOR));
 }
