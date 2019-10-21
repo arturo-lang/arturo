@@ -325,15 +325,25 @@ class Print_ : Func {
 		Value[] v = validate(ex);
 		Value item = v[0];
 
-		if (item.type==sV) write(item.content.s);
-		else write(item.stringify(true,true));
+		if (v.length==2 && B!(v,1)) {
+			item.doWrite(true);
+			stdout.flush();
+		}
+		else {
+			item.doWriteln(true);
+		}
 
-		stdout.flush();
-
-		if (v.length==2) {
-			if (!B!(v,1)) writeln();
-		} else writeln();
-
+		/*
+		if (v.length==2 && B!(v,1)) {
+			if (item.type==sV) write(item.content.s);
+			else write(item.stringify(true,true));
+			stdout.flush();
+		}
+		else {
+			if (item.type==sV) writeln(item.content.s);
+			else writeln(item.stringify(true,true));
+		}
+		*/
 		return v[0];
 	}
 }
