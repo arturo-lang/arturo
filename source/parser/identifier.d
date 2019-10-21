@@ -78,7 +78,7 @@ class Identifier {
 		string cleanstr = s;
 		isHash = hsh;
 		simpleId = s;
-
+		/*
 		if (s.indexOf(ARGS)!=-1) {
 			auto m = matchFirst(s, regex(ARGS ~ "(?P<index>[0-9]+)"));
 			if (m["index"]!=[]) {
@@ -97,7 +97,7 @@ class Identifier {
 			}
 		
 		} 
-		else {
+		else {*/
 			if (isHash) {
 				cleanstr = cleanstr.replace("@","");
 			}
@@ -106,7 +106,7 @@ class Identifier {
 			PathContent pc = {cleanstr};
 			pathContents = [ pc ];
 			simpleId = cleanstr;
-		}
+		/*}*/
 	}
 
 	void add(string s) {
