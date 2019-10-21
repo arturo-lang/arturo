@@ -17,7 +17,9 @@
 		"-O5",
 		"-Os",
 		"-Oz",
-		"-mcpu=native"
+		"-mcpu=native",
+		"-fcoverage-mapping",
+		"-profile"
 	],
 	"license": "proprietary",
 	"name": "test"
