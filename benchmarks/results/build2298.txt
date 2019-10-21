@@ -1,0 +1,17 @@
+after rehashing global context symbols (during startup only)
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           256         424         110         43          80          
+assign_print_120k         |   X           254         404         181         106         172         
+assign_print_480k         |   X           793         1560        X           412         630         
+assign_print_960k         |   X           1565        3056        X           815         1245        
+bubblesort                |   5230        284         293         255         -           2778        
+factorial                 |   6805        311         X           X           X           X           
+factorial_prod            |   434         319         187         X           -           -           
+fibonacci                 |   8077        141         246         144         142         3919        
+fibonacci_mem             |   236         5967        55          X           -           -           
+is_prime_lib              |   67          91          571         81          12          43          
+loop_assign_incr_5m       |   6431        387         475         X           -           8043        
+quicksort                 |   2981        183         177         179         -           21865       
+single_comments_1m        |   354         186         198         85          5           69          
