@@ -15,15 +15,18 @@ import std.array;
 import std.conv;
 import std.stdio;
 
+import containers.dynamicarray;
+
 // Functions
 
 alias lastItem(X) = X.list[X.length-1];
 
 class Stack(T)
 {
-    T[] list;
+    DynamicArray!T list;
+    //T[] list;
     this() {
-        list = [];
+        //list = [];
     }
 
     Stack!(T) copy() {
@@ -42,8 +45,8 @@ class Stack(T)
 
     T pop() {
         if (!isEmpty()) {
-            T item = list[list.length-1];
-            list.popBack();
+            T item = list.back();//list[list.length-1];
+            list.removeBack();//list.popBack();
 
             return item;
         }
@@ -51,15 +54,18 @@ class Stack(T)
     }
 
     bool isEmpty() {
-        return list.length==0;
+        return list.empty();
+        //return list.length==0;
     }
 
     ulong size() {
-        return list.length;
+        return list.length();
+        //return list.length;
     }
 
     T lastItem() {
-        return list[list.length-1];
+        return list.back();
+        //return list[list.length-1];
     }
 
     void print() {
