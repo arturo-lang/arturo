@@ -5,7 +5,7 @@ examples/dev/
 docs/
 /arturo
 /test.d
-/test
+#/test
 /scripts/update_build_number.awk
 arturo.so
 arturo.dylib
