@@ -192,13 +192,14 @@ class Expression {
 	Value evaluateDictionaryExpression() {
 		Value res = Value.dictionary();
 
-		Glob.contextStack.push(res.content.d);
+		Glob.contextStack.list ~= res.content.d; //push
 
 		foreach (Statement s; statements.lst) {
 			s.execute(&res);
 		}
 
-		Glob.contextStack.pop();
+		//Glob.contextStack.pop();
+		Glob.contextStack.list.removeBack();
 
 		return res;
 	}
