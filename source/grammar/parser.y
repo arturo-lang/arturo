@@ -47,7 +47,6 @@ extern void* new_ExpressionFromArray(void* ar);
 extern void* new_Statement(char* id);
 extern void* new_StatementFromExpression(void* ex);
 extern void* new_StatementWithExpressions(char* id, void* ex);
-extern void* new_ImmutableStatementWithExpressions(char* id, void* ex);
 extern void* new_Expressions();
 extern void* new_Statements();
 

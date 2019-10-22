@@ -52,7 +52,7 @@ Program sourceTree;
 
 // Functions
 
-class Compiler {
+final class Compiler {
 
     this(bool main=true, string[] args = []) {
         _program = cast(void*)(new Program());

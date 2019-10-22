@@ -76,7 +76,7 @@ string getErrorString(string msg, string symbol, string[] entryStrings, string[]
 
 // Functions
 
-class WARN_ErroneousParameterValueIgnored : Exception {
+final class WARN_ErroneousParameterValueIgnored : Exception {
     this(string param, string value) {
         super( getErrorString("Erroneous parameter value will be ignored ", null,
             ["Parameter", "Value"],
@@ -85,7 +85,7 @@ class WARN_ErroneousParameterValueIgnored : Exception {
     }
 }
 
-class WARN_AssignmentInsideExpression : Exception {
+final class WARN_AssignmentInsideExpression : Exception {
     this(string symbol) {
         super( getErrorString("Found assignment inside expression ", null,
             ["Symbol"],
@@ -94,25 +94,25 @@ class WARN_AssignmentInsideExpression : Exception {
     }
 }
 
-class ERR_FunctionNotFound : Exception {
+final class ERR_FunctionNotFound : Exception {
     this(string symbol) {
         super( getErrorString("Function not found", symbol, [], []) );
     }
 }
 
-class ERR_SymbolNotFound : Exception {
+final class ERR_SymbolNotFound : Exception {
     this(string symbol) {
         super( getErrorString("Variable not found", symbol, [], []) );
     }
 }
 
-class ERR_FileNotFound : Exception {
+final class ERR_FileNotFound : Exception {
     this(string filePath) {
         super( getErrorString("File not found", filePath, [], []) );
     }
 }
 
-class ERR_IndexNotFound : Exception {
+final class ERR_IndexNotFound : Exception {
     this(long index, string object) {
         super( getErrorString("Index out of range", to!string(index), ["Object"], [object]) );
     }
@@ -122,19 +122,19 @@ class ERR_IndexNotFound : Exception {
     }
 }
 
-class ERR_ArrayNotSortable : Exception {
+final class ERR_ArrayNotSortable : Exception {
     this(string object) {
         super( getErrorString("Array not sortable", null, ["Object"], [object]) );
     }
 }
 
-class ERR_ObjectNotIndexable : Exception {
+final class ERR_ObjectNotIndexable : Exception {
     this(string object, string index) {
         super( getErrorString("Object not indexable", null, ["Object", "Index"], [object, index]) );
     }
 }
 
-class ERR_ExpectedValueTypeError : Exception {
+final class ERR_ExpectedValueTypeError : Exception {
     this(string funcName, string expected, string given) {
         super( getErrorString("Erroneous value type for", funcName,
             ["Expected", "Given"],
@@ -143,7 +143,7 @@ class ERR_ExpectedValueTypeError : Exception {
     } 
 }
 
-class ERR_FunctionCallConstraintsError : Exception {
+final class ERR_FunctionCallConstraintsError : Exception {
     this(string funcName, string expected, string given) {
         super( getErrorString("Erroneous argument types for function",funcName,
             ["Expected", "Given"],
@@ -152,7 +152,7 @@ class ERR_FunctionCallConstraintsError : Exception {
     }
 }
 
-class ERR_FunctionCallErrorNotEnough : Exception {
+final class ERR_FunctionCallErrorNotEnough : Exception {
     this(string funcName, ulong minArgs, ulong curArgs, bool userFunc = false) {
         if (!userFunc) {
             super( getErrorString("Not enough arguments for function",funcName,
@@ -169,7 +169,7 @@ class ERR_FunctionCallErrorNotEnough : Exception {
     }
 }
 
-class ERR_FunctionCallErrorTooMany : Exception {
+final class ERR_FunctionCallErrorTooMany : Exception {
     this(string funcName, ulong maxArgs, ulong curArgs, bool userFunc = false) {
         if (!userFunc) {
             super( getErrorString("Too many arguments for function",funcName,
@@ -186,7 +186,7 @@ class ERR_FunctionCallErrorTooMany : Exception {
     }
 } 
 
-class ERR_ErroneousObjectTypeError : Exception {
+final class ERR_ErroneousObjectTypeError : Exception {
     this(string funcName, string expected, string given) {
         super( getErrorString("Erroneous object type for ",funcName,
             ["Expected", "Given"],
@@ -195,7 +195,7 @@ class ERR_ErroneousObjectTypeError : Exception {
     }
 }
 
-class ERR_FunctionCallValueError : Exception {
+final class ERR_FunctionCallValueError : Exception {
     this(string funcName, int arg, string expected, string given) {
         super( getErrorString("Error calling function",funcName,
             ["Argument", "Expected", "Given"],
@@ -204,7 +204,7 @@ class ERR_FunctionCallValueError : Exception {
     }
 }
 
-class ERR_ModifyingImmutableVariableError : Exception {
+final class ERR_ModifyingImmutableVariableError : Exception {
     this(string id) {
         super( getErrorString("Trying to modify immutable variable",null,
             ["Identifier"],
@@ -213,7 +213,7 @@ class ERR_ModifyingImmutableVariableError : Exception {
     }
 }
 
-class ERR_CannotPerformAssignmentError : Exception {
+final class ERR_CannotPerformAssignmentError : Exception {
     this(string id) {
         super( getErrorString("Could not perform assignment - perhaps variable doesn't exist?",null,
             ["Identifier"],
@@ -222,7 +222,7 @@ class ERR_CannotPerformAssignmentError : Exception {
     }
 }
 
-class ERR_DatabaseError : Exception {
+final class ERR_DatabaseError : Exception {
     this(string msg) {
         super( getErrorString("Database error",null,
             ["Message"],
@@ -231,7 +231,7 @@ class ERR_DatabaseError : Exception {
     }
 }
 
-class ERR_ConsoleCommandNotFoundError : Exception {
+final class ERR_ConsoleCommandNotFoundError : Exception {
     this(string cmd) {
         super( getErrorString("Command not found",cmd,
             [],
@@ -240,7 +240,7 @@ class ERR_ConsoleCommandNotFoundError : Exception {
     }
 }
 
-class ERR_ConsoleIdentifierNotFoundError : Exception {
+final class ERR_ConsoleIdentifierNotFoundError : Exception {
     this(string cmd) {
         super( getErrorString("Identifier not found",cmd,
             [],
@@ -249,7 +249,7 @@ class ERR_ConsoleIdentifierNotFoundError : Exception {
     }
 }
 
-class ERR_OperationNotPermitted : Exception {
+final class ERR_OperationNotPermitted : Exception {
     this(string operation, string arg1, string arg2) {
         super( getErrorString("Operation not permited",operation,
             ["Argument", "With"],
@@ -258,7 +258,7 @@ class ERR_OperationNotPermitted : Exception {
     }
 }
 
-class ERR_CannotCompareTypesError : Exception {
+final class ERR_CannotCompareTypesError : Exception {
     this(string arg1, string arg2) {
         super( getErrorString("Cannot compare arguments of given types",null,
             ["Argument", "With"],
@@ -267,7 +267,7 @@ class ERR_CannotCompareTypesError : Exception {
     }
 }
 
-class ERR_ProgramPanic : Exception {
+final class ERR_ProgramPanic : Exception {
     this(string msg) {
         super( getErrorString("Program panic",null,
             ["Message"],
@@ -276,7 +276,7 @@ class ERR_ProgramPanic : Exception {
     }
 }
 
-class Panic
+final class Panic
 {
     static void parseError(string msg, string filename, int line) {
         writeln(msg);

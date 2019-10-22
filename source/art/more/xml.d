@@ -45,7 +45,7 @@ Value getNode(DOMEntity!string nd) {
 
 // Functions
 
-class XML__Test_ : Func {
+final class XML__Test_ : Func {
 	this(string ns="") { super(ns ~ "test","check integrity of XML input using given string",[[]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -64,7 +64,7 @@ class XML__Test_ : Func {
 	}
 }
 
-class XML__Check_ : Func {
+final class XML__Check_ : Func {
 	this(string ns="") { super(ns ~ "check","check integrity of XML input using given string",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -72,10 +72,10 @@ class XML__Check_ : Func {
 
 		try {
 			std.xml.check(input);
-			return new Value(true);
+			return TRUEV;
 		}
 		catch (CheckException c) {
-			return new Value(false);
+			return FALSEV;
 		}
 	}
 }

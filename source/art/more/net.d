@@ -22,7 +22,7 @@ import value;
 
 // Functions
 
-class Net__Post_ : Func {
+final class Net__Post_ : Func {
 	this(string ns="") { super(ns ~ "post","perform POST request using given URL and data",[[sV,sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -35,7 +35,7 @@ class Net__Post_ : Func {
 	}
 }
 
-class Net__Download_ : Func {
+final class Net__Download_ : Func {
 	this(string ns="") { super(ns ~ "download","download string contents from webpage using given URL",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

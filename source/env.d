@@ -18,7 +18,7 @@ import value;
 
 // Functions
 
-class Env {
+final class Env {
 
     string currentFolder;
     string fileFolder;

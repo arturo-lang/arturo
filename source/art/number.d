@@ -69,7 +69,7 @@ string registerMathFunc(string func, string funcName = null) {
 	string ff = func;
 	if (funcName !is null) ff = funcName;
 	return "
-		class " ~ capitalize(func) ~ "_ : Func {
+		final class " ~ capitalize(func) ~ "_ : Func {
 			this(string ns=\"\") { super(ns ~ \"" ~ func ~ "\",\"get '" ~ func ~ "' for given number\",[[nV],[rV]],[rV]); }
 			override Value execute(Expressions ex, string hId=null) {
 				Value[] v = validate(ex);
@@ -92,7 +92,7 @@ string registerMathFunc(string func, string funcName = null) {
 
 // Functions
 
-class Even_ : Func {
+final class Even_ : Func {
 	this(string ns="") { super(ns ~ "even","check if given number is even",[[nV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -102,7 +102,7 @@ class Even_ : Func {
 	}
 }
 
-class Is__Prime_ : Func {
+final class Is__Prime_ : Func {
 	this(string ns="") { super(ns ~ "isPrime","check if given number is prime (uses the Miller-Rabin algorithm)",[[nV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -112,7 +112,7 @@ class Is__Prime_ : Func {
 	}
 }
 
-class Odd_ : Func {
+final class Odd_ : Func {
 	this(string ns="") { super(ns ~ "odd","check if given number is odd",[[nV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -122,7 +122,7 @@ class Odd_ : Func {
 	}
 }
 
-class Prime__Factors_ : Func {
+final class Prime__Factors_ : Func {
 	this(string ns="") { super(ns ~ "primeFactors","get list of prime factors for given number",[[nV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -141,7 +141,7 @@ class Prime__Factors_ : Func {
 }
 
 
-class Random_ : Func {
+final class Random_ : Func {
 	this(string ns="") { super(ns ~ "random","generate random number in given range (from..to)",[[nV,nV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -154,7 +154,7 @@ class Random_ : Func {
 	}
 }
 
-class Shl_ : Func {
+final class Shl_ : Func {
 	this(string ns="") { super(ns ~ "shl","bitwise left shift",[[nV,nV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -166,7 +166,7 @@ class Shl_ : Func {
 	}
 }
 
-class Shr_ : Func {
+final class Shr_ : Func {
 	this(string ns="") { super(ns ~ "shr","bitwise right shift",[[nV,nV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

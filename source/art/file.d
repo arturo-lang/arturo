@@ -30,7 +30,7 @@ import value;
 
 // Functions
 
-class File__Exists_ : Func {
+final class File__Exists_ : Func {
 	this(string ns="") { super(ns ~ "exists","check if file exists at given path",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -42,7 +42,7 @@ class File__Exists_ : Func {
 	}
 }
 
-class File__Filesize_ : Func {
+final class File__Filesize_ : Func {
 	this(string ns="") { super(ns ~ "filesize","get file size of file at given path",[[sV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -54,7 +54,7 @@ class File__Filesize_ : Func {
 	}
 }
 
-class File__Read_ : Func {
+final class File__Read_ : Func {
 	this(string ns="") { super(ns ~ "read","read string from file at given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -66,7 +66,7 @@ class File__Read_ : Func {
 	}
 }
 
-class File__Write_ : Func {
+final class File__Write_ : Func {
 	this(string ns="") { super(ns ~ "write","write string to file at given path",[[sV,sV]],[noV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

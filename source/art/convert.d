@@ -30,7 +30,7 @@ import value;
 
 // Functions
 
-class To__Bin_ : Func {
+final class To__Bin_ : Func {
 	this(string ns="") { super(ns ~ "toBin","convert given number to its corresponding binary string value",[[nV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -43,7 +43,7 @@ class To__Bin_ : Func {
 	}
 }
 
-class To__Hex_ : Func {
+final class To__Hex_ : Func {
 	this(string ns="") { super(ns ~ "toHex","convert given number to its corresponding hexadecimal string value",[[nV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -56,7 +56,7 @@ class To__Hex_ : Func {
 	}
 }
 
-class To__Number_ : Func {
+final class To__Number_ : Func {
 	this(string ns="") { super(ns ~ "toNumber","convert given value to its corresponding number value",[[rV],[sV],[bV]],[nV,rV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -94,7 +94,7 @@ class To__Number_ : Func {
 	}
 }
 
-class To__Oct_ : Func {
+final class To__Oct_ : Func {
 	this(string ns="") { super(ns ~ "toOct","convert given number to its corresponding octal string value",[[nV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -107,7 +107,7 @@ class To__Oct_ : Func {
 	}
 }
 
-class To__String_ : Func {
+final class To__String_ : Func {
 	this(string ns="") { super(ns ~ "toString","convert given number/boolean/array/dictionary to its corresponding string value",[[nV],[rV],[bV],[aV],[dV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

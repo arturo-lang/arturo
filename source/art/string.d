@@ -85,7 +85,7 @@ string isRegex(string s) {
 
 // Functions
 
-class Capitalize_ : Func {
+final class Capitalize_ : Func {
 	this(string ns="") { super(ns ~ "capitalize","capitalize given string",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -95,7 +95,7 @@ class Capitalize_ : Func {
 	}
 }
 
-class Char_ : Func {
+final class Char_ : Func {
 	this(string ns="") { super(ns ~ "char","get ASCII character from given char code",[[nV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -107,7 +107,7 @@ class Char_ : Func {
 	}
 }
 
-class Characters_ : Func {
+final class Characters_ : Func {
 	this(string ns="") { super(ns ~ "characters","get string characters as an array",[[sV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -119,7 +119,7 @@ class Characters_ : Func {
 	}
 }
 
-class Color_ : Func {
+final class Color_ : Func {
 	this(string ns="") { super(ns ~ "color","get colored string using color",[[sV,sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -132,7 +132,7 @@ class Color_ : Func {
 	}
 }
 
-class Decode__URL_ : Func {
+final class Decode__URL_ : Func {
 	this(string ns="") { super(ns ~ "decodeUrl","decode the given URL into a UTF-8 string url, optionally ignoring invalid characters",[[sV],[sV,bV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -152,7 +152,7 @@ class Decode__URL_ : Func {
 	}
 }
 
-class Encode__URL_ : Func {
+final class Encode__URL_ : Func {
 	this(string ns="") { super(ns ~ "encodeUrl","encode the given UTF-8 string url into a URL, optionally ignoring invalid characters",[[sV],[sV,bV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -172,7 +172,7 @@ class Encode__URL_ : Func {
 	}
 }
 
-class Ends__With_ : Func {
+final class Ends__With_ : Func {
 	this(string ns="") { super(ns ~ "endsWith","check if string ends with given string",[[sV,sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -183,72 +183,72 @@ class Ends__With_ : Func {
 	}
 }
 
-class Is__Alpha_ : Func {
+final class Is__Alpha_ : Func {
 	this(string ns="") { super(ns ~ "isAlpha","check if all characters in given string are ASCII letters",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
 		foreach (ch; input.split(""))
-			if (!isAlpha(cast(dchar)(ch[0]))) return new Value(false);
+			if (!isAlpha(cast(dchar)(ch[0]))) return FALSEV;
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Is__Alphanumeric_ : Func {
+final class Is__Alphanumeric_ : Func {
 	this(string ns="") { super(ns ~ "isAlphanumeric","check if all characters in given string are ASCII letters or digits",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
 		foreach (ch; input.split(""))
-			if (!isAlphaNum(cast(dchar)(ch[0]))) return new Value(false);
+			if (!isAlphaNum(cast(dchar)(ch[0]))) return FALSEV;
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Is__Control_ : Func {
+final class Is__Control_ : Func {
 	this(string ns="") { super(ns ~ "isControl","check if all characters in given string are control characters",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
 		foreach (ch; input.split(""))
-			if (!isControl(cast(dchar)(ch[0]))) return new Value(false);
+			if (!isControl(cast(dchar)(ch[0]))) return FALSEV;
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Is__Digit_ : Func {
+final class Is__Digit_ : Func {
 	this(string ns="") { super(ns ~ "isDigit","check if all characters in given string are digits",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
 		foreach (ch; input.split(""))
-			if (!isDigit(cast(dchar)(ch[0]))) return new Value(false);
+			if (!isDigit(cast(dchar)(ch[0]))) return FALSEV;
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Is__Lowercase_ : Func {
+final class Is__Lowercase_ : Func {
 	this(string ns="") { super(ns ~ "isLowercase","check if all characters in given string are lowercase",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
 		foreach (ch; input.split(""))
-			if (!isLower(cast(dchar)(ch[0]))) return new Value(false);
+			if (!isLower(cast(dchar)(ch[0]))) return FALSEV;
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Is__Match_ : Func {
+final class Is__Match_ : Func {
 	this(string ns="") { super(ns ~ "isMatch","check if string matches given regex",[[sV,sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -261,38 +261,38 @@ class Is__Match_ : Func {
 
 		auto rx = regex(pattern,"gm");
 
-		if (match(input,rx)) return new Value(true);
-		else return new Value(false);
+		if (match(input,rx)) return TRUEV;
+		else return FALSEV;
 	}
 }
 
-class Is__Uppercase_ : Func {
+final class Is__Uppercase_ : Func {
 	this(string ns="") { super(ns ~ "isUppercase","check if all characters in given string are uppercase",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
 		foreach (ch; input.split(""))
-			if (!isUpper(cast(dchar)(ch[0]))) return new Value(false);
+			if (!isUpper(cast(dchar)(ch[0]))) return FALSEV;
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Is__Whitespace_ : Func {
+final class Is__Whitespace_ : Func {
 	this(string ns="") { super(ns ~ "isWhitespace","check if all characters in given string are whitespace",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias input = S!(v,0);
 
 		foreach (ch; input.split(""))
-			if (!isWhite(cast(dchar)(ch[0]))) return new Value(false);
+			if (!isWhite(cast(dchar)(ch[0]))) return FALSEV;
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Levenshtein_ : Func {
+final class Levenshtein_ : Func {
 	this(string ns="") { super(ns ~ "levenshtein","get Levenshtein distance between two given strings",[[sV,sV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -305,7 +305,7 @@ class Levenshtein_ : Func {
 	}
 }
 
-class Lines_ : Func {
+final class Lines_ : Func {
 	this(string ns="") { super(ns ~ "lines","get lines from string as an array",[[sV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -317,7 +317,7 @@ class Lines_ : Func {
 	}
 }
 
-class Lowercase_ : Func {
+final class Lowercase_ : Func {
 	this(string ns="") { super(ns ~ "lowercase","lowercase given string",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -327,7 +327,7 @@ class Lowercase_ : Func {
 	}
 }
 
-class Matches_ : Func {
+final class Matches_ : Func {
 	this(string ns="") { super(ns ~ "matches","get array of matches for string using given regex",[[sV,sV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -353,7 +353,7 @@ class Matches_ : Func {
 	}
 }
 
-class Pad__Center_ : Func {
+final class Pad__Center_ : Func {
 	this(string ns="") { super(ns ~ "padCenter","center justify string by adding padding",[[sV,nV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -366,7 +366,7 @@ class Pad__Center_ : Func {
 	}
 }
 
-class Pad__Left_ : Func {
+final class Pad__Left_ : Func {
 	this(string ns="") { super(ns ~ "padLeft","left justify string by adding padding",[[sV,nV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -379,7 +379,7 @@ class Pad__Left_ : Func {
 	}
 }
 
-class Pad__Right_ : Func {
+final class Pad__Right_ : Func {
 	this(string ns="") { super(ns ~ "padRight","right justify string by adding padding",[[sV,nV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -392,7 +392,7 @@ class Pad__Right_ : Func {
 	}
 }
 
-class Replace__ : Func {
+final class Replace__ : Func {
 	this(string ns="") { super(ns ~ "replace","get string by replacing occurences of string with another string",[[sV,sV,sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -410,7 +410,7 @@ class Replace__ : Func {
 	}
 }
 
-class Split_ : Func {
+final class Split_ : Func {
 	this(string ns="") { super(ns ~ "split","split string by given separator or regex",[[sV,sV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -432,7 +432,7 @@ class Split_ : Func {
 	}
 }
 
-class Starts__With_ : Func {
+final class Starts__With_ : Func {
 	this(string ns="") { super(ns ~ "startsWith","check if string starts with given string",[[sV,sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -443,7 +443,7 @@ class Starts__With_ : Func {
 	}
 }
 
-class Strip_ : Func {
+final class Strip_ : Func {
 	this(string ns="") { super(ns ~ "strip","strip spaces from given string",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -453,7 +453,7 @@ class Strip_ : Func {
 	}
 }
 
-class Uppercase_ : Func {
+final class Uppercase_ : Func {
 	this(string ns="") { super(ns ~ "uppercase","uppercase given string",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -463,7 +463,7 @@ class Uppercase_ : Func {
 	}
 }
 
-class Uuid_ : Func {
+final class Uuid_ : Func {
 	this(string ns="") { super(ns ~ "uuid","generate random UUID string",[[]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		auto uuid = randomUUID();
@@ -476,7 +476,7 @@ class Uuid_ : Func {
 	}
 }
 
-class Words_ : Func {
+final class Words_ : Func {
 	this(string ns="") { super(ns ~ "words","get words from string as an array",[[sV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

@@ -124,7 +124,7 @@ string registerSystemFuncs() {
 
 // Functions
 
-class Globals {
+final class Globals {
 
     Context                     globalContext;
     Array!Context               contextStack;

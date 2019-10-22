@@ -31,7 +31,7 @@ import value;
 
 // Functions
 
-class CSV__Parse_ : Func {
+final class CSV__Parse_ : Func {
 	this(string ns="") { super(ns ~ "parse","get object by parsing given CSV string, optionally using headers",[[sV],[sV,bV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

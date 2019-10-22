@@ -30,7 +30,7 @@ import panic;
 
 // Functions
 
-class Add_ : Func {
+final class Add_ : Func {
 	this(string ns="") { super(ns ~ "add","add element to collection",[[aV,xV],[dV,xV]],[aV,dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -51,7 +51,7 @@ class Add_ : Func {
 	}
 }
 
-class Contains_ : Func {
+final class Contains_ : Func {
 	this(string ns="") { super(ns ~ "contains","check if collection contains given element",[[sV,sV],[aV,xV],[dV,xV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -68,7 +68,7 @@ class Contains_ : Func {
 	}
 }
 
-class Delete_ : Func {
+final class Delete_ : Func {
 	this(string ns="") { super(ns ~ "delete","delete collection element by using given value",[[aV,xV],[dV,xV]],[aV,dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -84,7 +84,7 @@ class Delete_ : Func {
 	}
 }
 
-class Delete__By_ : Func {
+final class Delete__By_ : Func {
 	this(string ns="") { super(ns ~ "deleteBy","delete collection element by using given index/key",[[aV,nV],[dV,sV]],[aV,dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -109,7 +109,7 @@ class Delete__By_ : Func {
 	}
 }
 
-class Find_ : Func {
+final class Find_ : Func {
 	this(string ns="") { super(ns ~ "find","return index of string/element within string/array, or -1 if not found",[[sV,sV],[aV,xV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -125,7 +125,7 @@ class Find_ : Func {
 	}
 }
 
-class Get_ : Func {
+final class Get_ : Func {
 	this(string ns="") { super(ns ~ "get","get element from collection using given index/key",[[aV,nV],[dV,sV]],[xV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -147,7 +147,7 @@ class Get_ : Func {
 	}
 }
 
-class Is__Empty_ : Func {
+final class Is__Empty_ : Func {
 	this(string ns="") { super(ns ~ "isEmpty","check if collection is empty",[[sV],[aV],[dV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -164,7 +164,7 @@ class Is__Empty_ : Func {
 	}
 }
 
-class Reverse_ : Func {
+final class Reverse_ : Func {
 	this(string ns="") { super(ns ~ "reverse","reverse given array or string",[[aV],[sV]],[aV,sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -179,7 +179,7 @@ class Reverse_ : Func {
 	}
 }
 
-class Set_ : Func {
+final class Set_ : Func {
 	this(string ns="") { super(ns ~ "set","set collection element using given index/key",[[aV,nV,xV],[dV,sV,xV]],[aV,dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -210,7 +210,7 @@ class Set_ : Func {
 	}
 }
 
-class Size_ : Func {
+final class Size_ : Func {
 	this(string ns="") { super(ns ~ "size","get size of collection",[[sV],[aV],[dV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -227,7 +227,7 @@ class Size_ : Func {
 	}
 }
 
-class Slice_ : Func {
+final class Slice_ : Func {
 	this(string ns="") { super(ns ~ "slice","get slice of array/string given a starting and/or end point",[[aV,nV],[aV,nV,nV],[sV,nV],[sV,nV,nV]],[aV,sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

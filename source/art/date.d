@@ -31,7 +31,7 @@ import value;
 
 // Functions
 
-class Date__Now_ : Func {
+final class Date__Now_ : Func {
 	this(string ns="") { super(ns ~ "dateNow","get current date into string",[[]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		SysTime now = Clock.currTime();
@@ -43,7 +43,7 @@ class Date__Now_ : Func {
 	}
 }
 
-class DateTime__Now_ : Func {
+final class DateTime__Now_ : Func {
 	this(string ns="") { super(ns ~ "datetimeNow","get current date and time into string",[[]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		SysTime now = Clock.currTime();
@@ -55,7 +55,7 @@ class DateTime__Now_ : Func {
 	}
 }
 
-class Day_ : Func {
+final class Day_ : Func {
 	this(string ns="") { super(ns ~ "day","get day from date string",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -75,7 +75,7 @@ class Day_ : Func {
 	}
 }
 
-class Month_ : Func {
+final class Month_ : Func {
 	this(string ns="") { super(ns ~ "month","get month from date string",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -95,7 +95,7 @@ class Month_ : Func {
 	}
 }
 
-class Time__Now_ : Func {
+final class Time__Now_ : Func {
 	this(string ns="") { super(ns ~ "timeNow","get current time into string",[[]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		SysTime now = Clock.currTime();
@@ -107,7 +107,7 @@ class Time__Now_ : Func {
 	}
 }
 
-class Timer_ : Func {
+final class Timer_ : Func {
 	this(string ns="") { super(ns ~ "timer","time the execution of a given function in milliseconds",[[fV]],[nV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

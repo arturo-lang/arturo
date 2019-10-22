@@ -36,7 +36,6 @@ extern (C) {
 	void* new_Statement(Identifier id) { return cast(void*)(new Statement(id)); }
 	void* new_StatementFromExpression(Expression ex) { return cast(void*)(new Statement(ex)); }
 	void* new_StatementWithExpressions(Identifier id, Expressions ex) { return cast(void*)(new Statement(id,ex)); }
-	void* new_ImmutableStatementWithExpressions(Identifier id, Expressions ex) { return cast(void*)(new Statement(id,ex,true)); }
 	void set_Position(Statement x, Position p) { x.pos = p; }
 }
 
@@ -46,22 +45,21 @@ void WARN_ASSIGN(string sym) { Panic.runtimeWarning((new WARN_AssignmentInsideEx
 
 // Definitions
 
-enum StatementType : string
+enum StatementType
 {
-	normalStatement = "normal",
-	functionCallStatement = "function",
-	expressionStatement = "expression"
+	normalStatement,
+	functionCallStatement,
+	expressionStatement
 }
 
 // Functions
 
-class Statement {
-
+final class Statement {
+	immutable StatementType type;
 	Identifier id;
 	Expressions expressions;
-	StatementType type;
+	
 	Expression expression;
-	bool immut;
 	bool hasExpressions;
 
 	Position pos;
@@ -69,54 +67,46 @@ class Statement {
 	@disable this();
 
 	this(Identifier i) {
+		type = StatementType.normalStatement;
 		id = i;
 		expressions = new Expressions();
-		type = StatementType.normalStatement;
 		hasExpressions = false;
-		//writeln("Statement(Identifier) @ Found identifier: " ~ id.getFullIdentifier());
 	}
 
-	this(Identifier i, Expressions ex, bool isImmutable=false) {
+	this(Identifier i, Expressions ex) {
+		type = StatementType.normalStatement;
 		id = i;
 		expressions = ex;
-
-		immut = isImmutable;
-
 		hasExpressions = true;
-		//writeln("Statement(Identifier,Expressions) @ Found identifier: " ~ id.getFullIdentifier());
 	}
 
 	this(Expression ex) {
 		if (ex.type==aE) {
 		
 			if (ex.content.arg.type==ArgumentType.stringArgument) {
-				id = new Identifier("print");
+				type = StatementType.normalStatement;
+				id = PRINT_ID;
 				expressions = new Expressions();
 				expressions.add(ex);
-
-				type = StatementType.normalStatement;
-				immut = false;
-
 				hasExpressions = true;
 				
 			}
 			else if (ex.content.arg.type==ArgumentType.identifierArgument) {
+				type = StatementType.normalStatement;
 				id = ex.content.arg.content.i;
 				expressions = new Expressions();
-				type = StatementType.normalStatement;
-				immut = false;
 				hasExpressions = false;
 			}
 			else {
+				type = StatementType.expressionStatement;
 				id = null;
 				expression = ex;
-				type = StatementType.expressionStatement;
 			}
 		}
 		else {
+			type = StatementType.expressionStatement;
 			id = null;
 			expression = ex;
-			type = StatementType.expressionStatement;
 		}
 	}
 

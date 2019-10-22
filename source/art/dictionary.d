@@ -28,7 +28,7 @@ import value;
 
 // Functions
 
-class Has__Key : Func {
+final class Has__Key : Func {
 	this(string ns="") { super(ns ~ "hasKey","check if dictionary has key",[[dV,sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -39,7 +39,7 @@ class Has__Key : Func {
 	}
 }
 
-class Keys : Func {
+final class Keys : Func {
 	this(string ns="") { super(ns ~ "keys","get array of dictionary keys",[[dV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -53,7 +53,7 @@ class Keys : Func {
 	}
 }
 
-class Values : Func {
+final class Values : Func {
 	this(string ns="") { super(ns ~ "values","get array of dictionary values",[[dV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

@@ -27,7 +27,7 @@ extern (C) {
 
 // Functions
 
-class Program {
+final class Program {
 
     Statements statements;
 

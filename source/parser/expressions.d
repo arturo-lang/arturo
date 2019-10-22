@@ -33,7 +33,7 @@ extern (C) {
 
 // Functions
 
-class Expressions {
+final class Expressions {
 
 	DynamicArray!Expression lst;
 	bool hasHashId;

@@ -89,7 +89,7 @@ version(SQLITE) {
 	Value closeDatabase(sqlite3* db) {
 		int result = sqlite3_close(db);
 
-		if (result==SQLITE_OK) return new Value(true);
+		if (result==SQLITE_OK) return TRUEV;
 		else throw new ERR_DatabaseError(SQLITE_RESULTSTR[result]);
 	}
 
@@ -227,7 +227,7 @@ version(SQLITE) {
 
 	// Functions
 
-	class Database__Create_ : Func {
+	final class Database__Create_ : Func {
 		this(string ns="") { super(ns ~ "create","create new SQLite database using path",[[sV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -237,7 +237,7 @@ version(SQLITE) {
 		}
 	}
 
-	class Database__Open_ : Func {
+	final class Database__Open_ : Func {
 		this(string ns="") { super(ns ~ "open","open SQLite database using path",[[sV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);

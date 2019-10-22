@@ -55,16 +55,16 @@ alias BlockTuple = Tuple!(Statements,"statements",string[],"args");
 
 // Definitions
 
-enum ExpressionType : string
+enum ExpressionType
 {
-	argumentExpression = "argument",
-	normalExpression = "expre",
-	comparisonExpression = "comparison",
-	functionExpression = "function",
-	blockExpression = "block",
-	arrayExpression = "array",
-	nullExpression = "expression",
-	dictionaryExpression = "dictionary"
+	argumentExpression,
+	normalExpression,
+	comparisonExpression,
+	functionExpression,
+	blockExpression,
+	arrayExpression,
+	nullExpression,
+	dictionaryExpression
 }
 
 union ExpressionContent
@@ -81,22 +81,10 @@ union ExpressionContent
 
 // Functions
 
-class Expression {
+final class Expression {
 
 	immutable ExpressionType type;
 	ExpressionContent content;
-/*
-	Expression left;
-	string operator;
-	Expression right;
-
-	Argument arg;
-
-	Statement statement;
-	Statements statements;
-	string[] function_arguments;
-	Identifiers identifiers;
-	Expressions expressions;*/
 
 	@disable this();
 
@@ -105,40 +93,19 @@ class Expression {
 		else type = cE;
 
 		content.normal = ExpressionTuple(l,op,r);
-/*
-		left = l;
-		operator = op;
-		right = r;
-
-		arg = null;
-		statement = null;
-		statements = null;*/
 	}
 
 	this(Argument a) {
 		type = aE;
 		content.arg = a;
-/*
-		arg = a;
-		statement = null;
-		statements = null;*/
 	}
 
 	this(Statement s) {
 		type = ExpressionType.functionExpression;
 		content.func = s;
-/*
-		arg = null;
-		statement = s;
-		statements = null;*/
 	}
 
 	this(Statements st, bool isDictionary=false, Identifiers ids = null) {
-		/*
-
-		arg = null;
-		statement = null;
-		statements = st;*/
 
 		string[] function_arguments;
 		if (ids !is null) {
@@ -158,11 +125,6 @@ class Expression {
 	this(Expressions ar) {
 		type = rE;
 		content.arr = ar;
-/*
-		arg = null;
-		statement = null;
-		statements = null;
-		expressions = ar;*/
 	}
 
 	Value evaluateNormalExpression() {

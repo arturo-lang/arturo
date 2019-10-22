@@ -124,7 +124,7 @@ auto GO(alias symbol)(){ return symbol.content.go; }
 
 // Functions
 
-class Value {
+final class Value {
 
     ValueType type;
     ValueContent content;
