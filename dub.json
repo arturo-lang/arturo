@@ -5,9 +5,6 @@
 	"buildTypes": {
 		"profile": {
 			"buildOptions": [
-				"debugInfo",
-				"inline",
-				"optimize",
 				"profile",
 				"profileGC",
 				"noBoundsCheck",
@@ -15,6 +12,7 @@
 				"coverage",
 				"warnings"
 			],
+			"buildRequirements": [ "allowWarnings"],
 			"dflags-dmd": [
 				"-J source/resources"
 			],
@@ -49,11 +47,12 @@
 			],
 			"dflags-ldc": [
 				"-J=source/resources",
-				"-flto=full",
+				"-flto=thin",
 				"-O5",
 				"-Os",
 				"-Oz",
-				"-mcpu=native"
+				"-mcpu=native",
+				"-ffast-math"
 			],
 			"lflags-dmd": [
 				"-lcurl"
