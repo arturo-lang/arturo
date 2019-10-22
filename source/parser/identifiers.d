@@ -16,6 +16,8 @@ import core.memory;
 import std.array;
 import std.stdio;
 
+import containers.dynamicarray;
+
 import parser.identifier;
 
 import value;
@@ -31,10 +33,9 @@ extern (C) {
 
 class Identifiers {
 
-	Identifier[] lst;
+	DynamicArray!Identifier lst;
 
 	this() {
-		lst = [];
 	}
 
 	void add(Identifier iden) {
