@@ -1,0 +1,17 @@
+after converting Context from class to struct (and eliminating support for blockStack & return)
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           248         431         112         45          82          
+assign_print_120k         |   X           272         408         203         111         180         
+assign_print_480k         |   X           874         1597        X           458         684         
+assign_print_960k         |   X           1566        3230        X           836         1262        
+bubblesort                |   X           284         295         252         -           2785        
+factorial                 |   5937        310         X           X           X           X           
+factorial_prod            |   398         320         185         X           -           -           
+fibonacci                 |   7517        141         249         145         139         3914        
+fibonacci_mem             |   194         5987        56          X           -           -           
+is_prime_lib              |   25          88          540         71          12          42          
+loop_assign_incr_5m       |   6099        383         469         X           -           8109        
+quicksort                 |   2588        179         178         174         -           18095       
+single_comments_1m        |   297         178         189         85          4           70          
