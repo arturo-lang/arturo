@@ -123,7 +123,7 @@ class Repl {
                 va.content.f.inspect(id,true);
             }
             else {
-                Glob._inspectSymbol(id,va,true);
+                //Glob.globalContext._inspectSymbol(id,va,true);
             }
         }
     }
