@@ -12,6 +12,7 @@ module compiler;
 // Imports
 
 import core.memory;
+import core.stdc.stdlib;
 
 import std.algorithm;
 import std.array;
@@ -27,8 +28,6 @@ import parser.expressions;
 import parser.statement;
 import parser.statements;
 
-import external.warp.omain;
-
 import env;
 import globals;
 import panic;
@@ -40,7 +39,9 @@ import value;
 extern (C) struct yy_buffer_state;
 extern (C) int yyparse();
 extern (C) yy_buffer_state* yy_scan_string(const char*);
+extern (C) void yy_delete_buffer(yy_buffer_state*);
 extern (C) yy_buffer_state* yy_scan_buffer(char *, size_t);
+extern (C) int yylex_destroy();
 extern (C) extern __gshared FILE* yyin;
 extern (C) extern __gshared const(char)* yyfilename;
 extern (C) extern __gshared int yycgiMode;
@@ -98,6 +99,7 @@ class Compiler {
         //writeln("=================================");
         //writeln("After: " ~ preprocessed);
         string input = preprocessed ~ "\n";
+
         //writeln(input);
         //string input = readText(source) ~ "\n";
 
@@ -105,8 +107,10 @@ class Compiler {
 
         try {
             yyfilename = toStringz(source);
-            yy_scan_buffer(cast(char*)(toStringz(input~'\0')),input.length+2);
+            yy_buffer_state* flex_buf = yy_scan_buffer(cast(char*)(toStringz(input~'\0')),input.length+2);
             yyparse();
+            yy_delete_buffer(flex_buf);
+            yylex_destroy();
 
             sourceTree = cast(Program)(_program);
             //debug inspect();
