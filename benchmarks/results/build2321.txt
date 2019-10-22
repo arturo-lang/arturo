@@ -1,0 +1,17 @@
+after removing stack and replacing it with a simple DynamicArray
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           300         451         136         52          90          
+assign_print_120k         |   X           262         413         201         114         176         
+assign_print_480k         |   X           894         1793        X           508         742         
+assign_print_960k         |   X           1584        3194        X           852         1270        
+bubblesort                |   4892        291         331         254         -           2960        
+factorial                 |   6998        316         X           X           X           X           
+factorial_prod            |   403         320         184         X           -           -           
+fibonacci                 |   7896        142         247         145         145         3928        
+fibonacci_mem             |   197         6165        60          X           -           -           
+is_prime_lib              |   27          99          967         76          13          46          
+loop_assign_incr_5m       |   6404        372         476         X           -           8157        
+quicksort                 |   2822        189         185         182         -           17777       
+single_comments_1m        |   293         185         195         90          5           70          
