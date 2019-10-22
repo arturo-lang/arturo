@@ -28,6 +28,11 @@ import panic;
 import program;
 import value;
 
+// globals
+
+__gshared Identifier ARGS_ID = new Identifier(ARGS);
+__gshared Identifier THIS_ID = new Identifier(THIS);
+
 // C Interface
 
 extern (C) {
