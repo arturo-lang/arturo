@@ -34,7 +34,7 @@ extern (C) {
 
 // Utilities
 
-class ReturnResult : Exception {
+final class ReturnResult : Exception {
 	Value val;
 	this(Value v) {
 		super("ReturnResult");
@@ -44,7 +44,7 @@ class ReturnResult : Exception {
 
 // Functions
 
-class Statements {
+final class Statements {
 
 	DynamicArray!Statement lst;
 

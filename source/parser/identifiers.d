@@ -31,7 +31,7 @@ extern (C) {
 
 // Functions
 
-class Identifiers {
+final class Identifiers {
 
 	DynamicArray!Identifier lst;
 

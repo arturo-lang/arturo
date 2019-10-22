@@ -31,7 +31,7 @@ import value;
 
 // Functions
 
-class Encode__Base64_ : Func {
+final class Encode__Base64_ : Func {
 	this(string ns="") { super(ns ~ "encodeBase64","encode given object to base64",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -43,7 +43,7 @@ class Encode__Base64_ : Func {
 	}
 }
 
-class Decode__Base64_ : Func {
+final class Decode__Base64_ : Func {
 	this(string ns="") { super(ns ~ "decodeBase64","decode given object from base64",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -56,7 +56,7 @@ class Decode__Base64_ : Func {
 }
 
 
-class Hash_ : Func {
+final class Hash_ : Func {
 	this(string ns="") { super(ns ~ "hash","get hash value for given value",[[xV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -65,7 +65,7 @@ class Hash_ : Func {
 	}
 }
 
-class MD5_ : Func {
+final class MD5_ : Func {
 	this(string ns="") { super(ns ~ "md5","get MD5 hash of given string data",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -80,7 +80,7 @@ class MD5_ : Func {
 }
 
 
-class SHA256_ : Func {
+final class SHA256_ : Func {
 	this(string ns="") { super(ns ~ "sha256","get SHA256 hash of given string data",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -94,7 +94,7 @@ class SHA256_ : Func {
 	}
 }
 
-class SHA512_ : Func {
+final class SHA512_ : Func {
 	this(string ns="") { super(ns ~ "sha512","get SHA512 hash of given string data",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

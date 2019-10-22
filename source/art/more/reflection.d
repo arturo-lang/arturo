@@ -28,18 +28,18 @@ import value;
 
 // Functions
 
-class Symbol__Exists_ : Func {
+final class Symbol__Exists_ : Func {
 	this(string ns="") { super(ns ~ "symbolExists","check if given symbol exists",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
 		alias symbolName = S!(v,0);
 
-		if (Glob.getSymbol(new Identifier(symbolName)) !is null) return new Value(true);
-		else return new Value(false);
+		if (Glob.getSymbol(new Identifier(symbolName)) !is null) return TRUEV;
+		else return FALSEV;
 	}
 }
 
-class Object_ : Func {
+final class Object_ : Func {
 	this(string ns="") { super(ns ~ "object","get object for given symbol name",[[sV]],[xV,noV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -52,7 +52,7 @@ class Object_ : Func {
 	}
 }
 
-class Pointer_ : Func {
+final class Pointer_ : Func {
 	this(string ns="") { super(ns ~ "pointer","get pointer location of object",[[xV],[sV]]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -61,7 +61,7 @@ class Pointer_ : Func {
 	}
 }
 
-class Type_ : Func {
+final class Type_ : Func {
 	this(string ns="") { super(ns ~ "type","get type for given object",[[xV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -70,7 +70,7 @@ class Type_ : Func {
 	}
 }
 
-class Syms_ : Func {
+final class Syms_ : Func {
 	this(string ns="") { super(ns ~ "syms","get list of declared symbols",[[],[sV]]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

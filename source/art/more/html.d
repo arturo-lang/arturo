@@ -31,7 +31,7 @@ import value;
 
 // Functions
 
-class Markdown__To__Html_ : Func {
+final class Markdown__To__Html_ : Func {
 	this(string ns="") { super(ns ~ "markdownToHtml","convert given markdown string to html",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

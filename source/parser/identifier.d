@@ -32,6 +32,7 @@ import value;
 
 __gshared Identifier ARGS_ID = new Identifier(ARGS);
 __gshared Identifier THIS_ID = new Identifier(THIS);
+__gshared Identifier PRINT_ID = new Identifier("print");
 
 // C Interface
 
@@ -51,11 +52,11 @@ alias exprPC = PathContentType.exprPathContent;
 
 // Definitions
 
-enum PathContentType : string
+enum PathContentType
 {
-	idPathContent = "id",
-	numPathContent = "num",
-	exprPathContent = "expr"
+	idPathContent,
+	numPathContent,
+	exprPathContent
 }
 
 union PathContent
@@ -67,7 +68,7 @@ union PathContent
 
 // Functions
 
-class Identifier {
+final class Identifier {
 	PathContentType[] pathContentTypes;
 	PathContent[] pathContents;
 	string namespace;

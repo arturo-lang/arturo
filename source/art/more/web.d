@@ -404,7 +404,7 @@ Value processChildrenNodes(Value[] children) {
 
 // Functions
 
-class Web__Page_ : Func {
+final class Web__Page_ : Func {
 	this(string ns="") { super(ns ~ "page","create web page with given contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -421,7 +421,7 @@ class Web__Page_ : Func {
 	}
 }
 
-class Web__Head_ : Func {
+final class Web__Head_ : Func {
 	this(string ns="") { super(ns ~ "head","create web page head with given contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -438,7 +438,7 @@ class Web__Head_ : Func {
 	}
 }
 
-class Web__Meta_ : Func {
+final class Web__Meta_ : Func {
 	this(string ns="") { super(ns ~ "meta","create a meta tag with given name and content",[[sV,sV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -460,7 +460,7 @@ class Web__Meta_ : Func {
 	}
 }
 
-class Web__Body_ : Func {
+final class Web__Body_ : Func {
 	this(string ns="") { super(ns ~ "body","create web page body with given contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -477,7 +477,7 @@ class Web__Body_ : Func {
 	}
 }
 
-class Web__H1_ : Func {
+final class Web__H1_ : Func {
 	this(string ns="") { super(ns ~ "h1","create H1 header with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -497,7 +497,7 @@ class Web__H1_ : Func {
 	}
 }
 
-class Web__H2_ : Func {
+final class Web__H2_ : Func {
 	this(string ns="") { super(ns ~ "h2","create H2 header with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -517,7 +517,7 @@ class Web__H2_ : Func {
 	}
 }
 
-class Web__H3_ : Func {
+final class Web__H3_ : Func {
 	this(string ns="") { super(ns ~ "h3","create H3 header with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -537,7 +537,7 @@ class Web__H3_ : Func {
 	}
 }
 
-class Web__H4_ : Func {
+final class Web__H4_ : Func {
 	this(string ns="") { super(ns ~ "h4","create H4 header with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -557,7 +557,7 @@ class Web__H4_ : Func {
 	}
 }
 
-class Web__H5_ : Func {
+final class Web__H5_ : Func {
 	this(string ns="") { super(ns ~ "h5","create H5 header with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -577,7 +577,7 @@ class Web__H5_ : Func {
 	}
 }
 
-class Web__H6_ : Func {
+final class Web__H6_ : Func {
 	this(string ns="") { super(ns ~ "h6","create H6 header with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -597,7 +597,7 @@ class Web__H6_ : Func {
 	}
 }
 
-class Web__B_ : Func {
+final class Web__B_ : Func {
 	this(string ns="") { super(ns ~ "b","create bold caption with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -617,7 +617,7 @@ class Web__B_ : Func {
 	}
 }
 
-class Web__I_ : Func {
+final class Web__I_ : Func {
 	this(string ns="") { super(ns ~ "i","create italic caption with title and given configuration",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -637,7 +637,7 @@ class Web__I_ : Func {
 	}
 }
 
-class Web__P_ : Func {
+final class Web__P_ : Func {
 	this(string ns="") { super(ns ~ "p","create paragraph with contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -654,7 +654,7 @@ class Web__P_ : Func {
 	}
 }
 
-class Web__Div_ : Func {
+final class Web__Div_ : Func {
 	this(string ns="") { super(ns ~ "div","create div section with contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -671,7 +671,7 @@ class Web__Div_ : Func {
 	}
 }
 
-class Web__Ul_ : Func {
+final class Web__Ul_ : Func {
 	this(string ns="") { super(ns ~ "ul","create unordered list section with contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -688,7 +688,7 @@ class Web__Ul_ : Func {
 	}
 }
 
-class Web__Li_ : Func {
+final class Web__Li_ : Func {
 	this(string ns="") { super(ns ~ "li","create unordered list item with title and contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -705,7 +705,7 @@ class Web__Li_ : Func {
 	}
 }
 
-class Web__A_ : Func {
+final class Web__A_ : Func {
 	this(string ns="") { super(ns ~ "a","create link with title, reference and configuration",[[sV,sV],[sV,sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -727,7 +727,7 @@ class Web__A_ : Func {
 	}
 }
 
-class Web__Css_ : Func {
+final class Web__Css_ : Func {
 	this(string ns="") { super(ns ~ "css","create a link or style tag, with the given CSS source",[[sV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -747,7 +747,7 @@ class Web__Css_ : Func {
 	}
 }
 
-class Web__Js_ : Func {
+final class Web__Js_ : Func {
 	this(string ns="") { super(ns ~ "js","create a script tag, with the given JavaScript source",[[sV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -767,7 +767,7 @@ class Web__Js_ : Func {
 	}
 }
 
-class Web__Br_ : Func {
+final class Web__Br_ : Func {
 	this(string ns="") { super(ns ~ "br","create a line break tag",[[]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -784,7 +784,7 @@ class Web__Br_ : Func {
 	}
 }
 
-class Web__Table_ : Func {
+final class Web__Table_ : Func {
 	this(string ns="") { super(ns ~ "table","create table with contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -801,7 +801,7 @@ class Web__Table_ : Func {
 	}
 }
 
-class Web__Row_ : Func {
+final class Web__Row_ : Func {
 	this(string ns="") { super(ns ~ "row","create table row with contents",[[dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -818,7 +818,7 @@ class Web__Row_ : Func {
 	}
 }
 
-class Web__Cell_ : Func {
+final class Web__Cell_ : Func {
 	this(string ns="") { super(ns ~ "cell","create table cell with contents",[[sV],[sV,dV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);

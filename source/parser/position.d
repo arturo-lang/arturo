@@ -21,7 +21,7 @@ extern (C) {
 
 // Functions
 
-class Position {
+final class Position {
 
 	int line;
 	string filename;

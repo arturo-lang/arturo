@@ -355,7 +355,7 @@ version(GTK) {
 
 	// Functions
 
-	class Gui__App_ : Func {
+	final class Gui__App_ : Func {
 		this(string ns="") { super(ns ~ "app","create GUI app with given string ID, main window and configuration",[[sV,dV,dV]],[nV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -381,7 +381,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Button_ : Func {
+	final class Gui__Button_ : Func {
 		this(string ns="") { super(ns ~ "button","create GUI button with given title and configuration",[[sV,dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -398,7 +398,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Checkbox_ : Func {
+	final class Gui__Checkbox_ : Func {
 		this(string ns="") { super(ns ~ "checkbox","create GUI checkbox with given title and configuration",[[sV,dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -425,7 +425,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Frame_ : Func {
+	final class Gui__Frame_ : Func {
 		this(string ns="") { super(ns ~ "frame","create GUI frame with given title and configuration",[[sV,dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -443,7 +443,7 @@ version(GTK) {
 	}
 
 
-	class Gui__Hbox_ : Func {
+	final class Gui__Hbox_ : Func {
 		this(string ns="") { super(ns ~ "hbox","create GUI horizontal box with given configuration",[[dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -457,7 +457,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Hpane_ : Func {
+	final class Gui__Hpane_ : Func {
 		this(string ns="") { super(ns ~ "hpane","create GUI horizontal pane with given configuration",[[dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -471,7 +471,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Label_ : Func {
+	final class Gui__Label_ : Func {
 		this(string ns="") { super(ns ~ "label","create GUI label with given title and configuration",[[sV,dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -498,7 +498,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Tabs_ : Func {
+	final class Gui__Tabs_ : Func {
 		this(string ns="") { super(ns ~ "tabs","create GUI tabbed view with given configuration",[[dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -512,7 +512,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Textfield_ : Func {
+	final class Gui__Textfield_ : Func {
 		this(string ns="") { super(ns ~ "textfield","create GUI textfield with given title and configuration",[[sV,dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -539,7 +539,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Vbox_ : Func {
+	final class Gui__Vbox_ : Func {
 		this(string ns="") { super(ns ~ "vbox","create GUI vertical box with given configuration",[[dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -553,7 +553,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Vpane_ : Func {
+	final class Gui__Vpane_ : Func {
 		this(string ns="") { super(ns ~ "vpane","create GUI vertical pane with given configuration",[[dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);
@@ -567,7 +567,7 @@ version(GTK) {
 		}
 	}
 
-	class Gui__Window_ : Func {
+	final class Gui__Window_ : Func {
 		this(string ns="") { super(ns ~ "window","create GUI window for given app and configuration",[[dV]],[dV]); }
 		override Value execute(Expressions ex, string hId=null) {
 			Value[] v = validate(ex);

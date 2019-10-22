@@ -44,13 +44,13 @@ alias xA = ArgumentType.nullArgument;
 
 // Definitions
 
-enum ArgumentType : string
+enum ArgumentType
 {
-	stringArgument = "string",
-	numberArgument = "number",
-	booleanArgument = "boolean",
-	nullArgument = "null",
-	identifierArgument = "identifier"
+	stringArgument,
+	numberArgument,
+	booleanArgument,
+	nullArgument,
+	identifierArgument
 }
 
 union ArgumentContent
@@ -86,7 +86,7 @@ string formatString(string s) @safe pure nothrow {
 
 // Functions
 
-class Argument {
+final class Argument {
 
 	immutable ArgumentType type;
 	ArgumentContent content;
@@ -122,8 +122,8 @@ class Argument {
 		}
 		else if (t=="boolean") {
 			type = ArgumentType.booleanArgument;
-			if (v=="true") content.v = new Value(true);
-			else content.v = new Value(false);
+			if (v=="true") content.v = TRUEV;
+			else content.v = FALSEV;
 		}
 		else if (t=="null") {
 			type = ArgumentType.nullArgument;

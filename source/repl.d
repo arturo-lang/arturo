@@ -63,7 +63,7 @@ class ReplLineGetter : LineGetter {
 
 // Functions
 
-class Repl {
+final class Repl {
 
     Compiler compiler;
 

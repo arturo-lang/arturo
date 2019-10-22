@@ -31,7 +31,7 @@ import url;
 
 // Functions
 
-class Create__Dir_ : Func {
+final class Create__Dir_ : Func {
 	this(string ns="") { super(ns ~ "createDir","create directory at given path",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -39,11 +39,11 @@ class Create__Dir_ : Func {
 
 		mkdir(path);
 
-		return new Value(true);
+		return TRUEV;
 	}
 }
 
-class Current__Dir_ : Func {
+final class Current__Dir_ : Func {
 	this(string ns="") { super(ns ~ "currentDir","get current directory path",[[]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		auto dirPath = getcwd();
@@ -52,7 +52,7 @@ class Current__Dir_ : Func {
 	}
 }
 
-class Dir_ : Func {
+final class Dir_ : Func {
 	this(string ns="") { super(ns ~ "dir","get array of directory contents at given path",[[],[sV]],[aV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -76,7 +76,7 @@ class Dir_ : Func {
 	}
 }
 
-class Get__Dir_ : Func {
+final class Get__Dir_ : Func {
 	this(string ns="") { super(ns ~ "getDir","get directory from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -88,7 +88,7 @@ class Get__Dir_ : Func {
 	}
 }
 
-class Get__Extension_ : Func {
+final class Get__Extension_ : Func {
 	this(string ns="") { super(ns ~ "getExtension","get extension from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -100,7 +100,7 @@ class Get__Extension_ : Func {
 	}
 }
 
-class Get__Filename_ : Func {
+final class Get__Filename_ : Func {
 	this(string ns="") { super(ns ~ "getFilename","get filename from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -112,7 +112,7 @@ class Get__Filename_ : Func {
 	}
 }
 
-class Get__URL__Components_ : Func {
+final class Get__URL__Components_ : Func {
 	this(string ns="") { super(ns ~ "getUrlComponents","get URL components from given URL",[[sV]],[dV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -137,7 +137,7 @@ class Get__URL__Components_ : Func {
 	}
 }
 
-class Is__Directory_ : Func {
+final class Is__Directory_ : Func {
 	this(string ns="") { super(ns ~ "isDirectory","check if given path is a directory",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -149,7 +149,7 @@ class Is__Directory_ : Func {
 	}
 }
 
-class Is__File_ : Func {
+final class Is__File_ : Func {
 	this(string ns="") { super(ns ~ "isFile","check if given path is a file",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -161,7 +161,7 @@ class Is__File_ : Func {
 	}
 }
 
-class Is__Symlink_ : Func {
+final class Is__Symlink_ : Func {
 	this(string ns="") { super(ns ~ "isSymlink","check if given path is a symlink",[[sV]],[bV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
@@ -173,7 +173,7 @@ class Is__Symlink_ : Func {
 	}
 }
 
-class Normalize__Path_ : Func {
+final class Normalize__Path_ : Func {
 	this(string ns="") { super(ns ~ "normalizePath","get normalized path from given path",[[sV]],[sV]); }
 	override Value execute(Expressions ex, string hId=null) {
 		Value[] v = validate(ex);
