@@ -16,6 +16,8 @@ import core.memory;
 import std.array;
 import std.stdio;
 
+import containers.dynamicarray;
+
 import parser.argument;
 import parser.expression;
 import parser.identifier;
@@ -33,19 +35,18 @@ extern (C) {
 
 class Expressions {
 
-	Expression[] lst;
+	DynamicArray!Expression lst;
 	bool hasHashId;
 
 	this() {
-		lst = [];
 		hasHashId = false;
 	}
 
 	void add(Expression ex) {
-		if (lst==[]) {
+		if (lst.empty()) {
 			if (ex.type==ExpressionType.argumentExpression && 
-				ex.arg.type==ArgumentType.identifierArgument &&
-				ex.arg.content.i.isHash) {
+				ex.content.arg.type==ArgumentType.identifierArgument &&
+				ex.content.arg.content.i.isHash) {
 				hasHashId = true;
 			}
 		}
@@ -55,9 +56,9 @@ class Expressions {
 	Identifier extractHashId() {
 		Expression hashEx = lst[0];
 
-		lst.popFront();
+		lst.remove(0);
 
-		return hashEx.arg.content.i;
+		return hashEx.content.arg.content.i;
 	}
 
 	Value evaluate(bool forceArray=false) {

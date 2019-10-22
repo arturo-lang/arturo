@@ -11,9 +11,10 @@ module parser.expression;
 
 // Imports
 
-import std.stdio;
-import std.conv;
 import std.array;
+import std.conv;
+import std.stdio;
+import std.typecons;
 
 import parser.argument;
 import parser.expressions;
@@ -41,9 +42,16 @@ extern (C) {
 // Aliases
 
 alias aE = ExpressionType.argumentExpression;
-alias nE = ExpressionType.nullExpression;
+alias cE = ExpressionType.comparisonExpression;
+alias nE = ExpressionType.normalExpression;
+alias xE = ExpressionType.nullExpression;
 alias fE = ExpressionType.functionExpression;
 alias bE = ExpressionType.blockExpression;
+alias dE = ExpressionType.dictionaryExpression;
+alias rE = ExpressionType.arrayExpression;
+
+alias ExpressionTuple = Tuple!(Expression,"left",string,"operator",Expression,"right");
+alias BlockTuple = Tuple!(Statements,"statements",string[],"args");
 
 // Definitions
 
@@ -59,12 +67,25 @@ enum ExpressionType : string
 	dictionaryExpression = "dictionary"
 }
 
+union ExpressionContent
+{
+	ExpressionTuple normal;
+	Argument arg;
+	Statement func;
+	Statements dict;
+	BlockTuple block;
+	Value v;
+	Expressions arr;
+}
+
+
 // Functions
 
 class Expression {
 
 	immutable ExpressionType type;
-
+	ExpressionContent content;
+/*
 	Expression left;
 	string operator;
 	Expression right;
@@ -75,78 +96,83 @@ class Expression {
 	Statements statements;
 	string[] function_arguments;
 	Identifiers identifiers;
-	Expressions expressions;
+	Expressions expressions;*/
 
 	@disable this();
 
 	this(Expression l, string op, Expression r, int tp) {
-		if (tp==0) type = ExpressionType.normalExpression;
-		else type = ExpressionType.comparisonExpression;
+		if (tp==0) type = nE;
+		else type = cE;
 
+		content.normal = ExpressionTuple(l,op,r);
+/*
 		left = l;
 		operator = op;
 		right = r;
 
 		arg = null;
 		statement = null;
-		statements = null;
+		statements = null;*/
 	}
 
 	this(Argument a) {
-		type = ExpressionType.argumentExpression;
-
+		type = aE;
+		content.arg = a;
+/*
 		arg = a;
 		statement = null;
-		statements = null;
+		statements = null;*/
 	}
 
 	this(Statement s) {
 		type = ExpressionType.functionExpression;
-
+		content.func = s;
+/*
 		arg = null;
 		statement = s;
-		statements = null;
+		statements = null;*/
 	}
 
 	this(Statements st, bool isDictionary=false, Identifiers ids = null) {
-		if (isDictionary) type = ExpressionType.dictionaryExpression;
-		else type = ExpressionType.blockExpression;
+		/*
 
 		arg = null;
 		statement = null;
-		statements = st;
+		statements = st;*/
 
+		string[] function_arguments;
 		if (ids !is null) {
-			identifiers = ids;
-			function_arguments = [];
+			//identifiers = ids;
 			// #CHK: what happens if identifier is not a single ID? - eg a number, or a path
-			foreach (Identifier id; identifiers.lst) {
+			foreach (Identifier id; ids.lst) {
 				if (id.pathContentTypes[0]==idPC) {
 					function_arguments ~= id.getId();
 				}
 			}
 		}
-		else {
-			function_arguments = [];
-		}
+
+		if (isDictionary) { type = dE; content.dict = st; }
+		else { type = bE; content.block = BlockTuple(st,function_arguments); }
 	}
 
 	this(Expressions ar) {
-		type = ExpressionType.arrayExpression;
-
+		type = rE;
+		content.arr = ar;
+/*
 		arg = null;
 		statement = null;
 		statements = null;
-		expressions = ar;
+		expressions = ar;*/
 	}
 
 	Value evaluateNormalExpression() {
-		Value lValue = left.evaluate();
+		Value lValue = content.normal.left.evaluate();
 		Value rValue; 
 		
-		if (right) rValue = right.evaluate();
+		if (content.normal.right) rValue = content.normal.right.evaluate();
+		else return lValue;
 
-		switch (operator) {
+		switch (content.normal.operator) {
 			case "+"	: return lValue+rValue;
 			case "-"	: return lValue-rValue;
 			case "*"	: return lValue*rValue;
@@ -161,17 +187,18 @@ class Expression {
 	}
 
 	Value evaluateComparisonExpression() {
-		Value lValue = left.evaluate();
+		Value lValue = content.normal.left.evaluate();
 		Value rValue;
-		if (right) rValue = right.evaluate();
+		if (content.normal.right) rValue = content.normal.right.evaluate();
+		else return lValue;
 
-		switch (operator) {
-			case "="	: return new Value(lValue==rValue);
-			case "!="	: return new Value(lValue!=rValue);
-			case ">"	: return new Value(lValue>rValue);
-			case ">="	: return new Value(lValue>=rValue);
-			case "<"	: return new Value(lValue<rValue);
-			case "<="	: return new Value(lValue<=rValue);
+		switch (content.normal.operator) {
+			case "="	: return lValue==rValue ? TRUEV : FALSEV;
+			case "!="	: return lValue!=rValue ? TRUEV : FALSEV;
+			case ">"	: return lValue>rValue  ? TRUEV : FALSEV;
+			case ">="	: return lValue>=rValue ? TRUEV : FALSEV;
+			case "<"	: return lValue<rValue  ? TRUEV : FALSEV;
+			case "<="	: return lValue<=rValue ? TRUEV : FALSEV;
 			case "" 	: return lValue;
 			default		: break;
 		}
@@ -182,7 +209,7 @@ class Expression {
 	Value evaluateArrayExpression() {
 		Value[] res;
 
-		foreach (Expression ex; expressions.lst) {
+		foreach (Expression ex; content.arr.lst) {
 			res ~= ex.evaluate();
 		}
 
@@ -192,36 +219,26 @@ class Expression {
 	Value evaluateDictionaryExpression() {
 		Value res = Value.dictionary();
 
-		Glob.contextStack.list ~= res.content.d; //push
+		Glob.contextStack ~= res.content.d;
 
-		foreach (Statement s; statements.lst) {
+		foreach (Statement s; content.dict.lst) {
 			s.execute(&res);
 		}
 
-		//Glob.contextStack.pop();
-		Glob.contextStack.list.removeBack();
+		Glob.contextStack.removeBack();
 
 		return res;
 	}
 
-	Value evaluateFunctionExpression() {
-		// true -> statement executed inside a statement
-		return statement.execute(null,true);
-	}
-
-	Value evaluateBlockExpression() {
-		return new Value(statements, function_arguments);
-	}
-
 	Value evaluate() {
 		switch (type) {
-			case ExpressionType.argumentExpression:		return arg.getValue();
+			case ExpressionType.argumentExpression:		return content.arg.getValue();
 			case ExpressionType.normalExpression:		return evaluateNormalExpression();
 			case ExpressionType.arrayExpression:		return evaluateArrayExpression();
 			case ExpressionType.dictionaryExpression:	return evaluateDictionaryExpression();
 			case ExpressionType.comparisonExpression: 	return evaluateComparisonExpression();
-			case ExpressionType.functionExpression:		return evaluateFunctionExpression();
-			case ExpressionType.blockExpression:		return evaluateBlockExpression();
+			case ExpressionType.functionExpression:		return content.func.execute(null,true);
+			case ExpressionType.blockExpression:		return new Value(content.block.statements, content.block.args);
 			default: return null;
 		}
 	}
