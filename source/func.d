@@ -19,6 +19,8 @@ import std.stdio;
 import std.string;
 import std.typecons;
 
+import containers.dynamicarray;
+
 import parser.expression;
 import parser.expressions;
 import parser.identifier;
@@ -98,7 +100,7 @@ class Func {
 
         returnValues = rets;
 
-        parentContext = null;
+        parentContext = NULLC;
         parentThis = null;
 
     }
@@ -131,23 +133,12 @@ class Func {
                 if (constraints.length>maxArgs) maxArgs = constraints.length;
             }
 
-            //debug writeln("setting func: " ~ name ~ " minArgs: " ~ to!string(minArgs) ~ ", maxArgs: " ~ to!string(maxArgs));
         }
 
         ids = idents;
 
         parentContext = null;
         parentThis = null;
-
-        /*
-        if (n.indexOf(":")!=-1) {
-            string[] parts = n.split(":");
-            namespace = parts[0];
-            name = parts[1];
-        } 
-        else {
-            namespace = null;
-        }*/
     }
 
     this (Func f) {
@@ -187,168 +178,145 @@ class Func {
     }
 
     Value execute(Value values = null, Value* v=null, string memo=null) {
+        // if it's an inner func, execute it
         if (hasInnerFunc) return executeInnerFunc(values);
 
-        //writeln(Glob.memoize);
+        // if it's a memoized function, look it ip
         string hsh = null;
         if (memo !is null && Glob.memoize.canFind(memo)) { 
             hsh = memo ~ "_" ~ values.hash();
 
+            // if found return it
             if ((hsh in Glob.memoized) !is null) {
-                //writeln("Found memoized result for: " ~ values.stringify());
                 return Glob.memoized[hsh];
             }
         }
-        
-        if (parentContext !is null) { 
-            Glob.contextStack.list ~= parentContext; //push(parentContext);
-        }
+
+        // if it has a parent context, set THIS
 
         bool thisWasAlreadySet = false;
 
-        if (parentContext !is null) {
-            if (Glob.getSymbol(new Identifier(THIS)) !is null) thisWasAlreadySet = true;
+        if (parentContext!=NULLC) { 
+            Glob.contextStack ~= parentContext; //push(parentContext);
+
+            if((Glob.getSymbol(THIS_ID)) !is null) thisWasAlreadySet = true;
             Glob.setGlobalSymbol(THIS, parentThis);
         }
 
-        if (name=="" || name is null) Glob.contextStack.list ~= new Context(); //push(new Context());
-        else Glob.contextStack.list ~= new Context(ContextType.functionContext); //push(new Context(ContextType.functionContext));
+        // create a new context for our block 
+        // and push it onto the stack
+        Glob.contextStack ~= cast(Context)null;
 
-        if (Glob.trace && name !is null && name.strip()!="") {
-            write(" ".replicate(Glob.contextStack.size()) ~ to!string(Glob.contextStack.size()) ~ "- " ~ name ~ " : ");
-        }
+        // the function has named parameters
+        // let's check if it's ok
+        if (ids.length>0) {
 
-        if ((ids.length>0) && (values is null)) {
-            string funcName;
-            if (name==null) funcName = "<user function>";
-            else funcName = name;
+            // but was called with nothing
+            if (values is null) {
+                string funcName = name==null ? "<user function>" : name;
 
-            throw new ERR_FunctionCallErrorNotEnough(name,ids.length,0,true);
-        }
+                throw new ERR_FunctionCallErrorNotEnough(name,ids.length,0,true);
+            }
+            else {
+                if (values.type==aV) {
+                    // wrong number of arguments
+                    if (values.content.a.length!=ids.length) {
+                        string funcName = name==null ? "<user function>" : name;
 
-        if ((ids.length>0) && (values !is null)) {
-            if (values.type==aV) {
-                 if (values.content.a.length!=ids.length) {
-                    string funcName;
-                    if (name==null) funcName = "<user function>";
-                    else funcName = name;
+                        if (ids.length>values.content.a.length) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,values.content.a.length,true);
+                        else throw new ERR_FunctionCallErrorTooMany(name,ids.length,values.content.a.length,true);
+                    }
+                } else {
+                    if (1!=ids.length) {
+                        string funcName = name==null ? "<user function>" : name;
 
-                    if (ids.length>values.content.a.length) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,values.content.a.length,true);
-                    else throw new ERR_FunctionCallErrorTooMany(name,ids.length,values.content.a.length,true);
-                }
-            } else {
-                if (1!=ids.length) {
-                    string funcName;
-                    if (name==null) funcName = "<user function>";
-                    else funcName = name;
-
-                    if (ids.length>1) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,1,true);
-                    else throw new ERR_FunctionCallErrorTooMany(name,ids.length,1,true);
+                        if (ids.length>1) throw new ERR_FunctionCallErrorNotEnough(name,ids.length,1,true);
+                        else throw new ERR_FunctionCallErrorTooMany(name,ids.length,1,true);
+                    }
                 }
             }
-            
+
         }
 
+        // if it's called with arguments, set them in the current - newly created - context
         if (values !is null) {
-            //writeln("executing function: " ~ name ~ " with ids: " ~ to!string(ids));
+
             if (values.type==aV) {
                 foreach (i, string ident; ids) {
-                    Glob.setSymbol(new Identifier(ident), values.content.a[i], true);
+                    Glob.setSymbol(ident,values.content.a[i]);
                 }   
             }
             else {
                 if (ids.length==1) {
-                    Glob.setSymbol(new Identifier(ids[0]), values, true);
+                    Glob.setSymbol(ids[0],values);
                 }
             }
 
             if (values !is null) {
-                Glob.setSymbol(new Identifier(ARGS), values, true);
-                if (Glob.trace) {
-                    if (values.type==aV)
-                        writeln(values.content.a.map!(v=>v.stringify()).array.join(", "));
-                }
+                Glob.setSymbol(ARGS,values);
             }
         }
 
         try {
             // ADDED
             //writeln("FUNC::execute  -> pushing block to stack and executing: " ~ name);
-            Glob.blockStack.list ~= block; //.push(block);
+            //Glob.blockStack ~= block; //.push(block);
 
-            debug writeln("contextStack: " ~ Glob.contextStack.str());
+            //debug writeln("contextStack: " ~ Glob.contextStack.str());
             
             Value ret = block.execute(v);
 
-            if (sourceTree.statements is block) {
-                //writeln("FUNC====> STATEMENTS is ROOT");
-            }
-            else {
-                //writeln("FUNC====> Statements is some random block");
-            }
-
             // ADDED
-            if (!Glob.blockStack.list.empty()/*isEmpty()*/ && Glob.blockStack.list.back() is block /*lastItem() is block */) {
+            /*
+            if (!Glob.blockStack.empty() && Glob.blockStack.back() is block ) {
                 //writeln("FUNC::execute -> popping block from stack after executing: " ~ name);
                 //Glob.blockStack.pop();
-                Glob.blockStack.list.removeBack();
+                Glob.blockStack.removeBack();
             } else {
                 // something was returned before
-                if ((name=="" || name is null) && (Glob.blockStack.list.length>0 /*size()>0*/)) {
+                if ((name=="" || name is null) && (Glob.blockStack.length>0 )) {
 
                     //writeln("Glob.globStack => " ~ Glob.blockStack.str());
 
                     //writeln("FUNC::execute -> reTHROW (not named block)");
                     if (!thisWasAlreadySet) Glob.unsetGlobalSymbol(THIS);
 
-                    debug writeln("contextStack: " ~ Glob.contextStack.str());
+                    //debug writeln("contextStack: " ~ Glob.contextStack.str());
 
-                    if (parentContext !is null && Glob.contextStack.list.length > 1 /*size()>1*/) { 
+                    if (parentContext !is null && Glob.contextStack.length > 1 ) { 
                         debug writeln("POP: contextStack");
                         //Glob.contextStack.pop();
-                        Glob.contextStack.list.removeBack();
+                        Glob.contextStack.removeBack();
                     }
 
-                    debug writeln("contextStack: " ~ Glob.contextStack.str());
+                    //debug writeln("contextStack: " ~ Glob.contextStack.str());
 
-                    if (Glob.contextStack.list.length > 1 /*size()>1*/) {
+                    if (Glob.contextStack.length > 1 ) {
                         debug writeln("POP: contextStack");
                         //Glob.contextStack.pop();
-                        Glob.contextStack.list.removeBack();
+                        Glob.contextStack.removeBack();
                     }
 
-                    debug writeln("contextStack: " ~ Glob.contextStack.str());
+                    //debug writeln("contextStack: " ~ Glob.contextStack.str());
 
                     throw new ReturnResult(ret);
                 }
-            }
+            }*/
 
             // cleanup
 
             if (!thisWasAlreadySet) Glob.unsetGlobalSymbol(THIS);
 
-            debug writeln("contextStack: " ~ Glob.contextStack.str());
-
-            if (parentContext !is null && Glob.contextStack.list.length > 1 /*size()>1*/) { 
-                debug writeln("POP: contextStack");
-                //Glob.contextStack.pop();
-                Glob.contextStack.list.removeBack();
+            if (parentContext!=null && Glob.contextStack.length > 1) { 
+                Glob.contextStack.removeBack();
             }
 
-            debug writeln("contextStack: " ~ Glob.contextStack.str());
-
-            if (Glob.contextStack.list.length > 1 /*size()>1*/) {
-                debug writeln("POP: contextStack");
-                //Glob.contextStack.pop();
-                Glob.contextStack.list.removeBack();
+            if (Glob.contextStack.length > 1) {
+                Glob.contextStack.removeBack();
             }
 
-            debug writeln("contextStack: " ~ Glob.contextStack.str());
-
-            //writeln("FUNC::execute [end] -> " ~ name);
-
+            // if the function is memoized, store results
             if (hsh !is null) {
-                //writeln("STORE memoized result for: " ~ values.stringify());
                 Glob.memoized[hsh] = ret;
             }
 
@@ -356,7 +324,6 @@ class Func {
 
         }
         catch(Exception e) {
-            //debug writeln("FUNC::execute  (" ~ name ~ ")-> got exception; reTHROW");
             throw e;
         }
     }
@@ -406,9 +373,7 @@ class Func {
 
         if (ex.lst.length < minArgs) throw new ERR_FunctionCallErrorNotEnough(name, minArgs, ex.lst.length);
 
-        if (!isVariadic) {
-            if (ex.lst.length > maxArgs) throw new ERR_FunctionCallErrorTooMany(name, maxArgs, ex.lst.length);
-        }
+        if (!isVariadic && ex.lst.length > maxArgs) throw new ERR_FunctionCallErrorTooMany(name, maxArgs, ex.lst.length);
 
         Value[] ret;
         
@@ -485,7 +450,7 @@ class Func {
 
     Func dup() {
         Func ret = new Func(name,block,valueConstraints,ids);
-        ret.parentContext = parentContext.dup;
+        ret.parentContext = parentContext;
         ret.parentThis = parentThis.dup;
 
         return ret;
