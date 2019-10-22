@@ -28,15 +28,17 @@ process [path,bin,expect]{
 	out ""
 	if $(exists "../"+path) {
 		execTime $(timer { out $(shell bin + " " + path) })
-		if out=false { return $(padLeft "X" padding) }
-
-		if $(strip out)=$(strip expect) {
-			return $(padLeft $(toString execTime) padding)
+		if out=false { 
+			$(padLeft "X" padding) 
 		} {
-			return $(padLeft "X" padding)
+			if $(strip out)=$(strip expect) {
+				$(padLeft $(toString execTime) padding)
+			} {
+				$(padLeft "X" padding)
+			}
 		}
 	} {
-		return $(padLeft "-" padding)
+		$(padLeft "-" padding)
 	}
 }
 

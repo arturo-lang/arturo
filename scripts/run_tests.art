@@ -14,13 +14,16 @@ total 0
 loop $(sort|map $(filter $(dir "../examples/rosetta") { contains & ".out" }) { replace & ".out" "" }) {
 	print " " + $(padLeft & 50) + " | " true
 	result $(shell "./arturo " + "examples/rosetta/" + & + ".art")
-	//write "../examples/rosetta/" + & + ".out" result
 
 	total total+1
 
-	if $(strip result)=$(strip|read "../examples/rosetta/"+&+".out") {
-		successful successful+1
-		print $(color $(padCenter "OK" 20) "green") true
+	if result!=false {
+		if $(strip result)=$(strip|read "../examples/rosetta/"+&+".out") {
+			successful successful+1
+			print $(color $(padCenter "OK" 20) "green") true
+		} {
+			print $(color $(padCenter ":(" 20) "red") true
+		}
 	} {
 		print $(color $(padCenter ":(" 20) "red") true
 	}
