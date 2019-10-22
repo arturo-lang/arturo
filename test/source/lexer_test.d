@@ -8,7 +8,7 @@
  *****************************************************************/
 
 module grammar.lexer;
-
+/*
 // Imports
 
 import core.stdc.stdlib;
@@ -72,77 +72,7 @@ struct Token {
     string content;
 }
 
-/*
-"~"                                                 { count(); return ID; }
-":"                                                 { count(); return COLON; }
-"#"                                                 { count(); return HASH; }
-*/
-/*
 
-%%
-
-\"(\\.|[^\\"])*\"                                   { count(); return STRING; }
-'(\\.|[^\\'])+'                                     { count(); return STRING; }
-
-
-"/*"                                                { BEGIN(C_COMMENT); }
-<C_COMMENT>"*"                                     { BEGIN(INITIAL); }
-<C_COMMENT>\n                                       { yylineno++; }
-<C_COMMENT>.                                        { }
-
-"//".*                                              { count();  }
-"#!".*                                              { count(); }
-
-"null"                                              { count(); return NULLV; }
-"true"|"false"                                      { count(); return BOOLEAN; }
-
-
-{LETTER}({LETTER_OR_MISC}|{DIGIT})*                 { count(); return ID; }
-":"({LETTER_OR_MISC}|{DIGIT})*                      { count(); return ID; }
-"@"({LETTER_OR_MISC}|{DIGIT})*                      { count(); return HASH_ID; }
-{DIGIT}+                                            { count(); return NUMBER; }
-{DIGIT}+\.{DIGIT}+                                  { count(); return FLOAT; }
-
-"|"                                                 { count(); return PIPE; }
-"->"                                                { count(); return IMPLIES; }
-
-"="                                                 { count(); return EQ_OP; }
-"<="                                                { count(); return LE_OP; }
-">="                                                { count(); return GE_OP; }
-"<"                                                 { count(); return LT_OP; }
-">"                                                 { count(); return GT_OP; }
-"!="                                                { count(); return NE_OP; }
-
-"+"                                                 { count(); return PLUS_SG; }
-"-"                                                 { count(); return MINUS_SG; }
-"*"                                                 { count(); return MULT_SG; }
-"/"                                                 { count(); return DIV_SG; }
-"%"                                                 { count(); return MOD_SG; }
-"^"                                                 { count(); return POW_SG; }
-
-"#("                                                { count(); return BEGIN_ARR; }
-"#{"                                                { count(); return BEGIN_DICT; }
-"$("                                                { count(); return BEGIN_INLINE; }
-
-"."                                                 { count(); return DOT; }
-
-"$"                                                 { count(); return DOLLAR; }
-"("                                                 { count(); return LPAREN; }
-")"                                                 { count(); return RPAREN; }
-"{"                                                 { count(); return LCURLY; }
-"}"                                                 { count(); return RCURLY; }
-"["                                                 { count(); return LSQUARE; }
-"]"                                                 { count(); return RSQUARE; }
-","                                                 { count(); return COMMA; }
-"!"                                                 { count(); return EXCL; }
-";"                                                 { count(); return SEMICOLON; }
-"~"                                                 { count(); return TILDE; }
-
-\n                                                  { count(); return NEW_LINE; }
-
-[ \t\v\f]+                                          { count(); }
-.                                                   { count(); } 
-*/
 // Functions
 
 void errorify(string msg) {
@@ -249,4 +179,4 @@ DynamicArray!TT lex(string src) {
 
     writeln("Time taken : " ~ to!string(cast(Duration)result[0]));
     return ret;
-}
+}*/
