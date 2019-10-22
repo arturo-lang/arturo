@@ -38,7 +38,9 @@ import panic;
 
 // Globals
 
-__gshared Value NULLV = new Value();
+__gshared Value NULLV   = new Value();
+__gshared Value TRUEV   = new Value(true);
+__gshared Value FALSEV  = new Value(false);
 
 // Constants
 
@@ -191,9 +193,9 @@ class Value {
 
     this(Value[Value] v) {
         type = ValueType.dictionaryValue;
-        content.d =  new Context(ContextType.dictionaryContext);
+        content.d =  cast(Context)null;//Context(null,ContextType.dictionaryContext);
         foreach (Value k, Value c; v) {
-            content.d._setSymbol(k.content.s, c);
+            content.d[k.content.s] = c;
         }
     }
 
@@ -207,17 +209,17 @@ class Value {
 
     this(string[string] v) {
         type = ValueType.dictionaryValue;
-        content.d = new Context(ContextType.dictionaryContext);
+        content.d = cast(Context)null;//Context(null,ContextType.dictionaryContext);
         foreach (string k, string c; v) {
-            content.d._setSymbol(k, new Value(c));
+            content.d[k] = new Value(c);
         }
     }
 
     this(Value[string] v) {
         type = ValueType.dictionaryValue;
-        content.d = new Context(ContextType.dictionaryContext);
+        content.d = cast(Context)null;//Context(null,ContextType.dictionaryContext);
         foreach (string key, Value val; v) {
-            content.d._setSymbol(key, new Value(val));
+            content.d[key] = new Value(val);
         }
     }
 
@@ -252,10 +254,10 @@ class Value {
                 foreach (Value vv; v.content.a) content.a ~= new Value(vv);
                 break;
             case ValueType.dictionaryValue :
-                content.d = new Context(ContextType.dictionaryContext);
-                foreach (string nm, Value va; v.content.d.symbols)
+                content.d = cast(Context)null;//Context(null,ContextType.dictionaryContext);
+                foreach (string nm, Value va; v.content.d)
                 {
-                    content.d._setSymbol(nm, va); 
+                    content.d[nm] = va; 
                     if (va.type==fV) {
                         va.content.f.parentThis = this;
                         va.content.f.parentContext = content.d;
@@ -291,9 +293,9 @@ class Value {
                 foreach (const Value vv; v.content.a) content.a ~= new Value(vv);
                 break;
             case ValueType.dictionaryValue :
-                content.d = new Context(ContextType.dictionaryContext);
-                foreach (const string nm, const Value va; v.content.d.symbols)
-                    content.d._setSymbol(nm, new Value(va)); break;
+                content.d = cast(Context)null;//Context(null,ContextType.dictionaryContext);
+                foreach (const string nm, const Value va; v.content.d)
+                    content.d[nm] = new Value(va); break;
             default: break;
         }
     }
@@ -308,7 +310,7 @@ class Value {
     static Value dictionary() {
         Value v = new Value();
         v.type = ValueType.dictionaryValue;
-        v.content.d = new Context(ContextType.dictionaryContext);
+        v.content.d = cast(Context)null;//Context(null,ContextType.dictionaryContext);
         return v;
     }
 
@@ -324,24 +326,24 @@ class Value {
     }
 
     bool dictionaryContains(Value item) {
-        return (content.d._getSymbol(item.content.s) !is null);
+        return (content.d.get(item.content.s,null) !is null);
     }
 
     bool dictionaryContainsKey(string key) {
-        return (content.d._getSymbol(key) !is null);
+        return (content.d.get(key,null) !is null);
     }
 
     string[] dictionaryKeys() {
-        return content.d.symbols.keys;
+        return content.d.keys;
     }
 
     Value[] dictionaryValues() {
-        return content.d.symbols.values;
+        return content.d.values;
     }
 
     Value[string] dictionaryKeyValues(bool clean=false) {
         Value[string] ret;
-        foreach (string nm, Value va; content.d.symbols)
+        foreach (string nm, Value va; content.d)
         {
             if (!clean) ret[nm] = va;
             else {
@@ -353,7 +355,7 @@ class Value {
     }
 
     const bool dictionaryContainsKey(string key) {
-        return (content.d.symbols.keys.canFind(key));
+        return (content.d.keys.canFind(key));
     }
 
 
@@ -394,8 +396,8 @@ class Value {
     }
 
     Value removeValueFromDict(Value object) {
-        foreach (string nm, Value va; content.d.symbols) {
-            if (va==object) content.d._unsetSymbol(nm);
+        foreach (string nm, Value va; content.d) {
+            if (va==object) content.d.remove(nm);
         }
 
         return this;
@@ -413,43 +415,37 @@ class Value {
     }
 
     Value removeIndexFromDict(string key) {
-        content.d._unsetSymbol(key);
+        content.d.remove(key);
 
         return this;
     }
 
     Value getValueFromDictValue(Value key) {
         Value ret;
-        if ((ret = content.d._getSymbol(key.content.s)) !is null) 
+        if ((ret = content.d.get(key.content.s,null)) !is null) 
             return ret;
         else return null;
     }
 
     Value getValueFromDict(string key) {
-        Value ret;
-        if ((ret = content.d._getSymbol(key)) !is null)
-            return ret;
-        else return null;
+        return content.d.get(key,null);
     }
 
     Value getSymbolFromDict(string key) {
-        return content.d._getSymbol(key);
+        return content.d.get(key,null);
     }
 
     const Value getValueFromDictImmut(string key) {
         Value cp = new Value(this);
-        Value ret;
-        if ((ret = cp.content.d._getSymbol(key)) !is null)
-            return ret;
-        else return null;
+        return cp.content.d.get(key,null);
     }
 
     void setValueForDictValue(Value key, Value val) {
-        content.d._setSymbol(key.content.s, val);
+        content.d[key.content.s] = val;
     }
 
     void setSymbolForDict(string key, Value val) {
-        content.d._setSymbol(key, val);
+        content.d[key] = val;
 
         if (val.type==fV) {
             val.content.f.parentThis = this;
@@ -458,7 +454,7 @@ class Value {
     }
 
     void setValueForDict(string key, Value val) {
-        content.d._setSymbol(key, val);
+        content.d[key] = val;
 
         if (val.type==fV) {
             val.content.f.parentThis = this;
@@ -467,13 +463,13 @@ class Value {
     }
 
     void setValueForDictRegardless(string key, Value val) {
-        content.d._setSymbol(key,val);
+        content.d[key] = val;
     }
 
     const Value mergeDictWith(const Value dictB) {
         Value cp = new Value(this);
 
-        foreach (const string nm, const Value va; dictB.content.d.symbols) {
+        foreach (const string nm, const Value va; dictB.content.d) {
             cp.setValueForDictRegardless(new Value(nm).content.s, new Value(va));
         }
 
@@ -1599,7 +1595,7 @@ class Value {
         }
         else if (type==ValueType.dictionaryValue) {
             Context lhs = content.d;
-            foreach (string nm, Value va; lhs.symbols) {
+            foreach (string nm, Value va; lhs) {
                 Value dv = rhs.getValueFromDict(nm);
 
                 if (dv is null) { return false; }
@@ -1708,7 +1704,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{\n";
                 string[] items;
-                auto sortedKeys = content.d.symbols.keys.array.sort();
+                auto sortedKeys = content.d.keys.array.sort();
                 if (sortedKeys.length==0) return "#{}";
                 foreach (string key; sortedKeys) {
                     Value v = getValueFromDict(key);
@@ -1755,7 +1751,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{ ";
                 string[] items;
-                auto sortedKeys = content.d.symbols.keys.array.sort();
+                auto sortedKeys = content.d.keys.array.sort();
                 foreach (string key; sortedKeys) {
                     if (!filterHiddenKeys || (filterHiddenKeys && !key.startsWith("_"))) {
                         Value v = getValueFromDict(key);
@@ -1796,7 +1792,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{ ";
                 string[] items;
-                auto sortedKeys = content.d.symbols.keys.array.sort();
+                auto sortedKeys = content.d.keys.array.sort();
                 foreach (string key; sortedKeys) {
                     if (!filterHiddenKeys || (filterHiddenKeys && !key.startsWith("_"))) {
                         Value v = getValueFromDict(key);
@@ -1836,7 +1832,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{ ";
                 string[] items;
-                auto sortedKeys = content.d.symbols.keys.array.sort();
+                auto sortedKeys = content.d.keys.array.sort();
                 foreach (string key; sortedKeys) {
                     if (!filterHiddenKeys || (filterHiddenKeys && !key.startsWith("_"))) {
                         Value v = getValueFromDict(key);
@@ -1875,7 +1871,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{ ";
                 string[] items;
-                auto sortedKeys = content.d.symbols.keys.array.sort();
+                auto sortedKeys = content.d.keys.array.sort();
                 foreach (string key; sortedKeys) {
                     Value v = getValueFromDict(key);
                     items ~= key ~ " " ~ v.stringifyb();
@@ -1912,7 +1908,7 @@ class Value {
             case ValueType.dictionaryValue  :
                 string ret = "#{ ";
                 string[] items;
-                auto sortedKeys = content.d.symbols.keys.array.sort();
+                auto sortedKeys = content.d.keys.array.sort();
                 foreach (string key; sortedKeys) {
                     Value v = getValueFromDictImmut(key);
                     items ~= key ~ " " ~ v.stringifyImmut();
@@ -1942,11 +1938,11 @@ class Value {
             case ValueType.dictionaryValue  :
                 write("[");
                 int i;
-                foreach (string nm, Value va; content.d.symbols) {
+                foreach (string nm, Value va; content.d) {
                     write(nm);
                     write(" : ");
                     va.print();
-                    if (i!=content.d.symbols.length-1) write(",");
+                    if (i!=content.d.length-1) write(",");
                     i++;
                 }
                 write("]"); break;
@@ -1973,9 +1969,9 @@ class Value {
             case ValueType.dictionaryValue  :
                 ret ~= "dict([";
                 int i;
-                foreach (string nm, Value va; content.d.symbols) {
+                foreach (string nm, Value va; content.d) {
                     ret ~= nm ~ ":" ~ va.toString();
-                    if (i!=content.d.symbols.length-1) ret ~= ", ";
+                    if (i!=content.d.length-1) ret ~= ", ";
                     i++;
                 }
                 ret ~= "])"; break;
@@ -2003,9 +1999,9 @@ class Value {
             case ValueType.dictionaryValue  :
                 ret ~= "dict([";
                 int i;
-                foreach (const string nm, const Value va; content.d.symbols) {
+                foreach (const string nm, const Value va; content.d) {
                     ret ~= nm ~ ":" ~ va.toString();
-                    if (i!=content.d.symbols.length-1) ret ~= ", ";
+                    if (i!=content.d.length-1) ret ~= ", ";
                     i++;
                 }
                 ret ~= "])"; break;
@@ -2025,7 +2021,7 @@ class Value {
             case ValueType.booleanValue     :   return HashValue(to!string(content.b));
             case ValueType.arrayValue       :   return HashValue(content.a.map!(v=> v.hash()).join(""));
             case ValueType.dictionaryValue  :   string ret = "";
-                                                foreach (string nm, Value va; content.d.symbols) {
+                                                foreach (string nm, Value va; content.d) {
                                                     ret ~= (new Value(nm)).hash() ~ va.hash();
                                                 }
                                                 return HashValue(ret);
@@ -2050,9 +2046,9 @@ class Value {
                 foreach (Value vv; content.a) content.a ~= vv.dup();
                 break;
             case ValueType.dictionaryValue :
-                content.d = new Context(ContextType.dictionaryContext);
-                foreach (string nm, Value va; content.d.symbols)
-                    content.d._setSymbol(nm, va.dup); break;
+                content.d = cast(Context)null;//Context(null,ContextType.dictionaryContext);
+                foreach (string nm, Value va; content.d)
+                    content.d[nm] = va.dup; break;
             default: break;
         }
 
