@@ -10,6 +10,8 @@ import std.container;
 import std.conv;
 import std.datetime.stopwatch;
 import std.functional;
+import std.math;
+import std.parallelism;
 import std.range;
 import std.stdio;
 import std.string;
@@ -60,35 +62,41 @@ void preRun() {
 	dict["one4"] = "1";
 	dict["two5"] = "2";
 	dict.rehash();
+
+	//foreach (i, ref elem; taskPool.parallel(iota(1,100)))
+	//{
+    //	elem = writeln(i);
+	//}
 }
 
 //---------------------
 // Test functions
 //---------------------
 
-string[] arr1;
-string[] arr2;
+int[] arr = iota(1,100000).array;
 DynamicArray!string arr3;
 
 auto stmtApp = appender!(string[])();
 
 void func1() {
-	arr1 ~= "done";
-	//auto k = arr1;
-	//writeln("done done");
+	foreach (i,a; arr) {
+		auto k = a*2;
+	}
 }
 
 void func2() {
-	stmtApp.put("done");
-	//auto k = stmtApp.data;
-	//printf("done done\n");
-	//auto z = dict.keys.canFind("boom");
+	foreach (i, a; taskPool.parallel(arr))
+	{
+	    auto k = i*2;
+	}
 }	
 
 void func3() {
-	arr3 ~= "done";
+	//arr3 ~= "done";
 	//auto k = arr3;
-	
+	//alias dbl = (x)=>x*2*20*30;
+	//auto k = taskPool.amap!(dbl)(arr);
+	//writeln(k);
 }
 
 void func4() {
