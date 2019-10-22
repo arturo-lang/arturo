@@ -28,7 +28,6 @@ import parser.position;
 import func;
 import globals;
 import panic;
-import stack;
 import value;
 
 // C Interface
@@ -90,7 +89,7 @@ class Statement {
 	this(Expression ex) {
 		if (ex.type==aE) {
 		
-			if (ex.arg.type==ArgumentType.stringArgument) {
+			if (ex.content.arg.type==ArgumentType.stringArgument) {
 				id = new Identifier("print");
 				expressions = new Expressions();
 				expressions.add(ex);
@@ -101,8 +100,8 @@ class Statement {
 				hasExpressions = true;
 				
 			}
-			else if (ex.arg.type==ArgumentType.identifierArgument) {
-				id = ex.arg.content.i;
+			else if (ex.content.arg.type==ArgumentType.identifierArgument) {
+				id = ex.content.arg.content.i;
 				expressions = new Expressions();
 				type = StatementType.normalStatement;
 				immut = false;
@@ -162,7 +161,7 @@ class Statement {
 
 			switch (ev.type) {
 				case dV: if (expressions.lst.length==1) Glob.symboldefs[id] = expressions; break;
-				case fV: ev.content.f.name = id.getId(); break;
+				case fV: ev.content.f.name = id.simpleId; break;
 				default: break;
 			}	
 
@@ -178,12 +177,12 @@ class Statement {
 			if (v.type==dV) { // is dictionary
 				
 				if (ev.type==fV) {
-					ev.content.f.name = id.getId();
+					ev.content.f.name = id.simpleId;
 				}
-				v.setSymbolForDict(id.getId(), ev);
+				v.setSymbolForDict(id.simpleId, ev);
 			}
 			else { // is array
-				v.content.a[(new Value(id.getId())).content.i] = ev;
+				v.content.a[(new Value(id.simpleId)).content.i] = ev;
 			}
 
 			return ev;
@@ -201,8 +200,6 @@ class Statement {
 	}
 
 	Value execute(Value* v, bool isInExpression=false) {
-		//if (isInExpression) WARN_ASSIGN(id.getId());
-
 		Value ret;
 		try {
 			switch(type) {
@@ -214,19 +211,15 @@ class Statement {
 						// Variable already exists
 
 						if (va.type==fV) {
-							//writeln(id.getFullIdentifier() ~ " : user func call");
 							// USER FUNCTION CALL
 							ret = executeFunction(va.content.f);
-							//ret = executeUserFunctionCall(va.value.content.f);
 						} 
 						else {
 							if (hasExpressions) {
-								//writeln(id.getFullIdentifier() ~ " : re-assignment");
 								// RE-ASSIGNMENT (of existing variable)
 								return executeAssignment(v,isInExpression);
 							}
 							else {
-								//writeln(id.getFullIdentifier() ~ " : expression (single-id)");
 								// it's a single-id expression, return its value
 								ret = new Expression(new Argument(id)).evaluate();
 							}
@@ -234,20 +227,17 @@ class Statement {
 					}
 					else {
 						if (hasExpressions) {
-							//writeln(id.getFullIdentifier() ~ " : assignment");
 							// ASSIGNMENT (first)
 							return executeAssignment(v,isInExpression);
 						}
 						else {
 							// throw error
-							//writeln(id.getFullIdentifier() ~ " : NOT FOUND!");
 							throw new ERR_SymbolNotFound(id.getFullIdentifier());
 						}
 					}
 					
 					break;
 				case StatementType.expressionStatement:
-					//writeln("null : expression statement");
 					// it's an expression, return its value
 					ret = expression.evaluate();
 					break;
