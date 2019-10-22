@@ -16,6 +16,8 @@ import core.memory;
 import std.conv;
 import std.stdio;
 
+import containers.dynamicarray;
+
 import parser.statement;
 
 import compiler;
@@ -44,10 +46,10 @@ class ReturnResult : Exception {
 
 class Statements {
 
-	Statement[] lst;
+	DynamicArray!Statement lst;
 
 	this() {
-		lst = [];
+		//lst = [];
 	}
 
 	this(Statement st) {
@@ -74,11 +76,13 @@ class Statements {
 						//writeln("Statements is some random block");
 					}
 					debug write("BLOCK::execute -> got Return: ");
-					if (!Glob.blockStack.isEmpty() && Glob.blockStack.lastItem() is this) {
+					/*
+					if (!Glob.blockStack.empty() && Glob.blockStack.back() is this) {
 						debug writeln("It's last item - return it");
 
 						//writeln("STATEMENTS::execute -> popping block from stack after executing");
-						Glob.blockStack.pop();
+						//Glob.blockStack.pop();
+						Glob.blockStack.removeBack();
 						//Glob.contextStack.pop();
 						//writeln("Return:: popping context");
 						//writeln(Glob.inspectAllVars());
@@ -91,7 +95,7 @@ class Statements {
 						debug writeln("Not last item - reTHROW");
 						//writeln("Return:: popping context (throw)"); 					
 						throw e;
-					}
+					}*/
 				} 
 				else {
 					debug writeln("BLOCK::execute -> got Exception");
