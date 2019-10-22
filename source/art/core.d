@@ -126,7 +126,7 @@ class Inherit_ : Func {
 
 		Value ret = symbolDefExs.evaluate();
 		
-		foreach (string nm, Value va; object.symbols) {
+		foreach (string nm, Value va; object) {
 			ret.setValueForDict(nm, va);
 		}
 
@@ -201,7 +201,7 @@ class Loop_ : Func {
 			alias func = F!(v,1);
 
 			Value ret;
-			foreach (string nm, Value va; dict.symbols) {
+			foreach (string nm, Value va; dict) {
 				ret = func.execute(new Value([new Value(nm),va]));
 			}
 
@@ -250,7 +250,7 @@ class New_ : Func {
 			if (ret.type==dV) {
 
 				Value initFunc;
-				if ((initFunc=ret.content.d._getSymbol("init")) !is null) {
+				if ((initFunc=ret.content.d.get("init",null)) !is null) {
 
 					Func func = initFunc.content.f;
 
