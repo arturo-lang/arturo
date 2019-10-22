@@ -18,7 +18,10 @@ import std.conv;
 import std.container;
 import std.stdio;
 import std.string;
+import std.typecons;
 import std.typetuple;
+
+import containers.dynamicarray;
 
 import parser.identifier;
 import parser.expressions;
@@ -51,7 +54,6 @@ import context;
 import env;
 import func;
 import panic;
-import stack;
 import value;
 
 // Globals
@@ -122,10 +124,11 @@ string registerSystemFuncs() {
 
 // Functions
 
-class Globals : Context {
+class Globals {
 
-    Stack!(Context)     contextStack;
-    Stack!(Statements)  blockStack;
+    Context                     globalContext;
+    Array!Context               contextStack;
+    //DynamicArray!Statements  blockStack;
 
     Env env;
 
@@ -145,15 +148,16 @@ class Globals : Context {
     @disable this();
 
     this(string[] args) {
-        super();
+        //super();
 
         // register system functions
         mixin(registerSystemFuncs());
 
         // set up stacks
-        contextStack = new Stack!(Context);
-        blockStack = new Stack!(Statements);
-        contextStack.push(this);
+        //contextStack = new Stack!(Context);
+        //blockStack = new Stack!(Statements);
+        //globalContext = Context();
+        contextStack ~= globalContext;
 
         // set command line arguments
         setGlobalSymbol(ARGS, new Value(args));
@@ -178,15 +182,16 @@ class Globals : Context {
     void addNamespaces(string[] toAdd) {
         foreach (string namespace; toAdd) {
             activeNamespaces ~= namespace;
-            foreach (string key; symbols.keys){
+            foreach (string key; globalContext.keys){
                 if (key.indexOf(namespace~":")!=-1) {
                     auto parts = key.split(":");
-                    setGlobalSymbol(parts[1], symbols[key]);
+                    setGlobalSymbol(parts[1], globalContext[key]);
                 }
             }
         }
 
-        rehashGlobalSymbols();
+        globalContext.rehash();
+        //rehashGlobalSymbols();
 
         activeNamespaces = activeNamespaces.uniq.array;
     }
@@ -200,7 +205,7 @@ class Globals : Context {
         }
 
         foreach (string namespace; toRemove) {
-            foreach (string key; symbols.keys){
+            foreach (string key; globalContext.keys){
                 if (key.indexOf(namespace~":")!=-1) {
                     auto parts = key.split(":");
                     unsetGlobalSymbol(parts[1]);
@@ -208,7 +213,8 @@ class Globals : Context {
             }
         }
 
-        rehashGlobalSymbols();
+        globalContext.rehash();
+        //rehashGlobalSymbols();
 
         activeNamespaces = newNamespaces.uniq.array;
     }
@@ -228,24 +234,28 @@ class Globals : Context {
     // Symbols get/set
     //--------------------------------
 
-    pragma(inline)
+    pragma(inline,true)
     void rehashGlobalSymbols() nothrow {
-        _rehash();
+        globalContext.rehash();
     }
 
-    pragma(inline)
+    //pragma(inline,true)
     void setSystemFunctionSymbol(Func f) {
         setGlobalSymbol(f.name,new Value(f));
     }
 
-    pragma(inline)
+    //pragma(inline,true)
     void setGlobalSymbol(string sym, Value v) @safe nothrow {
-        _setSymbol(sym,v);
+        globalContext[sym]=v;
     }
 
-    pragma(inline)
+    //pragma(inline,true)
     void unsetGlobalSymbol(string sym) @safe nothrow {
-        _unsetSymbol(sym);
+        globalContext.remove(sym);
+    }
+
+    void setSymbol(string s, Value v) {
+        contextStack.back[s] = v;
     }
 
     bool setSymbol(Identifier i, Value v, bool redefine=false) {
@@ -255,21 +265,21 @@ class Globals : Context {
 
             if (redefine) {
                 // if we redefine the symbol, just put it on the topmost context
-                contextStack.list.back()._setSymbol(i.simpleId,v);
+                contextStack.back[i.simpleId] = v;
                 return true;
             }
             else {
                 // first check if it exists
-                foreach_reverse (j, Context ctx; contextStack.list) {
-                    if (ctx._getSymbol(i.simpleId) !is null) {
+                foreach_reverse (Context ctx; contextStack) {
+                    if (ctx.get(i.simpleId,null) !is null) {
                         // re-assign it
-                        ctx._setSymbol(i.simpleId,v);
+                        ctx[i.simpleId]=v;
                         return true;
                     }
                 }
 
                 // symbol did not exist, put it on the topmost context
-                contextStack.list.back()._setSymbol(i.simpleId,v);
+                contextStack.back[i.simpleId]=v;
                 return true;
             }
         }
@@ -282,8 +292,8 @@ class Globals : Context {
             ////////////////
 
             // Look up our root symbol down the stack
-            foreach_reverse (j, Context ctx; contextStack.list) {
-                if ((root = ctx._getSymbol(i.simpleId)) !is null) break;
+            foreach_reverse (Context ctx; contextStack) {
+                if ((root = ctx.get(i.simpleId,null)) !is null) break;
 
             }
             // if not found, return false
@@ -371,9 +381,13 @@ class Globals : Context {
         // Process root
         ////////////////
 
+        // if it's a system function, look it up in the global context first
+        if (((ret=globalContext.get(i.simpleId,null)) !is null) && (ret.type==fV) && (ret.content.f.type==FuncType.systemFunc))
+            return ret;
+
         // Look up our root symbol down the stack
-        foreach_reverse (j, Context ctx; contextStack.list) {
-            if ((ret = ctx._getSymbol(i.simpleId)) !is null) break;
+        foreach_reverse (Context ctx; contextStack) {
+            if ((ret = ctx.get(i.simpleId,null)) !is null) break;
 
         }
         // if not found, return null
@@ -464,7 +478,7 @@ class Globals : Context {
 
     string[] getAutocompletionsForRepl() {
         return ["?info","?functions","?symbols","?read","?write","?clear","?help","?exit"] ~
-                symbols.keys;
+                globalContext.keys;
     }
 
     void printSystemFunctionsForDocumentation(bool markdown=true) {
@@ -475,9 +489,9 @@ class Globals : Context {
             writeln("| :---      | :---     | :---        | :---   |");
         }
 
-        auto sortedSymbols = symbols.keys.sort();
+        auto sortedSymbols = globalContext.keys.sort();
         foreach (string nm; sortedSymbols) {
-            Value va = symbols[nm];
+            Value va = globalContext[nm];
 
             if (va.type==fV && va.content.f.type==FuncType.systemFunc) {
                 if (markdown && nm.indexOf(":")!=-1) {
@@ -504,18 +518,18 @@ class Globals : Context {
     //--------------------------------
 
     void inspectAllContexts() {
-        foreach (i, st; contextStack.list) {
-            writeln("[" ~ to!string(i) ~ ": " ~ st.type ~ "]");
-            st._inspectSymbols(true,false);
+        foreach (st; contextStack) {
+            //writeln("[" ~ to!string(i) ~ ": " ~ st.type ~ "]");
+            //st._inspectSymbols(true,false);
         }
     }
 
     void inspectSymbols() {
-        contextStack.lastItem()._inspectSymbols(true,false);
+        //contextStack.back()._inspectSymbols(true,false);
     }
 
     void inspectFunctions() {
-        contextStack.lastItem()._inspectSymbols(false,true);
+        //contextStack.back()._inspectSymbols(false,true);
     }
 
 }
