@@ -37,7 +37,7 @@ __gshared Identifier PRINT_ID = new Identifier("print");
 // C Interface
 
 extern (C) {
-	void* new_IdentifierWithId(char* t, int hsh) { return cast(void*)(new Identifier(to!string(t), to!bool(hsh))); }
+	void* new_IdentifierWithId(char* t, int hsh) { return cast (void*)(getIdentifierForName(to!string(t), to!bool(hsh))); }//{ return cast(void*)(new Identifier(to!string(t), to!bool(hsh))); }
 
 	void add_IdToIdentifier(char* s, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(to!string(s)); }
 	void add_NumToIdentifier(char* l, Identifier iden) { GC.addRoot(cast(void*)iden); iden.add(to!string(l)); }
@@ -49,6 +49,13 @@ extern (C) {
 alias idPC = PathContentType.idPathContent;
 alias numPC = PathContentType.numPathContent;
 alias exprPC = PathContentType.exprPathContent;
+
+__gshared Identifier[string] idTbl;
+
+Identifier getIdentifierForName(string n, bool hsh) {
+	if (n in idTbl) return idTbl[n];
+	else return new Identifier(n,hsh);
+}
 
 // Definitions
 
