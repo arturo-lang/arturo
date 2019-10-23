@@ -384,14 +384,9 @@ final class Range_ : Func {
 		alias from = I!(v,0);
 		alias to = I!(v,1);
 
-		long step = 1;
+		long step = ex.lst.length==3 ? I!(v,2) : 1;
 
-		if (ex.lst.length==3) 
-			step = I!(v,2);
-
-		if (from>=to) step = -1*step;
-
-		Value[] ret = iota(from,to+1,step).map!(i=>new Value(i)).array;
+		Value[] ret = iota(from,to+1,(from>=to?-1*step:step)).map!(i=>new Value(i)).array;
 		/*
 		if (from<to) {
 			for (long i=from; i<=to; i+=step)
