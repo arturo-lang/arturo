@@ -73,25 +73,33 @@ void preRun() {
 // Test functions
 //---------------------
 
-int[] arr = iota(1,100000).array;
-DynamicArray!string arr3;
+int[] arr;
+int[string] d;
+DynamicArray!int arr3;
 
 auto stmtApp = appender!(string[])();
 
 void func1() {
+	arr ~= 0;
+	auto k = arr[0];
+	/*
 	foreach (i,a; arr) {
 		auto k = a*2;
-	}
+	}*/
 }
 
 void func2() {
-	foreach (i, a; taskPool.parallel(arr))
-	{
-	    auto k = i*2;
-	}
+	d["done"] = 2;
+	auto k = d["done"];
+	//foreach (i, a; taskPool.parallel(arr))
+	//{
+	//   auto k = i*2;
+	//}
 }	
 
 void func3() {
+	arr3 ~= 0;
+	auto k = arr3[0];
 	//arr3 ~= "done";
 	//auto k = arr3;
 	//alias dbl = (x)=>x*2*20*30;
