@@ -2,6 +2,7 @@
 docs.json
 __dummy.html
 examples/dev/
+nim/arturo
 docs/
 /arturo
 /test.d
