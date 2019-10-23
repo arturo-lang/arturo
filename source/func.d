@@ -369,7 +369,7 @@ class Func {
         return returnValues.map!(m => "" ~ m).array.join(" or ");
     }
 
-    void validateWithEvaluating(Expressions ex) {
+    void validateWithoutEvaluating(Expressions ex) {
         if (ex.lst.length < minArgs) throw new ERR_FunctionCallErrorNotEnough(name, minArgs, ex.lst.length);
         if (!isVariadic && ex.lst.length > maxArgs) throw new ERR_FunctionCallErrorTooMany(name, maxArgs, ex.lst.length);
     }
