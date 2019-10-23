@@ -65,6 +65,9 @@ final class Statements {
 		foreach (size_t i, Statement s; lst) {
 			try {
 				ret = s.execute(v);
+				//if (this is sourceTree.statements) {
+				//	destroy(s);
+				//}
 			}
 			catch (Exception e) {
 
