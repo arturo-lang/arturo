@@ -15,17 +15,13 @@ when defined(profile): import nimprof
 
 import ast/id
 import compiler
-import console
+when not defined(mini): import console
 import panic
+import version
 
 type
     AppAction = enum
         runAction, consoleAction, helpAction, versionAction, noAction
-
-const 
-    ART_VERSION     = "0.3.9"
-    ART_BUILD       = readFile("../source/resources/build.txt").strip
-    ART_BUILD_DATE  = readFile("../source/resources/build_date.txt").strip
 
 #[========================================
    Helper functions
@@ -35,11 +31,6 @@ template showHelp() =
     const helpTxt = readFile("src/rsrc/help.txt").replace("\\e","\e")
     showVersion()
     echo helpTxt
-
-template showVersion() = 
-    const vers = "\x1B[32m\x1B[1mArturo " & ART_VERSION & "\x1B[0m (" & ART_BUILD_DATE & " build " & ART_BUILD & ") [" & hostCPU & "-" & hostOS & "]"
-    echo vers
-    echo "(c) 2019 Yanis Zafirópulos\n"
 
 #[========================================
    Where all the magic begins...
@@ -83,8 +74,11 @@ when isMainModule:
             else: cmdlineError("run: no script specified")
 
         of consoleAction:   
-            if p.kind!=cmdEnd: cmdlineError("console: superfluous arguments given") 
-            else: console.startRepl()
+            when not defined(mini):
+                if p.kind!=cmdEnd: cmdlineError("console: superfluous arguments given") 
+                else: console.startRepl()
+            else:
+                cmdlineError("console: not supported on 'mini' releases")
         of helpAction:      
             if p.kind!=cmdEnd: cmdlineError("help: superfluous arguments given") 
             else: showHelp(); quit()
