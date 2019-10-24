@@ -22,7 +22,7 @@ template showMessage(msg:string,final:bool=false) =
         echo "  \e[1;32m" & msg & "\e[00m"
 
 template getCommand(cmdArgs:openArray[string]):string =
-    "nim c " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f " & srcDir & "/main.nim"
+    "nim c " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache " & srcDir & "/main.nim"
 
 template buildParser() = 
     showMessage("Building parser")
@@ -53,6 +53,7 @@ template compileMini() =
     showMessage("Compiling core for mini-release")
     let args = @[
         "-d:release",
+        "-d:mini",
 
         "--passL:parser.a",
         "--threads:on",
