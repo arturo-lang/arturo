@@ -25,11 +25,11 @@ extern int yylex();
 extern int yylineno;
 char* yyfilename;
 extern void gotID(char* i);
+extern void* new_IdentifierWithId(char* i, int hsh);
+extern void add_IdToIdentifier(char* i, void* id);
 /*
 extern void* _program;
 
-extern void* new_IdentifierWithId(char* s, int hsh);
-extern void add_IdToIdentifier(char* s, void* iden);
 extern void add_NumToIdentifier(char* l, void* iden);
 extern void add_ExprToIdentifier(void* e, void* iden);
 extern void* new_Identifiers();
@@ -172,10 +172,10 @@ int yywrap() {
 // Building blocks
 //==============================
 
-identifier 				: 	ID 																	{ gotID($ID); /*printf("found ID: %s\n",$ID); $$ = new_IdentifierWithId($ID,0);*/ }
+identifier 				: 	ID 																	{ $$ = new_IdentifierWithId($ID,0); }
 						| 	HASH_ID																{ /*$$ = new_IdentifierWithId($HASH_ID,1);*/ }
 						|	EXCL																{ /*$$ = new_IdentifierWithId("let",0);*/ }
-						|	identifier[previous] DOT ID 										{ /*void* i = $previous; add_IdToIdentifier($ID, i); $$ = i;*/ }
+						|	identifier[previous] DOT ID 										{ void* i = $previous; add_IdToIdentifier($ID, i); $$ = i; }
 						|	identifier[previous] DOT NUMBER										{ /*void* i = $previous; add_NumToIdentifier($NUMBER, i); $$ = i;*/ }
 						|	identifier[previous] DOT FLOAT										{ /*void* i = $previous; add_NumToIdentifier($FLOAT, i); $$ = i;*/ }
 						| 	identifier[previous] DOT LSQUARE expression RSQUARE					{ /*void* i = $previous; add_ExprToIdentifier($expression, i); $$ = i;*/ }
