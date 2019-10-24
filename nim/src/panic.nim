@@ -11,8 +11,11 @@ const
     CMDLINE_ERROR   = "✘ \x1B[4;1;35mCmdLine Error\x1B[0;37m | "
     CMDLINE_HELP    = "                | try `arturo help` for more information."
 
-    PARSE_ERROR   = "✘ \x1B[4;1;35mParse Error\x1B[0;37m | "
-    PARSE_PAD     = "              | "
+    PARSE_ERROR     = "✘ \x1B[4;1;35mParse Error\x1B[0;37m | "
+    PARSE_PAD       = "              | "
+
+    CONSOLE_ERROR   = "✘ \x1B[4;1;35mConsole Error\x1B[0;37m | "
+    CONSOLE_HELP    = "                | try `?help` for more information."
 
 #[========================================
    C interface
@@ -34,4 +37,8 @@ proc cmdlineError*(msg:string, showHelp:bool=true) =
     echo ""
     quit()
 
+proc consoleError*(msg:string, showHelp:bool=true) = 
+    echo CONSOLE_ERROR & msg
+    if showHelp: echo CONSOLE_HELP
+    echo ""
 
