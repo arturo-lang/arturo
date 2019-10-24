@@ -9,6 +9,8 @@
 
 import os
 
+import ast/id
+
 import panic
 
 #[========================================
