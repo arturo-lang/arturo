@@ -21,7 +21,10 @@ template showMessage(msg:string,final:bool=false) =
     else:
         echo "  \e[1;32m" & msg & "\e[00m"
 
-proc buildParser() = 
+template getCommand(cmdArgs:openArray[string]):string =
+    "nim c " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f " & srcDir & "/main.nim"
+
+template buildParser() = 
     showMessage("Building parser")
     exec "flex src/parser/lexer.l"
     exec "bison -d src/parser/parser.y"
@@ -29,24 +32,100 @@ proc buildParser() =
     exec "gcc -O3 -Os parser.tab.c -c"
     exec "ar rvs parser.a lex.yy.o parser.tab.o"
 
-proc compileCore() = 
-    showMessage("Compiling core")
-    exec "nim c -d:release --passL:parser.a --threads:on --hints:off --opt:size --nilseqs:on --path:src -o:arturo -f src/main.nim"
+template updateBuild() =
+    showMessage("Updating build number")
+    exec "cd .. && bash scripts/update_build.sh && cd nim"
 
-proc stripBinary() =
+template compileCore() = 
+    showMessage("Compiling core for release")
+    let args = @[
+        "-d:release",
+
+        "--passL:parser.a",
+        "--threads:on",
+        "--hints:off",
+        "--opt:speed",
+        "--nilseqs:on"
+    ]
+    exec getCommand(args)
+
+template compileMini() = 
+    showMessage("Compiling core for mini-release")
+    let args = @[
+        "-d:release",
+
+        "--passL:parser.a",
+        "--threads:on",
+        "--hints:off",
+        "--opt:size",
+        "--nilseqs:on"
+    ]
+    exec getCommand(args)
+
+template profileCore() = 
+    showMessage("Compiling core for profiling")
+    let args = @[
+        "-d:profile",
+        "--profiler:on",
+        "--stackTrace:on",
+
+        "--passL:parser.a",
+        "--threads:on",
+        "--hints:off",
+        "--opt:speed",
+        "--nilseqs:on"
+    ]
+    exec getCommand(args)
+
+template debugCore() = 
+    showMessage("Compiling core for debugging")
+    let args = @[
+        "-d:debug",
+        "--linedir:on",
+        "--debuginfo",
+
+        "--passL:parser.a",
+        "--threads:on",
+        "--hints:on",
+        "--opt:speed",
+        "--nilseqs:on"
+    ]
+    exec getCommand(args)
+
+template stripBinary() =
     showMessage "Stripping binary"
     exec "strip arturo"
 
-proc cleanUp() =
+template cleanUp() =
     showMessage "Cleaning up"
     exec "rm *.c *.a *.h *.o"
 
 # Tasks
 
-task release, "Build an optimised release":
+task release, "Build a production-ready optimize release":
     buildParser()
+    updateBuild()
     compileCore()
     stripBinary()
     cleanUp()
     showMessage "Done :)", true
 
+task mini, "Build a production-ready optimize mini-release":
+    buildParser()
+    updateBuild()
+    compileMini()
+    stripBinary()
+    cleanUp()
+    showMessage "Done :)", true
+
+task profile, "Build a version for profiling":
+    buildParser()
+    profileCore()
+    cleanUp()
+    showMessage "Done :)", true
+
+task debug, "Build a version for debugging":
+    buildParser()
+    debugCore()
+    cleanUp()
+    showMessage "Done :)", true
