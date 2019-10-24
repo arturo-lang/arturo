@@ -7,15 +7,15 @@
   * @file: main.nim
   *****************************************************************]#
 
+when defined(profile): 
+    import nimprof
 import os
 import parseopt
 import strutils 
 
-when defined(profile): import nimprof
-
-import ast/id
 import compiler
-when not defined(mini): import console
+when not defined(mini): 
+    import console
 import panic
 import version
 
@@ -23,14 +23,16 @@ type
     AppAction = enum
         runAction, consoleAction, helpAction, versionAction, noAction
 
+const
+    HELP_TXT = readFile("src/rsrc/help.txt").replace("\\e","\e")
+
 #[========================================
    Helper functions
   ========================================]#
 
 template showHelp() = 
-    const helpTxt = readFile("src/rsrc/help.txt").replace("\\e","\e")
     showVersion()
-    echo helpTxt
+    echo HELP_TXT
 
 #[========================================
    Where all the magic begins...
