@@ -24,7 +24,7 @@ void count();
 
 extern char* yyfilename;
 
-extern void panic_ParseError(const char* m, const char* f, int line);
+extern void parseError(const char* msg, const char* filename, int line);
 
 %}
 
@@ -50,12 +50,6 @@ LETTER_OR_MISC		[a-zA-Z_:]
 /****************************************
  Tokens
  ****************************************/
-/*
-"~"													{ count(); return ID; }
-":"													{ count(); return COLON; }
-"#"													{ count(); return HASH; }
-*/
-
 
 %%
 
@@ -144,9 +138,7 @@ void count()
 
 void yyerror(const char *str)
 {
-	printf("error. Back to nim\n");
-	panic_ParseError(str, yyfilename, yylineno);
-	printf("hereeee\n");
+	parseError(str, yyfilename, yylineno);
 }
 
 /****************************************
