@@ -20,17 +20,19 @@ template showMessage(msg:string,final:bool=false) =
         echo "  \e[1;35m" & msg & "...\e[00m"
     else:
         echo "  \e[1;32m" & msg & "\e[00m"
+        echo "------"
 
 template getCommand(cmdArgs:openArray[string]):string =
-    "nim c " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache " & srcDir & "/main.nim"
+    let gcc_flags   = ""#"--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --gcc.options.linker=\"-flto\""
+    let clang_flags = ""#"--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --clang.options.linker=\"-flto\""
+    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache " & srcDir & "/main.nim"
 
-template buildParser() = 
+template buildParser(forSize:bool=false) = 
     showMessage("Building parser")
-    exec "flex src/parser/lexer.l"
-    exec "bison -d src/parser/parser.y"
-    exec "gcc -O3 -Os lex.yy.c -c"
-    exec "gcc -O3 -Os parser.tab.c -c"
-    exec "ar rvs parser.a lex.yy.o parser.tab.o"
+    if forSize:
+        exec "bash scripts/compile_parser_size.sh"
+    else:
+        exec "bash scripts/compile_parser_speed.sh"
 
 template updateBuild() =
     showMessage("Updating build number")
@@ -62,6 +64,10 @@ template compileMini() =
         "--nilseqs:on"
     ]
     exec getCommand(args)
+
+template compileTest() = 
+    showMessage("Compiling test module")
+    exec "nim c -d:release --opt:speed --path:src -o:test src/test.nim"
 
 template profileCore() = 
     showMessage("Compiling core for profiling")
@@ -112,7 +118,7 @@ task release, "Build a production-ready optimize release":
     showMessage "Done :)", true
 
 task mini, "Build a production-ready optimize mini-release":
-    buildParser()
+    buildParser(forSize=true)
     updateBuild()
     compileMini()
     stripBinary()
@@ -129,4 +135,8 @@ task debug, "Build a version for debugging":
     buildParser()
     debugCore()
     cleanUp()
+    showMessage "Done :)", true
+
+task test, "Run tests":
+    compileTest()
     showMessage "Done :)", true
