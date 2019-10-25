@@ -66,14 +66,14 @@ LETTER_OR_MISC		[a-zA-Z_:]
 "#!".*                                  			{ count(); /* She-bang line. Ignore. */ }
 
 "null"												{ count(); return NULLV; }
-"true"|"false"     									{ count(); return BOOLEAN; }
+"true"|"false"     									{ count(); return BOOLEANV; }
 
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ count(); return ID; }
 ":"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return ID; }
-"@"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return HASH_ID; }
-{DIGIT}+											{ count(); return NUMBER; }
-{DIGIT}+\.{DIGIT}+									{ count(); return FLOAT; }
+"@"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return ID; }
+{DIGIT}+											{ count(); return INTEGER; }
+{DIGIT}+\.{DIGIT}+									{ count(); return REAL; }
 
 "|"													{ count(); return PIPE; }
 "->"												{ count(); return IMPLIES; }
