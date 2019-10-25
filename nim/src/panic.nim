@@ -17,19 +17,15 @@ const
     CONSOLE_ERROR   = "✘ \x1B[4;1;35mConsole Error\x1B[0;37m | "
     CONSOLE_HELP    = "                | try `?help` for more information."
 
-#[========================================
-   C interface
-  ========================================]#
+#[######################################################
+    Methods
+  ======================================================]#
 
 proc parseError*(msg:cstring, filename:cstring, line:cint) {.exportc.} =
     echo PARSE_ERROR & "file: " & $filename & " - line: " & $line
     echo PARSE_PAD & $msg
     echo ""
     quit()
-
-#[========================================
-   Methods
-  ========================================]#
 
 proc cmdlineError*(msg:string, showHelp:bool=true) = 
     echo CMDLINE_ERROR & msg
@@ -41,4 +37,3 @@ proc consoleError*(msg:string, showHelp:bool=true) =
     echo CONSOLE_ERROR & msg
     if showHelp: echo CONSOLE_HELP
     echo ""
-
