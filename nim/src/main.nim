@@ -9,15 +9,12 @@
 
 when defined(profile): 
     import nimprof
-import os
-import parseopt
-import strutils 
 
-import compiler
 when not defined(mini): 
     import console
-import panic
-import version
+
+import os, parseopt, strutils 
+import compiler, panic, version
 
 type
     AppAction = enum
@@ -26,17 +23,17 @@ type
 const
     HELP_TXT = readFile("src/rsrc/help.txt").replace("\\e","\e")
 
-#[========================================
-   Helper functions
-  ========================================]#
+#[######################################################
+    Helper functions
+  ======================================================]#
 
 template showHelp() = 
     showVersion()
     echo HELP_TXT
 
-#[========================================
-   Where all the magic begins...
-  ========================================]#
+#[######################################################
+    Where all the magic begins...
+  ======================================================]#
 
 when isMainModule:
     var scriptPath = ""
