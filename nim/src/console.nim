@@ -7,13 +7,8 @@
   * @file: console.nim
   *****************************************************************]#
 
-import rdstdin
-import strformat
-import strutils
-import terminal
-
-import panic
-import version
+import rdstdin, strformat, strutils, terminal
+import compiler, panic, version
 
 const
     CONSOLE_PROMPT_HEAD =  "$ :" #"\x1B[38;5;208m\x1B[1m$ :"
@@ -26,9 +21,9 @@ const
 
     CONSOLE_HELP_TXT    = readFile("src/rsrc/console_help.txt").replace("\\e","\e")
 
-#[========================================
-   Helper functions
-  ========================================]#
+#[######################################################
+    Helper functions
+  ======================================================]#
 
 proc getPrompt(line: int):string =
     return CONSOLE_PROMPT_HEAD & fmt"{line:03}" & CONSOLE_PROMPT_TAIL
@@ -64,9 +59,9 @@ proc doCompile(script: string): string =
     return "=> " & script
 
 
-#[========================================
-   Methods
-  ========================================]#
+#[######################################################
+    Methods
+  ======================================================]#
 
 proc startRepl*() = 
     showVersion()
