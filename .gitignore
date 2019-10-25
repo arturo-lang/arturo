@@ -3,6 +3,7 @@ docs.json
 __dummy.html
 examples/dev/
 nim/arturo
+nim/test
 nim/cache/*.c
 nim/cache/*.json
 docs/
