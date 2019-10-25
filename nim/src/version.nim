@@ -19,9 +19,9 @@ when defined(mini):
 else: 
     const ART_EDITION = "full"
 
-#[========================================
-   Methods
-  ========================================]#
+#[######################################################
+    Methods
+  ======================================================]#
 
 template showVersion*() = 
     const vers = "\x1B[32m\x1B[1mArturo " & ART_VERSION & "\x1B[0m (" & ART_BUILD_DATE & " build " & ART_BUILD & ") [" & hostCPU & "-" & hostOS & "-" & ART_EDITION & "]"
