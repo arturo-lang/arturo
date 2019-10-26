@@ -203,8 +203,8 @@ identifier 				: 	ID 																	{ $$ = identifierFromString($1); }
 						;
 
 string 					:	STRING 																{ $$ = argumentFromStringLiteral($1); }
-						|	TILDE 																{ $$ = argumentFromStringLiteral(""); }
-						|	TILDE ID 															{ $$ = argumentFromStringLiteral($ID); }
+						|	TILDE 																{ $$ = argumentFromStringLiteral("\"\""); }
+						|	TILDE ID 															{ char *new_s = (char*)malloc(2 * sizeof(char) + strlen($ID)); sprintf(new_s, "\"%s\"", $ID); $$ = argumentFromStringLiteral(new_s); }
 						;
 
 number					:	INTEGER																{ $$ = argumentFromIntegerLiteral($1); }
