@@ -5,7 +5,7 @@
  * Programming Language + Interpreter
  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
- * @file: grammar/lexer.l
+ * @file: parser/lexer.l
  *****************************************************************/
 
 /****************************************
@@ -76,7 +76,6 @@ LETTER_OR_MISC		[a-zA-Z_:]
 {DIGIT}+\.{DIGIT}+									{ count(); return REAL; }
 
 "|"													{ count(); return PIPE; }
-"->"												{ count(); return IMPLIES; }
 
 "="													{ count(); return EQ_OP; }
 "<="												{ count(); return LE_OP; }
