@@ -23,8 +23,8 @@ template showMessage(msg:string,final:bool=false) =
         echo "------"
 
 template getCommand(cmdArgs:openArray[string]):string =
-    let gcc_flags   = ""#"--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --gcc.options.linker=\"-flto\""
-    let clang_flags = ""#"--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --clang.options.linker=\"-flto\""
+    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --gcc.options.linker=\"-flto\""
+    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --clang.options.linker=\"-flto\""
     "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache " & srcDir & "/main.nim"
 
 template buildParser(forSize:bool=false) = 
@@ -47,7 +47,8 @@ template compileCore() =
         "--threads:on",
         "--hints:off",
         "--opt:speed",
-        "--nilseqs:on"
+        "--nilseqs:on",
+        "--gc:regions"
     ]
     exec getCommand(args)
 
@@ -61,7 +62,8 @@ template compileMini() =
         "--threads:on",
         "--hints:off",
         "--opt:size",
-        "--nilseqs:on"
+        "--nilseqs:on",
+        "--gc:regions"
     ]
     exec getCommand(args)
 
@@ -109,7 +111,7 @@ template cleanUp() =
 
 # Tasks
 
-task release, "Build a production-ready optimize release":
+task release, "Build a production-ready optimized release":
     buildParser()
     updateBuild()
     compileCore()
@@ -117,7 +119,7 @@ task release, "Build a production-ready optimize release":
     cleanUp()
     showMessage "Done :)", true
 
-task mini, "Build a production-ready optimize mini-release":
+task mini, "Build a production-ready optimized mini-release":
     buildParser(forSize=true)
     updateBuild()
     compileMini()
