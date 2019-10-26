@@ -5,7 +5,7 @@
  * Programming Language + Interpreter
  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
- * @file: grammar/parser.y
+ * @file: parser/parser.y
  *****************************************************************/
 
 /****************************************
@@ -14,9 +14,9 @@
 
 // Macros
 
-#define POS(X) set_Position(X,new_Position(yylineno,yyfilename));
+#define POS(X) setStatementPosition(X,yyfilename,yylineno);
 
-// External definitions
+// Parser interface
 
 extern void yyerror(const char* str);
 extern int yyparse(void);
@@ -24,53 +24,37 @@ extern int yylex();
 
 extern int yylineno;
 char* yyfilename;
-extern void gotID(char* i);
-extern void* new_IdentifierWithId(char* i, int hsh);
-extern void add_IdToIdentifier(char* i, void* id);
+
+// External definitions - from Nim
+
+extern void* MainProgram;
 
 extern void* identifierFromString(char* i);
+extern void* identifierFromKeypath(void* k);
 
 extern void* argumentFromIdentifier(void* i);
 extern void* argumentFromStringLiteral(char* l);
 extern void* argumentFromIntegerLiteral(char* l);
 extern void* argumentFromRealLiteral(char* l);
 extern void* argumentFromBooleanLiteral(char* l);
-extern void printArgument(void* arg);
+extern void* argumentFromNullLiteral();
+extern void* argumentFromArrayLiteral(void* l);
+extern void* argumentFromDictionaryLiteral(void* l);
+extern void* argumentFromFunctionLiteral(void* l, char* args);
+extern void* argumentFromInlineCallLiteral(void* l);
 
 extern void* expressionFromArgument(void *a);
 extern void* expressionFromExpressions(void* l, char* op, void* r);
-/*
-extern void* _program;
 
-extern void add_NumToIdentifier(char* l, void* iden);
-extern void add_ExprToIdentifier(void* e, void* iden);
-extern void* new_Identifiers();
-extern void add_Identifier(void* i, void* iden);
+extern void* newExpressionList();
+extern void addExpressionToExpressionList(void* x, void* xl);
 
-extern void* new_Argument(char* t, char* v);
-extern void* new_ArgumentFromIdentifier(void* iden);
-extern int argument_Interpolated(void* a);
-extern void* new_Expression(void* l, char* op, void* r, int tp);
-extern void* new_ExpressionFromArgument(void* a);
-extern void* new_ExpressionFromStatement(void* s);
-extern void* new_ExpressionFromStatementBlock(void* st);
-extern void* new_ExpressionFromStatementBlockWithArguments(void* st,void* ids);
-extern void* new_ExpressionFromDictionary(void* st);
-extern void* new_ExpressionFromArray(void* ar);
-extern void* new_Statement(char* id);
-extern void* new_StatementFromExpression(void* ex);
-extern void* new_StatementWithExpressions(char* id, void* ex);
-extern void* new_Expressions();
-extern void* new_Statements();
+extern void* statementFromExpression(void* x);
+extern void* statementFromExpressions(void* i, void* xl);
+extern void* setStatementPosition(void* s, char* f, int l);
 
-extern void add_Statement(void* s, void* st);
-extern void add_Expression(void* e, void* ex);
-
-extern void* new_Position(int l, char* f);
-extern void set_Position(void* i, void* p);
-
-extern void set_MainEntry(void* p, void* s);
-*/
+extern void* newStatementList();
+extern void addStatementToStatementList(void* s, void* sl);
 
 /****************************************
  Functions
@@ -105,7 +89,6 @@ int yywrap() {
 %token <str> BOOLEANV "Boolean"
 
 %token <str> PIPE "|"
-%token <str> IMPLIES "->"
 
 %token <str> EQ_OP "="
 %token <str> LE_OP "<="
@@ -144,13 +127,11 @@ int yywrap() {
 
 %type <str> args
 
+%type <compo> keypath
 %type <compo> identifier string number boolean null
-%type <compo> argument expression
-//%type <compo> keypath 
-//%type <compo> argument
-//%type <compo> expression expression_list
-//%type <compo> statement_list statement
-//%type <compo> program
+%type <compo> array dictionary function inline_call
+%type <compo> argument expression expression_list
+%type <compo> statement statement_list
 
 /****************************************
  Directives
@@ -166,7 +147,6 @@ int yywrap() {
 %left PLUS_SG MINUS_SG
 %left MULT_SG DIV_SG MOD_SG 
 %left POW_SG
-%left IMPLIES
 
 %nonassoc REDUCE
 %nonassoc ID
@@ -187,21 +167,39 @@ int yywrap() {
 //==============================
 
 
-keypath					: 	ID DOT ID
-						| 	ID DOT INTEGER
-						| 	ID DOT LSQUARE expression RSQUARE
-						| 	keypath DOT ID
-						| 	keypath DOT INTEGER
-						| 	keypath	DOT LSQUARE expression RSQUARE
+keypath					: 	ID DOT ID 															{ void* e = newExpressionList(); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($3))), e); 
+																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
+						| 	ID DOT INTEGER 	 													{ void* e = newExpressionList(); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIntegerLiteral($3)), e); 
+																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
+						| 	ID DOT LSQUARE expression RSQUARE 									{ void* e = newExpressionList(); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
+																								  addExpressionToExpressionList($4, e); 
+																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
+						| 	keypath DOT ID 														{ void* e = newExpressionList(); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($1)), e); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($3))), e); 
+																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
+						| 	keypath DOT INTEGER 												{ void* e = newExpressionList(); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($1)), e);
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIntegerLiteral($3)), e);  
+																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
+						| 	keypath	DOT LSQUARE expression RSQUARE 								{ void* e = newExpressionList(); 
+																								  addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($1)), e); 
+																								  addExpressionToExpressionList($4, e);  
+																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
 						;					
 
-args					: 	ID[previous] ID 													{ strcat( $1, "," ); $$ = strcat($1, $2); printf("ids: %s\n",$$);/*void* i = $previous; add_Identifier(i, $identifier); $$ = i;*/ }
-						|	ID 																	{ $$ = $1; /*void* i = new_Identifiers(); add_Identifier(i, $identifier); $$ = i;*/ }
-						|	/* Nothing */														{ /*$$ = new_Identifiers();*/ }
+args					: 	ID[previous] COMMA ID 												{ strcat( $1, "," ); $$ = strcat($1, $3); }
+						|	ID 																	{ $$ = $1; }
+						|	/* Nothing */														{ }
 						;
 
 identifier 				: 	ID 																	{ $$ = identifierFromString($1); }
-						| 	keypath
+						| 	keypath 															{ $$ = identifierFromKeypath($1); }
 						;
 
 string 					:	STRING 																{ $$ = argumentFromStringLiteral($1); }
@@ -213,93 +211,84 @@ number					:	INTEGER																{ $$ = argumentFromIntegerLiteral($1); }
 						|	REAL 																{ $$ = argumentFromRealLiteral($1); }
 						;
 
-
 boolean 				:  	BOOLEANV 															{ $$ = argumentFromBooleanLiteral($1); }
 						;
 
-null 					:	NULLV 																{ $$ = NULL; }
+null 					:	NULLV 																{ $$ = argumentFromNullLiteral(); }
 						;
 
-array 					:	BEGIN_ARR expression_list RPAREN
-						|	BEGIN_ARR RPAREN
+array 					:	BEGIN_ARR expression_list RPAREN 									{ $$ = argumentFromArrayLiteral($2); }
+						|	BEGIN_ARR RPAREN 													{ $$ = argumentFromArrayLiteral(NULL); }
 						;
 
-dictionary 				: 	BEGIN_DICT statement_list RCURLY
+dictionary 				: 	BEGIN_DICT statement_list RCURLY 									{ $$ = argumentFromDictionaryLiteral($2); }
 						;
 
-function 				: 	LCURLY statement_list RCURLY
-						|	LSQUARE args RSQUARE LCURLY statement_list RCURLY
+function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFunctionLiteral($2,""); }
+						|	LSQUARE args RSQUARE LCURLY statement_list RCURLY 					{ $$ = argumentFromFunctionLiteral($5,$2); }
 						;
 
-inline_call				:	BEGIN_INLINE statement RPAREN
+inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
 						;
 
-argument				:	identifier 																	{ $$ = argumentFromIdentifier($1); /*$$ = new_ArgumentFromIdentifier($identifier);*/ }
-						//| 	keypath																{  }
-						| 	number
-						//| 	NUMBER 																{ printf("found NUMBER: %s\n",$NUMBER); /*$$ = new_Argument("number", $NUMBER);*/ }
-						//|	FLOAT 																{ /*$$ = new_Argument("number", $FLOAT);*/ }
+argument				:	identifier 															{ $$ = argumentFromIdentifier($1); }
+						| 	number 																
 						|	string
-						//|	STRING 																{ /*$$ = new_Argument("string", $STRING);*/ }
-						//|	TILDE %prec REDUCE													{ /*$$ = new_Argument("string", "\"\"");*/ }
-						//|	TILDE ID 															{ /*$$ = new_Argument("string", $ID);*/ }
-						|	boolean 															{ /*$$ = new_Argument("boolean", $BOOLEAN);*/ }
-						|	null	 															{ /*$$ = new_Argument("null", $NULLV);*/ }
+						|	boolean 															
+						|	null	 															
 						| 	array
-						//|	BEGIN_ARR expression_list RPAREN									{ /*$$ = new_ExpressionFromArray($expression_list);*/ }
-						//|	BEGIN_ARR RPAREN													{ /*void* e = new_Expressions(); $$ = new_ExpressionFromArray(e);*/ }
 						|	dictionary
-						//|	BEGIN_DICT statement_list RCURLY									{ /*$$ = new_ExpressionFromDictionary($statements);*/ }
-						|	inline_call
-						//|	BEGIN_INLINE statement RPAREN 										{ /*$$ = new_ExpressionFromStatement($statement);*/ }
 						|	function
-						//|	LCURLY statement_list RCURLY											{ /*$$ = new_ExpressionFromStatementBlock($statements);*/ }
-						//| 	LSQUARE args RSQUARE LCURLY statement_list RCURLY					{ /*$$ = new_ExpressionFromStatementBlockWithArguments($statements, $identifiers);*/ }
+						|	inline_call
 						;
 
-expression				: 	argument 															{ $$ = expressionFromArgument($1); printArgument($1); /*$$ = new_ExpressionFromArgument($argument);*/ }
+//==============================
+// Expressions
+//==============================
+
+expression				: 	argument 															{ $$ = expressionFromArgument($1); }
 						|	LPAREN expression[main] RPAREN 										{ $$ = $main; }
 						|	expression[left] PLUS_SG expression[right] 							{ $$ = expressionFromExpressions($left, "PLUS_SG", $right); }
-						| 	expression[left] MINUS_SG expression[right] 						{ $$ = expressionFromExpressions($left, "MINUS_SG", $right);/*$$ = new_Expression($left, $2, $right, 0);*/ }
-						| 	expression[left] MULT_SG expression[right] 							{ $$ = expressionFromExpressions($left, "MULT_SG", $right);/*$$ = new_Expression($left, $2, $right, 0);*/ }
-						| 	expression[left] DIV_SG expression[right] 							{ $$ = expressionFromExpressions($left, "DIV_SG", $right);/*$$ = new_Expression($left, $2, $right, 0);*/ }
-						| 	expression[left] MOD_SG expression[right] 							{ $$ = expressionFromExpressions($left, "MOD_SG", $right);/*$$ = new_Expression($left, $2, $right, 0);*/ }
-						| 	expression[left] POW_SG expression[right] 							{ $$ = expressionFromExpressions($left, "POW_SG", $right);/*$$ = new_Expression($left, $2, $right, 0);*/ }
-						| 	expression[left] EQ_OP expression[right] 							{ $$ = expressionFromExpressions($left, "EQ_OP", $right);/*$$ = new_Expression($left, $2, $right, 1);*/ } 
-						|	expression[left] LE_OP expression[right]							{ $$ = expressionFromExpressions($left, "LE_OP", $right);/*$$ = new_Expression($left, $2, $right, 1);*/ } 
-						|	expression[left] GE_OP expression[right]							{ $$ = expressionFromExpressions($left, "GE_OP", $right);/*$$ = new_Expression($left, $2, $right, 1);*/ } 
-						|	expression[left] LT_OP expression[right]							{ $$ = expressionFromExpressions($left, "LT_OP", $right);/*$$ = new_Expression($left, $2, $right, 1);*/ } 
-						|	expression[left] GT_OP expression[right]							{ $$ = expressionFromExpressions($left, "GT_OP", $right);/*$$ = new_Expression($left, $2, $right, 1);*/ } 
-						|	expression[left] NE_OP expression[right]							{ $$ = expressionFromExpressions($left, "NE_OP", $right);/*$$ = new_Expression($left, $2, $right, 1);*/ } 
+						| 	expression[left] MINUS_SG expression[right] 						{ $$ = expressionFromExpressions($left, "MINUS_SG", $right); }
+						| 	expression[left] MULT_SG expression[right] 							{ $$ = expressionFromExpressions($left, "MULT_SG", $right); }
+						| 	expression[left] DIV_SG expression[right] 							{ $$ = expressionFromExpressions($left, "DIV_SG", $right); }
+						| 	expression[left] MOD_SG expression[right] 							{ $$ = expressionFromExpressions($left, "MOD_SG", $right); }
+						| 	expression[left] POW_SG expression[right] 							{ $$ = expressionFromExpressions($left, "POW_SG", $right); }
+						| 	expression[left] EQ_OP expression[right] 							{ $$ = expressionFromExpressions($left, "EQ_OP", $right); } 
+						|	expression[left] LE_OP expression[right]							{ $$ = expressionFromExpressions($left, "LE_OP", $right); } 
+						|	expression[left] GE_OP expression[right]							{ $$ = expressionFromExpressions($left, "GE_OP", $right); } 
+						|	expression[left] LT_OP expression[right]							{ $$ = expressionFromExpressions($left, "LT_OP", $right); } 
+						|	expression[left] GT_OP expression[right]							{ $$ = expressionFromExpressions($left, "GT_OP", $right); } 
+						|	expression[left] NE_OP expression[right]							{ $$ = expressionFromExpressions($left, "NE_OP", $right); } 
 						;
 
 
-expression_list			:	expression 															{ /*void* e = new_Expressions(); add_Expression(e, $expression); $$ = e;*/ }
-						//| 	IMPLIES expression													{ /*void* e = new_Expressions(); void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return",0), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e;*/ }
-						| 	expression_list[previous] expression 								{ /*void* e = $previous; add_Expression(e, $expression); $$ = e;*/ }
-						| 	expression_list[previous] SEMICOLON NEW_LINE expression 								{ /*void* e = $previous; add_Expression(e, $expression); $$ = e;*/ }
-						//| 	expression_list[previous] IMPLIES expression 						{ /*void* e = $previous; void* sts = new_Statements(); void* subex = new_Expressions(); add_Expression(subex,$expression); add_Statement(sts, new_StatementWithExpressions(new_IdentifierWithId("return",0), subex)); add_Expression(e, new_ExpressionFromStatementBlock(sts)); $$ = e;*/ }
+expression_list			:	expression 															{ void* e = newExpressionList(); addExpressionToExpressionList($expression, e); $$ = e; }
+						| 	expression_list[previous] expression 								{ void* e = $previous; addExpressionToExpressionList($expression, e); $$ = e; }
+						| 	expression_list[previous] SEMICOLON NEW_LINE expression 			{ void* e = $previous; addExpressionToExpressionList($expression, e); $$ = e; }
 						;
 
-statement				: 	expression 															{ /*$$ = new_StatementFromExpression($expression); POS($$);*/ }
-						//|   IMPLIES expression 													{ /*void* subex = new_Expressions(); add_Expression(subex,$expression); $$ = new_StatementWithExpressions(new_IdentifierWithId("return",0), subex);*/ }
-						|	identifier expression_list													{ /*$$ = new_StatementWithExpressions($identifier, $expression_list); POS($$);*/ }
-						//|	keypath expression_list												{ /*$$ = new_StatementWithExpressions($identifier, $expression_list); POS($$);*/ }
-						|	identifier PIPE statement[previous]											{ /*void* e = new_Expressions(); add_Expression(e, new_ExpressionFromStatement($previous)); $$ = new_StatementWithExpressions($identifier,e); POS($$);*/ }
+//==============================
+// Statements
+//==============================
+
+statement				: 	expression 															{ $$ = statementFromExpression($1); POS($$); }
+						|	identifier expression_list											{ $$ = statementFromExpressions($1,$2); POS($$); }
+						|	identifier PIPE statement[previous]									{ void* e = newExpressionList(); addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($previous)), e); $$ = statementFromExpressions($identifier,e); POS($$); }
 						;
 
-statement_list 			:	statement_list[previous] NEW_LINE statement 							{ /*void* s = $previous; if ($statement!=NULL) { add_Statement(s, $statement); } $$ = s;*/ }
-						|   statement_list[previous] COMMA statement 								{ /*void* s = $previous; if ($statement!=NULL) { add_Statement(s, $statement); } $$ = s;*/ }
-						|	statement_list[previous] NEW_LINE										{ /*$$ = $previous;*/ }
-						| 	statement 															{ /*void* s = new_Statements(); if ($statement!=NULL) { add_Statement(s, $statement); $$ = s; }*/ }
-						|	/* Nothing */														{ /*$$ = new_Statements();*/ }
+statement_list 			:	statement_list[previous] NEW_LINE statement 						{ void* s = $previous; if ($statement!=NULL) { addStatementToStatementList($statement, s); } $$ = s; }
+						|   statement_list[previous] COMMA statement 							{ void* s = $previous; if ($statement!=NULL) { addStatementToStatementList($statement, s); } $$ = s; }
+						|	statement_list[previous] NEW_LINE									{ $$ = $previous; }
+						| 	statement 															{ void* s = newStatementList(); if ($statement!=NULL) { addStatementToStatementList($statement, s); $$ = s; } }
+						|	/* Nothing */														{ $$ = newStatementList(); }
 						;
 
 //==============================
 // Entry point
 //==============================
 
-program					:	statement_list 															{ /*set_MainEntry(_program, $statements);*/ }
+program					:	statement_list 														{ MainProgram = $statement_list; }
 						;
 
 %%
