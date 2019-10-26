@@ -7,12 +7,18 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import math, os, parseutils, strutils, tables
+import algorithm, math, os, parseutils, sequtils, strutils, tables
 import panic
 
 import lib/core
 
 type
+    #[----------------------------------------
+        Stack
+      ----------------------------------------]#
+
+    Context = Table[string,Value]
+
     #[----------------------------------------
         Identifier
       ----------------------------------------]#
@@ -41,7 +47,6 @@ type
         inlineCallArgument
 
     Argument = ref object
-
         case kind: ArgumentKind:
             of identifierArgument:
                 i: Identifier
@@ -131,6 +136,8 @@ type
             of userFunction:
                 args: seq[string]
                 body: StatementList
+                parentThis: Value
+                parentContext: Context
             of systemFunction:
                 call: FunctionCall[Value,ExpressionList]
                 constraints: seq[seq[ValueKind]]
@@ -143,9 +150,9 @@ type
     ValueKind = enum
         stringValue, integerValue, realValue, booleanValue,
         arrayValue, dictionaryValue, functionValue, objectValue,
-        nullValue
+        nullValue, anyValue
 
-    Object = object
+    Object = ref object
 
     Value = ref object
         case kind: ValueKind:
@@ -160,18 +167,27 @@ type
             of arrayValue:
                 a: seq[Value]
             of dictionaryValue:
-                d: Table[string,Value]
+                d: Context
             of functionValue:
                 f: Function
             of objectValue:
                 o: Object
             of nullValue: 
                 discard
+            of anyValue:
+                discard
 
 var
     MainProgram {.exportc.} : StatementList
-    Stack                   : seq[Table[string, Value]]
+
+    Stack                   : seq[Context]
     SystemFunctions         : Table[string,Function]
+
+    # Const/literal arguments
+    ConstStrings            : Table[string,Argument]
+    ConstTrue               : Argument
+    ConstFalse              : Argument
+    ConstNull               : Argument
 
 #[######################################################
     Parser Interface
@@ -190,6 +206,9 @@ var yylineno {.importc.}: cint
 
 proc addContext() =
     Stack.add(initTable[string, Value]())
+
+proc popContext() =
+    discard Stack.pop()
 
 proc getSymbol(k: string): Value = 
     if Stack[^1].hasKey(k):
@@ -243,83 +262,250 @@ proc valueFromNull(): Value =
 proc valueFromArray(v: seq[Value]): Value =
     result = Value(kind: arrayValue, a: v)
 
+proc valueFromDictionary(v: Context): Value = 
+    result = Value(kind: dictionaryValue, d: v)
+
+proc valueFromFunction(v: Function): Value =
+    result = Value(kind: functionValue, f: v)
+
+proc valueFromValue(v: Value): Value =
+    case v.kind
+        of stringValue: result = valueFromString(v.s)
+        of integerValue: result = valueFromInteger(v.i)
+        of realValue: result = valueFromReal(v.r)
+        of arrayValue:
+            result = valueFromArray(@[])
+            for item in v.a:
+                result.a.add(valueFromValue(item))
+        of dictionaryValue:
+            result = valueFromDictionary(initTable[string, Value]())
+            for k,val in v.d.pairs:
+                result.d[k] = valueFromValue(val)
+
+        else: result = v
+
+proc compare(l: Value, r: Value): int # Forward
+proc findValueInArray(v: Value, lookup: Value): int =
+    var index = 0
+    for i in v.a:
+        if compare(i,lookup)==0: return index
+        inc(index)
+
+proc stringify(v: Value, quoted: bool = true): string # Forward
 proc `+`(l: Value, r: Value): Value =
     case l.kind
+        of stringValue:
+            case r.kind
+                of stringValue: result = valueFromString(l.s & r.s)
+                of integerValue: result = valueFromString(l.s & $(r.i))
+                of realValue: result = valueFromString(l.s & $(r.r))
+                else: result = valueFromString(l.s & r.stringify())
         of integerValue:
             case r.kind
+                of stringValue: result = valueFromString($(l.i) & r.s)
                 of integerValue: result = valueFromInteger(l.i + r.i)
                 of realValue: result = valueFromReal(float(l.i)+r.r)
-                else: 
-                    echo "i don't know what to do"
-                    result = nil
+                else: runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of realValue:
+            case r.kind
+                of stringValue: result = valueFromString($(l.r) & r.s)
+                of integerValue: result = valueFromReal(l.r + float(r.i))
+                of realValue: result = valueFromReal(l.r+r.r)
+                else: runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of arrayValue:
+            result = valueFromValue(l)
+            if r.kind!=arrayValue:
+                result.a.add(r)
+            else:
+                for item in r.a:
+                    result.a.add(item)
+        of dictionaryValue:
+            if r.kind==dictionaryValue:
+                result = valueFromValue(l)
+                for k,v in l.d.pairs:
+                    result.d[k] = v
+
+            else: runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         else:
-            echo "i don't know what to do"
-            result = nil
+            runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
 
 proc `-`(l: Value, r: Value): Value =
     case l.kind
+        of stringValue:
+            case r.kind
+                of stringValue: result = valueFromString(l.s.replace(r.s,""))
+                of integerValue: result = valueFromString(l.s.replace($(r.i),""))
+                of realValue: result = valueFromString(l.s.replace($(r.r),""))
+                else: runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromInteger(l.i - r.i)
-                else:
-                    echo "i don't know what to do"
-                    result = nil
+                of realValue: result = valueFromReal(float(l.i)-r.r)
+                else: runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of realValue:
+            case r.kind
+                of integerValue: result = valueFromReal(l.r - float(r.i))
+                of realValue: result = valueFromReal(l.r-r.r)
+                else: runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of arrayValue:
+            result = valueFromValue(l)
+            if r.kind!=arrayValue:
+                result.a.delete(l.findValueInArray(r))
+            else:
+                for item in r.a:
+                    result.a.delete(result.findValueInArray(item))
+
+        of dictionaryValue:
+            result = valueFromValue(l)
+            for k,v in l.d.pairs:
+                if compare(v,r)==0:
+                    result.d.del(k)
+
         else:
-            echo "i don't know what to do"
-            result = nil
-    result = nil
+            runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
 
 proc `*`(l: Value, r: Value): Value = 
     case l.kind
+        of stringValue:
+            case r.kind
+                of integerValue: result = valueFromString(l.s.repeat(r.i))
+                of realValue: result = valueFromString(l.s.repeat(int(r.r)))
+                else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         of integerValue:
             case r.kind
+                of stringValue: result = valueFromString(r.s.repeat(l.i))
                 of integerValue: result = valueFromInteger(l.i * r.i)
-                else:
-                    echo "i don't know what to do"
-                    result = nil
+                of realValue: result = valueFromReal(float(l.i)*r.r)
+                else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of realValue:
+            case r.kind
+                of stringValue: result = valueFromString(r.s.repeat(int(l.r)))
+                of integerValue: result = valueFromReal(l.r * float(r.i))
+                of realValue: result = valueFromReal(l.r*r.r)
+                else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of arrayValue:
+            result = valueFromArray(@[])
+            if r.kind==integerValue or r.kind==realValue:
+                var limit:int
+                if r.kind==integerValue: limit = r.i
+                else: limit = int(r.r)
+
+                var i = 0
+                while i<limit:
+                    for item in l.a:
+                        result.a.add(valueFromValue(item))
+                    inc(i)
+            else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         else:
-            echo "i don't know what to do"
-            result = nil
-    result = nil
+            runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
 
 proc `/`(l: Value, r: Value): Value = 
     case l.kind
+        of stringValue:
+            case r.kind
+                of integerValue: 
+                    var k=0
+                    var resp=""
+                    result = valueFromArray(@[])
+                    while k<l.s.len:
+                        resp &= l.s[k]
+                        if ((k+1) mod r.i)==0: 
+                            result.a.add(valueFromString(resp))
+                            resp = ""
+                        inc(k)
+                
+                of realValue: 
+                    var k=0
+                    var resp=""
+                    result = valueFromArray(@[])
+                    while k<l.s.len:
+                        resp &= l.s[k]
+                        if ((k+1) mod int(r.r))==0: 
+                            result.a.add(valueFromString(resp))
+                            resp = ""
+                        inc(k)
+
+                else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         of integerValue:
             case r.kind
-                of integerValue: result = valueFromInteger(l.i div r.i)
-                else:
-                    echo "i don't know what to do"
-                    result = nil
+                of integerValue: result = valueFromReal(l.i / r.i)
+                of realValue: result = valueFromReal(float(l.i) / r.r)
+                else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of realValue:
+            case r.kind
+                of integerValue: result = valueFromReal(l.r / float(r.i))
+                of realValue: result = valueFromReal(l.r / r.r)
+                else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of arrayValue:
+            result = valueFromArray(@[])
+            if r.kind==integerValue or r.kind==realValue:
+                var limit:int
+                if r.kind==integerValue: limit = r.i
+                else: limit = int(r.r)
+
+                var k = 0
+                var resp = valueFromArray(@[])
+                while k<l.a.len:
+                    resp.a.add(valueFromValue(l.a[k]))
+                    if ((k+1) mod limit)==0: 
+                        result.a.add(resp)
+                        resp = valueFromArray(@[])
+                    inc(k)
+
+            else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         else:
-            echo "i don't know what to do"
-            result = nil
-    result = nil
+            runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
 
 proc `%`(l: Value, r: Value): Value =
     case l.kind
+        of stringValue:
+            case r.kind
+                of integerValue: 
+                    let le = (l.s.len mod r.i)
+                    result = valueFromString(l.s[l.s.len-le..^1])
+                
+                of realValue: 
+                    let le = (l.s.len mod int(r.r))
+                    result = valueFromString(l.s[l.s.len-le..^1])
+
+                else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromInteger(l.i mod r.i)
-                else:
-                    echo "i don't know what to do"
-                    result = nil
+                of realValue: result = valueFromInteger(l.i mod int(r.r))
+                else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of realValue:
+            case r.kind
+                of integerValue: result = valueFromInteger(int(l.r) mod r.i)
+                of realValue: result = valueFromInteger(int(l.r) mod int(r.r))
+                else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of arrayValue:
+            result = valueFromArray(@[])
+            if r.kind==integerValue or r.kind==realValue:
+                var limit:int
+                if r.kind==integerValue: limit = r.i
+                else: limit = int(r.r)
+
+                let le = (l.a.len mod limit)
+                result = valueFromArray(l.a[l.a.len-le..^1])
+            else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         else:
-            echo "i don't know what to do"
-            result = nil
-    result = nil
+            runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
 
 proc `^`(l: Value, r: Value): Value =
     case l.kind
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromInteger(l.i ^ r.i)
-                else:
-                    echo "i don't know what to do"
-                    result = nil
+                of realValue: result = valueFromInteger(l.i ^ int(r.r))
+                else: runtimeError("cannot use `^` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+        of realValue:
+            case r.kind
+                of integerValue: result = valueFromInteger(int(l.r) ^ r.i)
+                of realValue: result = valueFromReal(pow(l.r,r.r))
+                else: runtimeError("cannot use `^` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
         else:
-            echo "i don't know what to do"
-            result = nil
-    result = nil
+            runtimeError("cannot use `^` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
 
 proc compare(l: Value, r: Value): int =
     case l.kind
@@ -358,43 +544,125 @@ proc compare(l: Value, r: Value): int =
                 else:
                     runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
                     result = 0
+        of booleanValue:
+            case r.kind
+                of booleanValue:
+                    if l==r: result = 0
+                    else: result = -1
+                else:
+                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
+                    result = 0
+
+        of arrayValue:
+            case r.kind
+                of arrayValue:
+                    if l.a.len < r.a.len: result = -1
+                    elif l.a.len > r.a.len: result = 1
+                    else:
+                        var i=0
+                        while i<l.a.len:
+                            if compare(l.a[i],r.a[i])!=0: return -2
+                            inc(i)
+                        result = 0
+                else:
+                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
+                    result = 0
+        of dictionaryValue:
+            case r.kind
+                of dictionaryValue:
+                    if toSeq(l.d.keys()).len < toSeq(r.d.keys()).len: result = -1
+                    elif toSeq(l.d.keys()).len > toSeq(r.d.keys()).len: result = 1
+                    else:
+                        for k,v in l.d.pairs:
+                            if not r.d.hasKey(k): return -2
+                            else: 
+                                if compare(l.d[k],r.d[k])!=0: return -2
+
+                        result = 0
+                else:
+                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
+                    result = 0 
+
         else:
             echo "i don't know what to do"
             result = 0
 
-proc stringify(v: Value): string =
+proc stringify(v: Value, quoted: bool = true): string =
     case v.kind
-        of stringValue      :   result = v.s
+        of stringValue      :   
+            if quoted: result = escape(v.s)
+            else: result = v.s
         of integerValue     :   result = $(v.i)
         of realValue        :   result = $(v.r)
         of booleanValue     :   result = $(v.b)
-        else                :   result = "NOTHING"
+        of arrayValue       :
+            result = "#("
+            var items: seq[string] = @[]
+
+            for item in v.a:
+                items.add(item.stringify())
+
+            result &= items.join(" ")
+            result &= ")"
+        of dictionaryValue  :
+            result = "#{ "
+            var items: seq[string] = @[]
+
+            for item in sorted(toSeq(v.d.keys())):
+                items.add(item & " " & v.d[item].stringify())
+
+            result &= items.join(", ")
+            result &= " }"
+
+            if result=="#{  }": result = "#{}"
+        of functionValue    :   result = "<function: 0x>"
+        of nullValue        :   result = "null"
+        of objectValue      :   result = "<object: 0x>"
+        of anyValue         :   result = ""
 
 #[----------------------------------------
     Functions
   ----------------------------------------]#
 
 proc newUserFunction(s: StatementList, a: seq[string] = @[]): Function =
-    result = Function(kind: userFunction, args: a, body: s)
+    result = Function(kind: userFunction, args: a, body: s, parentThis: nil, parentContext: initTable[string, Value]())
 
 proc newSystemFunction(f: FunctionCall[Value,ExpressionList], c: seq[seq[ValueKind]], e: bool = true): Function =
     result = Function(kind: systemFunction, call: f, constraints: c, eval: e)
 
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value # Forward
+proc execute(sl: StatementList): Value # Forward
 proc execute(f: Function, s: ExpressionList): Value =
-    if f.eval:
-        result = f.call(s.evaluate(),s)
+    if f.kind==systemFunction:
+        if f.eval:
+            result = f.call(s.evaluate(),s)
+        else:
+            result = f.call(nil,s)
     else:
-        result = f.call(nil,s)
+        addContext()
+        var params = s.evaluate(forceArray=true)
+        if f.args.len>0:
+            if params.a.len!=f.args.len: runtimeError("wrong number of parameters for function")
+
+            var ind=0
+            for arg in f.args:
+                discard setSymbol(arg,params.a[ind])
+                inc(ind)
+        
+        discard setSymbol("&", params)
+        result = f.body.execute()
+        popContext()
 
 #[----------------------------------------
     Identifier
   ----------------------------------------]#
 
 proc identifierFromString(i: cstring): Identifier {.exportc.} =
+    #echo "creating identifier: " & $i
     result = Identifier(kind: simpleIdentifier, i: $i)
 
 proc identifierFromKeypath(k: Expression): Identifier {.exportc.} =
+    #echo "creating identifier (k): "
     result = Identifier(kind: keypathIdentifier, k: k)
 
 #[----------------------------------------
@@ -464,7 +732,11 @@ proc argumentFromIdentifier(i: Identifier): Argument {.exportc.} =
     result = Argument(kind: identifierArgument, i: i)
 
 proc argumentFromStringLiteral(l: cstring): Argument {.exportc.} =
-    result = Argument(kind: literalArgument, v: valueFromString($l))
+    if ConstStrings.hasKey($l):
+        result = ConstStrings[$l]
+    else:
+        result = Argument(kind: literalArgument, v: valueFromString(unescape($l).replace("\\n","\n")))
+        ConstStrings[$l] = result
 
 proc argumentFromIntegerLiteral(l: cstring): Argument {.exportc.} =
     result = Argument(kind: literalArgument, v: valueFromInteger($l))
@@ -473,10 +745,11 @@ proc argumentFromRealLiteral(l: cstring): Argument {.exportc.} =
     result = Argument(kind: literalArgument, v: valueFromReal($l))
 
 proc argumentFromBooleanLiteral(l: cstring): Argument {.exportc.} =
-    result = Argument(kind: literalArgument, v: valueFromBoolean($l))
+    if l=="true": result = ConstTrue
+    else: result = ConstFalse
 
 proc argumentFromNullLiteral(): Argument {.exportc.} =
-    result = Argument(kind: literalArgument, v: valueFromNull())
+    result = ConstNull
 
 proc argumentFromArrayLiteral(l: ExpressionList): Argument {.exportc.} =
     if l==nil:
@@ -496,6 +769,7 @@ proc argumentFromFunctionLiteral(l: StatementList, args: cstring = ""): Argument
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} =
     result = Argument(kind: inlineCallArgument, c: l)
 
+proc execute(s: Statement, parent: Value = nil): Value # Forward
 proc getValue(a: Argument): Value =
     case a.kind
         of identifierArgument:
@@ -504,8 +778,21 @@ proc getValue(a: Argument): Value =
                 of keypathIdentifier: result = a.i.k.evaluate()
         of literalArgument:
             result = a.v
-        else:
-            result = nil
+        of arrayArgument:
+            result = a.a.evaluate(forceArray=true)
+        of dictionaryArgument:
+            var ret  = valueFromDictionary(initTable[string, Value]())
+
+            addContext()
+            for statement in a.d.list:
+                discard statement.execute(ret)
+            popContext()
+
+            result = ret
+        of functionArgument:
+            result = valueFromFunction(a.f)
+        of inlineCallArgument:
+            result = a.c.execute()
 
 #[----------------------------------------
     Statement
@@ -515,34 +802,51 @@ proc statementFromExpression(x: Expression): Statement {.exportc.} =
     result = Statement(kind: expressionStatement, expression: x)
 
 proc statementFromExpressions(i: Identifier, xl: ExpressionList): Statement {.exportc.} =
+    #echo "creating statement"
     result = Statement(kind: normalStatement, id: i, expressions: xl)
 
 proc setStatementPosition(s: Statement, f: cstring, l: int) {.exportc.} =
     s.pos = Position(file: $f, line: l)
 
-proc execute(s: Statement): Value = 
+proc executeAssign(s: Statement, parent: Value = nil): Value =
+    var ev = s.expressions.evaluate()
+
+    if parent==nil:
+        result = setSymbol(s.id.i, ev)
+    else:
+        parent.d[s.id.i] = ev
+
+        if ev.kind==functionValue:
+            ev.f.parentThis = ev
+            ev.f.parentContext = parent.d    
+
+        result = ev    
+
+
+proc execute(s: Statement, parent: Value = nil): Value = 
+
     case s.kind
         of expressionStatement:
             result = s.expression.evaluate()
         of normalStatement:
-            let sym = getSymbol(s.id.i)
+            if SystemFunctions.hasKey(s.id.i):
+                result = SystemFunctions[s.id.i].execute(s.expressions)
+            else:
+                let sym = getSymbol(s.id.i)
 
-            if sym==nil:
-                if SystemFunctions.hasKey(s.id.i):
-                    result = SystemFunctions[s.id.i].execute(s.expressions)
-                else:
+                if sym==nil:
                     if s.expressions.list.len > 0:
-                        result = setSymbol(s.id.i, s.expressions.evaluate())
+                        result = s.executeAssign(parent)
                     else:
                         runtimeError("symbol not found: '" & s.id.i & "'")
-            else:
-                if sym.kind==functionValue:
-                    echo "execute: " & s.id.i
                 else:
-                    if s.expressions.list.len > 0:
-                        result = setSymbol(s.id.i, s.expressions.evaluate())
+                    if sym.kind==functionValue:
+                        result = sym.f.execute(s.expressions)
                     else:
-                        result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
+                        if s.expressions.list.len > 0:
+                            result = s.executeAssign(parent)
+                        else:
+                            result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
 
 
 #[----------------------------------------
@@ -564,13 +868,23 @@ proc execute(sl: StatementList): Value =
   ======================================================]#
 
 template registerSystemFunctions() =
-    SystemFunctions["print"] = newSystemFunction(Core_Print,@[@[integerValue]])
+    SystemFunctions["print"] = newSystemFunction(Core_Print,@[@[anyValue]])
+
+#[######################################################
+    Store management
+  ======================================================]#
+
+template initializeConsts() =
+    ConstStrings = initTable[string,Argument]()
+    ConstTrue = Argument(kind: literalArgument, v: valueFromBoolean(true))
+    ConstFalse = Argument(kind: literalArgument, v: valueFromBoolean(false))
+    ConstNull = Argument(kind: literalArgument, v: valueFromNull())
 
 #[######################################################
     MAIN ENTRY
   ======================================================]#
 
-proc runScript*(scriptPath:string, includePath:string, warnings:bool) = 
+proc runScript*(scriptPath:string, includePath:string="", warnings:bool=false) = 
     if not fileExists(scriptPath): 
         cmdlineError("path not found: '" & scriptPath & "'")
 
@@ -581,10 +895,12 @@ proc runScript*(scriptPath:string, includePath:string, warnings:bool) =
     if not (success): 
         cmdlineError("something went wrong when opening file")
 
+    initializeConsts()
+
     MainProgram = nil
     discard yyparse()
 
-    echo repr MainProgram
+    #echo repr MainProgram
 
     if MainProgram!=nil:
         addContext()
