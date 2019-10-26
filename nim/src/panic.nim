@@ -11,6 +11,9 @@ const
     CMDLINE_ERROR   = "✘ \x1B[4;1;35mCmdLine Error\x1B[0;37m | "
     CMDLINE_HELP    = "                | try `arturo help` for more information."
 
+    RUNTIME_ERROR   = "✘ \x1B[4;1;35mRuntime Error\x1B[0;37m | "
+    RUNTIME_PAD     = "                | "
+
     PARSE_ERROR     = "✘ \x1B[4;1;35mParse Error\x1B[0;37m | "
     PARSE_PAD       = "              | "
 
@@ -20,6 +23,12 @@ const
 #[######################################################
     Methods
   ======================================================]#
+
+proc runtimeError*(msg:string, filename:string="", line:cint=0) {.exportc.} =
+    echo RUNTIME_ERROR & "file: " & $filename & " - line: " & $line
+    echo RUNTIME_PAD & $msg
+    echo ""
+    quit()
 
 proc parseError*(msg:cstring, filename:cstring, line:cint) {.exportc.} =
     echo PARSE_ERROR & "file: " & $filename & " - line: " & $line
