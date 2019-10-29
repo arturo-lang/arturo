@@ -8,31 +8,36 @@
   *****************************************************************]#
 
 import algorithm, math, os, parseutils, sequtils, strutils, tables
-import panic
+import panic, utils
 
-import lib/core
+#[######################################################
+    Type definitions
+  ======================================================]#
 
 type
     #[----------------------------------------
         Stack
       ----------------------------------------]#
 
-    Context = Table[string,Value]
+    Context = TableRef[string,Value]
 
     #[----------------------------------------
-        Identifier
+        KeyPath
       ----------------------------------------]#
 
-    IdentifierKind = enum
-        simpleIdentifier, 
-        keypathIdentifier
+    KeyPathPartKind = enum
+        stringKeyPathPart,
+        integerKeyPathPart,
+        inlineKeyPathPart
 
-    Identifier = ref object
-        case kind: IdentifierKind:
-            of simpleIdentifier:
-                i: string
-            of keypathIdentifier:
-                k: Expression
+    KeyPathPart = ref object
+        case kind: KeyPathPartKind:
+            of stringKeyPathPart    : s: string
+            of integerKeyPathPart   : i: int
+            of inlineKeyPathPart    : a: Argument
+
+    KeyPath = ref object
+        parts: seq[KeyPathPart]
                 
     #[----------------------------------------
         Argument
@@ -48,19 +53,12 @@ type
 
     Argument = ref object
         case kind: ArgumentKind:
-            of identifierArgument:
-                i: Identifier
-            of literalArgument:
-                v: Value
-            of arrayArgument:
-                a: ExpressionList
-            of dictionaryArgument:
-                d: StatementList
-            of functionArgument:
-                f: Function
-            of inlineCallArgument:
-                c: Statement
-
+            of identifierArgument   : i: string
+            of literalArgument      : v: Value
+            of arrayArgument        : a: ExpressionList
+            of dictionaryArgument   : d: StatementList
+            of functionArgument     : f: Function
+            of inlineCallArgument   : c: Statement
 
     #[----------------------------------------
         Expression
@@ -77,26 +75,26 @@ type
     Expression = ref object
         case kind: ExpressionKind:
             of argumentExpression:
-                a: Argument
+                a       : Argument
             of normalExpression:
-                left: Expression
-                op: ExpressionOperator
-                right: Expression
+                left    : Expression
+                op      : ExpressionOperator
+                right   : Expression
 
     #[----------------------------------------
         ExpressionList
       ----------------------------------------]#
 
     ExpressionList = ref object
-        list: seq[Expression]
+        list    : seq[Expression]
 
     #[----------------------------------------
         Position
       ----------------------------------------]#
 
     Position = object
-        file: string
-        line: int 
+        file    : string
+        line    : int 
 
     #[----------------------------------------
         Statement
@@ -110,17 +108,17 @@ type
         pos: Position
         case kind: StatementKind:
             of expressionStatement:
-                expression: Expression
+                expression      : Expression
             of normalStatement:
-                id: Identifier
-                expressions: ExpressionList
+                id              : string
+                expressions     : ExpressionList
 
     #[----------------------------------------
         StatementList
       ----------------------------------------]#
 
     StatementList = ref object
-        list: seq[Statement]
+        list    : seq[Statement]
 
     #[----------------------------------------
         Function
@@ -129,25 +127,31 @@ type
     FunctionKind = enum
         userFunction, systemFunction
 
-    FunctionCall[V,X] = proc(v: V, x: X): V
+    FunctionCall[F,X,V]     = proc(f:F, xl: X): V
+    FunctionConstraints     = seq[seq[ValueKind]]
+    FunctionReturns         = seq[ValueKind]
 
-    Function = ref object
+    Function* = ref object
         case kind: FunctionKind:
             of userFunction:
-                args: seq[string]
-                body: StatementList
-                parentThis: Value
-                parentContext: Context
+                args            : seq[string]
+                body            : StatementList
+                parentThis      : Value
+                parentContext   : Context
             of systemFunction:
-                call: FunctionCall[Value,ExpressionList]
-                constraints: seq[seq[ValueKind]]
-                eval: bool
+                name            : string
+                call            : FunctionCall[Function,ExpressionList,Value]
+                require         : FunctionConstraints
+                ret             : FunctionReturns
+                description     : string
+                minReq          : int
+                maxReq          : int
 
     #[----------------------------------------
         Value
       ----------------------------------------]#
 
-    ValueKind = enum
+    ValueKind* = enum
         stringValue, integerValue, realValue, booleanValue,
         arrayValue, dictionaryValue, functionValue, objectValue,
         nullValue, anyValue
@@ -155,46 +159,89 @@ type
     Object = ref object
 
     Value = ref object
-        case kind: ValueKind:
-            of stringValue:
-                s: string
-            of integerValue:
-                i: int
-            of realValue:
-                r: float
-            of booleanValue:
-                b: bool 
-            of arrayValue:
-                a: seq[Value]
-            of dictionaryValue:
-                d: Context
-            of functionValue:
-                f: Function
-            of objectValue:
-                o: Object
-            of nullValue: 
-                discard
-            of anyValue:
-                discard
+        case kind*: ValueKind:
+            of stringValue      : s: string
+            of integerValue     : i: int
+            of realValue        : r: float
+            of booleanValue     : b: bool 
+            of arrayValue       : a: seq[Value]
+            of dictionaryValue  : d: Context
+            of functionValue    : f: Function
+            of objectValue      : o: Object
+            of nullValue        : discard
+            of anyValue         : discard
+
+#[######################################################
+    Globals
+  ======================================================]#
 
 var
     MainProgram {.exportc.} : StatementList
 
-    Stack                   : seq[Context]
-    SystemFunctions         : Table[string,Function]
+    # Environment
+
+    Stack*                  : seq[Context]
+    SystemFunctions*        : TableRef[string,Function]
+
+    CurrentPosition         : Position
 
     # Const/literal arguments
-    ConstStrings            : Table[string,Argument]
+
+    ConstStrings            : TableRef[string,Argument]
     ConstTrue               : Argument
     ConstFalse              : Argument
     ConstNull               : Argument
 
 #[######################################################
-    Parser Interface
+    Aliases
   ======================================================]#
 
+template SV():ValueKind         = stringValue
+template IV():ValueKind         = integerValue
+template RV():ValueKind         = realValue
+template BV():ValueKind         = booleanValue
+template AV():ValueKind         = arrayValue
+template DV():ValueKind         = dictionaryValue
+template FV():ValueKind         = functionValue
+template OV():ValueKind         = objectValue
+template ANY():ValueKind        = anyValue
+
+template S(_:int):string        = v[_].s
+template I(_:int):int           = v[_].i
+template R(_:int):float         = v[_].r
+template B(_:int):bool          = v[_].b
+template A(_:int):seq[Value]    = v[_].a
+template D(_:int):Context       = v[_].d
+template FN(_:int):Function     = v[_].f
+template OB(_:int):Object       = v[_].o
+
+template NULL():Value       = ConstNull.v
+template TRUE():Value       = ConstTrue.v
+template FALSE():Value      = ConstFalse.v
+
+#[######################################################
+    Parser C Interface
+  ======================================================]#
+
+type
+    yy_buffer_state {.importc.} = ref object
+        yy_input_file       : File
+        yy_ch_buf           : cstring
+        yy_buf_pos          : cstring
+        yy_buf_size         : clong
+        yy_n_chars          : cint
+        yy_is_our_buffer    : cint
+        yy_is_interactive   : cint
+        yy_at_bol           : cint
+        yy_fill_buffer      : cint
+        yy_buffer_status    : cint
+
 proc yyparse(): cint {.importc.}
-proc yy_scan_buffer(buff:cstring, s:csize) {.importc.}
+proc yy_scan_buffer(buff: cstring, s: csize) {.importc.}
+
+proc yy_scan_string(str: cstring): yy_buffer_state {.importc.}
+proc yy_switch_to_buffer(buff: yy_buffer_state) {.importc.}
+proc yy_delete_buffer(buff: yy_buffer_state) {.importc.}
 
 var yyfilename {.importc.}: cstring
 var yyin {.importc.}: File
@@ -205,20 +252,32 @@ var yylineno {.importc.}: cint
   ======================================================]#
 
 proc addContext() =
-    Stack.add(initTable[string, Value]())
+    Stack.add(newTable[string, Value]())
+
+proc addContextWith(key:string, val:Value) =
+    Stack.add(newTable([(key,val)]))
 
 proc popContext() =
     discard Stack.pop()
 
 proc getSymbol(k: string): Value = 
-    if Stack[^1].hasKey(k):
-        return Stack[^1][k]
-    else:
-        return nil
+    for stack in reverse(Stack):
+        if stack.hasKey(k): return stack[k]
+    
+    return nil
 
-proc setSymbol(k: string, v: Value): Value = 
-    Stack[^1][k] = v
-    result = v
+proc setSymbol(k: string, v: Value, redefine: bool=false): Value = 
+    if redefine:
+        Stack[^1][k] = v
+    else:
+        var i = len(Stack) - 1
+        while i > -1:
+            if Stack[i].hasKey(k):
+                Stack[i][k]=v
+                return
+            dec(i)
+
+        Stack[^1][k] = v
 
 #[######################################################
     Methods
@@ -278,7 +337,7 @@ proc valueFromValue(v: Value): Value =
             for item in v.a:
                 result.a.add(valueFromValue(item))
         of dictionaryValue:
-            result = valueFromDictionary(initTable[string, Value]())
+            result = valueFromDictionary(newTable[string, Value]())
             for k,val in v.d.pairs:
                 result.d[k] = valueFromValue(val)
 
@@ -291,7 +350,7 @@ proc findValueInArray(v: Value, lookup: Value): int =
         if compare(i,lookup)==0: return index
         inc(index)
 
-proc stringify(v: Value, quoted: bool = true): string # Forward
+proc stringify*(v: Value, quoted: bool = true): string # Forward
 proc `+`(l: Value, r: Value): Value =
     case l.kind
         of stringValue:
@@ -305,13 +364,13 @@ proc `+`(l: Value, r: Value): Value =
                 of stringValue: result = valueFromString($(l.i) & r.s)
                 of integerValue: result = valueFromInteger(l.i + r.i)
                 of realValue: result = valueFromReal(float(l.i)+r.r)
-                else: runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of stringValue: result = valueFromString($(l.r) & r.s)
                 of integerValue: result = valueFromReal(l.r + float(r.i))
                 of realValue: result = valueFromReal(l.r+r.r)
-                else: runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromValue(l)
             if r.kind!=arrayValue:
@@ -325,9 +384,9 @@ proc `+`(l: Value, r: Value): Value =
                 for k,v in l.d.pairs:
                     result.d[k] = v
 
-            else: runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            else: InvalidOperationError("+",$(l.kind),$(r.kind))
         else:
-            runtimeError("cannot use `+` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            InvalidOperationError("+",$(l.kind),$(r.kind))
 
 proc `-`(l: Value, r: Value): Value =
     case l.kind
@@ -336,17 +395,17 @@ proc `-`(l: Value, r: Value): Value =
                 of stringValue: result = valueFromString(l.s.replace(r.s,""))
                 of integerValue: result = valueFromString(l.s.replace($(r.i),""))
                 of realValue: result = valueFromString(l.s.replace($(r.r),""))
-                else: runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromInteger(l.i - r.i)
                 of realValue: result = valueFromReal(float(l.i)-r.r)
-                else: runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue: result = valueFromReal(l.r - float(r.i))
                 of realValue: result = valueFromReal(l.r-r.r)
-                else: runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromValue(l)
             if r.kind!=arrayValue:
@@ -362,7 +421,7 @@ proc `-`(l: Value, r: Value): Value =
                     result.d.del(k)
 
         else:
-            runtimeError("cannot use `-` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            InvalidOperationError("-",$(l.kind),$(r.kind))
 
 proc `*`(l: Value, r: Value): Value = 
     case l.kind
@@ -370,19 +429,19 @@ proc `*`(l: Value, r: Value): Value =
             case r.kind
                 of integerValue: result = valueFromString(l.s.repeat(r.i))
                 of realValue: result = valueFromString(l.s.repeat(int(r.r)))
-                else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of integerValue:
             case r.kind
                 of stringValue: result = valueFromString(r.s.repeat(l.i))
                 of integerValue: result = valueFromInteger(l.i * r.i)
                 of realValue: result = valueFromReal(float(l.i)*r.r)
-                else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of stringValue: result = valueFromString(r.s.repeat(int(l.r)))
                 of integerValue: result = valueFromReal(l.r * float(r.i))
                 of realValue: result = valueFromReal(l.r*r.r)
-                else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromArray(@[])
             if r.kind==integerValue or r.kind==realValue:
@@ -395,9 +454,9 @@ proc `*`(l: Value, r: Value): Value =
                     for item in l.a:
                         result.a.add(valueFromValue(item))
                     inc(i)
-            else: runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            else: InvalidOperationError("*",$(l.kind),$(r.kind))
         else:
-            runtimeError("cannot use `*` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            InvalidOperationError("*",$(l.kind),$(r.kind))
 
 proc `/`(l: Value, r: Value): Value = 
     case l.kind
@@ -425,17 +484,17 @@ proc `/`(l: Value, r: Value): Value =
                             resp = ""
                         inc(k)
 
-                else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromReal(l.i / r.i)
                 of realValue: result = valueFromReal(float(l.i) / r.r)
-                else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue: result = valueFromReal(l.r / float(r.i))
                 of realValue: result = valueFromReal(l.r / r.r)
-                else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromArray(@[])
             if r.kind==integerValue or r.kind==realValue:
@@ -452,9 +511,9 @@ proc `/`(l: Value, r: Value): Value =
                         resp = valueFromArray(@[])
                     inc(k)
 
-            else: runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            else: InvalidOperationError("/",$(l.kind),$(r.kind))
         else:
-            runtimeError("cannot use `/` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            InvalidOperationError("/",$(l.kind),$(r.kind))
 
 proc `%`(l: Value, r: Value): Value =
     case l.kind
@@ -468,17 +527,17 @@ proc `%`(l: Value, r: Value): Value =
                     let le = (l.s.len mod int(r.r))
                     result = valueFromString(l.s[l.s.len-le..^1])
 
-                else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromInteger(l.i mod r.i)
                 of realValue: result = valueFromInteger(l.i mod int(r.r))
-                else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue: result = valueFromInteger(int(l.r) mod r.i)
                 of realValue: result = valueFromInteger(int(l.r) mod int(r.r))
-                else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromArray(@[])
             if r.kind==integerValue or r.kind==realValue:
@@ -488,9 +547,9 @@ proc `%`(l: Value, r: Value): Value =
 
                 let le = (l.a.len mod limit)
                 result = valueFromArray(l.a[l.a.len-le..^1])
-            else: runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            else: InvalidOperationError("%",$(l.kind),$(r.kind))
         else:
-            runtimeError("cannot use `%` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            InvalidOperationError("%",$(l.kind),$(r.kind))
 
 proc `^`(l: Value, r: Value): Value =
     case l.kind
@@ -498,14 +557,14 @@ proc `^`(l: Value, r: Value): Value =
             case r.kind
                 of integerValue: result = valueFromInteger(l.i ^ r.i)
                 of realValue: result = valueFromInteger(l.i ^ int(r.r))
-                else: runtimeError("cannot use `^` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("^",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue: result = valueFromInteger(int(l.r) ^ r.i)
                 of realValue: result = valueFromReal(pow(l.r,r.r))
-                else: runtimeError("cannot use `^` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+                else: InvalidOperationError("^",$(l.kind),$(r.kind))
         else:
-            runtimeError("cannot use `^` for '" & $(l.kind) & "' and '" & $(r.kind) & "'"); result = nil
+            InvalidOperationError("^",$(l.kind),$(r.kind))
 
 proc compare(l: Value, r: Value): int =
     case l.kind
@@ -515,9 +574,8 @@ proc compare(l: Value, r: Value): int =
                     if l.s==r.s: result = 0
                     elif l.s<r.s: result = -1
                     else: result = 1
-                else:
-                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
-                    result = 0
+                else: NotComparableError($(l.kind),$(r.kind))
+                    
         of integerValue:
             case r.kind
                 of integerValue: 
@@ -528,9 +586,7 @@ proc compare(l: Value, r: Value): int =
                     if l.i==int(r.r): result = 0
                     elif l.i<int(r.r): result = -1
                     else: result = 1
-                else:
-                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
-                    result = 0
+                else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue:
@@ -541,17 +597,13 @@ proc compare(l: Value, r: Value): int =
                     if l.r==r.r: result = 0
                     elif l.r<r.r: result = -1
                     else: result = 1
-                else:
-                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
-                    result = 0
+                else: NotComparableError($(l.kind),$(r.kind))
         of booleanValue:
             case r.kind
                 of booleanValue:
                     if l==r: result = 0
                     else: result = -1
-                else:
-                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
-                    result = 0
+                else: NotComparableError($(l.kind),$(r.kind))
 
         of arrayValue:
             case r.kind
@@ -564,9 +616,7 @@ proc compare(l: Value, r: Value): int =
                             if compare(l.a[i],r.a[i])!=0: return -2
                             inc(i)
                         result = 0
-                else:
-                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
-                    result = 0
+                else: NotComparableError($(l.kind),$(r.kind))
         of dictionaryValue:
             case r.kind
                 of dictionaryValue:
@@ -579,15 +629,11 @@ proc compare(l: Value, r: Value): int =
                                 if compare(l.d[k],r.d[k])!=0: return -2
 
                         result = 0
-                else:
-                    runtimeError("cannot compare '" & $(l.kind) & "' and '" & $(r.kind) & "'")
-                    result = 0 
+                else: NotComparableError($(l.kind),$(r.kind))
 
-        else:
-            echo "i don't know what to do"
-            result = 0
+        else: NotComparableError($(l.kind),$(r.kind))
 
-proc stringify(v: Value, quoted: bool = true): string =
+proc stringify*(v: Value, quoted: bool = true): string =
     case v.kind
         of stringValue      :   
             if quoted: result = escape(v.s)
@@ -615,9 +661,9 @@ proc stringify(v: Value, quoted: bool = true): string =
             result &= " }"
 
             if result=="#{  }": result = "#{}"
-        of functionValue    :   result = "<function: 0x>"
+        of functionValue    :   result = "<function>"
         of nullValue        :   result = "null"
-        of objectValue      :   result = "<object: 0x>"
+        of objectValue      :   result = "<object>"
         of anyValue         :   result = ""
 
 #[----------------------------------------
@@ -625,45 +671,123 @@ proc stringify(v: Value, quoted: bool = true): string =
   ----------------------------------------]#
 
 proc newUserFunction(s: StatementList, a: seq[string] = @[]): Function =
-    result = Function(kind: userFunction, args: a, body: s, parentThis: nil, parentContext: initTable[string, Value]())
+    result = Function(kind: userFunction, args: a, body: s, parentThis: nil, parentContext: newTable[string, Value]())
 
-proc newSystemFunction(f: FunctionCall[Value,ExpressionList], c: seq[seq[ValueKind]], e: bool = true): Function =
-    result = Function(kind: systemFunction, call: f, constraints: c, eval: e)
+proc registerSystemFunction(n: string, f: FunctionCall[Function,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = "") =
+    let minArgs = req.map(proc (x: seq[ValueKind]): int = x.len).min
+    let maxArgs = req.map(proc (x: seq[ValueKind]): int = x.len).max
+
+    SystemFunctions[n] = Function(kind: systemFunction, name: n, call: f, require: req, ret: ret, description: descr, minReq: minArgs, maxReq: maxArgs)
 
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value # Forward
+proc evaluate(x: Expression): Value # Forward
 proc execute(sl: StatementList): Value # Forward
-proc execute(f: Function, s: ExpressionList): Value =
-    if f.kind==systemFunction:
-        if f.eval:
-            result = f.call(s.evaluate(),s)
-        else:
-            result = f.call(nil,s)
-    else:
-        addContext()
-        var params = s.evaluate(forceArray=true)
-        if f.args.len>0:
-            if params.a.len!=f.args.len: runtimeError("wrong number of parameters for function")
 
-            var ind=0
-            for arg in f.args:
-                discard setSymbol(arg,params.a[ind])
-                inc(ind)
-        
-        discard setSymbol("&", params)
-        result = f.body.execute()
-        popContext()
+proc execute(f: Function, v: Value): Value =
+    addContextWith("&",v)
+    if f.args.len>0 and v.kind==AV:
+        if v.a.len!=f.args.len: runtimeError("wrong number of parameters for function")
+
+        var ind=0
+        for arg in f.args:
+            discard setSymbol(arg,v.a[ind],true)
+            inc(ind)
+    #let sym = getSymbol("&")
+    #discard setSymbol("&",v)
+    
+    result = f.body.execute()
+
+    #if sym!=nil: discard setSymbol("&",sym)
+    popContext()
+
+proc execute(f: Function, xl: ExpressionList): Value =
+    if f.kind==systemFunction:
+        result = f.call(f,xl)
+    else:
+        var params = xl.evaluate(forceArray=true)
+
+        result = f.execute(params)
+
+proc validate(f: Function, xl: ExpressionList): seq[Value] =
+    if xl.list.len < f.minReq or xl.list.len > f.maxReq:
+        IncorrectArgumentNumberError(f.name)
+
+    var ret = xl.evaluate(forceArray=true).a
+
+    for constraintSet in f.require:
+        var passing = true
+        for i,constraint in constraintSet:
+            if constraint!=ANY and constraint!=ret[i].kind: 
+                passing = false
+
+        if passing: return ret
+
+    # not passed
+
+    let expected = f.require.map(proc (x: seq[ValueKind]): string = x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",")).join(" or ")
+    let got = ret.map(proc (x: Value): string = ($(x.kind)).replace("Value","")).join(",")
+    
+    IncorrectArgumentValuesError(f.name, expected, got)
+
+proc validateOne(f: Function, x: Expression, req: seq[ValueKind]): Value =
+    result = x.evaluate()
+
+    if not (result.kind in req):
+        let expected = req.map(proc (x: ValueKind): string = $(x)).join(" or ")
+        IncorrectArgumentValuesError(f.name, expected, $(result.kind))
+
+proc getOneLineDescription*(f: Function): string =
+    let args = f.require.map(proc (x: seq[ValueKind]): string = "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
+    let ret = "[" & f.ret.join(",").replace("Value","") & "]"
+    result = alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " -> " & ret
+
+proc getFullDescription*(f: Function): string =
+    let args = f.require.map(proc (x: seq[ValueKind]): string = "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
+    let ret = "[" & f.ret.join(",").replace("Value","") & "]"
+    result  = "Function : \e[1m" & f.name & "\e[0m" & "\n"
+    result &= "       # : " & f.description & "\n\n"
+    result &= "   usage : " & f.name & " " & args & "\n"
+    result &= "        -> " & ret & "\n"
 
 #[----------------------------------------
-    Identifier
+    KeyPath
   ----------------------------------------]#
 
-proc identifierFromString(i: cstring): Identifier {.exportc.} =
-    #echo "creating identifier: " & $i
-    result = Identifier(kind: simpleIdentifier, i: $i)
+proc keypathFromIdId(a: cstring, b: cstring): KeyPath {.exportc.} =
+    result = KeyPath(parts: @[KeyPathPart(kind: stringKeyPathPart, s: $a), KeyPathPart(kind: stringKeyPathPart, s: $b)])
 
-proc identifierFromKeypath(k: Expression): Identifier {.exportc.} =
-    #echo "creating identifier (k): "
-    result = Identifier(kind: keypathIdentifier, k: k)
+proc keypathFromIdInteger(a: cstring, b: cstring): KeyPath {.exportc.} =
+    var intValue: int
+    discard parseInt($b, intValue)
+
+    result = KeyPath(parts: @[KeyPathPart(kind: stringKeyPathPart, s: $a), KeyPathPart(kind: integerKeyPathPart, i: intValue)])
+
+proc keypathFromIdInline(a: cstring, b: Argument): KeyPath {.exportc.} =
+    result = KeyPath(parts: @[KeyPathPart(kind: stringKeyPathPart, s: $a), KeyPathPart(kind: inlineKeyPathPart, a: b)])
+
+proc keypathFromInlineId(a: Argument, b: cstring): KeyPath {.exportc.} =
+    result = KeyPath(parts: @[KeyPathPart(kind: inlineKeyPathPart, a: a), KeyPathPart(kind: stringKeyPathPart, s: $b)])
+
+proc keypathFromInlineInteger(a: Argument, b: cstring): KeyPath {.exportc.} =
+    var intValue: int
+    discard parseInt($b, intValue)
+
+    result = KeyPath(parts: @[KeyPathPart(kind: inlineKeyPathPart, a: a), KeyPathPart(kind: integerKeyPathPart, i: intValue)])
+
+proc keypathFromInlineInline(a: Argument, b: Argument): KeyPath {.exportc.} =
+    result = KeyPath(parts: @[KeyPathPart(kind: inlineKeyPathPart, a: a), KeyPathPart(kind: inlineKeyPathPart, a: b)])
+
+proc addIdToKeypath(k: KeyPath, a: cstring) {.exportc.} =
+    k.parts.add(KeyPathPart(kind: stringKeyPathPart, s: $a))
+
+proc addIntegerToKeypath(k: KeyPath, a: cstring) {.exportc.} =
+    var intValue: int
+    discard parseInt($a, intValue)
+
+    k.parts.add(KeyPathPart(kind: integerKeyPathPart, i: intValue))
+
+proc addInlineToKeypath(k: KeyPath, a: Argument) {.exportc.} =
+    k.parts.add(KeyPathPart(kind: inlineKeyPathPart, a: a))
 
 #[----------------------------------------
     Expression
@@ -728,8 +852,8 @@ proc evaluate(xl: ExpressionList, forceArray: bool=false): Value =
     Argument
   ----------------------------------------]#
 
-proc argumentFromIdentifier(i: Identifier): Argument {.exportc.} =
-    result = Argument(kind: identifierArgument, i: i)
+proc argumentFromIdentifier(i: cstring): Argument {.exportc.} =
+    result = Argument(kind: identifierArgument, i: $i)
 
 proc argumentFromStringLiteral(l: cstring): Argument {.exportc.} =
     if ConstStrings.hasKey($l):
@@ -747,6 +871,34 @@ proc argumentFromRealLiteral(l: cstring): Argument {.exportc.} =
 proc argumentFromBooleanLiteral(l: cstring): Argument {.exportc.} =
     if l=="true": result = ConstTrue
     else: result = ConstFalse
+
+proc expressionFromKeyPathPart(part: KeyPathPart, isFirst: bool = false): Expression =
+    case part.kind
+        of stringKeyPathPart:
+            if isFirst: result = expressionFromArgument(argumentFromIdentifier(part.s))
+            else: result = expressionFromArgument(argumentFromStringLiteral("\"" & part.s & "\""))
+        of integerKeyPathPart:
+            result = expressionFromArgument(argumentFromIntegerLiteral($(part.i)))
+        of inlineKeyPathPart:
+            result = expressionFromArgument(part.a)
+
+proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} # Forward
+proc statementFromExpressions(i: cstring, xl: ExpressionList): Statement {.exportc.} # Forward
+proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
+    var exprA = expressionFromKeyPathPart(k.parts[0], true)
+
+    var i = 1
+    while i<k.parts.len:
+        var exprB = expressionFromKeyPathPart(k.parts[i], false)
+        var lst = newExpressionList()
+
+        addExpressionToExpressionList(exprA, lst)
+        addExpressionToExpressionList(exprB, lst)
+        exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",lst)))
+
+        inc(i)
+        
+    result = exprA.a
 
 proc argumentFromNullLiteral(): Argument {.exportc.} =
     result = ConstNull
@@ -773,15 +925,13 @@ proc execute(s: Statement, parent: Value = nil): Value # Forward
 proc getValue(a: Argument): Value =
     case a.kind
         of identifierArgument:
-            case a.i.kind
-                of simpleIdentifier: result = getSymbol(a.i.i)
-                of keypathIdentifier: result = a.i.k.evaluate()
+            result = getSymbol(a.i)
         of literalArgument:
             result = a.v
         of arrayArgument:
             result = a.a.evaluate(forceArray=true)
         of dictionaryArgument:
-            var ret  = valueFromDictionary(initTable[string, Value]())
+            var ret  = valueFromDictionary(newTable[string, Value]())
 
             addContext()
             for statement in a.d.list:
@@ -801,9 +951,8 @@ proc getValue(a: Argument): Value =
 proc statementFromExpression(x: Expression): Statement {.exportc.} =
     result = Statement(kind: expressionStatement, expression: x)
 
-proc statementFromExpressions(i: Identifier, xl: ExpressionList): Statement {.exportc.} =
-    #echo "creating statement"
-    result = Statement(kind: normalStatement, id: i, expressions: xl)
+proc statementFromExpressions(i: cstring, xl: ExpressionList): Statement {.exportc.} =
+    result = Statement(kind: normalStatement, id: $i, expressions: xl)
 
 proc setStatementPosition(s: Statement, f: cstring, l: int) {.exportc.} =
     s.pos = Position(file: $f, line: l)
@@ -812,9 +961,9 @@ proc executeAssign(s: Statement, parent: Value = nil): Value =
     var ev = s.expressions.evaluate()
 
     if parent==nil:
-        result = setSymbol(s.id.i, ev)
+        result = setSymbol(s.id, ev)
     else:
-        parent.d[s.id.i] = ev
+        parent.d[s.id] = ev
 
         if ev.kind==functionValue:
             ev.f.parentThis = ev
@@ -824,29 +973,26 @@ proc executeAssign(s: Statement, parent: Value = nil): Value =
 
 
 proc execute(s: Statement, parent: Value = nil): Value = 
+    CurrentPosition = s.pos
 
     case s.kind
         of expressionStatement:
             result = s.expression.evaluate()
         of normalStatement:
-            if SystemFunctions.hasKey(s.id.i):
-                result = SystemFunctions[s.id.i].execute(s.expressions)
+            if SystemFunctions.hasKey(s.id):
+                result = SystemFunctions[s.id].execute(s.expressions)
             else:
-                let sym = getSymbol(s.id.i)
+                let sym = getSymbol(s.id)
 
                 if sym==nil:
-                    if s.expressions.list.len > 0:
-                        result = s.executeAssign(parent)
-                    else:
-                        runtimeError("symbol not found: '" & s.id.i & "'")
+                    if s.expressions.list.len > 0: result = s.executeAssign(parent)
+                    else: SymbolNotFoundError(s.id)
                 else:
-                    if sym.kind==functionValue:
+                    if sym.kind==functionValue: 
                         result = sym.f.execute(s.expressions)
                     else:
-                        if s.expressions.list.len > 0:
-                            result = s.executeAssign(parent)
-                        else:
-                            result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
+                        if s.expressions.list.len > 0: result = s.executeAssign(parent)
+                        else: result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
 
 
 #[----------------------------------------
@@ -867,43 +1013,72 @@ proc execute(sl: StatementList): Value =
     System library
   ======================================================]#
 
+include lib/core
+include lib/collections
+include lib/numbers
+
 template registerSystemFunctions() =
-    SystemFunctions["print"] = newSystemFunction(Core_Print,@[@[anyValue]])
+    SystemFunctions = newTable[string,Function]()
+    #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    #                       Name            Proc                        Args                                                Return          Description
+    #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    registerSystemFunction("if",            Core_If,                    @[@[BV,FV],@[BV,FV,FV]],                            @[ANY],         "if condition is true, execute given function; else execute optional alternative function")
+    registerSystemFunction("get",           Core_Get,                   @[@[AV,IV],@[DV,SV]],                               @[ANY],         "get element from collection using given index/key")
+    registerSystemFunction("loop",          Core_Loop,                  @[@[AV,FV],@[DV,FV],@[BV,FV]],                      @[ANY],         "execute given function for each element in collection, or while condition is true")
+    registerSystemFunction("print",         Core_Print,                 @[@[ANY]],                                          @[SV],          "print value of given expression to screen")
+    registerSystemFunction("range",         Core_Range,                 @[@[IV,IV]],                                        @[AV],          "get array from given range (from..to) with optional step")
+
+    registerSystemFunction("filter",        Collections_Filter,         @[@[AV,FV]],                                        @[AV],          "get array after filtering each element using given function")
+    registerSystemFunction("shuffle",       Collections_Shuffle,        @[@[AV]],                                           @[AV],          "get given array shuffled")
+    registerSystemFunction("size",          Collections_Size,           @[@[AV],@[SV],@[DV]],                               @[IV],          "get size of given collection or string")
+    registerSystemFunction("slice",         Collections_Slice,          @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],       @[AV,SV],       "get slice of array/string given a starting and/or end point")
+
+    registerSystemFunction("isPrime",       Numbers_IsPrime,            @[@[IV]],                                           @[BV],          "check if given number is prime")
+    
 
 #[######################################################
     Store management
   ======================================================]#
 
 template initializeConsts() =
-    ConstStrings = initTable[string,Argument]()
-    ConstTrue = Argument(kind: literalArgument, v: valueFromBoolean(true))
-    ConstFalse = Argument(kind: literalArgument, v: valueFromBoolean(false))
-    ConstNull = Argument(kind: literalArgument, v: valueFromNull())
+    ConstStrings    = newTable[string,Argument]()
+    ConstTrue       = Argument(kind: literalArgument, v: valueFromBoolean(true))
+    ConstFalse      = Argument(kind: literalArgument, v: valueFromBoolean(false))
+    ConstNull       = Argument(kind: literalArgument, v: valueFromNull())
 
 #[######################################################
     MAIN ENTRY
   ======================================================]#
 
+proc setup*() = 
+    initializeConsts()
+    addContext()
+    registerSystemFunctions()
+
+proc runString*(src:string): string =
+    var buff = yy_scan_string(src)
+
+    yy_switch_to_buffer(buff)
+
+    MainProgram = nil
+    discard yyparse()
+
+    yy_delete_buffer(buff)
+
+    result = MainProgram.execute().stringify()
+
 proc runScript*(scriptPath:string, includePath:string="", warnings:bool=false) = 
     if not fileExists(scriptPath): 
         cmdlineError("path not found: '" & scriptPath & "'")
+
+    setup()
 
     yylineno = 0
     yyfilename = scriptPath
 
     let success = open(yyin, scriptPath)
-    if not (success): 
+    if not success:
         cmdlineError("something went wrong when opening file")
-
-    initializeConsts()
-
-    MainProgram = nil
-    discard yyparse()
-
-    #echo repr MainProgram
-
-    if MainProgram!=nil:
-        addContext()
-        registerSystemFunctions()
-
+    else:
+        discard yyparse()
         discard MainProgram.execute()
