@@ -62,3 +62,28 @@ f [x,y]{
 f "somearg" "boom"
 
 print ~done
+
+print f
+
+info #{ 
+	name "john"
+	surname "doe" 
+	address #{
+		country "spain"
+	}
+}
+
+print $(1+1)
+print info
+//print $(get 10 10)
+print info.address
+print info.address.country
+
+loop $(range 1 10) {
+
+}
+
+myarr $(range 1 10)
+print myarr
+print $(shuffle myarr)
+print myarr
