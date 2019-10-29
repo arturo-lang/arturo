@@ -53,8 +53,8 @@ LETTER_OR_MISC		[a-zA-Z_:]
 
 %%
 
-\"(\\.|[^\\"])*\"									{ count(); return STRING; }
-'(\\.|[^\\'])+'										{ count(); return STRING; }
+\"(\\.|[^\\"])*\"									{ yylval.str=strdup(yytext); return STRING; }
+'(\\.|[^\\'])+'										{ yylval.str=strdup(yytext); return STRING; }
 
 
 "/*"            									{ BEGIN(C_COMMENT); }
@@ -62,57 +62,57 @@ LETTER_OR_MISC		[a-zA-Z_:]
 <C_COMMENT>\n   									{ yylineno++; }
 <C_COMMENT>.   	 									{ }
 
-"//".*                                  			{ count(); /* Single-line comment. Ignore. */ }
-"#!".*                                  			{ count(); /* She-bang line. Ignore. */ }
+"//".*                                  			{ /* Single-line comment. Ignore. */ }
+"#!".*                                  			{ /* She-bang line. Ignore. */ }
 
-"null"												{ count(); return NULLV; }
-"true"|"false"     									{ count(); return BOOLEANV; }
+"null"												{ return NULLV; }
+"true"|"false"     									{ yylval.str=strdup(yytext); return BOOLEANV; }
 
 
-{LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ count(); return ID; }
-":"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return ID; }
-"@"({LETTER_OR_MISC}|{DIGIT})*						{ count(); return ID; }
-{DIGIT}+											{ count(); return INTEGER; }
-{DIGIT}+\.{DIGIT}+									{ count(); return REAL; }
+{LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ yylval.str=strdup(yytext); return ID; }
+":"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
+"@"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
+{DIGIT}+											{ yylval.str=strdup(yytext); return INTEGER; }
+{DIGIT}+\.{DIGIT}+									{ yylval.str=strdup(yytext); return REAL; }
 
-"|"													{ count(); return PIPE; }
+"|"													{ return PIPE; }
 
-"="													{ count(); return EQ_OP; }
-"<="												{ count(); return LE_OP; }
-">="												{ count(); return GE_OP; }
-"<"													{ count(); return LT_OP; }
-">"													{ count(); return GT_OP; }
-"!="												{ count(); return NE_OP; }
+"="													{ return EQ_OP; }
+"<="												{ return LE_OP; }
+">="												{ return GE_OP; }
+"<"													{ return LT_OP; }
+">"													{ return GT_OP; }
+"!="												{ return NE_OP; }
 
-"+"													{ count(); return PLUS_SG; }
-"-"													{ count(); return MINUS_SG; }
-"*"													{ count(); return MULT_SG; }
-"/"													{ count(); return DIV_SG; }
-"%"													{ count(); return MOD_SG; }
-"^"													{ count(); return POW_SG; }
+"+"													{ return PLUS_SG; }
+"-"													{ return MINUS_SG; }
+"*"													{ return MULT_SG; }
+"/"													{ return DIV_SG; }
+"%"													{ return MOD_SG; }
+"^"													{ return POW_SG; }
 
-"#("												{ count(); return BEGIN_ARR; }
-"#{"												{ count(); return BEGIN_DICT; }
-"$("												{ count(); return BEGIN_INLINE; }
+"#("												{ return BEGIN_ARR; }
+"#{"												{ return BEGIN_DICT; }
+"$("												{ return BEGIN_INLINE; }
 
-"."													{ count(); return DOT; }
+"."													{ return DOT; }
 
-"$"													{ count(); return DOLLAR; }
-"("													{ count(); return LPAREN; }
-")"													{ count(); return RPAREN; }
-"{"													{ count(); return LCURLY; }
-"}"													{ count(); return RCURLY; }
-"["													{ count(); return LSQUARE; }
-"]"													{ count(); return RSQUARE; }
-","													{ count(); return COMMA; }
-"!"													{ count(); return EXCL; }
-";"													{ count(); return SEMICOLON; }
-"~"													{ count(); return TILDE; }
+"$"													{ return DOLLAR; }
+"("													{ return LPAREN; }
+")"													{ return RPAREN; }
+"{"													{ return LCURLY; }
+"}"													{ return RCURLY; }
+"["													{ return LSQUARE; }
+"]"													{ return RSQUARE; }
+","													{ return COMMA; }
+"!"													{ return EXCL; }
+";"													{ return SEMICOLON; }
+"~"													{ return TILDE; }
 
-\n 													{ count(); return NEW_LINE; }
+\n 													{ return NEW_LINE; }
 
-[ \t\v\f]+                							{ count(); /* ignore whitespace */ }
-.													{ count(); /* ignore it */ } 
+[ \t\v\f]+                							{ /* ignore whitespace */ }
+.													{ /* ignore it */ } 
 %%
 
 /****************************************
@@ -123,14 +123,14 @@ int yycolumn = 0;
 
 void count()
 {
-	int i;
+	/*int i;
 	
 	for (i = 0; yytext[i] != '\0'; i++)
 	{
 		if (yytext[i] == '\n') yycolumn = 0;
 		else if (yytext[i] == '\t') yycolumn += 8 - (yycolumn % 8);
 		else yycolumn++;
-	}
+	}*/
 
 	yylval.str=strdup(yytext);
 }
