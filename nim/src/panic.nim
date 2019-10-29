@@ -7,11 +7,13 @@
   * @file: panic.nim
   *****************************************************************]#
 
+import strutils
+
 const 
     CMDLINE_ERROR   = "✘ \x1B[4;1;35mCmdLine Error\x1B[0;37m | "
     CMDLINE_HELP    = "                | try `arturo help` for more information."
 
-    RUNTIME_ERROR   = "✘ \x1B[4;1;35mRuntime Error\x1B[0;37m | "
+    RUNTIME_ERROR   = "✘ \x1B[4;1;35mRuntime Error\x1B[0;37m @ "
     RUNTIME_PAD     = "                | "
 
     PARSE_ERROR     = "✘ \x1B[4;1;35mParse Error\x1B[0;37m | "
@@ -24,9 +26,9 @@ const
     Methods
   ======================================================]#
 
-proc runtimeError*(msg:string, filename:string="", line:cint=0) {.exportc.} =
+proc runtimeError*(msg:string, filename:string="", line:int=0) {.exportc.} =
     echo RUNTIME_ERROR & "file: " & $filename & " - line: " & $line
-    echo RUNTIME_PAD & $msg
+    echo RUNTIME_PAD & $msg.split("\n").join("\n" & RUNTIME_PAD)
     echo ""
     quit()
 
@@ -46,3 +48,31 @@ proc consoleError*(msg:string, showHelp:bool=true) =
     echo CONSOLE_ERROR & msg
     if showHelp: echo CONSOLE_HELP
     echo ""
+
+#[######################################################
+    Templates
+  ======================================================]#
+
+template NotComparableError*(l: string, r: string) =
+    runtimeError("cannot compare arguments\n" &
+                 "lValue: " & l.replace("Value","") & "\n" &
+                 "rValue: " & r.replace("Value",""),
+                 CurrentPosition.file, CurrentPosition.line)
+
+template InvalidOperationError*(op: string, l: string, r: string) =
+    runtimeError("invalid arguments for operator '" & op & "'\n" &
+                 "lValue: " & l.replace("Value","") & "\n" &
+                 "rValue: " & r.replace("Value",""),
+                 CurrentPosition.file, CurrentPosition.line)
+
+template SymbolNotFoundError*(s: string) =
+    runtimeError("symbol not found: '" & s & "'", CurrentPosition.file, CurrentPosition.line)
+
+template IncorrectArgumentNumberError*(f: string) =
+    runtimeError("incorrect number of arguments for function '" & f & "'", CurrentPosition.file, CurrentPosition.line)
+
+template IncorrectArgumentValuesError*(f: string, e: string, g: string) =
+    runtimeError("incorrect arguments for function '" & f & "'\n" &
+                 "expected: " & e & "\n" &
+                 "got: " & g, 
+                 CurrentPosition.file, CurrentPosition.line)
