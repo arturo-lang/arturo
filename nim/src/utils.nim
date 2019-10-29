@@ -21,4 +21,8 @@ template benchmark*(benchmarkName: string, code: untyped) =
         let elapsedStr = elapsed.formatFloat(format = ffDecimal, precision = 3)
         echo "CPU Time [", benchmarkName, "] ", elapsedStr, "s"
 
-
+iterator reverse*[T](a: seq[T]): T {.inline.} =
+    var i = len(a) - 1
+    while i > -1:
+        yield a[i]
+        dec(i)
