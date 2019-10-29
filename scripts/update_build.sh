@@ -10,6 +10,6 @@ if test -f "scripts/update_build_number.awk"; then
 	# Build date
 	date +%d-%b-%Y > "src/rsrc/build_date.txt"
 
-	git add source/resources/build.txt
+	git add src/rsrc/build.txt
 	git commit -m "updated build number"
 fi
