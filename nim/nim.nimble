@@ -82,7 +82,8 @@ template profileCore() =
         "--threads:on",
         "--hints:off",
         "--opt:speed",
-        "--nilseqs:on"
+        "--nilseqs:on",
+        "--gc:regions"
     ]
     exec getCommand(args)
 
@@ -97,7 +98,8 @@ template debugCore() =
         "--threads:on",
         "--hints:on",
         "--opt:speed",
-        "--nilseqs:on"
+        "--nilseqs:on",
+        "--gc:regions"
     ]
     exec getCommand(args)
 
