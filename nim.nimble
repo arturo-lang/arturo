@@ -37,7 +37,7 @@ template buildParser(forSize:bool=false) =
 
 template updateBuild() =
     showMessage("Updating build number")
-    exec "cd .. && bash scripts/update_build.sh && cd nim"
+    exec "bash scripts/update_build.sh"
 
 template compileCore() = 
     showMessage("Compiling core for release")
