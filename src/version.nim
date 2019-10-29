@@ -11,8 +11,8 @@ import strutils
 
 const 
     ART_VERSION     = "0.3.9"
-    ART_BUILD       = readFile("../source/resources/build.txt").strip
-    ART_BUILD_DATE  = readFile("../source/resources/build_date.txt").strip
+    ART_BUILD       = readFile("src/rsrc/build.txt").strip
+    ART_BUILD_DATE  = readFile("src/rsrc/build_date.txt").strip
 
 when defined(mini): 
     const ART_EDITION = "mini"
