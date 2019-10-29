@@ -7,7 +7,7 @@
   * @file: console.nim
   *****************************************************************]#
 
-import rdstdin, strformat, strutils, terminal
+import algorithm, rdstdin, sequtils, strformat, strutils, tables, terminal
 import compiler, panic, version
 
 const
@@ -29,22 +29,33 @@ proc getPrompt(line: int):string =
     return CONSOLE_PROMPT_HEAD & fmt"{line:03}" & CONSOLE_PROMPT_TAIL
 
 proc showInfo(symbol: string) =
-    echo "showInfo: " & symbol
+    if SystemFunctions.hasKey(symbol):
+        echo SystemFunctions[symbol].getFullDescription()
+    elif Stack[0].hasKey(symbol):
+        let k = $((Stack[0][symbol]).kind)
+        echo "Symbol : \e[1m" & symbol & "\e[0m"
+        echo "       = \e[34m(" & k.replace("Value","") & ")\e[39m " & Stack[0][symbol].stringify() 
+    else:
+        consoleError("symbol '" & symbol & "' not found")
 
 proc showSymbols() = 
-    echo "showSymbols"
+    for n in sorted(toSeq(Stack[0].keys)):
+        let k = $((Stack[0][n]).kind)
+        echo alignLeft("\e[1m" & n & "\e[0m",20) & align("\e[34m" & k.replace("Value","") & "\e[39m",20) & " = " & Stack[0][n].stringify()
 
 proc showFunctions() =
-    echo "showFunctions"
+    for n in sorted(toSeq(SystemFunctions.keys)):
+        echo SystemFunctions[n].getOneLineDescription()
 
 proc showHelp() =
     echo CONSOLE_HELP_TXT
 
 proc doRead(filePath: string) =
-    echo "doRead: " & filePath
+    let input = readFile(filePath)
+    echo "\e[2m= " & runString(input) & "\e[22m"
 
-proc doWrite(filePath: string) = 
-    echo "doWrite: " & filePath
+proc doWrite(filePath: string, fileSrc: string) = 
+    writeFile(filePath, fileSrc)
 
 proc doClear() =
     eraseScreen()
@@ -55,9 +66,6 @@ proc doExit() =
     echo CONSOLE_EXIT_MSG
     quit()
 
-proc doCompile(script: string): string = 
-    return "=> " & script
-
 
 #[######################################################
     Methods
@@ -65,10 +73,15 @@ proc doCompile(script: string): string =
 
 proc startRepl*() = 
     showVersion()
+
+    compiler.setup()
+
     echo CONSOLE_INSTRUCTION
 
     var currentLine = 1
     var currentExpression = ""
+
+    var source = ""
 
     while true:
         try:
@@ -81,14 +94,15 @@ proc startRepl*() =
                     of "?symbols": showSymbols()
                     of "?functions": showFunctions()
                     of "?read": doRead(parts[1])
-                    of "?write": doWrite(parts[1])
+                    of "?write": doWrite(parts[1],source)
                     of "?clear": doClear()
                     of "?help": showHelp()
                     of "?exit": doExit()
                     else: consoleError("command '" & parts[0] & "' not found")
             
             else: 
-                echo doCompile(currentExpression)
+                echo "\e[2m= " & runString(currentExpression) & "\e[22m"
+                source &= currentExpression & "\n"
                 inc(currentLine)
 
         except IOError:
