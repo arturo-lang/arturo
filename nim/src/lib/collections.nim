@@ -13,19 +13,19 @@ import random
     Functions
   ======================================================]#
 
-proc Collections_Filter*[F,X,V](f: F, xl: X): V =
+proc Collections_Filter*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
     result = valueFromArray(A(0).filter(proc(x: Value): bool = FN(1).execute(x).b))
 
-proc Collections_Shuffle*[F,X,V](f: F, xl: X): V =
+proc Collections_Shuffle*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
     randomize()
     result = valueFromArray(A(0))
     shuffle(result.a)
 
-proc Collections_Size*[F,X,V](f: F, xl: X): V =
+proc Collections_Size*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
     case v[0].kind
@@ -34,7 +34,7 @@ proc Collections_Size*[F,X,V](f: F, xl: X): V =
         of DV: result = valueFromInteger(D(0).len)
         else: discard
 
-proc Collections_Slice*[F,X,V](f: F, xl: X): V =
+proc Collections_Slice*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
     case v[0].kind
