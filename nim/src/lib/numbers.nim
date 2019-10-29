@@ -62,7 +62,7 @@ proc isPrime*(n: int32): bool =
     Functions
   ======================================================]#
 
-proc Numbers_IsPrime*[F,X,V](f: F, xl: X): V =
+proc Numbers_IsPrime*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
     if isPrime(I(0).uint32): result = TRUE
