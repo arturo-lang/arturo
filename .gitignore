@@ -5,6 +5,9 @@ examples/dev/
 nim/arturo
 nim/test
 nim/cache/*.c
+nim/cache/*.h
+nim/cache/*.deps
+nim/cache/*.sh
 nim/cache/*.json
 docs/
 /arturo
