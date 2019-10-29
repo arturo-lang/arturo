@@ -166,14 +166,6 @@ int yywrap() {
 
 %%
 
-/*
-void* e = newExpressionList(); 
-addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
-addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($3))), e); 
-$$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e)));
-*/
-
-
 /****************************************
  Grammar Rules
  ****************************************/
