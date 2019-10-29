@@ -29,10 +29,19 @@ char* yyfilename;
 
 extern void* MainProgram;
 
-extern void* identifierFromString(char* i);
-extern void* identifierFromKeypath(void* k);
+extern void* keypathFromIdId(char* a, char* b);
+extern void* keypathFromIdInteger(char* a, char* b);
+extern void* keypathFromIdInline(char* a, void* b);
+extern void* keypathFromInlineId(void* a, char* b);
+extern void* keypathFromInlineInteger(void* a, char* b);
+extern void* keypathFromInlineInline(void* a, void* b);
 
-extern void* argumentFromIdentifier(void* i);
+extern void addIdToKeypath(void* k, char* a);
+extern void addIntegerToKeypath(void* k, char* a);
+extern void addInlineToKeypath(void* k, void* a);
+
+extern void* argumentFromIdentifier(char* i);
+extern void* argumentFromKeypath(void* k);
 extern void* argumentFromStringLiteral(char* l);
 extern void* argumentFromIntegerLiteral(char* l);
 extern void* argumentFromRealLiteral(char* l);
@@ -50,7 +59,7 @@ extern void* newExpressionList();
 extern void addExpressionToExpressionList(void* x, void* xl);
 
 extern void* statementFromExpression(void* x);
-extern void* statementFromExpressions(void* i, void* xl);
+extern void* statementFromExpressions(char* i, void* xl);
 extern void* setStatementPosition(void* s, char* f, int l);
 
 extern void* newStatementList();
@@ -127,8 +136,7 @@ int yywrap() {
 
 %type <str> args
 
-%type <compo> keypath
-%type <compo> identifier string number boolean null
+%type <compo> keypath string number boolean null
 %type <compo> array dictionary function inline_call
 %type <compo> argument expression expression_list
 %type <compo> statement statement_list
@@ -158,6 +166,14 @@ int yywrap() {
 
 %%
 
+/*
+void* e = newExpressionList(); 
+addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
+addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($3))), e); 
+$$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e)));
+*/
+
+
 /****************************************
  Grammar Rules
  ****************************************/
@@ -167,30 +183,15 @@ int yywrap() {
 //==============================
 
 
-keypath					: 	ID DOT ID 															{ void* e = newExpressionList(); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($3))), e); 
-																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
-						| 	ID DOT INTEGER 	 													{ void* e = newExpressionList(); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIntegerLiteral($3)), e); 
-																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
-						| 	ID DOT LSQUARE expression RSQUARE 									{ void* e = newExpressionList(); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($1))), e); 
-																								  addExpressionToExpressionList($4, e); 
-																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
-						| 	keypath DOT ID 														{ void* e = newExpressionList(); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($1)), e); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIdentifier(identifierFromString($3))), e); 
-																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
-						| 	keypath DOT INTEGER 												{ void* e = newExpressionList(); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($1)), e);
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromIntegerLiteral($3)), e);  
-																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
-						| 	keypath	DOT LSQUARE expression RSQUARE 								{ void* e = newExpressionList(); 
-																								  addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($1)), e); 
-																								  addExpressionToExpressionList($4, e);  
-																								  $$ = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",e))); }
+keypath					: 	ID DOT ID 															{ $$ = keypathFromIdId($1,$3); }
+						| 	ID DOT INTEGER 	 													{ $$ = keypathFromIdInteger($1,$3); }
+						| 	ID DOT inline_call 													{ $$ = keypathFromIdInline($1,$3); }
+						|	inline_call DOT ID 													{ $$ = keypathFromInlineId($1,$3); }
+						| 	inline_call DOT INTEGER 	 										{ $$ = keypathFromInlineInteger($1,$3); }
+						| 	inline_call DOT inline_call 										{ $$ = keypathFromInlineInline($1,$3); }
+						| 	keypath[previous] DOT ID 											{ addIdToKeypath($previous,$ID); $$ = $previous; }
+						| 	keypath[previous] DOT INTEGER 										{ addIntegerToKeypath($previous,$INTEGER); $$ = $previous; }
+						| 	keypath[previous] DOT inline_call 									{ addInlineToKeypath($previous,$inline_call); $$ = $previous; }
 						;					
 
 args					: 	ID[previous] COMMA ID 												{ strcat( $1, "," ); $$ = strcat($1, $3); }
@@ -198,9 +199,6 @@ args					: 	ID[previous] COMMA ID 												{ strcat( $1, "," ); $$ = strcat($
 						|	/* Nothing */														{ }
 						;
 
-identifier 				: 	ID 																	{ $$ = identifierFromString($1); }
-						| 	keypath 															{ $$ = identifierFromKeypath($1); }
-						;
 
 string 					:	STRING 																{ $$ = argumentFromStringLiteral($1); }
 						|	TILDE 																{ $$ = argumentFromStringLiteral("\"\""); }
@@ -231,7 +229,8 @@ function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFuncti
 inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
 						;
 
-argument				:	identifier 															{ $$ = argumentFromIdentifier($1); }
+argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
+						| 	keypath																{ $$ = argumentFromKeypath($1); }
 						| 	number 																
 						|	string
 						|	boolean 															
@@ -273,8 +272,8 @@ expression_list			:	expression 															{ void* e = newExpressionList(); a
 //==============================
 
 statement				: 	expression 															{ $$ = statementFromExpression($1); POS($$); }
-						|	identifier expression_list											{ $$ = statementFromExpressions($1,$2); POS($$); }
-						|	identifier PIPE statement[previous]									{ void* e = newExpressionList(); addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($previous)), e); $$ = statementFromExpressions($identifier,e); POS($$); }
+						|	ID expression_list													{ $$ = statementFromExpressions($1,$2); POS($$); }
+						|	ID PIPE statement[previous]											{ void* e = newExpressionList(); addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($previous)), e); $$ = statementFromExpressions($ID,e); POS($$); }
 						;
 
 statement_list 			:	statement_list[previous] NEW_LINE statement 						{ void* s = $previous; if ($statement!=NULL) { addStatementToStatementList($statement, s); } $$ = s; }
