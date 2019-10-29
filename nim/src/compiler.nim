@@ -127,11 +127,11 @@ type
     FunctionKind = enum
         userFunction, systemFunction
 
-    FunctionCall[F,X,V]     = proc(f:F, xl: X): V
+    FunctionCall[F,X,V]     = proc(f:F, xl: X): V {.inline.}
     FunctionConstraints     = seq[seq[ValueKind]]
     FunctionReturns         = seq[ValueKind]
 
-    Function* = ref object
+    Function = ref object
         case kind: FunctionKind:
             of userFunction:
                 args            : seq[string]
@@ -257,6 +257,9 @@ proc addContext() =
 proc addContextWith(key:string, val:Value) =
     Stack.add(newTable([(key,val)]))
 
+proc addContextWith(pairs:openArray[(string,Value)]) =
+    Stack.add(newTable(pairs))
+
 proc popContext() =
     discard Stack.pop()
 
@@ -269,15 +272,17 @@ proc getSymbol(k: string): Value =
 proc setSymbol(k: string, v: Value, redefine: bool=false): Value = 
     if redefine:
         Stack[^1][k] = v
+        result = v
     else:
         var i = len(Stack) - 1
         while i > -1:
             if Stack[i].hasKey(k):
                 Stack[i][k]=v
-                return
+                return v
             dec(i)
 
         Stack[^1][k] = v
+        result = v
 
 #[######################################################
     Methods
@@ -683,22 +688,37 @@ proc evaluate(xl: ExpressionList, forceArray: bool=false): Value # Forward
 proc evaluate(x: Expression): Value # Forward
 proc execute(sl: StatementList): Value # Forward
 
-proc execute(f: Function, v: Value): Value =
-    addContextWith("&",v)
+proc execute(f: Function, v: Value): Value {.inline.} =
+    #addContextWith("&",v)
     if f.args.len>0 and v.kind==AV:
         if v.a.len!=f.args.len: runtimeError("wrong number of parameters for function")
 
-        var ind=0
-        for arg in f.args:
-            discard setSymbol(arg,v.a[ind],true)
-            inc(ind)
-    #let sym = getSymbol("&")
-    #discard setSymbol("&",v)
-    
-    result = f.body.execute()
+        addContextWith(zip(f.args,v.a))
 
-    #if sym!=nil: discard setSymbol("&",sym)
-    popContext()
+        result = f.body.execute()
+
+        popContext()
+    else:
+        let sym = getSymbol("&")
+        discard setSymbol("&",v)
+
+        result = f.body.execute()
+
+        if sym!=nil: discard setSymbol("&",sym)
+
+    #     addContextWith("&",v)
+    #     result = f.body.
+    #     var ind=0
+    #     for arg in f.args:
+    #         discard setSymbol(arg,v.a[ind],true)
+    #         inc(ind)
+    # let sym = getSymbol("&")
+    # discard setSymbol("&",v)
+    
+    # result = f.body.execute()
+
+    # if sym!=nil: discard setSymbol("&",sym)
+    # #popContext()
 
 proc execute(f: Function, xl: ExpressionList): Value =
     if f.kind==systemFunction:
@@ -729,7 +749,7 @@ proc validate(f: Function, xl: ExpressionList): seq[Value] =
     
     IncorrectArgumentValuesError(f.name, expected, got)
 
-proc validateOne(f: Function, x: Expression, req: seq[ValueKind]): Value =
+proc validateOne(f: Function, x: Expression, req: openArray[ValueKind]): Value =
     result = x.evaluate()
 
     if not (result.kind in req):
@@ -1023,10 +1043,16 @@ template registerSystemFunctions() =
     #                       Name            Proc                        Args                                                Return          Description
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     registerSystemFunction("if",            Core_If,                    @[@[BV,FV],@[BV,FV,FV]],                            @[ANY],         "if condition is true, execute given function; else execute optional alternative function")
+    #registerSystemFunction("inc",           Core_Inc,                   @[@[SV]],                                           @[ANY],         "if condition is true, execute given function; else execute optional alternative function")
     registerSystemFunction("get",           Core_Get,                   @[@[AV,IV],@[DV,SV]],                               @[ANY],         "get element from collection using given index/key")
     registerSystemFunction("loop",          Core_Loop,                  @[@[AV,FV],@[DV,FV],@[BV,FV]],                      @[ANY],         "execute given function for each element in collection, or while condition is true")
     registerSystemFunction("print",         Core_Print,                 @[@[ANY]],                                          @[SV],          "print value of given expression to screen")
     registerSystemFunction("range",         Core_Range,                 @[@[IV,IV]],                                        @[AV],          "get array from given range (from..to) with optional step")
+
+    registerSystemFunction("and",           Core_And,                   @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical AND")
+    registerSystemFunction("not",           Core_Not,                   @[@[BV],@[IV]],                                     @[BV,IV],       "bitwise/logical NOT")
+    registerSystemFunction("or",            Core_Or,                    @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical OR")
+    registerSystemFunction("xor",           Core_Xor,                   @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical XOR")
 
     registerSystemFunction("filter",        Collections_Filter,         @[@[AV,FV]],                                        @[AV],          "get array after filtering each element using given function")
     registerSystemFunction("shuffle",       Collections_Shuffle,        @[@[AV]],                                           @[AV],          "get given array shuffled")
@@ -1050,9 +1076,9 @@ template initializeConsts() =
     MAIN ENTRY
   ======================================================]#
 
-proc setup*() = 
+proc setup*(args: seq[string] = @[]) = 
     initializeConsts()
-    addContext()
+    addContextWith("&", valueFromArray(args.map((proc (x: string): Value = valueFromString(x)))))
     registerSystemFunctions()
 
 proc runString*(src:string): string =
@@ -1067,11 +1093,11 @@ proc runString*(src:string): string =
 
     result = MainProgram.execute().stringify()
 
-proc runScript*(scriptPath:string, includePath:string="", warnings:bool=false) = 
+proc runScript*(scriptPath:string, args: seq[string], includePath:string="", warnings:bool=false) = 
     if not fileExists(scriptPath): 
         cmdlineError("path not found: '" & scriptPath & "'")
 
-    setup()
+    setup(args)
 
     yylineno = 0
     yyfilename = scriptPath
