@@ -1,8 +1,0 @@
-{
-	"fileVersion": 1,
-	"versions": {
-		"emsi_containers": "0.7.0",
-		"memutils": "0.4.13",
-		"stdx-allocator": "2.77.5"
-	}
-}

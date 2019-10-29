@@ -1,8 +1,0 @@
-bytes allocated, allocations, type, function, file:line
-           6928	             13	immutable(char)[][] app.func1 source/app.d:76
-            192	              6	std.array.Appender!string.Appender.Data std.array.Appender!string.Appender.this /Library/D/dmd/src/phobos/std/array.d:3222
-             32	              1	immutable(char)[] D main source/app.d:109
-             32	              1	immutable(char)[] D main source/app.d:116
-             32	              1	immutable(char)[] D main source/app.d:118
-             32	              1	immutable(char)[] D main source/app.d:119
-             16	              1	immutable(char)[] D main source/app.d:117
