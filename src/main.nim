@@ -78,16 +78,19 @@ when isMainModule:
                 if scriptPath!="": compiler.runScript(scriptPath,p.remainingArgs,includePath,warnings)
                 else: cmdlineError("run: no script specified")
 
-            of consoleAction:   
+            of consoleAction: 
+                p.next()  
                 when not defined(mini):
                     if p.kind!=cmdEnd: cmdlineError("console: superfluous arguments given") 
                     else: console.startRepl()
                 else:
                     cmdlineError("console: not supported on 'mini' releases")
-            of helpAction:      
+            of helpAction:   
+                p.next()   
                 if p.kind!=cmdEnd: cmdlineError("help: superfluous arguments given") 
                 else: showHelp(); quit()
             of versionAction:   
+                p.next()
                 if p.kind!=cmdEnd: cmdlineError("version: superfluous arguments given")
                 else: showVersion(); quit()
             else: 
