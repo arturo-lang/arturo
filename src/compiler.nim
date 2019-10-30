@@ -19,7 +19,7 @@ type
         Stack
       ----------------------------------------]#
 
-    Context = TableRef[string,Value]
+    Context = seq[(string,Value)]
 
     #[----------------------------------------
         KeyPath
@@ -137,7 +137,7 @@ type
                 args            : seq[string]
                 body            : StatementList
                 parentThis      : Value
-                parentContext   : Context
+                parentContext   : TableRef[string,Value]
             of systemFunction:
                 name            : string
                 call            : FunctionCall[Function,ExpressionList,Value]
@@ -165,7 +165,7 @@ type
             of realValue        : r: float
             of booleanValue     : b: bool 
             of arrayValue       : a: seq[Value]
-            of dictionaryValue  : d: Context
+            of dictionaryValue  : d: TableRef[string,Value]
             of functionValue    : f: Function
             of objectValue      : o: Object
             of nullValue        : discard
@@ -211,7 +211,7 @@ template I(_:int):int           = v[_].i
 template R(_:int):float         = v[_].r
 template B(_:int):bool          = v[_].b
 template A(_:int):seq[Value]    = v[_].a
-template D(_:int):Context       = v[_].d
+template D(_:int):TableRef[string,Value]       = v[_].d
 template FN(_:int):Function     = v[_].f
 template OB(_:int):Object       = v[_].o
 
@@ -252,36 +252,57 @@ var yylineno {.importc.}: cint
   ======================================================]#
 
 proc addContext() =
-    Stack.add(newTable[string, Value]())
+    Stack.add(@[])
 
 proc addContextWith(key:string, val:Value) =
-    Stack.add(newTable([(key,val)]))
+    Stack.add(@[(key,val)])
 
-proc addContextWith(pairs:openArray[(string,Value)]) =
-    Stack.add(newTable(pairs))
+proc addContextWith(pairs:seq[(string,Value)]) =
+    Stack.add(pairs)
 
 proc popContext() =
     discard Stack.pop()
 
+proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} = 
+    var i = 0
+    while i<ctx.len:
+        if ctx[i][0]==k: 
+            ctx[i][1] = v
+            return
+        inc(i)
+
+    # not updated, so let's assign it
+    ctx.add((k,v))
+
 proc getSymbol(k: string): Value = 
-    for stack in reverse(Stack):
-        if stack.hasKey(k): return stack[k]
-    
+    var i = len(Stack) - 1
+    while i > -1:
+        var j = 0
+        while j<Stack[i].len:
+            if Stack[i][j][0]==k: 
+                return Stack[i][j][1]
+            inc(j)
+        dec(i)
+
     return nil
 
 proc setSymbol(k: string, v: Value, redefine: bool=false): Value = 
     if redefine:
-        Stack[^1][k] = v
+        Stack[^1].updateOrSet(k,v)
         result = v
     else:
         var i = len(Stack) - 1
         while i > -1:
-            if Stack[i].hasKey(k):
-                Stack[i][k]=v
-                return v
+            var j = 0
+            while j<Stack[i].len:
+                if Stack[i][j][0]==k: 
+                    Stack[i][j][1]=v
+                    return v
+                inc(j)
+
             dec(i)
 
-        Stack[^1][k] = v
+        Stack[^1].updateOrSet(k,v)
         result = v
 
 #[######################################################
@@ -326,7 +347,7 @@ proc valueFromNull(): Value =
 proc valueFromArray(v: seq[Value]): Value =
     result = Value(kind: arrayValue, a: v)
 
-proc valueFromDictionary(v: Context): Value = 
+proc valueFromDictionary(v: TableRef[string,Value]): Value = 
     result = Value(kind: dictionaryValue, d: v)
 
 proc valueFromFunction(v: Function): Value =
