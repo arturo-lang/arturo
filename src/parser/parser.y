@@ -49,7 +49,7 @@ extern void* argumentFromBooleanLiteral(char* l);
 extern void* argumentFromNullLiteral();
 extern void* argumentFromArrayLiteral(void* l);
 extern void* argumentFromDictionaryLiteral(void* l);
-extern void* argumentFromFunctionLiteral(void* l, char* args);
+extern void* argumentFromFunctionLiteral(void* l, char* args, int hc);
 extern void* argumentFromInlineCallLiteral(void* l);
 
 extern void* expressionFromArgument(void *a);
@@ -116,6 +116,7 @@ int yywrap() {
 %token <str> BEGIN_ARR "#("
 %token <str> BEGIN_DICT "#{"
 %token <str> BEGIN_INLINE "$("
+%token <str> BEGIN_FUNC ":{"
 
 %token <str> DOT "."
 %token <str> HASH "#"
@@ -127,7 +128,6 @@ int yywrap() {
 %token <str> LSQUARE "["
 %token <str> RSQUARE "]"
 %token <str> COMMA ","
-%token <str> COLON ":"
 %token <str> EXCL "!"
 %token <str> SEMICOLON ";"
 %token <str> TILDE "~"
@@ -214,8 +214,10 @@ array 					:	BEGIN_ARR expression_list RPAREN 									{ $$ = argumentFromArrayL
 dictionary 				: 	BEGIN_DICT statement_list RCURLY 									{ $$ = argumentFromDictionaryLiteral($2); }
 						;
 
-function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFunctionLiteral($2,""); }
-						|	LSQUARE args RSQUARE LCURLY statement_list RCURLY 					{ $$ = argumentFromFunctionLiteral($5,$2); }
+function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFunctionLiteral($2,"",0); }
+						|	LSQUARE args RSQUARE LCURLY statement_list RCURLY 					{ $$ = argumentFromFunctionLiteral($5,$2,0); }
+						|	BEGIN_FUNC statement_list RCURLY									{ $$ = argumentFromFunctionLiteral($2,"",1); }
+						| 	LSQUARE args RSQUARE BEGIN_FUNC statement_list RCURLY				{ $$ = argumentFromFunctionLiteral($5,$2,1); }
 						;
 
 inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
