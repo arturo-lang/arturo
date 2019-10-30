@@ -30,20 +30,19 @@ proc getPrompt(line: int):string =
 
 proc showInfo(symbol: string) =
     discard
-    # if SystemFunctions.hasKey(symbol):
-    #     echo SystemFunctions[symbol].getFullDescription()
-    # elif Stack[0].hasKey(symbol):
-    #     let k = $((Stack[0][symbol]).kind)
-    #     echo "Symbol : \e[1m" & symbol & "\e[0m"
-    #     echo "       = \e[34m(" & k.replace("Value","") & ")\e[39m " & Stack[0][symbol].stringify() 
-    # else:
-    #     consoleError("symbol '" & symbol & "' not found")
+    if SystemFunctions.hasKey(symbol):
+        echo SystemFunctions[symbol].getFullDescription()
+    elif Stack[0].hasKey(symbol):
+        let k = $((Stack[0].getValueForKey(symbol)).kind)
+        echo "Symbol : \e[1m" & symbol & "\e[0m"
+        echo "       = \e[34m(" & k.replace("Value","") & ")\e[39m " & (Stack[0].getValueForKey(symbol)).stringify() 
+    else:
+        consoleError("symbol '" & symbol & "' not found")
 
 proc showSymbols() = 
-    discard
-    # for n in sorted(toSeq(Stack[0].keys)):
-    #     let k = $((Stack[0][n]).kind)
-    #     echo alignLeft("\e[1m" & n & "\e[0m",20) & align("\e[34m" & k.replace("Value","") & "\e[39m",20) & " = " & Stack[0][n].stringify()
+    for n in sorted(Stack[0].keys):
+        let k = $((Stack[0].getValueForKey(n)).kind)
+        echo alignLeft("\e[1m" & n & "\e[0m",20) & align("\e[34m" & k.replace("Value","") & "\e[39m",20) & " = " & (Stack[0].getValueForKey(n)).stringify()
 
 proc showFunctions() =
     for n in sorted(toSeq(SystemFunctions.keys)):
