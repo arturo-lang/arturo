@@ -338,9 +338,10 @@ proc valueFromValue(v: Value): Value =
         of integerValue: result = valueFromInteger(v.i)
         of realValue: result = valueFromReal(v.r)
         of arrayValue:
-            result = valueFromArray(@[])
-            for item in v.a:
-                result.a.add(valueFromValue(item))
+            result = valueFromArray(v.a.map(proc (x: Value): Value = valueFromValue(x)))
+            # result = valueFromArray(@[])
+            # for item in v.a:
+            #     result.a.add(valueFromValue(item))
         of dictionaryValue:
             result = valueFromDictionary(newTable[string, Value]())
             for k,val in v.d.pairs:
@@ -377,12 +378,14 @@ proc `+`(l: Value, r: Value): Value =
                 of realValue: result = valueFromReal(l.r+r.r)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of arrayValue:
-            result = valueFromValue(l)
+            #result = valueFromValue(l)
             if r.kind!=arrayValue:
-                result.a.add(r)
+                result = valueFromArray(l.a & @[r])
+                #result.a.add(r)
             else:
-                for item in r.a:
-                    result.a.add(item)
+                result = valueFromArray(l.a & r.a)
+                #for item in r.a:
+                #    result.a.add(item)
         of dictionaryValue:
             if r.kind==dictionaryValue:
                 result = valueFromValue(l)
