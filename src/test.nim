@@ -14,43 +14,56 @@ var tbl: OrderedTable[string,int]
 
 var lim = 5_000_000
 
+for i in 1..lim:
+  arr2.add(@[("one",i)])
+
+benchmark "normal":
+  for i in reverse(arr2):
+    var k = i
+
+benchmark "while":
+  var j = len(arr2) - 1
+  while j > -1:
+    var k = arr2[j]
+    dec(j)
+
 #benchmark "initTable":
 #    for i in 1..lim:
 #        discard newTable[string,int]()
 
-benchmark "add(initTable)":
-    for i in 1..lim:
-        arr1.add(newTable([("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i)]))
-        discard arr1[i-1].hasKey("four")
+# benchmark "add(initTable)":
+#     for i in 1..lim:
+#         arr1.add(newTable([("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i)]))
+#         discard arr1[i-1].hasKey("four")
 
-echo arr1.len
+# echo arr1.len
 
-proc hasKey(t: openArray[(string,int)], k: string): bool =
-  for s in t:
-    if s[0]==k: return true
-  return false
+# proc hasKey(t: openArray[(string,int)], k: string): bool =
+#   for s in t:
+#     if s[0]==k: return true
+#   return false
 
-#echo @[("one",2)].hasKey("one")
+# #echo @[("one",2)].hasKey("one")
 
-benchmark "arr.pop":
-    for i in 1..lim:
-        discard arr1.pop()
+# benchmark "arr.pop":
+#     for i in 1..lim:
+#         discard arr1.pop()
 
-echo arr1.len
+# echo arr1.len
 
-benchmark "add(int)":
-    for i in 1..lim:
-        arr2.add(@[("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i)])
-        discard arr2[i-1].hasKey("four")
+# benchmark "add(int)":
+#     for i in 1..lim:
+#         arr2.add(@[("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i),("one",i),("two",i),("three",i)])
+#         discard arr2[i-1].hasKey("four")
 
-echo arr2.len
+# echo arr2.len
 
-benchmark "pop(int)":
-    for i in 1..lim:
-        discard arr2.pop()
-        #arr2.del(arr2.len-1)
+# benchmark "pop(int)":
+#     for i in 1..lim:
+#         discard arr2.pop()
+#         #arr2.del(arr2.len-1)
 
-echo arr2.len
+# echo arr2.len
 
 # benchmark "add(obj)":
 #     for i in 1..lim:
