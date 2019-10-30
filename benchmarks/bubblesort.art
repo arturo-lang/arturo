@@ -2,7 +2,7 @@ bubbleSort [items]{
     loop $(range $(size items)-1 0) [n]{
         swapped false
         loop $(range 0 n-1) [i]{
-            if items.[i]>items.[i+1] {
+            if items.$(i)>items.$(i+1) {
                 swap items i i+1
                 swapped true
             }
