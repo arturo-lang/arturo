@@ -8,7 +8,7 @@
   *****************************************************************]#
 
 import algorithm, math, os, parseutils, sequtils, strutils, tables
-import panic, utils
+import panic
 
 #[######################################################
     Type definitions
@@ -136,8 +136,9 @@ type
             of userFunction:
                 args            : seq[string]
                 body            : StatementList
+                hasContext      : bool
                 parentThis      : Value
-                parentContext   : TableRef[string,Value]
+                parentContext   : Context
             of systemFunction:
                 name            : string
                 call            : FunctionCall[Function,ExpressionList,Value]
@@ -165,11 +166,18 @@ type
             of realValue        : r: float
             of booleanValue     : b: bool 
             of arrayValue       : a: seq[Value]
-            of dictionaryValue  : d: TableRef[string,Value]
+            of dictionaryValue  : d: Context
             of functionValue    : f: Function
             of objectValue      : o: Object
             of nullValue        : discard
             of anyValue         : discard
+
+    #[----------------------------------------
+        Returns
+      ----------------------------------------]#
+
+    ReturnValue* = object of Exception
+        value: Value
 
 #[######################################################
     Globals
@@ -211,7 +219,7 @@ template I(_:int):int           = v[_].i
 template R(_:int):float         = v[_].r
 template B(_:int):bool          = v[_].b
 template A(_:int):seq[Value]    = v[_].a
-template D(_:int):TableRef[string,Value]       = v[_].d
+template D(_:int):Context       = v[_].d
 template FN(_:int):Function     = v[_].f
 template OB(_:int):Object       = v[_].o
 
@@ -248,19 +256,19 @@ var yyin {.importc.}: File
 var yylineno {.importc.}: cint
 
 #[######################################################
-    Stack management
+    Context management
   ======================================================]#
 
-proc addContext() =
+proc addContext() {.inline.} =
     Stack.add(@[])
 
-proc addContextWith(key:string, val:Value) =
+proc addContextWith(key:string, val:Value) {.inline.} =
     Stack.add(@[(key,val)])
 
-proc addContextWith(pairs:seq[(string,Value)]) =
+proc addContextWith(pairs:seq[(string,Value)]) {.inline.} =
     Stack.add(pairs)
 
-proc popContext() =
+proc popContext() {.inline.} =
     discard Stack.pop()
 
 proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} = 
@@ -274,7 +282,24 @@ proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} =
     # not updated, so let's assign it
     ctx.add((k,v))
 
-proc getSymbol(k: string): Value = 
+proc keys*(ctx: Context): seq[string] {.inline.} =
+    result = ctx.map(proc (x:(string,Value)):string = x[0])
+
+proc hasKey*(ctx: Context, key: string): bool {.inline.} = 
+    var i = 0
+    while i<ctx.len:
+        if ctx[i][0]==key: return true 
+        inc(i)
+    return false
+
+proc getValueForKey*(ctx: Context, key: string): Value {.inline.} =
+    var i = 0
+    while i<ctx.len:
+        if ctx[i][0]==key: return ctx[i][1] 
+        inc(i)
+    return nil
+
+proc getSymbol(k: string): Value {.inline.} = 
     var i = len(Stack) - 1
     while i > -1:
         var j = 0
@@ -286,7 +311,7 @@ proc getSymbol(k: string): Value =
 
     return nil
 
-proc setSymbol(k: string, v: Value, redefine: bool=false): Value = 
+proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} = 
     if redefine:
         Stack[^1].updateOrSet(k,v)
         result = v
@@ -304,6 +329,19 @@ proc setSymbol(k: string, v: Value, redefine: bool=false): Value =
 
         Stack[^1].updateOrSet(k,v)
         result = v
+
+proc storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
+    result = syms.map(proc (x: (string,Value)): (string,Value) = (x[0],getSymbol(x[0])))
+    var i = 0
+    while i < syms.len:
+        discard setSymbol(syms[i][0],syms[i][1])
+        inc(i)
+
+proc restoreSymbols(syms: openArray[(string,Value)]) {.inline.} =
+    var i = 0
+    while i < syms.len:
+        if syms[i][1]!=nil: discard setSymbol(syms[i][0],syms[i][1])
+        inc(i)
 
 #[######################################################
     Methods
@@ -347,7 +385,7 @@ proc valueFromNull(): Value =
 proc valueFromArray(v: seq[Value]): Value =
     result = Value(kind: arrayValue, a: v)
 
-proc valueFromDictionary(v: TableRef[string,Value]): Value = 
+proc valueFromDictionary(v: Context): Value = 
     result = Value(kind: dictionaryValue, d: v)
 
 proc valueFromFunction(v: Function): Value =
@@ -358,24 +396,17 @@ proc valueFromValue(v: Value): Value =
         of stringValue: result = valueFromString(v.s)
         of integerValue: result = valueFromInteger(v.i)
         of realValue: result = valueFromReal(v.r)
-        of arrayValue:
-            result = valueFromArray(v.a.map(proc (x: Value): Value = valueFromValue(x)))
-            # result = valueFromArray(@[])
-            # for item in v.a:
-            #     result.a.add(valueFromValue(item))
-        of dictionaryValue:
-            result = valueFromDictionary(newTable[string, Value]())
-            for k,val in v.d.pairs:
-                result.d[k] = valueFromValue(val)
-
+        of arrayValue: result = valueFromArray(v.a.map(proc (x: Value): Value = valueFromValue(x)))
+        of dictionaryValue: result = valueFromDictionary(v.d.map(proc (x: (string,Value)): (string,Value) = (x[0],valueFromValue(x[1]))))
         else: result = v
 
 proc compare(l: Value, r: Value): int {.inline.} # Forward
 proc findValueInArray(v: Value, lookup: Value): int =
-    var index = 0
-    for i in v.a:
-        if compare(i,lookup)==0: return index
-        inc(index)
+    var i = 0
+    while i < v.a.len:
+        if compare(v.a[i],lookup)==0: return i 
+        inc(i)
+    return -1
 
 proc stringify*(v: Value, quoted: bool = true): string # Forward
 proc `+`(l: Value, r: Value): Value {.inline.} =
@@ -406,8 +437,8 @@ proc `+`(l: Value, r: Value): Value {.inline.} =
         of dictionaryValue:
             if r.kind==dictionaryValue:
                 result = valueFromValue(l)
-                for k,v in l.d.pairs:
-                    result.d[k] = v
+                for k in r.d.keys:
+                    result.d.updateOrSet(k,r.d.getValueForKey(k))
 
             else: InvalidOperationError("+",$(l.kind),$(r.kind))
         else:
@@ -441,9 +472,11 @@ proc `-`(l: Value, r: Value): Value {.inline.} =
 
         of dictionaryValue:
             result = valueFromValue(l)
-            for k,v in l.d.pairs:
-                if compare(v,r)==0:
-                    result.d.del(k)
+            var i = 0
+            while i < l.d.len:
+                if compare(l.d[i][1],r)==0:
+                    result.d.del(i)
+                inc(i)
 
         else:
             InvalidOperationError("-",$(l.kind),$(r.kind))
@@ -645,13 +678,15 @@ proc compare(l: Value, r: Value): int {.inline.} =
         of dictionaryValue:
             case r.kind
                 of dictionaryValue:
-                    if toSeq(l.d.keys()).len < toSeq(r.d.keys()).len: result = -1
-                    elif toSeq(l.d.keys()).len > toSeq(r.d.keys()).len: result = 1
+                    if l.d.keys.len < r.d.keys.len: result = -1
+                    elif l.d.keys.len > r.d.keys.len: result = 1
                     else:
-                        for k,v in l.d.pairs:
-                            if not r.d.hasKey(k): return -2
-                            else: 
-                                if compare(l.d[k],r.d[k])!=0: return -2
+                        var i = 0
+                        while i < l.d.len:
+                            if not r.d.hasKey(l.d[i][0]): return -2
+                            else:
+                                if compare(l.d[i][1],r.d.getValueForKey(l.d[i][0]))!=0: return -2
+                            inc(i)
 
                         result = 0
                 else: NotComparableError($(l.kind),$(r.kind))
@@ -668,19 +703,15 @@ proc stringify*(v: Value, quoted: bool = true): string =
         of booleanValue     :   result = $(v.b)
         of arrayValue       :
             result = "#("
-            var items: seq[string] = @[]
 
-            for item in v.a:
-                items.add(item.stringify())
+            let items = v.a.map(proc (x: Value):string = x.stringify())
 
             result &= items.join(" ")
             result &= ")"
         of dictionaryValue  :
             result = "#{ "
-            var items: seq[string] = @[]
-
-            for item in sorted(toSeq(v.d.keys())):
-                items.add(item & " " & v.d[item].stringify())
+            
+            let items = sorted(v.d.keys).map(proc (x: string):string = x & " " & v.d.getValueForKey(x).stringify())
 
             result &= items.join(", ")
             result &= " }"
@@ -695,8 +726,8 @@ proc stringify*(v: Value, quoted: bool = true): string =
     Functions
   ----------------------------------------]#
 
-proc newUserFunction(s: StatementList, a: seq[string] = @[]): Function =
-    result = Function(kind: userFunction, args: a, body: s, parentThis: nil, parentContext: newTable[string, Value]())
+proc newUserFunction(s: StatementList, a: seq[string], hc: bool): Function =
+    result = Function(kind: userFunction, args: a, body: s, hasContext: hc, parentThis: nil, parentContext: @[])
 
 proc registerSystemFunction(n: string, f: FunctionCall[Function,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = "") =
     let minArgs = req.map(proc (x: seq[ValueKind]): int = x.len).min
@@ -709,36 +740,28 @@ proc evaluate(x: Expression): Value # Forward
 proc execute(sl: StatementList): Value # Forward
 
 proc execute(f: Function, v: Value): Value {.inline.} =
-    #addContextWith("&",v)
-    if f.args.len>0 and v.kind==AV:
-        if v.a.len!=f.args.len: runtimeError("wrong number of parameters for function")
+    if f.hasContext:
+        if f.args.len>0:
+            if v.kind == AV: addContextWith(zip(f.args,v.a))
+            else: addContextWith(f.args[0],v)
+        else: addContextWith("&",v)
 
-        addContextWith(zip(f.args,v.a))
-
-        result = f.body.execute()
-
-        popContext()
+        try                         : result = f.body.execute()
+        except ReturnValue as ret   : result = ret.value
+        finally                     : popContext()
     else:
-        let sym = getSymbol("&")
-        discard setSymbol("&",v)
+        var stored: seq[(string,Value)]
 
-        result = f.body.execute()
+        if f.args.len>0:
+            if v.kind == AV: 
+                stored = storeSymbols(zip(f.args,v.a))
+            else: stored = storeSymbols(@[(f.args[0],v)])
+        else: 
+            stored = storeSymbols(@[("&",v)])
 
-        if sym!=nil: discard setSymbol("&",sym)
-
-    #     addContextWith("&",v)
-    #     result = f.body.
-    #     var ind=0
-    #     for arg in f.args:
-    #         discard setSymbol(arg,v.a[ind],true)
-    #         inc(ind)
-    # let sym = getSymbol("&")
-    # discard setSymbol("&",v)
-    
-    # result = f.body.execute()
-
-    # if sym!=nil: discard setSymbol("&",sym)
-    # #popContext()
+        try                         : result = f.body.execute()
+        except ReturnValue as ret   : raise
+        finally                     : restoreSymbols(stored)
 
 proc execute(f: Function, xl: ExpressionList): Value =
     if f.kind==systemFunction:
@@ -754,13 +777,17 @@ proc validate(f: Function, xl: ExpressionList): seq[Value] =
 
     var ret = xl.evaluate(forceArray=true).a
 
-    for constraintSet in f.require:
+    var i = 0
+    while i<f.require.len:
         var passing = true
-        for i,constraint in constraintSet:
-            if constraint!=ANY and constraint!=ret[i].kind: 
+        var j = 0
+        while j<f.require[i].len:
+            if f.require[i][j]!=ANY and f.require[i][j]!=ret[j].kind: 
                 passing = false
+            inc(j)
 
         if passing: return ret
+        inc(i)
 
     # not passed
 
@@ -877,11 +904,6 @@ proc addExpressionToExpressionList(x: Expression, xl: ExpressionList) {.exportc.
 
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value = 
     if forceArray or xl.list.len>1:
-        # var ret: seq[Value] = @[]
-        # for x in xl.list:
-        #     ret.add(x.evaluate())
-
-        # result = valueFromArray(ret)
         result = valueFromArray(xl.list.map(proc (x: Expression): Value = x.evaluate()))
     else:
         if xl.list.len==1:
@@ -953,11 +975,11 @@ proc argumentFromArrayLiteral(l: ExpressionList): Argument {.exportc.} =
 proc argumentFromDictionaryLiteral(l: StatementList): Argument {.exportc.} =
     result = Argument(kind: dictionaryArgument, d: l)
 
-proc argumentFromFunctionLiteral(l: StatementList, args: cstring = ""): Argument {.exportc.} =
+proc argumentFromFunctionLiteral(l: StatementList, args: cstring = "", hc: cint = 0): Argument {.exportc.} =
     if args=="":
-        result = Argument(kind: functionArgument, f: newUserFunction(l))
+        result = Argument(kind: functionArgument, f: newUserFunction(l,@[],bool(hc)))
     else:
-        result = Argument(kind: functionArgument, f: newUserFunction(l,($args).split(",")))
+        result = Argument(kind: functionArgument, f: newUserFunction(l,($args).split(","),bool(hc)))
 
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} =
     result = Argument(kind: inlineCallArgument, c: l)
@@ -967,12 +989,13 @@ proc getValue(a: Argument): Value =
     case a.kind
         of identifierArgument:
             result = getSymbol(a.i)
+            if result == nil: runtimeError("symbol not found: '" & a.i & "'", CurrentPosition.file, CurrentPosition.line)
         of literalArgument:
             result = a.v
         of arrayArgument:
             result = a.a.evaluate(forceArray=true)
         of dictionaryArgument:
-            var ret  = valueFromDictionary(newTable[string, Value]())
+            var ret = valueFromDictionary(@[])
 
             addContext()
             for statement in a.d.list:
@@ -1004,7 +1027,7 @@ proc executeAssign(s: Statement, parent: Value = nil): Value =
     if parent==nil:
         result = setSymbol(s.id, ev)
     else:
-        parent.d[s.id] = ev
+        parent.d.updateOrSet(s.id, ev)
 
         if ev.kind==functionValue:
             ev.f.parentThis = ev
@@ -1064,11 +1087,11 @@ template registerSystemFunctions() =
     #                       Name            Proc                        Args                                                Return          Description
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     registerSystemFunction("if",            Core_If,                    @[@[BV,FV],@[BV,FV,FV]],                            @[ANY],         "if condition is true, execute given function; else execute optional alternative function")
-    #registerSystemFunction("inc",           Core_Inc,                   @[@[SV]],                                           @[ANY],         "if condition is true, execute given function; else execute optional alternative function")
     registerSystemFunction("get",           Core_Get,                   @[@[AV,IV],@[DV,SV]],                               @[ANY],         "get element from collection using given index/key")
     registerSystemFunction("loop",          Core_Loop,                  @[@[AV,FV],@[DV,FV],@[BV,FV]],                      @[ANY],         "execute given function for each element in collection, or while condition is true")
     registerSystemFunction("print",         Core_Print,                 @[@[ANY]],                                          @[SV],          "print value of given expression to screen")
     registerSystemFunction("range",         Core_Range,                 @[@[IV,IV]],                                        @[AV],          "get array from given range (from..to) with optional step")
+    registerSystemFunction("return",        Core_Return,                @[@[ANY]],                                          @[ANY],         "break execution and return given value")
 
     registerSystemFunction("and",           Core_And,                   @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical AND")
     registerSystemFunction("not",           Core_Not,                   @[@[BV],@[IV]],                                     @[BV,IV],       "bitwise/logical NOT")
@@ -1079,6 +1102,7 @@ template registerSystemFunctions() =
     registerSystemFunction("shuffle",       Collections_Shuffle,        @[@[AV]],                                           @[AV],          "get given array shuffled")
     registerSystemFunction("size",          Collections_Size,           @[@[AV],@[SV],@[DV]],                               @[IV],          "get size of given collection or string")
     registerSystemFunction("slice",         Collections_Slice,          @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],       @[AV,SV],       "get slice of array/string given a starting and/or end point")
+    registerSystemFunction("swap",          Collections_Swap,           @[@[AV,IV,IV]],                                     @[AV],          "swap array elements at given indices")
 
     registerSystemFunction("isPrime",       Numbers_IsPrime,            @[@[IV]],                                           @[BV],          "check if given number is prime")
     
