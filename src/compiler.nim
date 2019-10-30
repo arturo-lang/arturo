@@ -378,14 +378,10 @@ proc `+`(l: Value, r: Value): Value {.inline.} =
                 of realValue: result = valueFromReal(l.r+r.r)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of arrayValue:
-            #result = valueFromValue(l)
             if r.kind!=arrayValue:
                 result = valueFromArray(l.a & @[r])
-                #result.a.add(r)
             else:
                 result = valueFromArray(l.a & r.a)
-                #for item in r.a:
-                #    result.a.add(item)
         of dictionaryValue:
             if r.kind==dictionaryValue:
                 result = valueFromValue(l)
@@ -860,11 +856,12 @@ proc addExpressionToExpressionList(x: Expression, xl: ExpressionList) {.exportc.
 
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value = 
     if forceArray or xl.list.len>1:
-        var ret: seq[Value] = @[]
-        for x in xl.list:
-            ret.add(x.evaluate())
+        # var ret: seq[Value] = @[]
+        # for x in xl.list:
+        #     ret.add(x.evaluate())
 
-        result = valueFromArray(ret)
+        # result = valueFromArray(ret)
+        result = valueFromArray(xl.list.map(proc (x: Expression): Value = x.evaluate()))
     else:
         if xl.list.len==1:
             result = xl.list[0].evaluate()
