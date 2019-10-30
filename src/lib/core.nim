@@ -38,15 +38,8 @@ proc Core_Get*[F,X,V](f: F, xl: X): V {.inline.} =
 
     case v[0].kind
         of arrayValue: result = A(0)[I(1)]
-        of dictionaryValue: result = D(0)[S(1)]
+        of dictionaryValue: result = D(0).getValueForKey(S(1))
         else: result = NULL
-
-proc Core_Inc*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = f.validate(xl)
-
-    getSymbol(S(0)).i += 1
-
-    result = NULL
 
 proc Core_Loop*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
@@ -56,8 +49,8 @@ proc Core_Loop*[F,X,V](f: F, xl: X): V {.inline.} =
             for item in A(0):
                 result = FN(1).execute(item)
         of DV:
-            for key,val in D(0).pairs:
-                result = FN(1).execute(valueFromArray(@[valueFromString(key),val]))
+            for val in D(0):
+                result = FN(1).execute(valueFromArray(@[valueFromString(val[0]),val[1]]))
         of BV:
             var condition = B(0)
             while condition:
@@ -97,7 +90,18 @@ proc Core_Print*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Core_Range*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
-    result = valueFromArray(toSeq(I(0)..I(1)).map(proc (x: int): Value = valueFromInteger(x)))
+    if I(0)<I(1):    
+        result = valueFromArray(toSeq(I(0)..I(1)).map(proc (x: int): Value = valueFromInteger(x)))
+    else:
+        result = valueFromArray(toSeq(countdown(I(0),I(1))).map(proc (x: int): Value = valueFromInteger(x)))
+
+proc Core_Return*[F,X,V](f: F, xl: X): V {.inline.} = 
+    let v = f.validate(xl)
+
+    var ret = newException(ReturnValue, "return")
+    ret.value = v[0]
+
+    raise ret
 
 proc Core_Xor*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = f.validateOne(xl.list[0],[BV,IV])
