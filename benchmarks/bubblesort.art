@@ -1,16 +1,40 @@
 bubbleSort [items]{
-    loop $(range $(size items)-1 0) [n]{
-        swapped false
-        loop $(range 0 n-1) [i]{
-            if items.$(i)>items.$(i+1) {
-                swap items i i+1
-                swapped true
+    changed true
+    loop changed {
+        changed false
+        loop $(range 0 $(size items)-2) {
+            if items.$(&)>items.$(&+1) {
+                swap items & &+1
+                changed true
             }
         }
-        if $(not swapped) { return items }
     }
-    return items
-}
+    items
+}/*
+
+proc bubbleSort[T](a: var openarray[T]) =
+  var t = true
+  for n in countdown(a.len-2, 0):
+    if not t: break
+    t = false
+    for j in 0..n:
+      if a[j] <= a[j+1]: continue
+      swap a[j], a[j+1]
+      t = true
+
+bubbleSort [items]{
+    t true
+    loop $(range $(size items)-2 0) {
+        if $(not t) { return items }
+        t false
+        loop $(range 0 &){
+            if items.$(&)>items.$(&+1) {
+                swap items & &+1
+                t true
+            }
+        }
+    }
+}*/
 
 list $(shuffle|range 1 2000)
 list $(bubbleSort list)
