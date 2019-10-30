@@ -349,7 +349,7 @@ proc valueFromValue(v: Value): Value =
 
         else: result = v
 
-proc compare(l: Value, r: Value): int # Forward
+proc compare(l: Value, r: Value): int {.inline.} # Forward
 proc findValueInArray(v: Value, lookup: Value): int =
     var index = 0
     for i in v.a:
@@ -357,7 +357,7 @@ proc findValueInArray(v: Value, lookup: Value): int =
         inc(index)
 
 proc stringify*(v: Value, quoted: bool = true): string # Forward
-proc `+`(l: Value, r: Value): Value =
+proc `+`(l: Value, r: Value): Value {.inline.} =
     case l.kind
         of stringValue:
             case r.kind
@@ -396,7 +396,7 @@ proc `+`(l: Value, r: Value): Value =
         else:
             InvalidOperationError("+",$(l.kind),$(r.kind))
 
-proc `-`(l: Value, r: Value): Value =
+proc `-`(l: Value, r: Value): Value {.inline.} =
     case l.kind
         of stringValue:
             case r.kind
@@ -431,7 +431,7 @@ proc `-`(l: Value, r: Value): Value =
         else:
             InvalidOperationError("-",$(l.kind),$(r.kind))
 
-proc `*`(l: Value, r: Value): Value = 
+proc `*`(l: Value, r: Value): Value {.inline.} = 
     case l.kind
         of stringValue:
             case r.kind
@@ -466,7 +466,7 @@ proc `*`(l: Value, r: Value): Value =
         else:
             InvalidOperationError("*",$(l.kind),$(r.kind))
 
-proc `/`(l: Value, r: Value): Value = 
+proc `/`(l: Value, r: Value): Value {.inline.} = 
     case l.kind
         of stringValue:
             case r.kind
@@ -523,7 +523,7 @@ proc `/`(l: Value, r: Value): Value =
         else:
             InvalidOperationError("/",$(l.kind),$(r.kind))
 
-proc `%`(l: Value, r: Value): Value =
+proc `%`(l: Value, r: Value): Value {.inline.} =
     case l.kind
         of stringValue:
             case r.kind
@@ -559,7 +559,7 @@ proc `%`(l: Value, r: Value): Value =
         else:
             InvalidOperationError("%",$(l.kind),$(r.kind))
 
-proc `^`(l: Value, r: Value): Value =
+proc `^`(l: Value, r: Value): Value {.inline.} =
     case l.kind
         of integerValue:
             case r.kind
@@ -574,7 +574,7 @@ proc `^`(l: Value, r: Value): Value =
         else:
             InvalidOperationError("^",$(l.kind),$(r.kind))
 
-proc compare(l: Value, r: Value): int =
+proc compare(l: Value, r: Value): int {.inline.} =
     case l.kind
         of stringValue:
             case r.kind
