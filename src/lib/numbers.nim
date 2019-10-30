@@ -11,7 +11,7 @@
     Helpers
   ======================================================]#
 
-proc isPrime*(n: uint32): bool =
+proc isPrime*(n: uint32): bool {.noSideEffect.} =
     case n
         of 0, 1: return false
         of 2, 7, 61: return true
@@ -55,7 +55,7 @@ proc isPrime*(n: uint32): bool =
  
     return true
  
-proc isPrime*(n: int32): bool =
+proc isPrime*(n: int32): bool {.noSideEffect.} =
     n >= 0 and n.uint32.isPrime
 
 #[######################################################
@@ -64,6 +64,5 @@ proc isPrime*(n: int32): bool =
 
 proc Numbers_IsPrime*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
-
     if isPrime(I(0).uint32): result = TRUE
     else: result = FALSE
