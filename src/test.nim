@@ -12,20 +12,45 @@ var arr3: seq[Obj]
 
 var tbl: OrderedTable[string,int]
 
-var lim = 5_000_000
+var lim = 10_000_000
+
+var a: seq[int] = @[1,2,3]
+var tmp: seq[int] = a
+a.add(4)
+a.add(5)
+echo "initially"
+echo "A = ",a
+echo "tmp = ", tmp
+
+echo "adding to A"
+a.add(4)
+a.add(5)
+
+echo "A = ", a
+echo "tmp = ", tmp
+
+echo "restoring"
+
+a = tmp
+echo "A = ", a
+echo "tmp = ", tmp
 
 for i in 1..lim:
   arr2.add(@[("one",i)])
 
 benchmark "normal":
-  for i in reverse(arr2):
-    var k = i
+  for i in 1..lim:
+      var tmp: seq[int] = a
+      a.add(4)
+      a.add(5)
+      a = tmp
 
 benchmark "while":
-  var j = len(arr2) - 1
-  while j > -1:
-    var k = arr2[j]
-    dec(j)
+  for i in 1..lim:
+      var tmp: seq[int] = @[]
+      tmp.add(4)
+      tmp.add(5)
+      discard tmp.pop()
 
 #benchmark "initTable":
 #    for i in 1..lim:
