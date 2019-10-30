@@ -45,3 +45,10 @@ proc Collections_Slice*[F,X,V](f: F, xl: X): V {.inline.} =
             if v.len==3: result = valueFromString(S(0)[I(1)..I(2)])
             else: result = valueFromString(S(0)[I(1)..^1])
         else: discard
+
+proc Collections_Swap*[F,X,V](f: F, xl: X): V {.inline.} = 
+    let v = f.validate(xl)
+
+    swap(A(0)[I(1)], A(0)[I(2)])
+
+    result = v[0]
