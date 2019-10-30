@@ -379,7 +379,7 @@ proc `+`(l: Value, r: Value): Value {.inline.} =
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of arrayValue:
             if r.kind!=arrayValue:
-                result = valueFromArray(l.a & @[r])
+                result = valueFromArray(l.a & r)
             else:
                 result = valueFromArray(l.a & r.a)
         of dictionaryValue:
