@@ -23,8 +23,8 @@ template showMessage(msg:string,final:bool=false) =
         echo "------"
 
 template getCommand(cmdArgs:openArray[string]):string =
-    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --gcc.options.linker=\"-flto\""
-    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --clang.options.linker=\"-flto\""
+    let gcc_flags   = ""#"--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --gcc.options.linker=\"-flto\""
+    let clang_flags = ""#"--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --clang.options.linker=\"-flto\""
     # --embedsrc --genScript 
     "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache --checks:off " & srcDir & "/main.nim"
 
@@ -80,11 +80,27 @@ template profileCore() =
         "--stackTrace:on",
 
         "--passL:parser.a",
-        "--threads:on",
-        "--hints:off",
+        #"--threads:on",
+        #"--hints:off",
         "--opt:speed",
-        "--nilseqs:on",
-        "--gc:regions"
+        #"--nilseqs:on",
+        #"--gc:regions"
+    ]
+    exec getCommand(args)
+
+template profileMemory() = 
+    showMessage("Compiling core for memory profiling")
+    let args = @[
+        "-d:memProfiler",
+        "--profiler:off",
+        "--stackTrace:on",
+
+        "--passL:parser.a",
+        #"--threads:on",
+        #"--hints:off",
+        "--opt:speed",
+        #"--nilseqs:on",
+        #"--gc:regions"
     ]
     exec getCommand(args)
 
@@ -133,6 +149,12 @@ task mini, "Build a production-ready optimized mini-release":
 task profile, "Build a version for profiling":
     buildParser()
     profileCore()
+    cleanUp()
+    showMessage "Done :)", true
+
+task memory, "Build a version for memory profiling":
+    buildParser()
+    profileMemory()
     cleanUp()
     showMessage "Done :)", true
 
