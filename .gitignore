@@ -28,3 +28,4 @@ arturo-test-*
 *.db
 trace.*
 *.profraw
+profile_results.txt
