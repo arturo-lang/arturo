@@ -1,56 +1,135 @@
 import algorithm, math, os, parseutils, sequtils, strutils, tables
 import utils
 
-type
-    Obj = ref object
-        s: string
-        v: int
+import compiler
 
-var arr1: seq[TableRef[string,int]]
-var arr2: seq[seq[(string,int)]]
-var arr3: seq[Obj]
+type 
+    ctx = TableRef[string,Value]
+    ctxo = OrderedTableRef[string,Value]
+    arr = seq[(string,Value)]
 
-var tbl: OrderedTable[string,int]
+    stack = array[ctx,2]
+
 
 var lim = 10_000_000
 
-var a: seq[int] = @[1,2,3]
-var tmp: seq[int] = a
-a.add(4)
-a.add(5)
-echo "initially"
-echo "A = ",a
-echo "tmp = ", tmp
+benchmark "value creation (Value)":
+    for i in 1..lim:
+        discard valueFromInteger(i)
 
-echo "adding to A"
-a.add(4)
-a.add(5)
+benchmark "new context creation (TableRef-Value)":
+    for i in 1..lim:
+        let k : ctx = newTable[string,Value]()
 
-echo "A = ", a
-echo "tmp = ", tmp
+benchmark "new context creation (TableRef-Value)":
+    for i in 1..lim:
+        let k : ctxo = newOrderedTable[string,Value]()
 
-echo "restoring"
+benchmark "new context creation (seq-Value)":
+    for i in 1..lim:
+        let k : arr = @[]
 
-a = tmp
-echo "A = ", a
-echo "tmp = ", tmp
+benchmark "context copy (TableRef)":
+    for i in 1..lim:
+        let k : ctx = newTable[string,Value]()
+        let z = k
 
-for i in 1..lim:
-  arr2.add(@[("one",i)])
+benchmark "context copy (seq)":
+    for i in 1..lim:
+        let k : arr = @[]
+        let z = k
 
-benchmark "normal":
-  for i in 1..lim:
-      var tmp: seq[int] = a
-      a.add(4)
-      a.add(5)
-      a = tmp
+let dT : ctx = newTable[string,Value]()
 
-benchmark "while":
-  for i in 1..lim:
-      var tmp: seq[int] = @[]
-      tmp.add(4)
-      tmp.add(5)
-      discard tmp.pop()
+benchmark "adding item to context (TableRef)":
+    
+    for i in 1..lim:
+        dT["one"] = valueFromInteger(i)
+
+let odT : ctxo = newOrderedTable[string,Value]()
+
+benchmark "adding item to context (OrderedTableRef)":
+    
+    for i in 1..lim:
+        odT[$i] = valueFromInteger(i)
+
+var dA : arr = @[]
+
+benchmark "adding item to context (seq)":
+    
+    for i in 1..lim:
+        dA.add(("one",valueFromInteger(i)))
+
+benchmark "popping items (seq)":
+    
+    for i in 1..lim:
+        discard dA.pop()
+
+echo "items in dA: ",dA.len
+
+dA = newSeq[(string,Value)](lim)
+benchmark "adding item to context (seq)":
+    
+    for i in 1..lim:
+        dA[i-1] = ($i,valueFromInteger(i))
+
+benchmark "popping items (seq-del)":
+    
+    for i in 1..lim:
+        dA.del(dA.len-1)
+
+echo "items in dA: ",dA.len
+
+# type
+#     Obj = ref object
+#         s: string
+#         v: int
+
+# var arr1: seq[TableRef[string,int]]
+# var arr2: seq[seq[(string,int)]]
+# var arr3: seq[Obj]
+
+# var tbl: OrderedTable[string,int]
+
+# var lim = 10_000_000
+
+# var a: seq[int] = @[1,2,3]
+# var tmp: seq[int] = a
+# a.add(4)
+# a.add(5)
+# echo "initially"
+# echo "A = ",a
+# echo "tmp = ", tmp
+
+# echo "adding to A"
+# a.add(4)
+# a.add(5)
+
+# echo "A = ", a
+# echo "tmp = ", tmp
+
+# echo "restoring"
+
+# a = tmp
+# echo "A = ", a
+# echo "tmp = ", tmp
+
+# for i in 1..lim:
+#   arr2.add(@[("one",i)])
+
+# benchmark "normal":
+#   for i in 1..lim:
+#       var tmp: seq[int] = a
+#       a.add(4)
+#       a.add(5)
+#       a = tmp
+
+# benchmark "while":
+#   for i in 1..lim:
+#       var tmp: seq[int] = @[]
+#       tmp.add(4)
+#       tmp.add(5)
+#       discard tmp.pop()
 
 #benchmark "initTable":
 #    for i in 1..lim:
