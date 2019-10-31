@@ -1,4 +1,4 @@
-import algorithm, math, os, parseutils, sequtils, strutils, tables
+import algorithm, lists, math, os, parseutils, sequtils, strutils, sugar, tables
 import utils
 
 import compiler
@@ -8,77 +8,116 @@ type
     ctxo = OrderedTableRef[string,Value]
     arr = seq[(string,Value)]
 
-    stack = array[ctx,2]
+    #stack = array[ctx,2]
 
 
-var lim = 10_000_000
+var lim = 15_000
 
-benchmark "value creation (Value)":
+benchmark "map":
     for i in 1..lim:
-        discard valueFromInteger(i)
+        let k = toSeq(1..10000).map(proc (x:int):int = 2*x+10)
 
-benchmark "new context creation (TableRef-Value)":
+benchmark "map (=>)":
     for i in 1..lim:
-        let k : ctx = newTable[string,Value]()
+        let k = toSeq(1..10000).map((x)=> 2*x+10)
 
-benchmark "new context creation (TableRef-Value)":
+benchmark "mapIt":
     for i in 1..lim:
-        let k : ctxo = newOrderedTable[string,Value]()
+        let k = toSeq(1..10000).mapIt(2*it+10)
 
-benchmark "new context creation (seq-Value)":
+
+# benchmark "list creation":
+#     for i in 1..lim:
+#         let k = initDoublyLinkedList[(string,Value)]()
+
+# var z = initDoublyLinkedList[(string,Value)]()
+# benchmark "list creation 2":
+#     for i in 1..lim:
+#         let v = ($i,valueFromInteger(i))
+#         z.append(v)
+#         discard z.find(v)
+
+# var z = initDoublyLinkedList[(string,Value)]()
+# benchmark "list creation 2":
+#     for i in 1..lim:
+
+var a : arr = @[]
+benchmark "list creation 3":
     for i in 1..lim:
-        let k : arr = @[]
+        a.add(($i,valueFromInteger(i)))
 
-benchmark "context copy (TableRef)":
-    for i in 1..lim:
-        let k : ctx = newTable[string,Value]()
-        let z = k
+# var a : arr = @[]
+# benchmark "list search":
+#     for i in 1..lim:
+#         a.add(($i,valueFromInteger(i)))
 
-benchmark "context copy (seq)":
-    for i in 1..lim:
-        let k : arr = @[]
-        let z = k
 
-let dT : ctx = newTable[string,Value]()
+# benchmark "value creation (Value)":
+#     for i in 1..lim:
+#         discard valueFromInteger(i)
 
-benchmark "adding item to context (TableRef)":
+# benchmark "new context creation (TableRef-Value)":
+#     for i in 1..lim:
+#         let k : ctx = newTable[string,Value]()
+
+# benchmark "new context creation (TableRef-Value)":
+#     for i in 1..lim:
+#         let k : ctxo = newOrderedTable[string,Value]()
+
+# benchmark "new context creation (seq-Value)":
+#     for i in 1..lim:
+#         let k : arr = @[]
+
+# benchmark "context copy (TableRef)":
+#     for i in 1..lim:
+#         let k : ctx = newTable[string,Value]()
+#         let z = k
+
+# benchmark "context copy (seq)":
+#     for i in 1..lim:
+#         let k : arr = @[]
+#         let z = k
+
+# let dT : ctx = newTable[string,Value]()
+
+# benchmark "adding item to context (TableRef)":
     
-    for i in 1..lim:
-        dT["one"] = valueFromInteger(i)
+#     for i in 1..lim:
+#         dT["one"] = valueFromInteger(i)
 
-let odT : ctxo = newOrderedTable[string,Value]()
+# let odT : ctxo = newOrderedTable[string,Value]()
 
-benchmark "adding item to context (OrderedTableRef)":
+# benchmark "adding item to context (OrderedTableRef)":
     
-    for i in 1..lim:
-        odT[$i] = valueFromInteger(i)
+#     for i in 1..lim:
+#         odT[$i] = valueFromInteger(i)
 
-var dA : arr = @[]
+# var dA : arr = @[]
 
-benchmark "adding item to context (seq)":
+# benchmark "adding item to context (seq)":
     
-    for i in 1..lim:
-        dA.add(("one",valueFromInteger(i)))
+#     for i in 1..lim:
+#         dA.add(("one",valueFromInteger(i)))
 
-benchmark "popping items (seq)":
+# benchmark "popping items (seq)":
     
-    for i in 1..lim:
-        discard dA.pop()
+#     for i in 1..lim:
+#         discard dA.pop()
 
-echo "items in dA: ",dA.len
+# echo "items in dA: ",dA.len
 
-dA = newSeq[(string,Value)](lim)
-benchmark "adding item to context (seq)":
+# dA = newSeq[(string,Value)](lim)
+# benchmark "adding item to context (seq)":
     
-    for i in 1..lim:
-        dA[i-1] = ($i,valueFromInteger(i))
+#     for i in 1..lim:
+#         dA[i-1] = ($i,valueFromInteger(i))
 
-benchmark "popping items (seq-del)":
+# benchmark "popping items (seq-del)":
     
-    for i in 1..lim:
-        dA.del(dA.len-1)
+#     for i in 1..lim:
+#         dA.del(dA.len-1)
 
-echo "items in dA: ",dA.len
+# echo "items in dA: ",dA.len
 
 # type
 #     Obj = ref object
