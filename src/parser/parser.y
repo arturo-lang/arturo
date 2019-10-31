@@ -49,21 +49,23 @@ extern void* argumentFromBooleanLiteral(char* l);
 extern void* argumentFromNullLiteral();
 extern void* argumentFromArrayLiteral(void* l);
 extern void* argumentFromDictionaryLiteral(void* l);
-extern void* argumentFromFunctionLiteral(void* l, char* args, int hc);
+extern void* argumentFromFunctionLiteral(void* l, char* args);
 extern void* argumentFromInlineCallLiteral(void* l);
 
 extern void* expressionFromArgument(void *a);
 extern void* expressionFromExpressions(void* l, char* op, void* r);
 
 extern void* newExpressionList();
-extern void addExpressionToExpressionList(void* x, void* xl);
+extern void* newExpressionListWithExpression(void* x);
+extern void* addExpressionToExpressionList(void* x, void* xl);
 
 extern void* statementFromExpression(void* x);
 extern void* statementFromExpressions(char* i, void* xl);
 extern void* setStatementPosition(void* s, char* f, int l);
 
 extern void* newStatementList();
-extern void addStatementToStatementList(void* s, void* sl);
+extern void* newStatementListWithStatement(void* s);
+extern void* addStatementToStatementList(void* s, void* sl);
 
 /****************************************
  Functions
@@ -116,7 +118,7 @@ int yywrap() {
 %token <str> BEGIN_ARR "#("
 %token <str> BEGIN_DICT "#{"
 %token <str> BEGIN_INLINE "$("
-%token <str> BEGIN_FUNC ":{"
+%token <str> BEGIN_FUNC "@{"
 
 %token <str> DOT "."
 %token <str> HASH "#"
@@ -214,10 +216,8 @@ array 					:	BEGIN_ARR expression_list RPAREN 									{ $$ = argumentFromArrayL
 dictionary 				: 	BEGIN_DICT statement_list RCURLY 									{ $$ = argumentFromDictionaryLiteral($2); }
 						;
 
-function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFunctionLiteral($2,"",0); }
-						|	LSQUARE args RSQUARE LCURLY statement_list RCURLY 					{ $$ = argumentFromFunctionLiteral($5,$2,0); }
-						|	BEGIN_FUNC statement_list RCURLY									{ $$ = argumentFromFunctionLiteral($2,"",1); }
-						| 	LSQUARE args RSQUARE BEGIN_FUNC statement_list RCURLY				{ $$ = argumentFromFunctionLiteral($5,$2,1); }
+function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFunctionLiteral($2,""); }
+						|	LSQUARE args RSQUARE LCURLY statement_list RCURLY 					{ $$ = argumentFromFunctionLiteral($5,$2); }
 						;
 
 inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
@@ -256,9 +256,9 @@ expression				: 	argument 															{ $$ = expressionFromArgument($1); }
 						;
 
 
-expression_list			:	expression 															{ void* e = newExpressionList(); addExpressionToExpressionList($expression, e); $$ = e; }
-						| 	expression_list[previous] expression 								{ void* e = $previous; addExpressionToExpressionList($expression, e); $$ = e; }
-						| 	expression_list[previous] SEMICOLON NEW_LINE expression 			{ void* e = $previous; addExpressionToExpressionList($expression, e); $$ = e; }
+expression_list			:	expression 															{ $$ = newExpressionListWithExpression($expression); }
+						| 	expression_list[previous] expression 								{ $$ = addExpressionToExpressionList($expression, $previous); }
+						| 	expression_list[previous] SEMICOLON NEW_LINE expression 			{ $$ = addExpressionToExpressionList($expression, $previous); }
 						;
 
 //==============================
@@ -267,13 +267,13 @@ expression_list			:	expression 															{ void* e = newExpressionList(); a
 
 statement				: 	expression 															{ $$ = statementFromExpression($1); POS($$); }
 						|	ID expression_list													{ $$ = statementFromExpressions($1,$2); POS($$); }
-						|	ID PIPE statement[previous]											{ void* e = newExpressionList(); addExpressionToExpressionList(expressionFromArgument(argumentFromInlineCallLiteral($previous)), e); $$ = statementFromExpressions($ID,e); POS($$); }
+						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous)))); POS($$); }
 						;
 
-statement_list 			:	statement_list[previous] NEW_LINE statement 						{ void* s = $previous; if ($statement!=NULL) { addStatementToStatementList($statement, s); } $$ = s; }
-						|   statement_list[previous] COMMA statement 							{ void* s = $previous; if ($statement!=NULL) { addStatementToStatementList($statement, s); } $$ = s; }
+statement_list 			:	statement_list[previous] NEW_LINE statement 						{ $$ = addStatementToStatementList($statement, $previous); }
+						|   statement_list[previous] COMMA statement 							{ $$ = addStatementToStatementList($statement, $previous); }
 						|	statement_list[previous] NEW_LINE									{ $$ = $previous; }
-						| 	statement 															{ void* s = newStatementList(); if ($statement!=NULL) { addStatementToStatementList($statement, s); $$ = s; } }
+						| 	statement 															{ $$ = newStatementListWithStatement($statement); }
 						|	/* Nothing */														{ $$ = newStatementList(); }
 						;
 
