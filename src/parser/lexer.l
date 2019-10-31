@@ -26,6 +26,10 @@ extern char* yyfilename;
 
 extern void parseError(const char* msg, const char* filename, int line);
 
+//":"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
+//"@"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
+
+
 %}
 
 /****************************************
@@ -44,8 +48,6 @@ DIGIT_HEX			[a-fA-F0-9]
 DIGIT_BIN			[01]
 LETTER				[a-zA-Z_&]
 LETTER_OR_MISC		[a-zA-Z_]
-
-
 
 /****************************************
  Tokens
@@ -69,9 +71,7 @@ LETTER_OR_MISC		[a-zA-Z_]
 "true"|"false"     									{ yylval.str=strdup(yytext); return BOOLEANV; }
 
 
-{LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ yylval.str=strdup(yytext); return ID; }
-":"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
-"@"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
+{LETTER}({LETTER_OR_MISC}|{DIGIT})*(":")?			{ yylval.str=strdup(yytext); return ID; }
 {DIGIT}+											{ yylval.str=strdup(yytext); return INTEGER; }
 {DIGIT}+\.{DIGIT}+									{ yylval.str=strdup(yytext); return REAL; }
 
@@ -94,7 +94,7 @@ LETTER_OR_MISC		[a-zA-Z_]
 "#("												{ return BEGIN_ARR; }
 "#{"												{ return BEGIN_DICT; }
 "$("												{ return BEGIN_INLINE; }
-":{"												{ return BEGIN_FUNC; }
+"@{"												{ return BEGIN_FUNC; }
 
 "."													{ return DOT; }
 
