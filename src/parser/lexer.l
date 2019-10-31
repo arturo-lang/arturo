@@ -28,7 +28,7 @@ extern void parseError(const char* msg, const char* filename, int line);
 
 //":"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
 //"@"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
-
+//'(\\.|[^\\'])+'										{ yylval.str=strdup(yytext); return STRING; }
 
 %}
 
@@ -56,8 +56,6 @@ LETTER_OR_MISC		[a-zA-Z_]
 %%
 
 \"(\\.|[^\\"])*\"									{ yylval.str=strdup(yytext); return STRING; }
-'(\\.|[^\\'])+'										{ yylval.str=strdup(yytext); return STRING; }
-
 
 "/*"            									{ BEGIN(C_COMMENT); }
 <C_COMMENT>"*/" 									{ BEGIN(INITIAL); }
@@ -70,8 +68,7 @@ LETTER_OR_MISC		[a-zA-Z_]
 "null"												{ return NULLV; }
 "true"|"false"     									{ yylval.str=strdup(yytext); return BOOLEANV; }
 
-
-{LETTER}({LETTER_OR_MISC}|{DIGIT})*(":")?			{ yylval.str=strdup(yytext); return ID; }
+{LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ yylval.str=strdup(yytext); return ID; }
 {DIGIT}+											{ yylval.str=strdup(yytext); return INTEGER; }
 {DIGIT}+\.{DIGIT}+									{ yylval.str=strdup(yytext); return REAL; }
 
@@ -94,7 +91,6 @@ LETTER_OR_MISC		[a-zA-Z_]
 "#("												{ return BEGIN_ARR; }
 "#{"												{ return BEGIN_DICT; }
 "$("												{ return BEGIN_INLINE; }
-"@{"												{ return BEGIN_FUNC; }
 
 "."													{ return DOT; }
 
@@ -108,6 +104,7 @@ LETTER_OR_MISC		[a-zA-Z_]
 ","													{ return COMMA; }
 "!"													{ return EXCL; }
 ";"													{ return SEMICOLON; }
+":"													{ return COLON; }
 "~"													{ return TILDE; }
 
 \n 													{ return NEW_LINE; }
