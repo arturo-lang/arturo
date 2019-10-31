@@ -1,11 +1,11 @@
-quickSort [items]{
+quickSort: [items]{
 	if $(size items) < 2 { items } { 
 		$(quickSort|filter $(slice items 1) { & < items.0 }) + items.0 +  $(quickSort|filter $(slice items 1) { & >= items.0 })
 	}
 }
 
-list $(shuffle|range 1 50000)
-list $(quickSort list)
+list: $(shuffle|range 1 50000)
+list: $(quickSort list)
 loop list {
 	print &
 }

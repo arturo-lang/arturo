@@ -1,4 +1,4 @@
-maxLimit 1000
+maxLimit: 1000
 
 factorial [n]{ 
 	if n>0 { 

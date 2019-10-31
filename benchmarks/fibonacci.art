@@ -1,6 +1,6 @@
-maxLimit 28
+maxLimit: 28
 
-fib [x]{
+fib: [x]{
 	if x<2 { 1 }{
 		$(fib x-1) + $(fib x-2)
 	} 
