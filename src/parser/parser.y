@@ -12,10 +12,6 @@
  Extern & Forward declarations
  ****************************************/
 
-// Macros
-
-#define POS(X) setStatementPosition(X,yyfilename,yylineno);
-
 // Parser interface
 
 extern void yyerror(const char* str);
@@ -25,7 +21,7 @@ extern int yylex();
 extern int yylineno;
 char* yyfilename;
 
-// External definitions - from Nim
+// External function - from Nim
 
 extern void* MainProgram;
 
@@ -35,10 +31,9 @@ extern void* keypathFromIdInline(char* a, void* b);
 extern void* keypathFromInlineId(void* a, char* b);
 extern void* keypathFromInlineInteger(void* a, char* b);
 extern void* keypathFromInlineInline(void* a, void* b);
-
-extern void addIdToKeypath(void* k, char* a);
-extern void addIntegerToKeypath(void* k, char* a);
-extern void addInlineToKeypath(void* k, void* a);
+extern void* keypathByAddingIdToKeypath(void* k, char* a);
+extern void* keypathByAddingIntegerToKeypath(void* k, char* a);
+extern void* keypathByAddingInlineToKeypath(void* k, void* a);
 
 extern void* argumentFromIdentifier(char* i);
 extern void* argumentFromKeypath(void* k);
@@ -59,9 +54,8 @@ extern void* newExpressionList();
 extern void* newExpressionListWithExpression(void* x);
 extern void* addExpressionToExpressionList(void* x, void* xl);
 
-extern void* statementFromExpression(void* x);
-extern void* statementFromExpressions(char* i, void* xl);
-extern void* setStatementPosition(void* s, char* f, int l);
+extern void* statementFromExpression(void* x, int pos);
+extern void* statementFromExpressions(char* i, void* xl, int ass, int pos);
 
 extern void* newStatementList();
 extern void* newStatementListWithStatement(void* s);
@@ -91,7 +85,6 @@ int yywrap() {
  ****************************************/
 
 %token <str> ID "ID"
-%token <str> HASH_ID "@ID"
 %token <str> FUNCTION_ID "Function Identifier"
 %token <str> INTEGER "Integer"
 %token <str> REAL "Real"
@@ -132,6 +125,7 @@ int yywrap() {
 %token <str> COMMA ","
 %token <str> EXCL "!"
 %token <str> SEMICOLON ";"
+%token <str> COLON ":"
 %token <str> TILDE "~"
 
 %token <str> NEW_LINE "End Of Line"
@@ -183,9 +177,9 @@ keypath					: 	ID DOT ID 															{ $$ = keypathFromIdId($1,$3); }
 						|	inline_call DOT ID 													{ $$ = keypathFromInlineId($1,$3); }
 						| 	inline_call DOT INTEGER 	 										{ $$ = keypathFromInlineInteger($1,$3); }
 						| 	inline_call DOT inline_call 										{ $$ = keypathFromInlineInline($1,$3); }
-						| 	keypath[previous] DOT ID 											{ addIdToKeypath($previous,$ID); $$ = $previous; }
-						| 	keypath[previous] DOT INTEGER 										{ addIntegerToKeypath($previous,$INTEGER); $$ = $previous; }
-						| 	keypath[previous] DOT inline_call 									{ addInlineToKeypath($previous,$inline_call); $$ = $previous; }
+						| 	keypath[previous] DOT ID 											{ $$ = keypathByAddingIdToKeypath($previous,$ID); }
+						| 	keypath[previous] DOT INTEGER 										{ $$ = keypathByAddingIntegerToKeypath($previous,$INTEGER); }
+						| 	keypath[previous] DOT inline_call 									{ $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
 						;					
 
 args					: 	ID[previous] COMMA ID 												{ strcat( $1, "," ); $$ = strcat($1, $3); }
@@ -265,9 +259,11 @@ expression_list			:	expression 															{ $$ = newExpressionListWithExpres
 // Statements
 //==============================
 
-statement				: 	expression 															{ $$ = statementFromExpression($1); POS($$); }
-						|	ID expression_list													{ $$ = statementFromExpressions($1,$2); POS($$); }
-						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous)))); POS($$); }
+statement				: 	expression 															{ $$ = statementFromExpression($expression,yylineno); }
+						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,0,yylineno); }
+						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),0,yylineno); }
+						| 	ID COLON expression_list 											{ $$ = statementFromExpressions($ID,$expression_list,1,yylineno); }
+						| 	ID COLON PIPE statement[previous] 									{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
 						;
 
 statement_list 			:	statement_list[previous] NEW_LINE statement 						{ $$ = addStatementToStatementList($statement, $previous); }
