@@ -54,25 +54,22 @@ proc consoleError*(msg:string, showHelp:bool=true) =
   ======================================================]#
 
 template NotComparableError*(l: string, r: string) =
-    runtimeError("cannot compare arguments\n" &
+    raise newException(Exception,"cannot compare arguments\n" &
                  "lValue: " & l.replace("Value","") & "\n" &
-                 "rValue: " & r.replace("Value",""),
-                 CurrentPosition.file, CurrentPosition.line)
+                 "rValue: " & r.replace("Value",""))
 
 template InvalidOperationError*(op: string, l: string, r: string) =
-    runtimeError("invalid arguments for operator '" & op & "'\n" &
+    raise newException(Exception,"invalid arguments for operator '" & op & "'\n" &
                  "lValue: " & l.replace("Value","") & "\n" &
-                 "rValue: " & r.replace("Value",""),
-                 CurrentPosition.file, CurrentPosition.line)
+                 "rValue: " & r.replace("Value",""))
 
 template SymbolNotFoundError*(s: string) =
-    runtimeError("symbol not found: '" & s & "'", CurrentPosition.file, CurrentPosition.line)
+    raise newException(Exception,"symbol not found: '" & s & "'")
 
 template IncorrectArgumentNumberError*(f: string) =
-    runtimeError("incorrect number of arguments for function '" & f & "'", CurrentPosition.file, CurrentPosition.line)
+    raise newException(Exception,"incorrect number of arguments for function '" & f & "'")
 
 template IncorrectArgumentValuesError*(f: string, e: string, g: string) =
-    runtimeError("incorrect arguments for function '" & f & "'\n" &
+    raise newException(Exception,"incorrect arguments for function '" & f & "'\n" &
                  "expected: " & e & "\n" &
-                 "got: " & g, 
-                 CurrentPosition.file, CurrentPosition.line)
+                 "got: " & g)
