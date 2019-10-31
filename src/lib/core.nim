@@ -103,6 +103,13 @@ proc Core_Return*[F,X,V](f: F, xl: X): V {.inline.} =
 
     raise ret
 
+proc Core_Syms*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = f.validateOne(xl.list[0],[BV,IV])
+
+    inspectStack()
+
+    result = NULL
+
 proc Core_Xor*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = f.validateOne(xl.list[0],[BV,IV])
 
