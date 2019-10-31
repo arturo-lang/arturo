@@ -89,14 +89,6 @@ type
         list    : seq[Expression]
 
     #[----------------------------------------
-        Position
-      ----------------------------------------]#
-
-    Position = object
-        file    : string
-        line    : int 
-
-    #[----------------------------------------
         Statement
       ----------------------------------------]#
 
@@ -105,7 +97,7 @@ type
         normalStatement
 
     Statement = ref object
-        pos: Position
+        pos: int
         case kind: StatementKind:
             of expressionStatement:
                 expression      : Expression
@@ -191,10 +183,9 @@ var
     # Environment
 
     Stack*                  : seq[Context]
-
     SystemFunctions*        : TableRef[string,Function]
 
-    CurrentPosition         : Position
+    FileName                : string
 
     # Const/literal arguments
 
@@ -268,7 +259,7 @@ proc stringify*(v: Value, quoted: bool = true): string
 proc evaluate(x: Expression): Value {.inline.}
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
 
-proc statementFromExpressions(i: cstring, xl: ExpressionList): Statement {.exportc.}
+proc statementFromExpressions(i: cstring, xl: ExpressionList, ass: cint, l: cint=0): Statement {.exportc.}
 proc execute(s: Statement, parent: Value = nil): Value {.inline.}
 proc execute(sl: StatementList): Value
 
@@ -893,17 +884,20 @@ proc keypathFromInlineInteger(a: Argument, b: cstring): KeyPath {.exportc.} =
 proc keypathFromInlineInline(a: Argument, b: Argument): KeyPath {.exportc.} =
     result = KeyPath(parts: @[KeyPathPart(kind: inlineKeyPathPart, a: a), KeyPathPart(kind: inlineKeyPathPart, a: b)])
 
-proc addIdToKeypath(k: KeyPath, a: cstring) {.exportc.} =
+proc keypathByAddingIdToKeypath(k: KeyPath, a: cstring):KeyPath {.exportc.} =
     k.parts.add(KeyPathPart(kind: stringKeyPathPart, s: $a))
+    result = k
 
-proc addIntegerToKeypath(k: KeyPath, a: cstring) {.exportc.} =
+proc keypathByAddingIntegerToKeypath(k: KeyPath, a: cstring):KeyPath {.exportc.} =
     var intValue: int
     discard parseInt($a, intValue)
 
     k.parts.add(KeyPathPart(kind: integerKeyPathPart, i: intValue))
+    result = k
 
-proc addInlineToKeypath(k: KeyPath, a: Argument) {.exportc.} =
+proc keypathByAddingInlineToKeypath(k: KeyPath, a: Argument): KeyPath {.exportc.} =
     k.parts.add(KeyPathPart(kind: inlineKeyPathPart, a: a))
+    result = k
 
 #[----------------------------------------
     Expression
@@ -1014,7 +1008,7 @@ proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
 
         discard addExpressionToExpressionList(exprA, lst)
         discard addExpressionToExpressionList(exprB, lst)
-        exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",lst)))
+        exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",lst,0)))
 
         inc(i)
         
@@ -1046,7 +1040,7 @@ proc getValue(a: Argument): Value {.inline.} =
     case a.kind
         of identifierArgument:
             result = getSymbol(a.i)
-            if result == nil: runtimeError("symbol not found: '" & a.i & "'", CurrentPosition.file, CurrentPosition.line)
+            #if result == nil: runtimeError("symbol not found: '" & a.i & "'", FileName, CurrentPosition.line)
         of literalArgument:
             result = a.v
         of arrayArgument:
@@ -1069,17 +1063,11 @@ proc getValue(a: Argument): Value {.inline.} =
     Statement
   ----------------------------------------]#
 
-proc statementFromExpression(x: Expression): Statement {.exportc.} =
-    result = Statement(kind: expressionStatement, expression: x)
+proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
+    result = Statement(kind: expressionStatement, expression: x, pos: l)
 
-proc statementFromExpressions(i: cstring, xl: ExpressionList): Statement {.exportc.} =
-    var s = $i
-
-    if s[^1]==':': s.removeSuffix(':'); result = Statement(kind: normalStatement, id: s, expressions: xl, isAssignment: true)
-    else: result = Statement(kind: normalStatement, id: s, expressions: xl, isAssignment: false)
-
-proc setStatementPosition(s: Statement, f: cstring, l: int) {.exportc.} =
-    s.pos = Position(file: $f, line: l)
+proc statementFromExpressions(i: cstring, xl: ExpressionList, ass: cint, l: cint=0): Statement {.exportc.} =
+    result = Statement(kind: normalStatement, id: $i, expressions: xl, isAssignment: bool(ass), pos: l)
 
 proc executeAssign(s: Statement, parent: Value = nil): Value {.inline.} =
     var ev = s.expressions.evaluate()
@@ -1099,7 +1087,6 @@ proc executeAssign(s: Statement, parent: Value = nil): Value {.inline.} =
         result = ev    
 
 proc execute(s: Statement, parent: Value = nil): Value {.inline.} = 
-    CurrentPosition = s.pos
 
     case s.kind
         of expressionStatement:
@@ -1136,7 +1123,13 @@ proc addStatementToStatementList(s: Statement, sl: StatementList): StatementList
 
 proc execute(sl: StatementList): Value = 
     for s in sl.list:
-        result = s.execute()
+        try:
+            result = s.execute()
+        except ReturnValue:
+            raise
+        except Exception as e:
+            runtimeError(e.msg, FileName, s.pos)
+
 
 #[######################################################
     System library
@@ -1189,12 +1182,18 @@ template initializeConsts() =
 
 proc setup*(args: seq[string] = @[]) = 
     initializeConsts()
+
     addContext() # global
     addContextWith("&", valueFromArray(args.map((proc (x: string): Value = valueFromString(x)))))
+
     registerSystemFunctions()
 
 proc runString*(src:string): string =
     var buff = yy_scan_string(src)
+
+    yylineno = 0
+    yyfilename = "-"
+    FileName = "-"
 
     yy_switch_to_buffer(buff)
 
@@ -1213,12 +1212,13 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
 
     yylineno = 0
     yyfilename = scriptPath
+    FileName = scriptPath
 
     let success = open(yyin, scriptPath)
     if not success:
         cmdlineError("something went wrong when opening file")
     else:
-        #benchmark "parsing":
+        # benchmark "parsing":
         discard yyparse()
 
         discard MainProgram.execute()
