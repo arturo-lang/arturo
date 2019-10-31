@@ -1,4 +1,4 @@
-maxLimit 5000
+maxLimit: 5000
 
 loop $(range 0 maxLimit) {
 	print $(isPrime &)
