@@ -8,7 +8,7 @@
   *****************************************************************]#
 
 import algorithm, math, os, parseutils, sequtils, strutils, tables
-import panic
+import panic, utils
 
 #[######################################################
     Type definitions
@@ -112,6 +112,7 @@ type
             of normalStatement:
                 id              : string
                 expressions     : ExpressionList
+                isAssignment    : bool
 
     #[----------------------------------------
         StatementList
@@ -134,6 +135,7 @@ type
     Function = ref object
         case kind: FunctionKind:
             of userFunction:
+                id              : string
                 args            : seq[string]
                 body            : StatementList
                 hasContext      : bool
@@ -159,7 +161,7 @@ type
 
     Object = ref object
 
-    Value = ref object
+    Value* = ref object
         case kind*: ValueKind:
             of stringValue      : s: string
             of integerValue     : i: int
@@ -189,6 +191,7 @@ var
     # Environment
 
     Stack*                  : seq[Context]
+
     SystemFunctions*        : TableRef[string,Function]
 
     CurrentPosition         : Position
@@ -256,6 +259,23 @@ var yyin {.importc.}: File
 var yylineno {.importc.}: cint
 
 #[######################################################
+    Forward declarations
+  ======================================================]#
+
+proc compare(l: Value, r: Value): int {.inline.}
+proc stringify*(v: Value, quoted: bool = true): string
+
+proc evaluate(x: Expression): Value {.inline.}
+proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
+
+proc statementFromExpressions(i: cstring, xl: ExpressionList): Statement {.exportc.}
+proc execute(s: Statement, parent: Value = nil): Value {.inline.}
+proc execute(sl: StatementList): Value
+
+proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
+proc getValue(a: Argument): Value {.inline.}
+
+#[######################################################
     Context management
   ======================================================]#
 
@@ -263,10 +283,10 @@ proc addContext() {.inline.} =
     Stack.add(@[])
 
 proc addContextWith(key:string, val:Value) {.inline.} =
-    Stack.add(@[(key,val)])
+    Stack[^1] = @[(key,val)]
 
 proc addContextWith(pairs:seq[(string,Value)]) {.inline.} =
-    Stack.add(pairs)
+    Stack[^1] = pairs
 
 proc popContext() {.inline.} =
     discard Stack.pop()
@@ -311,6 +331,7 @@ proc getSymbol(k: string): Value {.inline.} =
 
     return nil
 
+
 proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} = 
     if redefine:
         Stack[^1].updateOrSet(k,v)
@@ -334,13 +355,29 @@ proc storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
     result = syms.map(proc (x: (string,Value)): (string,Value) = (x[0],getSymbol(x[0])))
     var i = 0
     while i < syms.len:
-        discard setSymbol(syms[i][0],syms[i][1])
+        if syms[i][1]!=NULL:
+            discard setSymbol(syms[i][0],syms[i][1])
         inc(i)
 
 proc restoreSymbols(syms: openArray[(string,Value)]) {.inline.} =
     var i = 0
     while i < syms.len:
-        if syms[i][1]!=nil: discard setSymbol(syms[i][0],syms[i][1])
+        if syms[i][1]!=NULL: 
+            discard setSymbol(syms[i][0],syms[i][1])
+        inc(i)
+
+proc inspectStack() =
+    var i = 0
+    for s in Stack:
+        var tab = ""
+        if i>0: tab = "\t"
+        echo tab,"----------------"
+        echo tab,"Stack[",i,"]"
+        echo tab,"----------------"
+
+        for t in s:
+            echo tab,t[0]," -> ",t[1].stringify()
+
         inc(i)
 
 #[######################################################
@@ -354,7 +391,7 @@ proc restoreSymbols(syms: openArray[(string,Value)]) {.inline.} =
 proc valueFromString(v: string): Value =
     result = Value(kind: stringValue, s: v)
 
-proc valueFromInteger(v: int): Value =
+proc valueFromInteger*(v: int): Value =
     result = Value(kind: integerValue, i: v)
 
 proc valueFromInteger(v: string): Value =
@@ -392,6 +429,7 @@ proc valueFromFunction(v: Function): Value =
     result = Value(kind: functionValue, f: v)
 
 proc valueFromValue(v: Value): Value =
+    {.computedGoto.}
     case v.kind
         of stringValue: result = valueFromString(v.s)
         of integerValue: result = valueFromInteger(v.i)
@@ -400,7 +438,6 @@ proc valueFromValue(v: Value): Value =
         of dictionaryValue: result = valueFromDictionary(v.d.map(proc (x: (string,Value)): (string,Value) = (x[0],valueFromValue(x[1]))))
         else: result = v
 
-proc compare(l: Value, r: Value): int {.inline.} # Forward
 proc findValueInArray(v: Value, lookup: Value): int =
     var i = 0
     while i < v.a.len:
@@ -408,8 +445,8 @@ proc findValueInArray(v: Value, lookup: Value): int =
         inc(i)
     return -1
 
-proc stringify*(v: Value, quoted: bool = true): string # Forward
 proc `+`(l: Value, r: Value): Value {.inline.} =
+    {.computedGoto.}
     case l.kind
         of stringValue:
             case r.kind
@@ -445,6 +482,7 @@ proc `+`(l: Value, r: Value): Value {.inline.} =
             InvalidOperationError("+",$(l.kind),$(r.kind))
 
 proc `-`(l: Value, r: Value): Value {.inline.} =
+    {.computedGoto.}
     case l.kind
         of stringValue:
             case r.kind
@@ -482,6 +520,7 @@ proc `-`(l: Value, r: Value): Value {.inline.} =
             InvalidOperationError("-",$(l.kind),$(r.kind))
 
 proc `*`(l: Value, r: Value): Value {.inline.} = 
+    {.computedGoto.}
     case l.kind
         of stringValue:
             case r.kind
@@ -517,6 +556,7 @@ proc `*`(l: Value, r: Value): Value {.inline.} =
             InvalidOperationError("*",$(l.kind),$(r.kind))
 
 proc `/`(l: Value, r: Value): Value {.inline.} = 
+    {.computedGoto.}
     case l.kind
         of stringValue:
             case r.kind
@@ -574,6 +614,7 @@ proc `/`(l: Value, r: Value): Value {.inline.} =
             InvalidOperationError("/",$(l.kind),$(r.kind))
 
 proc `%`(l: Value, r: Value): Value {.inline.} =
+    {.computedGoto.}
     case l.kind
         of stringValue:
             case r.kind
@@ -610,6 +651,7 @@ proc `%`(l: Value, r: Value): Value {.inline.} =
             InvalidOperationError("%",$(l.kind),$(r.kind))
 
 proc `^`(l: Value, r: Value): Value {.inline.} =
+    {.computedGoto.}
     case l.kind
         of integerValue:
             case r.kind
@@ -625,6 +667,7 @@ proc `^`(l: Value, r: Value): Value {.inline.} =
             InvalidOperationError("^",$(l.kind),$(r.kind))
 
 proc compare(l: Value, r: Value): int {.inline.} =
+    {.computedGoto.}
     case l.kind
         of stringValue:
             case r.kind
@@ -694,6 +737,7 @@ proc compare(l: Value, r: Value): int {.inline.} =
         else: NotComparableError($(l.kind),$(r.kind))
 
 proc stringify*(v: Value, quoted: bool = true): string =
+    {.computedGoto.}
     case v.kind
         of stringValue      :   
             if quoted: result = escape(v.s)
@@ -726,8 +770,12 @@ proc stringify*(v: Value, quoted: bool = true): string =
     Functions
   ----------------------------------------]#
 
-proc newUserFunction(s: StatementList, a: seq[string], hc: bool): Function =
-    result = Function(kind: userFunction, args: a, body: s, hasContext: hc, parentThis: nil, parentContext: @[])
+proc newUserFunction(s: StatementList, a: seq[string]): Function =
+    result = Function(kind: userFunction, id: "", args: a, body: s, hasContext: false, parentThis: nil, parentContext: @[])
+
+proc setFunctionName(f: Function, s: string) {.inline.} =
+    f.id = s
+    f.hasContext = true
 
 proc registerSystemFunction(n: string, f: FunctionCall[Function,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = "") =
     let minArgs = req.map(proc (x: seq[ValueKind]): int = x.len).min
@@ -735,12 +783,11 @@ proc registerSystemFunction(n: string, f: FunctionCall[Function,ExpressionList,V
 
     SystemFunctions[n] = Function(kind: systemFunction, name: n, call: f, require: req, ret: ret, description: descr, minReq: minArgs, maxReq: maxArgs)
 
-proc evaluate(xl: ExpressionList, forceArray: bool=false): Value # Forward
-proc evaluate(x: Expression): Value # Forward
-proc execute(sl: StatementList): Value # Forward
-
 proc execute(f: Function, v: Value): Value {.inline.} =
     if f.hasContext:
+        if Stack.len == 1: addContext()
+
+        let oldSeq = Stack[1]
         if f.args.len>0:
             if v.kind == AV: addContextWith(zip(f.args,v.a))
             else: addContextWith(f.args[0],v)
@@ -748,7 +795,9 @@ proc execute(f: Function, v: Value): Value {.inline.} =
 
         try                         : result = f.body.execute()
         except ReturnValue as ret   : result = ret.value
-        finally                     : popContext()
+        finally                     : 
+            Stack[1] = oldSeq
+            if Stack[1].len==0: popContext()
     else:
         var stored: seq[(string,Value)]
 
@@ -866,8 +915,7 @@ proc expressionFromArgument(a: Argument): Expression {.exportc.} =
 proc expressionFromExpressions(l: Expression, op: cstring, r: Expression): Expression {.exportc.} =
     result = Expression(kind: normalExpression, left: l, op: parseEnum[ExpressionOperator]($op), right: r)
 
-proc getValue(a: Argument): Value # Forward
-proc evaluate(x: Expression): Value =
+proc evaluate(x: Expression): Value {.inline.} =
     case x.kind
         of argumentExpression:
             result = x.a.getValue()
@@ -877,7 +925,7 @@ proc evaluate(x: Expression): Value =
 
             if x.right!=nil: right = x.right.evaluate()
             else: result = left
-
+            {.computedGoto.}
             case x.op
                 of PLUS_SG  : result = left + right
                 of MINUS_SG : result = left - right
@@ -899,8 +947,19 @@ proc evaluate(x: Expression): Value =
 proc newExpressionList: ExpressionList {.exportc.} =
     result = ExpressionList(list: @[])
 
-proc addExpressionToExpressionList(x: Expression, xl: ExpressionList) {.exportc.} =
+proc newExpressionListWithExpression(x: Expression): ExpressionList {.exportc.} =
+    result = ExpressionList(list: @[x])
+
+proc copyExpressionList(xl: ExpressionList): ExpressionList {.exportc.} =
+    result = ExpressionList(list: xl.list)
+
+proc addExpressionToExpressionList(x: Expression, xl: ExpressionList): ExpressionList {.exportc.} =
     xl.list.add(x)
+    result = xl
+
+proc addExpressionToExpressionListFront(x: Expression, xl: ExpressionList): ExpressionList {.exportc.} =
+    xl.list.insert(x,0)
+    result = xl
 
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value = 
     if forceArray or xl.list.len>1:
@@ -945,8 +1004,6 @@ proc expressionFromKeyPathPart(part: KeyPathPart, isFirst: bool = false): Expres
         of inlineKeyPathPart:
             result = expressionFromArgument(part.a)
 
-proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} # Forward
-proc statementFromExpressions(i: cstring, xl: ExpressionList): Statement {.exportc.} # Forward
 proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
     var exprA = expressionFromKeyPathPart(k.parts[0], true)
 
@@ -955,8 +1012,8 @@ proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
         var exprB = expressionFromKeyPathPart(k.parts[i], false)
         var lst = newExpressionList()
 
-        addExpressionToExpressionList(exprA, lst)
-        addExpressionToExpressionList(exprB, lst)
+        discard addExpressionToExpressionList(exprA, lst)
+        discard addExpressionToExpressionList(exprB, lst)
         exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",lst)))
 
         inc(i)
@@ -975,17 +1032,17 @@ proc argumentFromArrayLiteral(l: ExpressionList): Argument {.exportc.} =
 proc argumentFromDictionaryLiteral(l: StatementList): Argument {.exportc.} =
     result = Argument(kind: dictionaryArgument, d: l)
 
-proc argumentFromFunctionLiteral(l: StatementList, args: cstring = "", hc: cint = 0): Argument {.exportc.} =
+proc argumentFromFunctionLiteral(l: StatementList, args: cstring = ""): Argument {.exportc.} =
     if args=="":
-        result = Argument(kind: functionArgument, f: newUserFunction(l,@[],bool(hc)))
+        result = Argument(kind: functionArgument, f: newUserFunction(l,@[]))
     else:
-        result = Argument(kind: functionArgument, f: newUserFunction(l,($args).split(","),bool(hc)))
+        result = Argument(kind: functionArgument, f: newUserFunction(l,($args).split(",")))
 
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} =
     result = Argument(kind: inlineCallArgument, c: l)
 
-proc execute(s: Statement, parent: Value = nil): Value # Forward
-proc getValue(a: Argument): Value =
+proc getValue(a: Argument): Value {.inline.} =
+    {.computedGoto.}
     case a.kind
         of identifierArgument:
             result = getSymbol(a.i)
@@ -1016,15 +1073,21 @@ proc statementFromExpression(x: Expression): Statement {.exportc.} =
     result = Statement(kind: expressionStatement, expression: x)
 
 proc statementFromExpressions(i: cstring, xl: ExpressionList): Statement {.exportc.} =
-    result = Statement(kind: normalStatement, id: $i, expressions: xl)
+    var s = $i
+
+    if s[^1]==':': s.removeSuffix(':'); result = Statement(kind: normalStatement, id: s, expressions: xl, isAssignment: true)
+    else: result = Statement(kind: normalStatement, id: s, expressions: xl, isAssignment: false)
 
 proc setStatementPosition(s: Statement, f: cstring, l: int) {.exportc.} =
     s.pos = Position(file: $f, line: l)
 
-proc executeAssign(s: Statement, parent: Value = nil): Value =
+proc executeAssign(s: Statement, parent: Value = nil): Value {.inline.} =
     var ev = s.expressions.evaluate()
 
     if parent==nil:
+        if ev.kind==functionValue:
+            setFunctionName(ev.f,s.id)
+
         result = setSymbol(s.id, ev)
     else:
         parent.d.updateOrSet(s.id, ev)
@@ -1035,29 +1098,27 @@ proc executeAssign(s: Statement, parent: Value = nil): Value =
 
         result = ev    
 
-
-proc execute(s: Statement, parent: Value = nil): Value = 
+proc execute(s: Statement, parent: Value = nil): Value {.inline.} = 
     CurrentPosition = s.pos
 
     case s.kind
         of expressionStatement:
             result = s.expression.evaluate()
         of normalStatement:
-            if SystemFunctions.hasKey(s.id):
-                result = SystemFunctions[s.id].execute(s.expressions)
+            if s.isAssignment:
+                result = s.executeAssign(parent)
             else:
-                let sym = getSymbol(s.id)
-
-                if sym==nil:
-                    if s.expressions.list.len > 0: result = s.executeAssign(parent)
-                    else: SymbolNotFoundError(s.id)
+                if SystemFunctions.hasKey(s.id):
+                    result = SystemFunctions[s.id].execute(s.expressions)
                 else:
-                    if sym.kind==functionValue: 
-                        result = sym.f.execute(s.expressions)
-                    else:
-                        if s.expressions.list.len > 0: result = s.executeAssign(parent)
+                    let sym = getSymbol(s.id)
+                    if sym==nil: SymbolNotFoundError(s.id)
+                    else: 
+                        if s.expressions.list.len > 0: 
+                            if sym.kind==FV: result = sym.f.execute(s.expressions)
+                            else: 
+                                result = expressionFromArgument(argumentFromArrayLiteral(addExpressionToExpressionListFront(expressionFromArgument(argumentFromIdentifier(s.id)),copyExpressionList(s.expressions)))).evaluate()
                         else: result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
-
 
 #[----------------------------------------
     StatementList
@@ -1066,8 +1127,12 @@ proc execute(s: Statement, parent: Value = nil): Value =
 proc newStatementList: StatementList {.exportc.} =
     result = StatementList(list: @[])
 
-proc addStatementToStatementList(s: Statement, sl: StatementList) {.exportc.} =
+proc newStatementListWithStatement(s: Statement): StatementList {.exportc.} =
+    result = StatementList(list: @[s])
+
+proc addStatementToStatementList(s: Statement, sl: StatementList): StatementList {.exportc.} =
     sl.list.add(s)
+    result = sl
 
 proc execute(sl: StatementList): Value = 
     for s in sl.list:
@@ -1092,6 +1157,7 @@ template registerSystemFunctions() =
     registerSystemFunction("print",         Core_Print,                 @[@[ANY]],                                          @[SV],          "print value of given expression to screen")
     registerSystemFunction("range",         Core_Range,                 @[@[IV,IV]],                                        @[AV],          "get array from given range (from..to) with optional step")
     registerSystemFunction("return",        Core_Return,                @[@[ANY]],                                          @[ANY],         "break execution and return given value")
+    registerSystemFunction("syms",          Core_Syms,                  @[@[ANY]],                                          @[ANY],         "print symbol stack")
 
     registerSystemFunction("and",           Core_And,                   @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical AND")
     registerSystemFunction("not",           Core_Not,                   @[@[BV],@[IV]],                                     @[BV,IV],       "bitwise/logical NOT")
@@ -1123,6 +1189,7 @@ template initializeConsts() =
 
 proc setup*(args: seq[string] = @[]) = 
     initializeConsts()
+    addContext() # global
     addContextWith("&", valueFromArray(args.map((proc (x: string): Value = valueFromString(x)))))
     registerSystemFunctions()
 
@@ -1151,5 +1218,7 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
     if not success:
         cmdlineError("something went wrong when opening file")
     else:
+        #benchmark "parsing":
         discard yyparse()
+
         discard MainProgram.execute()
