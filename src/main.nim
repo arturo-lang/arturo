@@ -7,7 +7,7 @@
   * @file: main.nim
   *****************************************************************]#
 
-when defined(profile): 
+when defined(profile) or defined(memProfiler): 
     import nimprof
 
 when not defined(mini): 
@@ -53,7 +53,11 @@ when isMainModule:
         of ":h","help"      : action = helpAction
         of ":v","version"   : action = versionAction
         else:
-            if p.key=="": startRepl(); done = true 
+            if p.key=="": 
+                when not defined(mini):
+                    startRepl(); done = true 
+                else:
+                    cmdlineError("console: not supported on 'mini' releases")
             else:
                 if fileExists(p.key): 
                     compiler.runScript(p.key,p.remainingArgs,includePath,warnings); done = true
