@@ -7,8 +7,8 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, math, os, parseutils, sequtils, strutils, tables
-import panic, utils
+import algorithm, math, os, parseutils, sequtils, strutils, sugar, tables
+import panic
 
 #[######################################################
     Type definitions
@@ -124,7 +124,7 @@ type
     FunctionConstraints     = seq[seq[ValueKind]]
     FunctionReturns         = seq[ValueKind]
 
-    Function = ref object
+    Function* = ref object
         case kind: FunctionKind:
             of userFunction:
                 id              : string
@@ -183,7 +183,7 @@ var
     # Environment
 
     Stack*                  : seq[Context]
-    SystemFunctions*        : TableRef[string,Function]
+    SystemFunctions*        : seq[(string,Function)]
 
     FileName                : string
 
@@ -294,7 +294,7 @@ proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} =
     ctx.add((k,v))
 
 proc keys*(ctx: Context): seq[string] {.inline.} =
-    result = ctx.map(proc (x:(string,Value)):string = x[0])
+    result = ctx.map((x) => x[0])
 
 proc hasKey*(ctx: Context, key: string): bool {.inline.} = 
     var i = 0
@@ -343,7 +343,7 @@ proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} =
         result = v
 
 proc storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
-    result = syms.map(proc (x: (string,Value)): (string,Value) = (x[0],getSymbol(x[0])))
+    result = syms.map((x) => (x[0],getSymbol(x[0])))
     var i = 0
     while i < syms.len:
         if syms[i][1]!=NULL:
@@ -425,8 +425,8 @@ proc valueFromValue(v: Value): Value =
         of stringValue: result = valueFromString(v.s)
         of integerValue: result = valueFromInteger(v.i)
         of realValue: result = valueFromReal(v.r)
-        of arrayValue: result = valueFromArray(v.a.map(proc (x: Value): Value = valueFromValue(x)))
-        of dictionaryValue: result = valueFromDictionary(v.d.map(proc (x: (string,Value)): (string,Value) = (x[0],valueFromValue(x[1]))))
+        of arrayValue: result = valueFromArray(v.a.map((x) => valueFromValue(x)))
+        of dictionaryValue: result = valueFromDictionary(v.d.map((x) => (x[0],valueFromValue(x[1]))))
         else: result = v
 
 proc findValueInArray(v: Value, lookup: Value): int =
@@ -739,14 +739,14 @@ proc stringify*(v: Value, quoted: bool = true): string =
         of arrayValue       :
             result = "#("
 
-            let items = v.a.map(proc (x: Value):string = x.stringify())
+            let items = v.a.map((x) => x.stringify())
 
             result &= items.join(" ")
             result &= ")"
         of dictionaryValue  :
             result = "#{ "
             
-            let items = sorted(v.d.keys).map(proc (x: string):string = x & " " & v.d.getValueForKey(x).stringify())
+            let items = sorted(v.d.keys).map((x) => x & " " & v.d.getValueForKey(x).stringify())
 
             result &= items.join(", ")
             result &= " }"
@@ -769,10 +769,19 @@ proc setFunctionName(f: Function, s: string) {.inline.} =
     f.hasContext = true
 
 proc registerSystemFunction(n: string, f: FunctionCall[Function,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = "") =
-    let minArgs = req.map(proc (x: seq[ValueKind]): int = x.len).min
-    let maxArgs = req.map(proc (x: seq[ValueKind]): int = x.len).max
+    let minArgs = req.map((x) => x.len).min
+    let maxArgs = req.map((x) => x.len).max
 
-    SystemFunctions[n] = Function(kind: systemFunction, name: n, call: f, require: req, ret: ret, description: descr, minReq: minArgs, maxReq: maxArgs)
+    SystemFunctions.add((n,Function(kind: systemFunction, name: n, call: f, require: req, ret: ret, description: descr, minReq: minArgs, maxReq: maxArgs)))
+
+proc getSystemFunction*(n: string): Function {.inline.} =
+    var i = 0
+    while i < SystemFunctions.len:
+        if SystemFunctions[i][0]==n:
+            return SystemFunctions[i][1]
+        inc(i)
+
+    result = nil
 
 proc execute(f: Function, v: Value): Value {.inline.} =
     if f.hasContext:
@@ -811,45 +820,31 @@ proc execute(f: Function, xl: ExpressionList): Value =
 
         result = f.execute(params)
 
-proc validate(f: Function, xl: ExpressionList): seq[Value] =
-    if xl.list.len < f.minReq or xl.list.len > f.maxReq:
-        IncorrectArgumentNumberError(f.name)
+proc validate(f: Function, xl: ExpressionList): seq[Value] {.inline.} =
 
-    var ret = xl.evaluate(forceArray=true).a
+    result = xl.evaluate(forceArray=true).a
 
-    var i = 0
-    while i<f.require.len:
-        var passing = true
-        var j = 0
-        while j<f.require[i].len:
-            if f.require[i][j]!=ANY and f.require[i][j]!=ret[j].kind: 
-                passing = false
-            inc(j)
+    if not f.require.contains(result.map((x) => x.kind)):
 
-        if passing: return ret
-        inc(i)
-
-    # not passed
-
-    let expected = f.require.map(proc (x: seq[ValueKind]): string = x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",")).join(" or ")
-    let got = ret.map(proc (x: Value): string = ($(x.kind)).replace("Value","")).join(",")
-    
-    IncorrectArgumentValuesError(f.name, expected, got)
+        let expected = f.require.map((x) => x.map((y) => ($y).replace("Value","")).join(",")).join(" or ")
+        let got = result.map((x) => ($(x.kind)).replace("Value","")).join(",")
+        
+        IncorrectArgumentValuesError(f.name, expected, got)
 
 proc validateOne(f: Function, x: Expression, req: openArray[ValueKind]): Value =
     result = x.evaluate()
 
     if not (result.kind in req):
-        let expected = req.map(proc (x: ValueKind): string = $(x)).join(" or ")
+        let expected = req.map((x) => $(x)).join(" or ")
         IncorrectArgumentValuesError(f.name, expected, $(result.kind))
 
 proc getOneLineDescription*(f: Function): string =
-    let args = f.require.map(proc (x: seq[ValueKind]): string = "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
+    let args = f.require.map((x) => "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
     let ret = "[" & f.ret.join(",").replace("Value","") & "]"
     result = alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " -> " & ret
 
 proc getFullDescription*(f: Function): string =
-    let args = f.require.map(proc (x: seq[ValueKind]): string = "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
+    let args = f.require.map((x) => "(" & x.map((y) => ($y).replace("Value","")).join(",") & ")").join(" / ")
     let ret = "[" & f.ret.join(",").replace("Value","") & "]"
     result  = "Function : \e[1m" & f.name & "\e[0m" & "\n"
     result &= "       # : " & f.description & "\n\n"
@@ -957,7 +952,7 @@ proc addExpressionToExpressionListFront(x: Expression, xl: ExpressionList): Expr
 
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value = 
     if forceArray or xl.list.len>1:
-        result = valueFromArray(xl.list.map(proc (x: Expression): Value = x.evaluate()))
+        result = valueFromArray(xl.list.map((x) => x.evaluate()))
     else:
         if xl.list.len==1:
             result = xl.list[0].evaluate()
@@ -1095,8 +1090,9 @@ proc execute(s: Statement, parent: Value = nil): Value {.inline.} =
             if s.isAssignment:
                 result = s.executeAssign(parent)
             else:
-                if SystemFunctions.hasKey(s.id):
-                    result = SystemFunctions[s.id].execute(s.expressions)
+                let sysFunc = getSystemFunction(s.id)
+                if sysFunc!=nil:
+                    result = sysFunc.execute(s.expressions)
                 else:
                     let sym = getSymbol(s.id)
                     if sym==nil: SymbolNotFoundError(s.id)
@@ -1122,13 +1118,16 @@ proc addStatementToStatementList(s: Statement, sl: StatementList): StatementList
     result = sl
 
 proc execute(sl: StatementList): Value = 
-    for s in sl.list:
+    var i = 0
+    while i < sl.list.len:
         try:
-            result = s.execute()
+            result = sl.list[i].execute()
         except ReturnValue:
             raise
         except Exception as e:
-            runtimeError(e.msg, FileName, s.pos)
+            runtimeError(e.msg, FileName, sl.list[i].pos)
+
+        inc(i)
 
 
 #[######################################################
@@ -1140,14 +1139,14 @@ include lib/collections
 include lib/numbers
 
 template registerSystemFunctions() =
-    SystemFunctions = newTable[string,Function]()
+    SystemFunctions = @[] #newTable[string,Function]()
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     #                       Name            Proc                        Args                                                Return          Description
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     registerSystemFunction("if",            Core_If,                    @[@[BV,FV],@[BV,FV,FV]],                            @[ANY],         "if condition is true, execute given function; else execute optional alternative function")
     registerSystemFunction("get",           Core_Get,                   @[@[AV,IV],@[DV,SV]],                               @[ANY],         "get element from collection using given index/key")
     registerSystemFunction("loop",          Core_Loop,                  @[@[AV,FV],@[DV,FV],@[BV,FV]],                      @[ANY],         "execute given function for each element in collection, or while condition is true")
-    registerSystemFunction("print",         Core_Print,                 @[@[ANY]],                                          @[SV],          "print value of given expression to screen")
+    registerSystemFunction("print",         Core_Print,                 @[@[SV],@[AV],@[IV],@[FV],@[BV],@[RV]],                                          @[SV],          "print value of given expression to screen")
     registerSystemFunction("range",         Core_Range,                 @[@[IV,IV]],                                        @[AV],          "get array from given range (from..to) with optional step")
     registerSystemFunction("return",        Core_Return,                @[@[ANY]],                                          @[ANY],         "break execution and return given value")
     registerSystemFunction("syms",          Core_Syms,                  @[@[ANY]],                                          @[ANY],         "print symbol stack")
@@ -1184,7 +1183,7 @@ proc setup*(args: seq[string] = @[]) =
     initializeConsts()
 
     addContext() # global
-    addContextWith("&", valueFromArray(args.map((proc (x: string): Value = valueFromString(x)))))
+    addContextWith("&", valueFromArray(args.map((x) => valueFromString(x))))
 
     registerSystemFunctions()
 
