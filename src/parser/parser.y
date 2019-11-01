@@ -148,6 +148,7 @@ int yywrap() {
 %token <code> SLICE_CMD "slice"
 %token <code> SWAP_CMD "swap"
 %token <code> ISPRIME_CMD "isPrime"
+%token <code> REPEAT_CMD "repeat"
 
 %token <str> NEW_LINE "End Of Line"
 
@@ -240,22 +241,23 @@ function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFuncti
 inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
 						;
 
-command 				:	IF_CMD			{ $$ = 0; }
-						|	GET_CMD 		{ $$ = 1; }
-						|	LOOP_CMD 		{ $$ = 2; }
-						|	PRINT_CMD 		{ $$ = 3; }
-						|	RANGE_CMD 		{ $$ = 4; }
-						|	RETURN_CMD 		{ $$ = 5; }
-						|	AND_CMD 		{ $$ = 6; }
-						|	NOT_CMD			{ $$ = 7; }
-						|	OR_CMD			{ $$ = 8; }
-						|	XOR_CMD			{ $$ = 9; }
-						|	FILTER_CMD 		{ $$ = 10; }
-						|	SHUFFLE_CMD 	{ $$ = 11; }
-						|	SIZE_CMD 		{ $$ = 12; }
-						|	SLICE_CMD 		{ $$ = 13; }
-						|	SWAP_CMD 		{ $$ = 14; }
-						|	ISPRIME_CMD 	{ $$ = 15; }
+command 				:	IF_CMD																{ $$ = 0; }
+						|	GET_CMD 															{ $$ = 1; }
+						|	LOOP_CMD 															{ $$ = 2; }
+						|	PRINT_CMD 															{ $$ = 3; }
+						|	RANGE_CMD 															{ $$ = 4; }
+						|	RETURN_CMD 															{ $$ = 5; }
+						|	AND_CMD 															{ $$ = 6; }
+						|	NOT_CMD																{ $$ = 7; }
+						|	OR_CMD																{ $$ = 8; }
+						|	XOR_CMD																{ $$ = 9; }
+						|	FILTER_CMD 															{ $$ = 10; }
+						|	SHUFFLE_CMD 														{ $$ = 11; }
+						|	SIZE_CMD 															{ $$ = 12; }
+						|	SLICE_CMD 															{ $$ = 13; }
+						|	SWAP_CMD 															{ $$ = 14; }
+						|	ISPRIME_CMD 														{ $$ = 15; }
+						;
 
 argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
 						|	command 															{ $$ = argumentFromCommandIdentifier($1); }
@@ -308,11 +310,8 @@ statement				: 	expression 															{ $$ = statementFromExpression($expres
 						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,0,yylineno); }
 						|	command expression_list												{ $$ = statementFromCommand($command,$expression_list,yylineno); }
 						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),0,yylineno); }
-						| 	command PIPE statement[previous] 									{ $$ = statementFromCommand($command,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
-						//| 	assignment_id COLON expression_list 								{ $$ = statementFromExpressions($assignment_id,$expression_list,1,yylineno); }
+						| 	command PIPE statement[previous] 									{ $$ = statementFromCommand($command,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }						
 						| 	assignment_id COLON statement[previous] 							{ $$ = statementFromExpressions($assignment_id,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
-						//| 	ID COLON PIPE statement[previous] 								{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
-						//| 	command COLON PIPE statement[previous] 							{ $$ = statementFromExpressions(getNameOfSystemFunction($command),newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
 						;
 
 statement_list 			:	statement_list[previous] NEW_LINE statement 						{ $$ = addStatementToStatementList($statement, $previous); }
