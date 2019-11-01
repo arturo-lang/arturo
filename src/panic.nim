@@ -26,11 +26,11 @@ const
     Methods
   ======================================================]#
 
-proc runtimeError*(msg:string, filename:string="", line:int=0) {.exportc.} =
+proc runtimeError*(msg:string, filename:string="", line:int=0, isRepl:bool=false) {.exportc.} =
     echo RUNTIME_ERROR & "file: " & $filename & " - line: " & $line
     echo RUNTIME_PAD & $msg.split("\n").join("\n" & RUNTIME_PAD)
     echo ""
-    quit()
+    if not isRepl: quit()
 
 proc parseError*(msg:cstring, filename:cstring, line:cint) {.exportc.} =
     echo PARSE_ERROR & "file: " & $filename & " - line: " & $line
