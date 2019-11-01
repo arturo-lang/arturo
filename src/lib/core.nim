@@ -46,16 +46,23 @@ proc Core_Loop*[F,X,V](f: F, xl: X): V {.inline.} =
 
     case v[0].kind
         of AV:
-            for item in A(0):
-                result = FN(1).execute(item)
+            var i = 0
+            while i < A(0).len:
+                result = FN(1).execute(A(0)[i])
+                inc(i)
         of DV:
             for val in D(0):
                 result = FN(1).execute(valueFromArray(@[valueFromString(val[0]),val[1]]))
         of BV:
-            var condition = B(0)
-            while condition:
+            if not B(0): return NULL
+            while true:
                 result = FN(1).execute(NULL)
-                condition = xl.list[0].evaluate().b
+                if not xl.list[0].evaluate().b: break
+        of IV:
+            var i = 0
+            while i < I(0):
+                result = FN(1).execute(NULL)
+                inc(i)
 
         else: result = NULL
 
@@ -93,7 +100,7 @@ proc Core_Range*[F,X,V](f: F, xl: X): V {.inline.} =
     if I(0)<I(1):    
         result = valueFromArray(toSeq(I(0)..I(1)).map(proc (x: int): Value = valueFromInteger(x)))
     else:
-        result = valueFromArray(toSeq(countdown(I(0),I(1))).map(proc (x: int): Value = valueFromInteger(x)))
+        result = valueFromArray(toSeq(countdown(I(0),I(1))).map(proc (x: int): Value = valueFromInteger(x)))    
 
 proc Core_Return*[F,X,V](f: F, xl: X): V {.inline.} = 
     let v = f.validate(xl)
