@@ -45,7 +45,7 @@ proc Core_Loop*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
     case v[0].kind
-        of AV: 
+        of AV:
             for item in A(0):
                 result = FN(1).execute(item)
         of DV:
