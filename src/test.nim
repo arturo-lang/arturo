@@ -31,10 +31,18 @@ type V = object
         of booleanValue         : b: bool 
         of arrayValue           : a: seq[V]
         else: discard
+
+type W = ref object
+    case kind: ValueKind:
+        of integerValue: i:int
+        else: discard
             
 
 var va1 = V(kind: integerValue, i:2)
 var va2 = V(kind: integerValue, i:3)
+
+var wa1 = W(kind:integerValue, i:2)
+var wa2 = W(kind:integerValue, i:3)
 
 benchmark "straight addition":
     for  i in 1..lim:
@@ -47,6 +55,10 @@ benchmark "boxed addition":
 benchmark "boxed addition (objs)":
     for i in 1..lim:
         let k = V(kind: integerValue, i:(v1.i + v2.i))
+
+benchmark "boxed addition (w)":
+    for i in 1..lim:
+        let k = W(kind:integerValue, i:(wa1.i + wa2.i))
 
 #echo repr main
 
