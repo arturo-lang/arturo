@@ -25,6 +25,8 @@ char* yyfilename;
 
 extern void* MainProgram;
 
+extern char* getNameOfSystemFunction(int n);
+
 extern void* keypathFromIdId(char* a, char* b);
 extern void* keypathFromIdInteger(char* a, char* b);
 extern void* keypathFromIdInline(char* a, void* b);
@@ -36,6 +38,8 @@ extern void* keypathByAddingIntegerToKeypath(void* k, char* a);
 extern void* keypathByAddingInlineToKeypath(void* k, void* a);
 
 extern void* argumentFromIdentifier(char* i);
+extern void* argumentFromCommandIdentifier(int i);
+extern void* argumentFromSystemFunction(char* f);
 extern void* argumentFromKeypath(void* k);
 extern void* argumentFromStringLiteral(char* l);
 extern void* argumentFromIntegerLiteral(char* l);
@@ -79,6 +83,7 @@ int yywrap() {
 %union {
 	char* str;
 	void* compo;
+	int code;
 }
 
 /****************************************
@@ -86,7 +91,8 @@ int yywrap() {
  ****************************************/
 
 %token <str> ID "ID"
-%token <str> FUNCTION_ID "Function Identifier"
+%token <str> CMD_ID "CMD_ID"
+
 %token <str> INTEGER "Integer"
 %token <str> REAL "Real"
 %token <str> STRING "String Literal"
@@ -116,7 +122,6 @@ int yywrap() {
 
 %token <str> DOT "."
 %token <str> HASH "#"
-%token <str> DOLLAR "$"
 %token <str> LPAREN "("
 %token <str> RPAREN ")"
 %token <str> LCURLY "{"
@@ -129,7 +134,22 @@ int yywrap() {
 %token <str> COLON ":"
 %token <str> TILDE "~"
 
-%token <str> PRINT_CMD "print"
+%token <code> IF_CMD "if"
+%token <code> GET_CMD "get"
+%token <code> LOOP_CMD "loop"
+%token <code> PRINT_CMD "print"
+%token <code> RANGE_CMD "range"
+%token <code> RETURN_CMD "return"
+%token <code> AND_CMD "and"
+%token <code> NOT_CMD "not"
+%token <code> OR_CMD "or"
+%token <code> XOR_CMD "xor"
+%token <code> FILTER_CMD "filter"
+%token <code> SHUFFLE_CMD "shuffle"
+%token <code> SIZE_CMD "size"
+%token <code> SLICE_CMD "slice"
+%token <code> SWAP_CMD "swap"
+%token <code> ISPRIME_CMD "isPrime"
 
 %token <str> NEW_LINE "End Of Line"
 
@@ -137,6 +157,7 @@ int yywrap() {
 
 %type <compo> keypath string number boolean null
 %type <compo> array dictionary function inline_call
+%type <code> command
 %type <compo> argument expression expression_list
 %type <compo> statement statement_list
 
@@ -220,7 +241,26 @@ function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFuncti
 inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
 						;
 
+command 				:	IF_CMD			{ $$ = 0; }
+						|	GET_CMD 		{ $$ = 1; }
+						|	LOOP_CMD 		{ $$ = 2; }
+						|	PRINT_CMD 		{ $$ = 3; }
+						|	RANGE_CMD 		{ $$ = 4; }
+						|	RETURN_CMD 		{ $$ = 5; }
+						|	AND_CMD 		{ $$ = 6; }
+						|	NOT_CMD			{ $$ = 7; }
+						|	OR_CMD			{ $$ = 8; }
+						|	XOR_CMD			{ $$ = 9; }
+						|	FILTER_CMD 		{ $$ = 10; }
+						|	SHUFFLE_CMD 	{ $$ = 11; }
+						|	SIZE_CMD 		{ $$ = 12; }
+						|	SLICE_CMD 		{ $$ = 13; }
+						|	SWAP_CMD 		{ $$ = 14; }
+						|	ISPRIME_CMD 	{ $$ = 15; }
+
 argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
+						|	command 															{ $$ = argumentFromCommandIdentifier($1); }
+						|	CMD_ID																{ $$ = argumentFromSystemFunction($1); }
 						| 	keypath																{ $$ = argumentFromKeypath($1); }
 						| 	number 																
 						|	string
@@ -264,10 +304,13 @@ expression_list			:	expression 															{ $$ = newExpressionListWithExpres
 
 statement				: 	expression 															{ $$ = statementFromExpression($expression,yylineno); }
 						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,0,yylineno); }
-						|	PRINT_CMD expression_list											{ $$ = statementFromCommand(3,$expression_list,yylineno); }
+						|	command expression_list												{ $$ = statementFromCommand($command,$expression_list,yylineno); }
 						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),0,yylineno); }
+						| 	command PIPE statement[previous] 									{ $$ = statementFromCommand($command,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
 						| 	ID COLON expression_list 											{ $$ = statementFromExpressions($ID,$expression_list,1,yylineno); }
+						| 	command COLON expression_list 										{ $$ = statementFromExpressions(getNameOfSystemFunction($command),$expression_list,1,yylineno); }
 						| 	ID COLON PIPE statement[previous] 									{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
+						| 	command COLON PIPE statement[previous] 								{ $$ = statementFromExpressions(getNameOfSystemFunction($command),newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
 						;
 
 statement_list 			:	statement_list[previous] NEW_LINE statement 						{ $$ = addStatementToStatementList($statement, $previous); }
