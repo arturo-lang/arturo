@@ -68,7 +68,25 @@ LETTER_OR_MISC		[a-zA-Z_]
 "null"												{ return NULLV; }
 "true"|"false"     									{ yylval.str=strdup(yytext); return BOOLEANV; }
 
+"$"{LETTER}({LETTER_OR_MISC}|{DIGIT})*				{ yylval.str=strdup(yytext); return CMD_ID; }
+
+"if"												{ return IF_CMD; }
+"get"												{ return GET_CMD; }
+"loop"												{ return LOOP_CMD; }
 "print"												{ return PRINT_CMD; }
+"range"												{ return RANGE_CMD; }
+"return"											{ return RETURN_CMD; }
+"and"												{ return AND_CMD; }
+"not"												{ return NOT_CMD; }
+"or"												{ return OR_CMD; }
+"xor"												{ return XOR_CMD; }
+"filter"											{ return FILTER_CMD; }
+"shuffle"											{ return SHUFFLE_CMD; }
+"size"												{ return SIZE_CMD; }
+"slice"												{ return SLICE_CMD; }
+"swap"												{ return SWAP_CMD; }
+"isPrime"											{ return ISPRIME_CMD; }
+
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ yylval.str=strdup(yytext); return ID; }
 {DIGIT}+											{ yylval.str=strdup(yytext); return INTEGER; }
 {DIGIT}+\.{DIGIT}+									{ yylval.str=strdup(yytext); return REAL; }
@@ -95,7 +113,6 @@ LETTER_OR_MISC		[a-zA-Z_]
 
 "."													{ return DOT; }
 
-"$"													{ return DOLLAR; }
 "("													{ return LPAREN; }
 ")"													{ return RPAREN; }
 "{"													{ return LCURLY; }
