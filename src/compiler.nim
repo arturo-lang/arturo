@@ -94,7 +94,8 @@ type
 
     StatementKind = enum
         expressionStatement,
-        normalStatement
+        normalStatement,
+        commandStatement
 
     Statement = ref object
         pos: int
@@ -105,6 +106,9 @@ type
                 id              : string
                 expressions     : ExpressionList
                 isAssignment    : bool
+            of commandStatement:
+                code            : int
+                arguments       : ExpressionList
 
     #[----------------------------------------
         StatementList
@@ -342,7 +346,7 @@ proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} =
         Stack[^1].updateOrSet(k,v)
         result = v
 
-proc storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
+proc storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] {.inline.} =
     result = syms.map((x) => (x[0],getSymbol(x[0])))
     var i = 0
     while i < syms.len:
@@ -1064,6 +1068,9 @@ proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
 proc statementFromExpressions(i: cstring, xl: ExpressionList, ass: cint, l: cint=0): Statement {.exportc.} =
     result = Statement(kind: normalStatement, id: $i, expressions: xl, isAssignment: bool(ass), pos: l)
 
+proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.} =
+    result = Statement(kind: commandStatement, code: i, arguments: xl, pos: l)
+
 proc executeAssign(s: Statement, parent: Value = nil): Value {.inline.} =
     var ev = s.expressions.evaluate()
 
@@ -1102,6 +1109,8 @@ proc execute(s: Statement, parent: Value = nil): Value {.inline.} =
                             else: 
                                 result = expressionFromArgument(argumentFromArrayLiteral(addExpressionToExpressionListFront(expressionFromArgument(argumentFromIdentifier(s.id)),copyExpressionList(s.expressions)))).evaluate()
                         else: result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
+        of commandStatement:
+            result = SystemFunctions[s.code][1].execute(s.expressions)
 
 #[----------------------------------------
     StatementList
