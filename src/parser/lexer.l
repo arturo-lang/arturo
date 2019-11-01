@@ -68,8 +68,6 @@ LETTER_OR_MISC		[a-zA-Z_]
 "null"												{ return NULLV; }
 "true"|"false"     									{ yylval.str=strdup(yytext); return BOOLEANV; }
 
-"$"{LETTER}({LETTER_OR_MISC}|{DIGIT})*				{ yylval.str=strdup(yytext); return CMD_ID; }
-
 "if"												{ return IF_CMD; }
 "get"												{ return GET_CMD; }
 "loop"												{ return LOOP_CMD; }

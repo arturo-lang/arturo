@@ -39,7 +39,6 @@ extern void* keypathByAddingInlineToKeypath(void* k, void* a);
 
 extern void* argumentFromIdentifier(char* i);
 extern void* argumentFromCommandIdentifier(int i);
-extern void* argumentFromSystemFunction(char* f);
 extern void* argumentFromKeypath(void* k);
 extern void* argumentFromStringLiteral(char* l);
 extern void* argumentFromIntegerLiteral(char* l);
@@ -91,7 +90,6 @@ int yywrap() {
  ****************************************/
 
 %token <str> ID "ID"
-%token <str> CMD_ID "CMD_ID"
 
 %token <str> INTEGER "Integer"
 %token <str> REAL "Real"
@@ -154,6 +152,7 @@ int yywrap() {
 %token <str> NEW_LINE "End Of Line"
 
 %type <str> args
+%type <str> assignment_id
 
 %type <compo> keypath string number boolean null
 %type <compo> array dictionary function inline_call
@@ -260,7 +259,6 @@ command 				:	IF_CMD			{ $$ = 0; }
 
 argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
 						|	command 															{ $$ = argumentFromCommandIdentifier($1); }
-						|	CMD_ID																{ $$ = argumentFromSystemFunction($1); }
 						| 	keypath																{ $$ = argumentFromKeypath($1); }
 						| 	number 																
 						|	string
@@ -300,17 +298,21 @@ expression_list			:	expression 															{ $$ = newExpressionListWithExpres
 
 //==============================
 // Statements
-//==============================
+//==============================		
+
+assignment_id			:	ID
+						|	command  															{ $$ = getNameOfSystemFunction($command); }
+						;
 
 statement				: 	expression 															{ $$ = statementFromExpression($expression,yylineno); }
 						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,0,yylineno); }
 						|	command expression_list												{ $$ = statementFromCommand($command,$expression_list,yylineno); }
 						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),0,yylineno); }
 						| 	command PIPE statement[previous] 									{ $$ = statementFromCommand($command,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
-						| 	ID COLON expression_list 											{ $$ = statementFromExpressions($ID,$expression_list,1,yylineno); }
-						| 	command COLON expression_list 										{ $$ = statementFromExpressions(getNameOfSystemFunction($command),$expression_list,1,yylineno); }
-						| 	ID COLON PIPE statement[previous] 									{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
-						| 	command COLON PIPE statement[previous] 								{ $$ = statementFromExpressions(getNameOfSystemFunction($command),newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
+						//| 	assignment_id COLON expression_list 								{ $$ = statementFromExpressions($assignment_id,$expression_list,1,yylineno); }
+						| 	assignment_id COLON statement[previous] 							{ $$ = statementFromExpressions($assignment_id,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
+						//| 	ID COLON PIPE statement[previous] 								{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
+						//| 	command COLON PIPE statement[previous] 							{ $$ = statementFromExpressions(getNameOfSystemFunction($command),newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
 						;
 
 statement_list 			:	statement_list[previous] NEW_LINE statement 						{ $$ = addStatementToStatementList($statement, $previous); }
