@@ -30,8 +30,8 @@ proc getPrompt(line: int):string =
 
 proc showInfo(symbol: string) =
     let sysFunc = getSystemFunction(symbol)
-    if sysFunc!=nil:
-        echo sysFunc.getFullDescription()
+    if sysFunc!=(-1):
+        echo SystemFunctions[sysFunc].getFullDescription()
     elif Stack[0].hasKey(symbol):
         let k = $((Stack[0].getValueForKey(symbol)).kind)
         echo "Symbol : \e[1m" & symbol & "\e[0m"
@@ -45,9 +45,9 @@ proc showSymbols() =
         echo alignLeft("\e[1m" & n & "\e[0m",20) & align("\e[34m" & k.replace("Value","") & "\e[39m",20) & " = " & (Stack[0].getValueForKey(n)).stringify()
 
 proc showFunctions() =
-    let names = SystemFunctions.map((x) => x[0])
+    let names = SystemFunctions.map((x) => x.name)
     for n in names:
-        echo getSystemFunction(n).getOneLineDescription()
+        echo SystemFunctions[getSystemFunction(n)].getOneLineDescription()
 
 proc showHelp() =
     echo CONSOLE_HELP_TXT
