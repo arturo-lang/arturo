@@ -129,22 +129,21 @@ type
     FunctionReturns         = seq[ValueKind]
 
     Function* = ref object
-        case kind: FunctionKind:
-            of userFunction:
-                id              : string
-                args            : seq[string]
-                body            : StatementList
-                hasContext      : bool
-                parentThis      : Value
-                parentContext   : Context
-            of systemFunction:
-                name            : string
-                call            : FunctionCall[Function,ExpressionList,Value]
-                require         : FunctionConstraints
-                ret             : FunctionReturns
-                description     : string
-                minReq          : int
-                maxReq          : int
+        id              : string
+        args            : seq[string]
+        body            : StatementList
+        hasContext      : bool
+        parentThis      : Value
+        parentContext   : Context
+
+    SystemFunction* = object
+        name*           : string
+        call            : FunctionCall[SystemFunction,ExpressionList,Value]
+        req             : FunctionConstraints
+        ret             : FunctionReturns
+        desc            : string
+        minReq          : int
+        maxReq          : int
 
     #[----------------------------------------
         Value
@@ -152,23 +151,21 @@ type
 
     ValueKind* = enum
         stringValue, integerValue, realValue, booleanValue,
-        arrayValue, dictionaryValue, functionValue, objectValue,
+        arrayValue, dictionaryValue, functionValue, systemFunctionValue,
         nullValue, anyValue
-
-    Object = ref object
 
     Value* = ref object
         case kind*: ValueKind:
-            of stringValue      : s: string
-            of integerValue     : i: int
-            of realValue        : r: float
-            of booleanValue     : b: bool 
-            of arrayValue       : a: seq[Value]
-            of dictionaryValue  : d: Context
-            of functionValue    : f: Function
-            of objectValue      : o: Object
-            of nullValue        : discard
-            of anyValue         : discard
+            of stringValue          : s: string
+            of integerValue         : i*: int
+            of realValue            : r: float
+            of booleanValue         : b: bool 
+            of arrayValue           : a: seq[Value]
+            of dictionaryValue      : d: Context
+            of functionValue        : f: Function
+            of systemFunctionValue  : sf: SystemFunction
+            of nullValue            : discard
+            of anyValue             : discard
 
     #[----------------------------------------
         Returns
@@ -176,6 +173,36 @@ type
 
     ReturnValue* = object of Exception
         value: Value
+
+#[######################################################
+    Forward declarations
+  ======================================================]#
+
+proc getValueForKey*(ctx: Context, key: string): Value {.inline.}
+proc inspectStack()
+
+proc valueFromString(v: string): Value
+proc valueFromInteger*(v: int): Value
+proc valueFromInteger(v: string): Value
+proc valueFromArray(v: seq[Value]): Value
+proc compare(l: Value, r: Value): int {.inline.}
+proc stringify*(v: Value, quoted: bool = true): string
+
+proc newSystemFunction(n: string, f: FunctionCall[SystemFunction,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = ""): SystemFunction
+proc execute(f: Function, v: Value): Value {.inline.} 
+proc validate(f: SystemFunction, xl: ExpressionList): seq[Value] {.inline.}
+proc validateOne(f: SystemFunction, x: Expression, req: openArray[ValueKind]): Value
+
+proc evaluate(x: Expression): Value {.inline.}
+proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
+
+proc statementFromExpressions(i: cstring, xl: ExpressionList, ass: cint, l: cint=0): Statement {.exportc.}
+proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.}
+proc execute(s: Statement, parent: Value = nil): Value {.inline.}
+proc execute(sl: StatementList): Value
+
+proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
+proc getValue(a: Argument): Value {.inline.}
 
 #[######################################################
     Globals
@@ -187,8 +214,6 @@ var
     # Environment
 
     Stack*                  : seq[Context]
-    SystemFunctions*        : seq[(string,Function)]
-
     FileName                : string
 
     # Const/literal arguments
@@ -209,7 +234,7 @@ template BV():ValueKind         = booleanValue
 template AV():ValueKind         = arrayValue
 template DV():ValueKind         = dictionaryValue
 template FV():ValueKind         = functionValue
-template OV():ValueKind         = objectValue
+template SFV():ValueKind        = systemFunctionValue
 template ANY():ValueKind        = anyValue
 
 template S(_:int):string        = v[_].s
@@ -219,11 +244,45 @@ template B(_:int):bool          = v[_].b
 template A(_:int):seq[Value]    = v[_].a
 template D(_:int):Context       = v[_].d
 template FN(_:int):Function     = v[_].f
-template OB(_:int):Object       = v[_].o
 
 template NULL():Value       = ConstNull.v
 template TRUE():Value       = ConstTrue.v
 template FALSE():Value      = ConstFalse.v
+
+#[######################################################
+    System library
+  ======================================================]#
+
+include lib/core
+include lib/collections
+include lib/numbers
+
+const
+    SystemFunctions* = @[
+        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        #              Name                 Proc                            Args                                                    Return                  Description                                                                                             MinR       MaxR
+        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        SystemFunction(name:"if",           call:Core_If,                   req: @[@[BV,FV],@[BV,FV,FV]],                           ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function",        minReq:2,  maxReq:3),
+        SystemFunction(name:"get",          call:Core_Get,                  req: @[@[AV,IV],@[DV,SV]],                              ret: @[ANY],            desc:"get element from collection using given index/key",                                               minReq:2,  maxReq:2),
+        SystemFunction(name:"loop",         call:Core_Loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV]],                     ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true",               minReq:2,  maxReq:2),
+        SystemFunction(name:"print",        call:Core_Print,                req: @[@[SV],@[AV],@[IV],@[FV],@[BV],@[RV]],            ret: @[SV],             desc:"print value of given expression to screen",                                                       minReq:1,  maxReq:1),
+        SystemFunction(name:"range",        call:Core_Range,                req: @[@[IV,IV]],                                       ret: @[AV],             desc:"get array from given range (from..to) with optional step",                                        minReq:2,  maxReq:2),
+        SystemFunction(name:"return",       call:Core_Return,               req: @[@[ANY]],                                         ret: @[ANY],            desc:"break execution and return given value",                                                          minReq:1,  maxReq:1),
+        #SystemFunction(name:"syms",        call:Core_Syms,                 req: @[@[ANY]],                                         ret: @[ANY],            desc:"print symbol stack",                                                                              minReq:1,  maxReq:1),
+
+        SystemFunction(name:"and",          call:Core_And,                  req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical AND",                                                                             minReq:2,  maxReq:2),
+        SystemFunction(name:"not",          call:Core_Not,                  req: @[@[BV],@[IV]],                                    ret: @[BV,IV],          desc:"bitwise/logical NOT",                                                                             minReq:1,  maxReq:1),
+        SystemFunction(name:"or",           call:Core_Or,                   req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical OR",                                                                              minReq:2,  maxReq:2),
+        SystemFunction(name:"xor",          call:Core_Xor,                  req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical XOR",                                                                             minReq:2,  maxReq:2),
+
+        SystemFunction(name:"filter",       call:Collections_Filter,        req: @[@[AV,FV]],                                       ret: @[AV],             desc:"get array after filtering each element using given function",                                     minReq:2,  maxReq:2),
+        SystemFunction(name:"shuffle",      call:Collections_Shuffle,       req: @[@[AV]],                                          ret: @[AV],             desc:"get given array shuffled",                                                                        minReq:1,  maxReq:1),
+        SystemFunction(name:"size",         call:Collections_Size,          req: @[@[AV],@[SV],@[DV]],                              ret: @[IV],             desc:"get size of given collection or string",                                                          minReq:1,  maxReq:1),
+        SystemFunction(name:"slice",        call:Collections_Slice,         req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],      ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point",                                     minReq:2,  maxReq:3),
+        SystemFunction(name:"swap",         call:Collections_Swap,          req: @[@[AV,IV,IV]],                                    ret: @[AV],             desc:"swap array elements at given indices",                                                            minReq:3,  maxReq:3),
+
+        SystemFunction(name:"isPrime",      call:Numbers_IsPrime,           req: @[@[IV]],                                          ret: @[BV],             desc:"check if given number is prime",                                                                  minReq:1,  maxReq:1)
+    ]
 
 #[######################################################
     Parser C Interface
@@ -252,23 +311,6 @@ proc yy_delete_buffer(buff: yy_buffer_state) {.importc.}
 var yyfilename {.importc.}: cstring
 var yyin {.importc.}: File
 var yylineno {.importc.}: cint
-
-#[######################################################
-    Forward declarations
-  ======================================================]#
-
-proc compare(l: Value, r: Value): int {.inline.}
-proc stringify*(v: Value, quoted: bool = true): string
-
-proc evaluate(x: Expression): Value {.inline.}
-proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
-
-proc statementFromExpressions(i: cstring, xl: ExpressionList, ass: cint, l: cint=0): Statement {.exportc.}
-proc execute(s: Statement, parent: Value = nil): Value {.inline.}
-proc execute(sl: StatementList): Value
-
-proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
-proc getValue(a: Argument): Value {.inline.}
 
 #[######################################################
     Context management
@@ -422,6 +464,9 @@ proc valueFromDictionary(v: Context): Value =
 
 proc valueFromFunction(v: Function): Value =
     result = Value(kind: functionValue, f: v)
+
+proc valueFromSystemFunction(v: SystemFunction): Value =
+    result = Value(kind: systemFunctionValue, sf: v)
 
 proc valueFromValue(v: Value): Value =
     {.computedGoto.}
@@ -734,20 +779,20 @@ proc compare(l: Value, r: Value): int {.inline.} =
 proc stringify*(v: Value, quoted: bool = true): string =
     {.computedGoto.}
     case v.kind
-        of stringValue      :   
+        of stringValue          :   
             if quoted: result = escape(v.s)
             else: result = v.s
-        of integerValue     :   result = $(v.i)
-        of realValue        :   result = $(v.r)
-        of booleanValue     :   result = $(v.b)
-        of arrayValue       :
+        of integerValue         :   result = $(v.i)
+        of realValue            :   result = $(v.r)
+        of booleanValue         :   result = $(v.b)
+        of arrayValue           :
             result = "#("
 
             let items = v.a.map((x) => x.stringify())
 
             result &= items.join(" ")
             result &= ")"
-        of dictionaryValue  :
+        of dictionaryValue      :
             result = "#{ "
             
             let items = sorted(v.d.keys).map((x) => x & " " & v.d.getValueForKey(x).stringify())
@@ -756,36 +801,36 @@ proc stringify*(v: Value, quoted: bool = true): string =
             result &= " }"
 
             if result=="#{  }": result = "#{}"
-        of functionValue    :   result = "<function>"
-        of nullValue        :   result = "null"
-        of objectValue      :   result = "<object>"
-        of anyValue         :   result = ""
+        of functionValue        :   result = "<function>"
+        of systemFunctionValue  :   result = "<system|function>"
+        of nullValue            :   result = "null"
+        of anyValue             :   result = ""
 
 #[----------------------------------------
     Functions
   ----------------------------------------]#
 
 proc newUserFunction(s: StatementList, a: seq[string]): Function =
-    result = Function(kind: userFunction, id: "", args: a, body: s, hasContext: false, parentThis: nil, parentContext: @[])
+    result = Function(id: "", args: a, body: s, hasContext: false, parentThis: nil, parentContext: @[])
 
 proc setFunctionName(f: Function, s: string) {.inline.} =
     f.id = s
     f.hasContext = true
 
-proc registerSystemFunction(n: string, f: FunctionCall[Function,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = "") =
-    let minArgs = req.map((x) => x.len).min
-    let maxArgs = req.map((x) => x.len).max
+proc newSystemFunction(n: string, f: FunctionCall[SystemFunction,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = ""): SystemFunction =
+    result = SystemFunction(name: n, call: f, req: req, ret: ret, desc: descr, minReq: req.map((x) => x.len).min, maxReq: req.map((x) => x.len).max)
 
-    SystemFunctions.add((n,Function(kind: systemFunction, name: n, call: f, require: req, ret: ret, description: descr, minReq: minArgs, maxReq: maxArgs)))
-
-proc getSystemFunction*(n: string): Function {.inline.} =
+proc getSystemFunction*(n: string): int {.inline.} =
     var i = 0
     while i < SystemFunctions.len:
-        if SystemFunctions[i][0]==n:
-            return SystemFunctions[i][1]
+        if SystemFunctions[i].name==n:
+            return i
         inc(i)
 
-    result = nil
+    result = -1
+
+proc getNameOfSystemFunction*(n: int): cstring {.exportc.} =
+    result = SystemFunctions[n].name
 
 proc execute(f: Function, v: Value): Value {.inline.} =
     if f.hasContext:
@@ -816,42 +861,37 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         except ReturnValue as ret   : raise
         finally                     : restoreSymbols(stored)
 
-proc execute(f: Function, xl: ExpressionList): Value =
-    if f.kind==systemFunction:
-        result = f.call(f,xl)
-    else:
-        var params = xl.evaluate(forceArray=true)
+proc execute(f: SystemFunction, xl: ExpressionList): Value {.inline.} =
+    f.call(f,xl)
 
-        result = f.execute(params)
-
-proc validate(f: Function, xl: ExpressionList): seq[Value] {.inline.} =
+proc validate(f: SystemFunction, xl: ExpressionList): seq[Value] {.inline.} =
 
     result = xl.evaluate(forceArray=true).a
 
-    if not f.require.contains(result.map((x) => x.kind)):
+    if not f.req.contains(result.map((x) => x.kind)):
 
-        let expected = f.require.map((x) => x.map((y) => ($y).replace("Value","")).join(",")).join(" or ")
+        let expected = f.req.map((x) => x.map((y) => ($y).replace("Value","")).join(",")).join(" or ")
         let got = result.map((x) => ($(x.kind)).replace("Value","")).join(",")
         
         IncorrectArgumentValuesError(f.name, expected, got)
 
-proc validateOne(f: Function, x: Expression, req: openArray[ValueKind]): Value =
+proc validateOne(f: SystemFunction, x: Expression, req: openArray[ValueKind]): Value =
     result = x.evaluate()
 
     if not (result.kind in req):
         let expected = req.map((x) => $(x)).join(" or ")
         IncorrectArgumentValuesError(f.name, expected, $(result.kind))
 
-proc getOneLineDescription*(f: Function): string =
-    let args = f.require.map((x) => "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
+proc getOneLineDescription*(f: SystemFunction): string =
+    let args = f.req.map((x) => "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
     let ret = "[" & f.ret.join(",").replace("Value","") & "]"
     result = alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " -> " & ret
 
-proc getFullDescription*(f: Function): string =
-    let args = f.require.map((x) => "(" & x.map((y) => ($y).replace("Value","")).join(",") & ")").join(" / ")
+proc getFullDescription*(f: SystemFunction): string =
+    let args = f.req.map((x) => "(" & x.map((y) => ($y).replace("Value","")).join(",") & ")").join(" / ")
     let ret = "[" & f.ret.join(",").replace("Value","") & "]"
     result  = "Function : \e[1m" & f.name & "\e[0m" & "\n"
-    result &= "       # : " & f.description & "\n\n"
+    result &= "       # : " & f.desc & "\n\n"
     result &= "   usage : " & f.name & " " & args & "\n"
     result &= "        -> " & ret & "\n"
 
@@ -970,6 +1010,15 @@ proc evaluate(xl: ExpressionList, forceArray: bool=false): Value =
 proc argumentFromIdentifier(i: cstring): Argument {.exportc.} =
     result = Argument(kind: identifierArgument, i: $i)
 
+proc argumentFromCommandIdentifier(i: cint): Argument {.exportc.} =
+    result = Argument(kind: identifierArgument, i: SystemFunctions[i].name)
+
+proc argumentFromSystemFunction(f: cstring): Argument {.exportc.} =
+    let sf = getSystemFunction(($f).replace("$",""))
+    if sf==(-1): SymbolNotFoundError($f)
+    else:
+        result = Argument(kind: literalArgument, v: valueFromSystemFunction(SystemFunctions[sf]))
+
 proc argumentFromStringLiteral(l: cstring): Argument {.exportc.} =
     if ConstStrings.hasKey($l):
         result = ConstStrings[$l]
@@ -1007,7 +1056,7 @@ proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
 
         discard addExpressionToExpressionList(exprA, lst)
         discard addExpressionToExpressionList(exprB, lst)
-        exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromExpressions("get",lst,0)))
+        exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromCommand(1,lst,0)))
 
         inc(i)
         
@@ -1097,20 +1146,20 @@ proc execute(s: Statement, parent: Value = nil): Value {.inline.} =
             if s.isAssignment:
                 result = s.executeAssign(parent)
             else:
-                let sysFunc = getSystemFunction(s.id)
-                if sysFunc!=nil:
-                    result = sysFunc.execute(s.expressions)
-                else:
-                    let sym = getSymbol(s.id)
-                    if sym==nil: SymbolNotFoundError(s.id)
-                    else: 
-                        if s.expressions.list.len > 0: 
-                            if sym.kind==FV: result = sym.f.execute(s.expressions)
+                let sym = getSymbol(s.id)
+                if sym==nil: SymbolNotFoundError(s.id)
+                else: 
+                    if s.expressions.list.len > 0: 
+                        case sym.kind
+                            of FV: 
+                                result = sym.f.execute(s.expressions.evaluate(forceArray=true))
+                            of SFV:
+                                result = sym.sf.execute(s.expressions)
                             else: 
                                 result = expressionFromArgument(argumentFromArrayLiteral(addExpressionToExpressionListFront(expressionFromArgument(argumentFromIdentifier(s.id)),copyExpressionList(s.expressions)))).evaluate()
-                        else: result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
+                    else: result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
         of commandStatement:
-            result = SystemFunctions[s.code][1].execute(s.expressions)
+            result = SystemFunctions[s.code].execute(s.expressions)     
 
 #[----------------------------------------
     StatementList
@@ -1138,42 +1187,6 @@ proc execute(sl: StatementList): Value =
 
         inc(i)
 
-
-#[######################################################
-    System library
-  ======================================================]#
-
-include lib/core
-include lib/collections
-include lib/numbers
-
-template registerSystemFunctions() =
-    SystemFunctions = @[] #newTable[string,Function]()
-    #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    #                       Name            Proc                        Args                                                Return          Description
-    #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    registerSystemFunction("if",            Core_If,                    @[@[BV,FV],@[BV,FV,FV]],                            @[ANY],         "if condition is true, execute given function; else execute optional alternative function")
-    registerSystemFunction("get",           Core_Get,                   @[@[AV,IV],@[DV,SV]],                               @[ANY],         "get element from collection using given index/key")
-    registerSystemFunction("loop",          Core_Loop,                  @[@[AV,FV],@[DV,FV],@[BV,FV]],                      @[ANY],         "execute given function for each element in collection, or while condition is true")
-    registerSystemFunction("print",         Core_Print,                 @[@[SV],@[AV],@[IV],@[FV],@[BV],@[RV]],                                          @[SV],          "print value of given expression to screen")
-    registerSystemFunction("range",         Core_Range,                 @[@[IV,IV]],                                        @[AV],          "get array from given range (from..to) with optional step")
-    registerSystemFunction("return",        Core_Return,                @[@[ANY]],                                          @[ANY],         "break execution and return given value")
-    registerSystemFunction("syms",          Core_Syms,                  @[@[ANY]],                                          @[ANY],         "print symbol stack")
-
-    registerSystemFunction("and",           Core_And,                   @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical AND")
-    registerSystemFunction("not",           Core_Not,                   @[@[BV],@[IV]],                                     @[BV,IV],       "bitwise/logical NOT")
-    registerSystemFunction("or",            Core_Or,                    @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical OR")
-    registerSystemFunction("xor",           Core_Xor,                   @[@[BV,BV],@[IV,IV]],                               @[BV,IV],       "bitwise/logical XOR")
-
-    registerSystemFunction("filter",        Collections_Filter,         @[@[AV,FV]],                                        @[AV],          "get array after filtering each element using given function")
-    registerSystemFunction("shuffle",       Collections_Shuffle,        @[@[AV]],                                           @[AV],          "get given array shuffled")
-    registerSystemFunction("size",          Collections_Size,           @[@[AV],@[SV],@[DV]],                               @[IV],          "get size of given collection or string")
-    registerSystemFunction("slice",         Collections_Slice,          @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],       @[AV,SV],       "get slice of array/string given a starting and/or end point")
-    registerSystemFunction("swap",          Collections_Swap,           @[@[AV,IV,IV]],                                     @[AV],          "swap array elements at given indices")
-
-    registerSystemFunction("isPrime",       Numbers_IsPrime,            @[@[IV]],                                           @[BV],          "check if given number is prime")
-    
-
 #[######################################################
     Store management
   ======================================================]#
@@ -1193,8 +1206,6 @@ proc setup*(args: seq[string] = @[]) =
 
     addContext() # global
     addContextWith("&", valueFromArray(args.map((x) => valueFromString(x))))
-
-    registerSystemFunctions()
 
 proc runString*(src:string): string =
     var buff = yy_scan_string(src)
