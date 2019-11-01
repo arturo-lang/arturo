@@ -8,7 +8,7 @@
   *****************************************************************]#
 
 import algorithm, math, os, parseutils, sequtils, strutils, sugar, tables
-import panic
+import panic, utils
 
 #[######################################################
     Type definitions
@@ -180,11 +180,13 @@ type
 proc getValueForKey*(ctx: Context, key: string): Value {.inline.}
 proc inspectStack()
 
-proc valueFromString(v: string): Value
-proc valueFromInteger*(v: int): Value
-proc valueFromInteger(v: string): Value
-proc valueFromArray(v: seq[Value]): Value
-proc compare(l: Value, r: Value): int {.inline.}
+proc valueFromString(v: string): Value {.inline.}
+proc valueFromInteger*(v: int): Value {.inline.}
+proc valueFromInteger(v: string): Value {.inline.}
+proc valueFromArray(v: seq[Value]): Value {.inline.}
+proc eq(l: Value, r: Value): bool {.inline.}
+proc lt(l: Value, r: Value): bool {.inline.}
+proc gt(l: Value, r: Value): bool {.inline.}
 proc stringify*(v: Value, quoted: bool = true): string
 
 proc newSystemFunction(n: string, f: FunctionCall[SystemFunction,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = ""): SystemFunction
@@ -263,7 +265,7 @@ const
         #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         SystemFunction(name:"if",           call:Core_If,                   req: @[@[BV,FV],@[BV,FV,FV]],                           ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function",        minReq:2,  maxReq:3),
         SystemFunction(name:"get",          call:Core_Get,                  req: @[@[AV,IV],@[DV,SV]],                              ret: @[ANY],            desc:"get element from collection using given index/key",                                               minReq:2,  maxReq:2),
-        SystemFunction(name:"loop",         call:Core_Loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV]],                     ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true",               minReq:2,  maxReq:2),
+        SystemFunction(name:"loop",         call:Core_Loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],            ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true",               minReq:2,  maxReq:2),
         SystemFunction(name:"print",        call:Core_Print,                req: @[@[SV],@[AV],@[IV],@[FV],@[BV],@[RV]],            ret: @[SV],             desc:"print value of given expression to screen",                                                       minReq:1,  maxReq:1),
         SystemFunction(name:"range",        call:Core_Range,                req: @[@[IV,IV]],                                       ret: @[AV],             desc:"get array from given range (from..to) with optional step",                                        minReq:2,  maxReq:2),
         SystemFunction(name:"return",       call:Core_Return,               req: @[@[ANY]],                                         ret: @[ANY],            desc:"break execution and return given value",                                                          minReq:1,  maxReq:1),
@@ -367,6 +369,18 @@ proc getSymbol(k: string): Value {.inline.} =
 
     return nil
 
+proc getAndSetSymbol(k: string, v: Value): Value {.inline.} = 
+    var i = len(Stack) - 1
+    while i > -1:
+        var j = 0
+        while j<Stack[i].len:
+            if Stack[i][j][0]==k: 
+                result = Stack[i][j][1]
+                Stack[i][j][1] = v
+            inc(j)
+        dec(i)
+
+    return nil
 
 proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} = 
     if redefine:
@@ -387,18 +401,16 @@ proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} =
         Stack[^1].updateOrSet(k,v)
         result = v
 
-proc storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] {.inline.} =
-    result = syms.map((x) => (x[0],getSymbol(x[0])))
-    var i = 0
-    while i < syms.len:
-        if syms[i][1]!=NULL:
-            discard setSymbol(syms[i][0],syms[i][1])
-        inc(i)
+template storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
+    syms.map((x) => (x[0],getAndSetSymbol(x[0],x[1])))
 
-proc restoreSymbols(syms: openArray[(string,Value)]) {.inline.} =
+template storeSymbol(sym: (string,Value)):seq[(string,Value)] =
+    @[(sym[0],getAndSetSymbol(sym[0],sym[1]))]
+
+template restoreSymbols(syms: openArray[(string,Value)]) =
     var i = 0
     while i < syms.len:
-        if syms[i][1]!=NULL: 
+        if syms[i][1]!=ConstNull.v: 
             discard setSymbol(syms[i][0],syms[i][1])
         inc(i)
 
@@ -424,44 +436,44 @@ proc inspectStack() =
     Value
   ----------------------------------------]#
 
-proc valueFromString(v: string): Value =
+proc valueFromString(v: string): Value {.inline.} =
     result = Value(kind: stringValue, s: v)
 
-proc valueFromInteger*(v: int): Value =
+proc valueFromInteger*(v: int): Value {.inline.} =
     result = Value(kind: integerValue, i: v)
 
-proc valueFromInteger(v: string): Value =
+proc valueFromInteger(v: string): Value {.inline.} =
     var intValue: int
     discard parseInt(v, intValue)
 
     result = valueFromInteger(intValue)
 
-proc valueFromReal(v: float): Value =
+proc valueFromReal(v: float): Value {.inline.} =
     result = Value(kind: realValue, r: v)
 
-proc valueFromReal(v: string): Value =
+proc valueFromReal(v: string): Value {.inline.} =
     var floatValue: float
     discard parseFloat(v, floatValue)
 
     result = valueFromReal(floatValue)
 
-proc valueFromBoolean(v: bool): Value =
+proc valueFromBoolean(v: bool): Value {.inline.} =
     result = Value(kind: booleanValue, b: v)
 
-proc valueFromBoolean(v: string): Value =
+proc valueFromBoolean(v: string): Value {.inline.} =
     if v=="true": result = valueFromBoolean(true)
     else: result = valueFromBoolean(false)
 
-proc valueFromNull(): Value =
+proc valueFromNull(): Value {.inline.} =
     result = Value(kind: nullValue)
 
-proc valueFromArray(v: seq[Value]): Value =
+proc valueFromArray(v: seq[Value]): Value {.inline.} =
     result = Value(kind: arrayValue, a: v)
 
-proc valueFromDictionary(v: Context): Value = 
+proc valueFromDictionary(v: Context): Value {.inline.} = 
     result = Value(kind: dictionaryValue, d: v)
 
-proc valueFromFunction(v: Function): Value =
+proc valueFromFunction(v: Function): Value {.inline.} =
     result = Value(kind: functionValue, f: v)
 
 proc valueFromValue(v: Value): Value =
@@ -477,7 +489,7 @@ proc valueFromValue(v: Value): Value =
 proc findValueInArray(v: Value, lookup: Value): int =
     var i = 0
     while i < v.a.len:
-        if compare(v.a[i],lookup)==0: return i 
+        if v.a[i].eq(lookup): return i 
         inc(i)
     return -1
 
@@ -548,7 +560,7 @@ proc `-`(l: Value, r: Value): Value {.inline.} =
             result = valueFromValue(l)
             var i = 0
             while i < l.d.len:
-                if compare(l.d[i][1],r)==0:
+                if l.d[i][1].eq(r):
                     result.d.del(i)
                 inc(i)
 
@@ -702,72 +714,111 @@ proc `^`(l: Value, r: Value): Value {.inline.} =
         else:
             InvalidOperationError("^",$(l.kind),$(r.kind))
 
-proc compare(l: Value, r: Value): int {.inline.} =
+proc eq(l: Value, r: Value): bool {.inline.} =
     {.computedGoto.}
     case l.kind
         of stringValue:
             case r.kind
-                of stringValue:
-                    if l.s==r.s: result = 0
-                    elif l.s<r.s: result = -1
-                    else: result = 1
+                of stringValue: result = l.s==r.s
                 else: NotComparableError($(l.kind),$(r.kind))
                     
         of integerValue:
             case r.kind
-                of integerValue: 
-                    if l.i==r.i: result = 0
-                    elif l.i<r.i: result = -1
-                    else: result = 1
-                of realValue:
-                    if l.i==int(r.r): result = 0
-                    elif l.i<int(r.r): result = -1
-                    else: result = 1
+                of integerValue: result = l.i==r.i
+                of realValue: result = l.i==int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
             case r.kind
-                of integerValue:
-                    if int(l.r)==r.i: result = 0
-                    elif int(l.r)<r.i: result = -1
-                    else: result = 1
-                of realValue:
-                    if l.r==r.r: result = 0
-                    elif l.r<r.r: result = -1
-                    else: result = 1
+                of integerValue: result = int(l.r)==r.i
+                of realValue: result = l.r==r.r
                 else: NotComparableError($(l.kind),$(r.kind))
         of booleanValue:
             case r.kind
-                of booleanValue:
-                    if l==r: result = 0
-                    else: result = -1
+                of booleanValue: result = l==r
                 else: NotComparableError($(l.kind),$(r.kind))
 
         of arrayValue:
             case r.kind
                 of arrayValue:
-                    if l.a.len < r.a.len: result = -1
-                    elif l.a.len > r.a.len: result = 1
+                    if l.a.len!=r.a.len: result = false
                     else:
                         var i=0
                         while i<l.a.len:
-                            if compare(l.a[i],r.a[i])!=0: return -2
+                            if not (l.a[i]==r.a[i]): return false
                             inc(i)
-                        result = 0
+                        result = true
                 else: NotComparableError($(l.kind),$(r.kind))
         of dictionaryValue:
             case r.kind
                 of dictionaryValue:
-                    if l.d.keys.len < r.d.keys.len: result = -1
-                    elif l.d.keys.len > r.d.keys.len: result = 1
+                    if l.d.keys!=r.d.keys: result = false
                     else:
                         var i = 0
                         while i < l.d.len:
-                            if not r.d.hasKey(l.d[i][0]): return -2
+                            if not r.d.hasKey(l.d[i][0]): return false
                             else:
-                                if compare(l.d[i][1],r.d.getValueForKey(l.d[i][0]))!=0: return -2
+                                if not (l.d[i][1]==r.d.getValueForKey(l.d[i][0])): return false
                             inc(i)
 
-                        result = 0
+                        result = true 
+                else: NotComparableError($(l.kind),$(r.kind))
+
+        else: NotComparableError($(l.kind),$(r.kind))
+
+proc lt(l: Value, r: Value): bool {.inline.} =
+    {.computedGoto.}
+    case l.kind
+        of stringValue:
+            case r.kind
+                of stringValue: result = l.s<r.s
+                else: NotComparableError($(l.kind),$(r.kind))
+                    
+        of integerValue:
+            case r.kind
+                of integerValue: result = l.i<r.i
+                of realValue: result = l.i<int(r.r)
+                else: NotComparableError($(l.kind),$(r.kind))
+        of realValue:
+            case r.kind
+                of integerValue: result = int(l.r)<r.i
+                of realValue: result = l.r<r.r
+                else: NotComparableError($(l.kind),$(r.kind))
+        of arrayValue:
+            case r.kind
+                of arrayValue: result = l.a.len < r.a.len
+                else: NotComparableError($(l.kind),$(r.kind))
+        of dictionaryValue:
+            case r.kind
+                of dictionaryValue: result = l.d.keys.len < r.d.keys.len
+                else: NotComparableError($(l.kind),$(r.kind))
+
+        else: NotComparableError($(l.kind),$(r.kind))
+
+proc gt(l: Value, r: Value): bool {.inline.} =
+    {.computedGoto.}
+    case l.kind
+        of stringValue:
+            case r.kind
+                of stringValue: result = l.s>r.s
+                else: NotComparableError($(l.kind),$(r.kind))
+                    
+        of integerValue:
+            case r.kind
+                of integerValue: result = l.i>r.i
+                of realValue: result = l.i>int(r.r)
+                else: NotComparableError($(l.kind),$(r.kind))
+        of realValue:
+            case r.kind
+                of integerValue: result = int(l.r)>r.i
+                of realValue: result = l.r>r.r
+                else: NotComparableError($(l.kind),$(r.kind))
+        of arrayValue:
+            case r.kind
+                of arrayValue: result = l.a.len > r.a.len
+                else: NotComparableError($(l.kind),$(r.kind))
+        of dictionaryValue:
+            case r.kind
+                of dictionaryValue: result = l.d.keys.len > r.d.keys.len
                 else: NotComparableError($(l.kind),$(r.kind))
 
         else: NotComparableError($(l.kind),$(r.kind))
@@ -845,12 +896,13 @@ proc execute(f: Function, v: Value): Value {.inline.} =
     else:
         var stored: seq[(string,Value)]
 
-        if f.args.len>0:
-            if v.kind == AV: 
-                stored = storeSymbols(zip(f.args,v.a))
-            else: stored = storeSymbols(@[(f.args[0],v)])
-        else: 
-            stored = storeSymbols(@[("&",v)])
+        if v!=NULL:
+            if f.args.len>0:
+                if v.kind == AV: 
+                    stored = storeSymbols(zip(f.args,v.a))
+                else: stored = storeSymbol((f.args[0],v))
+            else: 
+                stored = storeSymbol(("&",v))
 
         try                         : result = f.body.execute()
         except ReturnValue as ret   : raise
@@ -952,7 +1004,7 @@ proc evaluate(x: Expression): Value {.inline.} =
             var right: Value
 
             if x.right!=nil: right = x.right.evaluate()
-            else: result = left
+            else: return left
             {.computedGoto.}
             case x.op
                 of PLUS_SG  : result = left + right
@@ -961,12 +1013,12 @@ proc evaluate(x: Expression): Value {.inline.} =
                 of DIV_SG   : result = left / right
                 of MOD_SG   : result = left % right
                 of POW_SG   : result = left ^ right
-                of EQ_OP    : result = valueFromBoolean(compare(left,right)==0)
-                of LT_OP    : result = valueFromBoolean(compare(left,right)==(-1))
-                of GT_OP    : result = valueFromBoolean(compare(left,right)==1)
-                of LE_OP    : result = valueFromBoolean(compare(left,right) in -1..0)
-                of GE_OP    : result = valueFromBoolean(compare(left,right) in 0..1)
-                of NE_OP    : result = valueFromBoolean(compare(left,right)!=0)
+                of EQ_OP    : result = valueFromBoolean(left.eq(right))
+                of LT_OP    : result = valueFromBoolean(left.lt(right))
+                of GT_OP    : result = valueFromBoolean(left.gt(right))
+                of LE_OP    : result = valueFromBoolean(left.lt(right) or left.eq(right))
+                of GE_OP    : result = valueFromBoolean(left.gt(right) or left.eq(right))
+                of NE_OP    : result = valueFromBoolean(not (left.eq(right)))
 
 #[----------------------------------------
     ExpressionList
@@ -1230,7 +1282,7 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
     if not success:
         cmdlineError("something went wrong when opening file")
     else:
-        # benchmark "parsing":
+        #benchmark "parsing":
         discard yyparse()
 
         discard MainProgram.execute()
