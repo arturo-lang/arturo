@@ -4,6 +4,7 @@ __dummy.html
 examples/dev/
 arturo
 test
+cache/*.cpp
 cache/*.c
 cache/*.h
 cache/*.deps
