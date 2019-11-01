@@ -4,8 +4,8 @@ quickSort: [items]{
 	}
 }
 
-list: $(shuffle|range 1 50000)
-list: $(quickSort list)
+list: shuffle|range 1 50000
+list: quickSort list
 loop list {
 	print &
 }
