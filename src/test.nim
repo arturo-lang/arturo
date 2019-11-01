@@ -11,19 +11,56 @@ type
     #stack = array[ctx,2]
 
 
-var lim = 15_000
+var lim = 5_000_000
 
-benchmark "map":
-    for i in 1..lim:
-        let k = toSeq(1..10000).map(proc (x:int):int = 2*x+10)
+type 
+    MyObj = ref object
+        a: int
+        s: string
 
-benchmark "map (=>)":
-    for i in 1..lim:
-        let k = toSeq(1..10000).map((x)=> 2*x+10)
 
-benchmark "mapIt":
+
+var v1 = valueFromInteger(2)
+var v2 = valueFromInteger(3)
+
+type V = object
+    case kind*: ValueKind:
+        of stringValue          : s: string
+        of integerValue         : i*: int
+        of realValue            : r: float
+        of booleanValue         : b: bool 
+        of arrayValue           : a: seq[V]
+        else: discard
+            
+
+var va1 = V(kind: integerValue, i:2)
+var va2 = V(kind: integerValue, i:3)
+
+benchmark "straight addition":
+    for  i in 1..lim:
+        let k = 2+3
+
+benchmark "boxed addition":
     for i in 1..lim:
-        let k = toSeq(1..10000).mapIt(2*it+10)
+        let k = valueFromInteger(v1.i + v2.i)
+
+benchmark "boxed addition (objs)":
+    for i in 1..lim:
+        let k = V(kind: integerValue, i:(v1.i + v2.i))
+
+#echo repr main
+
+# benchmark "map":
+#     for i in 1..lim:
+#         let k = toSeq(1..10000).map(proc (x:int):int = 2*x+10)
+
+# benchmark "map (=>)":
+#     for i in 1..lim:
+#         let k = toSeq(1..10000).map((x)=> 2*x+10)
+
+# benchmark "mapIt":
+#     for i in 1..lim:
+#         let k = toSeq(1..10000).mapIt(2*it+10)
 
 
 # benchmark "list creation":
