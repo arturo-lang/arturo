@@ -56,6 +56,7 @@ extern void* addExpressionToExpressionList(void* x, void* xl);
 
 extern void* statementFromExpression(void* x, int pos);
 extern void* statementFromExpressions(char* i, void* xl, int ass, int pos);
+extern void* statementFromCommand(int i, void* xl, int pos);
 
 extern void* newStatementList();
 extern void* newStatementListWithStatement(void* s);
@@ -127,6 +128,8 @@ int yywrap() {
 %token <str> SEMICOLON ";"
 %token <str> COLON ":"
 %token <str> TILDE "~"
+
+%token <str> PRINT_CMD "print"
 
 %token <str> NEW_LINE "End Of Line"
 
@@ -261,6 +264,7 @@ expression_list			:	expression 															{ $$ = newExpressionListWithExpres
 
 statement				: 	expression 															{ $$ = statementFromExpression($expression,yylineno); }
 						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,0,yylineno); }
+						|	PRINT_CMD expression_list											{ $$ = statementFromCommand(3,$expression_list,yylineno); }
 						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),0,yylineno); }
 						| 	ID COLON expression_list 											{ $$ = statementFromExpressions($ID,$expression_list,1,yylineno); }
 						| 	ID COLON PIPE statement[previous] 									{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
