@@ -128,14 +128,6 @@ type
     FunctionConstraints     = seq[seq[ValueKind]]
     FunctionReturns         = seq[ValueKind]
 
-    Function* = ref object
-        id              : string
-        args            : seq[string]
-        body            : StatementList
-        hasContext      : bool
-        parentThis      : Value
-        parentContext   : Context
-
     SystemFunction* = object
         name*           : string
         call            : FunctionCall[SystemFunction,ExpressionList,Value]
@@ -145,13 +137,21 @@ type
         minReq          : int
         maxReq          : int
 
+    Function* = ref object
+        id              : string
+        args            : seq[string]
+        body            : StatementList
+        hasContext      : bool
+        parentThis      : Value
+        parentContext   : Context
+
     #[----------------------------------------
         Value
       ----------------------------------------]#
 
     ValueKind* = enum
         stringValue, integerValue, realValue, booleanValue,
-        arrayValue, dictionaryValue, functionValue, systemFunctionValue,
+        arrayValue, dictionaryValue, functionValue,
         nullValue, anyValue
 
     Value* = ref object
@@ -163,7 +163,6 @@ type
             of arrayValue           : a: seq[Value]
             of dictionaryValue      : d: Context
             of functionValue        : f: Function
-            of systemFunctionValue  : sf: SystemFunction
             of nullValue            : discard
             of anyValue             : discard
 
@@ -215,6 +214,7 @@ var
 
     Stack*                  : seq[Context]
     FileName                : string
+    IsRepl                  : bool
 
     # Const/literal arguments
 
@@ -234,7 +234,6 @@ template BV():ValueKind         = booleanValue
 template AV():ValueKind         = arrayValue
 template DV():ValueKind         = dictionaryValue
 template FV():ValueKind         = functionValue
-template SFV():ValueKind        = systemFunctionValue
 template ANY():ValueKind        = anyValue
 
 template S(_:int):string        = v[_].s
@@ -464,9 +463,6 @@ proc valueFromDictionary(v: Context): Value =
 
 proc valueFromFunction(v: Function): Value =
     result = Value(kind: functionValue, f: v)
-
-proc valueFromSystemFunction(v: SystemFunction): Value =
-    result = Value(kind: systemFunctionValue, sf: v)
 
 proc valueFromValue(v: Value): Value =
     {.computedGoto.}
@@ -802,7 +798,6 @@ proc stringify*(v: Value, quoted: bool = true): string =
 
             if result=="#{  }": result = "#{}"
         of functionValue        :   result = "<function>"
-        of systemFunctionValue  :   result = "<system|function>"
         of nullValue            :   result = "null"
         of anyValue             :   result = ""
 
@@ -1013,12 +1008,6 @@ proc argumentFromIdentifier(i: cstring): Argument {.exportc.} =
 proc argumentFromCommandIdentifier(i: cint): Argument {.exportc.} =
     result = Argument(kind: identifierArgument, i: SystemFunctions[i].name)
 
-proc argumentFromSystemFunction(f: cstring): Argument {.exportc.} =
-    let sf = getSystemFunction(($f).replace("$",""))
-    if sf==(-1): SymbolNotFoundError($f)
-    else:
-        result = Argument(kind: literalArgument, v: valueFromSystemFunction(SystemFunctions[sf]))
-
 proc argumentFromStringLiteral(l: cstring): Argument {.exportc.} =
     if ConstStrings.hasKey($l):
         result = ConstStrings[$l]
@@ -1088,7 +1077,7 @@ proc getValue(a: Argument): Value {.inline.} =
     case a.kind
         of identifierArgument:
             result = getSymbol(a.i)
-            #if result == nil: runtimeError("symbol not found: '" & a.i & "'", FileName, CurrentPosition.line)
+            if result == nil: SymbolNotFoundError(a.i)
         of literalArgument:
             result = a.v
         of arrayArgument:
@@ -1150,13 +1139,10 @@ proc execute(s: Statement, parent: Value = nil): Value {.inline.} =
                 if sym==nil: SymbolNotFoundError(s.id)
                 else: 
                     if s.expressions.list.len > 0: 
-                        case sym.kind
-                            of FV: 
-                                result = sym.f.execute(s.expressions.evaluate(forceArray=true))
-                            of SFV:
-                                result = sym.sf.execute(s.expressions)
-                            else: 
-                                result = expressionFromArgument(argumentFromArrayLiteral(addExpressionToExpressionListFront(expressionFromArgument(argumentFromIdentifier(s.id)),copyExpressionList(s.expressions)))).evaluate()
+                        if sym.kind==FV:
+                            result = sym.f.execute(s.expressions.evaluate(forceArray=true))
+                        else: 
+                            result = expressionFromArgument(argumentFromArrayLiteral(addExpressionToExpressionListFront(expressionFromArgument(argumentFromIdentifier(s.id)),copyExpressionList(s.expressions)))).evaluate()
                     else: result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
         of commandStatement:
             result = SystemFunctions[s.code].execute(s.expressions)     
@@ -1183,7 +1169,8 @@ proc execute(sl: StatementList): Value =
         except ReturnValue:
             raise
         except Exception as e:
-            runtimeError(e.msg, FileName, sl.list[i].pos)
+            if IsRepl: raise
+            else: runtimeError(e.msg, FileName, sl.list[i].pos, IsRepl)
 
         inc(i)
 
@@ -1213,6 +1200,7 @@ proc runString*(src:string): string =
     yylineno = 0
     yyfilename = "-"
     FileName = "-"
+    IsRepl = true
 
     yy_switch_to_buffer(buff)
 
@@ -1221,7 +1209,11 @@ proc runString*(src:string): string =
 
     yy_delete_buffer(buff)
 
-    result = MainProgram.execute().stringify()
+    try:
+        result = MainProgram.execute().stringify()
+    except Exception as e:
+        runtimeError(e.msg, FileName, 0, IsRepl)
+
 
 proc runScript*(scriptPath:string, args: seq[string], includePath:string="", warnings:bool=false) = 
     if not fileExists(scriptPath): 
@@ -1232,6 +1224,7 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
     yylineno = 0
     yyfilename = scriptPath
     FileName = scriptPath
+    IsRepl = false
 
     let success = open(yyin, scriptPath)
     if not success:
