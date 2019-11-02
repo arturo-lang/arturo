@@ -948,7 +948,8 @@ proc execute(f: Function, v: Value): Value {.inline.} =
     if f.hasContext:
         if Stack.len == 1: addContext()
 
-        let oldSeq = Stack[1]
+        var oldSeq:Context
+        shallowCopy(oldSeq,Stack[1])
         if f.args.len>0:
             if v.kind == AV: addContextWith(zip(f.args,v.a))
             else: addContextWith(f.args[0],v)
@@ -957,7 +958,7 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         try                         : result = f.body.execute()
         except ReturnValue as ret   : result = ret.value
         finally                     : 
-            Stack[1] = oldSeq
+            shallowCopy(Stack[1],oldSeq)
             if Stack[1].len==0: popContext()
     else:
         var stored: Value = nil
