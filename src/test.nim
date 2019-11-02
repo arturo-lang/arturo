@@ -3,6 +3,8 @@ import utils
 
 import compiler
 
+import bignum
+
 type 
     ctx = TableRef[string,Value]
     ctxo = OrderedTableRef[string,Value]
@@ -11,89 +13,177 @@ type
     #stack = array[ctx,2]
 
 
-var lim = 5_000_000
+var lim = 10_000_000
 
 type 
     MyObj = ref object
         a: int
         s: string
+        b: bool
 
+benchmark "intToStr":
+    for i in 0..lim:
+        let k = i
 
+benchmark "$":
+    var i = 0
+    while i<lim:
+        let k = i
+        inc(i)
 
-var v1 = valueFromInteger(2)
-var v2 = valueFromInteger(3)
+var ConstInts: Table[int,Int]
 
-type V = object
-    case kind*: ValueKind:
-        of stringValue          : s: string
-        of integerValue         : i*: int
-        of realValue            : r: float
-        of booleanValue         : b: bool 
-        of arrayValue           : a: seq[V]
-        else: discard
+benchmark "int$":
+    for i in 0..lim:
+        let k = newInt(i)
+        ConstInts[i] = k
 
-type W = ref object
-    case kind: ValueKind:
-        of integerValue: i:int
-        else: discard
+benchmark "int$":
+    for i in 0..lim:
+        let k = ConstInts.getOrDefault(i,newInt(i))
+
+let b : string = "done"
+let c : cstring = "done"
+#echo c & "boom"
+benchmark "$":
+    for i in 1..lim:
+        let k = $c
+
+benchmark "$":
+    for i in 1..lim:
+        let k = b
+# proc newMyObjResult(a:int, s:string): MyObj =
+#     result = MyObj(a:a, s:s, b:true)
+
+# proc newMyObjResultInline(a:int, s:string): MyObj {.inline.} =
+#     result = MyObj(a:a, s:s, b:true)
+
+# proc newMyObjReturn(a:int, s:string): MyObj = 
+#     return MyObj(a:a, s:s, b:true)
+
+# proc newMyObjStraight(a:int, s:string): MyObj = 
+#     MyObj(a:a, s:s, b:true)
+
+# proc newMyObjStraightInline(a:int, s:string): MyObj {.inline.} = 
+#     MyObj(a:a, s:s, b:true)
+
+# template newMyObjTemplate(ax:int, sx:string): MyObj = 
+#     MyObj(a:ax, s:sx, b:true)
+
+# benchmark "newMyObjResult":
+#     for i in 1..lim:
+#         let k = newMyObjResult(i,"test")
+
+# benchmark "newMyObjResultInline":
+#     for i in 1..lim:
+#         let k = newMyObjResultInline(i,"test")
+
+# benchmark "newMyObjReturn":
+#     for i in 1..lim:
+#         let k = newMyObjReturn(i,"test")
+
+# benchmark "newMyObjStraight":
+#     for i in 1..lim:
+#         let k = newMyObjStraight(i,"test")
+
+# benchmark "newMyObjStraightInline":
+#     for i in 1..lim:
+#         let k = newMyObjStraightInline(i,"test")
+
+# benchmark "newMyObjTemplate":
+#     for i in 1..lim:
+#         let k = newMyObjTemplate(i,"test")
+
+# benchmark "newMyObj - nothing":
+#     for i in 1..lim:
+#         let k = MyObj(a:i,s:"test",b:true)
+
+# benchmark "add 2 regular ints":
+#     for i in 1..lim:
+#         var x: int = 3
+#         var y: int = 4
+#         let k = x+y
+
+# benchmark "add 2 GMP Ints":
+#     for i in 1..lim:
+#         var x: Int = newInt(3)
+#         var y: Int = newInt(4)
+#         let k = x+y
+
+# var v1 = valueFromInteger(2)
+# var v2 = valueFromInteger(3)
+
+# type V = object
+#     case kind*: ValueKind:
+#         of stringValue          : s: string
+#         of integerValue         : i*: int
+#         of realValue            : r: float
+#         of booleanValue         : b: bool 
+#         of arrayValue           : a: seq[V]
+#         else: discard
+
+# type W = ref object
+#     case kind: ValueKind:
+#         of integerValue: i:int
+#         else: discard
             
 
-var va1 = V(kind: integerValue, i:2)
-var va2 = V(kind: integerValue, i:3)
+# var va1 = V(kind: integerValue, i:2)
+# var va2 = V(kind: integerValue, i:3)
 
-var wa1 = W(kind:integerValue, i:2)
-var wa2 = W(kind:integerValue, i:3)
+# var wa1 = W(kind:integerValue, i:2)
+# var wa2 = W(kind:integerValue, i:3)
 
-benchmark "straight addition":
-    for  i in 1..lim:
-        let k = 2+3
+# benchmark "straight addition":
+#     for  i in 1..lim:
+#         let k = 2+3
 
-benchmark "boxed addition":
-    for i in 1..lim:
-        let k = valueFromInteger(v1.i + v2.i)
-
-benchmark "boxed addition (objs)":
-    for i in 1..lim:
-        let k = V(kind: integerValue, i:(v1.i + v2.i))
-
-benchmark "boxed addition (w)":
-    for i in 1..lim:
-        let k = W(kind:integerValue, i:(wa1.i + wa2.i))
-
-#echo repr main
-
-# benchmark "map":
+# benchmark "boxed addition":
 #     for i in 1..lim:
-#         let k = toSeq(1..10000).map(proc (x:int):int = 2*x+10)
+#         let k = valueFromInteger(v1.i + v2.i)
 
-# benchmark "map (=>)":
+# benchmark "boxed addition (objs)":
 #     for i in 1..lim:
-#         let k = toSeq(1..10000).map((x)=> 2*x+10)
+#         let k = V(kind: integerValue, i:(v1.i + v2.i))
 
-# benchmark "mapIt":
+# benchmark "boxed addition (w)":
 #     for i in 1..lim:
-#         let k = toSeq(1..10000).mapIt(2*it+10)
+#         let k = W(kind:integerValue, i:(wa1.i + wa2.i))
+
+# #echo repr main
+
+# # benchmark "map":
+# #     for i in 1..lim:
+# #         let k = toSeq(1..10000).map(proc (x:int):int = 2*x+10)
+
+# # benchmark "map (=>)":
+# #     for i in 1..lim:
+# #         let k = toSeq(1..10000).map((x)=> 2*x+10)
+
+# # benchmark "mapIt":
+# #     for i in 1..lim:
+# #         let k = toSeq(1..10000).mapIt(2*it+10)
 
 
-# benchmark "list creation":
+# # benchmark "list creation":
+# #     for i in 1..lim:
+# #         let k = initDoublyLinkedList[(string,Value)]()
+
+# # var z = initDoublyLinkedList[(string,Value)]()
+# # benchmark "list creation 2":
+# #     for i in 1..lim:
+# #         let v = ($i,valueFromInteger(i))
+# #         z.append(v)
+# #         discard z.find(v)
+
+# # var z = initDoublyLinkedList[(string,Value)]()
+# # benchmark "list creation 2":
+# #     for i in 1..lim:
+
+# var a : arr = @[]
+# benchmark "list creation 3":
 #     for i in 1..lim:
-#         let k = initDoublyLinkedList[(string,Value)]()
-
-# var z = initDoublyLinkedList[(string,Value)]()
-# benchmark "list creation 2":
-#     for i in 1..lim:
-#         let v = ($i,valueFromInteger(i))
-#         z.append(v)
-#         discard z.find(v)
-
-# var z = initDoublyLinkedList[(string,Value)]()
-# benchmark "list creation 2":
-#     for i in 1..lim:
-
-var a : arr = @[]
-benchmark "list creation 3":
-    for i in 1..lim:
-        a.add(($i,valueFromInteger(i)))
+#         a.add(($i,valueFromInteger(i)))
 
 # var a : arr = @[]
 # benchmark "list search":
