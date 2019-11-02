@@ -30,3 +30,4 @@ arturo-test-*
 trace.*
 *.profraw
 profile_results.txt
+luac.out
