@@ -94,6 +94,16 @@ proc Core_Print*[F,X,V](f: F, xl: X): V {.inline.} =
     echo v[0].stringify(quoted=false)
     result = v[0]
 
+proc Core_Product*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = f.validate(xl)
+
+    result = A(0)[0]
+
+    var i = 1
+    while i < A(0).len:
+        result = result * A(0)[i]
+        inc(i)
+
 proc Core_Range*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
 
@@ -109,6 +119,16 @@ proc Core_Return*[F,X,V](f: F, xl: X): V {.inline.} =
     ret.value = v[0]
 
     raise ret
+
+proc Core_Sum*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = f.validate(xl)
+
+    result = A(0)[0]
+
+    var i = 1
+    while i < A(0).len:
+        result = result + A(0)[i]
+        inc(i)
 
 proc Core_Syms*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = f.validateOne(xl.list[0],[BV,IV])
