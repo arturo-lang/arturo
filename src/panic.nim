@@ -66,6 +66,9 @@ template InvalidOperationError*(op: string, l: string, r: string) =
 template SymbolNotFoundError*(s: string) =
     raise newException(Exception,"symbol not found: '" & s & "'")
 
+template FunctionNotFoundError*(s: string) =
+    raise newException(Exception,"function not found: '" & s & "'")
+
 template IncorrectArgumentNumberError*(f: string) =
     raise newException(Exception,"incorrect number of arguments for function '" & f & "'")
 
