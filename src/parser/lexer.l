@@ -84,6 +84,8 @@ LETTER_OR_MISC		[a-zA-Z_]
 "slice"												{ return SLICE_CMD; }
 "swap"												{ return SWAP_CMD; }
 "isPrime"											{ return ISPRIME_CMD; }
+"product"											{ return PRODUCT_CMD; }
+"sum"												{ return SUM_CMD; }
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ yylval.str=strdup(yytext); return ID; }
 {DIGIT}+											{ yylval.str=strdup(yytext); return INTEGER; }
