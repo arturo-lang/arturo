@@ -23,10 +23,10 @@ template showMessage(msg:string,final:bool=false) =
         echo "------"
 
 template getCommand(cmdArgs:openArray[string]):string =
-    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --gcc.options.linker=\"-flto\""
-    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math\" --clang.options.linker=\"-flto\""
+    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math \" --gcc.options.linker=\"-flto\""
+    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math \" --clang.options.linker=\"-flto\""
     # --embedsrc --genScript 
-    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache --checks:off " & srcDir & "/main.nim"
+    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache --checks:off --overflowChecks:on " & srcDir & "/main.nim"
 
 template buildParser(forSize:bool=false) = 
     showMessage("Building parser")
