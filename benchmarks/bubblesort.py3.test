@@ -1,0 +1,21 @@
+import random
+
+def bubblesort(seq):
+
+    changed = True
+    while changed:
+        changed = False
+        for i in range(len(seq) - 1):
+            if seq[i] > seq[i+1]:
+                seq[i], seq[i+1] = seq[i+1], seq[i]
+                changed = True
+    return seq
+
+
+lst = list(range(1,2000+1))
+random.shuffle(lst)
+
+bubblesort(lst)
+
+for i in lst:
+	print(i)
