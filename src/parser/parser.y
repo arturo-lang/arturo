@@ -17,7 +17,6 @@
 extern void yyerror(const char* str);
 extern int yyparse(void);
 extern int yylex();
-
 extern int yylineno;
 char* yyfilename;
 
@@ -57,9 +56,10 @@ extern void* newExpressionList();
 extern void* newExpressionListWithExpression(void* x);
 extern void* addExpressionToExpressionList(void* x, void* xl);
 
-extern void* statementFromExpression(void* x, int pos);
-extern void* statementFromExpressions(char* i, void* xl, int ass, int pos);
 extern void* statementFromCommand(int i, void* xl, int pos);
+extern void* statementFromAssignment(char* i, void* xl, int pos);
+extern void* statementFromExpression(void* x, int pos);
+extern void* statementFromExpressions(char* i, void* xl, int pos);
 
 extern void* newStatementList();
 extern void* newStatementListWithStatement(void* s);
@@ -148,7 +148,8 @@ int yywrap() {
 %token <code> SLICE_CMD "slice"
 %token <code> SWAP_CMD "swap"
 %token <code> ISPRIME_CMD "isPrime"
-%token <code> REPEAT_CMD "repeat"
+%token <code> PRODUCT_CMD "product"
+%token <code> SUM_CMD "sum"
 
 %token <str> NEW_LINE "End Of Line"
 
@@ -257,6 +258,8 @@ command 				:	IF_CMD																{ $$ = 0; }
 						|	SLICE_CMD 															{ $$ = 13; }
 						|	SWAP_CMD 															{ $$ = 14; }
 						|	ISPRIME_CMD 														{ $$ = 15; }
+						|	PRODUCT_CMD 														{ $$ = 16; }
+						|	SUM_CMD 															{ $$ = 17; }
 						;
 
 argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
@@ -307,11 +310,11 @@ assignment_id			:	ID
 						;
 
 statement				: 	expression 															{ $$ = statementFromExpression($expression,yylineno); }
-						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,0,yylineno); }
+						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,yylineno); }
 						|	command expression_list												{ $$ = statementFromCommand($command,$expression_list,yylineno); }
-						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),0,yylineno); }
+						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
 						| 	command PIPE statement[previous] 									{ $$ = statementFromCommand($command,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }						
-						| 	assignment_id COLON statement[previous] 							{ $$ = statementFromExpressions($assignment_id,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),1,yylineno); }
+						| 	assignment_id COLON statement[previous] 							{ $$ = statementFromAssignment($assignment_id,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
 						;
 
 statement_list 			:	statement_list[previous] NEW_LINE statement 						{ $$ = addStatementToStatementList($statement, $previous); }
