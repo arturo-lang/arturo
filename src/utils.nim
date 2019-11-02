@@ -26,3 +26,6 @@ iterator reverse*[T](a: seq[T]): T {.inline.} =
     while i > -1:
         yield a[i]
         dec(i)
+
+# template `:=`(x: var seq[T]; v: seq[T]) =
+#     shallowCopy(x, v)
