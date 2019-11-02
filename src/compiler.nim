@@ -10,6 +10,8 @@
 import algorithm, math, os, parseutils, sequtils, strutils, sugar, tables
 import panic, utils
 
+import bignum
+
 #[######################################################
     Type definitions
   ======================================================]#
@@ -93,22 +95,25 @@ type
       ----------------------------------------]#
 
     StatementKind = enum
+        commandStatement,
+        assignmentStatement,
         expressionStatement,
-        normalStatement,
-        commandStatement
+        normalStatement
 
     Statement = ref object
         pos: int
         case kind: StatementKind:
+            of commandStatement:
+                code            : int
+                arguments       : ExpressionList
+            of assignmentStatement:
+                symbol          : string
+                rValue          : ExpressionList
             of expressionStatement:
                 expression      : Expression
             of normalStatement:
                 id              : string
                 expressions     : ExpressionList
-                isAssignment    : bool
-            of commandStatement:
-                code            : int
-                arguments       : ExpressionList
 
     #[----------------------------------------
         StatementList
@@ -150,7 +155,7 @@ type
       ----------------------------------------]#
 
     ValueKind* = enum
-        stringValue, integerValue, realValue, booleanValue,
+        stringValue, integerValue, bigIntegerValue, realValue, booleanValue,
         arrayValue, dictionaryValue, functionValue,
         nullValue, anyValue
 
@@ -158,6 +163,7 @@ type
         case kind*: ValueKind:
             of stringValue          : s: string
             of integerValue         : i*: int
+            of bigIntegerValue      : bi*: Int
             of realValue            : r: float
             of booleanValue         : b: bool 
             of arrayValue           : a: seq[Value]
@@ -183,7 +189,15 @@ proc inspectStack()
 proc valueFromString(v: string): Value {.inline.}
 proc valueFromInteger*(v: int): Value {.inline.}
 proc valueFromInteger(v: string): Value {.inline.}
+proc valueFromBigInteger*(v: Int): Value {.inline.}
+proc valueFromBigInteger*(v: string): Value {.inline.}
 proc valueFromArray(v: seq[Value]): Value {.inline.}
+proc `+`(l: Value, r: Value): Value {.inline.}
+proc `-`(l: Value, r: Value): Value {.inline.}
+proc `*`(l: Value, r: Value): Value {.inline.}
+proc `/`(l: Value, r: Value): Value {.inline.}
+proc `%`(l: Value, r: Value): Value {.inline.}
+proc `^`(l: Value, r: Value): Value {.inline.}
 proc eq(l: Value, r: Value): bool {.inline.}
 proc lt(l: Value, r: Value): bool {.inline.}
 proc gt(l: Value, r: Value): bool {.inline.}
@@ -197,7 +211,7 @@ proc validateOne(f: SystemFunction, x: Expression, req: openArray[ValueKind]): V
 proc evaluate(x: Expression): Value {.inline.}
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
 
-proc statementFromExpressions(i: cstring, xl: ExpressionList, ass: cint, l: cint=0): Statement {.exportc.}
+proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.}
 proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.}
 proc execute(s: Statement, parent: Value = nil): Value {.inline.}
 proc execute(sl: StatementList): Value
@@ -231,6 +245,7 @@ var
 
 template SV():ValueKind         = stringValue
 template IV():ValueKind         = integerValue
+template BIV():ValueKind        = bigIntegerValue
 template RV():ValueKind         = realValue
 template BV():ValueKind         = booleanValue
 template AV():ValueKind         = arrayValue
@@ -240,6 +255,7 @@ template ANY():ValueKind        = anyValue
 
 template S(_:int):string        = v[_].s
 template I(_:int):int           = v[_].i
+template BI(_:int):Int          = v[_].bi
 template R(_:int):float         = v[_].r
 template B(_:int):bool          = v[_].b
 template A(_:int):seq[Value]    = v[_].a
@@ -266,7 +282,7 @@ const
         SystemFunction(name:"if",           call:Core_If,                   req: @[@[BV,FV],@[BV,FV,FV]],                           ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function",        minReq:2,  maxReq:3),
         SystemFunction(name:"get",          call:Core_Get,                  req: @[@[AV,IV],@[DV,SV]],                              ret: @[ANY],            desc:"get element from collection using given index/key",                                               minReq:2,  maxReq:2),
         SystemFunction(name:"loop",         call:Core_Loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],            ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true",               minReq:2,  maxReq:2),
-        SystemFunction(name:"print",        call:Core_Print,                req: @[@[SV],@[AV],@[IV],@[FV],@[BV],@[RV]],            ret: @[SV],             desc:"print value of given expression to screen",                                                       minReq:1,  maxReq:1),
+        SystemFunction(name:"print",        call:Core_Print,                req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],     ret: @[SV],             desc:"print value of given expression to screen",                                                       minReq:1,  maxReq:1),
         SystemFunction(name:"range",        call:Core_Range,                req: @[@[IV,IV]],                                       ret: @[AV],             desc:"get array from given range (from..to) with optional step",                                        minReq:2,  maxReq:2),
         SystemFunction(name:"return",       call:Core_Return,               req: @[@[ANY]],                                         ret: @[ANY],            desc:"break execution and return given value",                                                          minReq:1,  maxReq:1),
         #SystemFunction(name:"syms",        call:Core_Syms,                 req: @[@[ANY]],                                         ret: @[ANY],            desc:"print symbol stack",                                                                              minReq:1,  maxReq:1),
@@ -282,7 +298,9 @@ const
         SystemFunction(name:"slice",        call:Collections_Slice,         req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],      ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point",                                     minReq:2,  maxReq:3),
         SystemFunction(name:"swap",         call:Collections_Swap,          req: @[@[AV,IV,IV]],                                    ret: @[AV],             desc:"swap array elements at given indices",                                                            minReq:3,  maxReq:3),
 
-        SystemFunction(name:"isPrime",      call:Numbers_IsPrime,           req: @[@[IV]],                                          ret: @[BV],             desc:"check if given number is prime",                                                                  minReq:1,  maxReq:1)
+        SystemFunction(name:"isPrime",      call:Numbers_IsPrime,           req: @[@[IV]],                                          ret: @[BV],             desc:"check if given number is prime",                                                                  minReq:1,  maxReq:1),
+        SystemFunction(name:"product",      call:Core_Product,              req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return product of elements of given array",                                                       minReq:1,  maxReq:1),
+        SystemFunction(name:"sum",          call:Core_Sum,                  req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return sum of elements of given array",                                                           minReq:1,  maxReq:1)
     ]
 
 #[######################################################
@@ -401,18 +419,18 @@ proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} =
         Stack[^1].updateOrSet(k,v)
         result = v
 
-template storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
-    syms.map((x) => (x[0],getAndSetSymbol(x[0],x[1])))
+# template storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
+#     syms.map((x) => (x[0],getAndSetSymbol(x[0],x[1])))
 
-template storeSymbol(sym: (string,Value)):seq[(string,Value)] =
-    @[(sym[0],getAndSetSymbol(sym[0],sym[1]))]
+# template storeSymbol(sym: (string,Value)):seq[(string,Value)] =
+#     @[(sym[0],getAndSetSymbol(sym[0],sym[1]))]
 
-template restoreSymbols(syms: openArray[(string,Value)]) =
-    var i = 0
-    while i < syms.len:
-        if syms[i][1]!=ConstNull.v: 
-            discard setSymbol(syms[i][0],syms[i][1])
-        inc(i)
+# template restoreSymbols(syms: openArray[(string,Value)]) =
+#     var i = 0
+#     while i < syms.len:
+#         if syms[i][1]!=ConstNull.v: 
+#             discard setSymbol(syms[i][0],syms[i][1])
+#         inc(i)
 
 proc inspectStack() =
     var i = 0
@@ -437,16 +455,24 @@ proc inspectStack() =
   ----------------------------------------]#
 
 proc valueFromString(v: string): Value {.inline.} =
-    result = Value(kind: stringValue, s: v)
+    Value(kind: stringValue, s: v)
 
 proc valueFromInteger*(v: int): Value {.inline.} =
-    result = Value(kind: integerValue, i: v)
+    Value(kind: integerValue, i: v)
 
 proc valueFromInteger(v: string): Value {.inline.} =
     var intValue: int
-    discard parseInt(v, intValue)
+    try: 
+        discard parseInt(v, intValue)
+        result = valueFromInteger(intValue)
+    except: 
+        result = valueFromBigInteger(v)
 
-    result = valueFromInteger(intValue)
+proc valueFromBigInteger*(v: Int): Value {.inline.} =
+    Value(kind: bigIntegerValue, bi: v)
+
+proc valueFromBigInteger*(v: string): Value {.inline.} =
+    Value(kind: bigIntegerValue, bi: newInt(v))
 
 proc valueFromReal(v: float): Value {.inline.} =
     result = Value(kind: realValue, r: v)
@@ -500,13 +526,22 @@ proc `+`(l: Value, r: Value): Value {.inline.} =
             case r.kind
                 of stringValue: result = valueFromString(l.s & r.s)
                 of integerValue: result = valueFromString(l.s & $(r.i))
+                of bigIntegerValue: result = valueFromString(l.s & $(r.bi))
                 of realValue: result = valueFromString(l.s & $(r.r))
                 else: result = valueFromString(l.s & r.stringify())
         of integerValue:
             case r.kind
                 of stringValue: result = valueFromString($(l.i) & r.s)
-                of integerValue: result = valueFromInteger(l.i + r.i)
+                of integerValue: 
+                    try: result = valueFromInteger(l.i + r.i)
+                    except Exception as e: result = valueFromBigInteger(newInt(l.i)+r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.i+r.bi)
                 of realValue: result = valueFromReal(float(l.i)+r.r)
+                else: InvalidOperationError("+",$(l.kind),$(r.kind))
+        of bigIntegerValue:
+            case r.kind
+                of integerValue: result = valueFromBigInteger(l.bi + r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.bi+r.bi)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
@@ -536,12 +571,19 @@ proc `-`(l: Value, r: Value): Value {.inline.} =
             case r.kind
                 of stringValue: result = valueFromString(l.s.replace(r.s,""))
                 of integerValue: result = valueFromString(l.s.replace($(r.i),""))
+                of bigIntegerValue: result = valueFromString(l.s.replace($(r.bi),""))
                 of realValue: result = valueFromString(l.s.replace($(r.r),""))
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromInteger(l.i - r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.i - r.bi)
                 of realValue: result = valueFromReal(float(l.i)-r.r)
+                else: InvalidOperationError("-",$(l.kind),$(r.kind))
+        of bigIntegerValue:
+            case r.kind
+                of integerValue: result = valueFromBigInteger(l.bi - r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.bi - r.bi)
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
@@ -578,8 +620,16 @@ proc `*`(l: Value, r: Value): Value {.inline.} =
         of integerValue:
             case r.kind
                 of stringValue: result = valueFromString(r.s.repeat(l.i))
-                of integerValue: result = valueFromInteger(l.i * r.i)
+                of integerValue: 
+                    try: result = valueFromInteger(l.i * r.i)
+                    except Exception as e: result = valueFromBigInteger(newInt(l.i)*r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.i * r.bi)
                 of realValue: result = valueFromReal(float(l.i)*r.r)
+                else: InvalidOperationError("*",$(l.kind),$(r.kind))
+        of bigIntegerValue:
+            case r.kind
+                of integerValue: result = valueFromBigInteger(l.bi * r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.bi * r.bi)
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
@@ -678,7 +728,13 @@ proc `%`(l: Value, r: Value): Value {.inline.} =
         of integerValue:
             case r.kind
                 of integerValue: result = valueFromInteger(l.i mod r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.i mod r.bi)
                 of realValue: result = valueFromInteger(l.i mod int(r.r))
+                else: InvalidOperationError("%",$(l.kind),$(r.kind))
+        of bigIntegerValue:
+            case r.kind
+                of integerValue: result = valueFromBigInteger(l.bi mod r.i)
+                of bigIntegerValue: result = valueFromBigInteger(l.bi mod r.bi)
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
@@ -706,6 +762,10 @@ proc `^`(l: Value, r: Value): Value {.inline.} =
                 of integerValue: result = valueFromInteger(l.i ^ r.i)
                 of realValue: result = valueFromInteger(l.i ^ int(r.r))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
+        of bigIntegerValue:
+            case r.kind
+                of integerValue: result = valueFromBigInteger(l.bi ^ culong(r.i))
+                else: InvalidOperationError("^",$(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue: result = valueFromInteger(int(l.r) ^ r.i)
@@ -725,11 +785,13 @@ proc eq(l: Value, r: Value): bool {.inline.} =
         of integerValue:
             case r.kind
                 of integerValue: result = l.i==r.i
+                of bigIntegerValue: result = l.i==r.bi
                 of realValue: result = l.i==int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue: result = int(l.r)==r.i
+                of bigIntegerValue: result = int(l.r)==r.bi
                 of realValue: result = l.r==r.r
                 else: NotComparableError($(l.kind),$(r.kind))
         of booleanValue:
@@ -776,11 +838,13 @@ proc lt(l: Value, r: Value): bool {.inline.} =
         of integerValue:
             case r.kind
                 of integerValue: result = l.i<r.i
+                of bigIntegerValue: result = l.i<r.bi
                 of realValue: result = l.i<int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
             case r.kind
                 of integerValue: result = int(l.r)<r.i
+                of bigIntegerValue: result = int(l.r)<r.bi
                 of realValue: result = l.r<r.r
                 else: NotComparableError($(l.kind),$(r.kind))
         of arrayValue:
@@ -805,6 +869,7 @@ proc gt(l: Value, r: Value): bool {.inline.} =
         of integerValue:
             case r.kind
                 of integerValue: result = l.i>r.i
+                of bigIntegerValue: result = l.i>r.bi
                 of realValue: result = l.i>int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
@@ -830,6 +895,7 @@ proc stringify*(v: Value, quoted: bool = true): string =
             if quoted: result = escape(v.s)
             else: result = v.s
         of integerValue         :   result = $(v.i)
+        of bigIntegerValue      :   result = $(v.bi)
         of realValue            :   result = $(v.r)
         of booleanValue         :   result = $(v.b)
         of arrayValue           :
@@ -894,19 +960,21 @@ proc execute(f: Function, v: Value): Value {.inline.} =
             Stack[1] = oldSeq
             if Stack[1].len==0: popContext()
     else:
-        var stored: seq[(string,Value)]
-
+        var stored: Value = nil
         if v!=NULL:
             if f.args.len>0:
                 if v.kind == AV: 
-                    stored = storeSymbols(zip(f.args,v.a))
-                else: stored = storeSymbol((f.args[0],v))
-            else: 
-                stored = storeSymbol(("&",v))
+                    var i = 0
+                    while i<f.args.len:
+                        discard setSymbol(f.args[i],v.a[i],redefine=true)
+                        inc(i)
+                else: discard setSymbol(f.args[0],v,redefine=true)
+            else: stored = getAndSetSymbol("&",v)
 
         try                         : result = f.body.execute()
         except ReturnValue as ret   : raise
-        finally                     : restoreSymbols(stored)
+        finally                     : 
+            if stored!=nil: discard setSymbol("&",stored)
 
 proc execute(f: SystemFunction, xl: ExpressionList): Value {.inline.} =
     f.call(f,xl)
@@ -1055,10 +1123,10 @@ proc evaluate(xl: ExpressionList, forceArray: bool=false): Value =
   ----------------------------------------]#
 
 proc argumentFromIdentifier(i: cstring): Argument {.exportc.} =
-    result = Argument(kind: identifierArgument, i: $i)
+    Argument(kind: identifierArgument, i: $i)
 
 proc argumentFromCommandIdentifier(i: cint): Argument {.exportc.} =
-    result = Argument(kind: identifierArgument, i: SystemFunctions[i].name)
+    Argument(kind: identifierArgument, i: SystemFunctions[i].name)
 
 proc argumentFromStringLiteral(l: cstring): Argument {.exportc.} =
     if ConstStrings.hasKey($l):
@@ -1068,14 +1136,14 @@ proc argumentFromStringLiteral(l: cstring): Argument {.exportc.} =
         ConstStrings[$l] = result
 
 proc argumentFromIntegerLiteral(l: cstring): Argument {.exportc.} =
-    result = Argument(kind: literalArgument, v: valueFromInteger($l))
+    Argument(kind: literalArgument, v: valueFromInteger($l))
 
 proc argumentFromRealLiteral(l: cstring): Argument {.exportc.} =
-    result = Argument(kind: literalArgument, v: valueFromReal($l))
+    Argument(kind: literalArgument, v: valueFromReal($l))
 
 proc argumentFromBooleanLiteral(l: cstring): Argument {.exportc.} =
-    if l=="true": result = ConstTrue
-    else: result = ConstFalse
+    if l=="true": ConstTrue
+    else: ConstFalse
 
 proc expressionFromKeyPathPart(part: KeyPathPart, isFirst: bool = false): Expression =
     case part.kind
@@ -1104,25 +1172,21 @@ proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
     result = exprA.a
 
 proc argumentFromNullLiteral(): Argument {.exportc.} =
-    result = ConstNull
+    ConstNull
 
 proc argumentFromArrayLiteral(l: ExpressionList): Argument {.exportc.} =
-    if l==nil:
-        result = Argument(kind: arrayArgument, a: newExpressionList())
-    else:
-        result = Argument(kind: arrayArgument, a: l)
+    if l==nil: Argument(kind: arrayArgument, a: newExpressionList())
+    else: Argument(kind: arrayArgument, a: l)
 
 proc argumentFromDictionaryLiteral(l: StatementList): Argument {.exportc.} =
-    result = Argument(kind: dictionaryArgument, d: l)
+    Argument(kind: dictionaryArgument, d: l)
 
 proc argumentFromFunctionLiteral(l: StatementList, args: cstring = ""): Argument {.exportc.} =
-    if args=="":
-        result = Argument(kind: functionArgument, f: newUserFunction(l,@[]))
-    else:
-        result = Argument(kind: functionArgument, f: newUserFunction(l,($args).split(",")))
+    if args=="": Argument(kind: functionArgument, f: newUserFunction(l,@[]))
+    else: Argument(kind: functionArgument, f: newUserFunction(l,($args).split(",")))
 
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} =
-    result = Argument(kind: inlineCallArgument, c: l)
+    Argument(kind: inlineCallArgument, c: l)
 
 proc getValue(a: Argument): Value {.inline.} =
     {.computedGoto.}
@@ -1152,14 +1216,17 @@ proc getValue(a: Argument): Value {.inline.} =
     Statement
   ----------------------------------------]#
 
+proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.} =
+    result = Statement(kind: commandStatement, code: i, arguments: xl, pos: l)
+
+proc statementFromAssignment(i: cstring, xl: ExpressionList, l: cint): Statement {.exportc.} =
+    result = Statement(kind: assignmentStatement, symbol: $i, rValue: xl, pos: l)
+
 proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
     result = Statement(kind: expressionStatement, expression: x, pos: l)
 
-proc statementFromExpressions(i: cstring, xl: ExpressionList, ass: cint, l: cint=0): Statement {.exportc.} =
-    result = Statement(kind: normalStatement, id: $i, expressions: xl, isAssignment: bool(ass), pos: l)
-
-proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.} =
-    result = Statement(kind: commandStatement, code: i, arguments: xl, pos: l)
+proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
+    result = Statement(kind: normalStatement, id: $i, expressions: xl, pos: l)
 
 proc executeAssign(s: Statement, parent: Value = nil): Value {.inline.} =
     var ev = s.expressions.evaluate()
@@ -1179,25 +1246,25 @@ proc executeAssign(s: Statement, parent: Value = nil): Value {.inline.} =
         result = ev    
 
 proc execute(s: Statement, parent: Value = nil): Value {.inline.} = 
-
     case s.kind
+        of assignmentStatement:
+            result = s.executeAssign(parent)
+        of commandStatement:
+            result = SystemFunctions[s.code].execute(s.expressions) 
         of expressionStatement:
             result = s.expression.evaluate()
         of normalStatement:
-            if s.isAssignment:
-                result = s.executeAssign(parent)
-            else:
-                let sym = getSymbol(s.id)
-                if sym==nil: SymbolNotFoundError(s.id)
+            let sym = getSymbol(s.id)
+            if sym==nil: SymbolNotFoundError(s.id)
+            else: 
+                if sym.kind==FV:
+                    result = sym.f.execute(s.expressions.evaluate(forceArray=true))
                 else: 
-                    if s.expressions.list.len > 0: 
-                        if sym.kind==FV:
-                            result = sym.f.execute(s.expressions.evaluate(forceArray=true))
-                        else: 
-                            result = expressionFromArgument(argumentFromArrayLiteral(addExpressionToExpressionListFront(expressionFromArgument(argumentFromIdentifier(s.id)),copyExpressionList(s.expressions)))).evaluate()
-                    else: result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
-        of commandStatement:
-            result = SystemFunctions[s.code].execute(s.expressions)     
+                    if s.expressions.list.len > 0:
+                        FunctionNotFoundError(s.id)
+                    else:
+                        result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
+            
 
 #[----------------------------------------
     StatementList
