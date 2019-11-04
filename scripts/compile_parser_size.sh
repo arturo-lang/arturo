@@ -1,4 +1,4 @@
-flex src/parser/lexer.l
+flex src/parser/lexer_final.l
 bison -d src/parser/parser.y
 gcc -Os lex.yy.c -c
 gcc -Os parser.tab.c -c
