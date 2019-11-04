@@ -26,10 +26,15 @@ template getCommand(cmdArgs:openArray[string]):string =
     let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math \" --gcc.options.linker=\"-flto\""
     let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math \" --clang.options.linker=\"-flto\""
     # --embedsrc --genScript 
-    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache --checks:off --overflowChecks:on " & srcDir & "/main.nim"
+    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache --embedsrc --checks:off --overflowChecks:on " & srcDir & "/main.nim"
+
+template buildLibrary(forSize:bool=false) = 
+    showMessage("Registering system library")
+    exec "ruby scripts/register_system_functions.rb"
 
 template buildParser(forSize:bool=false) = 
     showMessage("Building parser")
+    exec "ruby scripts/register_system_functions.rb"
     if forSize:
         exec "bash scripts/compile_parser_size.sh"
     else:
@@ -127,10 +132,13 @@ template stripBinary() =
 template cleanUp() =
     showMessage "Cleaning up"
     exec "rm *.c *.a *.h *.o"
+    exec "rm src/parser/lexer_final.l"
+    exec "rm src/system.nim"
 
 # Tasks
 
 task release, "Build a production-ready optimized release":
+    buildLibrary()
     buildParser()
     updateBuild()
     compileCore()
@@ -139,6 +147,7 @@ task release, "Build a production-ready optimized release":
     showMessage "Done :)", true
 
 task mini, "Build a production-ready optimized mini-release":
+    buildLibrary()
     buildParser(forSize=true)
     updateBuild()
     compileMini()
@@ -147,18 +156,21 @@ task mini, "Build a production-ready optimized mini-release":
     showMessage "Done :)", true
 
 task profile, "Build a version for profiling":
+    buildLibrary()
     buildParser()
     profileCore()
     cleanUp()
     showMessage "Done :)", true
 
 task memory, "Build a version for memory profiling":
+    buildLibrary()
     buildParser()
     profileMemory()
     cleanUp()
     showMessage "Done :)", true
 
 task debug, "Build a version for debugging":
+    buildLibrary()
     buildParser()
     debugCore()
     cleanUp()
