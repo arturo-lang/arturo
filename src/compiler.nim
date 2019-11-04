@@ -505,13 +505,13 @@ proc valueFromFunction(v: Function): Value {.inline.} =
 
 proc valueFromValue(v: Value): Value =
     {.computedGoto.}
-    case v.kind
-        of stringValue: result = valueFromString(v.s)
-        of integerValue: result = valueFromInteger(v.i)
-        of realValue: result = valueFromReal(v.r)
-        of arrayValue: result = valueFromArray(v.a.map((x) => valueFromValue(x)))
-        of dictionaryValue: result = valueFromDictionary(Context(list:v.d.list.map((x) => (x[0],valueFromValue(x[1])))))
-        else: result = v
+    result = case v.kind
+        of stringValue: valueFromString(v.s)
+        of integerValue: valueFromInteger(v.i)
+        of realValue: valueFromReal(v.r)
+        of arrayValue: valueFromArray(v.a.map((x) => valueFromValue(x)))
+        of dictionaryValue: valueFromDictionary(Context(list:v.d.list.map((x) => (x[0],valueFromValue(x[1])))))
+        else: v
 
 proc findValueInArray(v: Value, lookup: Value): int =
     var i = 0
@@ -524,36 +524,36 @@ proc `+`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
         of stringValue:
-            case r.kind
-                of stringValue: result = valueFromString(l.s & r.s)
-                of integerValue: result = valueFromString(l.s & $(r.i))
-                of bigIntegerValue: result = valueFromString(l.s & $(r.bi))
-                of realValue: result = valueFromString(l.s & $(r.r))
-                else: result = valueFromString(l.s & r.stringify())
+            result = case r.kind
+                of stringValue: valueFromString(l.s & r.s)
+                of integerValue: valueFromString(l.s & $(r.i))
+                of bigIntegerValue: valueFromString(l.s & $(r.bi))
+                of realValue: valueFromString(l.s & $(r.r))
+                else: valueFromString(l.s & r.stringify())
         of integerValue:
-            case r.kind
-                of stringValue: result = valueFromString($(l.i) & r.s)
+            result = case r.kind
+                of stringValue: valueFromString($(l.i) & r.s)
                 of integerValue: 
-                    try: result = valueFromInteger(l.i + r.i)
-                    except Exception as e: result = valueFromBigInteger(newInt(l.i)+r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.i+r.bi)
-                of realValue: result = valueFromReal(float(l.i)+r.r)
+                    try: valueFromInteger(l.i + r.i)
+                    except Exception as e: valueFromBigInteger(newInt(l.i)+r.i)
+                of bigIntegerValue: valueFromBigInteger(l.i+r.bi)
+                of realValue: valueFromReal(float(l.i)+r.r)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of bigIntegerValue:
-            case r.kind
-                of integerValue: result = valueFromBigInteger(l.bi + r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.bi+r.bi)
+            result = case r.kind
+                of integerValue: valueFromBigInteger(l.bi + r.i)
+                of bigIntegerValue: valueFromBigInteger(l.bi+r.bi)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of stringValue: result = valueFromString($(l.r) & r.s)
-                of integerValue: result = valueFromReal(l.r + float(r.i))
-                of realValue: result = valueFromReal(l.r+r.r)
+            result = case r.kind
+                of stringValue: valueFromString($(l.r) & r.s)
+                of integerValue: valueFromReal(l.r + float(r.i))
+                of realValue: valueFromReal(l.r+r.r)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
         of arrayValue:
             if r.kind!=arrayValue:
                 result = valueFromArray(l.a & r)
-            else:
+            else: 
                 result = valueFromArray(l.a & r.a)
         of dictionaryValue:
             if r.kind==dictionaryValue:
@@ -569,27 +569,27 @@ proc `-`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
         of stringValue:
-            case r.kind
-                of stringValue: result = valueFromString(l.s.replace(r.s,""))
-                of integerValue: result = valueFromString(l.s.replace($(r.i),""))
-                of bigIntegerValue: result = valueFromString(l.s.replace($(r.bi),""))
-                of realValue: result = valueFromString(l.s.replace($(r.r),""))
+            result = case r.kind
+                of stringValue: valueFromString(l.s.replace(r.s,""))
+                of integerValue: valueFromString(l.s.replace($(r.i),""))
+                of bigIntegerValue: valueFromString(l.s.replace($(r.bi),""))
+                of realValue: valueFromString(l.s.replace($(r.r),""))
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of integerValue:
-            case r.kind
-                of integerValue: result = valueFromInteger(l.i - r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.i - r.bi)
-                of realValue: result = valueFromReal(float(l.i)-r.r)
+            result = case r.kind
+                of integerValue: valueFromInteger(l.i - r.i)
+                of bigIntegerValue: valueFromBigInteger(l.i - r.bi)
+                of realValue: valueFromReal(float(l.i)-r.r)
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of bigIntegerValue:
-            case r.kind
-                of integerValue: result = valueFromBigInteger(l.bi - r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.bi - r.bi)
+            result = case r.kind
+                of integerValue: valueFromBigInteger(l.bi - r.i)
+                of bigIntegerValue: valueFromBigInteger(l.bi - r.bi)
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of integerValue: result = valueFromReal(l.r - float(r.i))
-                of realValue: result = valueFromReal(l.r-r.r)
+            result = case r.kind
+                of integerValue: valueFromReal(l.r - float(r.i))
+                of realValue: valueFromReal(l.r-r.r)
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromValue(l)
@@ -614,29 +614,29 @@ proc `*`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
         of stringValue:
-            case r.kind
-                of integerValue: result = valueFromString(l.s.repeat(r.i))
-                of realValue: result = valueFromString(l.s.repeat(int(r.r)))
+            result = case r.kind
+                of integerValue: valueFromString(l.s.repeat(r.i))
+                of realValue: valueFromString(l.s.repeat(int(r.r)))
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of integerValue:
-            case r.kind
-                of stringValue: result = valueFromString(r.s.repeat(l.i))
+            result = case r.kind
+                of stringValue: valueFromString(r.s.repeat(l.i))
                 of integerValue: 
-                    try: result = valueFromInteger(l.i * r.i)
-                    except Exception as e: result = valueFromBigInteger(newInt(l.i)*r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.i * r.bi)
-                of realValue: result = valueFromReal(float(l.i)*r.r)
+                    try: valueFromInteger(l.i * r.i)
+                    except Exception as e: valueFromBigInteger(newInt(l.i)*r.i)
+                of bigIntegerValue: valueFromBigInteger(l.i * r.bi)
+                of realValue: valueFromReal(float(l.i)*r.r)
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of bigIntegerValue:
-            case r.kind
-                of integerValue: result = valueFromBigInteger(l.bi * r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.bi * r.bi)
+            result = case r.kind
+                of integerValue: valueFromBigInteger(l.bi * r.i)
+                of bigIntegerValue: valueFromBigInteger(l.bi * r.bi)
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of stringValue: result = valueFromString(r.s.repeat(int(l.r)))
-                of integerValue: result = valueFromReal(l.r * float(r.i))
-                of realValue: result = valueFromReal(l.r*r.r)
+            result = case r.kind
+                of stringValue: valueFromString(r.s.repeat(int(l.r)))
+                of integerValue: valueFromReal(l.r * float(r.i))
+                of realValue: valueFromReal(l.r*r.r)
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromArray(@[])
@@ -683,14 +683,14 @@ proc `/`(l: Value, r: Value): Value {.inline.} =
 
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of integerValue:
-            case r.kind
-                of integerValue: result = valueFromReal(l.i / r.i)
-                of realValue: result = valueFromReal(float(l.i) / r.r)
+            result = case r.kind
+                of integerValue: valueFromReal(l.i / r.i)
+                of realValue: valueFromReal(float(l.i) / r.r)
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of integerValue: result = valueFromReal(l.r / float(r.i))
-                of realValue: result = valueFromReal(l.r / r.r)
+            result = case r.kind
+                of integerValue: valueFromReal(l.r / float(r.i))
+                of realValue: valueFromReal(l.r / r.r)
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromArray(@[])
@@ -727,20 +727,20 @@ proc `%`(l: Value, r: Value): Value {.inline.} =
 
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of integerValue:
-            case r.kind
-                of integerValue: result = valueFromInteger(l.i mod r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.i mod r.bi)
-                of realValue: result = valueFromInteger(l.i mod int(r.r))
+            result = case r.kind
+                of integerValue: valueFromInteger(l.i mod r.i)
+                of bigIntegerValue: valueFromBigInteger(l.i mod r.bi)
+                of realValue: valueFromInteger(l.i mod int(r.r))
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of bigIntegerValue:
-            case r.kind
-                of integerValue: result = valueFromBigInteger(l.bi mod r.i)
-                of bigIntegerValue: result = valueFromBigInteger(l.bi mod r.bi)
+            result = case r.kind
+                of integerValue: valueFromBigInteger(l.bi mod r.i)
+                of bigIntegerValue: valueFromBigInteger(l.bi mod r.bi)
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of integerValue: result = valueFromInteger(int(l.r) mod r.i)
-                of realValue: result = valueFromInteger(int(l.r) mod int(r.r))
+            result = case r.kind
+                of integerValue: valueFromInteger(int(l.r) mod r.i)
+                of realValue: valueFromInteger(int(l.r) mod int(r.r))
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
         of arrayValue:
             result = valueFromArray(@[])
@@ -759,18 +759,18 @@ proc `^`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
         of integerValue:
-            case r.kind
-                of integerValue: result = valueFromInteger(l.i ^ r.i)
-                of realValue: result = valueFromInteger(l.i ^ int(r.r))
+            result = case r.kind
+                of integerValue: valueFromInteger(l.i ^ r.i)
+                of realValue: valueFromInteger(l.i ^ int(r.r))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
         of bigIntegerValue:
-            case r.kind
-                of integerValue: result = valueFromBigInteger(l.bi ^ culong(r.i))
+            result = case r.kind
+                of integerValue: valueFromBigInteger(l.bi ^ culong(r.i))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of integerValue: result = valueFromInteger(int(l.r) ^ r.i)
-                of realValue: result = valueFromReal(pow(l.r,r.r))
+            result = case r.kind
+                of integerValue: valueFromInteger(int(l.r) ^ r.i)
+                of realValue: valueFromReal(pow(l.r,r.r))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
         else:
             InvalidOperationError("^",$(l.kind),$(r.kind))
@@ -779,25 +779,25 @@ proc eq(l: Value, r: Value): bool {.inline.} =
     {.computedGoto.}
     case l.kind
         of stringValue:
-            case r.kind
-                of stringValue: result = l.s==r.s
+            result = case r.kind
+                of stringValue: l.s==r.s
                 else: NotComparableError($(l.kind),$(r.kind))
                     
         of integerValue:
-            case r.kind
-                of integerValue: result = l.i==r.i
-                of bigIntegerValue: result = l.i==r.bi
-                of realValue: result = l.i==int(r.r)
+            result = case r.kind
+                of integerValue: l.i==r.i
+                of bigIntegerValue: l.i==r.bi
+                of realValue: l.i==int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of integerValue: result = int(l.r)==r.i
-                of bigIntegerValue: result = int(l.r)==r.bi
-                of realValue: result = l.r==r.r
+            result = case r.kind
+                of integerValue: int(l.r)==r.i
+                of bigIntegerValue: int(l.r)==r.bi
+                of realValue: l.r==r.r
                 else: NotComparableError($(l.kind),$(r.kind))
         of booleanValue:
-            case r.kind
-                of booleanValue: result = l==r
+            result = case r.kind
+                of booleanValue: l==r
                 else: NotComparableError($(l.kind),$(r.kind))
 
         of arrayValue:
@@ -832,29 +832,29 @@ proc lt(l: Value, r: Value): bool {.inline.} =
     {.computedGoto.}
     case l.kind
         of stringValue:
-            case r.kind
-                of stringValue: result = l.s<r.s
+            result = case r.kind
+                of stringValue: l.s<r.s
                 else: NotComparableError($(l.kind),$(r.kind))
                     
         of integerValue:
-            case r.kind
-                of integerValue: result = l.i<r.i
-                of bigIntegerValue: result = l.i<r.bi
-                of realValue: result = l.i<int(r.r)
+            result = case r.kind
+                of integerValue: l.i<r.i
+                of bigIntegerValue: l.i<r.bi
+                of realValue: l.i<int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of integerValue: result = int(l.r)<r.i
-                of bigIntegerValue: result = int(l.r)<r.bi
-                of realValue: result = l.r<r.r
+            result = case r.kind
+                of integerValue: int(l.r)<r.i
+                of bigIntegerValue: int(l.r)<r.bi
+                of realValue: l.r<r.r
                 else: NotComparableError($(l.kind),$(r.kind))
         of arrayValue:
-            case r.kind
-                of arrayValue: result = l.a.len < r.a.len
+            result = case r.kind
+                of arrayValue: l.a.len < r.a.len
                 else: NotComparableError($(l.kind),$(r.kind))
         of dictionaryValue:
-            case r.kind
-                of dictionaryValue: result = l.d.keys.len < r.d.keys.len
+            result = case r.kind
+                of dictionaryValue: l.d.keys.len < r.d.keys.len
                 else: NotComparableError($(l.kind),$(r.kind))
 
         else: NotComparableError($(l.kind),$(r.kind))
@@ -863,28 +863,28 @@ proc gt(l: Value, r: Value): bool {.inline.} =
     {.computedGoto.}
     case l.kind
         of stringValue:
-            case r.kind
-                of stringValue: result = l.s>r.s
+            result = case r.kind
+                of stringValue: l.s>r.s
                 else: NotComparableError($(l.kind),$(r.kind))
                     
         of integerValue:
-            case r.kind
-                of integerValue: result = l.i>r.i
-                of bigIntegerValue: result = l.i>r.bi
-                of realValue: result = l.i>int(r.r)
+            result = case r.kind
+                of integerValue: l.i>r.i
+                of bigIntegerValue: l.i>r.bi
+                of realValue: l.i>int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of realValue:
-            case r.kind
-                of integerValue: result = int(l.r)>r.i
-                of realValue: result = l.r>r.r
+            result = case r.kind
+                of integerValue: int(l.r)>r.i
+                of realValue: l.r>r.r
                 else: NotComparableError($(l.kind),$(r.kind))
         of arrayValue:
-            case r.kind
-                of arrayValue: result = l.a.len > r.a.len
+            result = case r.kind
+                of arrayValue: l.a.len > r.a.len
                 else: NotComparableError($(l.kind),$(r.kind))
         of dictionaryValue:
-            case r.kind
-                of dictionaryValue: result = l.d.keys.len > r.d.keys.len
+            result = case r.kind
+                of dictionaryValue: l.d.keys.len > r.d.keys.len
                 else: NotComparableError($(l.kind),$(r.kind))
 
         else: NotComparableError($(l.kind),$(r.kind))
