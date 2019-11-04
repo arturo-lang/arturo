@@ -7,10 +7,9 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, math, os, parseutils, sequtils, strutils, sugar, tables
-import panic, utils
-
+import algorithm, macros, math, os, parseutils, sequtils, strutils, sugar, tables
 import bignum
+import panic
 
 #[######################################################
     Type definitions
@@ -28,7 +27,7 @@ type
         KeyPath
       ----------------------------------------]#
 
-    KeyPathPartKind = enum
+    KeyPathPartKind {.size: sizeof(cint),pure.} = enum
         stringKeyPathPart,
         integerKeyPathPart,
         inlineKeyPathPart
@@ -46,7 +45,7 @@ type
         Argument
       ----------------------------------------]#
     
-    ArgumentKind = enum
+    ArgumentKind {.size: sizeof(cint),pure.} = enum
         identifierArgument, 
         literalArgument,
         arrayArgument,
@@ -67,7 +66,7 @@ type
         Expression
       ----------------------------------------]#
 
-    ExpressionOperator = enum
+    ExpressionOperator {.size: sizeof(cint),pure.} = enum
         PLUS_SG, MINUS_SG, MULT_SG, DIV_SG, MOD_SG, POW_SG,
         EQ_OP, GE_OP, LE_OP, GT_OP, LT_OP, NE_OP
 
@@ -95,7 +94,7 @@ type
         Statement
       ----------------------------------------]#
 
-    StatementKind = enum
+    StatementKind {.size: sizeof(cint),pure.} = enum
         commandStatement,
         assignmentStatement,
         expressionStatement,
@@ -127,21 +126,15 @@ type
         Function
       ----------------------------------------]#
 
-    FunctionKind = enum
-        userFunction, systemFunction
-
-    FunctionCall[F,X,V]     = proc(f:F, xl: X): V {.inline.}
     FunctionConstraints     = seq[seq[ValueKind]]
     FunctionReturns         = seq[ValueKind]
 
     SystemFunction* = object
+        lib*            : string
         name*           : string
-        call            : FunctionCall[SystemFunction,ExpressionList,Value]
         req             : FunctionConstraints
         ret             : FunctionReturns
         desc            : string
-        minReq          : int
-        maxReq          : int
 
     Function* = ref object
         id              : string
@@ -155,7 +148,7 @@ type
         Value
       ----------------------------------------]#
 
-    ValueKind* = enum
+    ValueKind* {.pure.} = enum
         stringValue, integerValue, bigIntegerValue, realValue, booleanValue,
         arrayValue, dictionaryValue, functionValue,
         nullValue, anyValue
@@ -204,17 +197,14 @@ proc lt(l: Value, r: Value): bool {.inline.}
 proc gt(l: Value, r: Value): bool {.inline.}
 proc stringify*(v: Value, quoted: bool = true): string
 
-proc newSystemFunction(n: string, f: FunctionCall[SystemFunction,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = ""): SystemFunction
 proc execute(f: Function, v: Value): Value {.inline.} 
-proc validate(f: SystemFunction, xl: ExpressionList): seq[Value] {.inline.}
-proc validateOne(f: SystemFunction, x: Expression, req: openArray[ValueKind]): Value
 
 proc evaluate(x: Expression): Value {.inline.}
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
 
 proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.}
 proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.}
-proc execute(s: Statement, parent: Value = nil): Value {.inline.}
+proc execute(stm: Statement, parent: Value = nil): Value {.inline.}
 proc execute(sl: StatementList): Value
 
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
@@ -277,31 +267,30 @@ include lib/numbers
 
 const
     SystemFunctions* = @[
-        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        #              Name                 Proc                            Args                                                    Return                  Description                                                                                             MinR       MaxR
-        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        SystemFunction(name:"if",           call:Core_If,                   req: @[@[BV,FV],@[BV,FV,FV]],                           ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function",        minReq:2,  maxReq:3),
-        SystemFunction(name:"get",          call:Core_Get,                  req: @[@[AV,IV],@[DV,SV]],                              ret: @[ANY],            desc:"get element from collection using given index/key",                                               minReq:2,  maxReq:2),
-        SystemFunction(name:"loop",         call:Core_Loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],            ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true",               minReq:2,  maxReq:2),
-        SystemFunction(name:"print",        call:Core_Print,                req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],     ret: @[SV],             desc:"print value of given expression to screen",                                                       minReq:1,  maxReq:1),
-        SystemFunction(name:"range",        call:Core_Range,                req: @[@[IV,IV]],                                       ret: @[AV],             desc:"get array from given range (from..to) with optional step",                                        minReq:2,  maxReq:2),
-        SystemFunction(name:"return",       call:Core_Return,               req: @[@[ANY]],                                         ret: @[ANY],            desc:"break execution and return given value",                                                          minReq:1,  maxReq:1),
-        #SystemFunction(name:"syms",        call:Core_Syms,                 req: @[@[ANY]],                                         ret: @[ANY],            desc:"print symbol stack",                                                                              minReq:1,  maxReq:1),
+        #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        #              Library              Name                 Args                                                    Return                  Description                                                                                             
+        #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        SystemFunction(lib:"core",          name:"if",           req: @[@[BV,FV],@[BV,FV,FV]],                           ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
+        SystemFunction(lib:"core",          name:"get",          req: @[@[AV,IV],@[DV,SV]],                              ret: @[ANY],            desc:"get element from collection using given index/key"),
+        SystemFunction(lib:"core",          name:"loop",         req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],            ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
+        SystemFunction(lib:"core",          name:"print",        req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],     ret: @[SV],             desc:"print value of given expression to screen"),
+        SystemFunction(lib:"core",          name:"range",        req: @[@[IV,IV]],                                       ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
+        # SystemFunction(lib:"core",          name:"return",       req: @[@[ANY]],                                         ret: @[ANY],            desc:"break execution and return given value"),
 
-        SystemFunction(name:"and",          call:Core_And,                  req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical AND",                                                                             minReq:2,  maxReq:2),
-        SystemFunction(name:"not",          call:Core_Not,                  req: @[@[BV],@[IV]],                                    ret: @[BV,IV],          desc:"bitwise/logical NOT",                                                                             minReq:1,  maxReq:1),
-        SystemFunction(name:"or",           call:Core_Or,                   req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical OR",                                                                              minReq:2,  maxReq:2),
-        SystemFunction(name:"xor",          call:Core_Xor,                  req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical XOR",                                                                             minReq:2,  maxReq:2),
+        # SystemFunction(lib:"core",          name:"and",          req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical AND"),
+        # SystemFunction(lib:"core",          name:"not",          req: @[@[BV],@[IV]],                                    ret: @[BV,IV],          desc:"bitwise/logical NOT"),
+        # SystemFunction(lib:"core",          name:"or",           req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical OR"),
+        # SystemFunction(lib:"core",          name:"xor",          req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical XOR"),
 
-        SystemFunction(name:"filter",       call:Collections_Filter,        req: @[@[AV,FV]],                                       ret: @[AV],             desc:"get array after filtering each element using given function",                                     minReq:2,  maxReq:2),
-        SystemFunction(name:"shuffle",      call:Collections_Shuffle,       req: @[@[AV]],                                          ret: @[AV],             desc:"get given array shuffled",                                                                        minReq:1,  maxReq:1),
-        SystemFunction(name:"size",         call:Collections_Size,          req: @[@[AV],@[SV],@[DV]],                              ret: @[IV],             desc:"get size of given collection or string",                                                          minReq:1,  maxReq:1),
-        SystemFunction(name:"slice",        call:Collections_Slice,         req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],      ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point",                                     minReq:2,  maxReq:3),
-        SystemFunction(name:"swap",         call:Collections_Swap,          req: @[@[AV,IV,IV]],                                    ret: @[AV],             desc:"swap array elements at given indices",                                                            minReq:3,  maxReq:3),
+        # SystemFunction(lib:"core",          name:"filter",       req: @[@[AV,FV]],                                       ret: @[AV],             desc:"get array after filtering each element using given function"),
+        # SystemFunction(lib:"core",          name:"shuffle",      req: @[@[AV]],                                          ret: @[AV],             desc:"get given array shuffled"),
+        # SystemFunction(lib:"core",          name:"size",         req: @[@[AV],@[SV],@[DV]],                              ret: @[IV],             desc:"get size of given collection or string"),
+        # SystemFunction(lib:"core",          name:"slice",        req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],      ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
+        # SystemFunction(lib:"core",          name:"swap",         req: @[@[AV,IV,IV]],                                    ret: @[AV],             desc:"swap array elements at given indices"),
 
-        SystemFunction(name:"isPrime",      call:Numbers_IsPrime,           req: @[@[IV]],                                          ret: @[BV],             desc:"check if given number is prime",                                                                  minReq:1,  maxReq:1),
-        SystemFunction(name:"product",      call:Core_Product,              req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return product of elements of given array",                                                       minReq:1,  maxReq:1),
-        SystemFunction(name:"sum",          call:Core_Sum,                  req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return sum of elements of given array",                                                           minReq:1,  maxReq:1)
+        # SystemFunction(lib:"core",          name:"isPrime",      req: @[@[IV]],                                          ret: @[BV],             desc:"check if given number is prime"),
+        # SystemFunction(lib:"core",          name:"product",      req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return product of elements of given array"),
+        # SystemFunction(lib:"core",          name:"sum",          req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return sum of elements of given array")
     ]
 
 #[######################################################
@@ -419,19 +408,6 @@ proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} =
 
         Stack[^1].updateOrSet(k,v)
         result = v
-
-# template storeSymbols(syms: openArray[(string,Value)]):seq[(string,Value)] =
-#     syms.map((x) => (x[0],getAndSetSymbol(x[0],x[1])))
-
-# template storeSymbol(sym: (string,Value)):seq[(string,Value)] =
-#     @[(sym[0],getAndSetSymbol(sym[0],sym[1]))]
-
-# template restoreSymbols(syms: openArray[(string,Value)]) =
-#     var i = 0
-#     while i < syms.len:
-#         if syms[i][1]!=ConstNull.v: 
-#             discard setSymbol(syms[i][0],syms[i][1])
-#         inc(i)
 
 proc inspectStack() =
     var i = 0
@@ -930,8 +906,13 @@ proc setFunctionName(f: Function, s: string) {.inline.} =
     f.id = s
     f.hasContext = true
 
-proc newSystemFunction(n: string, f: FunctionCall[SystemFunction,ExpressionList,Value], req: FunctionConstraints = @[], ret: FunctionReturns, descr: string = ""): SystemFunction =
-    result = SystemFunction(name: n, call: f, req: req, ret: ret, desc: descr, minReq: req.map((x) => x.len).min, maxReq: req.map((x) => x.len).max)
+proc functionConstraints*(n: string): seq[seq[ValueKind]] =
+    var i = 0
+    while i < SystemFunctions.len:
+        if SystemFunctions[i].name == n:
+            return SystemFunctions[i].req
+        inc(i)
+    result = nil
 
 proc getSystemFunction*(n: string): int {.inline.} =
     var i = 0
@@ -980,26 +961,22 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         finally                     : 
             if stored!=nil: discard setSymbol("&",stored)
 
-proc execute(f: SystemFunction, xl: ExpressionList): Value {.inline.} =
-    f.call(f,xl)
-
-proc validate(f: SystemFunction, xl: ExpressionList): seq[Value] {.inline.} =
-
+proc validate(xl: ExpressionList, name: string, req: seq[seq[ValueKind]]): seq[Value] {.inline.} =
     result = xl.evaluate(forceArray=true).a
 
-    if not f.req.contains(result.map((x) => x.kind)):
+    if not req.contains(result.map((x) => x.kind)):
 
-        let expected = f.req.map((x) => x.map((y) => ($y).replace("Value","")).join(",")).join(" or ")
+        let expected = req.map((x) => x.map((y) => ($y).replace("Value","")).join(",")).join(" or ")
         let got = result.map((x) => ($(x.kind)).replace("Value","")).join(",")
         
-        IncorrectArgumentValuesError(f.name, expected, got)
+        IncorrectArgumentValuesError(name, expected, got)
 
-proc validateOne(f: SystemFunction, x: Expression, req: openArray[ValueKind]): Value =
+proc validateOne(x: Expression, name: string, req: openArray[ValueKind]): Value =
     result = x.evaluate()
 
     if not (result.kind in req):
         let expected = req.map((x) => $(x)).join(" or ")
-        IncorrectArgumentValuesError(f.name, expected, $(result.kind))
+        IncorrectArgumentValuesError(name, expected, $(result.kind))
 
 proc getOneLineDescription*(f: SystemFunction): string =
     let args = f.req.map((x) => "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
@@ -1249,25 +1226,25 @@ proc executeAssign(s: Statement, parent: Value = nil): Value {.inline.} =
 
         result = ev    
 
-proc execute(s: Statement, parent: Value = nil): Value {.inline.} = 
-    case s.kind
+proc execute(stm: Statement, parent: Value = nil): Value {.inline.} = 
+    case stm.kind
         of assignmentStatement:
-            result = s.executeAssign(parent)
+            result = stm.executeAssign(parent)
         of commandStatement:
-            result = SystemFunctions[s.code].execute(s.expressions) 
+            include system
         of expressionStatement:
-            result = s.expression.evaluate()
+            result = stm.expression.evaluate()
         of normalStatement:
-            let sym = getSymbol(s.id)
-            if sym==nil: SymbolNotFoundError(s.id)
+            let sym = getSymbol(stm.id)
+            if sym==nil: SymbolNotFoundError(stm.id)
             else: 
                 if sym.kind==FV:
-                    result = sym.f.execute(s.expressions.evaluate(forceArray=true))
+                    result = sym.f.execute(stm.expressions.evaluate(forceArray=true))
                 else: 
-                    if s.expressions.list.len > 0:
-                        FunctionNotFoundError(s.id)
+                    if stm.expressions.list.len > 0:
+                        FunctionNotFoundError(stm.id)
                     else:
-                        result = expressionFromArgument(argumentFromIdentifier(s.id)).evaluate()
+                        result = expressionFromArgument(argumentFromIdentifier(stm.id)).evaluate()
             
 
 #[----------------------------------------
