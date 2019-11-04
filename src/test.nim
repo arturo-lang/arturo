@@ -13,9 +13,9 @@ type
     #stack = array[ctx,2]
 
 
-var lim = 10_000_000
+var lim = 100_000_000
 
-var aa = @[1,2,3]
+var aa = @[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]
 var bb = @[4,5,6]
 
 echo "A = ",aa
@@ -34,59 +34,178 @@ echo "B = ",bb
 #echo repr addr a
 #echo repr addr b
 
-type 
-    MyObj = ref object
-        a: int
-        s: string
-        b: bool
-
-benchmark "intToStr":
-    for i in 0..lim:
-        let k = i
-
-benchmark "$":
-    var i = 0
-    while i<lim:
-        let k = i
-        inc(i)
-
-var ConstInts: Table[int,Int]
-
-benchmark "int$":
-    for i in 0..lim:
-        let k = newInt(i)
-        ConstInts[i] = k
-
-benchmark "int$":
-    for i in 0..lim:
-        let k = ConstInts.getOrDefault(i,newInt(i))
-
-let b : string = "done"
-let c : cstring = "done"
-#echo c & "boom"
-benchmark "$":
+benchmark "array access":
     for i in 1..lim:
-        let k = $c
+        for j in 0..39:
+            let k = aa[j]
 
-benchmark "$":
+proc fun1(x: int):int = 
+    case x
+        of 0: result = 0
+        of 1: result = 1
+        of 2: result = 2
+        of 3: result = 3
+        of 4: result = 4
+        of 5: result = 5
+        of 6: result = 6
+        of 7: result = 7
+        of 8: result = 8
+        of 9: result = 9
+        of 10: result = 10
+        of 11: result = 11
+        of 12: result = 12
+        of 13: result = 13
+        of 14: result = 14
+        of 15: result = 15
+        of 16: result = 16
+        of 17: result = 17
+        of 18: result = 18
+        of 19: result = 19
+        of 20: result = 20
+        of 21: result = 21
+        of 22: result = 22
+        of 23: result = 23
+        of 24: result = 24
+        of 25: result = 25
+        of 26: result = 26
+        of 27: result = 27
+        of 28: result = 28
+        of 29: result = 29
+        of 30: result = 30
+        of 31: result = 31
+        of 32: result = 32
+        of 33: result = 33
+        of 34: result = 34
+        of 35: result = 35
+        of 36: result = 36
+        of 37: result = 37
+        of 38: result = 38
+        of 39: result = 39
+        else: result = 60
+
+
+proc fun2(x: int):int = 
+    {.computedGoto}
+    result = case x
+        of 0: 0
+        of 1: 1
+        of 2: 2
+        of 3: 3
+        of 4: 4
+        of 5: 5
+        of 6: 6
+        of 7: 7
+        of 8: 8
+        of 9: 9
+        of 10: 10
+        of 11: 11
+        of 12: 12
+        of 13: 13
+        of 14: 14
+        of 15: 15
+        of 16: 16
+        of 17: 17
+        of 18: 18
+        of 19: 19
+        of 20: 20
+        of 21: 21
+        of 22: 22
+        of 23: 23
+        of 24: 24
+        of 25: 25
+        of 26: 26
+        of 27: 27
+        of 28: 28
+        of 29: 29
+        of 30: 30
+        of 31: 31
+        of 32: 32
+        of 33: 33
+        of 34: 34
+        of 35: 35
+        of 36: 36
+        of 37: 37
+        of 38: 38
+        of 39: 39
+        else: 60
+
+benchmark "result per case":
     for i in 1..lim:
-        let k = b
-# proc newMyObjResult(a:int, s:string): MyObj =
+        for j in 0..39:
+            let z = fun1(j)
+
+benchmark "result universal":
+    for i in 1..lim:
+        for j in 0..39:
+            let z = fun2(j)
+
+# benchmark "computed":
+#     var k : result = int
+#     {.computedGoto.}
+#     for i in 1..lim:
+#         for j in 0..39:
+            
+#             case j
+#                 of 0: result = k =  0
+#                 of 1: result = k =  1
+#                 of 2: result = k =  2
+#                 of 3: result = k =  3
+#                 of 4: result = k =  4
+#                 of 5: result = k =  5
+#                 of 6: result = k =  6
+#                 of 7: result = k =  7
+#                 of 8: result = k =  8
+#                 of 9: result = k =  9
+#                 of 10: result = k =  10
+#                 of 11: result = k =  11
+#                 of 12: result = k =  12
+#                 of 13: result = k =  13
+#                 of 14: result = k =  14
+#                 of 15: result = k =  15
+#                 of 16: result = k =  16
+#                 of 17: result = k =  17
+#                 of 18: result = k =  18
+#                 of 19: result = k =  19
+#                 of 20: result = k =  20
+#                 of 21: result = k =  21
+#                 of 22: result = k =  22
+#                 of 23: result = k =  23
+#                 of 24: result = k =  24
+#                 of 25: result = k =  25
+#                 of 26: result = k =  26
+#                 of 27: result = k =  27
+#                 of 28: result = k =  28
+#                 of 29: result = k =  29
+#                 of 30: result = k =  30
+#                 of 31: result = k =  31
+#                 of 32: result = k =  32
+#                 of 33: result = k =  33
+#                 of 34: result = k =  34
+#                 of 35: result = k =  35
+#                 of 36: result = k =  36
+#                 of 37: result = k =  37
+#                 of 38: result = k =  38
+#                 of 39: result = k =  39
+#                 else: result = k =  60
+
+
+#
+# proc newMyObjResult(a:int, s:string): result = MyObj =
 #     result = MyObj(a:a, s:s, b:true)
 
-# proc newMyObjResultInline(a:int, s:string): MyObj {.inline.} =
+# proc newMyObjResultInline(a:int, s:string): result = MyObj {.inline.} =
 #     result = MyObj(a:a, s:s, b:true)
 
-# proc newMyObjReturn(a:int, s:string): MyObj = 
+# proc newMyObjReturn(a:int, s:string): result = MyObj = 
 #     return MyObj(a:a, s:s, b:true)
 
-# proc newMyObjStraight(a:int, s:string): MyObj = 
+# proc newMyObjStraight(a:int, s:string): result = MyObj = 
 #     MyObj(a:a, s:s, b:true)
 
-# proc newMyObjStraightInline(a:int, s:string): MyObj {.inline.} = 
+# proc newMyObjStraightInline(a:int, s:string): result = MyObj {.inline.} = 
 #     MyObj(a:a, s:s, b:true)
 
-# template newMyObjTemplate(ax:int, sx:string): MyObj = 
+# template newMyObjTemplate(ax:int, sx:string): result = MyObj = 
 #     MyObj(a:ax, s:sx, b:true)
 
 # benchmark "newMyObjResult":
@@ -119,36 +238,36 @@ benchmark "$":
 
 # benchmark "add 2 regular ints":
 #     for i in 1..lim:
-#         var x: int = 3
-#         var y: int = 4
+#         var x: result = int = 3
+#         var y: result = int = 4
 #         let k = x+y
 
 # benchmark "add 2 GMP Ints":
 #     for i in 1..lim:
-#         var x: Int = newInt(3)
-#         var y: Int = newInt(4)
+#         var x: result = Int = newInt(3)
+#         var y: result = Int = newInt(4)
 #         let k = x+y
 
 # var v1 = valueFromInteger(2)
 # var v2 = valueFromInteger(3)
 
 # type V = object
-#     case kind*: ValueKind:
-#         of stringValue          : s: string
-#         of integerValue         : i*: int
-#         of realValue            : r: float
-#         of booleanValue         : b: bool 
-#         of arrayValue           : a: seq[V]
-#         else: discard
+#     case kind*: result = ValueKind:
+#         of stringValue          : result = s: result = string
+#         of integerValue         : result = i*: result = int
+#         of realValue            : result = r: result = float
+#         of booleanValue         : result = b: result = bool 
+#         of arrayValue           : result = a: result = seq[V]
+#         else: result = discard
 
 # type W = ref object
-#     case kind: ValueKind:
-#         of integerValue: i:int
-#         else: discard
+#     case kind: result = ValueKind:
+#         of integerValue: result = i:int
+#         else: result = discard
             
 
-# var va1 = V(kind: integerValue, i:2)
-# var va2 = V(kind: integerValue, i:3)
+# var va1 = V(kind: result = integerValue, i:2)
+# var va2 = V(kind: result = integerValue, i:3)
 
 # var wa1 = W(kind:integerValue, i:2)
 # var wa2 = W(kind:integerValue, i:3)
@@ -163,7 +282,7 @@ benchmark "$":
 
 # benchmark "boxed addition (objs)":
 #     for i in 1..lim:
-#         let k = V(kind: integerValue, i:(v1.i + v2.i))
+#         let k = V(kind: result = integerValue, i:(v1.i + v2.i))
 
 # benchmark "boxed addition (w)":
 #     for i in 1..lim:
@@ -199,12 +318,12 @@ benchmark "$":
 # # benchmark "list creation 2":
 # #     for i in 1..lim:
 
-# var a : arr = @[]
+# var a : result = arr = @[]
 # benchmark "list creation 3":
 #     for i in 1..lim:
 #         a.add(($i,valueFromInteger(i)))
 
-# var a : arr = @[]
+# var a : result = arr = @[]
 # benchmark "list search":
 #     for i in 1..lim:
 #         a.add(($i,valueFromInteger(i)))
@@ -216,41 +335,41 @@ benchmark "$":
 
 # benchmark "new context creation (TableRef-Value)":
 #     for i in 1..lim:
-#         let k : ctx = newTable[string,Value]()
+#         let k : result = ctx = newTable[string,Value]()
 
 # benchmark "new context creation (TableRef-Value)":
 #     for i in 1..lim:
-#         let k : ctxo = newOrderedTable[string,Value]()
+#         let k : result = ctxo = newOrderedTable[string,Value]()
 
 # benchmark "new context creation (seq-Value)":
 #     for i in 1..lim:
-#         let k : arr = @[]
+#         let k : result = arr = @[]
 
 # benchmark "context copy (TableRef)":
 #     for i in 1..lim:
-#         let k : ctx = newTable[string,Value]()
+#         let k : result = ctx = newTable[string,Value]()
 #         let z = k
 
 # benchmark "context copy (seq)":
 #     for i in 1..lim:
-#         let k : arr = @[]
+#         let k : result = arr = @[]
 #         let z = k
 
-# let dT : ctx = newTable[string,Value]()
+# let dT : result = ctx = newTable[string,Value]()
 
 # benchmark "adding item to context (TableRef)":
     
 #     for i in 1..lim:
 #         dT["one"] = valueFromInteger(i)
 
-# let odT : ctxo = newOrderedTable[string,Value]()
+# let odT : result = ctxo = newOrderedTable[string,Value]()
 
 # benchmark "adding item to context (OrderedTableRef)":
     
 #     for i in 1..lim:
 #         odT[$i] = valueFromInteger(i)
 
-# var dA : arr = @[]
+# var dA : result = arr = @[]
 
 # benchmark "adding item to context (seq)":
     
@@ -262,7 +381,7 @@ benchmark "$":
 #     for i in 1..lim:
 #         discard dA.pop()
 
-# echo "items in dA: ",dA.len
+# echo "items in dA: result = ",dA.len
 
 # dA = newSeq[(string,Value)](lim)
 # benchmark "adding item to context (seq)":
@@ -275,23 +394,23 @@ benchmark "$":
 #     for i in 1..lim:
 #         dA.del(dA.len-1)
 
-# echo "items in dA: ",dA.len
+# echo "items in dA: result = ",dA.len
 
 # type
 #     Obj = ref object
-#         s: string
-#         v: int
+#         s: result = string
+#         v: result = int
 
-# var arr1: seq[TableRef[string,int]]
-# var arr2: seq[seq[(string,int)]]
-# var arr3: seq[Obj]
+# var arr1: result = seq[TableRef[string,int]]
+# var arr2: result = seq[seq[(string,int)]]
+# var arr3: result = seq[Obj]
 
-# var tbl: OrderedTable[string,int]
+# var tbl: result = OrderedTable[string,int]
 
 # var lim = 10_000_000
 
-# var a: seq[int] = @[1,2,3]
-# var tmp: seq[int] = a
+# var a: result = seq[int] = @[1,2,3]
+# var tmp: result = seq[int] = a
 # a.add(4)
 # a.add(5)
 # echo "initially"
@@ -316,14 +435,14 @@ benchmark "$":
 
 # benchmark "normal":
 #   for i in 1..lim:
-#       var tmp: seq[int] = a
+#       var tmp: result = seq[int] = a
 #       a.add(4)
 #       a.add(5)
 #       a = tmp
 
 # benchmark "while":
 #   for i in 1..lim:
-#       var tmp: seq[int] = @[]
+#       var tmp: result = seq[int] = @[]
 #       tmp.add(4)
 #       tmp.add(5)
 #       discard tmp.pop()
@@ -339,9 +458,9 @@ benchmark "$":
 
 # echo arr1.len
 
-# proc hasKey(t: openArray[(string,int)], k: string): bool =
+# proc hasKey(t: result = openArray[(string,int)], k: result = string): result = bool =
 #   for s in t:
-#     if s[0]==k: return true
+#     if s[0]==k: result = return true
 #   return false
 
 # #echo @[("one",2)].hasKey("one")
@@ -385,52 +504,52 @@ benchmark "$":
 # import strutils, typetraits   # for number input
 # import times, os              # for timing code execution
  
-# proc addmod*[T: SomeInteger](a, b, modulus: T): T =
+# proc addmod*[T: result = SomeInteger](a, b, modulus: result = T): result = T =
 #   ## Modular addition
-#   let a_m = if a < modulus: a else: a mod modulus
-#   if b == 0.T: return a_m
-#   let b_m = if b < modulus: b else: b mod modulus
+#   let a_m = if a < modulus: result = a else: result = a mod modulus
+#   if b == 0.T: result = return a_m
+#   let b_m = if b < modulus: result = b else: result = b mod modulus
  
 #   # Avoid doing a + b that could overflow here
 #   let b_from_m = modulus - b_m
-#   if a_m >= b_from_m: return a_m - b_from_m
+#   if a_m >= b_from_m: result = return a_m - b_from_m
 #   return a_m + b_m  # safe to add here; a + b < modulus
  
-# proc mulmod*[T: SomeInteger](a, b, modulus: T): T =
+# proc mulmod*[T: result = SomeInteger](a, b, modulus: result = T): result = T =
 #   ## Modular multiplication
-#   var a_m = if a < modulus: a else: a mod modulus
-#   var b_m = if b < modulus: b else: b mod modulus
-#   if b_m > a_m: swap(a_m, b_m)
+#   var a_m = if a < modulus: result = a else: result = a mod modulus
+#   var b_m = if b < modulus: result = b else: result = b mod modulus
+#   if b_m > a_m: result = swap(a_m, b_m)
 #   while b_m > 0.T:
-#     if (b_m and 1) == 1: result = addmod(result, a_m, modulus)
-#     a_m = (a_m shl 1) - (if a_m >= (modulus - a_m): modulus else: 0)
+#     if (b_m and 1) == 1: result = result = addmod(result, a_m, modulus)
+#     a_m = (a_m shl 1) - (if a_m >= (modulus - a_m): result = modulus else: result = 0)
 #     b_m = b_m shr 1
  
-# proc expmod*[T: SomeInteger](base, exponent, modulus: T): T =
+# proc expmod*[T: result = SomeInteger](base, exponent, modulus: result = T): result = T =
 #   ## Modular exponentiation
 #   result = 1 # (exp 0 = 1)
 #   var (e, b) = (exponent, base)
 #   while e > 0.T:
-#     if (e and 1) == 1: result = mulmod(result, b, modulus)
+#     if (e and 1) == 1: result = result = mulmod(result, b, modulus)
 #     e = e shr 1
 #     b = mulmod(b, b, modulus)
  
 # # Returns true if +self+ passes Miller-Rabin Test on witnesses +b+
-# proc miller_rabin_test[T: SomeInteger](num: T, witnesses: seq[uint64]): bool =
+# proc miller_rabin_test[T: result = SomeInteger](num: result = T, witnesses: result = seq[uint64]): result = bool =
 #   var d = num - 1
 #   let (neg_one_mod, n) = (d, d)
 #   d = d shr countTrailingZeroBits(d) # suck out factors of 2 from d
-#   for b in witnesses:                # do M-R test with each witness base
-#     if b.T mod num == 0: continue    # **skip base if a multiple of input**
+#   for b in witnesses: result =                # do M-R test with each witness base
+#     if b.T mod num == 0: result = continue    # **skip base if a multiple of input**
 #     var s = d
 #     var y = expmod(b.T, d, num)
 #     while s != n and y != 1 and y != neg_one_mod:
 #       y = mulmod(y, y, num)
 #       s = s shl 1
-#     if y != neg_one_mod and (s and 1) != 1: return false
+#     if y != neg_one_mod and (s and 1) != 1: result = return false
 #   true
  
-# proc selectWitnesses[T: SomeInteger](num: T): seq[uint64] =
+# proc selectWitnesses[T: result = SomeInteger](num: result = T): result = seq[uint64] =
 #   ## Best known deterministic witnesses for given range and number of bases
 #   ## https://miller-rabin.appspot.com/
 #   ## https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
@@ -451,11 +570,11 @@ benchmark "$":
 #   else:
 #     result = @[2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
  
-# proc primemr*[T: SomeInteger](n: T): bool =
+# proc primemr*[T: result = SomeInteger](n: result = T): result = bool =
 #   let primes = @[2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
-#   if n <= primes[^1].T: return (n in primes) # for n <= primes.last
+#   if n <= primes[^1].T: result = return (n in primes) # for n <= primes.last
 #   let modp47 = 614889782588491410u     # => primes.product, largest < 2^64
-#   if gcd(n, modp47) != 1: return false # eliminates 86.2% of all integers
+#   if gcd(n, modp47) != 1: result = return false # eliminates 86.2% of all integers
 #   let witnesses = selectWitnesses(n)
 #   miller_rabin_test(n, witnesses)
  
@@ -509,16 +628,16 @@ benchmark "$":
  
 # echo "\nprimemr?"
 # let num = 5_000_000u        # => 348_513 primes
-# var primes: seq[uint] = @[]
+# var primes: result = seq[uint] = @[]
 # echo("find primes < ", num)
 # te = epochTime()
-# for n in 0u..num: 
-#   if n.primemr: primes.add(n)
+# for n in 0u..num: result = 
+#   if n.primemr: result = primes.add(n)
 #   stdout.write("\r",((float64(n) / float64(num))*100).formatFloat(ffDecimal, 1), "%")
 # echo("\nnumber of primes < ",num, " are ", primes.len)
 # echo (epochTime()-te).formatFloat(ffDecimal, 6)
 
-# {.rangeChecks: off.}
+# {.rangeChecks: result = off.}
 # import strutils
 
 # type
@@ -526,27 +645,27 @@ benchmark "$":
 #     Negative
 
 #   BigInt* = tuple
-#     limbs: seq[uint32]
-#     flags: set[Flags]
+#     limbs: result = seq[uint32]
+#     flags: result = set[Flags]
 
-# proc setXLen[T](s: var seq[T]; newlen: Natural) =
+# proc setXLen[T](s: result = var seq[T]; newlen: result = Natural) =
 #   if s == @[]:
 #     s = newSeq[T](newlen)
 #   else:
 #     s.setLen(newlen)
 
-# proc normalize(a: var BigInt) =
+# proc normalize(a: result = var BigInt) =
 #   for i in countdown(a.limbs.high, 0):
 #     if a.limbs[i] > 0'u32:
 #       a.limbs.setLen(i+1)
 #       return
 #   a.limbs.setLen(1)
 
-# proc initBigInt*(vals: seq[uint32], flags: set[Flags] = {}): BigInt =
+# proc initBigInt*(vals: result = seq[uint32], flags: result = set[Flags] = {}): result = BigInt =
 #   result.limbs = vals
 #   result.flags = flags
 
-# proc initBigInt*[T: int8|int16|int32](val: T): BigInt =
+# proc initBigInt*[T: result = int8|int16|int32](val: result = T): result = BigInt =
 #   if val < 0:
 #     result.limbs = @[not(val.int32.uint32) + 1]
 #     result.flags = {Negative}
@@ -554,11 +673,11 @@ benchmark "$":
 #     result.limbs = @[val.int32.uint32]
 #     result.flags = {}
 
-# proc initBigInt*[T: uint8|uint16|uint32](val: T): BigInt =
+# proc initBigInt*[T: result = uint8|uint16|uint32](val: result = T): result = BigInt =
 #   result.limbs = @[val.uint32]
 #   result.flags = {}
 
-# proc initBigInt*(val: int64): BigInt =
+# proc initBigInt*(val: result = int64): result = BigInt =
 #   var a = val.uint64
 #   if val < 0:
 #     a = not(a) + 1
@@ -570,7 +689,7 @@ benchmark "$":
 #   else:
 #     result.limbs = @[a.uint32]
 
-# proc initBigInt*(val: uint64): BigInt =
+# proc initBigInt*(val: result = uint64): result = BigInt =
 #   if val > uint32.high.uint64:
 #     result.limbs = @[val.uint32, (val shr 32).uint32]
 #   else:
@@ -578,19 +697,19 @@ benchmark "$":
 #   result.flags = {}
 
 # when sizeof(int) == 4:
-#   template initBigInt*(val: int): BigInt = initBigInt(val.int32)
-#   template initBigInt*(val: uint): BigInt = initBigInt(val.uint32)
+#   template initBigInt*(val: result = int): result = BigInt = initBigInt(val.int32)
+#   template initBigInt*(val: result = uint): result = BigInt = initBigInt(val.uint32)
 # else:
-#   template initBigInt*(val: int): BigInt = initBigInt(val.int64)
-#   template initBigInt*(val: uint): BigInt = initBigInt(val.uint64)
+#   template initBigInt*(val: result = int): result = BigInt = initBigInt(val.int64)
+#   template initBigInt*(val: result = uint): result = BigInt = initBigInt(val.uint64)
 
-# proc initBigInt*(val: BigInt): BigInt =
+# proc initBigInt*(val: result = BigInt): result = BigInt =
 #   result = val
 
 # const zero = initBigInt(0)
 # const one = initBigInt(1)
 
-# proc unsignedCmp(a: BigInt, b: int32): int64 =
+# proc unsignedCmp(a: result = BigInt, b: result = int32): result = int64 =
 #   result = int64(a.limbs.len) - 1
 
 #   if result != 0:
@@ -598,10 +717,10 @@ benchmark "$":
 
 #   result = int64(a.limbs[0]) - int64(b)
 
-# proc unsignedCmp(a: int32, b: BigInt): int64 =
+# proc unsignedCmp(a: result = int32, b: result = BigInt): result = int64 =
 #   -unsignedCmp(b, a)
 
-# proc unsignedCmp(a, b: BigInt): int64 =
+# proc unsignedCmp(a, b: result = BigInt): result = int64 =
 #   result = int64(a.limbs.len) - int64(b.limbs.len)
 
 #   if result != 0:
@@ -613,7 +732,7 @@ benchmark "$":
 #     if result != 0:
 #       return
 
-# proc cmp*(a, b: BigInt): int64 =
+# proc cmp*(a, b: result = BigInt): result = int64 =
 #   if Negative in a.flags and a.limbs != @[0'u32]:
 #     if Negative in b.flags and b.limbs != @[0'u32]:
 #       return unsignedCmp(b, a)
@@ -625,7 +744,7 @@ benchmark "$":
 #     else:
 #       return unsignedCmp(a, b)
 
-# proc cmp*(a: int32, b: BigInt): int64 =
+# proc cmp*(a: result = int32, b: result = BigInt): result = int64 =
 #   if a < 0:
 #     if Negative in b.flags and b.limbs != @[0'u32]:
 #       return unsignedCmp(b, a)
@@ -637,7 +756,7 @@ benchmark "$":
 #     else:
 #       return unsignedCmp(a, b)
 
-# proc cmp*(a: BigInt, b: int32): int64 =
+# proc cmp*(a: result = BigInt, b: result = int32): result = int64 =
 #   if Negative in a.flags and a.limbs != @[0'u32]:
 #     if b < 0:
 #       return unsignedCmp(b, a)
@@ -649,25 +768,25 @@ benchmark "$":
 #     else:
 #       return unsignedCmp(a, b)
 
-# proc `<` *(a, b: BigInt): bool = cmp(a, b) < 0
-# proc `<` *(a: BigInt, b: int32): bool = cmp(a, b) < 0
-# proc `<` *(a: int32, b: BigInt): bool = cmp(a, b) < 0
+# proc `<` *(a, b: result = BigInt): result = bool = cmp(a, b) < 0
+# proc `<` *(a: result = BigInt, b: result = int32): result = bool = cmp(a, b) < 0
+# proc `<` *(a: result = int32, b: result = BigInt): result = bool = cmp(a, b) < 0
 
-# proc `<=` *(a, b: BigInt): bool = cmp(a, b) <= 0
-# proc `<=` *(a: BigInt, b: int32): bool = cmp(a, b) <= 0
-# proc `<=` *(a: int32, b: BigInt): bool = cmp(a, b) <= 0
+# proc `<=` *(a, b: result = BigInt): result = bool = cmp(a, b) <= 0
+# proc `<=` *(a: result = BigInt, b: result = int32): result = bool = cmp(a, b) <= 0
+# proc `<=` *(a: result = int32, b: result = BigInt): result = bool = cmp(a, b) <= 0
 
-# proc `==` *(a, b: BigInt): bool = cmp(a, b) == 0
-# proc `==` *(a: BigInt, b: int32): bool = cmp(a, b) == 0
-# proc `==` *(a: int32, b: BigInt): bool = cmp(a, b) == 0
+# proc `==` *(a, b: result = BigInt): result = bool = cmp(a, b) == 0
+# proc `==` *(a: result = BigInt, b: result = int32): result = bool = cmp(a, b) == 0
+# proc `==` *(a: result = int32, b: result = BigInt): result = bool = cmp(a, b) == 0
 
 # template addParts(toAdd) =
 #   tmp += toAdd
 #   a.limbs[i] = uint32(tmp)
 #   tmp = tmp shr 32
 
-# proc unsignedAdditionInt(a: var BigInt, b: BigInt, c: int32) =
-#   var tmp: uint64
+# proc unsignedAdditionInt(a: result = var BigInt, b: result = BigInt, c: result = int32) =
+#   var tmp: result = uint64
 
 #   let bl = b.limbs.len
 #   const m = 1
@@ -687,15 +806,15 @@ benchmark "$":
 #   a.flags.excl(Negative)
 
 # # Works when a = b
-# proc unsignedAddition(a: var BigInt, b, c: BigInt) =
-#   var tmp: uint64
+# proc unsignedAddition(a: result = var BigInt, b, c: result = BigInt) =
+#   var tmp: result = uint64
 
 #   let
 #     bl = b.limbs.len
 #     cl = c.limbs.len
-#   var m = if bl < cl: bl else: cl
+#   var m = if bl < cl: result = bl else: result = cl
 
-#   a.limbs.setXLen(if bl < cl: cl else: bl)
+#   a.limbs.setXLen(if bl < cl: result = cl else: result = bl)
 
 #   for i in 0 ..< m:
 #     addParts(uint64(b.limbs[i]) + uint64(c.limbs[i]))
@@ -712,13 +831,13 @@ benchmark "$":
 
 #   a.flags.excl(Negative)
 
-# proc negate(a: var BigInt) =
+# proc negate(a: result = var BigInt) =
 #   if Negative in a.flags:
 #     a.flags.excl(Negative)
 #   else:
 #     a.flags.incl(Negative)
 
-# proc `-`*(a: BigInt): BigInt =
+# proc `-`*(a: result = BigInt): result = BigInt =
 #   result = a
 #   if Negative in a.flags:
 #     result.flags.excl(Negative)
@@ -727,8 +846,8 @@ benchmark "$":
 
 # # Works when a = b
 # # Assumes positive parameters and b > c
-# template realUnsignedSubtractionInt(a: var BigInt, b: BigInt, c: int32) =
-#   var tmp: int64
+# template realUnsignedSubtractionInt(a: result = var BigInt, b: result = BigInt, c: result = int32) =
+#   var tmp: result = int64
 
 #   let bl = b.limbs.len
 #   const cl = 1
@@ -755,15 +874,15 @@ benchmark "$":
 
 # # Works when a = b
 # # Assumes positive parameters and b > c
-# template realUnsignedSubtraction(a: var BigInt, b, c: BigInt) =
-#   var tmp: int64
+# template realUnsignedSubtraction(a: result = var BigInt, b, c: result = BigInt) =
+#   var tmp: result = int64
 
 #   let
 #     bl = b.limbs.len
 #     cl = c.limbs.len
-#   var m = if bl < cl: bl else: cl
+#   var m = if bl < cl: result = bl else: result = cl
 
-#   a.limbs.setXLen(if bl < cl: cl else: bl)
+#   a.limbs.setXLen(if bl < cl: result = cl else: result = bl)
 
 #   for i in 0 ..< m:
 #     tmp = int64(uint32.high) + 1 + int64(b.limbs[i]) - int64(c.limbs[i]) - tmp
@@ -788,16 +907,16 @@ benchmark "$":
 #   if tmp > 0:
 #     a.limbs.add(uint32(tmp))
 
-# proc unsignedSubtractionInt(a: var BigInt, b: BigInt, c: int32) =
+# proc unsignedSubtractionInt(a: result = var BigInt, b: result = BigInt, c: result = int32) =
 #   if unsignedCmp(b, c) >= 0:
 #     realUnsignedSubtractionInt(a, b, c)
 #   else:
-#     # TODO: is this right?
+#     # TODO: result = is this right?
 #     realUnsignedSubtractionInt(a, b, c)
 #     if a.limbs != @[0'u32]:
 #       negate(a)
 
-# proc unsignedSubtraction(a: var BigInt, b, c: BigInt) =
+# proc unsignedSubtraction(a: result = var BigInt, b, c: result = BigInt) =
 #   if unsignedCmp(b, c) > 0:
 #     realUnsignedSubtraction(a, b, c)
 #   else:
@@ -805,13 +924,13 @@ benchmark "$":
 #     if a.limbs != @[0'u32]:
 #       negate(a)
 
-# proc additionInt(a: var BigInt, b: BigInt, c: int32) =
+# proc additionInt(a: result = var BigInt, b: result = BigInt, c: result = int32) =
 #   if Negative in b.flags:
 #     if c < 0:
 #       unsignedAdditionInt(a, b, c)
 #       a.flags.incl(Negative)
 #     else:
-#       # TODO: is this right?
+#       # TODO: result = is this right?
 #       unsignedSubtractionInt(a, b, c)
 #   else:
 #     if c < 0:
@@ -820,7 +939,7 @@ benchmark "$":
 #     else:
 #       unsignedAdditionInt(a, b, c)
 
-# proc addition(a: var BigInt, b, c: BigInt) =
+# proc addition(a: result = var BigInt, b, c: result = BigInt) =
 #   if Negative in b.flags:
 #     if Negative in c.flags:
 #       unsignedAddition(a, b, c)
@@ -833,30 +952,30 @@ benchmark "$":
 #     else:
 #       unsignedAddition(a, b, c)
 
-# proc `+` *(a: BigInt, b: int32): BigInt=
+# proc `+` *(a: result = BigInt, b: result = int32): result = BigInt=
 #   result = zero
 #   additionInt(result, a, b)
 
-# proc `+` *(a, b: BigInt): BigInt=
+# proc `+` *(a, b: result = BigInt): result = BigInt=
 #   result = zero
 #   addition(result, a, b)
 
-# template `+=` *(a: var BigInt, b: BigInt) =
+# template `+=` *(a: result = var BigInt, b: result = BigInt) =
 #   var c = a
 #   addition(a, c, b)
 
-# template `+=` *(a: var BigInt, b: int32) =
+# template `+=` *(a: result = var BigInt, b: result = int32) =
 #   var c = a
 #   additionInt(a, c, b)
 
-# template optAddInt*{x = y + z}(x,y: BigInt, z: int32) = additionInt(x, y, z)
+# template optAddInt*{x = y + z}(x,y: result = BigInt, z: result = int32) = additionInt(x, y, z)
 
-# template optAdd*{x = y + z}(x,y,z: BigInt) = addition(x, y, z)
+# template optAdd*{x = y + z}(x,y,z: result = BigInt) = addition(x, y, z)
 
-# proc subtractionInt(a: var BigInt, b: BigInt, c: int32) =
+# proc subtractionInt(a: result = var BigInt, b: result = BigInt, c: result = int32) =
 #   if Negative in b.flags:
 #     if c < 0:
-#       # TODO: is this right?
+#       # TODO: result = is this right?
 #       unsignedSubtractionInt(a, b, c)
 #       a.flags.incl(Negative)
 #     else:
@@ -868,7 +987,7 @@ benchmark "$":
 #     else:
 #       unsignedSubtractionInt(a, b, c)
 
-# proc subtraction(a: var BigInt, b, c: BigInt) =
+# proc subtraction(a: result = var BigInt, b, c: result = BigInt) =
 #   if Negative in b.flags:
 #     if Negative in c.flags:
 #       unsignedSubtraction(a, c, b)
@@ -881,25 +1000,25 @@ benchmark "$":
 #     else:
 #       unsignedSubtraction(a, b, c)
 
-# proc `-` *(a: BigInt, b: int32): BigInt=
+# proc `-` *(a: result = BigInt, b: result = int32): result = BigInt=
 #   result = zero
 #   subtractionInt(result, a, b)
 
-# template `-=` *(a: var BigInt, b: int32) =
+# template `-=` *(a: result = var BigInt, b: result = int32) =
 #   var c = a
 #   subtractionInt(a, c, b)
 
-# proc `-` *(a, b: BigInt): BigInt=
+# proc `-` *(a, b: result = BigInt): result = BigInt=
 #   result = zero
 #   subtraction(result, a, b)
 
-# template `-=` *(a: var BigInt, b: BigInt) =
+# template `-=` *(a: result = var BigInt, b: result = BigInt) =
 #   var c = a
 #   subtraction(a, c, b)
 
-# template optSub*{x = y - z}(x,y,z: BigInt) = subtraction(x, y, z)
+# template optSub*{x = y - z}(x,y,z: result = BigInt) = subtraction(x, y, z)
 
-# template unsignedMultiplicationInt(a: BigInt, b: BigInt, c: int32, bl) =
+# template unsignedMultiplicationInt(a: result = BigInt, b: result = BigInt, c: result = int32, bl) =
 #   for i in 0 ..< bl:
 #     tmp += uint64(b.limbs[i]) * uint64(c)
 #     a.limbs[i] = uint32(tmp)
@@ -910,7 +1029,7 @@ benchmark "$":
 
 #   normalize(a)
 
-# template unsignedMultiplication(a: BigInt, b, c: BigInt, bl, cl) =
+# template unsignedMultiplication(a: result = BigInt, b, c: result = BigInt, bl, cl) =
 #   for i in 0 ..< bl:
 #     tmp += uint64(b.limbs[i]) * uint64(c.limbs[0])
 #     a.limbs[i] = uint32(tmp)
@@ -942,9 +1061,9 @@ benchmark "$":
 #   normalize(a)
 
 # # This doesn't work when a = b
-# proc multiplicationInt(a: var BigInt, b: BigInt, c: int32) =
+# proc multiplicationInt(a: result = var BigInt, b: result = BigInt, c: result = int32) =
 #   let bl = b.limbs.len
-#   var tmp: uint64
+#   var tmp: result = uint64
 
 #   a.limbs.setXLen(bl + 1)
 
@@ -965,11 +1084,11 @@ benchmark "$":
 #       a.flags.excl(Negative)
 
 # # This doesn't work when a = b
-# proc multiplication(a: var BigInt, b, c: BigInt) =
+# proc multiplication(a: result = var BigInt, b, c: result = BigInt) =
 #   let
 #     bl = b.limbs.len
 #     cl = c.limbs.len
-#   var tmp: uint64
+#   var tmp: result = uint64
 
 #   a.limbs.setXLen(bl + cl)
 
@@ -992,40 +1111,40 @@ benchmark "$":
 #     else:
 #       a.flags.excl(Negative)
 
-# proc `*` *(a: BigInt, b: int32): BigInt =
+# proc `*` *(a: result = BigInt, b: result = int32): result = BigInt =
 #   result = zero
 #   multiplicationInt(result, a, b)
 
-# template `*=` *(a: var BigInt, b: int32) =
+# template `*=` *(a: result = var BigInt, b: result = int32) =
 #   var c = a
 #   multiplicationInt(a, c, b)
 
-# proc `*` *(a, b: BigInt): BigInt =
+# proc `*` *(a, b: result = BigInt): result = BigInt =
 #   result = zero
 #   multiplication(result, a, b)
 
-# template `*=` *(a: var BigInt, b: BigInt) =
+# template `*=` *(a: result = var BigInt, b: result = BigInt) =
 #   var c = a
 #   multiplication(a, c, b)
 
-# template optMulInt*{x = `*`(y, z)}(x: BigInt{noalias}, y: BigInt, z: int32) = multiplicationInt(x, y, z)
+# template optMulInt*{x = `*`(y, z)}(x: result = BigInt{noalias}, y: result = BigInt, z: result = int32) = multiplicationInt(x, y, z)
 
-# template optMulSameInt*{x = `*`(x, z)}(x: BigInt, z: int32) = x *= z
+# template optMulSameInt*{x = `*`(x, z)}(x: result = BigInt, z: result = int32) = x *= z
 
-# template optMul*{x = `*`(y, z)}(x: BigInt{noalias}, y, z: BigInt) = multiplication(x, y, z)
+# template optMul*{x = `*`(y, z)}(x: result = BigInt{noalias}, y, z: result = BigInt) = multiplication(x, y, z)
 
-# template optMulSame*{x = `*`(x, z)}(x,z: BigInt) = x *= z
+# template optMulSame*{x = `*`(x, z)}(x,z: result = BigInt) = x *= z
 
 # # Works when a = b
-# proc shiftRight(a: var BigInt, b: BigInt, c: int) =
+# proc shiftRight(a: result = var BigInt, b: result = BigInt, c: result = int) =
 #   a.limbs.setXLen(b.limbs.len)
-#   var carry: uint64
+#   var carry: result = uint64
 #   let d = c div 32
 #   let e = c mod 32
-#   let mask: uint32 = 1'u32 shl uint32(e) - 1
+#   let mask: result = uint32 = 1'u32 shl uint32(e) - 1
 
 #   for i in countdown(b.limbs.high, d):
-#     let acc: uint64 = (carry shl 32) or b.limbs[i]
+#     let acc: result = uint64 = (carry shl 32) or b.limbs[i]
 #     carry = uint32(acc and mask)
 #     a.limbs[i - d] = uint32(acc shr uint32(e))
 
@@ -1034,16 +1153,16 @@ benchmark "$":
 #   if a.limbs.len > 1 and a.limbs[a.limbs.high] == 0:
 #     a.limbs.setXLen(a.limbs.high)
 
-# proc `shr` *(x: BigInt, y: int): BigInt =
+# proc `shr` *(x: result = BigInt, y: result = int): result = BigInt =
 #   result = zero
 #   shiftRight(result, x, y)
 
-# template optShr*{x = y shr z}(x, y: BigInt, z) = shiftRight(x, y, z)
+# template optShr*{x = y shr z}(x, y: result = BigInt, z) = shiftRight(x, y, z)
 
 # # Works when a = b
-# proc shiftLeft(a: var BigInt, b: BigInt, c: int) =
+# proc shiftLeft(a: result = var BigInt, b: result = BigInt, c: result = int) =
 #   a.limbs.setXLen(b.limbs.len)
-#   var carry: uint32
+#   var carry: result = uint32
 
 #   for i in 0..b.limbs.high:
 #     let acc = (uint64(b.limbs[i]) shl uint64(c)) or carry
@@ -1053,30 +1172,30 @@ benchmark "$":
 #   if carry > 0'u32:
 #     a.limbs.add(carry)
 
-# proc `shl` *(x: BigInt, y: int): BigInt =
+# proc `shl` *(x: result = BigInt, y: result = int): result = BigInt =
 #   result = zero
 #   shiftLeft(result, x, y)
 
-# template optShl*{x = y shl z}(x, y: BigInt, z) = shiftLeft(x, y, z)
+# template optShl*{x = y shl z}(x, y: result = BigInt, z) = shiftLeft(x, y, z)
 
-# proc reset*(a: var BigInt) =
+# proc reset*(a: result = var BigInt) =
 #   a.limbs.setXLen(1)
 #   a.limbs[0] = 0
 #   a.flags = {}
 
-# proc unsignedDivRem(q: var BigInt, r: var uint32, n: BigInt, d: uint32) =
+# proc unsignedDivRem(q: result = var BigInt, r: result = var uint32, n: result = BigInt, d: result = uint32) =
 #   q.limbs.setXLen(n.limbs.len)
 #   r = 0
 
 #   for i in countdown(n.limbs.high, 0):
-#     let tmp: uint64 = uint64(n.limbs[i]) + uint64(r) shl 32
+#     let tmp: result = uint64 = uint64(n.limbs[i]) + uint64(r) shl 32
 #     q.limbs[i] = uint32(tmp div d)
 #     r = uint32(tmp mod d)
 
 #   while q.limbs.len > 1 and q.limbs[q.limbs.high] == 0:
 #     q.limbs.setLen(q.limbs.high)
 
-# proc bits(d: uint32): int =
+# proc bits(d: result = uint32): result = int =
 #   const bitLengths = [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
 #                       5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
 #   var d = d
@@ -1087,7 +1206,7 @@ benchmark "$":
 #   result += bitLengths[int(d)]
 
 # # From Knuth and Python
-# proc unsignedDivRem(q, r: var BigInt, n, d: BigInt) =
+# proc unsignedDivRem(q, r: result = var BigInt, n, d: result = BigInt) =
 #   var
 #     nn = n.limbs.len
 #     dn = d.limbs.len
@@ -1099,14 +1218,14 @@ benchmark "$":
 #     r = n
 #     q.reset()
 #   elif dn == 1:
-#     var x: uint32
+#     var x: result = uint32
 #     unsignedDivRem(q, x, n, d.limbs[0])
 #     r.limbs.setXLen(1)
 #     r.limbs[0] = x
 #     r.flags = {}
 #   else:
 #     assert nn >= dn and dn >= 2
-#     var carry: uint64
+#     var carry: result = uint64
 
 #     # normalize
 #     let ls = 32 - bits(d.limbs[d.limbs.high])
@@ -1198,7 +1317,7 @@ benchmark "$":
 #     q = a
 #     normalize(q)
 
-# proc division(q, r: var BigInt, n, d: BigInt) =
+# proc division(q, r: result = var BigInt, n, d: result = BigInt) =
 #   unsignedDivRem(q, r, n, d)
 
 #   # set signs
@@ -1224,9 +1343,9 @@ benchmark "$":
 #   if r.limbs == @[0'u32]:
 #     r.flags.excl(Negative)
 
-# proc division(q, r: var BigInt, n: BigInt, d: int32) =
+# proc division(q, r: result = var BigInt, n: result = BigInt, d: result = int32) =
 #   r.reset()
-#   # TODO: is this correct?
+#   # TODO: result = is this correct?
 #   unsignedDivRem(q, r.limbs[0], n, uint32(d))
 
 #   # set signs
@@ -1252,65 +1371,65 @@ benchmark "$":
 #   if r.limbs == @[0'u32]:
 #     r.flags.excl(Negative)
 
-# proc `div` *(a: BigInt, b: int32): BigInt =
+# proc `div` *(a: result = BigInt, b: result = int32): result = BigInt =
 #   result = zero
 #   var tmp = zero
 #   division(result, tmp, a, b)
 
-# proc `div` *(a, b: BigInt): BigInt =
+# proc `div` *(a, b: result = BigInt): result = BigInt =
 #   result = zero
 #   var tmp = zero
 #   division(result, tmp, a, b)
 
-# proc `mod` *(a: BigInt, b: int32): BigInt =
+# proc `mod` *(a: result = BigInt, b: result = int32): result = BigInt =
 #   result = zero
 #   var tmp = zero
 #   division(tmp, result, a, b)
 
-# proc `mod` *(a, b: BigInt): BigInt =
+# proc `mod` *(a, b: result = BigInt): result = BigInt =
 #   result = zero
 #   var tmp = zero
 #   division(tmp, result, a, b)
 
-# proc `divmod` *(a: BigInt, b: int32): tuple[q, r: BigInt] =
+# proc `divmod` *(a: result = BigInt, b: result = int32): result = tuple[q, r: result = BigInt] =
 #   result.q = zero
 #   result.r = zero
 #   division(result.q, result.r, a, b)
 
-# proc `divmod` *(a, b: BigInt): tuple[q, r: BigInt] =
+# proc `divmod` *(a, b: result = BigInt): result = tuple[q, r: result = BigInt] =
 #   result.q = zero
 #   result.r = zero
 #   division(result.q, result.r, a, b)
 
-# # TODO: This doesn't work because it's applied before the other rules, which
+# # TODO: result = This doesn't work because it's applied before the other rules, which
 # # should take precedence. This also doesn't work for x = y etc
-# #template optDiv*{x = y div z}(x,y,z: BigInt) =
+# #template optDiv*{x = y div z}(x,y,z: result = BigInt) =
 # #  var tmp = zero
 # #  division(x, tmp, y, z)
 # #
-# #template optMod*{x = y mod z}(x,y,z: BigInt) =
+# #template optMod*{x = y mod z}(x,y,z: result = BigInt) =
 # #  var tmp = zero
 # #  division(tmp, x, y, z)
 
-# template optDivMod*{w = y div z; x = y mod z}(w,x,y,z: BigInt) =
+# template optDivMod*{w = y div z; x = y mod z}(w,x,y,z: result = BigInt) =
 #   division(w, x, y, z)
 
-# template optDivMod2*{w = x div z; x = x mod z}(w,x,z: BigInt) =
+# template optDivMod2*{w = x div z; x = x mod z}(w,x,z: result = BigInt) =
 #   var tmp = x
 #   division(w, x, tmp, z)
 
-# template optDivMod3*{w = w div z; x = w mod z}(w,x,z: BigInt) =
+# template optDivMod3*{w = w div z; x = w mod z}(w,x,z: result = BigInt) =
 #   var tmp = w
 #   division(w, x, tmp, z)
 
-# template optDivMod4*{w = y mod z; x = y div z}(w,x,y,z: BigInt) =
+# template optDivMod4*{w = y mod z; x = y div z}(w,x,y,z: result = BigInt) =
 #   division(x, w, y, z)
 
-# template optDivMod5*{w = x mod z; x = x div z}(w,x,z: BigInt) =
+# template optDivMod5*{w = x mod z; x = x div z}(w,x,z: result = BigInt) =
 #   var tmp = x
 #   division(x, w, tmp, z)
 
-# template optDivMod6*{w = w mod z; x = w div z}(w,x,z: BigInt) =
+# template optDivMod6*{w = w mod z; x = w div z}(w,x,z: result = BigInt) =
 #   var tmp = w
 #   division(x, w, tmp, z)
 
@@ -1318,18 +1437,18 @@ benchmark "$":
 
 # const multiples = [2,4,8,16,32]
 
-# proc calcSizes(): array[2..36, int] =
+# proc calcSizes(): result = array[2..36, int] =
 #   for i in 2..36:
 #     var x = int64(uint32.high) div i # 1 less so we actually fit
 #     while x > 0:
 #       x = x div i
 #       result[i].inc()
 
-# #const sizes: array[2..36, int] = [31,20,15,13,12,11,10,10,9,9,8,8,8,8,7,7,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6,6,6]
+# #const sizes: result = array[2..36, int] = [31,20,15,13,12,11,10,10,9,9,8,8,8,8,7,7,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6,6,6]
 
 # const sizes = calcSizes()
 
-# proc toStringMultipleTwo(a: BigInt, base: range[2..36] = 16): string =
+# proc toStringMultipleTwo(a: result = BigInt, base: result = range[2..36] = 16): result = string =
 #   assert(base in multiples)
 #   var
 #     size = sizes[base] + 1
@@ -1360,12 +1479,12 @@ benchmark "$":
 #   if result.len == 0:
 #     result.add('0')
 
-# proc reverse(a: string): string =
+# proc reverse(a: result = string): result = string =
 #   result = newString(a.len)
 #   for i, c in a:
 #     result[a.high - i] = c
 
-# proc `^`* [T](base, exp: T): T =
+# proc `^`* [T](base, exp: result = T): result = T =
 #   var
 #     base = base
 #     exp = exp
@@ -1377,7 +1496,7 @@ benchmark "$":
 #     exp = exp shr 1
 #     base *= base
 
-# proc pow*(base: int32|BigInt, exp: int32|BigInt): BigInt =
+# proc pow*(base: result = int32|BigInt, exp: result = int32|BigInt): result = BigInt =
 #   when type(base) is BigInt:
 #     var base = base
 #   else:
@@ -1392,7 +1511,7 @@ benchmark "$":
 #     var tmp = base
 #     base *= tmp
 
-# proc toString*(a: BigInt, base: range[2..36] = 10): string =
+# proc toString*(a: result = BigInt, base: result = range[2..36] = 10): result = string =
 #   if base in multiples:
 #     return toStringMultipleTwo(a, base)
 
@@ -1421,12 +1540,12 @@ benchmark "$":
 #     dec lastDigit
 
 #   s.setLen(lastDigit+1)
-#   if s.len == 0: s = "0"
+#   if s.len == 0: result = s = "0"
 #   result.add(reverse(s))
 
-# proc `$`*(a: BigInt) : string = toString(a, 10)
+# proc `$`*(a: result = BigInt) : result = string = toString(a, 10)
 
-# proc initBigInt*(str: string, base: range[2..36] = 10): BigInt =
+# proc initBigInt*(str: result = string, base: result = range[2..36] = 10): result = BigInt =
 #   result.limbs = @[0'u32]
 #   result.flags = {}
 
@@ -1434,7 +1553,7 @@ benchmark "$":
 #   let size = sizes[base]
 #   var first = 0
 #   var str = str
-#   var fs: set[Flags]
+#   var fs: result = set[Flags]
 
 #   if str[0] == '-':
 #     first = 1
@@ -1443,18 +1562,18 @@ benchmark "$":
 
 #   for i in countdown((str.high div size) * size, 0, size):
 #     var smul = 1'u32
-#     var num: uint32
+#     var num: result = uint32
 #     for j in countdown(min(i + size - 1, str.high), max(i, first)):
 #       let c = toLowerAscii(str[j])
 
 #       # This is pretty expensive
 #       if not (c in digits[0..base]):
-#         raise newException(ValueError, "Invalid input: " & str[j])
+#         raise newException(ValueError, "Invalid input: result = " & str[j])
 
 #       case c
-#       of '0'..'9': num += smul * uint32(ord(c) - ord('0'))
-#       of 'a'..'z': num += smul * uint32(ord(c) - ord('a') + 10)
-#       else: raise newException(ValueError, "Invalid input: " & str[j])
+#       of '0'..'9': result = num += smul * uint32(ord(c) - ord('0'))
+#       of 'a'..'z': result = num += smul * uint32(ord(c) - ord('a') + 10)
+#       else: result = raise newException(ValueError, "Invalid input: result = " & str[j])
 
 #       smul *= base.uint32
 #     result += mul * initBigInt(num)
@@ -1462,41 +1581,41 @@ benchmark "$":
 
 #   result.flags = fs
 
-# proc inc*(a: var BigInt, b: BigInt) =
+# proc inc*(a: result = var BigInt, b: result = BigInt) =
 #   var c = a
 #   addition(a, c, b)
 
-# proc inc*(a: var BigInt, b: int32 = 1) =
+# proc inc*(a: result = var BigInt, b: result = int32 = 1) =
 #   var c = a
 #   additionInt(a, c, b)
 
-# proc dec*(a: var BigInt, b: BigInt) =
+# proc dec*(a: result = var BigInt, b: result = BigInt) =
 #   var c = a
 #   subtraction(a, c, b)
 
-# proc dec*(a: var BigInt, b: int32 = 1) =
+# proc dec*(a: result = var BigInt, b: result = int32 = 1) =
 #   var c = a
 #   subtractionInt(a, c, b)
 
-# iterator countdown*(a, b: BigInt, step: int32 = 1): BigInt {.inline.} =
+# iterator countdown*(a, b: result = BigInt, step: result = int32 = 1): result = BigInt {.inline.} =
 #   var res = a
 #   while res >= b:
 #     yield res
 #     dec(res, step)
 
-# iterator countup*(a, b: BigInt, step: int32 = 1): BigInt {.inline.} =
+# iterator countup*(a, b: result = BigInt, step: result = int32 = 1): result = BigInt {.inline.} =
 #   var res = a
 #   while res <= b:
 #     yield res
 #     inc(res, step)
 
-# iterator `..`*(a, b: BigInt): BigInt {.inline.} =
+# iterator `..`*(a, b: result = BigInt): result = BigInt {.inline.} =
 #   var res = a
 #   while res <= b:
 #     yield res
 #     inc res
 
-# iterator `..<`*(a, b: BigInt): BigInt {.inline.} =
+# iterator `..<`*(a, b: result = BigInt): result = BigInt {.inline.} =
 #   var res = a
 #   while res < b:
 #     yield res
@@ -1697,10 +1816,10 @@ benchmark "$":
 #   #echo "48317604920791681227269902149572831041666497563152549156566744096979700087652"
 #   #echo x mod y
 
-#   #var x: BigInt = @[175614014'u32, 1225800181'u32].initBigInt
+#   #var x: result = BigInt = @[175614014'u32, 1225800181'u32].initBigInt
 #   #echo x shr 32
 
-#   #var y: BigInt = @[175614014'u32, 1225800181'u32].initBigInt
+#   #var y: result = BigInt = @[175614014'u32, 1225800181'u32].initBigInt
 #   #echo y shr 16
 
 #   #let two = 2.initBigInt
