@@ -15,6 +15,25 @@ type
 
 var lim = 10_000_000
 
+var aa = @[1,2,3]
+var bb = @[4,5,6]
+
+echo "A = ",aa
+echo "B = ",bb
+
+echo repr aa
+echo repr bb
+
+let k = addr aa
+bb = k[]
+
+
+echo "A = ",aa
+echo "B = ",bb
+
+#echo repr addr a
+#echo repr addr b
+
 type 
     MyObj = ref object
         a: int
