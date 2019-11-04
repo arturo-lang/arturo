@@ -31,7 +31,7 @@ proc Collections_Size*[F,X,V](f: F, xl: X): V {.inline.} =
     case v[0].kind
         of AV: result = valueFromInteger(A(0).len)
         of SV: result = valueFromInteger(S(0).len)
-        of DV: result = valueFromInteger(D(0).len)
+        of DV: result = valueFromInteger(D(0).list.len)
         else: discard
 
 proc Collections_Slice*[F,X,V](f: F, xl: X): V {.inline.} =
