@@ -132,24 +132,7 @@ int yywrap() {
 %token <str> COLON ":"
 %token <str> TILDE "~"
 
-%token <code> IF_CMD "if"
-%token <code> GET_CMD "get"
-%token <code> LOOP_CMD "loop"
-%token <code> PRINT_CMD "print"
-%token <code> RANGE_CMD "range"
-%token <code> RETURN_CMD "return"
-%token <code> AND_CMD "and"
-%token <code> NOT_CMD "not"
-%token <code> OR_CMD "or"
-%token <code> XOR_CMD "xor"
-%token <code> FILTER_CMD "filter"
-%token <code> SHUFFLE_CMD "shuffle"
-%token <code> SIZE_CMD "size"
-%token <code> SLICE_CMD "slice"
-%token <code> SWAP_CMD "swap"
-%token <code> ISPRIME_CMD "isPrime"
-%token <code> PRODUCT_CMD "product"
-%token <code> SUM_CMD "sum"
+%token <code> SYSTEM_CMD "<system command>"
 
 %token <str> NEW_LINE "End Of Line"
 
@@ -158,7 +141,7 @@ int yywrap() {
 
 %type <compo> keypath string number boolean null
 %type <compo> array dictionary function inline_call
-%type <code> command
+
 %type <compo> argument expression expression_list
 %type <compo> statement statement_list
 
@@ -242,28 +225,8 @@ function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFuncti
 inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
 						;
 
-command 				:	IF_CMD																{ $$ = 0; }
-						|	GET_CMD 															{ $$ = 1; }
-						|	LOOP_CMD 															{ $$ = 2; }
-						|	PRINT_CMD 															{ $$ = 3; }
-						|	RANGE_CMD 															{ $$ = 4; }
-						|	RETURN_CMD 															{ $$ = 5; }
-						|	AND_CMD 															{ $$ = 6; }
-						|	NOT_CMD																{ $$ = 7; }
-						|	OR_CMD																{ $$ = 8; }
-						|	XOR_CMD																{ $$ = 9; }
-						|	FILTER_CMD 															{ $$ = 10; }
-						|	SHUFFLE_CMD 														{ $$ = 11; }
-						|	SIZE_CMD 															{ $$ = 12; }
-						|	SLICE_CMD 															{ $$ = 13; }
-						|	SWAP_CMD 															{ $$ = 14; }
-						|	ISPRIME_CMD 														{ $$ = 15; }
-						|	PRODUCT_CMD 														{ $$ = 16; }
-						|	SUM_CMD 															{ $$ = 17; }
-						;
-
 argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
-						|	command 															{ $$ = argumentFromCommandIdentifier($1); }
+						|	SYSTEM_CMD 															{ $$ = argumentFromCommandIdentifier($1); }
 						| 	keypath																{ $$ = argumentFromKeypath($1); }
 						| 	number 																
 						|	string
@@ -306,14 +269,14 @@ expression_list			:	expression 															{ $$ = newExpressionListWithExpres
 //==============================		
 
 assignment_id			:	ID
-						|	command  															{ $$ = getNameOfSystemFunction($command); }
+						|	SYSTEM_CMD  														{ $$ = getNameOfSystemFunction($SYSTEM_CMD); }
 						;
 
 statement				: 	expression 															{ $$ = statementFromExpression($expression,yylineno); }
 						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,yylineno); }
-						|	command expression_list												{ $$ = statementFromCommand($command,$expression_list,yylineno); }
+						|	SYSTEM_CMD expression_list											{ $$ = statementFromCommand($SYSTEM_CMD,$expression_list,yylineno); }
 						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
-						| 	command PIPE statement[previous] 									{ $$ = statementFromCommand($command,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }						
+						| 	SYSTEM_CMD PIPE statement[previous] 								{ $$ = statementFromCommand($SYSTEM_CMD,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }						
 						| 	assignment_id COLON statement[previous] 							{ $$ = statementFromAssignment($assignment_id,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
 						;
 
