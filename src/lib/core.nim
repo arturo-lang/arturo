@@ -24,25 +24,47 @@ proc Core_And*[F,X,V](f: F, xl: X): V {.inline.} =
             result = valueFromInteger(bitand(v0.i, f.validateOne(xl.list[1],[IV]).i))
         else: discard
 
-proc Core_If*[F,X,V](f: F, xl: X): V {.inline.} =
-    if f.validateOne(xl.list[0],[BV]).b:
-        result = f.validateOne(xl.list[1],[FV]).f.execute(NULL)
+# SystemFunctions[0] = SystemFunction(
+#     name:"if", 
+#     req: @[@[BV,FV],@[BV,FV,FV]], 
+#     ret: @[ANY], 
+#     desc:"if condition is true, execute given function; else execute optional alternative function")
+
+template Core_If*(xl: ExpressionList): untyped {.dirty.} =
+    if xl.list[0].validateOne("if",[BV]).b:
+        result = xl.list[1].validateOne("if",[FV]).f.execute(NULL)
     else:
         if xl.list.len == 3:
-            result = f.validateOne(xl.list[2],[FV]).f.execute(NULL)
+            result = xl.list[2].validateOne("if",[FV]).f.execute(NULL)
         else:
             result = FALSE
 
-proc Core_Get*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = f.validate(xl)
+#---
+
+# SystemFunctions[1] = SystemFunction(
+#     name:"get",          
+#     req: @[@[AV,IV],@[DV,SV]],                              
+#     ret: @[ANY],            
+#     desc:"get element from collection using given index/key")
+
+template Core_Get*(xl: ExpressionList): untyped {.dirty.} =
+    let v = xl.validate("get",@[@[AV,IV],@[DV,SV]])
 
     case v[0].kind
         of arrayValue: result = A(0)[I(1)]
         of dictionaryValue: result = D(0).getValueForKey(S(1))
         else: result = NULL
 
-proc Core_Loop*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = f.validate(xl)
+#---
+
+# SystemFunctions[2] = SystemFunction(
+#     name:"loop",         
+#     req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],            
+#     ret: @[ANY],            
+#     desc:"execute given function for each element in collection, or while condition is true")
+
+template Core_Loop*(xl: ExpressionList): untyped {.dirty.} =
+    let v = xl.validate("loop",@[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]])
 
     case v[0].kind
         of AV:
@@ -88,11 +110,21 @@ proc Core_Or*[F,X,V](f: F, xl: X): V {.inline.} =
             result = valueFromInteger(bitor(v0.i, f.validateOne(xl.list[1],[IV]).i))
         else: discard
 
-proc Core_Print*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = f.validate(xl)
-    
+#---
+
+# SystemFunctions[3] = SystemFunction(
+#     name:"print",        
+#     req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],     
+#     ret: @[SV],             
+#     desc:"print value of given expression to screen")
+
+template Core_Print*(xl: ExpressionList): untyped {.dirty.} =
+    let v = xl.validate("print", static functionConstraints("print"))
+
     echo v[0].stringify(quoted=false)
     result = v[0]
+
+#---
 
 proc Core_Product*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = f.validate(xl)
@@ -104,8 +136,14 @@ proc Core_Product*[F,X,V](f: F, xl: X): V {.inline.} =
         result = result * A(0)[i]
         inc(i)
 
-proc Core_Range*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = f.validate(xl)
+# SystemFunctions[4] = SystemFunction(
+#     name:"range",        
+#     req: @[@[IV,IV]],                                       
+#     ret: @[AV],             
+#     desc:"get array from given range (from..to) with optional step")
+
+template Core_Range*(xl: ExpressionList): untyped {.dirty.} =
+    let v = xl.validate("range",@[@[IV,IV]])
 
     if I(0)<I(1):    
         result = valueFromArray(toSeq(I(0)..I(1)).map(proc (x: int): Value = valueFromInteger(x)))
