@@ -46,7 +46,7 @@ proc showSymbols() =
 
 proc showFunctions() =
     let names = SystemFunctions.map((x) => x.name)
-    for n in names:
+    for n in sorted(names):
         echo SystemFunctions[getSystemFunction(n)].getOneLineDescription()
 
 proc showHelp() =
