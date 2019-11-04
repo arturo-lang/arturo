@@ -68,24 +68,7 @@ LETTER_OR_MISC		[a-zA-Z_]
 "null"												{ return NULLV; }
 "true"|"false"     									{ yylval.str=strdup(yytext); return BOOLEANV; }
 
-"if"												{ yylval.code = 0; return SYSTEM_CMD; }
-"get"												{ yylval.code = 1; return SYSTEM_CMD; }
-"loop"												{ yylval.code = 2; return SYSTEM_CMD; }
-"print"												{ yylval.code = 3; return SYSTEM_CMD; }
-"range"												{ yylval.code = 4; return SYSTEM_CMD; }
-"return"											{ yylval.code = 5; return SYSTEM_CMD; }
-"and"												{ yylval.code = 6; return SYSTEM_CMD; }
-"not"												{ yylval.code = 7; return SYSTEM_CMD; }
-"or"												{ yylval.code = 8; return SYSTEM_CMD; }
-"xor"												{ yylval.code = 9; return SYSTEM_CMD; }
-"filter"											{ yylval.code = 10; return SYSTEM_CMD; }
-"shuffle"											{ yylval.code = 11; return SYSTEM_CMD; }
-"size"												{ yylval.code = 12; return SYSTEM_CMD; }
-"slice"												{ yylval.code = 13; return SYSTEM_CMD; }
-"swap"												{ yylval.code = 14; return SYSTEM_CMD; }
-"isPrime"											{ yylval.code = 15; return SYSTEM_CMD; }
-"product"											{ yylval.code = 16; return SYSTEM_CMD; }
-"sum"												{ yylval.code = 17; return SYSTEM_CMD; }
+%%SYSTEM_CMD%%
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ yylval.str=strdup(yytext); return ID; }
 {DIGIT}+											{ yylval.str=strdup(yytext); return INTEGER; }
