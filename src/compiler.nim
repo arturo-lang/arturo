@@ -21,7 +21,8 @@ type
         Stack
       ----------------------------------------]#
 
-    Context = seq[(string,Value)]
+    Context = ref object
+        list    : seq[(string,Value)]
 
     #[----------------------------------------
         KeyPath
@@ -336,42 +337,42 @@ var yylineno {.importc.}: cint
   ======================================================]#
 
 proc addContext() {.inline.} =
-    Stack.add(@[])
+    Stack.add(Context(list: @[]))
 
 proc addContextWith(key:string, val:Value) {.inline.} =
-    Stack[^1] = @[(key,val)]
+    Stack[^1] = Context(list: @[(key,val)])
 
 proc addContextWith(pairs:seq[(string,Value)]) {.inline.} =
-    Stack[^1] = pairs
+    Stack[^1] = Context(list:pairs)
 
 proc popContext() {.inline.} =
     discard Stack.pop()
 
 proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} = 
     var i = 0
-    while i<ctx.len:
-        if ctx[i][0]==k: 
-            ctx[i][1] = v
+    while i<ctx.list.len:
+        if ctx.list[i][0]==k: 
+            ctx.list[i][1] = v
             return
         inc(i)
 
     # not updated, so let's assign it
-    ctx.add((k,v))
+    ctx.list.add((k,v))
 
 proc keys*(ctx: Context): seq[string] {.inline.} =
-    result = ctx.map((x) => x[0])
+    result = ctx.list.map((x) => x[0])
 
 proc hasKey*(ctx: Context, key: string): bool {.inline.} = 
     var i = 0
-    while i<ctx.len:
-        if ctx[i][0]==key: return true 
+    while i<ctx.list.len:
+        if ctx.list[i][0]==key: return true 
         inc(i)
     return false
 
 proc getValueForKey*(ctx: Context, key: string): Value {.inline.} =
     var i = 0
-    while i<ctx.len:
-        if ctx[i][0]==key: return ctx[i][1] 
+    while i<ctx.list.len:
+        if ctx.list[i][0]==key: return ctx.list[i][1] 
         inc(i)
     return nil
 
@@ -379,9 +380,9 @@ proc getSymbol(k: string): Value {.inline.} =
     var i = len(Stack) - 1
     while i > -1:
         var j = 0
-        while j<Stack[i].len:
-            if Stack[i][j][0]==k: 
-                return Stack[i][j][1]
+        while j<Stack[i].list.len:
+            if Stack[i].list[j][0]==k: 
+                return Stack[i].list[j][1]
             inc(j)
         dec(i)
 
@@ -391,10 +392,10 @@ proc getAndSetSymbol(k: string, v: Value): Value {.inline.} =
     var i = len(Stack) - 1
     while i > -1:
         var j = 0
-        while j<Stack[i].len:
-            if Stack[i][j][0]==k: 
-                result = Stack[i][j][1]
-                Stack[i][j][1] = v
+        while j<Stack[i].list.len:
+            if Stack[i].list[j][0]==k: 
+                result = Stack[i].list[j][1]
+                Stack[i].list[j][1] = v
             inc(j)
         dec(i)
 
@@ -408,9 +409,9 @@ proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} =
         var i = len(Stack) - 1
         while i > -1:
             var j = 0
-            while j<Stack[i].len:
-                if Stack[i][j][0]==k: 
-                    Stack[i][j][1]=v
+            while j<Stack[i].list.len:
+                if Stack[i].list[j][0]==k: 
+                    Stack[i].list[j][1]=v
                     return v
                 inc(j)
 
@@ -441,7 +442,7 @@ proc inspectStack() =
         echo tab,"Stack[",i,"]"
         echo tab,"----------------"
 
-        for t in s:
+        for t in s.list:
             echo tab,t[0]," -> ",t[1].stringify()
 
         inc(i)
@@ -509,7 +510,7 @@ proc valueFromValue(v: Value): Value =
         of integerValue: result = valueFromInteger(v.i)
         of realValue: result = valueFromReal(v.r)
         of arrayValue: result = valueFromArray(v.a.map((x) => valueFromValue(x)))
-        of dictionaryValue: result = valueFromDictionary(v.d.map((x) => (x[0],valueFromValue(x[1]))))
+        of dictionaryValue: result = valueFromDictionary(Context(list:v.d.list.map((x) => (x[0],valueFromValue(x[1])))))
         else: result = v
 
 proc findValueInArray(v: Value, lookup: Value): int =
@@ -601,9 +602,9 @@ proc `-`(l: Value, r: Value): Value {.inline.} =
         of dictionaryValue:
             result = valueFromValue(l)
             var i = 0
-            while i < l.d.len:
-                if l.d[i][1].eq(r):
-                    result.d.del(i)
+            while i < l.d.list.len:
+                if l.d.list[i][1].eq(r):
+                    result.d.list.del(i)
                 inc(i)
 
         else:
@@ -816,10 +817,10 @@ proc eq(l: Value, r: Value): bool {.inline.} =
                     if l.d.keys!=r.d.keys: result = false
                     else:
                         var i = 0
-                        while i < l.d.len:
-                            if not r.d.hasKey(l.d[i][0]): return false
+                        while i < l.d.list.len:
+                            if not r.d.hasKey(l.d.list[i][0]): return false
                             else:
-                                if not (l.d[i][1]==r.d.getValueForKey(l.d[i][0])): return false
+                                if not (l.d.list[i][1]==r.d.getValueForKey(l.d.list[i][0])): return false
                             inc(i)
 
                         result = true 
@@ -923,7 +924,7 @@ proc stringify*(v: Value, quoted: bool = true): string =
   ----------------------------------------]#
 
 proc newUserFunction(s: StatementList, a: seq[string]): Function =
-    result = Function(id: "", args: a, body: s, hasContext: false, parentThis: nil, parentContext: @[])
+    result = Function(id: "", args: a, body: s, hasContext: false, parentThis: nil, parentContext: nil)
 
 proc setFunctionName(f: Function, s: string) {.inline.} =
     f.id = s
@@ -949,7 +950,8 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         if Stack.len == 1: addContext()
 
         var oldSeq:Context
-        shallowCopy(oldSeq,Stack[1])
+        oldSeq = Stack[1]
+        #shallowCopy(oldSeq,Stack[1])
         if f.args.len>0:
             if v.kind == AV: addContextWith(zip(f.args,v.a))
             else: addContextWith(f.args[0],v)
@@ -958,8 +960,9 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         try                         : result = f.body.execute()
         except ReturnValue as ret   : result = ret.value
         finally                     : 
-            shallowCopy(Stack[1],oldSeq)
-            if Stack[1].len==0: popContext()
+            Stack[1]=oldSeq
+            #shallowCopy(Stack[1],oldSeq)
+            if Stack[1].list.len==0: popContext()
     else:
         var stored: Value = nil
         if v!=NULL:
@@ -1200,7 +1203,7 @@ proc getValue(a: Argument): Value {.inline.} =
         of arrayArgument:
             result = a.a.evaluate(forceArray=true)
         of dictionaryArgument:
-            var ret = valueFromDictionary(@[])
+            var ret = valueFromDictionary(Context(list: @[]))
 
             addContext()
             for statement in a.d.list:

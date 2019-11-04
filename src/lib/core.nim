@@ -51,7 +51,7 @@ proc Core_Loop*[F,X,V](f: F, xl: X): V {.inline.} =
                 result = FN(1).execute(A(0)[i])
                 inc(i)
         of DV:
-            for val in D(0):
+            for val in D(0).list:
                 result = FN(1).execute(valueFromArray(@[valueFromString(val[0]),val[1]]))
         of BV:
             if not B(0): return NULL
