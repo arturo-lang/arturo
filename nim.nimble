@@ -23,8 +23,8 @@ template showMessage(msg:string,final:bool=false) =
         echo "------"
 
 template getCommand(cmdArgs:openArray[string]):string =
-    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math \" --gcc.options.linker=\"-flto\""
-    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -fno-strict-aliasing -ffast-math \" --clang.options.linker=\"-flto\""
+    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --gcc.options.linker=\"-flto\""
+    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --clang.options.linker=\"-flto\""
     # --embedsrc --genScript 
     "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache --embedsrc --checks:off --overflowChecks:on " & srcDir & "/main.nim"
 
@@ -48,6 +48,7 @@ template compileCore() =
     showMessage("Compiling core for release")
     let args = @[
         "-d:release",
+        "-d:danger",
 
         "--passL:parser.a",
         "--threads:on",
@@ -75,7 +76,7 @@ template compileMini() =
 
 template compileTest() = 
     showMessage("Compiling test module")
-    exec "nim c -d:release --opt:speed --nimcache:cache --path:src -o:test src/test.nim"
+    exec "nim c -d:release --opt:speed --nimcache:cache --threads:on --path:src -o:test src/test.nim"
 
 template profileCore() = 
     showMessage("Compiling core for profiling")
@@ -133,7 +134,7 @@ template cleanUp() =
     showMessage "Cleaning up"
     exec "rm *.c *.a *.h *.o"
     exec "rm src/parser/lexer_final.l"
-    exec "rm src/system.nim"
+    #exec "rm src/system.nim"
 
 # Tasks
 
