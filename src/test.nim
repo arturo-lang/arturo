@@ -1,9 +1,11 @@
-import algorithm, lists, math, os, parseutils, sequtils, strutils, sugar, tables
+{.experimental: "parallel".}
+import algorithm, lists, math, os, parseutils, sequtils, strutils, sugar, tables, threadpool
 import utils
 
 import compiler
 
 import bignum
+
 
 type 
     ctx = TableRef[string,Value]
@@ -13,7 +15,7 @@ type
     #stack = array[ctx,2]
 
 
-var lim = 100_000_000
+var lim = 1_000_000
 
 var aa = @[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]
 var bb = @[4,5,6]
@@ -31,113 +33,123 @@ bb = k[]
 echo "A = ",aa
 echo "B = ",bb
 
+benchmark "sum 2 numbers":
+    for i in 1..lim:
+        let k = 1+i
+
+benchmark "sum 2 numbers (parallel)":
+    
+    parallel:
+        for i in 1..lim:
+            let k = spawn 1+i
+    sync()
 #echo repr addr a
 #echo repr addr b
 
-benchmark "array access":
-    for i in 1..lim:
-        for j in 0..39:
-            let k = aa[j]
+# benchmark "array access":
+#     for i in 1..lim:
+#         for j in 0..39:
+#             let k = aa[j]
 
-proc fun1(x: int):int = 
-    case x
-        of 0: result = 0
-        of 1: result = 1
-        of 2: result = 2
-        of 3: result = 3
-        of 4: result = 4
-        of 5: result = 5
-        of 6: result = 6
-        of 7: result = 7
-        of 8: result = 8
-        of 9: result = 9
-        of 10: result = 10
-        of 11: result = 11
-        of 12: result = 12
-        of 13: result = 13
-        of 14: result = 14
-        of 15: result = 15
-        of 16: result = 16
-        of 17: result = 17
-        of 18: result = 18
-        of 19: result = 19
-        of 20: result = 20
-        of 21: result = 21
-        of 22: result = 22
-        of 23: result = 23
-        of 24: result = 24
-        of 25: result = 25
-        of 26: result = 26
-        of 27: result = 27
-        of 28: result = 28
-        of 29: result = 29
-        of 30: result = 30
-        of 31: result = 31
-        of 32: result = 32
-        of 33: result = 33
-        of 34: result = 34
-        of 35: result = 35
-        of 36: result = 36
-        of 37: result = 37
-        of 38: result = 38
-        of 39: result = 39
-        else: result = 60
+# proc fun1(x: int):int = 
+#     case x
+#         of 0: result = 0
+#         of 1: result = 1
+#         of 2: result = 2
+#         of 3: result = 3
+#         of 4: result = 4
+#         of 5: result = 5
+#         of 6: result = 6
+#         of 7: result = 7
+#         of 8: result = 8
+#         of 9: result = 9
+#         of 10: result = 10
+#         of 11: result = 11
+#         of 12: result = 12
+#         of 13: result = 13
+#         of 14: result = 14
+#         of 15: result = 15
+#         of 16: result = 16
+#         of 17: result = 17
+#         of 18: result = 18
+#         of 19: result = 19
+#         of 20: result = 20
+#         of 21: result = 21
+#         of 22: result = 22
+#         of 23: result = 23
+#         of 24: result = 24
+#         of 25: result = 25
+#         of 26: result = 26
+#         of 27: result = 27
+#         of 28: result = 28
+#         of 29: result = 29
+#         of 30: result = 30
+#         of 31: result = 31
+#         of 32: result = 32
+#         of 33: result = 33
+#         of 34: result = 34
+#         of 35: result = 35
+#         of 36: result = 36
+#         of 37: result = 37
+#         of 38: result = 38
+#         of 39: result = 39
+#         else: result = 60
 
 
-proc fun2(x: int):int = 
-    {.computedGoto}
-    result = case x
-        of 0: 0
-        of 1: 1
-        of 2: 2
-        of 3: 3
-        of 4: 4
-        of 5: 5
-        of 6: 6
-        of 7: 7
-        of 8: 8
-        of 9: 9
-        of 10: 10
-        of 11: 11
-        of 12: 12
-        of 13: 13
-        of 14: 14
-        of 15: 15
-        of 16: 16
-        of 17: 17
-        of 18: 18
-        of 19: 19
-        of 20: 20
-        of 21: 21
-        of 22: 22
-        of 23: 23
-        of 24: 24
-        of 25: 25
-        of 26: 26
-        of 27: 27
-        of 28: 28
-        of 29: 29
-        of 30: 30
-        of 31: 31
-        of 32: 32
-        of 33: 33
-        of 34: 34
-        of 35: 35
-        of 36: 36
-        of 37: 37
-        of 38: 38
-        of 39: 39
-        else: 60
+# proc fun2(x: int):int = 
+#     {.computedGoto}
+#     result = case x
+#         of 0: 0
+#         of 1: 1
+#         of 2: 2
+#         of 3: 3
+#         of 4: 4
+#         of 5: 5
+#         of 6: 6
+#         of 7: 7
+#         of 8: 8
+#         of 9: 9
+#         of 10: 10
+#         of 11: 11
+#         of 12: 12
+#         of 13: 13
+#         of 14: 14
+#         of 15: 15
+#         of 16: 16
+#         of 17: 17
+#         of 18: 18
+#         of 19: 19
+#         of 20: 20
+#         of 21: 21
+#         of 22: 22
+#         of 23: 23
+#         of 24: 24
+#         of 25: 25
+#         of 26: 26
+#         of 27: 27
+#         of 28: 28
+#         of 29: 29
+#         of 30: 30
+#         of 31: 31
+#         of 32: 32
+#         of 33: 33
+#         of 34: 34
+#         of 35: 35
+#         of 36: 36
+#         of 37: 37
+#         of 38: 38
+#         of 39: 39
+#         else: 60
 
-benchmark "result per case":
-    for i in 1..lim:
-        for j in 0..39:
-            let z = fun1(j)
+# benchmark "result per case":
+#     for i in 1..lim:
+#         for j in 0..39:
+#             let z = fun1(j)
 
-benchmark "result universal":
-    for i in 1..lim:
-        for j in 0..39:
-            let z = fun2(j)
+# benchmark "result universal":
+#     for i in 1..lim:
+#         for j in 0..39:
+#             let z = fun2(j)
 
 # benchmark "computed":
 #     var k : result = int
