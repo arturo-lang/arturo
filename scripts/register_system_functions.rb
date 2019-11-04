@@ -16,13 +16,9 @@ File.read("src/compiler.nim").split("\n").each{|l|
 
 compiler += "    else: result = NULL"
 
-#puts lexer
-#puts "-----"
-#puts compiler
-
-File.open("src/system.nim","w"){|f|
-	f.write(compiler)
-}
+# File.open("src/system.nim","w"){|f|
+# 	f.write(compiler)
+# }
 
 File.open("src/parser/lexer_final.l","w"){|f|
 	f.write(File.read("src/parser/lexer.l").gsub("\%\%SYSTEM_CMD\%\%",lexer))
