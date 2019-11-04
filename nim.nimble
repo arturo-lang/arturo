@@ -70,7 +70,7 @@ template compileMini() =
 
 template compileTest() = 
     showMessage("Compiling test module")
-    exec "nim c -d:release --opt:speed --path:src -o:test src/test.nim"
+    exec "nim c -d:release --opt:speed --nimcache:cache --path:src -o:test src/test.nim"
 
 template profileCore() = 
     showMessage("Compiling core for profiling")
