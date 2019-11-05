@@ -7,6 +7,8 @@
   * @file: lib/system/math.nim
   *****************************************************************]#
 
+import bignum
+
 #[######################################################
     Helpers
   ======================================================]#
@@ -65,8 +67,13 @@ proc isPrime*(n: int32): bool {.noSideEffect.} =
 
 proc Math_isPrime*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isPrime", f.req)
-    if isPrime(I(0).uint32): result = TRUE
-    else: result = FALSE
+
+    if v[0].kind==IV:
+        if isPrime(I(0).uint32): result = TRUE
+        else: result = FALSE
+    else:
+        if probablyPrime(BI(0),25)==0: result = FALSE
+        else: result = TRUE
 
 proc Math_product*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("product", f.req)
