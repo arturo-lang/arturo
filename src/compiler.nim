@@ -9,7 +9,7 @@
 
 import algorithm, bitops, macros, math, os, parseutils, random, sequtils, strutils, sugar, tables
 import bignum
-import panic
+import panic, utils
 
 #[######################################################
     Type definitions
@@ -310,7 +310,7 @@ const
         SystemFunction(lib:"array",         name:"swap",         call:Array_swap,           req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices"),
         SystemFunction(lib:"array",         name:"swap!",        call:Array_swapI,          req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices (in-place)"),
 
-        SystemFunction(lib:"math",          name:"isPrime",      call:Math_isPrime,         req: @[@[IV]],                                                                      ret: @[BV],             desc:"check if given number is prime"),
+        SystemFunction(lib:"math",          name:"isPrime",      call:Math_isPrime,         req: @[@[IV],@[BIV]],                                                               ret: @[BV],             desc:"check if given number is prime"),
         SystemFunction(lib:"math",          name:"product",      call:Math_product,         req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return product of elements of given array"),
         SystemFunction(lib:"math",          name:"sum",          call:Math_sum,             req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
 
