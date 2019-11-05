@@ -195,6 +195,7 @@ proc eq(l: Value, r: Value): bool {.inline.}
 proc lt(l: Value, r: Value): bool {.inline.}
 proc gt(l: Value, r: Value): bool {.inline.}
 proc stringify*(v: Value, quoted: bool = true): string
+proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 
 proc execute(f: Function, v: Value): Value {.inline.} 
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.}
@@ -275,33 +276,43 @@ include lib/system/core
 include lib/system/array
 include lib/system/collection
 include lib/system/math
+include lib/system/reflection
 
 const
     SystemFunctions* = @[
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         #              Library              Name                 Call                       Args                                                    Return                  Description                                                                                             
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        SystemFunction(lib:"core",          name:"if",           call:Core_if,              req: @[@[BV,FV],@[BV,FV,FV]],                           ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
-        SystemFunction(lib:"core",          name:"loop",         call:Core_loop,            req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],            ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
-        SystemFunction(lib:"core",          name:"get",          call:Core_get,             req: @[@[AV,IV],@[DV,SV]],                              ret: @[ANY],            desc:"get element from collection using given index/key"),
-        SystemFunction(lib:"core",          name:"print",        call:Core_print,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],     ret: @[SV],             desc:"print value of given expression to screen"),
-        SystemFunction(lib:"core",          name:"range",        call:Core_range,           req: @[@[IV,IV]],                                       ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
-        SystemFunction(lib:"core",          name:"return",       call:Core_return,          req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],     ret: @[ANY],            desc:"break execution and return given value"),
-        SystemFunction(lib:"core",          name:"and",          call:Core_and,             req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical AND"),
-        SystemFunction(lib:"core",          name:"not",          call:Core_not,             req: @[@[BV],@[IV]],                                    ret: @[BV,IV],          desc:"bitwise/logical NOT"),
-        SystemFunction(lib:"core",          name:"or",           call:Core_or,              req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical OR"),
-        SystemFunction(lib:"core",          name:"xor",          call:Core_xor,             req: @[@[BV,BV],@[IV,IV]],                              ret: @[BV,IV],          desc:"bitwise/logical XOR"),
-        SystemFunction(lib:"core",          name:"swap",         call:Core_swap,            req: @[@[AV,IV,IV]],                                    ret: @[AV],             desc:"swap array elements at given indices"),
+        SystemFunction(lib:"core",          name:"if",           call:Core_if,              req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
+        SystemFunction(lib:"core",          name:"loop",         call:Core_loop,            req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
+        SystemFunction(lib:"core",          name:"get",          call:Core_get,             req: @[@[AV,IV],@[DV,SV]],                                                          ret: @[ANY],            desc:"get element from collection using given index/key"),
+        SystemFunction(lib:"core",          name:"print",        call:Core_print,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen"),
+        SystemFunction(lib:"core",          name:"panic",        call:Core_panic,           req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
+        SystemFunction(lib:"core",          name:"input",        call:Core_input,           req: @[],                                                                           ret: @[SV],             desc:"read line from stdin"),
+        SystemFunction(lib:"core",          name:"range",        call:Core_range,           req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
+        SystemFunction(lib:"core",          name:"return",       call:Core_return,          req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
+        SystemFunction(lib:"core",          name:"and",          call:Core_and,             req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical AND"),
+        SystemFunction(lib:"core",          name:"not",          call:Core_not,             req: @[@[BV],@[IV]],                                                                ret: @[BV,IV],          desc:"bitwise/logical NOT"),
+        SystemFunction(lib:"core",          name:"or",           call:Core_or,              req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical OR"),
+        SystemFunction(lib:"core",          name:"xor",          call:Core_xor,             req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XOR"),
 
-        SystemFunction(lib:"collection",    name:"size",         call:Collection_size,      req: @[@[AV],@[SV],@[DV]],                              ret: @[IV],             desc:"get size of given collection or string"),
+        SystemFunction(lib:"collection",    name:"append",       call:Collection_append,    req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string"),
+        SystemFunction(lib:"collection",    name:"append!",      call:Collection_appendI,   req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string (in-place)"),
+        SystemFunction(lib:"collection",    name:"size",         call:Collection_size,      req: @[@[AV],@[SV],@[DV]],                                                          ret: @[IV],             desc:"get size of given collection or string"),
 
-        SystemFunction(lib:"array",         name:"filter",       call:Array_filter,         req: @[@[AV,FV]],                                       ret: @[AV],             desc:"get array after filtering each element using given function"),
-        SystemFunction(lib:"array",         name:"shuffle",      call:Array_shuffle,        req: @[@[AV]],                                          ret: @[AV],             desc:"get given array shuffled"),
-        SystemFunction(lib:"array",         name:"slice",        call:Array_slice,          req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],      ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
+        SystemFunction(lib:"array",         name:"filter",       call:Array_filter,         req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function"),
+        SystemFunction(lib:"array",         name:"filter!",      call:Array_filterI,        req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function (in-place)"),
+        SystemFunction(lib:"array",         name:"shuffle",      call:Array_shuffle,        req: @[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array"),
+        SystemFunction(lib:"array",         name:"shuffle!",     call:Array_shuffleI,       req: @[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array (in-place)"),
+        SystemFunction(lib:"array",         name:"slice",        call:Array_slice,          req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],                                  ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
+        SystemFunction(lib:"array",         name:"swap",         call:Array_swap,           req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices"),
+        SystemFunction(lib:"array",         name:"swap!",        call:Array_swapI,          req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices (in-place)"),
 
-        SystemFunction(lib:"math",          name:"isPrime",      call:Math_isPrime,         req: @[@[IV]],                                          ret: @[BV],             desc:"check if given number is prime"),
-        SystemFunction(lib:"math",          name:"product",      call:Math_product,         req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return product of elements of given array"),
-        SystemFunction(lib:"math",          name:"sum",          call:Math_sum,             req: @[@[AV]],                                          ret: @[IV,BIV],         desc:"return sum of elements of given array")
+        SystemFunction(lib:"math",          name:"isPrime",      call:Math_isPrime,         req: @[@[IV]],                                                                      ret: @[BV],             desc:"check if given number is prime"),
+        SystemFunction(lib:"math",          name:"product",      call:Math_product,         req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return product of elements of given array"),
+        SystemFunction(lib:"math",          name:"sum",          call:Math_sum,             req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
+
+        SystemFunction(lib:"reflection",    name:"inspect",      call:Reflection_inspect,   req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen in a readable format")
     ]
 
 #[######################################################
@@ -845,6 +856,9 @@ proc gt(l: Value, r: Value): bool {.inline.} =
 
         else: NotComparableError($(l.kind),$(r.kind))
 
+proc valueKindToPrintable(s: string): string = 
+    s.replace("Value","").replace("ionary","").replace("tion","").replace("ay","").replace("eger","").replace("ing","").replace("ean","")
+
 proc stringify*(v: Value, quoted: bool = true): string =
     {.computedGoto.}
     case v.kind
@@ -865,12 +879,51 @@ proc stringify*(v: Value, quoted: bool = true): string =
         of dictionaryValue      :
             result = "#{ "
             
-            let items = sorted(v.d.keys).map((x) => x & " " & v.d.getValueForKey(x).stringify())
+            let items = sorted(v.d.keys).map((x) => x & ": " & v.d.getValueForKey(x).stringify())
 
             result &= items.join(", ")
             result &= " }"
 
             if result=="#{  }": result = "#{}"
+        of functionValue        :   result = "<function>"
+        of nullValue            :   result = "null"
+        of anyValue             :   result = ""
+
+proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
+    const 
+        RESTORE_COLOR   = "\x1B[0;37m"
+        STR_COLOR       = "\x1B[0;33m"
+        NUM_COLOR       = "\x1B[0;35m"
+        KEY_COLOR       = "\x1B[1;37m"
+        INSPECT_PADDING = 16
+
+    let padding = 
+        if isKeyVal: INSPECT_PADDING
+        else: 0
+
+    {.computedGoto.}
+    case v.kind
+        of stringValue          :   result = STR_COLOR & escape(v.s) & RESTORE_COLOR
+        of integerValue         :   result = NUM_COLOR & $(v.i) & RESTORE_COLOR
+        of bigIntegerValue      :   result = NUM_COLOR & $(v.bi) & RESTORE_COLOR
+        of realValue            :   result = NUM_COLOR & $(v.r) & RESTORE_COLOR
+        of booleanValue         :   result = NUM_COLOR & $(v.b) & RESTORE_COLOR
+        of arrayValue           :
+            result = "#(\n"
+
+            if v.a.len==0: return "#()"
+            let items = v.a.map((x) => repeat("\t",prepend) & repeat(" ",padding) & "\t" & x.inspect(prepend+1,isKeyVal) & "\n")
+
+            result &= items.join("")
+            result &= repeat("\t",prepend) & repeat(" ",padding) & ")"
+        of dictionaryValue      :
+            result = "#{\n"
+            
+            if v.d.keys.len==0: return "#{}"
+            let items = sorted(v.d.keys).map((x) => repeat("\t",prepend) & repeat(" ",padding) & "\t" & KEY_COLOR & alignLeft(x,INSPECT_PADDING) & RESTORE_COLOR & "" & v.d.getValueForKey(x).inspect(prepend+1,true) & "\n")
+
+            result &= items.join("")
+            result &= repeat("\t",prepend) & repeat(" ",padding) & "}"
         of functionValue        :   result = "<function>"
         of nullValue            :   result = "null"
         of anyValue             :   result = ""
@@ -944,23 +997,31 @@ proc validate(xl: ExpressionList, name: string, req: seq[seq[ValueKind]]): seq[V
 
     if not req.contains(result.map((x) => x.kind)):
 
-        let expected = req.map((x) => x.map((y) => ($y).replace("Value","")).join(",")).join(" or ")
-        let got = result.map((x) => ($(x.kind)).replace("Value","")).join(",")
+        let expected = req.map((x) => x.map((y) => ($y).valueKindToPrintable()).join(",")).join(" or ")
+        let got = result.map((x) => ($(x.kind)).valueKindToPrintable()).join(",")
 
         IncorrectArgumentValuesError(name, expected, got)
 
 proc getOneLineDescription*(f: SystemFunction): string =
-    let args = f.req.map((x) => "(" & x.map(proc (y: ValueKind): string = ($y).replace("Value","")).join(",") & ")").join(" / ")
-    let ret = "[" & f.ret.join(",").replace("Value","") & "]"
-    result = alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " -> " & ret
+    let args = 
+        if f.req.len>0: f.req.map((x) => "(" & x.map(proc (y: ValueKind): string = ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
+        else: "()"
+
+    let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
+
+    result = alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " \x1B[0;32m->\x1B[0;37m " & ret
 
 proc getFullDescription*(f: SystemFunction): string =
-    let args = f.req.map((x) => "(" & x.map((y) => ($y).replace("Value","")).join(",") & ")").join(" / ")
-    let ret = "[" & f.ret.join(",").replace("Value","") & "]"
+    let args = 
+        if f.req.len>0: f.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
+        else: "()"
+
+    let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
+
     result  = "Function : \e[1m" & f.name & "\e[0m" & "\n"
     result &= "       # : " & f.desc & "\n\n"
     result &= "   usage : " & f.name & " " & args & "\n"
-    result &= "        -> " & ret & "\n"
+    result &= "        \x1B[0;32m->\x1B[0;37m " & ret & "\n"
 
 #[----------------------------------------
     KeyPath
