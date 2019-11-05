@@ -127,7 +127,6 @@ int yywrap() {
 %token <str> LSQUARE "["
 %token <str> RSQUARE "]"
 %token <str> COMMA ","
-%token <str> EXCL "!"
 %token <str> SEMICOLON ";"
 %token <str> COLON ":"
 %token <str> TILDE "~"
@@ -197,7 +196,6 @@ args					: 	ID[previous] COMMA ID 												{ strcat( $1, "," ); $$ = strcat($
 
 
 string 					:	STRING 																{ $$ = argumentFromStringLiteral($1); }
-						|	TILDE 																{ $$ = argumentFromStringLiteral("\"\""); }
 						|	TILDE ID 															{ char *new_s = (char*)malloc(2 * sizeof(char) + strlen($ID)); sprintf(new_s, "\"%s\"", $ID); $$ = argumentFromStringLiteral(new_s); }
 						;
 
@@ -209,6 +207,7 @@ boolean 				:  	BOOLEANV 															{ $$ = argumentFromBooleanLiteral($1); }
 						;
 
 null 					:	NULLV 																{ $$ = argumentFromNullLiteral(); }
+						|	TILDE																{ $$ = argumentFromNullLiteral(); }
 						;
 
 array 					:	BEGIN_ARR expression_list RPAREN 									{ $$ = argumentFromArrayLiteral($2); }
