@@ -1,7 +1,0 @@
-=={{header|Arturo}}==
-
-<lang arturo>ARTURO CODE/lang>
-
-{{out}}
-
-<pre>OUTPUT</pre>
