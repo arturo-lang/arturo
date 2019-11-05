@@ -1,8 +1,0 @@
-1) add "-fprofile-instr-generate" to "dflags-ldc"
-2) build
-3) ldc-profdata merge default.profraw -output test.profdata
-4) replace "-fprofile-instr-generate" with "-fprofile-instr-use=test.profdata"
-5) rebuild
-
-// code coverage
-llvm-cov show ./test -instr-profile=test.profdata test.c

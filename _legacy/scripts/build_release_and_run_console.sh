@@ -1,1 +1,0 @@
-./scripts/build_release.sh && ./arturo -c
