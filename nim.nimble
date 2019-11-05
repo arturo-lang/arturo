@@ -26,7 +26,7 @@ template getCommand(cmdArgs:openArray[string]):string =
     let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --gcc.options.linker=\"-flto\""
     let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --clang.options.linker=\"-flto\""
     # --embedsrc --genScript 
-    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:cache --embedsrc --checks:off --overflowChecks:on " & srcDir & "/main.nim"
+    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:_cache --embedsrc --checks:off --overflowChecks:on " & srcDir & "/main.nim"
 
 template buildLibrary(forSize:bool=false) = 
     showMessage("Registering system library")
@@ -76,7 +76,7 @@ template compileMini() =
 
 template compileTest() = 
     showMessage("Compiling test module")
-    exec "nim c -d:release --opt:speed --nimcache:cache --threads:on --path:src -o:test src/test.nim"
+    exec "nim c -d:release --opt:speed --nimcache:_cache --threads:on --path:src -o:test src/test.nim"
 
 template profileCore() = 
     showMessage("Compiling core for profiling")
