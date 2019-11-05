@@ -1,1 +1,0 @@
-dub build --build=debug --compiler=dmd --parallel

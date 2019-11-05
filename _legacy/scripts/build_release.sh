@@ -1,1 +1,0 @@
-dub build --build=release --compiler=dmd --parallel

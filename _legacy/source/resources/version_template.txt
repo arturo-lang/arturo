@@ -1,1 +1,0 @@
-\x1B[32m\x1B[1m%s %s\x1B[0m (%s build %s) [%s%s-%s-%s]

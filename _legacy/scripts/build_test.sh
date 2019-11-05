@@ -1,1 +1,0 @@
-dub run --build=unittest --compiler=dmd --parallel
