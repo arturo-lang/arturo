@@ -657,8 +657,14 @@ proc `/`(l: Value, r: Value): Value {.inline.} =
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of integerValue:
             result = case r.kind
-                of integerValue: REAL(l.i / r.i)
+                of integerValue: INT(l.i div r.i)
+                of bigIntegerValue: BIGINT(l.i div r.bi)
                 of realValue: REAL(float(l.i) / r.r)
+                else: InvalidOperationError("/",$(l.kind),$(r.kind))
+        of bigIntegerValue:
+            result = case r.kind
+                of integerValue: BIGINT(l.bi div r.i)
+                of bigIntegerValue: BIGINT(l.bi div r.bi)
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
         of realValue:
             result = case r.kind
