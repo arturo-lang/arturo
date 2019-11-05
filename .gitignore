@@ -32,3 +32,4 @@ trace.*
 profile_results.txt
 luac.out
 _legacy/
+extras/
