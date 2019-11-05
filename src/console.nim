@@ -103,7 +103,7 @@ proc startRepl*() =
                     else: consoleError("command '" & parts[0] & "' not found")
             
             else: 
-                echo "\e[2m= " & runString(currentExpression) & "\e[22m"
+                echo "\e[2m= " & runString(currentExpression) & "\e[0;37m"
                 source &= currentExpression & "\n"
                 inc(currentLine)
 
