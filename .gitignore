@@ -4,12 +4,13 @@ __dummy.html
 examples/dev/
 arturo
 test
-cache/*.cpp
-cache/*.c
-cache/*.h
-cache/*.deps
-cache/*.sh
-cache/*.json
+_cache/*.cpp
+_cache/*.c
+_cache/*.h
+_cache/*.deps
+_cache/*.sh
+_cache/*.json
+_cache/
 docs/
 /arturo
 /test.d
@@ -32,4 +33,4 @@ trace.*
 profile_results.txt
 luac.out
 _legacy/
-extras/
+_extras/
