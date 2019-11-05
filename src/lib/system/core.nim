@@ -30,6 +30,9 @@ proc Core_get*[F,X,V](f: F, xl: X): V {.inline.} =
         of dictionaryValue: result = D(0).getValueForKey(S(1))
         else: result = NULL
 
+proc Core_input*[F,X,V](f: F, xl: X): V {.inline.} =
+    result = STR(readLine(stdin))
+
 proc Core_if*[F,X,V](f: F, xl: X): V {.inline.} =
     if xl.list[0].validate("if",[BV]).b:
         result = xl.list[1].validate("if",[FV]).f.execute(NULL)
@@ -86,6 +89,11 @@ proc Core_or*[F,X,V](f: F, xl: X): V {.inline.} =
             result = INT(bitor(v0.i, xl.list[1].validate("or",[IV]).i))
         else: discard
 
+proc Core_panic*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("panic", f.req)
+
+    ProgramPanic(S(0))
+
 proc Core_print*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("print", f.req)
 
@@ -107,13 +115,6 @@ proc Core_return*[F,X,V](f: F, xl: X): V {.inline.} =
     ret.value = v[0]
 
     raise ret
-
-proc Core_swap*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("swap", f.req)
-
-    swap(A(0)[I(1)], A(0)[I(2)])
-
-    result = v[0]
 
 proc Core_Xor*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = xl.list[0].validate("xor",[BV,IV])
