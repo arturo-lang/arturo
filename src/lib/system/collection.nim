@@ -31,6 +31,15 @@ proc Collection_appendI*[F,X,V](f: F, xl: X): V {.inline.} =
             result = v[0]
         else: discard
 
+proc Collection_contains*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("contains", f.req)
+
+    case v[0].kind
+         of AV: result = BOOL(findValueInArray(v[0],v[1])!=(-1))
+         of SV: result = BOOL(S(0).contains(S(1)))
+         of DV: result = BOOL(findValueInArray(D(0).values,v[1])!=(-1))
+         else: discard
+
 proc Collection_size*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("size", f.req)
 
