@@ -76,3 +76,7 @@ template IncorrectArgumentValuesError*(f: string, e: string, g: string) =
     raise newException(Exception,"incorrect arguments for function '" & f & "'\n" &
                  "expected: " & e & "\n" &
                  "got: " & g)
+
+template ProgramPanic*(msg: string) =
+    raise newException(Exception,"program panic\n" &
+                 "msg: " & msg)
