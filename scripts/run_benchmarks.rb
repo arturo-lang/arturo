@@ -6,7 +6,7 @@ def execute(comp,scpt,shld)
 	got = `/usr/bin/time -lp #{comp} #{scpt} 2>&1`
 	time = ""
 	mem = ""
-	if !got.include?(shld) 
+	if !got.strip.include?(shld.strip) 
 		return []
 	end
 
@@ -85,7 +85,7 @@ Dir["benchmarks/*.art"].sort.each{|b|
 		puts ('%-30s' % 'Perl') + "  |  " + ('%-10s' % "-") + "   |   " + ('%-15s' % "-")
 	end
 	if File.exist? (b.gsub(".art",".lua.test"))
-		got = execute("luac",b.gsub(".art",".lua.test"),should)
+		got = execute("lua",b.gsub(".art",".lua.test"),should)
 		if got==[]
 			puts ('%-30s' % 'Lua') + "  |  " + ('%-10s' % "X").colorize(:red) + "   |   " + ('%-15s' % "X").colorize(:red)
 		else
@@ -93,6 +93,16 @@ Dir["benchmarks/*.art"].sort.each{|b|
 		end
 	else
 		puts ('%-30s' % 'Lua') + "  |  " + ('%-10s' % "-") + "   |   " + ('%-15s' % "-")
+	end
+	if File.exist? (b.gsub(".art",".lisp.test"))
+		got = execute("clisp",b.gsub(".art",".lisp.test"),should)
+		if got==[]
+			puts ('%-30s' % 'Lisp') + "  |  " + ('%-10s' % "X").colorize(:red) + "   |   " + ('%-15s' % "X").colorize(:red)
+		else
+			puts ('%-30s' % 'Lisp') + "  |  " + ('%-10s' % got[0]) + "   |   " + ('%-15s' % got[1])
+		end
+	else
+		puts ('%-30s' % 'Lisp') + "  |  " + ('%-10s' % "-") + "   |   " + ('%-15s' % "-")
 	end
 	if File.exist? (b.gsub(".art",".tcl.test"))
 		got = execute("tclsh",b.gsub(".art",".tcl.test"),should)
