@@ -7,8 +7,6 @@
   * @file: lib/system/math.nim
   *****************************************************************]#
 
-import bignum
-
 #[######################################################
     Helpers
   ======================================================]#
@@ -84,6 +82,42 @@ proc Math_product*[F,X,V](f: F, xl: X): V {.inline.} =
     while i < A(0).len:
         result = result * A(0)[i]
         inc(i)
+
+proc Math_shl*[F,X,V](f: F, xl: X): V  {.inline.} =
+    let v = xl.validate("shl", f.req)
+
+    if v[0].kind==IV:
+        result = INT(I(0) shl I(1))
+    else:
+        result = BIGINT(BI(0) shl culong(I(1)))
+
+proc Math_shlI*[F,X,V](f: F, xl: X): V  {.inline.} =
+    let v = xl.validate("shl!", f.req)
+
+    if v[0].kind==IV:
+        I(0) = I(0) shl I(1)
+        result = v[0]
+    else:
+        BI(0) = BI(0) shl culong(I(1))
+        result = v[0]
+
+proc Math_shr*[F,X,V](f: F, xl: X): V  {.inline.} =
+    let v = xl.validate("shl", f.req)
+
+    if v[0].kind==IV:
+        result = INT(I(0) shr I(1))
+    else:
+        result = BIGINT(BI(0) shr culong(I(1)))
+
+proc Math_shrI*[F,X,V](f: F, xl: X): V  {.inline.} =
+    let v = xl.validate("shr!", f.req)
+
+    if v[0].kind==IV:
+        I(0) = I(0) shr I(1)
+        result = v[0]
+    else:
+        BI(0) = BI(0) shr culong(I(1))
+        result = v[0]
 
 proc Math_sum*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("sum", f.req)

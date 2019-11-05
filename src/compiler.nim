@@ -312,6 +312,10 @@ const
 
         SystemFunction(lib:"math",          name:"isPrime",      call:Math_isPrime,         req: @[@[IV],@[BIV]],                                                               ret: @[BV],             desc:"check if given number is prime"),
         SystemFunction(lib:"math",          name:"product",      call:Math_product,         req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return product of elements of given array"),
+        SystemFunction(lib:"math",          name:"shl",          call:Math_shl,             req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-left given number by the given amount of bits"),
+        SystemFunction(lib:"math",          name:"shl!",         call:Math_shlI,            req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-left given number by the given amount of bits (in-place)"),
+        SystemFunction(lib:"math",          name:"shr",          call:Math_shr,             req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-right given number by the given amount of bits"),
+        SystemFunction(lib:"math",          name:"shr!",         call:Math_shrI,            req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-right given number by the given amount of bits (in-place)"),
         SystemFunction(lib:"math",          name:"sum",          call:Math_sum,             req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
 
         SystemFunction(lib:"reflection",    name:"inspect",      call:Reflection_inspect,   req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen in a readable format")
