@@ -103,7 +103,6 @@ LETTER_OR_MISC		[a-zA-Z_]
 "["													{ return LSQUARE; }
 "]"													{ return RSQUARE; }
 ","													{ return COMMA; }
-"!"													{ return EXCL; }
 ";"													{ return SEMICOLON; }
 ":"													{ return COLON; }
 "~"													{ return TILDE; }
