@@ -180,11 +180,21 @@ type
     Forward declarations
   ======================================================]#
 
+proc keys*(ctx: Context): seq[string] {.inline.}
+proc values*(ctx: Context): seq[Value] {.inline.}
 proc getValueForKey*(ctx: Context, key: string): Value {.inline.}
 proc inspectStack()
 
 proc INT(v: string): Value {.inline.}
 proc BIGINT*(v: string): Value {.inline.}
+proc STRARR(v: seq[string]): Value {.inline.}
+proc INTARR(v: seq[int]): Value {.inline.}
+proc BIGINTARR(v: seq[Int]): Value {.inline.}
+proc REALARR(v: seq[float]): Value {.inline.}
+proc BOOLARR(v: seq[bool]): Value {.inline.}
+
+proc findValueInArray(v: Value, lookup: Value): int
+proc findValueInArray(v: seq[Value], lookup: Value): int
 proc `+`(l: Value, r: Value): Value {.inline.}
 proc `-`(l: Value, r: Value): Value {.inline.}
 proc `*`(l: Value, r: Value): Value {.inline.}
@@ -277,48 +287,65 @@ include lib/system/array
 include lib/system/collection
 include lib/system/math
 include lib/system/reflection
+include lib/system/string
 
 const
     SystemFunctions* = @[
-        #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        #              Library              Name                 Call                       Args                                                    Return                  Description                                                                                             
-        #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        SystemFunction(lib:"core",          name:"if",           call:Core_if,              req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
-        SystemFunction(lib:"core",          name:"loop",         call:Core_loop,            req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
-        SystemFunction(lib:"core",          name:"get",          call:Core_get,             req: @[@[AV,IV],@[DV,SV]],                                                          ret: @[ANY],            desc:"get element from collection using given index/key"),
-        SystemFunction(lib:"core",          name:"print",        call:Core_print,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen"),
-        SystemFunction(lib:"core",          name:"panic",        call:Core_panic,           req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
-        SystemFunction(lib:"core",          name:"input",        call:Core_input,           req: @[],                                                                           ret: @[SV],             desc:"read line from stdin"),
-        SystemFunction(lib:"core",          name:"range",        call:Core_range,           req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
-        SystemFunction(lib:"core",          name:"return",       call:Core_return,          req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
-        SystemFunction(lib:"core",          name:"and",          call:Core_and,             req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical AND"),
-        SystemFunction(lib:"core",          name:"not",          call:Core_not,             req: @[@[BV],@[IV]],                                                                ret: @[BV,IV],          desc:"bitwise/logical NOT"),
-        SystemFunction(lib:"core",          name:"or",           call:Core_or,              req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical OR"),
-        SystemFunction(lib:"core",          name:"xor",          call:Core_xor,             req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XOR"),
+        #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        #              Library              Name                        Call                            Args                                                                                Return                  Description                                                                                             
+        #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        SystemFunction(lib:"core",          name:"if",                  call:Core_if,                   req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
+        SystemFunction(lib:"core",          name:"loop",                call:Core_loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
+        SystemFunction(lib:"core",          name:"get",                 call:Core_get,                  req: @[@[AV,IV],@[DV,SV]],                                                          ret: @[ANY],            desc:"get element from collection using given index/key"),
+        SystemFunction(lib:"core",          name:"print",               call:Core_print,                req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen"),
+        SystemFunction(lib:"core",          name:"panic",               call:Core_panic,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
+        SystemFunction(lib:"core",          name:"input",               call:Core_input,                req: @[],                                                                           ret: @[SV],             desc:"read line from stdin"),
+        SystemFunction(lib:"core",          name:"range",               call:Core_range,                req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
+        SystemFunction(lib:"core",          name:"return",              call:Core_return,               req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
+        SystemFunction(lib:"core",          name:"and",                 call:Core_and,                  req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical AND"),
+        SystemFunction(lib:"core",          name:"not",                 call:Core_not,                  req: @[@[BV],@[IV]],                                                                ret: @[BV,IV],          desc:"bitwise/logical NOT"),
+        SystemFunction(lib:"core",          name:"or",                  call:Core_or,                   req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical OR"),
+        SystemFunction(lib:"core",          name:"xor",                 call:Core_xor,                  req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XOR"),
 
-        SystemFunction(lib:"collection",    name:"append",       call:Collection_append,    req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string"),
-        SystemFunction(lib:"collection",    name:"append!",      call:Collection_appendI,   req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string (in-place)"),
-        SystemFunction(lib:"collection",    name:"size",         call:Collection_size,      req: @[@[AV],@[SV],@[DV]],                                                          ret: @[IV],             desc:"get size of given collection or string"),
+        SystemFunction(lib:"collection",    name:"append",              call:Collection_append,         req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string"),
+        SystemFunction(lib:"collection",    name:"append!",             call:Collection_appendI,        req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string (in-place)"),
+        SystemFunction(lib:"collection",    name:"contains",            call:Collection_contains,       req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],
+                                                                                                               @[DV,SV],@[DV,IV],@[DV,BIV],@[DV,BV],@[DV,AV],@[DV,DV],@[DV,FV],@[SV,SV]],   ret: @[BV],             desc:"check if collection contains given element"),
+        SystemFunction(lib:"collection",    name:"size",                call:Collection_size,           req: @[@[AV],@[SV],@[DV]],                                                          ret: @[IV],             desc:"get size of given collection or string"),
 
-        SystemFunction(lib:"array",         name:"filter",       call:Array_filter,         req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function"),
-        SystemFunction(lib:"array",         name:"filter!",      call:Array_filterI,        req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function (in-place)"),
-        SystemFunction(lib:"array",         name:"map",          call:Array_map,            req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element"),
-        SystemFunction(lib:"array",         name:"map!",         call:Array_mapI,           req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element (in-place)"),
-        SystemFunction(lib:"array",         name:"shuffle",      call:Array_shuffle,        req: @[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array"),
-        SystemFunction(lib:"array",         name:"shuffle!",     call:Array_shuffleI,       req: @[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array (in-place)"),
-        SystemFunction(lib:"array",         name:"slice",        call:Array_slice,          req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],                                  ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
-        SystemFunction(lib:"array",         name:"swap",         call:Array_swap,           req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices"),
-        SystemFunction(lib:"array",         name:"swap!",        call:Array_swapI,          req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices (in-place)"),
+        SystemFunction(lib:"array",         name:"filter",              call:Array_filter,              req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function"),
+        SystemFunction(lib:"array",         name:"filter!",             call:Array_filterI,             req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function (in-place)"),
+        SystemFunction(lib:"array",         name:"map",                 call:Array_map,                 req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element"),
+        SystemFunction(lib:"array",         name:"map!",                call:Array_mapI,                req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element (in-place)"),
+        SystemFunction(lib:"array",         name:"shuffle",             call:Array_shuffle,             req: @[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array"),
+        SystemFunction(lib:"array",         name:"shuffle!",            call:Array_shuffleI,            req: @[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array (in-place)"),
+        SystemFunction(lib:"array",         name:"slice",               call:Array_slice,               req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],                                  ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
+        SystemFunction(lib:"array",         name:"swap",                call:Array_swap,                req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices"),
+        SystemFunction(lib:"array",         name:"swap!",               call:Array_swapI,               req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices (in-place)"),
 
-        SystemFunction(lib:"math",          name:"isPrime",      call:Math_isPrime,         req: @[@[IV],@[BIV]],                                                               ret: @[BV],             desc:"check if given number is prime"),
-        SystemFunction(lib:"math",          name:"product",      call:Math_product,         req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return product of elements of given array"),
-        SystemFunction(lib:"math",          name:"shl",          call:Math_shl,             req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-left given number by the given amount of bits"),
-        SystemFunction(lib:"math",          name:"shl!",         call:Math_shlI,            req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-left given number by the given amount of bits (in-place)"),
-        SystemFunction(lib:"math",          name:"shr",          call:Math_shr,             req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-right given number by the given amount of bits"),
-        SystemFunction(lib:"math",          name:"shr!",         call:Math_shrI,            req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-right given number by the given amount of bits (in-place)"),
-        SystemFunction(lib:"math",          name:"sum",          call:Math_sum,             req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
+        SystemFunction(lib:"string",        name:"capitalize",          call:String_capitalize,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string"),
+        SystemFunction(lib:"string",        name:"capitalize!",         call:String_capitalizeI,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string (in-place)"),
+        SystemFunction(lib:"string",        name:"isAlpha",             call:String_isAlpha,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters"),
+        SystemFunction(lib:"string",        name:"isAlphaNumeric",      call:String_isAlphaNumeric,     req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters or digits"),
+        SystemFunction(lib:"string",        name:"isLowercase",         call:String_isLowercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are lowercase"),
+        SystemFunction(lib:"string",        name:"isNumber",            call:String_isNumber,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if given string is a number"),
+        SystemFunction(lib:"string",        name:"isUppercase",         call:String_isUppercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are uppercase"),
+        SystemFunction(lib:"string",        name:"isWhitespace",        call:String_isWhitespace,       req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are whitespace"),
+        SystemFunction(lib:"string",        name:"lowercase",           call:String_lowercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string"),
+        SystemFunction(lib:"string",        name:"lowercase!",          call:String_lowercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string (in-place)"),
+        SystemFunction(lib:"string",        name:"lines",               call:String_lines,              req: @[@[SV]],                                                                      ret: @[AV],             desc:"get lines from string as an array"),
+        SystemFunction(lib:"string",        name:"uppercase",           call:String_uppercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string"),
+        SystemFunction(lib:"string",        name:"uppercase!",          call:String_uppercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string (in-place)"),
 
-        SystemFunction(lib:"reflection",    name:"inspect",      call:Reflection_inspect,   req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen in a readable format")
+        SystemFunction(lib:"math",          name:"isPrime",             call:Math_isPrime,              req: @[@[IV],@[BIV]],                                                               ret: @[BV],             desc:"check if given number is prime"),
+        SystemFunction(lib:"math",          name:"product",             call:Math_product,              req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return product of elements of given array"),
+        SystemFunction(lib:"math",          name:"shl",                 call:Math_shl,                  req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-left given number by the given amount of bits"),
+        SystemFunction(lib:"math",          name:"shl!",                call:Math_shlI,                 req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-left given number by the given amount of bits (in-place)"),
+        SystemFunction(lib:"math",          name:"shr",                 call:Math_shr,                  req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-right given number by the given amount of bits"),
+        SystemFunction(lib:"math",          name:"shr!",                call:Math_shrI,                 req: @[@[IV,IV],@[BIV,IV]],                                                         ret: @[IV,BIV],         desc:"shift-right given number by the given amount of bits (in-place)"),
+        SystemFunction(lib:"math",          name:"sum",                 call:Math_sum,                  req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
+
+        SystemFunction(lib:"reflection",    name:"inspect",             call:Reflection_inspect,        req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen in a readable format")
     ]
 
 #[######################################################
@@ -378,6 +405,9 @@ proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} =
 
 proc keys*(ctx: Context): seq[string] {.inline.} =
     result = ctx.list.map((x) => x[0])
+
+proc values*(ctx: Context): seq[Value] {.inline.} =
+    result = ctx.list.map((x) => x[1])
 
 proc hasKey*(ctx: Context, key: string): bool {.inline.} = 
     var i = 0
@@ -476,6 +506,21 @@ proc REAL(v: string): Value {.inline.} =
 
     result = REAL(floatValue)
 
+proc STRARR(v: seq[string]): Value {.inline.} =
+    result = ARR(v.map((x)=>STR(x)))
+
+proc INTARR(v: seq[int]): Value {.inline.} =
+    result = ARR(v.map((x)=>INT(x)))
+
+proc BIGINTARR(v: seq[Int]): Value {.inline.} =
+    result = ARR(v.map((x)=>BIGINT(x)))
+
+proc REALARR(v: seq[float]): Value {.inline.} =
+    result = ARR(v.map((x)=>REAL(x)))
+
+proc BOOLARR(v: seq[bool]): Value {.inline.} =
+    result = ARR(v.map((x)=>BOOL(x)))
+
 proc valueCopy(v: Value): Value =
     {.computedGoto.}
     result = case v.kind
@@ -490,6 +535,13 @@ proc findValueInArray(v: Value, lookup: Value): int =
     var i = 0
     while i < v.a.len:
         if v.a[i].eq(lookup): return i 
+        inc(i)
+    return -1
+
+proc findValueInArray(v: seq[Value], lookup: Value): int =
+    var i = 0
+    while i < v.len:
+        if v[i].eq(lookup): return i 
         inc(i)
     return -1
 
