@@ -47,7 +47,7 @@ proc String_isLowercase*[F,X,V](f: F, xl: X): V {.inline.} =
 
     var i = 0
     while i<S(0).len:
-        if not S(0)[i].isLowerAscii(): return FALSE
+        if S(0)[i].isAlphaAscii() and (not S(0)[i].isLowerAscii()): return FALSE
         inc(i)
 
     result = TRUE
@@ -67,7 +67,7 @@ proc String_isUppercase*[F,X,V](f: F, xl: X): V {.inline.} =
 
     var i = 0
     while i<S(0).len:
-        if not S(0)[i].isUpperAscii(): return FALSE
+        if S(0)[i].isAlphaAscii() and (not S(0)[i].isUpperAscii()): return FALSE
         inc(i)
 
     result = TRUE
