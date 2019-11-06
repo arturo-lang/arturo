@@ -163,9 +163,6 @@ when defined(unittest):
             check(eq( callFunction("or",@[FALSE,FALSE]), FALSE ))
             check(eq( callFunction("or",@[INT(10),INT(3)]), INT(11) ))
 
-        test "print":
-            check(eq( callFunction("print",@[STR("done")]), STR("done") ))
-
         test "xor":
             check(eq( callFunction("xor",@[TRUE,TRUE]), FALSE ))
             check(eq( callFunction("xor",@[TRUE,FALSE]), TRUE ))
