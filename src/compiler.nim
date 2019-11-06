@@ -207,6 +207,8 @@ proc gt(l: Value, r: Value): bool {.inline.}
 proc stringify*(v: Value, quoted: bool = true): string
 proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 
+proc getSystemFunctionInstance*(n: string): SystemFunction {.inline.}
+proc callFunction(f: string, v: seq[Value]): Value
 proc execute(f: Function, v: Value): Value {.inline.} 
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.}
 proc validate(xl: ExpressionList, name: string, req: seq[seq[ValueKind]]): seq[Value] {.inline.}
@@ -216,6 +218,8 @@ proc addExpressionToExpressionList(x: Expression, xl: ExpressionList): Expressio
 proc evaluate(x: Expression): Value {.inline.}
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
 
+proc expressionFromArgument(a: Argument): Expression {.exportc.}
+
 proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.}
 proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.}
 proc execute(stm: Statement, parent: Value = nil): Value {.inline.}
@@ -223,6 +227,8 @@ proc execute(sl: StatementList): Value
 
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
 proc getValue(a: Argument): Value {.inline.}
+
+proc setup*(args: seq[string] = @[])
 
 #[######################################################
     Globals
@@ -278,6 +284,13 @@ template BOOL(v:bool):Value         =
 template ARR(v:seq[Value]):Value    = Value(kind: arrayValue, a: v)
 template DICT(v:Context):Value      = Value(kind: dictionaryValue, d: v)
 template FUNC(v:Function):Value     = Value(kind: functionValue, f: v)
+
+#[######################################################
+    Unittest setup
+  ======================================================]#
+
+when defined(unittest):
+    setup()
 
 #[######################################################
     System library
@@ -840,7 +853,7 @@ proc eq(l: Value, r: Value): bool {.inline.} =
                     else:
                         var i=0
                         while i<l.a.len:
-                            if not (l.a[i]==r.a[i]): return false
+                            if not (l.a[i].eq(r.a[i])): return false
                             inc(i)
                         result = true
                 else: NotComparableError($(l.kind),$(r.kind))
@@ -853,7 +866,7 @@ proc eq(l: Value, r: Value): bool {.inline.} =
                         while i < l.d.list.len:
                             if not r.d.hasKey(l.d.list[i][0]): return false
                             else:
-                                if not (l.d.list[i][1]==r.d.getValueForKey(l.d.list[i][0])): return false
+                                if not (l.d.list[i][1].eq(r.d.getValueForKey(l.d.list[i][0]))): return false
                             inc(i)
 
                         result = true 
@@ -1014,8 +1027,24 @@ proc getSystemFunction*(n: string): int {.inline.} =
 
     result = -1
 
+proc getSystemFunctionInstance*(n: string): SystemFunction {.inline.} =
+    var i = 0
+    while i < SystemFunctions.len:
+        if SystemFunctions[i].name==n:
+            return SystemFunctions[i]
+        inc(i)
+
 proc getNameOfSystemFunction*(n: int): cstring {.exportc.} =
     result = SystemFunctions[n].name
+
+proc callFunction(f: string, v: seq[Value]): Value = 
+    let fun = getSystemFunctionInstance(f)
+    let exprs = newExpressionList()
+
+    for val in v:
+        discard addExpressionToExpressionList(expressionFromArgument(Argument(kind: literalArgument, v: val)),exprs)
+
+    result = fun.call(fun,exprs)
 
 proc execute(f: Function, v: Value): Value {.inline.} =
     if f.hasContext:
@@ -1430,3 +1459,12 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
         discard yyparse()
 
         discard MainProgram.execute()
+
+
+#[######################################################
+  ######################################################
+    UnitTests
+  ======================================================
+  ======================================================]#
+
+
