@@ -71,7 +71,7 @@ extern void* addStatementToStatementList(void* s, void* sl);
  ****************************************/ 
  
 int yywrap() {
-	return 1;
+    return 1;
 } 
 
 %}
@@ -81,9 +81,9 @@ int yywrap() {
  ****************************************/
 
 %union {
-	char* str;
-	void* compo;
-	int code;
+    char* str;
+    void* compo;
+    int code;
 }
 
 /****************************************
@@ -181,121 +181,121 @@ int yywrap() {
 //==============================
 
 
-keypath					: 	ID DOT ID 															{ $$ = keypathFromIdId($1,$3); }
-						| 	ID DOT INTEGER 	 													{ $$ = keypathFromIdInteger($1,$3); }
-						| 	ID DOT inline_call 													{ $$ = keypathFromIdInline($1,$3); }
-						|	inline_call DOT ID 													{ $$ = keypathFromInlineId($1,$3); }
-						| 	inline_call DOT INTEGER 	 										{ $$ = keypathFromInlineInteger($1,$3); }
-						| 	inline_call DOT inline_call 										{ $$ = keypathFromInlineInline($1,$3); }
-						| 	keypath[previous] DOT ID 											{ $$ = keypathByAddingIdToKeypath($previous,$ID); }
-						| 	keypath[previous] DOT INTEGER 										{ $$ = keypathByAddingIntegerToKeypath($previous,$INTEGER); }
-						| 	keypath[previous] DOT inline_call 									{ $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
-						;		
+keypath                 :   ID DOT ID                                                           { $$ = keypathFromIdId($1,$3); }
+                        |   ID DOT INTEGER                                                      { $$ = keypathFromIdInteger($1,$3); }
+                        |   ID DOT inline_call                                                  { $$ = keypathFromIdInline($1,$3); }
+                        |   inline_call DOT ID                                                  { $$ = keypathFromInlineId($1,$3); }
+                        |   inline_call DOT INTEGER                                             { $$ = keypathFromInlineInteger($1,$3); }
+                        |   inline_call DOT inline_call                                         { $$ = keypathFromInlineInline($1,$3); }
+                        |   keypath[previous] DOT ID                                            { $$ = keypathByAddingIdToKeypath($previous,$ID); }
+                        |   keypath[previous] DOT INTEGER                                       { $$ = keypathByAddingIntegerToKeypath($previous,$INTEGER); }
+                        |   keypath[previous] DOT inline_call                                   { $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
+                        ;       
 
-args					: 	ID[previous] COMMA ID 												{ strcat( $1, "," ); $$ = strcat($1, $3); }
-						|	ID 																	{ $$ = $1; }
-						|	/* Nothing */														{ }
-						;
+args                    :   ID[previous] COMMA ID                                               { strcat( $1, "," ); $$ = strcat($1, $3); }
+                        |   ID                                                                  { $$ = $1; }
+                        |   /* Nothing */                                                       { }
+                        ;
 
 
-string 					:	STRING 																{ $$ = argumentFromStringLiteral($1); }
-						|	TILDE ID 															{ char *new_s = (char*)malloc(2 * sizeof(char) + strlen($ID)); sprintf(new_s, "\"%s\"", $ID); $$ = argumentFromStringLiteral(new_s); }
-						;
+string                  :   STRING                                                              { $$ = argumentFromStringLiteral($1); }
+                        |   TILDE ID                                                            { char *new_s = (char*)malloc(2 * sizeof(char) + strlen($ID)); sprintf(new_s, "\"%s\"", $ID); $$ = argumentFromStringLiteral(new_s); }
+                        ;
 
-number					:	INTEGER																{ $$ = argumentFromIntegerLiteral($1); }
-						|	REAL 																{ $$ = argumentFromRealLiteral($1); }
-						;
+number                  :   INTEGER                                                             { $$ = argumentFromIntegerLiteral($1); }
+                        |   REAL                                                                { $$ = argumentFromRealLiteral($1); }
+                        ;
 
-boolean 				:  	BOOLEANV 															{ $$ = argumentFromBooleanLiteral($1); }
-						;
+boolean                 :   BOOLEANV                                                            { $$ = argumentFromBooleanLiteral($1); }
+                        ;
 
-null 					:	NULLV 																{ $$ = argumentFromNullLiteral(); }
-						|	TILDE																{ $$ = argumentFromNullLiteral(); }
-						;
+null                    :   NULLV                                                               { $$ = argumentFromNullLiteral(); }
+                        |   TILDE                                                               { $$ = argumentFromNullLiteral(); }
+                        ;
 
-array 					:	BEGIN_ARR expression_list RPAREN 									{ $$ = argumentFromArrayLiteral($2); }
-						|	BEGIN_ARR RPAREN 													{ $$ = argumentFromArrayLiteral(NULL); }
-						;
+array                   :   BEGIN_ARR expression_list RPAREN                                    { $$ = argumentFromArrayLiteral($2); }
+                        |   BEGIN_ARR RPAREN                                                    { $$ = argumentFromArrayLiteral(NULL); }
+                        ;
 
-dictionary 				: 	BEGIN_DICT statement_list RCURLY 									{ $$ = argumentFromDictionaryLiteral($2); }
-						;
+dictionary              :   BEGIN_DICT statement_list RCURLY                                    { $$ = argumentFromDictionaryLiteral($2); }
+                        ;
 
-function 				: 	LCURLY statement_list RCURLY 										{ $$ = argumentFromFunctionLiteral($2,""); }
-						|	LSQUARE args RSQUARE LCURLY statement_list RCURLY 					{ $$ = argumentFromFunctionLiteral($5,$2); }
-						;
+function                :   LCURLY statement_list RCURLY                                        { $$ = argumentFromFunctionLiteral($2,""); }
+                        |   LSQUARE args RSQUARE LCURLY statement_list RCURLY                   { $$ = argumentFromFunctionLiteral($5,$2); }
+                        ;
 
-inline_call				:	BEGIN_INLINE statement RPAREN 										{ $$ = argumentFromInlineCallLiteral($2); }					
-						;
+inline_call             :   BEGIN_INLINE statement RPAREN                                       { $$ = argumentFromInlineCallLiteral($2); }                 
+                        ;
 
-argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
-						|	SYSTEM_CMD 															{ $$ = argumentFromCommandIdentifier($1); }
-						| 	keypath																{ $$ = argumentFromKeypath($1); }
-						| 	number 																
-						|	string
-						|	boolean 															
-						|	null	 															
-						| 	array
-						|	dictionary
-						|	function
-						|	inline_call
-						;
+argument                :   ID                                                                  { $$ = argumentFromIdentifier($1); }
+                        |   SYSTEM_CMD                                                          { $$ = argumentFromCommandIdentifier($1); }
+                        |   keypath                                                             { $$ = argumentFromKeypath($1); }
+                        |   number                                                              
+                        |   string
+                        |   boolean                                                             
+                        |   null                                                                
+                        |   array
+                        |   dictionary
+                        |   function
+                        |   inline_call
+                        ;
 
 //==============================
 // Expressions
 //==============================
 
-expression				: 	argument 															{ $$ = expressionFromArgument($1); }
-						|	argument RANGE argument 											{ $$ = expressionFromRange($1,$3); }
-						|	LPAREN expression[main] RPAREN 										{ $$ = $main; }
-						|	expression[left] PLUS_SG expression[right] 							{ $$ = expressionFromExpressions($left, "PLUS_SG", $right); }
-						| 	expression[left] MINUS_SG expression[right] 						{ $$ = expressionFromExpressions($left, "MINUS_SG", $right); }
-						| 	expression[left] MULT_SG expression[right] 							{ $$ = expressionFromExpressions($left, "MULT_SG", $right); }
-						| 	expression[left] DIV_SG expression[right] 							{ $$ = expressionFromExpressions($left, "DIV_SG", $right); }
-						| 	expression[left] MOD_SG expression[right] 							{ $$ = expressionFromExpressions($left, "MOD_SG", $right); }
-						| 	expression[left] POW_SG expression[right] 							{ $$ = expressionFromExpressions($left, "POW_SG", $right); }
-						| 	expression[left] EQ_OP expression[right] 							{ $$ = expressionFromExpressions($left, "EQ_OP", $right); } 
-						|	expression[left] LE_OP expression[right]							{ $$ = expressionFromExpressions($left, "LE_OP", $right); } 
-						|	expression[left] GE_OP expression[right]							{ $$ = expressionFromExpressions($left, "GE_OP", $right); } 
-						|	expression[left] LT_OP expression[right]							{ $$ = expressionFromExpressions($left, "LT_OP", $right); } 
-						|	expression[left] GT_OP expression[right]							{ $$ = expressionFromExpressions($left, "GT_OP", $right); } 
-						|	expression[left] NE_OP expression[right]							{ $$ = expressionFromExpressions($left, "NE_OP", $right); } 
-						;
+expression              :   argument                                                            { $$ = expressionFromArgument($1); }
+                        |   argument RANGE argument                                             { $$ = expressionFromRange($1,$3); }
+                        |   LPAREN expression[main] RPAREN                                      { $$ = $main; }
+                        |   expression[left] PLUS_SG expression[right]                          { $$ = expressionFromExpressions($left, "PLUS_SG", $right); }
+                        |   expression[left] MINUS_SG expression[right]                         { $$ = expressionFromExpressions($left, "MINUS_SG", $right); }
+                        |   expression[left] MULT_SG expression[right]                          { $$ = expressionFromExpressions($left, "MULT_SG", $right); }
+                        |   expression[left] DIV_SG expression[right]                           { $$ = expressionFromExpressions($left, "DIV_SG", $right); }
+                        |   expression[left] MOD_SG expression[right]                           { $$ = expressionFromExpressions($left, "MOD_SG", $right); }
+                        |   expression[left] POW_SG expression[right]                           { $$ = expressionFromExpressions($left, "POW_SG", $right); }
+                        |   expression[left] EQ_OP expression[right]                            { $$ = expressionFromExpressions($left, "EQ_OP", $right); } 
+                        |   expression[left] LE_OP expression[right]                            { $$ = expressionFromExpressions($left, "LE_OP", $right); } 
+                        |   expression[left] GE_OP expression[right]                            { $$ = expressionFromExpressions($left, "GE_OP", $right); } 
+                        |   expression[left] LT_OP expression[right]                            { $$ = expressionFromExpressions($left, "LT_OP", $right); } 
+                        |   expression[left] GT_OP expression[right]                            { $$ = expressionFromExpressions($left, "GT_OP", $right); } 
+                        |   expression[left] NE_OP expression[right]                            { $$ = expressionFromExpressions($left, "NE_OP", $right); } 
+                        ;
 
 
-expression_list			:	expression 															{ $$ = newExpressionListWithExpression($expression); }
-						| 	expression_list[previous] expression 								{ $$ = addExpressionToExpressionList($expression, $previous); }
-						| 	expression_list[previous] SEMICOLON NEW_LINE expression 			{ $$ = addExpressionToExpressionList($expression, $previous); }
-						;
+expression_list         :   expression                                                          { $$ = newExpressionListWithExpression($expression); }
+                        |   expression_list[previous] expression                                { $$ = addExpressionToExpressionList($expression, $previous); }
+                        |   expression_list[previous] SEMICOLON NEW_LINE expression             { $$ = addExpressionToExpressionList($expression, $previous); }
+                        ;
 
 //==============================
 // Statements
-//==============================		
+//==============================        
 
-assignment_id			:	ID
-						|	SYSTEM_CMD  														{ $$ = getNameOfSystemFunction($SYSTEM_CMD); }
-						;
+assignment_id           :   ID
+                        |   SYSTEM_CMD                                                          { $$ = getNameOfSystemFunction($SYSTEM_CMD); }
+                        ;
 
-statement				: 	expression 															{ $$ = statementFromExpression($expression,yylineno); }
-						|	ID expression_list													{ $$ = statementFromExpressions($ID,$expression_list,yylineno); }
-						|	SYSTEM_CMD expression_list											{ $$ = statementFromCommand($SYSTEM_CMD,$expression_list,yylineno); }
-						|	ID PIPE statement[previous]											{ $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
-						| 	SYSTEM_CMD PIPE statement[previous] 								{ $$ = statementFromCommand($SYSTEM_CMD,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }						
-						| 	assignment_id COLON statement[previous] 							{ $$ = statementFromAssignment($assignment_id,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
-						;
+statement               :   expression                                                          { $$ = statementFromExpression($expression,yylineno); }
+                        |   ID expression_list                                                  { $$ = statementFromExpressions($ID,$expression_list,yylineno); }
+                        |   SYSTEM_CMD expression_list                                          { $$ = statementFromCommand($SYSTEM_CMD,$expression_list,yylineno); }
+                        |   ID PIPE statement[previous]                                         { $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
+                        |   SYSTEM_CMD PIPE statement[previous]                                 { $$ = statementFromCommand($SYSTEM_CMD,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }                      
+                        |   assignment_id COLON statement[previous]                             { $$ = statementFromAssignment($assignment_id,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($previous))),yylineno); }
+                        ;
 
-statement_list 			:	statement_list[previous] NEW_LINE statement 						{ $$ = addStatementToStatementList($statement, $previous); }
-						|   statement_list[previous] COMMA statement 							{ $$ = addStatementToStatementList($statement, $previous); }
-						|	statement_list[previous] NEW_LINE									{ $$ = $previous; }
-						| 	statement 															{ $$ = newStatementListWithStatement($statement); }
-						|	/* Nothing */														{ $$ = newStatementList(); }
-						;
+statement_list          :   statement_list[previous] NEW_LINE statement                         { $$ = addStatementToStatementList($statement, $previous); }
+                        |   statement_list[previous] COMMA statement                            { $$ = addStatementToStatementList($statement, $previous); }
+                        |   statement_list[previous] NEW_LINE                                   { $$ = $previous; }
+                        |   statement                                                           { $$ = newStatementListWithStatement($statement); }
+                        |   /* Nothing */                                                       { $$ = newStatementList(); }
+                        ;
 
 //==============================
 // Entry point
 //==============================
 
-program					:	statement_list 														{ MainProgram = $statement_list; }
-						;
+program                 :   statement_list                                                      { MainProgram = $statement_list; }
+                        ;
 
 %%
 
