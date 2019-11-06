@@ -112,6 +112,9 @@ when defined(unittest):
             check(eq( callFunction("contains",@[ARR(@[INT(1),INT(2)]),INT(2)]), TRUE ))
             check(eq( callFunction("contains",@[ARR(@[INT(1),INT(2)]),INT(3)]), FALSE ))
 
+        test "reverse":
+            check(eq( callFunction("reverse",@[ARR(@[INT(1),INT(2),INT(3)])]), ARR(@[INT(3),INT(2),INT(1)]) ))
+
         test "size":
             check(eq( callFunction("size",@[STR("hello")]), INT(5) ))
             check(eq( callFunction("size",@[ARR(@[INT(1),INT(2)])]), INT(2) ))
