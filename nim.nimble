@@ -92,6 +92,7 @@ template compileUnittests() =
         "-d:danger",
         "-d:unittest",
 
+        "--passL:parser.a",
         "--threads:on",
         "--hints:off",
         "--opt:speed",
@@ -207,6 +208,9 @@ task experiment, "Run experiments":
     showMessage "Done :)", true
 
 task test, "Run Unittests":
+    buildLibrary()
+    buildParser()
     compileUnittests()
+    cleanUp()
     showMessage "Done :)", true
     runUnittests()
