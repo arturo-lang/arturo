@@ -128,3 +128,40 @@ proc Math_sum*[F,X,V](f: F, xl: X): V {.inline.} =
     while i < A(0).len:
         result = result + A(0)[i]
         inc(i)
+
+#[******************************************************
+  ******************************************************
+    UnitTests
+  ******************************************************
+  ******************************************************]#
+
+when defined(unittest):
+
+    suite "Library: system/math":
+
+        test "isPrime":
+            check(eq( callFunction("isPrime",@[INT(2)]), TRUE ))
+            check(eq( callFunction("isPrime",@[INT(3)]), TRUE ))
+            check(eq( callFunction("isPrime",@[INT(4)]), FALSE ))
+            check(eq( callFunction("isPrime",@[INT(5)]), TRUE ))
+            check(eq( callFunction("isPrime",@[INT(6)]), FALSE ))
+            check(eq( callFunction("isPrime",@[INT(7)]), TRUE ))
+            check(eq( callFunction("isPrime",@[INT(13)]), TRUE ))
+            check(eq( callFunction("isPrime",@[INT(982451653)]), TRUE ))
+            check(eq( callFunction("isPrime",@[INT(982451655)]), FALSE ))
+            check(eq( callFunction("isPrime",@[BIGINT("170141183460469231731687303715884105727")]), TRUE ))
+            check(eq( callFunction("isPrime",@[BIGINT("170141183460469231731687303715884105729")]), FALSE ))
+            check(eq( callFunction("isPrime",@[BIGINT("20988936657440586486151264256610222593863921")]), TRUE ))
+            check(eq( callFunction("isPrime",@[BIGINT("20988936657440586486151264256610222593863927")]), FALSE ))
+
+        test "product":
+            check(eq( callFunction("product",@[ARR(@[INT(1),INT(2),INT(3)])]), INT(6) ))
+
+        test "shl":
+            check(eq( callFunction("shl",@[INT(10),INT(2)]), INT(40) ))
+
+        test "shr":
+            check(eq( callFunction("shr",@[INT(10),INT(2)]), INT(2) ))
+
+        test "sum":
+            check(eq( callFunction("sum",@[ARR(@[INT(1),INT(2),INT(3)])]), INT(6) ))
