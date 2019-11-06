@@ -87,8 +87,6 @@ proc String_uppercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
 
 when defined(unittest):
 
-    import unittest 
-
     suite "Library: system/string":
 
         test "capitalize":
