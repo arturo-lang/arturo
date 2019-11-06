@@ -110,6 +110,15 @@ when defined(unittest):
 
     suite "Library: system/array":
 
+        test "all":
+            check(eq( callFunction("all",@[ARR(@[TRUE,TRUE,TRUE])]), TRUE ))
+            check(eq( callFunction("all",@[ARR(@[TRUE,TRUE,FALSE])]), FALSE ))
+
+        test "any":
+            check(eq( callFunction("any",@[ARR(@[TRUE,TRUE,TRUE])]), TRUE ))
+            check(eq( callFunction("any",@[ARR(@[TRUE,TRUE,FALSE])]), TRUE ))
+            check(eq( callFunction("any",@[ARR(@[FALSE,FALSE,FALSE])]), FALSE ))
+
         test "shuffle":
             check(not eq( callFunction("shuffle",@[ARR(@[INT(1),INT(2),INT(3),INT(4),INT(5),INT(6),INT(7),INT(8),INT(9)])]), ARR(@[INT(1),INT(2),INT(3),INT(4),INT(5),INT(6),INT(7),INT(8),INT(9)]) ))
 
