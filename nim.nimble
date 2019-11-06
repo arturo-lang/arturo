@@ -28,6 +28,12 @@ template getCommand(cmdArgs:openArray[string]):string =
     # --embedsrc --genScript 
     "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:_cache --embedsrc --checks:off --overflowChecks:on " & srcDir & "/main.nim"
 
+template getTestCommand(cmdArgs:openArray[string]):string =
+    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --gcc.options.linker=\"-flto\""
+    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --clang.options.linker=\"-flto\""
+    # --embedsrc --genScript 
+    "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:test -f --checks:off --overflowChecks:on " & srcDir & "/compiler.nim"
+
 template buildLibrary(forSize:bool=false) = 
     showMessage("Registering system library")
     exec "ruby scripts/register_system_functions.rb"
@@ -74,9 +80,28 @@ template compileMini() =
     ]
     exec getCommand(args)
 
-template compileTest() = 
-    showMessage("Compiling test module")
+template compileExperiment() = 
+    showMessage("Compiling experimental module")
     exec "nim c -d:release --opt:speed --nimcache:_cache --threads:on --path:src -o:test src/test.nim"
+
+
+template compileUnittests() = 
+    showMessage("Compiling unittests")
+    let args = @[
+        "-d:release",
+        "-d:danger",
+        "-d:unittest",
+
+        "--threads:on",
+        "--hints:off",
+        "--opt:speed",
+        "--nilseqs:on",
+        "--gc:regions"
+    ]
+    exec getTestCommand(args)
+
+template runUnittests() =
+    exec "./test"
 
 template profileCore() = 
     showMessage("Compiling core for profiling")
@@ -177,6 +202,11 @@ task debug, "Build a version for debugging":
     cleanUp()
     showMessage "Done :)", true
 
-task test, "Run tests":
-    compileTest()
+task experiment, "Run experiments":
+    compileExperiment()
     showMessage "Done :)", true
+
+task test, "Run Unittests":
+    compileUnittests()
+    showMessage "Done :)", true
+    runUnittests()
