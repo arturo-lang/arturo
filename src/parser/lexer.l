@@ -26,10 +26,6 @@ extern char* yyfilename;
 
 extern void parseError(const char* msg, const char* filename, int line);
 
-//":"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
-//"@"({LETTER_OR_MISC}|{DIGIT})*						{ yylval.str=strdup(yytext); return ID; }
-//'(\\.|[^\\'])+'										{ yylval.str=strdup(yytext); return STRING; }
-
 %}
 
 /****************************************
@@ -43,11 +39,11 @@ extern void parseError(const char* msg, const char* filename, int line);
  Building blocks
  ****************************************/
 
-DIGIT				[0-9]
-DIGIT_HEX			[a-fA-F0-9]
-DIGIT_BIN			[01]
-LETTER				[a-zA-Z_&]
-LETTER_OR_MISC		[a-zA-Z_]
+DIGIT               [0-9]
+DIGIT_HEX           [a-fA-F0-9]
+DIGIT_BIN           [01]
+LETTER              [a-zA-Z_&]
+LETTER_OR_MISC      [a-zA-Z_]
 
 /****************************************
  Tokens
@@ -55,63 +51,63 @@ LETTER_OR_MISC		[a-zA-Z_]
 
 %%
 
-\"(\\.|[^\\"])*\"									{ yylval.str=strdup(yytext); return STRING; }
+\"(\\.|[^\\"])*\"                                   { yylval.str=strdup(yytext); return STRING; }
 
-"/*"            									{ BEGIN(C_COMMENT); }
-<C_COMMENT>"*/" 									{ BEGIN(INITIAL); }
-<C_COMMENT>\n   									{ yylineno++; }
-<C_COMMENT>.   	 									{ }
+"/*"                                                { BEGIN(C_COMMENT); }
+<C_COMMENT>"*/"                                     { BEGIN(INITIAL); }
+<C_COMMENT>\n                                       { yylineno++; }
+<C_COMMENT>.                                        { }
 
-"//".*                                  			{ /* Single-line comment. Ignore. */ }
-"#!".*                                  			{ /* She-bang line. Ignore. */ }
+"//".*                                              { /* Single-line comment. Ignore. */ }
+"#!".*                                              { /* She-bang line. Ignore. */ }
 
-"null"												{ return NULLV; }
-"true"|"false"     									{ yylval.str=strdup(yytext); return BOOLEANV; }
+"null"                                              { return NULLV; }
+"true"|"false"                                      { yylval.str=strdup(yytext); return BOOLEANV; }
 
 %%SYSTEM_CMD%%
 
-{LETTER}({LETTER_OR_MISC}|{DIGIT})*					{ yylval.str=strdup(yytext); return ID; }
-{DIGIT}+											{ yylval.str=strdup(yytext); return INTEGER; }
-{DIGIT}+\.{DIGIT}+									{ yylval.str=strdup(yytext); return REAL; }
+{LETTER}({LETTER_OR_MISC}|{DIGIT})*                 { yylval.str=strdup(yytext); return ID; }
+{DIGIT}+                                            { yylval.str=strdup(yytext); return INTEGER; }
+{DIGIT}+\.{DIGIT}+                                  { yylval.str=strdup(yytext); return REAL; }
 
-"|"													{ return PIPE; }
+"|"                                                 { return PIPE; }
 
-"="													{ return EQ_OP; }
-"<="												{ return LE_OP; }
-">="												{ return GE_OP; }
-"<"													{ return LT_OP; }
-">"													{ return GT_OP; }
-"!="												{ return NE_OP; }
+"="                                                 { return EQ_OP; }
+"<="                                                { return LE_OP; }
+">="                                                { return GE_OP; }
+"<"                                                 { return LT_OP; }
+">"                                                 { return GT_OP; }
+"!="                                                { return NE_OP; }
 
-"+"													{ return PLUS_SG; }
-"-"													{ return MINUS_SG; }
-"*"													{ return MULT_SG; }
-"/"													{ return DIV_SG; }
-"%"													{ return MOD_SG; }
-"^"													{ return POW_SG; }
+"+"                                                 { return PLUS_SG; }
+"-"                                                 { return MINUS_SG; }
+"*"                                                 { return MULT_SG; }
+"/"                                                 { return DIV_SG; }
+"%"                                                 { return MOD_SG; }
+"^"                                                 { return POW_SG; }
 
-"#("												{ return BEGIN_ARR; }
-"#{"												{ return BEGIN_DICT; }
-"$("												{ return BEGIN_INLINE; }
+"#("                                                { return BEGIN_ARR; }
+"#{"                                                { return BEGIN_DICT; }
+"$("                                                { return BEGIN_INLINE; }
 
-".."												{ return RANGE; }
-"."													{ return DOT; }
+".."                                                { return RANGE; }
+"."                                                 { return DOT; }
 
-"("													{ return LPAREN; }
-")"													{ return RPAREN; }
-"{"													{ return LCURLY; }
-"}"													{ return RCURLY; }
-"["													{ return LSQUARE; }
-"]"													{ return RSQUARE; }
-","													{ return COMMA; }
-";"													{ return SEMICOLON; }
-":"													{ return COLON; }
-"~"													{ return TILDE; }
+"("                                                 { return LPAREN; }
+")"                                                 { return RPAREN; }
+"{"                                                 { return LCURLY; }
+"}"                                                 { return RCURLY; }
+"["                                                 { return LSQUARE; }
+"]"                                                 { return RSQUARE; }
+","                                                 { return COMMA; }
+";"                                                 { return SEMICOLON; }
+":"                                                 { return COLON; }
+"~"                                                 { return TILDE; }
 
-\n 													{ return NEW_LINE; }
+\n                                                  { return NEW_LINE; }
 
-[ \t\v\f]+                							{ /* ignore whitespace */ }
-.													{ /* ignore it */ } 
+[ \t\v\f]+                                          { /* ignore whitespace */ }
+.                                                   { /* ignore it */ } 
 %%
 
 /****************************************
@@ -122,21 +118,21 @@ int yycolumn = 0;
 
 void count()
 {
-	/*int i;
-	
-	for (i = 0; yytext[i] != '\0'; i++)
-	{
-		if (yytext[i] == '\n') yycolumn = 0;
-		else if (yytext[i] == '\t') yycolumn += 8 - (yycolumn % 8);
-		else yycolumn++;
-	}*/
+    /*int i;
+    
+    for (i = 0; yytext[i] != '\0'; i++)
+    {
+        if (yytext[i] == '\n') yycolumn = 0;
+        else if (yytext[i] == '\t') yycolumn += 8 - (yycolumn % 8);
+        else yycolumn++;
+    }*/
 
-	yylval.str=strdup(yytext);
+    yylval.str=strdup(yytext);
 }
 
 void yyerror(const char *str)
 {
-	parseError(str, yyfilename, yylineno);
+    parseError(str, yyfilename, yylineno);
 }
 
 /****************************************
