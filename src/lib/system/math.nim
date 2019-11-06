@@ -63,6 +63,120 @@ proc isPrime*(n: int32): bool {.noSideEffect.} =
     Functions
   ======================================================]#
 
+proc Math_acos*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("acos", f.req)
+
+    result = REAL(arccos(R(0)))
+
+proc Math_acosh*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("acosh", f.req)
+
+    result = REAL(arccosh(R(0)))
+
+proc Math_asin*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("asin", f.req)
+
+    result = REAL(arcsin(R(0)))
+
+proc Math_asinh*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("asinh", f.req)
+
+    result = REAL(arcsinh(R(0)))
+
+proc Math_atan*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("atan", f.req)
+
+    result = REAL(arctan(R(0)))
+
+proc Math_atanh*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("atanh", f.req)
+
+    result = REAL(arctanh(R(0)))
+
+proc Math_avg*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("avg", f.req)
+
+    result = A(0)[0]
+
+    var i = 1
+    while i < A(0).len:
+        result = result + A(0)[i]
+        inc(i)
+
+    result = REAL(result.i / A(0).len)
+
+proc Math_ceil*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("ceil", f.req)
+
+    result = REAL(ceil(R(0)))
+
+proc Math_cos*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("cos", f.req)
+
+    result = REAL(cos(R(0)))
+
+proc Math_cosh*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("cosh", f.req)
+
+    result = REAL(cosh(R(0)))
+
+proc Math_csec*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("csec", f.req)
+
+    result = REAL(csc(R(0)))
+
+proc Math_csech*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("csech", f.req)
+
+    result = REAL(csch(R(0)))
+
+proc Math_ctan*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("ctan", f.req)
+
+    result = REAL(cot(R(0)))
+
+proc Math_ctanh*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("ctanh", f.req)
+
+    result = REAL(coth(R(0)))
+
+proc Math_exp*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("exp", f.req)
+
+    result = REAL(exp(R(0)))
+
+proc Math_floor*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("floor", f.req)
+
+    result = REAL(floor(R(0)))
+
+proc Math_gcd*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("gcd", f.req)
+
+    var current = A(0)[0].i
+    var i = 1
+    while i<A(0).len:
+        current = gcd(current,A(0)[i].i)
+        inc(i)
+
+    result = INT(current)
+
+proc Math_isEven*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("isEven", f.req)
+
+    if v[0].kind==IV:
+        result = BOOL((I(0) mod 2)==0)
+    else:
+        result = BOOL(BI(0).even())
+
+proc Math_isOdd*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("isOdd", f.req)
+
+    if v[0].kind==IV:
+        result = BOOL((I(0) mod 2)!=0)
+    else:
+        result = BOOL(BI(0).odd())
+
 proc Math_isPrime*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isPrime", f.req)
 
@@ -73,6 +187,57 @@ proc Math_isPrime*[F,X,V](f: F, xl: X): V {.inline.} =
         if probablyPrime(BI(0),25)==0: result = FALSE
         else: result = TRUE
 
+proc Math_lcm*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("lcm", f.req)
+
+    var current = A(0)[0].i
+    var i = 1
+    while i<A(0).len:
+        current = lcm(current,A(0)[i].i)
+        inc(i)
+
+    result = INT(current)
+
+proc Math_ln*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("ln", f.req)
+
+    result = REAL(ln(R(0)))
+
+proc Math_log*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("log", f.req)
+
+    result = REAL(log(R(0),R(1)))
+
+proc Math_log2*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("log2", f.req)
+
+    result = REAL(log2(R(0)))
+
+proc Math_log10*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("log10", f.req)
+
+    result = REAL(log10(R(0)))
+
+proc Math_max*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("min", f.req)
+
+    result = A(0)[0]
+    var i = 1
+    while i<A(0).len:
+        if A(0)[i].gt(result):
+            result = A(0)[i]
+        inc(i)
+
+proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("min", f.req)
+
+    result = A(0)[0]
+    var i = 1
+    while i<A(0).len:
+        if A(0)[i].lt(result):
+            result = A(0)[i]
+        inc(i)
+
 proc Math_product*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("product", f.req)
 
@@ -82,6 +247,28 @@ proc Math_product*[F,X,V](f: F, xl: X): V {.inline.} =
     while i < A(0).len:
         result = result * A(0)[i]
         inc(i)
+
+proc Math_random*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("random", f.req)
+
+    randomize()
+
+    result = INT(rand(I(0)..I(1)))
+
+proc Math_round*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("round", f.req)
+
+    result = REAL(round(R(0)))
+
+proc Math_sec*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("sec", f.req)
+
+    result = REAL(sec(R(0)))
+
+proc Math_sech*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("sech", f.req)
+
+    result = REAL(sech(R(0)))
 
 proc Math_shl*[F,X,V](f: F, xl: X): V  {.inline.} =
     let v = xl.validate("shl", f.req)
@@ -119,6 +306,21 @@ proc Math_shrI*[F,X,V](f: F, xl: X): V  {.inline.} =
         BI(0) = BI(0) shr culong(I(1))
         result = v[0]
 
+proc Math_sin*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("sin", f.req)
+
+    result = REAL(sin(R(0)))
+
+proc Math_sinh*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("sinh", f.req)
+
+    result = REAL(sinh(R(0)))
+
+proc Math_sqrt*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("sqrt", f.req)
+
+    result = REAL(sqrt(R(0)))
+
 proc Math_sum*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("sum", f.req)
 
@@ -128,6 +330,16 @@ proc Math_sum*[F,X,V](f: F, xl: X): V {.inline.} =
     while i < A(0).len:
         result = result + A(0)[i]
         inc(i)
+
+proc Math_tan*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("tan", f.req)
+
+    result = REAL(tan(R(0)))
+
+proc Math_tanh*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("tanh", f.req)
+
+    result = REAL(tanh(R(0)))
 
 #[******************************************************
   ******************************************************
