@@ -161,7 +161,7 @@ template stripBinary() =
 template cleanUp() =
     showMessage "Cleaning up"
     exec "rm *.c *.a *.h *.o"
-    #exec "rm src/parser/lexer_final.l"
+    exec "rm src/parser/lexer_final.l"
 
 # Tasks
 
