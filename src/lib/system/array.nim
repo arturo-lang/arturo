@@ -11,6 +11,38 @@
     Functions
   ======================================================]#
 
+proc Array_all*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("all", f.req)
+
+    if v.len==1:
+        var i = 0
+        while i < A(0).len:
+            if not A(0)[i].b: return FALSE
+            inc(i)
+        result = TRUE
+    else:
+        var i = 0
+        while i < A(0).len:
+            if not FN(1).execute(A(0)[i]).b: return FALSE
+            inc(i)
+        result = TRUE
+
+proc Array_any*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("any", f.req)
+
+    if v.len==1:
+        var i = 0
+        while i < A(0).len:
+            if A(0)[i].b: return TRUE
+            inc(i)
+        result = FALSE
+    else:
+        var i = 0
+        while i < A(0).len:
+            if not FN(1).execute(A(0)[i]).b: return TRUE
+            inc(i)
+        result = FALSE
+
 proc Array_filter*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("filter", f.req)
 
