@@ -48,3 +48,27 @@ proc Collection_size*[F,X,V](f: F, xl: X): V {.inline.} =
         of SV: result = INT(S(0).len)
         of DV: result = INT(D(0).list.len)
         else: discard
+
+#[******************************************************
+  ******************************************************
+    UnitTests
+  ******************************************************
+  ******************************************************]#
+
+when defined(unittest):
+
+    suite "Library: system/collection":
+
+        test "append":
+            check(eq( callFunction("append",@[STR("hello"),STR("world")]), STR("helloworld") ))
+            check(eq( callFunction("append",@[ARR(@[INT(1),INT(2)]),INT(3)]), ARR(@[INT(1),INT(2),INT(3)]) ))
+
+        test "contains":
+            check(eq( callFunction("contains",@[STR("hello"),STR("hell")]), TRUE ))
+            check(eq( callFunction("contains",@[STR("world"),STR("hell")]), FALSE ))
+            check(eq( callFunction("contains",@[ARR(@[INT(1),INT(2)]),INT(2)]), TRUE ))
+            check(eq( callFunction("contains",@[ARR(@[INT(1),INT(2)]),INT(3)]), FALSE ))
+
+        test "size":
+            check(eq( callFunction("size",@[STR("hello")]), INT(5) ))
+            check(eq( callFunction("size",@[ARR(@[INT(1),INT(2)])]), INT(2) ))
