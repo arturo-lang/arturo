@@ -80,3 +80,4 @@ template IncorrectArgumentValuesError*(f: string, e: string, g: string) =
 template ProgramPanic*(msg: string) =
     raise newException(Exception,"program panic\n" &
                  "msg: " & msg)
+    
