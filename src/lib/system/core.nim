@@ -18,6 +18,7 @@ proc Core_and*[F,X,V](f: F, xl: X): V {.inline.} =
         of BV:
             if not v0.b: return FALSE
             if xl.list[1].validate("and",[BV]).b: return TRUE
+            else: return FALSE
         of IV:
             result = INT(bitand(v0.i, xl.list[1].validate("and",[IV]).i))
         else: discard
@@ -72,8 +73,8 @@ proc Core_not*[F,X,V](f: F, xl: X): V {.inline.} =
 
     case v0.kind
         of BV:
-            if v0.b: result = TRUE
-            else: result = FALSE
+            if v0.b: result = FALSE
+            else: result = TRUE
         of IV:
             result = INT(bitnot(v0.i))
         else: discard
@@ -85,6 +86,7 @@ proc Core_or*[F,X,V](f: F, xl: X): V {.inline.} =
         of BV:
             if v0.b: return TRUE
             if xl.list[1].validate("or",[BV]).b: return TRUE
+            else: return FALSE
         of IV:
             result = INT(bitor(v0.i, xl.list[1].validate("or",[IV]).i))
         else: discard
@@ -129,3 +131,44 @@ proc Core_Xor*[F,X,V](f: F, xl: X): V {.inline.} =
         of IV:
             result = INT(bitxor(v0.i, xl.list[1].validate("xor",[IV]).i))
         else: discard
+
+#[******************************************************
+  ******************************************************
+    UnitTests
+  ******************************************************
+  ******************************************************]#
+
+when defined(unittest):
+
+    suite "Library: system/core":
+
+        test "and":
+            check(eq( callFunction("and",@[TRUE,TRUE]), TRUE ))
+            check(eq( callFunction("and",@[TRUE,FALSE]), FALSE ))
+            check(eq( callFunction("and",@[FALSE,TRUE]), FALSE ))
+            check(eq( callFunction("and",@[FALSE,FALSE]), FALSE ))
+            check(eq( callFunction("and",@[INT(10),INT(3)]), INT(2) ))
+
+        test "get":
+            check(eq( callFunction("get",@[ARR(@[INT(1),INT(2),INT(3)]),INT(0)]), INT(1) ))
+
+        test "not":
+            check(eq( callFunction("not",@[TRUE]), FALSE ))
+            check(eq( callFunction("not",@[FALSE]), TRUE ))
+
+        test "or":
+            check(eq( callFunction("or",@[TRUE,TRUE]), TRUE ))
+            check(eq( callFunction("or",@[TRUE,FALSE]), TRUE ))
+            check(eq( callFunction("or",@[FALSE,TRUE]), TRUE ))
+            check(eq( callFunction("or",@[FALSE,FALSE]), FALSE ))
+            check(eq( callFunction("or",@[INT(10),INT(3)]), INT(11) ))
+
+        test "print":
+            check(eq( callFunction("print",@[STR("done")]), STR("done") ))
+
+        test "xor":
+            check(eq( callFunction("xor",@[TRUE,TRUE]), FALSE ))
+            check(eq( callFunction("xor",@[TRUE,FALSE]), TRUE ))
+            check(eq( callFunction("xor",@[FALSE,TRUE]), TRUE ))
+            check(eq( callFunction("xor",@[FALSE,FALSE]), FALSE ))
+            check(eq( callFunction("xor",@[INT(10),INT(3)]), INT(9) ))
