@@ -25,32 +25,62 @@ proc String_capitalizeI*[F,X,V](f: F, xl: X): V {.inline.} =
 proc String_isAlpha*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isAlpha", f.req)
 
-    result = BOOL(S(0).isAlphaAscii())
+    var i = 0
+    while i<S(0).len:
+        if not S(0)[i].isAlphaAscii(): return FALSE
+        inc(i)
+
+    result = TRUE
 
 proc String_isAlphaNumeric*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isAlphaNumeric", f.req)
 
-    result = BOOL(S(0).isAlphaNumeric())
+    var i = 0
+    while i<S(0).len:
+        if not S(0)[i].isAlphaNumeric(): return FALSE
+        inc(i)
+
+    result = TRUE
 
 proc String_isLowercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isLowercase", f.req)
 
-    result = BOOL(S(0).isLowerAscii(true))
+    var i = 0
+    while i<S(0).len:
+        if not S(0)[i].isLowerAscii(): return FALSE
+        inc(i)
+
+    result = TRUE
 
 proc String_isNumber*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isNumber", f.req)
 
-    result = BOOL(S(0).isDigit())
+    var i = 0
+    while i<S(0).len:
+        if not S(0)[i].isDigit(): return FALSE
+        inc(i)
+
+    result = TRUE
 
 proc String_isUppercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isUppercase", f.req)
 
-    result = BOOL(S(0).isUpperAscii(true))
+    var i = 0
+    while i<S(0).len:
+        if not S(0)[i].isUpperAscii(): return FALSE
+        inc(i)
+
+    result = TRUE
 
 proc String_isWhitespace*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isWhitespace", f.req)
 
-    result = BOOL(S(0).isSpaceAscii())
+    var i = 0
+    while i<S(0).len:
+        if not S(0)[i].isSpaceAscii(): return FALSE
+        inc(i)
+
+    result = TRUE
 
 proc String_lowercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("lowercase", f.req)
