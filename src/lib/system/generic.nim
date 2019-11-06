@@ -4,14 +4,14 @@
   * Programming Language + Interpreter
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
-  * @file: lib/system/collection.nim
+  * @file: lib/system/generic.nim
   *****************************************************************]#
 
 #[######################################################
     Functions
   ======================================================]#
 
-proc Collection_append*[F,X,V](f: F, xl: X): V {.inline.} =
+proc Generic_append*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("append", f.req)
 
     case v[0].kind
@@ -19,7 +19,7 @@ proc Collection_append*[F,X,V](f: F, xl: X): V {.inline.} =
         of SV: result = STR(S(0) & S(1))
         else: discard
 
-proc Collection_appendI*[F,X,V](f: F, xl: X): V {.inline.} =
+proc Generic_appendI*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("append!", f.req)
 
     case v[0].kind
@@ -31,7 +31,7 @@ proc Collection_appendI*[F,X,V](f: F, xl: X): V {.inline.} =
             result = v[0]
         else: discard
 
-proc Collection_contains*[F,X,V](f: F, xl: X): V {.inline.} =
+proc Generic_contains*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("contains", f.req)
 
     case v[0].kind
@@ -40,13 +40,56 @@ proc Collection_contains*[F,X,V](f: F, xl: X): V {.inline.} =
          of DV: result = BOOL(findValueInArray(D(0).values,v[1])!=(-1))
          else: discard
 
-proc Collection_size*[F,X,V](f: F, xl: X): V {.inline.} =
+proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("reverse", f.req)
+
+    case v[0].kind
+        of AV: result = ARR(A(0).reversed())
+        of SV: 
+            var ret = newString(S(0).len)
+            var i = 0
+            while i<S(0).len:
+                ret[S(0).high-i] = S(0)[i]
+                inc(i)
+            
+            result = STR(ret)
+        else: discard
+
+proc Generic_reverseI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("reverse!", f.req)
+
+    case v[0].kind
+        of AV: 
+            A(0).reverse()
+            result = v[0]
+        of SV: 
+            var i = 0
+            while i<S(0).high div 2:
+                swap(S(0)[i],S(0)[S(0).high - i])
+                inc(i)
+            
+            result = v[0]
+        else: discard
+
+proc Generic_size*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("size", f.req)
 
     case v[0].kind
         of AV: result = INT(A(0).len)
         of SV: result = INT(S(0).len)
         of DV: result = INT(D(0).list.len)
+        else: discard
+
+proc Generic_slice*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("slice", f.req)
+
+    case v[0].kind
+        of AV: 
+            if v.len==3: result = ARR(A(0)[I(1)..I(2)])
+            else: result = ARR(A(0)[I(1)..^1])
+        of SV: 
+            if v.len==3: result = STR(S(0)[I(1)..I(2)])
+            else: result = STR(S(0)[I(1)..^1])
         else: discard
 
 #[******************************************************
@@ -57,7 +100,7 @@ proc Collection_size*[F,X,V](f: F, xl: X): V {.inline.} =
 
 when defined(unittest):
 
-    suite "Library: system/collection":
+    suite "Library: system/generic":
 
         test "append":
             check(eq( callFunction("append",@[STR("hello"),STR("world")]), STR("helloworld") ))
@@ -72,3 +115,6 @@ when defined(unittest):
         test "size":
             check(eq( callFunction("size",@[STR("hello")]), INT(5) ))
             check(eq( callFunction("size",@[ARR(@[INT(1),INT(2)])]), INT(2) ))
+
+        test "slice":
+            check(eq( callFunction("slice",@[ARR(@[INT(1),INT(2),INT(3),INT(4),INT(5),INT(6),INT(7),INT(8),INT(9)]),INT(0),INT(3)]), ARR(@[INT(1),INT(2),INT(3),INT(4)]) ))
