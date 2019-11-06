@@ -7,7 +7,7 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, bitops, macros, math, os, parseutils, random, sequtils, strutils, sugar, tables
+import algorithm, bitops, macros, math, os, parseutils, random, sequtils, strutils, sugar, unicode, tables
 import bignum
 import panic, utils
 
@@ -301,6 +301,8 @@ when defined(unittest):
 
 include lib/system/array
 include lib/system/core
+include lib/system/dictionary
+include lib/system/file
 include lib/system/generic
 include lib/system/math
 include lib/system/reflection
@@ -333,8 +335,8 @@ const
         SystemFunction(lib:"generic",       name:"size",                call:Generic_size,              req: @[@[AV],@[SV],@[DV]],                                                          ret: @[IV],             desc:"get size of given collection or string"),
         SystemFunction(lib:"generic",       name:"slice",               call:Generic_slice,             req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],                                  ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
 
-        SystemFunction(lib:"array",         name:"all",                 call:Array_all,                 req: @[@[AV,BV],@[AV,FV]],                                                          ret: @[BV],             desc:"check if all elements of array are true or pass the condition of given function"),
-        SystemFunction(lib:"array",         name:"any",                 call:Array_any,                 req: @[@[AV,BV],@[AV,FV]],                                                          ret: @[BV],             desc:"check if any elements of array are true or pass the condition of given function"),
+        SystemFunction(lib:"array",         name:"all",                 call:Array_all,                 req: @[@[AV],@[AV,FV]],                                                             ret: @[BV],             desc:"check if all elements of array are true or pass the condition of given function"),
+        SystemFunction(lib:"array",         name:"any",                 call:Array_any,                 req: @[@[AV],@[AV,FV]],                                                             ret: @[BV],             desc:"check if any elements of array are true or pass the condition of given function"),
         SystemFunction(lib:"array",         name:"filter",              call:Array_filter,              req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function"),
         SystemFunction(lib:"array",         name:"filter!",             call:Array_filterI,             req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function (in-place)"),
         SystemFunction(lib:"array",         name:"map",                 call:Array_map,                 req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element"),
@@ -344,6 +346,10 @@ const
         SystemFunction(lib:"array",         name:"shuffle!",            call:Array_shuffleI,            req: @[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array (in-place)"),
         SystemFunction(lib:"array",         name:"swap",                call:Array_swap,                req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices"),
         SystemFunction(lib:"array",         name:"swap!",               call:Array_swapI,               req: @[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices (in-place)"),
+
+        SystemFunction(lib:"dictionary",    name:"hasKey",              call:Dictionary_hasKey,         req: @[@[DV,SV]],                                                                   ret: @[BV],             desc:"check if dictionary contains key"),
+        SystemFunction(lib:"dictionary",    name:"keys",                call:Dictionary_keys,           req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary keys"),
+        SystemFunction(lib:"dictionary",    name:"values",              call:Dictionary_values,         req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary values"),     
 
         SystemFunction(lib:"string",        name:"capitalize",          call:String_capitalize,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string"),
         SystemFunction(lib:"string",        name:"capitalize!",         call:String_capitalizeI,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string (in-place)"),
@@ -1041,7 +1047,7 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
             result = "#{\n"
             
             if v.d.keys.len==0: return "#{}"
-            let items = sorted(v.d.keys).map((x) => repeat("\t",prepend) & repeat(" ",padding) & "\t" & KEY_COLOR & alignLeft(x,INSPECT_PADDING) & RESTORE_COLOR & "" & v.d.getValueForKey(x).inspect(prepend+1,true) & "\n")
+            let items = sorted(v.d.keys).map((x) => repeat("\t",prepend) & repeat(" ",padding) & "\t" & KEY_COLOR & strutils.alignLeft(x,INSPECT_PADDING) & RESTORE_COLOR & "" & v.d.getValueForKey(x).inspect(prepend+1,true) & "\n")
 
             result &= items.join("")
             result &= repeat("\t",prepend) & repeat(" ",padding) & "}"
@@ -1146,7 +1152,7 @@ proc getOneLineDescription*(f: SystemFunction): string =
 
     let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
 
-    result = alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " \x1B[0;32m->\x1B[0;37m " & ret
+    result = strutils.alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " \x1B[0;32m->\x1B[0;37m " & ret
 
 proc getFullDescription*(f: SystemFunction): string =
     let args = 
@@ -1513,6 +1519,27 @@ when defined(unittest):
 
     suite "Compiler":
 
-        test "Simple expression":
+        test "arithmetic operators":
             check(runString("1+1") == "2" )
+            check(runString("1-1") == "0" )
+            check(runString("1*1") == "1" )
+            check(runString("1/1") == "1" )
+            check(runString("5%2") == "1" )
+            check(runString("2^3") == "8" )
+            check(runString("1+2*3") == "7" )
+            check(runString("(1+2)*3") == "9" )
 
+
+        test "comparison operators":
+            check(runString("1=1") == "true" )
+            check(runString("1=2") == "false" )
+            check(runString("1>1") == "false" )
+            check(runString("2>1") == "true" )
+            check(runString("2<1") == "false" )
+            check(runString("5!=5") == "false" )
+            check(runString("5!=7") == "true" )
+            check(runString("2>=1") == "true" )
+            check(runString("2>=2") == "true" )
+            check(runString("2>=3") == "false" )
+            check(runString("2<=1") == "false" )
+            check(runString("2<=3") == "true" )
