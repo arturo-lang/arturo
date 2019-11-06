@@ -34,3 +34,5 @@ profile_results.txt
 luac.out
 _legacy/
 _extras/
+experimental
+/src/experimental.nim
