@@ -351,6 +351,30 @@ when defined(unittest):
 
     suite "Library: system/math":
 
+        test "avg":
+            check(eq( callFunction("avg",@[ARR(@[INT(2),INT(4)])]), REAL(3.0) ))
+
+        test "gcd":
+            check(eq( callFunction("gcd",@[ARR(@[INT(2),INT(3),INT(4)])]), INT(1) ))
+
+        test "isEven":
+            check(eq( callFunction("isEven",@[INT(2)]), TRUE ))
+            check(eq( callFunction("isEven",@[INT(3)]), FALSE ))
+            check(eq( callFunction("isEven",@[INT(4)]), TRUE ))
+            check(eq( callFunction("isEven",@[INT(5)]), FALSE ))
+            check(eq( callFunction("isEven",@[INT(6)]), TRUE ))
+            check(eq( callFunction("isEven",@[BIGINT("170141183460469231731687303715884105727")]), FALSE ))
+            check(eq( callFunction("isEven",@[BIGINT("170141183460469231731687303715884105728")]), TRUE ))
+
+        test "isOdd":
+            check(eq( callFunction("isOdd",@[INT(2)]), FALSE ))
+            check(eq( callFunction("isOdd",@[INT(3)]), TRUE ))
+            check(eq( callFunction("isOdd",@[INT(4)]), FALSE ))
+            check(eq( callFunction("isOdd",@[INT(5)]), TRUE ))
+            check(eq( callFunction("isOdd",@[INT(6)]), FALSE ))
+            check(eq( callFunction("isOdd",@[BIGINT("170141183460469231731687303715884105727")]), TRUE ))
+            check(eq( callFunction("isOdd",@[BIGINT("170141183460469231731687303715884105728")]), FALSE ))
+
         test "isPrime":
             check(eq( callFunction("isPrime",@[INT(2)]), TRUE ))
             check(eq( callFunction("isPrime",@[INT(3)]), TRUE ))
@@ -366,14 +390,33 @@ when defined(unittest):
             check(eq( callFunction("isPrime",@[BIGINT("20988936657440586486151264256610222593863921")]), TRUE ))
             check(eq( callFunction("isPrime",@[BIGINT("20988936657440586486151264256610222593863927")]), FALSE ))
 
+        test "lcm":
+            check(eq( callFunction("lcm",@[ARR(@[INT(2),INT(3),INT(4)])]), INT(12) ))
+
+        test "max":
+            check(eq( callFunction("max",@[ARR(@[INT(2),INT(3),INT(4)])]), INT(4) ))
+
+        test "min":
+            check(eq( callFunction("min",@[ARR(@[INT(2),INT(3),INT(4)])]), INT(2) ))
+
         test "product":
             check(eq( callFunction("product",@[ARR(@[INT(1),INT(2),INT(3)])]), INT(6) ))
+
+        test "random":
+            check(lt( callFunction("random",@[INT(1),INT(10)]), INT(11) ))
+            check(lt( callFunction("random",@[INT(1),INT(10)]), INT(11) ))
+            check(lt( callFunction("random",@[INT(1),INT(10)]), INT(11) ))
+            check(lt( callFunction("random",@[INT(1),INT(10)]), INT(11) ))
+            check(lt( callFunction("random",@[INT(1),INT(10)]), INT(11) ))
 
         test "shl":
             check(eq( callFunction("shl",@[INT(10),INT(2)]), INT(40) ))
 
         test "shr":
             check(eq( callFunction("shr",@[INT(10),INT(2)]), INT(2) ))
+
+        test "sqrt":
+            check(eq( callFunction("sqrt",@[REAL(4.0)]), REAL(2.0) ))
 
         test "sum":
             check(eq( callFunction("sum",@[ARR(@[INT(1),INT(2),INT(3)])]), INT(6) ))
