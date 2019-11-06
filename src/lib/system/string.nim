@@ -78,3 +78,55 @@ proc String_uppercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
     
     S(0) = S(0).toUpperAscii()
     result = v[0]
+
+#[######################################################
+  ######################################################
+    UnitTests
+  ======================================================
+  ======================================================]#
+
+when defined(unittest):
+
+    import unittest 
+
+    suite "Library: system/string":
+
+        test "capitalize":
+            check(eq( callFunction("capitalize",@[STR("done")]), STR("Done") ))
+
+        test "isAlpha":
+            check(eq( callFunction("isAlpha",@[STR("done")]), TRUE ))
+            check(eq( callFunction("isAlpha",@[STR("d3one")]), FALSE ))
+
+        test "isAlphaNumeric":
+            check(eq( callFunction("isAlphaNumeric",@[STR("done")]), TRUE ))
+            check(eq( callFunction("isAlphaNumeric",@[STR("d3one")]), TRUE ))
+
+        test "isLowercase":
+            check(eq( callFunction("isLowercase",@[STR("done")]), TRUE ))
+            check(eq( callFunction("isLowercase",@[STR("d3one")]), TRUE ))
+            check(eq( callFunction("isLowercase",@[STR("d3oNe")]), FALSE ))
+
+        test "isNumber":
+            check(eq( callFunction("isNumber",@[STR("12345")]), TRUE ))
+            check(eq( callFunction("isNumber",@[STR("d3one")]), FALSE ))
+            check(eq( callFunction("isNumber",@[STR("done")]), FALSE ))
+
+        test "isUppercase":
+            check(eq( callFunction("isUppercase",@[STR("done")]), FALSE ))
+            check(eq( callFunction("isUppercase",@[STR("dONe")]), FALSE ))
+            check(eq( callFunction("isUppercase",@[STR("DONE")]), TRUE ))
+
+        test "isWhitespace":
+            check(eq( callFunction("isWhitespace",@[STR("done")]), FALSE ))
+            check(eq( callFunction("isWhitespace",@[STR("  ")]), TRUE ))
+            check(eq( callFunction("isWhitespace",@[STR("  \t\n")]), TRUE ))
+
+        test "lowercase":
+            check(eq( callFunction("lowercase",@[STR("dOnE")]), STR("done") ))
+
+        test "lines":
+            check(eq( callFunction("lines",@[STR("one\ntwo")]), STRARR(@["one","two"]) ))
+
+        test "uppercase":
+            check(eq( callFunction("uppercase",@[STR("dOnE")]), STR("DONE") ))
