@@ -82,8 +82,10 @@ template compileMini() =
 
 template compileExperiment() = 
     showMessage("Compiling experimental module")
-    exec "nim c -d:release --opt:speed --nimcache:_cache --threads:on --path:src -o:test src/test.nim"
+    exec "nim c -d:release --opt:speed --nimcache:_cache --threads:on --path:src -o:experimental src/experimental.nim"
 
+template runExperiment() =
+    exec "./experimental"
 
 template compileUnittests() = 
     showMessage("Compiling unittests")
@@ -159,8 +161,7 @@ template stripBinary() =
 template cleanUp() =
     showMessage "Cleaning up"
     exec "rm *.c *.a *.h *.o"
-    exec "rm src/parser/lexer_final.l"
-    #exec "rm src/system.nim"
+    #exec "rm src/parser/lexer_final.l"
 
 # Tasks
 
@@ -206,6 +207,7 @@ task debug, "Build a version for debugging":
 task experiment, "Run experiments":
     compileExperiment()
     showMessage "Done :)", true
+    runExperiment()
 
 task test, "Run Unittests":
     buildLibrary()
