@@ -94,6 +94,7 @@ LETTER_OR_MISC		[a-zA-Z_]
 "#{"												{ return BEGIN_DICT; }
 "$("												{ return BEGIN_INLINE; }
 
+".."												{ return RANGE; }
 "."													{ return DOT; }
 
 "("													{ return LPAREN; }

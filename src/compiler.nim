@@ -211,6 +211,8 @@ proc execute(f: Function, v: Value): Value {.inline.}
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.}
 proc validate(xl: ExpressionList, name: string, req: seq[seq[ValueKind]]): seq[Value] {.inline.}
 
+proc newExpressionList: ExpressionList {.exportc.}
+proc addExpressionToExpressionList(x: Expression, xl: ExpressionList): ExpressionList {.exportc.}
 proc evaluate(x: Expression): Value {.inline.}
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
 
@@ -1136,6 +1138,13 @@ proc keypathByAddingInlineToKeypath(k: KeyPath, a: Argument): KeyPath {.exportc.
 
 proc expressionFromArgument(a: Argument): Expression {.exportc.} =
     result = Expression(kind: argumentExpression, a: a)
+
+proc expressionFromRange(a: Argument, b: Argument): Expression {.exportc.} =
+    var lst = newExpressionList()
+
+    discard addExpressionToExpressionList(expressionFromArgument(a), lst)
+    discard addExpressionToExpressionList(expressionFromArgument(b), lst)
+    result = Expression(kind: argumentExpression, a: argumentFromInlineCallLiteral(statementFromCommand(static cint(getSystemFunction("range")),lst,0)))
 
 proc expressionFromExpressions(l: Expression, op: cstring, r: Expression): Expression {.exportc.} =
     result = Expression(kind: normalExpression, left: l, op: parseEnum[ExpressionOperator]($op), right: r)
