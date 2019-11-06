@@ -7,42 +7,65 @@ import compiler
 import bignum
 
 
-type 
-    ctx = TableRef[string,Value]
-    ctxo = OrderedTableRef[string,Value]
-    arr = seq[(string,Value)]
+# type 
+#     ctx = TableRef[string,Value]
+#     ctxo = OrderedTableRef[string,Value]
+#     arr = seq[(string,Value)]
 
-    #stack = array[ctx,2]
-
-
-var lim = 1_000_000
-
-var aa = @[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]
-var bb = @[4,5,6]
-
-echo "A = ",aa
-echo "B = ",bb
-
-echo repr aa
-echo repr bb
-
-let k = addr aa
-bb = k[]
+#     #stack = array[ctx,2]
 
 
-echo "A = ",aa
-echo "B = ",bb
+var lim = 1_000_000_000
 
-benchmark "sum 2 numbers":
+# var aa = @[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]
+# var bb = @[4,5,6]
+
+# echo "A = ",aa
+# echo "B = ",bb
+
+# echo repr aa
+# echo repr bb
+
+# let k = addr aa
+# bb = k[]
+
+
+# echo "A = ",aa
+# echo "B = ",bb
+
+# Least signficant bit:
+proc isOdd(i: int): bool = (i and 1) != 0
+proc isEven(i: int): bool = (i and 1) == 0
+ 
+# Modulo:
+proc isOdd2(i: int): bool = (i mod 2) != 0
+proc isEven2(i: int): bool = (i mod 2) == 0
+ 
+# Bit Shifting:
+proc isOdd3(n: int): bool = n != ((n shr 1) shl 1)
+proc isEven3(n: int): bool = n == ((n shr 1) shl 1)
+
+benchmark "odd/even 1":
     for i in 1..lim:
-        let k = 1+i
+        let k = isOdd(i)
+        let m = isEven(i)
 
-benchmark "sum 2 numbers (parallel)":
+benchmark "odd/even 2":
+    for i in 1..lim:
+        let k = isOdd2(i)
+        let m = isEven2(i)
+
+benchmark "odd/even 3":
+    for i in 1..lim:
+        let k = isOdd3(i)
+        let m = isEven3(i)
+
+# benchmark "sum 2 numbers (parallel)":
     
-    parallel:
-        for i in 1..lim:
-            let k = spawn 1+i
-    sync()
+#     parallel:
+#         for i in 1..lim:
+#             let k = spawn 1+i
+#     sync()
 #echo repr addr a
 #echo repr addr b
 
