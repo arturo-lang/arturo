@@ -50,6 +50,7 @@ extern void* argumentFromFunctionLiteral(void* l, char* args);
 extern void* argumentFromInlineCallLiteral(void* l);
 
 extern void* expressionFromArgument(void *a);
+extern void* expressionFromRange(void* a, void* b);
 extern void* expressionFromExpressions(void* l, char* op, void* r);
 
 extern void* newExpressionList();
@@ -118,6 +119,7 @@ int yywrap() {
 %token <str> BEGIN_INLINE "$("
 %token <str> BEGIN_FUNC "@{"
 
+%token <str> RANGE ".."
 %token <str> DOT "."
 %token <str> HASH "#"
 %token <str> LPAREN "("
@@ -138,7 +140,8 @@ int yywrap() {
 %type <str> args
 %type <str> assignment_id
 
-%type <compo> keypath string number boolean null
+%type <compo> keypath
+%type <compo> string number boolean null
 %type <compo> array dictionary function inline_call
 
 %type <compo> argument expression expression_list
@@ -187,7 +190,7 @@ keypath					: 	ID DOT ID 															{ $$ = keypathFromIdId($1,$3); }
 						| 	keypath[previous] DOT ID 											{ $$ = keypathByAddingIdToKeypath($previous,$ID); }
 						| 	keypath[previous] DOT INTEGER 										{ $$ = keypathByAddingIntegerToKeypath($previous,$INTEGER); }
 						| 	keypath[previous] DOT inline_call 									{ $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
-						;					
+						;		
 
 args					: 	ID[previous] COMMA ID 												{ strcat( $1, "," ); $$ = strcat($1, $3); }
 						|	ID 																	{ $$ = $1; }
@@ -242,6 +245,7 @@ argument				:	ID 																	{ $$ = argumentFromIdentifier($1); }
 //==============================
 
 expression				: 	argument 															{ $$ = expressionFromArgument($1); }
+						|	argument RANGE argument 											{ $$ = expressionFromRange($1,$3); }
 						|	LPAREN expression[main] RPAREN 										{ $$ = $main; }
 						|	expression[left] PLUS_SG expression[right] 							{ $$ = expressionFromExpressions($left, "PLUS_SG", $right); }
 						| 	expression[left] MINUS_SG expression[right] 						{ $$ = expressionFromExpressions($left, "MINUS_SG", $right); }
