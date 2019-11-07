@@ -7,8 +7,6 @@
   * @file: lib/system/string.nim
   *****************************************************************]#
 
-# TODO: Add support for unicode strings
-
 #[######################################################
     Functions
   ======================================================]#
@@ -16,12 +14,12 @@
 proc String_capitalize*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("capitalize", f.req)
 
-    result = STR(S(0).capitalizeAscii())
+    result = STR(S(0).capitalize())
 
 proc String_capitalizeI*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("capitalize!", f.req)
     
-    S(0) = S(0).capitalizeAscii()
+    S(0) = S(0).capitalize()
     result = v[0]
 
 proc String_isAlpha*[F,X,V](f: F, xl: X): V {.inline.} =
@@ -96,12 +94,12 @@ proc String_join*[F,X,V](f: F, xl: X): V {.inline.} =
 proc String_lowercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("lowercase", f.req)
 
-    result = STR(S(0).toLowerAscii())
+    result = STR(S(0).toLower())
 
 proc String_lowercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("lowercase!", f.req)
     
-    S(0) = S(0).toLowerAscii()
+    S(0) = S(0).toLower()
     result = v[0]
 
 proc String_lines*[F,X,V](f: F, xl: X): V {.inline.} =
@@ -112,12 +110,12 @@ proc String_lines*[F,X,V](f: F, xl: X): V {.inline.} =
 proc String_uppercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("uppercase", f.req)
 
-    result = STR(S(0).toUpperAscii())
+    result = STR(S(0).toUpper())
 
 proc String_uppercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("uppercase!", f.req)
     
-    S(0) = S(0).toUpperAscii()
+    S(0) = S(0).toUpper()
     result = v[0]
 
 #[******************************************************
