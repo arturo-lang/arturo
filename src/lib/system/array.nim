@@ -87,6 +87,14 @@ proc Array_popI*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = A(0).pop()
 
+proc Array_range*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("range", f.req)
+
+    if I(0)<I(1):    
+        result = ARR(toSeq(I(0)..I(1)).map((x) => INT(x)))
+    else:
+        result = ARR(toSeq(countdown(I(0),I(1))).map((x) => INT(x)))    
+
 proc Array_rotate*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("rotate", f.req)
 
@@ -221,6 +229,10 @@ when defined(unittest):
 
         test "pop":
             check(eq( callFunction("pop",@[ARR(@[INT(1),INT(2),INT(3),INT(4)])]), INT(4) ))
+
+        test "range":
+            check(eq( callFunction("range",@[INT(0),INT(3)]), ARR(@[INT(0),INT(1),INT(2),INT(3)]) ))
+            check(eq( callFunction("range",@[INT(3),INT(0)]), ARR(@[INT(3),INT(2),INT(1),INT(0)]) ))
 
         test "rotate":
             check(eq( callFunction("rotate",@[ARR(@[INT(1),INT(2),INT(3),INT(4)])]), ARR(@[INT(4),INT(1),INT(2),INT(3)]) ))
