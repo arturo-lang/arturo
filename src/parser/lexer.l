@@ -42,7 +42,7 @@ extern void parseError(const char* msg, const char* filename, int line);
 DIGIT               [0-9]
 DIGIT_HEX           [a-fA-F0-9]
 DIGIT_BIN           [01]
-LETTER              [a-zA-Z_&]
+LETTER              [a-zA-Z_]
 LETTER_OR_MISC      [a-zA-Z_]
 
 /****************************************
@@ -65,6 +65,18 @@ LETTER_OR_MISC      [a-zA-Z_]
 "true"|"false"                                      { yylval.str=strdup(yytext); return BOOLEANV; }
 
 %%SYSTEM_CMD%%
+
+"&0"                                                { yylval.str="0"; return ARGV; }
+"&1"                                                { yylval.str="1"; return ARGV; }
+"&2"                                                { yylval.str="2"; return ARGV; }
+"&3"                                                { yylval.str="3"; return ARGV; }
+"&4"                                                { yylval.str="4"; return ARGV; }
+"&5"                                                { yylval.str="5"; return ARGV; }
+"&6"                                                { yylval.str="6"; return ARGV; }
+"&7"                                                { yylval.str="7"; return ARGV; }
+"&8"                                                { yylval.str="8"; return ARGV; }
+"&9"                                                { yylval.str="9"; return ARGV; }
+"&"                                                 { yylval.str="&"; return ID; }
 
 {LETTER}({LETTER_OR_MISC}|{DIGIT})*                 { yylval.str=strdup(yytext); return ID; }
 {DIGIT}+                                            { yylval.str=strdup(yytext); return INTEGER; }
