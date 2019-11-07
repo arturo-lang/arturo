@@ -224,7 +224,10 @@ proc expressionFromArgument(a: Argument): Expression {.exportc.}
 
 proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.}
 proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.}
+proc statementFromKeypathExpressions(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.}
 proc execute(stm: Statement, parent: Value = nil): Value {.inline.}
+proc newStatementList: StatementList {.exportc.}
+proc addStatementToStatementList(s: Statement, sl: StatementList): StatementList {.exportc.}
 proc execute(sl: StatementList): Value
 
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
@@ -319,6 +322,7 @@ const
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         SystemFunction(lib:"array",         name:"all",                 call:Array_all,                 req: @[@[AV],@[AV,FV]],                                                             ret: @[BV],             desc:"check if all elements of array are true or pass the condition of given function"),
         SystemFunction(lib:"array",         name:"any",                 call:Array_any,                 req: @[@[AV],@[AV,FV]],                                                             ret: @[BV],             desc:"check if any elements of array are true or pass the condition of given function"),
+        SystemFunction(lib:"array",         name:"count",               call:Array_count,               req: @[@[AV,FV]],                                                                   ret: @[IV],             desc:"get number of elements from array that pass given condition"),
         SystemFunction(lib:"array",         name:"filter",              call:Array_filter,              req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function"),
         SystemFunction(lib:"array",         name:"filter!",             call:Array_filterI,             req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function (in-place)"),
         SystemFunction(lib:"array",         name:"first",               call:Array_first,               req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get first element of given array"),
@@ -1392,6 +1396,31 @@ proc argumentFromFunctionLiteral(l: StatementList, args: cstring = ""): Argument
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} =
     Argument(kind: inlineCallArgument, c: l)
 
+proc argumentFromMapId(i: cstring): Argument {.exportc.} =
+    var sl = newStatementList()
+    var el = newExpressionListWithExpression(expressionFromArgument(argumentFromIdentifier("&")))
+
+    discard addStatementToStatementList(statementFromExpressions($i,el,0), sl)
+
+    result = argumentFromFunctionLiteral(sl,"")
+
+proc argumentFromMapCommand(c: cint): Argument {.exportc.} =
+    var sl = newStatementList()
+    var el = newExpressionListWithExpression(expressionFromArgument(argumentFromIdentifier("&")))
+
+    discard addStatementToStatementList(statementFromCommand(c,el,0), sl)
+
+    result = argumentFromFunctionLiteral(sl,"")
+
+proc argumentFromMapKeypath(k: KeyPath): Argument {.exportc.} =
+    var sl = newStatementList()
+    var el = newExpressionListWithExpression(expressionFromArgument(argumentFromIdentifier("&")))
+
+    discard addStatementToStatementList(statementFromKeypathExpressions(k,el,0), sl)
+
+    result = argumentFromFunctionLiteral(sl,"")
+
+
 proc getValue(a: Argument): Value {.inline.} =
     {.computedGoto.}
     case a.kind
@@ -1461,7 +1490,7 @@ proc statementFromKeypathExpressions(k: KeyPath, xl: ExpressionList, l: cint=0):
 proc execute(stm: Statement, parent: Value = nil): Value {.inline.} = 
     case stm.kind
         of assignmentStatement:
-            result = stm.expressions.evaluate()
+            result = stm.rValue.evaluate()
             if parent==nil:
                 if result.kind==functionValue: setFunctionName(result.f,stm.id)   
                 discard setSymbol(stm.id, result)
