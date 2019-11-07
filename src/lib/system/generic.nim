@@ -96,6 +96,15 @@ proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
             result = v[0]
         else: discard
 
+proc Generic_isEmpty*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("isEmpty", f.req)
+
+    case v[0].kind
+        of AV: result = BOOL(A(0).len==0)
+        of DV: result = BOOL(D(0).list.len==0)
+        of SV: result = BOOL(S(0).len==0)
+        else: discard
+
 proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("reverse", f.req)
 
@@ -175,6 +184,12 @@ when defined(unittest):
         test "deleteBy":
             check(eq( callFunction("deleteBy",@[STR("hello"),INT(0)]), STR("ello") ))
             check(eq( callFunction("deleteBy",@[ARR(@[INT(1),INT(2),INT(3)]),INT(2)]), ARR(@[INT(1),INT(2)]) ))
+
+        test "isEmpty":
+            check(eq( callFunction("isEmpty",@[STR("hello")]), FALSE ))
+            check(eq( callFunction("isEmpty",@[STR("")]), TRUE ))
+            check(eq( callFunction("isEmpty",@[ARR(@[INT(1),INT(2),INT(3)])]), FALSE ))
+            check(eq( callFunction("isEmpty",@[ARR(@[])]), TRUE ))
 
         test "reverse":
             check(eq( callFunction("reverse",@[ARR(@[INT(1),INT(2),INT(3)])]), ARR(@[INT(3),INT(2),INT(1)]) ))
