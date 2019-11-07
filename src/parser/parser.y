@@ -58,18 +58,19 @@ extern void* expressionFromExpressions(void* l, char* op, void* r);
 
 extern void* newExpressionList();
 extern void* newExpressionListWithExpression(void* x);
-extern void* addExpressionToExpressionList(void* x, void* xl);
+extern void* addExpression(void* xl, void* x);
 
+extern void* statementFromAssignment(char* i, void* st, int pos);
+extern void* statementFromAssignmentWithKeypath(void* k, void* st, int pos);
 extern void* statementFromCommand(int i, void* xl, int pos);
-extern void* statementFromAssignment(char* i, void* xl, int pos);
 extern void* statementFromExpression(void* x, int pos);
 extern void* statementFromExpressions(char* i, void* xl, int pos);
-extern void* statementFromKeypathExpressions(void* k, void* xl, int pos);
-extern void* statementFromKeypathAssignment(void* k, void* xl, int pos);
+extern void* statementFromExpressionsWithKeypath(void* k, void* xl, int pos);
+
 
 extern void* newStatementList();
 extern void* newStatementListWithStatement(void* s);
-extern void* addStatementToStatementList(void* s, void* sl);
+extern void* addStatement(void* sl, void* s);
 
 /****************************************
  Functions
@@ -275,27 +276,27 @@ expression              :   argument                                            
 
 
 expression_list         :   expression                                                          { $$ = newExpressionListWithExpression($expression); }
-                        |   expression_list[previous] expression                                { $$ = addExpressionToExpressionList($expression, $previous); }
-                        |   expression_list[previous] SEMICOLON NEW_LINE expression             { $$ = addExpressionToExpressionList($expression, $previous); }
+                        |   expression_list[previous] expression                                { $$ = addExpression($previous, $expression); }
+                        |   expression_list[previous] SEMICOLON NEW_LINE expression             { $$ = addExpression($previous, $expression); }
                         ;
 
 //==============================
 // Statements
-//==============================        
+//==============================    
+
+assignment              :   ID COLON statement                                                  { $$ = statementFromAssignment($ID,$statement,yylineno); }
+                        |   SYSTEM_CMD COLON statement                                          { $$ = statementFromAssignment(getNameOfSystemFunction($SYSTEM_CMD),$statement,yylineno); }
+                        |   keypath COLON statement                                             { $$ = statementFromAssignmentWithKeypath($keypath,$statement,yylineno); }
+                        ;     
 
 function_call           :   ID expression_list                                                  { $$ = statementFromExpressions($ID,$expression_list,yylineno); }
                         |   SYSTEM_CMD expression_list                                          { $$ = statementFromCommand($SYSTEM_CMD,$expression_list,yylineno); }
-                        |   keypath expression_list                                             { $$ = statementFromKeypathExpressions($keypath,$expression_list,yylineno); }
+                        |   keypath expression_list                                             { $$ = statementFromExpressionsWithKeypath($keypath,$expression_list,yylineno); }
                         ;
-
-assignment              :   ID COLON statement                                                  { $$ = statementFromAssignment($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }
-                        |   SYSTEM_CMD COLON statement                                          { $$ = statementFromAssignment(getNameOfSystemFunction($SYSTEM_CMD),newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }
-                        |   keypath COLON statement                                             { $$ = statementFromKeypathAssignment($keypath,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }
-                        ; 
 
 chained                 :   ID PIPE statement                                                   { $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }
                         |   SYSTEM_CMD PIPE statement                                           { $$ = statementFromCommand($SYSTEM_CMD,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }                      
-                        |   keypath PIPE statement
+                        |   keypath PIPE statement                                              { $$ = statementFromExpressionsWithKeypath($keypath,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }
                         ;
 
 statement               :   expression                                                          { $$ = statementFromExpression($expression,yylineno); }
@@ -304,8 +305,8 @@ statement               :   expression                                          
                         |   chained
                         ;
 
-statement_list          :   statement_list[previous] NEW_LINE statement                         { $$ = addStatementToStatementList($statement, $previous); }
-                        |   statement_list[previous] COMMA statement                            { $$ = addStatementToStatementList($statement, $previous); }
+statement_list          :   statement_list[previous] NEW_LINE statement                         { $$ = addStatement($previous, $statement); }
+                        |   statement_list[previous] COMMA statement                            { $$ = addStatement($previous, $statement); }
                         |   statement_list[previous] NEW_LINE                                   { $$ = $previous; }
                         |   statement                                                           { $$ = newStatementListWithStatement($statement); }
                         |   /* Nothing */                                                       { $$ = newStatementList(); }

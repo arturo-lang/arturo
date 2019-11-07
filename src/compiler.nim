@@ -108,7 +108,7 @@ type
                 arguments       : ExpressionList
             of assignmentStatement:
                 symbol          : string
-                rValue          : ExpressionList
+                rValue          : Statement
             of expressionStatement:
                 expression      : Expression
             of normalStatement:
@@ -209,6 +209,7 @@ proc valueKindToPrintable(s: string): string
 proc stringify*(v: Value, quoted: bool = true): string
 proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 
+proc getSystemFunction*(n: string): int {.inline.}
 proc getSystemFunctionInstance*(n: string): SystemFunction {.inline.}
 proc callFunction(f: string, v: seq[Value]): Value
 proc execute(f: Function, v: Value): Value {.inline.} 
@@ -216,7 +217,8 @@ proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.i
 proc validate(xl: ExpressionList, name: string, req: seq[seq[ValueKind]]): seq[Value] {.inline.}
 
 proc newExpressionList: ExpressionList {.exportc.}
-proc addExpressionToExpressionList(x: Expression, xl: ExpressionList): ExpressionList {.exportc.}
+proc newExpressionList(xl: seq[Expression]): ExpressionList
+proc addExpression(xl: ExpressionList, x: Expression): ExpressionList {.exportc.}
 proc evaluate(x: Expression): Value {.inline.}
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
 
@@ -224,16 +226,29 @@ proc expressionFromArgument(a: Argument): Expression {.exportc.}
 
 proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.}
 proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.}
-proc statementFromKeypathExpressions(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.}
+proc statementFromExpressionsWithKeypath(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.}
 proc execute(stm: Statement, parent: Value = nil): Value {.inline.}
 proc newStatementList: StatementList {.exportc.}
-proc addStatementToStatementList(s: Statement, sl: StatementList): StatementList {.exportc.}
+proc newStatementList(sl: seq[Statement]): StatementList
+proc addStatement(sl: StatementList, s: Statement): StatementList {.exportc.}
 proc execute(sl: StatementList): Value
 
+proc argumentFromIdentifier(i: cstring): Argument {.exportc.}
+proc argumentFromCommandIdentifier(i: cint): Argument {.exportc.}
+proc argumentFromStringLiteral(l: cstring): Argument {.exportc.}
+proc argumentFromIntegerLiteral(l: cstring): Argument {.exportc.}
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
+proc argumentFromCommand(cmd: cint, xl: ExpressionList): Argument
 proc getValue(a: Argument): Value {.inline.}
 
 proc setup*(args: seq[string] = @[])
+
+#[######################################################
+    Constants
+  ======================================================]#
+
+const
+    ARGV                    = "&"
 
 #[######################################################
     Globals
@@ -255,7 +270,6 @@ var
     FALSE                   : Value
     NULL                    : Value
 
-
 #[######################################################
     Aliases
   ======================================================]#
@@ -268,6 +282,7 @@ template BV():ValueKind         = booleanValue
 template AV():ValueKind         = arrayValue
 template DV():ValueKind         = dictionaryValue
 template FV():ValueKind         = functionValue
+template NV():ValueKind         = nullValue
 template ANY():ValueKind        = anyValue
 
 template S(_:int):string        = v[_].s
@@ -279,16 +294,14 @@ template A(_:int):seq[Value]    = v[_].a
 template D(_:int):Context       = v[_].d
 template FN(_:int):Function     = v[_].f
 
-template STR(v:string):Value        = Value(kind: stringValue, s: v)
-template INT(v:int):Value           = Value(kind: integerValue, i: v)
-template BIGINT(v:Int):Value        = Value(kind: bigIntegerValue, bi: v)
-template REAL(v:float):Value        = Value(kind: realValue, r: v)
-template BOOL(v:bool):Value         = 
-    if v: TRUE
-    else: FALSE
-template ARR(v:seq[Value]):Value    = Value(kind: arrayValue, a: v)
-template DICT(v:Context):Value      = Value(kind: dictionaryValue, d: v)
-template FUNC(v:Function):Value     = Value(kind: functionValue, f: v)
+template STR(v:string):Value        = Value(kind: SV, s: v)
+template INT(v:int):Value           = Value(kind: IV, i: v)
+template BIGINT(v:Int):Value        = Value(kind: BIV, bi: v)
+template REAL(v:float):Value        = Value(kind: RV, r: v)
+template BOOL(v:bool):Value         = ( if v: TRUE else: FALSE )
+template ARR(v:seq[Value]):Value    = Value(kind: AV, a: v)
+template DICT(v:Context):Value      = Value(kind: DV, d: v)
+template FUNC(v:Function):Value     = Value(kind: FV, f: v)
 
 #[######################################################
     Unittest setup
@@ -455,6 +468,12 @@ const
         SystemFunction(lib:"terminal",      name:"print",               call:Terminal_print,            req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen")
     ]
 
+let
+    EXEC_CMD    =   cint(getSystemFunction("exec"))
+    GET_CMD     =   cint(getSystemFunction("get"))
+    RANGE_CMD   =   cint(getSystemFunction("range"))
+    SET_CMD     =   cint(getSystemFunction("set!"))
+
 #[######################################################
     Parser C Interface
   ======================================================]#
@@ -507,7 +526,6 @@ proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} =
             return
         inc(i)
 
-    # not updated, so let's assign it
     ctx.list.add((k,v))
 
 proc keys*(ctx: Context): seq[string] {.inline.} =
@@ -605,7 +623,7 @@ proc INT(v: string): Value {.inline.} =
         result = BIGINT(v)
 
 proc BIGINT*(v: string): Value {.inline.} =
-    Value(kind: bigIntegerValue, bi: newInt(v))
+    Value(kind: BIV, bi: newInt(v))
 
 proc REAL(v: string): Value {.inline.} =
     var floatValue: float
@@ -631,11 +649,11 @@ proc BOOLARR(v: seq[bool]): Value {.inline.} =
 proc valueCopy(v: Value): Value =
     {.computedGoto.}
     result = case v.kind
-        of stringValue: STR(v.s)
-        of integerValue: INT(v.i)
-        of realValue: REAL(v.r)
-        of arrayValue: ARR(v.a.map((x) => valueCopy(x)))
-        of dictionaryValue: DICT(Context(list:v.d.list.map((x) => (x[0],valueCopy(x[1])))))
+        of SV: STR(v.s)
+        of IV: INT(v.i)
+        of RV: REAL(v.r)
+        of AV: ARR(v.a.map((x) => valueCopy(x)))
+        of DV: DICT(Context(list:v.d.list.map((x) => (x[0],valueCopy(x[1])))))
         else: v
 
 proc findValueInArray(v: Value, lookup: Value): int =
@@ -655,40 +673,40 @@ proc findValueInArray(v: seq[Value], lookup: Value): int =
 proc `+`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             result = case r.kind
-                of stringValue: STR(l.s & r.s)
-                of integerValue: STR(l.s & $(r.i))
-                of bigIntegerValue: STR(l.s & $(r.bi))
-                of realValue: STR(l.s & $(r.r))
+                of SV: STR(l.s & r.s)
+                of IV: STR(l.s & $(r.i))
+                of BIV: STR(l.s & $(r.bi))
+                of RV: STR(l.s & $(r.r))
                 else: STR(l.s & r.stringify())
-        of integerValue:
+        of IV:
             result = case r.kind
-                of stringValue: STR($(l.i) & r.s)
-                of integerValue: 
+                of SV: STR($(l.i) & r.s)
+                of IV: 
                     try: INT(l.i + r.i)
                     except Exception as e: BIGINT(newInt(l.i)+r.i)
-                of bigIntegerValue: BIGINT(l.i+r.bi)
-                of realValue: REAL(float(l.i)+r.r)
+                of BIV: BIGINT(l.i+r.bi)
+                of RV: REAL(float(l.i)+r.r)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
-        of bigIntegerValue:
+        of BIV:
             result = case r.kind
-                of integerValue: BIGINT(l.bi + r.i)
-                of bigIntegerValue: BIGINT(l.bi+r.bi)
+                of IV: BIGINT(l.bi + r.i)
+                of BIV: BIGINT(l.bi+r.bi)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of stringValue: STR($(l.r) & r.s)
-                of integerValue: REAL(l.r + float(r.i))
-                of realValue: REAL(l.r+r.r)
+                of SV: STR($(l.r) & r.s)
+                of IV: REAL(l.r + float(r.i))
+                of RV: REAL(l.r+r.r)
                 else: InvalidOperationError("+",$(l.kind),$(r.kind))
-        of arrayValue:
-            if r.kind!=arrayValue:
+        of AV:
+            if r.kind!=AV:
                 result = ARR(l.a & r)
             else: 
                 result = ARR(l.a & r.a)
-        of dictionaryValue:
-            if r.kind==dictionaryValue:
+        of DV:
+            if r.kind==DV:
                 result = valueCopy(l)
                 for k in r.d.keys:
                     result.d.updateOrSet(k,r.d.getValueForKey(k))
@@ -700,38 +718,38 @@ proc `+`(l: Value, r: Value): Value {.inline.} =
 proc `-`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             result = case r.kind
-                of stringValue: STR(l.s.replace(r.s,""))
-                of integerValue: STR(l.s.replace($(r.i),""))
-                of bigIntegerValue: STR(l.s.replace($(r.bi),""))
-                of realValue: STR(l.s.replace($(r.r),""))
+                of SV: STR(l.s.replace(r.s,""))
+                of IV: STR(l.s.replace($(r.i),""))
+                of BIV: STR(l.s.replace($(r.bi),""))
+                of RV: STR(l.s.replace($(r.r),""))
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
-        of integerValue:
+        of IV:
             result = case r.kind
-                of integerValue: INT(l.i - r.i)
-                of bigIntegerValue: BIGINT(l.i - r.bi)
-                of realValue: REAL(float(l.i)-r.r)
+                of IV: INT(l.i - r.i)
+                of BIV: BIGINT(l.i - r.bi)
+                of RV: REAL(float(l.i)-r.r)
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
-        of bigIntegerValue:
+        of BIV:
             result = case r.kind
-                of integerValue: BIGINT(l.bi - r.i)
-                of bigIntegerValue: BIGINT(l.bi - r.bi)
+                of IV: BIGINT(l.bi - r.i)
+                of BIV: BIGINT(l.bi - r.bi)
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of integerValue: REAL(l.r - float(r.i))
-                of realValue: REAL(l.r-r.r)
+                of IV: REAL(l.r - float(r.i))
+                of RV: REAL(l.r-r.r)
                 else: InvalidOperationError("-",$(l.kind),$(r.kind))
-        of arrayValue:
+        of AV:
             result = valueCopy(l)
-            if r.kind!=arrayValue:
+            if r.kind!=AV:
                 result.a.delete(l.findValueInArray(r))
             else:
                 for item in r.a:
                     result.a.delete(result.findValueInArray(item))
 
-        of dictionaryValue:
+        of DV:
             result = valueCopy(l)
             var i = 0
             while i < l.d.list.len:
@@ -745,36 +763,36 @@ proc `-`(l: Value, r: Value): Value {.inline.} =
 proc `*`(l: Value, r: Value): Value {.inline.} = 
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             result = case r.kind
-                of integerValue: STR(l.s.repeat(r.i))
-                of realValue: STR(l.s.repeat(int(r.r)))
+                of IV: STR(l.s.repeat(r.i))
+                of RV: STR(l.s.repeat(int(r.r)))
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
-        of integerValue:
+        of IV:
             result = case r.kind
-                of stringValue: STR(r.s.repeat(l.i))
-                of integerValue: 
+                of SV: STR(r.s.repeat(l.i))
+                of IV: 
                     try: INT(l.i * r.i)
                     except Exception as e: BIGINT(newInt(l.i)*r.i)
-                of bigIntegerValue: BIGINT(l.i * r.bi)
-                of realValue: REAL(float(l.i)*r.r)
+                of BIV: BIGINT(l.i * r.bi)
+                of RV: REAL(float(l.i)*r.r)
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
-        of bigIntegerValue:
+        of BIV:
             result = case r.kind
-                of integerValue: BIGINT(l.bi * r.i)
-                of bigIntegerValue: BIGINT(l.bi * r.bi)
+                of IV: BIGINT(l.bi * r.i)
+                of BIV: BIGINT(l.bi * r.bi)
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of stringValue: STR(r.s.repeat(int(l.r)))
-                of integerValue: REAL(l.r * float(r.i))
-                of realValue: REAL(l.r*r.r)
+                of SV: STR(r.s.repeat(int(l.r)))
+                of IV: REAL(l.r * float(r.i))
+                of RV: REAL(l.r*r.r)
                 else: InvalidOperationError("*",$(l.kind),$(r.kind))
-        of arrayValue:
+        of AV:
             result = ARR(@[])
-            if r.kind==integerValue or r.kind==realValue:
+            if r.kind==IV or r.kind==RV:
                 var limit:int
-                if r.kind==integerValue: limit = r.i
+                if r.kind==IV: limit = r.i
                 else: limit = int(r.r)
 
                 var i = 0
@@ -789,9 +807,9 @@ proc `*`(l: Value, r: Value): Value {.inline.} =
 proc `/`(l: Value, r: Value): Value {.inline.} = 
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             case r.kind
-                of integerValue: 
+                of IV: 
                     var k=0
                     var resp=""
                     result = ARR(@[])
@@ -802,7 +820,7 @@ proc `/`(l: Value, r: Value): Value {.inline.} =
                             resp = ""
                         inc(k)
                 
-                of realValue: 
+                of RV: 
                     var k=0
                     var resp=""
                     result = ARR(@[])
@@ -814,27 +832,27 @@ proc `/`(l: Value, r: Value): Value {.inline.} =
                         inc(k)
 
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
-        of integerValue:
+        of IV:
             result = case r.kind
-                of integerValue: INT(l.i div r.i)
-                of bigIntegerValue: BIGINT(l.i div r.bi)
-                of realValue: REAL(float(l.i) / r.r)
+                of IV: INT(l.i div r.i)
+                of BIV: BIGINT(l.i div r.bi)
+                of RV: REAL(float(l.i) / r.r)
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
-        of bigIntegerValue:
+        of BIV:
             result = case r.kind
-                of integerValue: BIGINT(l.bi div r.i)
-                of bigIntegerValue: BIGINT(l.bi div r.bi)
+                of IV: BIGINT(l.bi div r.i)
+                of BIV: BIGINT(l.bi div r.bi)
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of integerValue: REAL(l.r / float(r.i))
-                of realValue: REAL(l.r / r.r)
+                of IV: REAL(l.r / float(r.i))
+                of RV: REAL(l.r / r.r)
                 else: InvalidOperationError("/",$(l.kind),$(r.kind))
-        of arrayValue:
+        of AV:
             result = ARR(@[])
-            if r.kind==integerValue or r.kind==realValue:
+            if r.kind==IV or r.kind==RV:
                 var limit:int
-                if r.kind==integerValue: limit = r.i
+                if r.kind==IV: limit = r.i
                 else: limit = int(r.r)
 
                 var k = 0
@@ -853,38 +871,38 @@ proc `/`(l: Value, r: Value): Value {.inline.} =
 proc `%`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             case r.kind
-                of integerValue: 
+                of IV: 
                     let le = (l.s.len mod r.i)
                     result = STR(l.s[l.s.len-le..^1])
                 
-                of realValue: 
+                of RV: 
                     let le = (l.s.len mod int(r.r))
                     result = STR(l.s[l.s.len-le..^1])
 
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
-        of integerValue:
+        of IV:
             result = case r.kind
-                of integerValue: INT(l.i mod r.i)
-                of bigIntegerValue: BIGINT(l.i mod r.bi)
-                of realValue: INT(l.i mod int(r.r))
+                of IV: INT(l.i mod r.i)
+                of BIV: BIGINT(l.i mod r.bi)
+                of RV: INT(l.i mod int(r.r))
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
-        of bigIntegerValue:
+        of BIV:
             result = case r.kind
-                of integerValue: BIGINT(l.bi mod r.i)
-                of bigIntegerValue: BIGINT(l.bi mod r.bi)
+                of IV: BIGINT(l.bi mod r.i)
+                of BIV: BIGINT(l.bi mod r.bi)
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of integerValue: INT(int(l.r) mod r.i)
-                of realValue: INT(int(l.r) mod int(r.r))
+                of IV: INT(int(l.r) mod r.i)
+                of RV: INT(int(l.r) mod int(r.r))
                 else: InvalidOperationError("%",$(l.kind),$(r.kind))
-        of arrayValue:
+        of AV:
             result = ARR(@[])
-            if r.kind==integerValue or r.kind==realValue:
+            if r.kind==IV or r.kind==RV:
                 var limit:int
-                if r.kind==integerValue: limit = r.i
+                if r.kind==IV: limit = r.i
                 else: limit = int(r.r)
 
                 let le = (l.a.len mod limit)
@@ -896,19 +914,19 @@ proc `%`(l: Value, r: Value): Value {.inline.} =
 proc `^`(l: Value, r: Value): Value {.inline.} =
     {.computedGoto.}
     case l.kind
-        of integerValue:
+        of IV:
             result = case r.kind
-                of integerValue: INT(l.i ^ r.i)
-                of realValue: INT(l.i ^ int(r.r))
+                of IV: INT(l.i ^ r.i)
+                of RV: INT(l.i ^ int(r.r))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
-        of bigIntegerValue:
+        of BIV:
             result = case r.kind
-                of integerValue: BIGINT(l.bi ^ culong(r.i))
+                of IV: BIGINT(l.bi ^ culong(r.i))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of integerValue: INT(int(l.r) ^ r.i)
-                of realValue: REAL(pow(l.r,r.r))
+                of IV: INT(int(l.r) ^ r.i)
+                of RV: REAL(pow(l.r,r.r))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
         else:
             InvalidOperationError("^",$(l.kind),$(r.kind))
@@ -916,31 +934,30 @@ proc `^`(l: Value, r: Value): Value {.inline.} =
 proc eq(l: Value, r: Value): bool {.inline.} =
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             result = case r.kind
-                of stringValue: l.s==r.s
+                of SV: l.s==r.s
                 else: NotComparableError($(l.kind),$(r.kind))
                     
-        of integerValue:
+        of IV:
             result = case r.kind
-                of integerValue: l.i==r.i
-                of bigIntegerValue: l.i==r.bi
-                of realValue: l.i==int(r.r)
+                of IV: l.i==r.i
+                of BIV: l.i==r.bi
+                of RV: l.i==int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of integerValue: int(l.r)==r.i
-                of bigIntegerValue: int(l.r)==r.bi
-                of realValue: l.r==r.r
+                of IV: int(l.r)==r.i
+                of BIV: int(l.r)==r.bi
+                of RV: l.r==r.r
                 else: NotComparableError($(l.kind),$(r.kind))
-        of booleanValue:
+        of BV:
             result = case r.kind
-                of booleanValue: l==r
+                of BV: l==r
                 else: NotComparableError($(l.kind),$(r.kind))
-
-        of arrayValue:
+        of AV:
             case r.kind
-                of arrayValue:
+                of AV:
                     if l.a.len!=r.a.len: result = false
                     else:
                         var i=0
@@ -949,9 +966,9 @@ proc eq(l: Value, r: Value): bool {.inline.} =
                             inc(i)
                         result = true
                 else: NotComparableError($(l.kind),$(r.kind))
-        of dictionaryValue:
+        of DV:
             case r.kind
-                of dictionaryValue:
+                of DV:
                     if l.d.keys!=r.d.keys: result = false
                     else:
                         var i = 0
@@ -969,30 +986,30 @@ proc eq(l: Value, r: Value): bool {.inline.} =
 proc lt(l: Value, r: Value): bool {.inline.} =
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             result = case r.kind
-                of stringValue: l.s<r.s
+                of SV: l.s<r.s
                 else: NotComparableError($(l.kind),$(r.kind))
                     
-        of integerValue:
+        of IV:
             result = case r.kind
-                of integerValue: l.i<r.i
-                of bigIntegerValue: l.i<r.bi
-                of realValue: l.i<int(r.r)
+                of IV: l.i<r.i
+                of BIV: l.i<r.bi
+                of RV: l.i<int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of integerValue: int(l.r)<r.i
-                of bigIntegerValue: int(l.r)<r.bi
-                of realValue: l.r<r.r
+                of IV: int(l.r)<r.i
+                of BIV: int(l.r)<r.bi
+                of RV: l.r<r.r
                 else: NotComparableError($(l.kind),$(r.kind))
-        of arrayValue:
+        of AV:
             result = case r.kind
-                of arrayValue: l.a.len < r.a.len
+                of AV: l.a.len < r.a.len
                 else: NotComparableError($(l.kind),$(r.kind))
-        of dictionaryValue:
+        of DV:
             result = case r.kind
-                of dictionaryValue: l.d.keys.len < r.d.keys.len
+                of DV: l.d.keys.len < r.d.keys.len
                 else: NotComparableError($(l.kind),$(r.kind))
 
         else: NotComparableError($(l.kind),$(r.kind))
@@ -1000,29 +1017,29 @@ proc lt(l: Value, r: Value): bool {.inline.} =
 proc gt(l: Value, r: Value): bool {.inline.} =
     {.computedGoto.}
     case l.kind
-        of stringValue:
+        of SV:
             result = case r.kind
-                of stringValue: l.s>r.s
+                of SV: l.s>r.s
                 else: NotComparableError($(l.kind),$(r.kind))
                     
-        of integerValue:
+        of IV:
             result = case r.kind
-                of integerValue: l.i>r.i
-                of bigIntegerValue: l.i>r.bi
-                of realValue: l.i>int(r.r)
+                of IV: l.i>r.i
+                of BIV: l.i>r.bi
+                of RV: l.i>int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
-        of realValue:
+        of RV:
             result = case r.kind
-                of integerValue: int(l.r)>r.i
-                of realValue: l.r>r.r
+                of IV: int(l.r)>r.i
+                of RV: l.r>r.r
                 else: NotComparableError($(l.kind),$(r.kind))
-        of arrayValue:
+        of AV:
             result = case r.kind
-                of arrayValue: l.a.len > r.a.len
+                of AV: l.a.len > r.a.len
                 else: NotComparableError($(l.kind),$(r.kind))
-        of dictionaryValue:
+        of DV:
             result = case r.kind
-                of dictionaryValue: l.d.keys.len > r.d.keys.len
+                of DV: l.d.keys.len > r.d.keys.len
                 else: NotComparableError($(l.kind),$(r.kind))
 
         else: NotComparableError($(l.kind),$(r.kind))
@@ -1033,21 +1050,19 @@ proc valueKindToPrintable(s: string): string =
 proc stringify*(v: Value, quoted: bool = true): string =
     {.computedGoto.}
     case v.kind
-        of stringValue          :   
-            if quoted: result = escape(v.s)
-            else: result = v.s
-        of integerValue         :   result = $(v.i)
-        of bigIntegerValue      :   result = $(v.bi)
-        of realValue            :   result = $(v.r)
-        of booleanValue         :   result = $(v.b)
-        of arrayValue           :
+        of SV   :   ( if quoted: result = escape(v.s) else: result = v.s )
+        of IV   :   result = $(v.i)
+        of BIV  :   result = $(v.bi)
+        of RV   :   result = $(v.r)
+        of BV   :   result = $(v.b)
+        of AV   :
             result = "#("
 
             let items = v.a.map((x) => x.stringify())
 
             result &= items.join(" ")
             result &= ")"
-        of dictionaryValue      :
+        of DV   :
             result = "#{ "
             
             let items = sorted(v.d.keys).map((x) => x & ": " & v.d.getValueForKey(x).stringify())
@@ -1056,9 +1071,9 @@ proc stringify*(v: Value, quoted: bool = true): string =
             result &= " }"
 
             if result=="#{  }": result = "#{}"
-        of functionValue        :   result = "<function>"
-        of nullValue            :   result = "null"
-        of anyValue             :   result = ""
+        of FV   :   result = "<function>"
+        of NV   :   result = "null"
+        of ANY  :   result = ""
 
 proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
     const 
@@ -1074,12 +1089,12 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
 
     {.computedGoto.}
     case v.kind
-        of stringValue          :   result = STR_COLOR & escape(v.s) & RESTORE_COLOR
-        of integerValue         :   result = NUM_COLOR & $(v.i) & RESTORE_COLOR
-        of bigIntegerValue      :   result = NUM_COLOR & $(v.bi) & RESTORE_COLOR
-        of realValue            :   result = NUM_COLOR & $(v.r) & RESTORE_COLOR
-        of booleanValue         :   result = NUM_COLOR & $(v.b) & RESTORE_COLOR
-        of arrayValue           :
+        of SV   :   result = STR_COLOR & escape(v.s) & RESTORE_COLOR
+        of IV   :   result = NUM_COLOR & $(v.i) & RESTORE_COLOR
+        of BIV  :   result = NUM_COLOR & $(v.bi) & RESTORE_COLOR
+        of RV   :   result = NUM_COLOR & $(v.r) & RESTORE_COLOR
+        of BV   :   result = NUM_COLOR & $(v.b) & RESTORE_COLOR
+        of AV   :
             result = "#(\n"
 
             if v.a.len==0: return "#()"
@@ -1087,7 +1102,7 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
 
             result &= items.join("")
             result &= repeat("\t",prepend) & repeat(" ",padding) & ")"
-        of dictionaryValue      :
+        of DV   :
             result = "#{\n"
             
             if v.d.keys.len==0: return "#{}"
@@ -1095,9 +1110,9 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
 
             result &= items.join("")
             result &= repeat("\t",prepend) & repeat(" ",padding) & "}"
-        of functionValue        :   result = "<function>"
-        of nullValue            :   result = "null"
-        of anyValue             :   result = ""
+        of FV   :   result = "<function>"
+        of NV   :   result = "null"
+        of ANY  :   result = ""
 
 #[----------------------------------------
     Functions
@@ -1110,7 +1125,7 @@ proc setFunctionName(f: Function, s: string) {.inline.} =
     f.id = s
     f.hasContext = true
 
-proc getSystemFunction*(n: string): int {.inline.} =
+proc getSystemFunction*(n: string): int =
     var i = 0
     while i < SystemFunctions.len:
         if SystemFunctions[i].name==n:
@@ -1134,7 +1149,7 @@ proc callFunction(f: string, v: seq[Value]): Value =
     let exprs = newExpressionList()
 
     for val in v:
-        discard addExpressionToExpressionList(expressionFromArgument(Argument(kind: literalArgument, v: val)),exprs)
+        discard exprs.addExpression(expressionFromArgument(Argument(kind: literalArgument, v: val)))
 
     result = fun.call(fun,exprs)
 
@@ -1148,7 +1163,7 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         if f.args.len>0:
             if v.kind == AV: addContextWith(zip(f.args,v.a))
             else: addContextWith(f.args[0],v)
-        else: addContextWith("&",v)
+        else: addContextWith(ARGV,v)
 
         try                         : result = f.body.execute()
         except ReturnValue as ret   : result = ret.value
@@ -1165,12 +1180,12 @@ proc execute(f: Function, v: Value): Value {.inline.} =
                         discard setSymbol(f.args[i],v.a[i],redefine=true)
                         inc(i)
                 else: discard setSymbol(f.args[0],v,redefine=true)
-            else: stored = getAndSetSymbol("&",v)
+            else: stored = getAndSetSymbol(ARGV,v)
 
         try                         : result = f.body.execute()
         except ReturnValue as ret   : raise
         finally                     : 
-            if stored!=nil: discard setSymbol("&",stored)
+            if stored!=nil: discard setSymbol(ARGV,stored)
 
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.} =
     result = x.evaluate()
@@ -1261,14 +1276,25 @@ proc expressionFromArgument(a: Argument): Expression {.exportc.} =
     result = Expression(kind: argumentExpression, a: a)
 
 proc expressionFromRange(a: Argument, b: Argument): Expression {.exportc.} =
-    var lst = newExpressionList()
+    var lst = newExpressionList(@[
+        expressionFromArgument(a),
+        expressionFromArgument(b)
+    ])
 
-    discard addExpressionToExpressionList(expressionFromArgument(a), lst)
-    discard addExpressionToExpressionList(expressionFromArgument(b), lst)
-    result = Expression(kind: argumentExpression, a: argumentFromInlineCallLiteral(statementFromCommand(static cint(getSystemFunction("range")),lst,0)))
+    result = Expression(kind: argumentExpression, a: argumentFromCommand(RANGE_CMD,lst))
 
 proc expressionFromExpressions(l: Expression, op: cstring, r: Expression): Expression {.exportc.} =
     result = Expression(kind: normalExpression, left: l, op: parseEnum[ExpressionOperator]($op), right: r)
+
+proc expressionFromKeyPathPart(part: KeyPathPart, isFirst: bool = false): Expression =
+    case part.kind
+        of stringKeyPathPart:
+            if isFirst: result = expressionFromArgument(argumentFromIdentifier(part.s))
+            else: result = expressionFromArgument(argumentFromStringLiteral("\"" & part.s & "\""))
+        of integerKeyPathPart:
+            result = expressionFromArgument(argumentFromIntegerLiteral($(part.i)))
+        of inlineKeyPathPart:
+            result = expressionFromArgument(part.a)
 
 proc evaluate(x: Expression): Value {.inline.} =
     case x.kind
@@ -1302,21 +1328,20 @@ proc evaluate(x: Expression): Value {.inline.} =
 proc newExpressionList: ExpressionList {.exportc.} =
     result = ExpressionList(list: @[])
 
+proc newExpressionList(xl: seq[Expression]): ExpressionList =
+    result = ExpressionList(list: xl)
+
 proc newExpressionListWithExpression(x: Expression): ExpressionList {.exportc.} =
     result = ExpressionList(list: @[x])
 
-proc newExpressionListWithExpressions(xl: seq[Expression]): ExpressionList =
-    result = ExpressionList(list: xl)
+template expressionListWithARGV(): ExpressionList = 
+    newExpressionListWithExpression(expressionFromArgument(argumentFromIdentifier(ARGV)))
 
 proc copyExpressionList(xl: ExpressionList): ExpressionList {.exportc.} =
     ExpressionList(list: xl.list)
 
-proc addExpressionToExpressionList(x: Expression, xl: ExpressionList): ExpressionList {.exportc.} =
+proc addExpression(xl: ExpressionList, x: Expression): ExpressionList {.exportc.} =
     xl.list.add(x)
-    result = xl
-
-proc addExpressionToExpressionListFront(x: Expression, xl: ExpressionList): ExpressionList {.exportc.} =
-    xl.list.insert(x,0)
     result = xl
 
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value = 
@@ -1355,25 +1380,15 @@ proc argumentFromBooleanLiteral(l: cstring): Argument {.exportc.} =
     if l=="true": Argument(kind: literalArgument, v: TRUE)
     else: Argument(kind: literalArgument, v: FALSE)
 
-proc expressionFromKeyPathPart(part: KeyPathPart, isFirst: bool = false): Expression =
-    case part.kind
-        of stringKeyPathPart:
-            if isFirst: result = expressionFromArgument(argumentFromIdentifier(part.s))
-            else: result = expressionFromArgument(argumentFromStringLiteral("\"" & part.s & "\""))
-        of integerKeyPathPart:
-            result = expressionFromArgument(argumentFromIntegerLiteral($(part.i)))
-        of inlineKeyPathPart:
-            result = expressionFromArgument(part.a)
-
 proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
     var exprA = expressionFromKeyPathPart(k.parts[0], true)
 
     var i = 1
     while i<k.parts.len:
         var exprB = expressionFromKeyPathPart(k.parts[i], false)
-        var lst = newExpressionListWithExpressions(@[exprA,exprB])
+        var lst = newExpressionList(@[exprA,exprB])
 
-        exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromCommand(static cint(getSystemFunction("get")),lst,0)))
+        exprA = expressionFromArgument(argumentFromCommand(GET_CMD,lst))
 
         inc(i)
         
@@ -1396,27 +1411,27 @@ proc argumentFromFunctionLiteral(l: StatementList, args: cstring = ""): Argument
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.} =
     Argument(kind: inlineCallArgument, c: l)
 
-proc argumentFromMapId(i: cstring): Argument {.exportc.} =
-    var sl = newStatementList()
-    var el = newExpressionListWithExpression(expressionFromArgument(argumentFromIdentifier("&")))
+proc argumentFromCommand(cmd: cint, xl: ExpressionList): Argument = 
+    argumentFromInlineCallLiteral(statementFromCommand(cmd,xl,0))
 
-    discard addStatementToStatementList(statementFromExpressions($i,el,0), sl)
+proc argumentFromMapId(i: cstring): Argument {.exportc.} =
+    var sl = newStatementList(@[
+        statementFromExpressions($i,expressionListWithARGV(),0)
+    ])
 
     result = argumentFromFunctionLiteral(sl,"")
 
 proc argumentFromMapCommand(c: cint): Argument {.exportc.} =
-    var sl = newStatementList()
-    var el = newExpressionListWithExpression(expressionFromArgument(argumentFromIdentifier("&")))
-
-    discard addStatementToStatementList(statementFromCommand(c,el,0), sl)
+    var sl = newStatementList(@[
+        statementFromCommand(c,expressionListWithARGV(),0)
+    ])
 
     result = argumentFromFunctionLiteral(sl,"")
 
 proc argumentFromMapKeypath(k: KeyPath): Argument {.exportc.} =
-    var sl = newStatementList()
-    var el = newExpressionListWithExpression(expressionFromArgument(argumentFromIdentifier("&")))
-
-    discard addStatementToStatementList(statementFromKeypathExpressions(k,el,0), sl)
+    var sl = newStatementList(@[
+        statementFromExpressionsWithKeypath(k,expressionListWithARGV(),0)
+    ])
 
     result = argumentFromFunctionLiteral(sl,"")
 
@@ -1449,11 +1464,27 @@ proc getValue(a: Argument): Value {.inline.} =
     Statement
   ----------------------------------------]#
 
+proc statementFromAssignment(i: cstring, st: Statement, l: cint): Statement {.exportc.} =
+    result = Statement(kind: assignmentStatement, symbol: $i, rValue: st, pos: l)
+
+proc statementFromAssignmentWithKeypath(k: KeyPath, st: Statement, l: cint=0): Statement {.exportc.} =
+    var parentExpr = expressionFromKeyPathPart(k.parts[0], true)
+
+    var i = 1
+    while i<k.parts.len-1:
+        var exprB = expressionFromKeyPathPart(k.parts[i], false)
+        var lst = newExpressionList(@[parentExpr,exprB])
+
+        parentExpr = expressionFromArgument(argumentFromCommand(GET_CMD,lst))
+        inc(i)
+    
+    var keyExpr = expressionFromKeyPathPart(k.parts[^1],false)
+    var lst = newExpressionList(@[parentExpr,keyExpr, expressionFromArgument(argumentFromInlineCallLiteral(st))])
+
+    result = statementFromCommand(SET_CMD,lst,l)
+
 proc statementFromCommand(i: cint, xl: ExpressionList, l: cint): Statement {.exportc.} =
     result = Statement(kind: commandStatement, code: i, arguments: xl, pos: l)
-
-proc statementFromAssignment(i: cstring, xl: ExpressionList, l: cint): Statement {.exportc.} =
-    result = Statement(kind: assignmentStatement, symbol: $i, rValue: xl, pos: l)
 
 proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
     result = Statement(kind: expressionStatement, expression: x, pos: l)
@@ -1461,46 +1492,28 @@ proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
 proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
     result = Statement(kind: normalStatement, id: $i, expressions: xl, pos: l) 
 
-proc statementFromKeypathAssignment(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
-    var parentExpr = expressionFromKeyPathPart(k.parts[0], true)
-
-    var i = 1
-    while i<k.parts.len-1:
-        var exprB = expressionFromKeyPathPart(k.parts[i], false)
-        var lst = newExpressionListWithExpressions(@[parentExpr,exprB])
-
-        parentExpr = expressionFromArgument(argumentFromInlineCallLiteral(statementFromCommand(static cint(getSystemFunction("get")),lst,0)))
-
-        inc(i)
+proc statementFromExpressionsWithKeypath(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
+    var lst = newExpressionList(@[
+        expressionFromArgument(argumentFromKeypath(k)),
+        expressionFromArgument(argumentFromArrayLiteral(xl))
+    ])
     
-    var keyExpr = expressionFromKeyPathPart(k.parts[^1],false)
-
-    var lst = newExpressionListWithExpressions(@[parentExpr,keyExpr, xl.list[0]])
-
-    result = statementFromCommand(static cint(getSystemFunction("set!")),lst,l)
-
-proc statementFromKeypathExpressions(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
-    var lst = newExpressionList()
-
-    discard addExpressionToExpressionList(expressionFromArgument(argumentFromKeypath(k)),lst)
-    discard addExpressionToExpressionList(expressionFromArgument(argumentFromArrayLiteral(xl)),lst)
-    
-    result = statementFromCommand(static cint(getSystemFunction("exec")),lst,l)
+    result = statementFromCommand(EXEC_CMD,lst,l)
 
 proc execute(stm: Statement, parent: Value = nil): Value {.inline.} = 
     case stm.kind
         of assignmentStatement:
-            result = stm.rValue.evaluate()
+            result = stm.rValue.execute()
             if parent==nil:
-                if result.kind==functionValue: setFunctionName(result.f,stm.id)   
+                if result.kind==FV: setFunctionName(result.f,stm.id)   
                 discard setSymbol(stm.id, result)
             else:
                 parent.d.updateOrSet(stm.id, result)
-                if result.kind==functionValue:
+                if result.kind==FV:
                     result.f.parentThis = result
                     result.f.parentContext = parent.d   
         of commandStatement:
-            result = SystemFunctions[stm.code].call(SystemFunctions[stm.code],stm.expressions)
+            result = SystemFunctions[stm.code].call(SystemFunctions[stm.code],stm.arguments)
         of expressionStatement:
             result = stm.expression.evaluate()
         of normalStatement:
@@ -1523,10 +1536,13 @@ proc execute(stm: Statement, parent: Value = nil): Value {.inline.} =
 proc newStatementList: StatementList {.exportc.} =
     result = StatementList(list: @[])
 
+proc newStatementList(sl: seq[Statement]): StatementList =
+    result = StatementList(list: sl)
+
 proc newStatementListWithStatement(s: Statement): StatementList {.exportc.} =
     result = StatementList(list: @[s])
 
-proc addStatementToStatementList(s: Statement, sl: StatementList): StatementList {.exportc.} =
+proc addStatement(sl: StatementList, s: Statement): StatementList {.exportc.} =
     sl.list.add(s)
     result = sl
 
@@ -1549,9 +1565,9 @@ proc execute(sl: StatementList): Value =
 
 template initializeConsts() =
     ConstStrings    = newTable[string,Argument]()
-    TRUE            = Value(kind: booleanValue, b: true)
-    FALSE           = Value(kind: booleanValue, b: false)
-    NULL            = Value(kind: nullValue)
+    TRUE            = Value(kind: BV, b: true)
+    FALSE           = Value(kind: BV, b: false)
+    NULL            = Value(kind: NV)
 
 #[######################################################
     MAIN ENTRY
@@ -1561,7 +1577,7 @@ proc setup*(args: seq[string] = @[]) =
     initializeConsts()
     Stack = newSeqOfCap[Context](2)
     addContext() # global
-    addContextWith("&", ARR(args.map((x) => STR(x))))
+    addContextWith(ARGV, ARR(args.map((x) => STR(x))))
 
 proc runString*(src:string): string =
     var buff = yy_scan_string(src)
