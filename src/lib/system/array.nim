@@ -43,6 +43,11 @@ proc Array_any*[F,X,V](f: F, xl: X): V {.inline.} =
             inc(i)
         result = FALSE
 
+proc Array_first*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("first", f.req)
+
+    result = A(0)[0]
+
 proc Array_filter*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("filter", f.req)
 
@@ -55,6 +60,11 @@ proc Array_filterI*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = v[0]
 
+proc Array_last*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("last", f.req)
+
+    result = A(0)[^1]
+
 proc Array_map*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("map", f.req)
 
@@ -65,6 +75,35 @@ proc Array_mapI*[F,X,V](f: F, xl: X): V {.inline.} =
 
     A(0).apply((x) => FN(1).execute(x))
 
+    result = v[0]
+
+proc Array_pop*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("pop", f.req)
+
+    result = A(0)[^1]
+
+proc Array_popI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("pop!", f.req)
+
+    result = A(0).pop()
+
+proc Array_rotate*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("rotate", f.req)
+
+    let step = 
+        if v.len==2: (-1)*I(1)
+        else: -1
+
+    result = ARR(A(0).rotatedLeft(step))
+
+proc Array_rotateI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("rotate!", f.req)
+
+    let step = 
+        if v.len==2: (-1)*I(1)
+        else: -1
+
+    A(0).rotateLeft(step)
     result = v[0]
 
 proc Array_sample*[F,X,V](f: F, xl: X): V {.inline.} =
@@ -87,6 +126,25 @@ proc Array_shuffleI*[F,X,V](f: F, xl: X): V {.inline.} =
     result = v[0]
     shuffle(result.a)
 
+proc Array_sort*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("sort", f.req)
+
+    proc opCmp(l: Value, r: Value): int =
+        if (l.lt(r) or l.eq(r)): -1
+        else: 1
+
+    result = ARR(A(0).sorted(opCmp))
+
+proc Array_sortI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("sort!", f.req)
+
+    proc opCmp(l: Value, r: Value): int =
+        if (l.lt(r) or l.eq(r)): -1
+        else: 1
+
+    A(0).sort(opCmp)
+    result = v[0]
+
 proc Array_swap*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("swap", f.req)
 
@@ -99,6 +157,42 @@ proc Array_swapI*[F,X,V](f: F, xl: X): V {.inline.} =
     swap(A(0)[I(1)], A(0)[I(2)])
 
     result = v[0]
+
+proc Array_unique*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("unique", f.req)
+
+    result = ARR(@[])
+
+    var i = 0
+    while i < A(0).len:
+        if findValueInArray(result.a, A(0)[i])==(-1):
+            result.a.add(A(0)[i])
+        inc(i)
+
+proc Array_uniqueI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("unique!", f.req)
+
+    result = ARR(@[])
+
+    var i = 0
+    while i < A(0).len:
+        if findValueInArray(result.a, A(0)[i])==(-1):
+            result.a.add(A(0)[i])
+        inc(i)
+
+    A(0) = result.a
+
+proc Array_zip*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("zip", f.req)
+
+    result = ARR(@[])
+    let m = min(A(0).len, A(1).len)
+    newSeq(result.a,m)
+
+    var i = 0
+    while i <= m:
+        result.a[i] = ARR(@[A(0)[i], A(1)[i]])
+        inc(i)
 
 #[******************************************************
   ******************************************************
@@ -119,8 +213,33 @@ when defined(unittest):
             check(eq( callFunction("any",@[ARR(@[TRUE,TRUE,FALSE])]), TRUE ))
             check(eq( callFunction("any",@[ARR(@[FALSE,FALSE,FALSE])]), FALSE ))
 
+        test "first":
+            check(eq( callFunction("first",@[ARR(@[INT(1),INT(2),INT(3),INT(4)])]), INT(1) ))
+
+        test "last":
+            check(eq( callFunction("last",@[ARR(@[INT(1),INT(2),INT(3),INT(4)])]), INT(4) ))
+
+        test "pop":
+            check(eq( callFunction("pop",@[ARR(@[INT(1),INT(2),INT(3),INT(4)])]), INT(4) ))
+
+        test "rotate":
+            check(eq( callFunction("rotate",@[ARR(@[INT(1),INT(2),INT(3),INT(4)])]), ARR(@[INT(4),INT(1),INT(2),INT(3)]) ))
+            check(eq( callFunction("rotate",@[ARR(@[INT(1),INT(2),INT(3),INT(4)]),INT(1)]), ARR(@[INT(4),INT(1),INT(2),INT(3)]) ))
+            check(eq( callFunction("rotate",@[ARR(@[INT(1),INT(2),INT(3),INT(4)]),INT(-1)]), ARR(@[INT(2),INT(3),INT(4),INT(1)]) ))
+
         test "shuffle":
             check(not eq( callFunction("shuffle",@[ARR(@[INT(1),INT(2),INT(3),INT(4),INT(5),INT(6),INT(7),INT(8),INT(9)])]), ARR(@[INT(1),INT(2),INT(3),INT(4),INT(5),INT(6),INT(7),INT(8),INT(9)]) ))
 
+        test "sort":
+            check(eq( callFunction("sort",@[ARR(@[INT(5),INT(2),INT(1),INT(4),INT(3)])]), ARR(@[INT(1),INT(2),INT(3),INT(4),INT(5)]) ))
+            check(eq( callFunction("sort",@[ARR(@[STR("gamma"),STR("beta"),STR("alpha")])]), ARR(@[STR("alpha"),STR("beta"),STR("gamma")]) ))
+
         test "swap":
             check(eq( callFunction("swap",@[ARR(@[INT(1),INT(2),INT(3)]),INT(0),INT(2)]), ARR(@[INT(3),INT(2),INT(1)]) ))
+
+        test "unique":
+            check(eq( callFunction("unique",@[ARR(@[INT(1),INT(2),INT(3),INT(2),INT(3),INT(1),INT(2),INT(3),INT(1)])]), ARR(@[INT(1),INT(2),INT(3)]) ))
+            check(eq( callFunction("unique",@[ARR(@[INT(1),INT(2),INT(2),INT(2),INT(3),INT(3),INT(2),INT(3),INT(1)])]), ARR(@[INT(1),INT(2),INT(3)]) ))
+
+        test "zip":
+            check(eq( callFunction("zip",@[ARR(@[INT(1),INT(2),INT(3)]),ARR(@[STR("a"),STR("b")])]), ARR(@[ARR(@[INT(1),STR("a")]),ARR(@[INT(2),STR("b")])]) ))
