@@ -40,6 +40,62 @@ proc Generic_contains*[F,X,V](f: F, xl: X): V {.inline.} =
          of DV: result = BOOL(findValueInArray(D(0).values,v[1])!=(-1))
          else: discard
 
+proc Generic_delete*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("delete", f.req)
+
+    case v[0].kind
+        of AV: result = v[0]-v[1]
+        of SV: result = v[0]-v[1]
+        of DV: result = v[0]-v[1]
+        else: discard
+
+proc Generic_deleteI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("delete!", f.req)
+
+    case v[0].kind
+        of AV: result = v[0]-v[1]; v[0].a = result.a
+        of SV: result = v[0]-v[1]; v[0].s = result.s
+        of DV: result = v[0]-v[1]; v[0].d = result.d
+        else: discard
+
+proc Generic_deleteBy*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("deleteBy", f.req)
+
+    case v[0].kind
+        of AV: 
+            result = valueCopy(v[0])
+            result.a.delete(I(1))
+        of SV: 
+            result = valueCopy(v[0])
+            result.s.delete(I(1),I(1))
+        of DV: 
+            result = valueCopy(v[0])
+            var i = 0
+            while i < result.d.list.len:
+                if result.d.list[i][0] == S(1):
+                    result.d.list.del(i)
+                inc(i)
+        else: discard
+
+proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("deleteBy", f.req)
+
+    case v[0].kind
+        of AV: 
+            A(0).delete(I(1))
+            result = v[0]
+        of SV: 
+            S(0).delete(I(1),I(1))
+            result = v[0]
+        of DV: 
+            var i = 0
+            while i < D(0).list.len:
+                if D(0).list[i][0] == S(1):
+                    D(0).list.del(i)
+                inc(i)
+            result = v[0]
+        else: discard
+
 proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("reverse", f.req)
 
@@ -111,6 +167,14 @@ when defined(unittest):
             check(eq( callFunction("contains",@[STR("world"),STR("hell")]), FALSE ))
             check(eq( callFunction("contains",@[ARR(@[INT(1),INT(2)]),INT(2)]), TRUE ))
             check(eq( callFunction("contains",@[ARR(@[INT(1),INT(2)]),INT(3)]), FALSE ))
+
+        test "delete":
+            check(eq( callFunction("delete",@[STR("hello"),STR("l")]), STR("heo") ))
+            check(eq( callFunction("delete",@[ARR(@[INT(1),INT(2),INT(3)]),INT(2)]), ARR(@[INT(1),INT(3)]) ))
+
+        test "deleteBy":
+            check(eq( callFunction("deleteBy",@[STR("hello"),INT(0)]), STR("ello") ))
+            check(eq( callFunction("deleteBy",@[ARR(@[INT(1),INT(2),INT(3)]),INT(2)]), ARR(@[INT(1),INT(2)]) ))
 
         test "reverse":
             check(eq( callFunction("reverse",@[ARR(@[INT(1),INT(2),INT(3)])]), ARR(@[INT(3),INT(2),INT(1)]) ))
