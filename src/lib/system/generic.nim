@@ -237,6 +237,10 @@ when defined(unittest):
         test "reverse":
             check(eq( callFunction("reverse",@[ARR(@[INT(1),INT(2),INT(3)])]), ARR(@[INT(3),INT(2),INT(1)]) ))
 
+        test "set":
+            check(eq( callFunction("set",@[ARR(@[INT(1),INT(2),INT(3)]),INT(0),STR("one")]), ARR(@[STR("one"),INT(2),INT(3)]) ))
+            check(eq( callFunction("set",@[STR("hello"),INT(0),STR("x")]), STR("xello") ))
+
         test "size":
             check(eq( callFunction("size",@[STR("hello")]), INT(5) ))
             check(eq( callFunction("size",@[ARR(@[INT(1),INT(2)])]), INT(2) ))
