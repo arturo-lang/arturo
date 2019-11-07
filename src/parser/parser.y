@@ -100,6 +100,8 @@ int yywrap() {
 %token <str> NULLV "Null"
 %token <str> BOOLEANV "Boolean"
 
+%token <str> ARGV "&"
+
 %token <str> PIPE "|"
 
 %token <str> EQ_OP "="
@@ -232,6 +234,7 @@ inline_call             :   BEGIN_INLINE statement RPAREN                       
 argument                :   ID                                                                  { $$ = argumentFromIdentifier($1); }
                         |   SYSTEM_CMD                                                          { $$ = argumentFromCommandIdentifier($1); }
                         |   keypath                                                             { $$ = argumentFromKeypath($1); }
+                        |   ARGV                                                                { $$ = argumentFromKeypath(keypathFromIdInteger("&",$1)); }
                         |   number                                                              
                         |   string
                         |   boolean                                                             
