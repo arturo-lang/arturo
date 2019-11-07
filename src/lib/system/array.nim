@@ -43,6 +43,18 @@ proc Array_any*[F,X,V](f: F, xl: X): V {.inline.} =
             inc(i)
         result = FALSE
 
+proc Array_count*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("count", f.req)
+
+    var cnt = 0
+    var i = 0
+    while i < A(0).len:
+        if FN(1).execute(A(0)[i]).b:
+            inc(cnt)
+        inc(i)
+
+    result = INT(cnt)
+
 proc Array_first*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("first", f.req)
 
