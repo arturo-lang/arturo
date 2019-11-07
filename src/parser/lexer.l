@@ -83,6 +83,7 @@ LETTER_OR_MISC      [a-zA-Z_]
 {DIGIT}+\.{DIGIT}+                                  { yylval.str=strdup(yytext); return REAL; }
 
 "|"                                                 { return PIPE; }
+"=>"                                                { return MAP; }
 
 "="                                                 { return EQ_OP; }
 "<="                                                { return LE_OP; }
