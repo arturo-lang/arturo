@@ -180,6 +180,7 @@ type
     Forward declarations
   ======================================================]#
 
+proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.}
 proc keys*(ctx: Context): seq[string] {.inline.}
 proc values*(ctx: Context): seq[Value] {.inline.}
 proc getValueForKey*(ctx: Context, key: string): Value {.inline.}
@@ -305,44 +306,17 @@ include lib/system/core
 include lib/system/dictionary
 include lib/system/file
 include lib/system/generic
+include lib/system/logical
 include lib/system/math
 include lib/system/reflection
 include lib/system/string
+include lib/system/terminal
 
 const
     SystemFunctions* = @[
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         #              Library              Name                        Call                            Args                                                                                Return                  Description                                                                                             
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-        SystemFunction(lib:"core",          name:"and",                 call:Core_and,                  req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical AND"),
-        SystemFunction(lib:"core",          name:"get",                 call:Core_get,                  req: @[@[AV,IV],@[DV,SV]],                                                          ret: @[ANY],            desc:"get element from collection using given index/key"),
-        SystemFunction(lib:"core",          name:"input",               call:Core_input,                req: @[],                                                                           ret: @[SV],             desc:"read line from stdin"),
-        SystemFunction(lib:"core",          name:"if",                  call:Core_if,                   req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
-        SystemFunction(lib:"core",          name:"loop",                call:Core_loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
-        SystemFunction(lib:"core",          name:"not",                 call:Core_not,                  req: @[@[BV],@[IV]],                                                                ret: @[BV,IV],          desc:"bitwise/logical NOT"),
-        SystemFunction(lib:"core",          name:"or",                  call:Core_or,                   req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical OR"),
-        SystemFunction(lib:"core",          name:"panic",               call:Core_panic,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
-        SystemFunction(lib:"core",          name:"print",               call:Core_print,                req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen"),
-        SystemFunction(lib:"core",          name:"range",               call:Core_range,                req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
-        SystemFunction(lib:"core",          name:"return",              call:Core_return,               req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
-        SystemFunction(lib:"core",          name:"xor",                 call:Core_xor,                  req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XOR"),
-
-        SystemFunction(lib:"generic",       name:"append",              call:Generic_append,            req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string"),
-        SystemFunction(lib:"generic",       name:"append!",             call:Generic_appendI,           req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string (in-place)"),
-        SystemFunction(lib:"generic",       name:"contains",            call:Generic_contains,          req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],
-                                                                                                               @[DV,SV],@[DV,IV],@[DV,BIV],@[DV,BV],@[DV,AV],@[DV,DV],@[DV,FV],@[SV,SV]],   ret: @[BV],             desc:"check if collection contains given element"),
-        SystemFunction(lib:"generic",       name:"delete",              call:Generic_delete,            req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],
-                                                                                                               @[DV,SV],@[DV,IV],@[DV,BIV],@[DV,BV],@[DV,AV],@[DV,DV],@[DV,FV],@[SV,SV]],   ret: @[AV,SV,DV],       desc:"delete value from given array, dictionary or string"),
-        SystemFunction(lib:"generic",       name:"delete!",             call:Generic_deleteI,           req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],
-                                                                                                               @[DV,SV],@[DV,IV],@[DV,BIV],@[DV,BV],@[DV,AV],@[DV,DV],@[DV,FV],@[SV,SV]],   ret: @[AV,SV,DV],       desc:"delete value from given array, dictionary or string (in-place)"),
-        SystemFunction(lib:"generic",       name:"deleteBy",            call:Generic_deleteBy,          req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[AV,SV,DV],       desc:"delete index from given array, dictionary or string"),
-        SystemFunction(lib:"generic",       name:"deleteBy!",           call:Generic_deleteByI,         req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[AV,SV,DV],       desc:"delete index from given array, dictionary or string (in-place)"),
-        SystemFunction(lib:"generic",       name:"isEmpty",             call:Generic_isEmpty,           req: @[@[AV],@[SV],@[DV]],                                                          ret: @[BV],             desc:"check if given array, dictionary or string is empty"),
-        SystemFunction(lib:"generic",       name:"reverse",             call:Generic_reverse,           req: @[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string"),
-        SystemFunction(lib:"generic",       name:"reverse!",            call:Generic_reverseI,          req: @[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string (in-place)"),
-        SystemFunction(lib:"generic",       name:"size",                call:Generic_size,              req: @[@[AV],@[SV],@[DV]],                                                          ret: @[IV],             desc:"get size of given collection or string"),
-        SystemFunction(lib:"generic",       name:"slice",               call:Generic_slice,             req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],                                  ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
-
         SystemFunction(lib:"array",         name:"all",                 call:Array_all,                 req: @[@[AV],@[AV,FV]],                                                             ret: @[BV],             desc:"check if all elements of array are true or pass the condition of given function"),
         SystemFunction(lib:"array",         name:"any",                 call:Array_any,                 req: @[@[AV],@[AV,FV]],                                                             ret: @[BV],             desc:"check if any elements of array are true or pass the condition of given function"),
         SystemFunction(lib:"array",         name:"filter",              call:Array_filter,              req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function"),
@@ -353,6 +327,7 @@ const
         SystemFunction(lib:"array",         name:"map!",                call:Array_mapI,                req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element (in-place)"),
         SystemFunction(lib:"array",         name:"pop",                 call:Array_pop,                 req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array (same as 'last')"),
         SystemFunction(lib:"array",         name:"pop!",                call:Array_popI,                req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array and delete it (in-place)"),
+        SystemFunction(lib:"array",         name:"range",               call:Array_range,               req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
         SystemFunction(lib:"array",         name:"rotate",              call:Array_rotate,              req: @[@[AV],@[AV,IV]],                                                             ret: @[AV],             desc:"rotate given array, optionally by using step; negative values for left rotation"),
         SystemFunction(lib:"array",         name:"rotate!",             call:Array_rotateI,             req: @[@[AV],@[AV,IV]],                                                             ret: @[AV],             desc:"rotate given array, optionally by using step; negative values for left rotation (in-place)"),
         SystemFunction(lib:"array",         name:"sample",              call:Array_sample,              req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get random sample from given array"),
@@ -366,24 +341,50 @@ const
         SystemFunction(lib:"array",         name:"unique!",             call:Array_uniqueI,             req: @[@[AV]],                                                                      ret: @[AV],             desc:"remove duplicates from given array (in-place)"),
         SystemFunction(lib:"array",         name:"zip",                 call:Array_zip,                 req: @[@[AV,AV]],                                                                   ret: @[AV],             desc:"get array of element pairs using given arrays"),
 
+        SystemFunction(lib:"core",          name:"exec",                call:Core_exec,                 req: @[@[FV,AV]],                                                                   ret: @[ANY],            desc:"execute function using given array of values"),
+        SystemFunction(lib:"core",          name:"if",                  call:Core_if,                   req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
+        SystemFunction(lib:"core",          name:"loop",                call:Core_loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
+        SystemFunction(lib:"core",          name:"panic",               call:Core_panic,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
+        SystemFunction(lib:"core",          name:"return",              call:Core_return,               req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
+
         SystemFunction(lib:"dictionary",    name:"hasKey",              call:Dictionary_hasKey,         req: @[@[DV,SV]],                                                                   ret: @[BV],             desc:"check if dictionary contains key"),
         SystemFunction(lib:"dictionary",    name:"keys",                call:Dictionary_keys,           req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary keys"),
-        SystemFunction(lib:"dictionary",    name:"values",              call:Dictionary_values,         req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary values"),     
+        SystemFunction(lib:"dictionary",    name:"values",              call:Dictionary_values,         req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary values"),  
 
-        SystemFunction(lib:"string",        name:"capitalize",          call:String_capitalize,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string"),
-        SystemFunction(lib:"string",        name:"capitalize!",         call:String_capitalizeI,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string (in-place)"),
-        SystemFunction(lib:"string",        name:"isAlpha",             call:String_isAlpha,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters"),
-        SystemFunction(lib:"string",        name:"isAlphaNumeric",      call:String_isAlphaNumeric,     req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters or digits"),
-        SystemFunction(lib:"string",        name:"isLowercase",         call:String_isLowercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are lowercase"),
-        SystemFunction(lib:"string",        name:"isNumber",            call:String_isNumber,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if given string is a number"),
-        SystemFunction(lib:"string",        name:"isUppercase",         call:String_isUppercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are uppercase"),
-        SystemFunction(lib:"string",        name:"isWhitespace",        call:String_isWhitespace,       req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are whitespace"),
-        SystemFunction(lib:"string",        name:"join",                call:String_join,               req: @[@[AV],@[AV,SV]],                                                                      ret: @[SV],             desc:"join strings in given array, optionally using separator"),
-        SystemFunction(lib:"string",        name:"lowercase",           call:String_lowercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string"),
-        SystemFunction(lib:"string",        name:"lowercase!",          call:String_lowercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string (in-place)"),
-        SystemFunction(lib:"string",        name:"lines",               call:String_lines,              req: @[@[SV]],                                                                      ret: @[AV],             desc:"get lines from string as an array"),
-        SystemFunction(lib:"string",        name:"uppercase",           call:String_uppercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string"),
-        SystemFunction(lib:"string",        name:"uppercase!",          call:String_uppercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string (in-place)"),
+        SystemFunction(lib:"generic",       name:"append",              call:Generic_append,            req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string"),
+        SystemFunction(lib:"generic",       name:"append!",             call:Generic_appendI,           req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[AV,SV],          desc:"append element to given array/string (in-place)"),
+        SystemFunction(lib:"generic",       name:"contains",            call:Generic_contains,          req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],
+                                                                                                               @[DV,SV],@[DV,IV],@[DV,BIV],@[DV,BV],@[DV,AV],@[DV,DV],@[DV,FV],@[SV,SV]],   ret: @[BV],             desc:"check if collection contains given element"),
+        SystemFunction(lib:"generic",       name:"delete",              call:Generic_delete,            req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],
+                                                                                                               @[DV,SV],@[DV,IV],@[DV,BIV],@[DV,BV],@[DV,AV],@[DV,DV],@[DV,FV],@[SV,SV]],   ret: @[AV,SV,DV],       desc:"delete value from given array, dictionary or string"),
+        SystemFunction(lib:"generic",       name:"delete!",             call:Generic_deleteI,           req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],
+                                                                                                               @[DV,SV],@[DV,IV],@[DV,BIV],@[DV,BV],@[DV,AV],@[DV,DV],@[DV,FV],@[SV,SV]],   ret: @[AV,SV,DV],       desc:"delete value from given array, dictionary or string (in-place)"),
+        SystemFunction(lib:"generic",       name:"deleteBy",            call:Generic_deleteBy,          req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[AV,SV,DV],       desc:"delete index from given array, dictionary or string"),
+        SystemFunction(lib:"generic",       name:"deleteBy!",           call:Generic_deleteByI,         req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[AV,SV,DV],       desc:"delete index from given array, dictionary or string (in-place)"),
+        SystemFunction(lib:"generic",       name:"get",                 call:Generic_get,               req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[ANY],            desc:"get element from array, dictionary or string using given index/key"),
+        SystemFunction(lib:"generic",       name:"isEmpty",             call:Generic_isEmpty,           req: @[@[AV],@[SV],@[DV]],                                                          ret: @[BV],             desc:"check if given array, dictionary or string is empty"),
+        SystemFunction(lib:"generic",       name:"reverse",             call:Generic_reverse,           req: @[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string"),
+        SystemFunction(lib:"generic",       name:"reverse!",            call:Generic_reverseI,          req: @[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string (in-place)"),
+        SystemFunction(lib:"generic",       name:"set",                 call:Generic_set,               req: @[@[AV,IV,IV],@[AV,IV,RV],@[AV,IV,BV],@[AV,IV,AV],@[AV,IV,DV],@[AV,IV,FV],
+                                                                                                               @[AV,IV,BIV],@[AV,IV,SV],
+                                                                                                               @[DV,SV,IV],@[DV,SV,RV],@[DV,SV,BV],@[DV,SV,AV],@[DV,SV,DV],@[DV,SV,FV],
+                                                                                                               @[DV,SV,BIV],@[DV,SV,SV],
+                                                                                                               @[SV,IV,SV]],                                                                ret: @[ANY],            desc:"set element of array, dictionary or string to given value using index/key"),
+        SystemFunction(lib:"generic",       name:"set!",                call:Generic_setI,              req: @[@[AV,IV,IV],@[AV,IV,RV],@[AV,IV,BV],@[AV,IV,AV],@[AV,IV,DV],@[AV,IV,FV],
+                                                                                                               @[AV,IV,BIV],@[AV,IV,SV],
+                                                                                                               @[DV,SV,IV],@[DV,SV,RV],@[DV,SV,BV],@[DV,SV,AV],@[DV,SV,DV],@[DV,SV,FV],
+                                                                                                               @[DV,SV,BIV],@[DV,SV,SV],
+                                                                                                               @[SV,IV,SV]],                                                                ret: @[ANY],            desc:"set element of array, dictionary or string to given value using index/key (in-place)"),
+        SystemFunction(lib:"generic",       name:"size",                call:Generic_size,              req: @[@[AV],@[SV],@[DV]],                                                          ret: @[IV],             desc:"get size of given collection or string"),
+        SystemFunction(lib:"generic",       name:"slice",               call:Generic_slice,             req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],                                  ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
+
+        SystemFunction(lib:"logical",       name:"and",                 call:Logical_and,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical AND"),
+        SystemFunction(lib:"logical",       name:"nand",                call:Logical_nand,              req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical NAND"),
+        SystemFunction(lib:"logical",       name:"nor",                 call:Logical_nor,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical NOR"),
+        SystemFunction(lib:"logical",       name:"not",                 call:Logical_not,               req: @[@[BV],@[IV]],                                                                ret: @[BV,IV],          desc:"bitwise/logical NOT"),
+        SystemFunction(lib:"logical",       name:"or",                  call:Logical_or,                req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical OR"),
+        SystemFunction(lib:"logical",       name:"xnor",                call:Logical_xnor,              req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XNOR"),   
+        SystemFunction(lib:"logical",       name:"xor",                 call:Logical_xor,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XOR"),   
 
         SystemFunction(lib:"math",          name:"acos",                call:Math_acos,                 req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the inverse cosine of given value"),
         SystemFunction(lib:"math",          name:"acosh",               call:Math_acosh,                req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the inverse hyperbolic cosine of given value"),
@@ -427,9 +428,27 @@ const
         SystemFunction(lib:"math",          name:"sum",                 call:Math_sum,                  req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
         SystemFunction(lib:"math",          name:"tan",                 call:Math_tan,                  req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the tangent of given value"),
         SystemFunction(lib:"math",          name:"tanh",                call:Math_tanh,                 req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the hyperbolic tangent of given value"),
-
+        
         SystemFunction(lib:"reflection",    name:"inspect",             call:Reflection_inspect,        req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen in a readable format"),
-        SystemFunction(lib:"reflection",    name:"type",                call:Reflection_type,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"get type of given object as a string")
+        SystemFunction(lib:"reflection",    name:"type",                call:Reflection_type,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"get type of given object as a string"),
+
+        SystemFunction(lib:"string",        name:"capitalize",          call:String_capitalize,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string"),
+        SystemFunction(lib:"string",        name:"capitalize!",         call:String_capitalizeI,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string (in-place)"),
+        SystemFunction(lib:"string",        name:"isAlpha",             call:String_isAlpha,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters"),
+        SystemFunction(lib:"string",        name:"isAlphaNumeric",      call:String_isAlphaNumeric,     req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters or digits"),
+        SystemFunction(lib:"string",        name:"isLowercase",         call:String_isLowercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are lowercase"),
+        SystemFunction(lib:"string",        name:"isNumber",            call:String_isNumber,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if given string is a number"),
+        SystemFunction(lib:"string",        name:"isUppercase",         call:String_isUppercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are uppercase"),
+        SystemFunction(lib:"string",        name:"isWhitespace",        call:String_isWhitespace,       req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are whitespace"),
+        SystemFunction(lib:"string",        name:"join",                call:String_join,               req: @[@[AV],@[AV,SV]],                                                                      ret: @[SV],             desc:"join strings in given array, optionally using separator"),
+        SystemFunction(lib:"string",        name:"lowercase",           call:String_lowercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string"),
+        SystemFunction(lib:"string",        name:"lowercase!",          call:String_lowercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string (in-place)"),
+        SystemFunction(lib:"string",        name:"lines",               call:String_lines,              req: @[@[SV]],                                                                      ret: @[AV],             desc:"get lines from string as an array"),
+        SystemFunction(lib:"string",        name:"uppercase",           call:String_uppercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string"),
+        SystemFunction(lib:"string",        name:"uppercase!",          call:String_uppercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string (in-place)"),
+
+        SystemFunction(lib:"terminal",      name:"input",               call:Terminal_input,            req: @[],                                                                           ret: @[SV],             desc:"read line from stdin"),
+        SystemFunction(lib:"terminal",      name:"print",               call:Terminal_print,            req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen")
     ]
 
 #[######################################################
@@ -1282,6 +1301,9 @@ proc newExpressionList: ExpressionList {.exportc.} =
 proc newExpressionListWithExpression(x: Expression): ExpressionList {.exportc.} =
     result = ExpressionList(list: @[x])
 
+proc newExpressionListWithExpressions(xl: seq[Expression]): ExpressionList =
+    result = ExpressionList(list: xl)
+
 proc copyExpressionList(xl: ExpressionList): ExpressionList {.exportc.} =
     ExpressionList(list: xl.list)
 
@@ -1345,10 +1367,8 @@ proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
     var i = 1
     while i<k.parts.len:
         var exprB = expressionFromKeyPathPart(k.parts[i], false)
-        var lst = newExpressionList()
+        var lst = newExpressionListWithExpressions(@[exprA,exprB])
 
-        discard addExpressionToExpressionList(exprA, lst)
-        discard addExpressionToExpressionList(exprB, lst)
         exprA = expressionFromArgument(argumentFromInlineCallLiteral(statementFromCommand(static cint(getSystemFunction("get")),lst,0)))
 
         inc(i)
@@ -1411,6 +1431,32 @@ proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
 
 proc statementFromExpressions(i: cstring, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
     result = Statement(kind: normalStatement, id: $i, expressions: xl, pos: l) 
+
+proc statementFromKeypathAssignment(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
+    var parentExpr = expressionFromKeyPathPart(k.parts[0], true)
+
+    var i = 1
+    while i<k.parts.len-1:
+        var exprB = expressionFromKeyPathPart(k.parts[i], false)
+        var lst = newExpressionListWithExpressions(@[parentExpr,exprB])
+
+        parentExpr = expressionFromArgument(argumentFromInlineCallLiteral(statementFromCommand(static cint(getSystemFunction("get")),lst,0)))
+
+        inc(i)
+    
+    var keyExpr = expressionFromKeyPathPart(k.parts[^1],false)
+
+    var lst = newExpressionListWithExpressions(@[parentExpr,keyExpr, xl.list[0]])
+
+    result = statementFromCommand(static cint(getSystemFunction("set!")),lst,l)
+
+proc statementFromKeypathExpressions(k: KeyPath, xl: ExpressionList, l: cint=0): Statement {.exportc.} =
+    var lst = newExpressionList()
+
+    discard addExpressionToExpressionList(expressionFromArgument(argumentFromKeypath(k)),lst)
+    discard addExpressionToExpressionList(expressionFromArgument(argumentFromArrayLiteral(xl)),lst)
+    
+    result = statementFromCommand(static cint(getSystemFunction("exec")),lst,l)
 
 proc execute(stm: Statement, parent: Value = nil): Value {.inline.} = 
     case stm.kind
