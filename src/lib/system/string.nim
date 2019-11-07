@@ -7,6 +7,8 @@
   * @file: lib/system/string.nim
   *****************************************************************]#
 
+# TODO: Add support for unicode strings
+
 #[######################################################
     Functions
   ======================================================]#
@@ -82,6 +84,15 @@ proc String_isWhitespace*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = TRUE
 
+proc String_join*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("join", f.req)
+
+    let separator = 
+        if v.len==2: S(1)
+        else: ""
+
+    result = STR(A(0).map((x) => x.s).join(separator))
+
 proc String_lowercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("lowercase", f.req)
 
@@ -149,6 +160,10 @@ when defined(unittest):
             check(eq( callFunction("isWhitespace",@[STR("done")]), FALSE ))
             check(eq( callFunction("isWhitespace",@[STR("  ")]), TRUE ))
             check(eq( callFunction("isWhitespace",@[STR("  \t\n")]), TRUE ))
+
+        test "join":
+            check(eq( callFunction("join",@[ARR(@[STR("a"),STR("b"),STR("c")])]), STR("abc") ))
+            check(eq( callFunction("join",@[ARR(@[STR("a"),STR("b"),STR("c")]),STR("|")]), STR("a|b|c") ))
 
         test "lowercase":
             check(eq( callFunction("lowercase",@[STR("dOnE")]), STR("done") ))
