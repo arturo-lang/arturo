@@ -96,6 +96,15 @@ proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
             result = v[0]
         else: discard
 
+proc Generic_get*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("get", f.req)
+
+    case v[0].kind
+        of AV: result = A(0)[I(1)]
+        of DV: result = D(0).getValueForKey(S(1))
+        of SV: result = STR($(S(0)[I(1)]))
+        else: discard
+
 proc Generic_isEmpty*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate("isEmpty", f.req)
 
@@ -133,6 +142,36 @@ proc Generic_reverseI*[F,X,V](f: F, xl: X): V {.inline.} =
                 swap(S(0)[i],S(0)[S(0).high - i])
                 inc(i)
             
+            result = v[0]
+        else: discard
+
+proc Generic_set*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("set", f.req)
+
+    case v[0].kind
+        of AV: 
+            result = valueCopy(v[0])
+            result.a[I(1)] = v[2]
+        of DV: 
+            result = valueCopy(v[0])
+            result.d.updateOrSet(S(1),v[2])
+        of SV: 
+            result = valueCopy(v[0])
+            result.s[I(1)] = S(2)[0]
+        else: discard
+
+proc Generic_setI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate("set!", f.req)
+
+    case v[0].kind
+        of AV: 
+            A(0)[I(1)] = v[2]
+            result = v[0]
+        of DV: 
+            D(0).updateOrSet(S(1),v[2])
+            result = v[0]
+        of SV: 
+            S(0)[I(1)] = S(2)[0]
             result = v[0]
         else: discard
 
@@ -184,6 +223,10 @@ when defined(unittest):
         test "deleteBy":
             check(eq( callFunction("deleteBy",@[STR("hello"),INT(0)]), STR("ello") ))
             check(eq( callFunction("deleteBy",@[ARR(@[INT(1),INT(2),INT(3)]),INT(2)]), ARR(@[INT(1),INT(2)]) ))
+
+        test "get":
+            check(eq( callFunction("get",@[ARR(@[INT(1),INT(2),INT(3)]),INT(0)]), INT(1) ))
+            check(eq( callFunction("get",@[STR("hello"),INT(0)]), STR("h") ))
 
         test "isEmpty":
             check(eq( callFunction("isEmpty",@[STR("hello")]), FALSE ))
