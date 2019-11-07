@@ -48,6 +48,9 @@ extern void* argumentFromArrayLiteral(void* l);
 extern void* argumentFromDictionaryLiteral(void* l);
 extern void* argumentFromFunctionLiteral(void* l, char* args);
 extern void* argumentFromInlineCallLiteral(void* l);
+extern void* argumentFromMapId(void* i);
+extern void* argumentFromMapCommand(int c);
+extern void* argumentFromMapKeypath(void* k);
 
 extern void* expressionFromArgument(void *a);
 extern void* expressionFromRange(void* a, void* b);
@@ -103,6 +106,7 @@ int yywrap() {
 %token <str> ARGV "&"
 
 %token <str> PIPE "|"
+%token <str> MAP "=>"
 
 %token <str> EQ_OP "="
 %token <str> LE_OP "<="
@@ -226,6 +230,9 @@ dictionary              :   BEGIN_DICT statement_list RCURLY                    
 
 function                :   LCURLY statement_list RCURLY                                        { $$ = argumentFromFunctionLiteral($2,""); }
                         |   LSQUARE args RSQUARE LCURLY statement_list RCURLY                   { $$ = argumentFromFunctionLiteral($5,$2); }
+                        |   MAP ID                                                              { $$ = argumentFromMapId($ID);  }
+                        |   MAP SYSTEM_CMD                                                      { $$ = argumentFromMapCommand($SYSTEM_CMD);}
+                        |   MAP keypath                                                         { $$ = argumentFromMapKeypath($keypath); }
                         ;
 
 inline_call             :   BEGIN_INLINE statement RPAREN                                       { $$ = argumentFromInlineCallLiteral($2); }                 
