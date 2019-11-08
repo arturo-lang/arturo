@@ -16,12 +16,28 @@ when not defined(mini):
 import os, parseopt, strutils 
 import compiler, panic, version
 
+#[######################################################
+    Type
+  ======================================================]#
+
 type
     AppAction = enum
-        runAction, consoleAction, helpAction, versionAction, noAction
+        runAction, consoleAction, 
+        helpAction, versionAction, noAction
+
+#[######################################################
+    Constants
+  ======================================================]#
 
 const
-    HELP_TXT = readFile("src/rsrc/help.txt").replace("\\e","\e")
+    HELP_TXT        = readFile("src/rsrc/help.txt").replace("\\e","\e")
+
+    MINI_RELEASE    = "not supported on 'mini' releases"
+    NO_COMMAND      = "no command specified"
+    NO_SCRIPT       = "no script specified"
+    SUPERFLUOUS     = "superfluous arguments given"
+    UNREC_COMMAND   = "unrecognized command"
+    UNREC_PARAM     = "unrecognized parameter"
 
 #[######################################################
     Helper functions
@@ -57,11 +73,11 @@ when isMainModule:
                 when not defined(mini):
                     startRepl(); done = true 
                 else:
-                    cmdlineError("console: not supported on 'mini' releases")
+                    cmdlineError("console: " & MINI_RELEASE)
             else:
                 if fileExists(p.key): 
                     compiler.runScript(p.key,p.remainingArgs,includePath,warnings); done = true
-                else: cmdlineError("unrecognized command '" & p.key & "'")
+                else: cmdlineError(UNREC_COMMAND & " '" & p.key & "'")
 
     if not done:                
         case action
@@ -75,30 +91,30 @@ when isMainModule:
                             case p.key
                                 of "i","include":   includePath = p.val
                                 of "w","warnings":  warnings = true
-                                else:               cmdlineError("run: unrecognized parameter '" & p.key & "'")
+                                else:               cmdlineError("run: " & UNREC_PARAM & " '" & p.key & "'")
                         of cmdArgument: scriptPath = p.key; break
                     
 
                 if scriptPath!="": compiler.runScript(scriptPath,p.remainingArgs,includePath,warnings)
-                else: cmdlineError("run: no script specified")
+                else: cmdlineError("run: " & NO_SCRIPT)
 
             of consoleAction: 
                 p.next()  
                 when not defined(mini):
-                    if p.kind!=cmdEnd: cmdlineError("console: superfluous arguments given") 
+                    if p.kind!=cmdEnd: cmdlineError("console: " & SUPERFLUOUS) 
                     else: console.startRepl()
                 else:
-                    cmdlineError("console: not supported on 'mini' releases")
+                    cmdlineError("console: " & MINI_RELEASE)
             of helpAction:   
                 p.next()   
-                if p.kind!=cmdEnd: cmdlineError("help: superfluous arguments given") 
+                if p.kind!=cmdEnd: cmdlineError("help: " & SUPERFLUOUS) 
                 else: showHelp(); quit()
             of versionAction:   
                 p.next()
-                if p.kind!=cmdEnd: cmdlineError("version: superfluous arguments given")
+                if p.kind!=cmdEnd: cmdlineError("version: " & SUPERFLUOUS)
                 else: showVersion(); quit()
             else: 
-                cmdlineError("no command specified")   
+                cmdlineError(NO_COMMAND)   
 
 #[****************************************
    This is the end,
