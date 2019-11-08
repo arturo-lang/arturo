@@ -266,11 +266,11 @@ expression              :   argument                                            
                         |   expression[left] DIV_SG expression[right]                           { $$ = expressionFromExpressions($left, "DIV_SG", $right); }
                         |   expression[left] MOD_SG expression[right]                           { $$ = expressionFromExpressions($left, "MOD_SG", $right); }
                         |   expression[left] POW_SG expression[right]                           { $$ = expressionFromExpressions($left, "POW_SG", $right); }
-                        |   expression[left] EQ_OP expression[right]                            { $$ = expressionFromExpressions($left, "EQ_OP", $right); } 
+                        |   expression[left] EQ_OP expression[right]                            { $$ = expressionFromExpressions($left, "EQ_OP", $right); }
+                        |   expression[left] LT_OP expression[right]                            { $$ = expressionFromExpressions($left, "LT_OP", $right); } 
+                        |   expression[left] GT_OP expression[right]                            { $$ = expressionFromExpressions($left, "GT_OP", $right); }  
                         |   expression[left] LE_OP expression[right]                            { $$ = expressionFromExpressions($left, "LE_OP", $right); } 
                         |   expression[left] GE_OP expression[right]                            { $$ = expressionFromExpressions($left, "GE_OP", $right); } 
-                        |   expression[left] LT_OP expression[right]                            { $$ = expressionFromExpressions($left, "LT_OP", $right); } 
-                        |   expression[left] GT_OP expression[right]                            { $$ = expressionFromExpressions($left, "GT_OP", $right); } 
                         |   expression[left] NE_OP expression[right]                            { $$ = expressionFromExpressions($left, "NE_OP", $right); } 
                         ;
 
