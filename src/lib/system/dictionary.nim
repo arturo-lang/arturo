@@ -12,17 +12,17 @@
   ======================================================]#
 
 proc Dictionary_hasKey*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("hasKey", f.req)
+    let v = xl.validate(f)
 
     result = BOOL(S(1) in D(0).keys())  
 
 proc Dictionary_keys*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("keys", f.req)
+    let v = xl.validate(f)
 
     result = STRARR(D(0).keys())
 
 proc Dictionary_values*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("values", f.req)
+    let v = xl.validate(f)
 
     result = ARR(D(0).values())
 

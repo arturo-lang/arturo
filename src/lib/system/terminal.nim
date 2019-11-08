@@ -15,7 +15,7 @@ proc Terminal_input*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(readLine(stdin))
 
 proc Terminal_print*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("print", f.req)
+    let v = xl.validate(f)
 
     echo v[0].stringify(quoted=false)
     result = v[0]

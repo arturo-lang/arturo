@@ -12,7 +12,7 @@
   ======================================================]#
 
 proc Generic_append*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("append", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: result = ARR(A(0) & v[1])
@@ -20,7 +20,7 @@ proc Generic_append*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_appendI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("append!", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: 
@@ -32,7 +32,7 @@ proc Generic_appendI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_contains*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("contains", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
          of AV: result = BOOL(findValueInArray(v[0],v[1])!=(-1))
@@ -41,7 +41,7 @@ proc Generic_contains*[F,X,V](f: F, xl: X): V {.inline.} =
          else: discard
 
 proc Generic_delete*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("delete", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: result = v[0]-v[1]
@@ -50,7 +50,7 @@ proc Generic_delete*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_deleteI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("delete!", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: result = v[0]-v[1]; v[0].a = result.a
@@ -59,7 +59,7 @@ proc Generic_deleteI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_deleteBy*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("deleteBy", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: 
@@ -78,7 +78,7 @@ proc Generic_deleteBy*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("deleteBy", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: 
@@ -97,7 +97,7 @@ proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_get*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("get", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: result = A(0)[I(1)]
@@ -106,7 +106,7 @@ proc Generic_get*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_isEmpty*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("isEmpty", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: result = BOOL(A(0).len==0)
@@ -115,7 +115,7 @@ proc Generic_isEmpty*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("reverse", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: result = ARR(A(0).reversed())
@@ -130,7 +130,7 @@ proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_reverseI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("reverse!", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: 
@@ -146,7 +146,7 @@ proc Generic_reverseI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_set*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("set", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: 
@@ -161,7 +161,7 @@ proc Generic_set*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_setI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("set!", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: 
@@ -176,7 +176,7 @@ proc Generic_setI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_size*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("size", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: result = INT(A(0).len)
@@ -185,7 +185,7 @@ proc Generic_size*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_slice*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("slice", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV: 
