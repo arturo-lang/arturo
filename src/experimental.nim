@@ -1,5 +1,5 @@
 {.experimental: "parallel".}
-import algorithm, lists, math, os, parseutils, sequtils, strutils, sugar, tables, threadpool
+import algorithm, bitops, hashes, lists, math, os, parseutils, sequtils, strformat, strutils, sugar, tables, threadpool
 import utils
 
 import compiler
@@ -14,8 +14,36 @@ import bignum
 
 #     #stack = array[ctx,2]
 
+proc encodeVKs(vks:seq[seq[ValueKind]]):int64 =
+    echo vks.hash()
+    result = 0
+    for constr in vks:
+        var shift = 0
+        var res = 0
+        for vk in constr:
+            let val = case vk
+                of stringValue: 1
+                of integerValue: 2
+                of bigIntegerValue: 4
+                of realValue: 8
+                of booleanValue: 16
+                of arrayValue: 32
+                of dictionaryValue: 64
+                of functionValue: 128
+                of nullValue: 256
+                else: 256+128+64+32+16+8+4+2+1
 
-var lim = 1_000_000_000
+            
+            res = res or (val shl shift)
+            shift += 9
+            echo fmt"{val:#b}"
+        result = result or res
+
+let res = encodeVKs(@[@[integerValue,stringValue,arrayValue],@[realValue]])
+
+echo "RES: " & fmt"{res:#b}"
+
+var lim = 5_000_000
 
 # var aa = @[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]
 # var bb = @[4,5,6]
@@ -33,32 +61,37 @@ var lim = 1_000_000_000
 # echo "A = ",aa
 # echo "B = ",bb
 
-# Least signficant bit:
-proc isOdd(i: int): bool = (i and 1) != 0
-proc isEven(i: int): bool = (i and 1) == 0
+# # Least signficant bit:
+# proc isOdd(i: int): bool = (i and 1) != 0
+# proc isEven(i: int): bool = (i and 1) == 0
  
-# Modulo:
-proc isOdd2(i: int): bool = (i mod 2) != 0
-proc isEven2(i: int): bool = (i mod 2) == 0
+# # Modulo:
+# proc isOdd2(i: int): bool = (i mod 2) != 0
+# proc isEven2(i: int): bool = (i mod 2) == 0
  
-# Bit Shifting:
-proc isOdd3(n: int): bool = n != ((n shr 1) shl 1)
-proc isEven3(n: int): bool = n == ((n shr 1) shl 1)
+# # Bit Shifting:
+# proc isOdd3(n: int): bool = n != ((n shr 1) shl 1)
+# proc isEven3(n: int): bool = n == ((n shr 1) shl 1)
 
-benchmark "odd/even 1":
-    for i in 1..lim:
-        let k = isOdd(i)
-        let m = isEven(i)
+# benchmark "odd/even 1":
+#     for i in 1..lim:
+#         let k = isOdd(i)
+#         let m = isEven(i)
 
-benchmark "odd/even 2":
-    for i in 1..lim:
-        let k = isOdd2(i)
-        let m = isEven2(i)
+# benchmark "odd/even 2":
+#     for i in 1..lim:
+#         try:
+#             let k = isOdd2(i)
+#             let m = isEven2(i)
+#         except:
+#             discard
+#         finally:
+#             discard
 
-benchmark "odd/even 3":
-    for i in 1..lim:
-        let k = isOdd3(i)
-        let m = isEven3(i)
+# benchmark "odd/even 3":
+#     for i in 1..lim:
+#         let k = isOdd3(i)
+#         let m = isEven3(i)
 
 # benchmark "sum 2 numbers (parallel)":
     
