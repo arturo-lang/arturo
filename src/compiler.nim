@@ -68,7 +68,7 @@ type
 
     ExpressionOperator {.size: sizeof(cint),pure.} = enum
         PLUS_SG, MINUS_SG, MULT_SG, DIV_SG, MOD_SG, POW_SG,
-        EQ_OP, GE_OP, LE_OP, GT_OP, LT_OP, NE_OP
+        EQ_OP, LT_OP, GT_OP, LE_OP, GE_OP, NE_OP
 
     ExpressionKind = enum
         argumentExpression, 
@@ -142,6 +142,7 @@ type
     Function* = ref object
         id              : string
         args            : seq[string]
+        hasNamedArgs    : bool
         body            : StatementList
         hasContext      : bool
         parentThis      : Value
@@ -387,6 +388,7 @@ let
         SystemFunction(lib:"core",          name:"loop",                call:Core_loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
         SystemFunction(lib:"core",          name:"panic",               call:Core_panic,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
         SystemFunction(lib:"core",          name:"return",              call:Core_return,               req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
+        SystemFunction(lib:"core",          name:"syms",                call:Core_syms,                 req: @[@[NV]],                                                                      ret: @[ANY],            desc:"break execution and return given value"),
 
         SystemFunction(lib:"dictionary",    name:"hasKey",              call:Dictionary_hasKey,         req: @[@[DV,SV]],                                                                   ret: @[BV],             desc:"check if dictionary contains key"),
         SystemFunction(lib:"dictionary",    name:"keys",                call:Dictionary_keys,           req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary keys"),
@@ -628,6 +630,7 @@ proc getAndSetSymbol(k: string, v: Value): Value {.inline.} =
             if Stack[i].list[j][0]==k: 
                 result = Stack[i].list[j][1]
                 Stack[i].list[j][1] = v
+                return 
             inc(j)
         dec(i)
 
@@ -1228,7 +1231,7 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
 ##---------------------------
 
 proc newUserFunction(s: StatementList, a: seq[string]): Function =
-    result = Function(id: "", args: a, body: s, hasContext: false, parentThis: nil, parentContext: nil)
+    result = Function(id: "", args: a, hasNamedArgs: (a.len!=0), body: s, hasContext: false, parentThis: nil, parentContext: nil)
 
 ##---------------------------
 ## Getters/Setters
@@ -1290,10 +1293,9 @@ proc execute(f: Function, v: Value): Value {.inline.} =
     if f.hasContext:
         if Stack.len == 1: addContext()
 
-        var oldSeq:Context
-        oldSeq = Stack[1]
+        let oldSeq = Stack[1]
 
-        if f.args.len>0:
+        if f.hasNamedArgs:
             if v.kind == AV: initTopContextWith(zip(f.args,v.a))
             else: initTopContextWith(f.args[0],v)
         else: initTopContextWith(ARGV,v)
@@ -1306,7 +1308,7 @@ proc execute(f: Function, v: Value): Value {.inline.} =
     else:
         var stored: Value = nil
         if v!=NULL:
-            if f.args.len==0:
+            if not f.hasNamedArgs:
                 stored = getAndSetSymbol(ARGV,v)
             else:
                 if v.kind == AV: 
@@ -1327,9 +1329,11 @@ proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.i
 
     result = x.evaluate()
 
-    if not (result.kind in req):
+    if unlikely(not (result.kind in req)):
         let expected = req.map((x) => $(x)).join(" or ")
         IncorrectArgumentValuesError(name, expected, $(result.kind))
+    else:
+        return
 
 proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
     ## Validate given ExpressionList against given array of constraints
@@ -1337,11 +1341,13 @@ proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
 
     result = xl.list.map((x) => x.evaluate())
 
-    if not f.req.contains(result.map((x) => x.kind)):  
+    if unlikely(not f.req.contains(result.map((x) => x.kind))):  
         let expected = f.req.map((x) => x.map((y) => ($y).valueKindToPrintable()).join(",")).join(" or ")
         let got = result.map((x) => ($(x.kind)).valueKindToPrintable()).join(",")
 
         IncorrectArgumentValuesError(f.name, expected, got)
+    else:
+        return
 
 proc getOneLineDescription*(f: SystemFunction): string =
     ## Get one-line description for given System function
@@ -1460,11 +1466,9 @@ proc evaluate(x: Expression): Value {.inline.} =
         of argumentExpression:
             result = x.a.getValue()
         of normalExpression:
-            var left = x.left.evaluate()
-            var right: Value
+            let left = x.left.evaluate()
+            let right = x.right.evaluate()
 
-            if x.right!=nil: right = x.right.evaluate()
-            else: return left
             {.computedGoto.}
             case x.op
                 of PLUS_SG  : result = left + right
