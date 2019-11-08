@@ -131,7 +131,7 @@ type
     FunctionConstraints         = seq[seq[ValueKind]]
     FunctionReturns             = seq[ValueKind]
 
-    SystemFunction* = object
+    SystemFunction* = ref object
         lib*            : string
         call*           : SystemFunctionCall[SystemFunction,ExpressionList,Value]
         name*           : string
@@ -220,7 +220,7 @@ proc getSystemFunctionInstance*(n: string): SystemFunction {.inline.}
 proc callFunction(f: string, v: seq[Value]): Value
 proc execute(f: Function, v: Value): Value {.inline.} 
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.}
-proc validate(xl: ExpressionList, name: string, req: seq[seq[ValueKind]]): seq[Value] {.inline.}
+proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.}
 
 # Expression
 
@@ -352,7 +352,7 @@ include lib/system/terminal
 ## Function registration
 ##---------------------------
 
-const
+let 
     SystemFunctions* = @[
         #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         #              Library              Name                        Call                            Args                                                                                Return                  Description                                                                                             
@@ -444,6 +444,8 @@ const
         SystemFunction(lib:"math",          name:"exp",                 call:Math_exp,                  req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the exponential the given value"),
         SystemFunction(lib:"math",          name:"floor",               call:Math_floor,                req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the largest number greater than or equal to given value"),
         SystemFunction(lib:"math",          name:"gcd",                 call:Math_gcd,                  req: @[@[AV]],                                                                      ret: @[IV],             desc:"get the greatest common divisor of the values in given array"),
+        SystemFunction(lib:"math",          name:"inc",                 call:Math_inc,                  req: @[@[IV],@[BIV]],                                                               ret: @[IV,BIV],         desc:"increase given value by 1"),
+        SystemFunction(lib:"math",          name:"inc!",                call:Math_incI,                 req: @[@[IV],@[BIV]],                                                               ret: @[IV,BIV],         desc:"increase given value by 1 (in-place)"),
         SystemFunction(lib:"math",          name:"isEven",              call:Math_isEven,               req: @[@[IV],@[BIV]],                                                               ret: @[BV],             desc:"check if given number is even"),
         SystemFunction(lib:"math",          name:"isOdd",               call:Math_isOdd,                req: @[@[IV],@[BIV]],                                                               ret: @[BV],             desc:"check if given number is odd"),
         SystemFunction(lib:"math",          name:"isPrime",             call:Math_isPrime,              req: @[@[IV],@[BIV]],                                                               ret: @[BV],             desc:"check if given number is prime"),
@@ -538,22 +540,22 @@ var yylineno {.importc.}: cint
 ## Constructors
 ##---------------------------
 
-proc addContext() {.inline.} =
+template addContext() =
     ## Add a new context to the Stack
-    
+
     Stack.add(Context(list: @[]))
 
-proc initTopContextWith(key:string, val:Value) {.inline.} =
+template initTopContextWith(key:string, val:Value) =
     ## Initialize topmost Context with key-val pair
 
     Stack[^1] = Context(list: @[(key,val)])
 
-proc initTopContextWith(pairs:seq[(string,Value)]) {.inline.} =
+template initTopContextWith(pairs:seq[(string,Value)]) =
     ## Initialize topmost Context with key-val pairs
 
     Stack[^1] = Context(list:pairs)
 
-proc popContext() {.inline.} =
+template popContext() =
     ## Discard topmost Context
 
     discard Stack.pop()
@@ -1304,14 +1306,15 @@ proc execute(f: Function, v: Value): Value {.inline.} =
     else:
         var stored: Value = nil
         if v!=NULL:
-            if f.args.len>0:
+            if f.args.len==0:
+                stored = getAndSetSymbol(ARGV,v)
+            else:
                 if v.kind == AV: 
                     var i = 0
                     while i<f.args.len:
                         discard setSymbol(f.args[i],v.a[i],redefine=true)
                         inc(i)
                 else: discard setSymbol(f.args[0],v,redefine=true)
-            else: stored = getAndSetSymbol(ARGV,v)
 
         try                         : result = f.body.execute()
         except ReturnValue as ret   : raise
@@ -1328,18 +1331,17 @@ proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.i
         let expected = req.map((x) => $(x)).join(" or ")
         IncorrectArgumentValuesError(name, expected, $(result.kind))
 
-proc validate(xl: ExpressionList, name: string, req: seq[seq[ValueKind]]): seq[Value] {.inline.} =
+proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
     ## Validate given ExpressionList against given array of constraints
     ## ! Called only from System functions
 
     result = xl.list.map((x) => x.evaluate())
 
-    if not req.contains(result.map((x) => x.kind)):
-
-        let expected = req.map((x) => x.map((y) => ($y).valueKindToPrintable()).join(",")).join(" or ")
+    if not f.req.contains(result.map((x) => x.kind)):  
+        let expected = f.req.map((x) => x.map((y) => ($y).valueKindToPrintable()).join(",")).join(" or ")
         let got = result.map((x) => ($(x.kind)).valueKindToPrintable()).join(",")
 
-        IncorrectArgumentValuesError(name, expected, got)
+        IncorrectArgumentValuesError(f.name, expected, got)
 
 proc getOneLineDescription*(f: SystemFunction): string =
     ## Get one-line description for given System function
