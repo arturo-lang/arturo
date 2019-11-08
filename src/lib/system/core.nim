@@ -12,7 +12,7 @@
   ======================================================]#
 
 proc Core_exec*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("exec", f.req)
+    let v = xl.validate(f)
 
     result = FN(0).execute(v[1])
 
@@ -26,7 +26,7 @@ proc Core_if*[F,X,V](f: F, xl: X): V {.inline.} =
             result = FALSE
 
 proc Core_loop*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("loop", f.req)
+    let v = xl.validate(f)
 
     case v[0].kind
         of AV:
@@ -51,12 +51,12 @@ proc Core_loop*[F,X,V](f: F, xl: X): V {.inline.} =
         else: result = NULL
 
 proc Core_panic*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("panic", f.req)
+    let v = xl.validate(f)
 
     ProgramPanic(S(0))
 
 proc Core_return*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("return", f.req)
+    let v = xl.validate(f)
 
     var ret = newException(ReturnValue, "return")
     ret.value = v[0]

@@ -12,18 +12,18 @@
   ======================================================]#
 
 proc String_capitalize*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("capitalize", f.req)
+    let v = xl.validate(f)
 
     result = STR(S(0).capitalize())
 
 proc String_capitalizeI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("capitalize!", f.req)
+    let v = xl.validate(f)
     
     S(0) = S(0).capitalize()
     result = v[0]
 
 proc String_isAlpha*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("isAlpha", f.req)
+    let v = xl.validate(f)
 
     var i = 0
     while i<S(0).len:
@@ -33,7 +33,7 @@ proc String_isAlpha*[F,X,V](f: F, xl: X): V {.inline.} =
     result = TRUE
 
 proc String_isAlphaNumeric*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("isAlphaNumeric", f.req)
+    let v = xl.validate(f)
 
     var i = 0
     while i<S(0).len:
@@ -43,7 +43,7 @@ proc String_isAlphaNumeric*[F,X,V](f: F, xl: X): V {.inline.} =
     result = TRUE
 
 proc String_isLowercase*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("isLowercase", f.req)
+    let v = xl.validate(f)
 
     var i = 0
     while i<S(0).len:
@@ -53,7 +53,7 @@ proc String_isLowercase*[F,X,V](f: F, xl: X): V {.inline.} =
     result = TRUE
 
 proc String_isNumber*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("isNumber", f.req)
+    let v = xl.validate(f)
 
     var i = 0
     while i<S(0).len:
@@ -63,7 +63,7 @@ proc String_isNumber*[F,X,V](f: F, xl: X): V {.inline.} =
     result = TRUE
 
 proc String_isUppercase*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("isUppercase", f.req)
+    let v = xl.validate(f)
 
     var i = 0
     while i<S(0).len:
@@ -73,7 +73,7 @@ proc String_isUppercase*[F,X,V](f: F, xl: X): V {.inline.} =
     result = TRUE
 
 proc String_isWhitespace*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("isWhitespace", f.req)
+    let v = xl.validate(f)
 
     var i = 0
     while i<S(0).len:
@@ -83,7 +83,7 @@ proc String_isWhitespace*[F,X,V](f: F, xl: X): V {.inline.} =
     result = TRUE
 
 proc String_join*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("join", f.req)
+    let v = xl.validate(f)
 
     let separator = 
         if v.len==2: S(1)
@@ -92,28 +92,28 @@ proc String_join*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(A(0).map((x) => x.s).join(separator))
 
 proc String_lowercase*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("lowercase", f.req)
+    let v = xl.validate(f)
 
     result = STR(S(0).toLower())
 
 proc String_lowercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("lowercase!", f.req)
+    let v = xl.validate(f)
     
     S(0) = S(0).toLower()
     result = v[0]
 
 proc String_lines*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("lines", f.req)
+    let v = xl.validate(f)
     
     result = STRARR(S(0).splitLines())
 
 proc String_uppercase*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("uppercase", f.req)
+    let v = xl.validate(f)
 
     result = STR(S(0).toUpper())
 
 proc String_uppercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate("uppercase!", f.req)
+    let v = xl.validate(f)
     
     S(0) = S(0).toUpper()
     result = v[0]
