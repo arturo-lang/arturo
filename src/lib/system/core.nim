@@ -63,6 +63,11 @@ proc Core_return*[F,X,V](f: F, xl: X): V {.inline.} =
 
     raise ret
 
+proc Core_syms*[F,X,V](f: F, xl: X): V {.inline.} =
+    inspectStack()
+
+    result = NULL
+
 #[******************************************************
   ******************************************************
     UnitTests
