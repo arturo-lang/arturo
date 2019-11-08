@@ -58,15 +58,15 @@ extern void* expressionFromExpressions(void* l, char* op, void* r);
 
 extern void* newExpressionList();
 extern void* newExpressionListWithExpression(void* x);
+extern void* expressionListWithChainedStatement(void* st);
 extern void* addExpression(void* xl, void* x);
 
+extern void* statementFromCommand(int i, void* xl, int pos);
+extern void* statementFromCall(char* i, void* xl, int pos);
+extern void* statementFromCallWithKeypath(void* k, void* xl, int pos);
 extern void* statementFromAssignment(char* i, void* st, int pos);
 extern void* statementFromAssignmentWithKeypath(void* k, void* st, int pos);
-extern void* statementFromCommand(int i, void* xl, int pos);
 extern void* statementFromExpression(void* x, int pos);
-extern void* statementFromExpressions(char* i, void* xl, int pos);
-extern void* statementFromExpressionsWithKeypath(void* k, void* xl, int pos);
-
 
 extern void* newStatementList();
 extern void* newStatementListWithStatement(void* s);
@@ -284,24 +284,24 @@ expression_list         :   expression                                          
 // Statements
 //==============================    
 
+function_call           :   ID expression_list                                                  { $$ = statementFromCall($ID,$expression_list,yylineno); }
+                        |   SYSTEM_CMD expression_list                                          { $$ = statementFromCommand($SYSTEM_CMD,$expression_list,yylineno); }
+                        |   keypath expression_list                                             { $$ = statementFromCallWithKeypath($keypath,$expression_list,yylineno); }
+                        ;
+
 assignment              :   ID COLON statement                                                  { $$ = statementFromAssignment($ID,$statement,yylineno); }
                         |   SYSTEM_CMD COLON statement                                          { $$ = statementFromAssignment(getNameOfSystemFunction($SYSTEM_CMD),$statement,yylineno); }
                         |   keypath COLON statement                                             { $$ = statementFromAssignmentWithKeypath($keypath,$statement,yylineno); }
                         ;     
 
-function_call           :   ID expression_list                                                  { $$ = statementFromExpressions($ID,$expression_list,yylineno); }
-                        |   SYSTEM_CMD expression_list                                          { $$ = statementFromCommand($SYSTEM_CMD,$expression_list,yylineno); }
-                        |   keypath expression_list                                             { $$ = statementFromExpressionsWithKeypath($keypath,$expression_list,yylineno); }
+chained                 :   ID PIPE statement                                                   { $$ = statementFromCall($ID,expressionListWithChainedStatement($statement),yylineno); }
+                        |   SYSTEM_CMD PIPE statement                                           { $$ = statementFromCommand($SYSTEM_CMD,expressionListWithChainedStatement($statement),yylineno); }                      
+                        |   keypath PIPE statement                                              { $$ = statementFromCallWithKeypath($keypath,expressionListWithChainedStatement($statement),yylineno); }
                         ;
 
-chained                 :   ID PIPE statement                                                   { $$ = statementFromExpressions($ID,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }
-                        |   SYSTEM_CMD PIPE statement                                           { $$ = statementFromCommand($SYSTEM_CMD,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }                      
-                        |   keypath PIPE statement                                              { $$ = statementFromExpressionsWithKeypath($keypath,newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral($statement))),yylineno); }
-                        ;
-
-statement               :   expression                                                          { $$ = statementFromExpression($expression,yylineno); }
-                        |   function_call       
+statement               :   function_call
                         |   assignment
+                        |   expression                                                          { $$ = statementFromExpression($expression,yylineno); }
                         |   chained
                         ;
 

@@ -10,6 +10,10 @@
 import algorithm, rdstdin, sequtils, strformat, strutils, sugar, terminal
 import compiler, panic, version
 
+#[######################################################
+    Constants
+  ======================================================]#
+
 const
     CONSOLE_PROMPT_HEAD =  "$ :" #"\x1B[38;5;208m\x1B[1m$ :"
     CONSOLE_PROMPT_TAIL =  "> " #"\x1B[0m\x1B[38;5;208m\x1B[1m>\x1B[0m "
