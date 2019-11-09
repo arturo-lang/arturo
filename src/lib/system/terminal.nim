@@ -11,8 +11,15 @@
     Functions
   ======================================================]#
 
+proc Terminal_clear*[F,X,V](f: F, xl: X): V {.inline.} =
+    eraseScreen()
+    result = NULL
+
 proc Terminal_input*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(readLine(stdin))
+
+proc Terminal_inputChar*[F,X,V](f: F, xl: X): V {.inline.} =
+    result = STR($(getch()))
 
 proc Terminal_print*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
