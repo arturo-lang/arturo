@@ -13,6 +13,20 @@ import times, strutils
     Methods
   ======================================================]#
 
+proc removingPrefix*(s: string, pr: string): string =
+    if s.startsWith(pr): s[pr.len..^1]
+    else: s
+
+proc removingSuffix*(s: string, pr: string): string =
+    if s.endsWith(pr): s[0..(s.len-pr.len-1)]
+    else: s
+
+template isRegex*(s: string): bool = 
+    s.startsWith("/") and s.endsWith("/")
+
+template prepareRegex*(s: string): string = 
+    s.removingPrefix("/").removingSuffix("/")
+
 template benchmark*(benchmarkName: string, code: untyped) =
     block:
         let t0 = epochTime()
