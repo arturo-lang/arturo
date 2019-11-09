@@ -63,6 +63,11 @@ proc isPrime*(n: int32): bool {.noSideEffect.} =
     Functions
   ======================================================]#
 
+proc Math_abs*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = INT(abs(I(0)))
+
 proc Math_acos*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
