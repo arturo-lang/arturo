@@ -7,7 +7,8 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, bitops, macros, math, os, parseutils, random, sequtils, strformat, strutils, sugar, unicode, tables
+import algorithm, base64, bitops, macros, math, md5, os, parseutils, random, re
+import sequtils, std/editdistance, std/sha1, strformat, strutils, sugar, unicode, tables
 import bignum
 import panic, utils
 
@@ -339,12 +340,15 @@ when defined(unittest):
   ======================================================]#
 
 include lib/system/array
+include lib/system/convert
 include lib/system/core
+include lib/system/crypto
 include lib/system/dictionary
-include lib/system/file
 include lib/system/generic
+include lib/system/io
 include lib/system/logical
 include lib/system/math
+include lib/system/path
 include lib/system/reflection
 include lib/system/string
 include lib/system/terminal
@@ -383,12 +387,29 @@ let
         SystemFunction(lib:"array",         name:"unique!",             call:Array_uniqueI,             req: @[@[AV]],                                                                      ret: @[AV],             desc:"remove duplicates from given array (in-place)"),
         SystemFunction(lib:"array",         name:"zip",                 call:Array_zip,                 req: @[@[AV,AV]],                                                                   ret: @[AV],             desc:"get array of element pairs using given arrays"),
 
+        SystemFunction(lib:"convert",       name:"toBin",               call:Convert_toBin,             req: @[@[IV]],                                                                      ret: @[SV],             desc:"convert given number to its binary string representation"),
+        SystemFunction(lib:"convert",       name:"toHex",               call:Convert_toHex,             req: @[@[IV]],                                                                      ret: @[SV],             desc:"convert given number to its hexadecimal string representation"),
+        SystemFunction(lib:"convert",       name:"toNumber",            call:Convert_toNumber,          req: @[@[SV],@[RV],@[BV]],                                                                ret: @[IV],             desc:"convert given string, real or boolean to an integer number"),
+        SystemFunction(lib:"convert",       name:"toOct",               call:Convert_toOct,             req: @[@[IV]],                                                                      ret: @[SV],             desc:"convert given number to its octal string representation"),
+        SystemFunction(lib:"convert",       name:"toReal",              call:Convert_toReal,            req: @[@[IV]],                                                                      ret: @[SV],             desc:"convert given integer number to real"),
+        SystemFunction(lib:"convert",       name:"toString",            call:Convert_toString,          req: @[@[SV],@[IV],@[BIV],@[RV],@[AV],@[DV],@[FV],@[NV]],                           ret: @[SV],             desc:"convert given value to string"),
+
         SystemFunction(lib:"core",          name:"exec",                call:Core_exec,                 req: @[@[FV,AV]],                                                                   ret: @[ANY],            desc:"execute function using given array of values"),
         SystemFunction(lib:"core",          name:"if",                  call:Core_if,                   req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
         SystemFunction(lib:"core",          name:"loop",                call:Core_loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
+        SystemFunction(lib:"core",          name:"new",                 call:Core_new,                  req: @[@[DV],@[AV],@[SV]],                                                          ret: @[ANY],            desc:"get new copy of given object"),
         SystemFunction(lib:"core",          name:"panic",               call:Core_panic,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
         SystemFunction(lib:"core",          name:"return",              call:Core_return,               req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
         SystemFunction(lib:"core",          name:"syms",                call:Core_syms,                 req: @[@[NV]],                                                                      ret: @[ANY],            desc:"break execution and return given value"),
+
+        SystemFunction(lib:"crypto",        name:"decodeBase64",        call:Crypto_decodeBase64,       req: @[@[SV]],                                                                      ret: @[SV],             desc:"Base64-decode given string"),
+        SystemFunction(lib:"crypto",        name:"decodeBase64!",       call:Crypto_decodeBase64I,      req: @[@[SV]],                                                                      ret: @[SV],             desc:"Base64-decode given string (in-place)"),
+        SystemFunction(lib:"crypto",        name:"encodeBase64",        call:Crypto_encodeBase64,       req: @[@[SV]],                                                                      ret: @[SV],             desc:"Base64-encode given string"),
+        SystemFunction(lib:"crypto",        name:"encodeBase64!",       call:Crypto_encodeBase64I,      req: @[@[SV]],                                                                      ret: @[SV],             desc:"Base64-encode given string (in-place)"),
+        SystemFunction(lib:"crypto",        name:"md5",                 call:Crypto_md5,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"MD5-encrypt given string"),
+        SystemFunction(lib:"crypto",        name:"md5!",                call:Crypto_md5I,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"MD5-encrypt given string (in-place)"),
+        SystemFunction(lib:"crypto",        name:"sha1",                call:Crypto_sha1,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"SHA1-encrypt given string"),
+        SystemFunction(lib:"crypto",        name:"sha1!",               call:Crypto_sha1I,              req: @[@[SV]],                                                                      ret: @[SV],             desc:"SHA1-encrypt given string (in-place)"),
 
         SystemFunction(lib:"dictionary",    name:"hasKey",              call:Dictionary_hasKey,         req: @[@[DV,SV]],                                                                   ret: @[BV],             desc:"check if dictionary contains key"),
         SystemFunction(lib:"dictionary",    name:"keys",                call:Dictionary_keys,           req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary keys"),
@@ -421,6 +442,9 @@ let
         SystemFunction(lib:"generic",       name:"size",                call:Generic_size,              req: @[@[AV],@[SV],@[DV]],                                                          ret: @[IV],             desc:"get size of given collection or string"),
         SystemFunction(lib:"generic",       name:"slice",               call:Generic_slice,             req: @[@[AV,IV],@[AV,IV,IV],@[SV,IV],@[SV,IV,IV]],                                  ret: @[AV,SV],          desc:"get slice of array/string given a starting and/or end point"),
 
+        SystemFunction(lib:"io",            name:"read",                call:Io_read,                   req: @[@[SV]],                                                                      ret: @[SV],             desc:"read string from file at given path"),
+        SystemFunction(lib:"io",            name:"write",               call:Io_write,                  req: @[@[SV]],                                                                      ret: @[SV],             desc:"write string to file at given path"),
+
         SystemFunction(lib:"logical",       name:"and",                 call:Logical_and,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical AND"),
         SystemFunction(lib:"logical",       name:"nand",                call:Logical_nand,              req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical NAND"),
         SystemFunction(lib:"logical",       name:"nor",                 call:Logical_nor,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical NOR"),
@@ -429,6 +453,7 @@ let
         SystemFunction(lib:"logical",       name:"xnor",                call:Logical_xnor,              req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XNOR"),   
         SystemFunction(lib:"logical",       name:"xor",                 call:Logical_xor,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical XOR"),   
 
+        SystemFunction(lib:"math",          name:"abs",                 call:Math_abs,                  req: @[@[IV]],                                                                      ret: @[IV],             desc:"get absolute value from given value"),
         SystemFunction(lib:"math",          name:"acos",                call:Math_acos,                 req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the inverse cosine of given value"),
         SystemFunction(lib:"math",          name:"acosh",               call:Math_acosh,                req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the inverse hyperbolic cosine of given value"),
         SystemFunction(lib:"math",          name:"asin",                call:Math_asin,                 req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the inverse sine of given value"),
@@ -473,22 +498,66 @@ let
         SystemFunction(lib:"math",          name:"sum",                 call:Math_sum,                  req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
         SystemFunction(lib:"math",          name:"tan",                 call:Math_tan,                  req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the tangent of given value"),
         SystemFunction(lib:"math",          name:"tanh",                call:Math_tanh,                 req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the hyperbolic tangent of given value"),
-        
+
+        SystemFunction(lib:"path",          name:"absolutePath",        call:Path_absolutePath,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"get absolute path from given path"),
+        SystemFunction(lib:"path",          name:"absolutePath!",       call:Path_absolutePathI,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"get absolute path from given path (in-place)"),
+        SystemFunction(lib:"path",          name:"copyDir",             call:Path_copyDir,              req: @[@[SV,SV]],                                                                   ret: @[BV],             desc:"copy directory at path to given destination"),
+        SystemFunction(lib:"path",          name:"copyFile",            call:Path_copyFile,             req: @[@[SV,SV]],                                                                   ret: @[BV],             desc:"copy file at path to given destination"),
+        SystemFunction(lib:"path",          name:"createDir",           call:Path_createDir,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"create directory at given path"),
+        SystemFunction(lib:"path",          name:"currentDir",          call:Path_currentDir,           req: @[@[NV],@[SV]],                                                                ret: @[SV],             desc:"get current directory or set it to given path"),
+        SystemFunction(lib:"path",          name:"deleteDir",           call:Path_deleteDir,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"delete directory at given path"),
+        SystemFunction(lib:"path",          name:"deleteFile",          call:Path_deleteFile,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"delete file at given path"),
+        SystemFunction(lib:"path",          name:"fileCreationTime",    call:Path_fileCreationTime,     req: @[@[SV]],                                                                      ret: @[SV],             desc:"get creation time of file at given path"),
+        SystemFunction(lib:"path",          name:"fileExists",          call:Path_fileExists,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if file exists at given path"),
+        SystemFunction(lib:"path",          name:"fileLastAccess",      call:Path_fileLastAccess,       req: @[@[SV]],                                                                      ret: @[SV],             desc:"get last access time of file at given path"),
+        SystemFunction(lib:"path",          name:"fileLastModification",call:Path_fileLastModification, req: @[@[SV]],                                                                      ret: @[SV],             desc:"get last modification time of file at given path"),
+        SystemFunction(lib:"path",          name:"fileSize",            call:Path_fileSize,             req: @[@[SV]],                                                                      ret: @[IV],             desc:"get size of file at given path in bytes"),
+        SystemFunction(lib:"path",          name:"dirExists",           call:Path_dirExists,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if directory exists at given path"),
+        SystemFunction(lib:"path",          name:"moveDir",             call:Path_moveDir,              req: @[@[SV,SV]],                                                                   ret: @[BV],             desc:"move directory at path to given destination"),
+        SystemFunction(lib:"path",          name:"moveFile",            call:Path_moveFile,             req: @[@[SV,SV]],                                                                   ret: @[BV],             desc:"move file at path to given destination"),
+        SystemFunction(lib:"path",          name:"normalizePath",       call:Path_normalizePath,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"normalize given path"),
+        SystemFunction(lib:"path",          name:"normalizePath!",      call:Path_normalizePathI,       req: @[@[SV]],                                                                      ret: @[SV],             desc:"normalize given path (in-place)"),
+        SystemFunction(lib:"path",          name:"pathDir",             call:Path_pathDir,              req: @[@[SV]],                                                                      ret: @[SV],             desc:"retrieve directory component from given path"),
+        SystemFunction(lib:"path",          name:"pathExtension",       call:Path_pathExtension,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"retrieve extension component from given path"),
+        SystemFunction(lib:"path",          name:"pathFilename",        call:Path_pathFilename,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"retrieve filename component from given path"),
+        SystemFunction(lib:"path",          name:"symlinkExists",       call:Path_symlinkExists,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if symlink exists at given path"),
+
         SystemFunction(lib:"reflection",    name:"inspect",             call:Reflection_inspect,        req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen in a readable format"),
         SystemFunction(lib:"reflection",    name:"type",                call:Reflection_type,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"get type of given object as a string"),
 
         SystemFunction(lib:"string",        name:"capitalize",          call:String_capitalize,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string"),
         SystemFunction(lib:"string",        name:"capitalize!",         call:String_capitalizeI,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string (in-place)"),
+        SystemFunction(lib:"string",        name:"char",                call:String_char,               req: @[@[IV]],                                                                      ret: @[SV],             desc:"get ASCII character from given char code"),
+        SystemFunction(lib:"string",        name:"chars",               call:String_chars,              req: @[@[SV]],                                                                      ret: @[AV],             desc:"get string characters as an array"),
+        SystemFunction(lib:"string",        name:"deletePrefix",        call:String_deletePrefix,       req: @[@[SV,SV]],                                                                   ret: @[SV],             desc:"get string by deleting given prefix"),
+        SystemFunction(lib:"string",        name:"deletePrefix!",       call:String_deletePrefixI,      req: @[@[SV,SV]],                                                                   ret: @[SV],             desc:"get string by deleting given prefix (in-place)"),
+        SystemFunction(lib:"string",        name:"deleteSuffix",        call:String_deleteSuffix,       req: @[@[SV,SV]],                                                                   ret: @[SV],             desc:"get string by deleting given suffix"),
+        SystemFunction(lib:"string",        name:"deleteSuffix!",       call:String_deleteSuffixI,      req: @[@[SV,SV]],                                                                   ret: @[SV],             desc:"get string by deleting given suffix (in-place)"),
+        SystemFunction(lib:"string",        name:"distance",            call:String_distance,           req: @[@[SV,SV]],                                                                   ret: @[IV],             desc:"get Levenshtein distance between given strings"),
+        SystemFunction(lib:"string",        name:"endsWith",            call:String_endsWith,           req: @[@[SV,SV]],                                                                   ret: @[BV],             desc:"check if string ends with given string/regex"),
         SystemFunction(lib:"string",        name:"isAlpha",             call:String_isAlpha,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters"),
         SystemFunction(lib:"string",        name:"isAlphaNumeric",      call:String_isAlphaNumeric,     req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are ASCII letters or digits"),
         SystemFunction(lib:"string",        name:"isLowercase",         call:String_isLowercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are lowercase"),
         SystemFunction(lib:"string",        name:"isNumber",            call:String_isNumber,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if given string is a number"),
         SystemFunction(lib:"string",        name:"isUppercase",         call:String_isUppercase,        req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are uppercase"),
         SystemFunction(lib:"string",        name:"isWhitespace",        call:String_isWhitespace,       req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if all characters in given string are whitespace"),
-        SystemFunction(lib:"string",        name:"join",                call:String_join,               req: @[@[AV],@[AV,SV]],                                                                      ret: @[SV],             desc:"join strings in given array, optionally using separator"),
+        SystemFunction(lib:"string",        name:"join",                call:String_join,               req: @[@[AV],@[AV,SV]],                                                             ret: @[SV],             desc:"join strings in given array, optionally using separator"),
+        SystemFunction(lib:"string",        name:"lines",               call:String_lines,              req: @[@[SV]],                                                                      ret: @[AV],             desc:"get lines from string as an array"),
         SystemFunction(lib:"string",        name:"lowercase",           call:String_lowercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string"),
         SystemFunction(lib:"string",        name:"lowercase!",          call:String_lowercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"lowercase given string (in-place)"),
-        SystemFunction(lib:"string",        name:"lines",               call:String_lines,              req: @[@[SV]],                                                                      ret: @[AV],             desc:"get lines from string as an array"),
+        SystemFunction(lib:"string",        name:"matches",             call:String_matches,            req: @[@[SV,SV]],                                                                   ret: @[AV],             desc:"get array of matches from string using given string/regex"),
+        SystemFunction(lib:"string",        name:"padCenter",           call:String_padCenter,          req: @[@[SV,IV]],                                                                   ret: @[SV],             desc:"center-justify string by adding given padding"),
+        SystemFunction(lib:"string",        name:"padCenter!",          call:String_padCenterI,         req: @[@[SV,IV]],                                                                   ret: @[SV],             desc:"center-justify string by adding given padding (in-place)"),
+        SystemFunction(lib:"string",        name:"padLeft",             call:String_padLeft,            req: @[@[SV,IV]],                                                                   ret: @[SV],             desc:"left-justify string by adding given padding"),
+        SystemFunction(lib:"string",        name:"padLeft!",            call:String_padLeftI,           req: @[@[SV,IV]],                                                                   ret: @[SV],             desc:"left-justify string by adding given padding (in-place)"),
+        SystemFunction(lib:"string",        name:"padRight",            call:String_padRight,           req: @[@[SV,IV]],                                                                   ret: @[SV],             desc:"right-justify string by adding given padding"),
+        SystemFunction(lib:"string",        name:"padRight!",           call:String_padRightI,          req: @[@[SV,IV]],                                                                   ret: @[SV],             desc:"right-justify string by adding given padding (in-place)"),
+        SystemFunction(lib:"string",        name:"replace",             call:String_replace,            req: @[@[SV,SV,SV]],                                                                ret: @[SV],             desc:"get string by replacing occurences of string/regex with given replacement"),
+        SystemFunction(lib:"string",        name:"replace!",            call:String_replaceI,           req: @[@[SV,SV,SV]],                                                                ret: @[SV],             desc:"get string by replacing occurences of string/regex with given replacement (in-place)"),
+        SystemFunction(lib:"string",        name:"split",               call:String_split,              req: @[@[SV,SV]],                                                                   ret: @[AV],             desc:"split string to array by given string/regex separator"),
+        SystemFunction(lib:"string",        name:"startsWith",          call:String_startsWith,         req: @[@[SV,SV]],                                                                   ret: @[BV],             desc:"check if string starts with given string/regex"),
+        SystemFunction(lib:"string",        name:"strip",               call:String_strip,              req: @[@[SV]],                                                                      ret: @[SV],             desc:"remove leading and trailing whitespace from given string"),
+        SystemFunction(lib:"string",        name:"strip!",              call:String_stripI,             req: @[@[SV]],                                                                      ret: @[SV],             desc:"remove leading and trailing whitespace from given string (in-place)"),
         SystemFunction(lib:"string",        name:"uppercase",           call:String_uppercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string"),
         SystemFunction(lib:"string",        name:"uppercase!",          call:String_uppercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string (in-place)"),
 
@@ -1342,7 +1411,7 @@ proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
     result = xl.list.map((x) => x.evaluate())
 
     if unlikely(not f.req.contains(result.map((x) => x.kind))):  
-        let expected = f.req.map((x) => x.map((y) => ($y).valueKindToPrintable()).join(",")).join(" or ")
+        let expected = f.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" or ")
         let got = result.map((x) => ($(x.kind)).valueKindToPrintable()).join(",")
 
         IncorrectArgumentValuesError(f.name, expected, got)
@@ -1354,7 +1423,7 @@ proc getOneLineDescription*(f: SystemFunction): string =
     ## ! Called only from the Console module
 
     let args = 
-        if f.req.len>0: f.req.map((x) => "(" & x.map(proc (y: ValueKind): string = ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
+        if f.req.len>0: f.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
         else: "()"
 
     let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
