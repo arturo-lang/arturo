@@ -7,8 +7,8 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, base64, bitops, macros, math, md5, os, parseutils, random, re
-import sequtils, std/editdistance, std/sha1, strformat, strutils, sugar, unicode, tables
+import algorithm, base64, bitops, macros, math, md5, os, parseutils, random, re, sequtils
+import std/editdistance, std/sha1, strformat, strutils, sugar, unicode, tables, terminal
 import bignum
 import panic, utils
 
@@ -507,6 +507,8 @@ let
         SystemFunction(lib:"path",          name:"currentDir",          call:Path_currentDir,           req: @[@[NV],@[SV]],                                                                ret: @[SV],             desc:"get current directory or set it to given path"),
         SystemFunction(lib:"path",          name:"deleteDir",           call:Path_deleteDir,            req: @[@[SV]],                                                                      ret: @[BV],             desc:"delete directory at given path"),
         SystemFunction(lib:"path",          name:"deleteFile",          call:Path_deleteFile,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"delete file at given path"),
+        SystemFunction(lib:"path",          name:"dirContent",          call:Path_dirContent,           req: @[@[SV],@[SV,SV]],                                                             ret: @[AV],             desc:"get directory contents from given path; optionally filtering the results"),
+        SystemFunction(lib:"path",          name:"dirContents",         call:Path_dirContents,          req: @[@[SV],@[SV,SV]],                                                             ret: @[AV],             desc:"get directory contents from given path, recursively; optionally filtering the results"),
         SystemFunction(lib:"path",          name:"fileCreationTime",    call:Path_fileCreationTime,     req: @[@[SV]],                                                                      ret: @[SV],             desc:"get creation time of file at given path"),
         SystemFunction(lib:"path",          name:"fileExists",          call:Path_fileExists,           req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if file exists at given path"),
         SystemFunction(lib:"path",          name:"fileLastAccess",      call:Path_fileLastAccess,       req: @[@[SV]],                                                                      ret: @[SV],             desc:"get last access time of file at given path"),
@@ -561,7 +563,9 @@ let
         SystemFunction(lib:"string",        name:"uppercase",           call:String_uppercase,          req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string"),
         SystemFunction(lib:"string",        name:"uppercase!",          call:String_uppercaseI,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"uppercase given string (in-place)"),
 
-        SystemFunction(lib:"terminal",      name:"input",               call:Terminal_input,            req: @[],                                                                           ret: @[SV],             desc:"read line from stdin"),
+        SystemFunction(lib:"terminal",      name:"clear",               call:Terminal_clear,            req: @[@[NV]],                                                                      ret: @[NV],             desc:"clear screen and move cursor to home"),
+        SystemFunction(lib:"terminal",      name:"input",               call:Terminal_input,            req: @[@[NV]],                                                                      ret: @[SV],             desc:"read line from stdin"),
+        SystemFunction(lib:"terminal",      name:"inputChar",           call:Terminal_inputChar,        req: @[@[NV]],                                                                      ret: @[SV],             desc:"read character from terminal, without being printed"),
         SystemFunction(lib:"terminal",      name:"print",               call:Terminal_print,            req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen")
     ]
 
