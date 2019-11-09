@@ -72,6 +72,34 @@ proc Path_deleteFile*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = BOOL(tryRemoveFile(S(0)))
 
+proc Path_dirContent*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if v.len==2:
+        result = ARR(@[])
+        let pattern = re(prepareRegex(S(1)))
+        for kind,file in walkDir S(0):
+            if file.match pattern:
+                result.a.add(STR(file))
+    else:
+        result = ARR(@[])
+        for kind,file in walkDir S(0):
+            result.a.add(STR(file))
+
+proc Path_dirContents*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if v.len==2:
+        result = ARR(@[])
+        let pattern = re(prepareRegex(S(1)))
+        for file in walkDirRec S(0):
+            if file.match pattern:
+                result.a.add(STR(file))
+    else:
+        result = ARR(@[])
+        for file in walkDirRec S(0):
+            result.a.add(STR(file))
+
 proc Path_fileCreationTime*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
