@@ -6,7 +6,20 @@ import compiler
 
 import bignum
 
+echo "hello/".removingSuffix("/")
 
+echo "hello/sdf".removingSuffix("/sdf")
+
+echo "hello/aa".removingSuffix("/")
+
+echo "/hello/".removingPrefix("/")
+
+echo "/sdfhello/sdf".removingPrefix("/sdf")
+
+echo "hello/aa".removingPrefix("/")
+echo "".removingPrefix("/")
+echo "//".removingPrefix("/")
+echo "/".removingPrefix("/")
 # type 
 #     ctx = TableRef[string,Value]
 #     ctxo = OrderedTableRef[string,Value]
@@ -14,36 +27,36 @@ import bignum
 
 #     #stack = array[ctx,2]
 
-proc encodeVKs(vks:seq[seq[ValueKind]]):int64 =
-    echo vks.hash()
-    result = 0
-    for constr in vks:
-        var shift = 0
-        var res = 0
-        for vk in constr:
-            let val = case vk
-                of stringValue: 1
-                of integerValue: 2
-                of bigIntegerValue: 4
-                of realValue: 8
-                of booleanValue: 16
-                of arrayValue: 32
-                of dictionaryValue: 64
-                of functionValue: 128
-                of nullValue: 256
-                else: 256+128+64+32+16+8+4+2+1
+# proc encodeVKs(vks:seq[seq[ValueKind]]):int64 =
+#     echo vks.hash()
+#     result = 0
+#     for constr in vks:
+#         var shift = 0
+#         var res = 0
+#         for vk in constr:
+#             let val = case vk
+#                 of stringValue: 1
+#                 of integerValue: 2
+#                 of bigIntegerValue: 4
+#                 of realValue: 8
+#                 of booleanValue: 16
+#                 of arrayValue: 32
+#                 of dictionaryValue: 64
+#                 of functionValue: 128
+#                 of nullValue: 256
+#                 else: 256+128+64+32+16+8+4+2+1
 
             
-            res = res or (val shl shift)
-            shift += 9
-            echo fmt"{val:#b}"
-        result = result or res
+#             res = res or (val shl shift)
+#             shift += 9
+#             echo fmt"{val:#b}"
+#         result = result or res
 
-let res = encodeVKs(@[@[integerValue,stringValue,arrayValue],@[realValue]])
+# let res = encodeVKs(@[@[integerValue,stringValue,arrayValue],@[realValue]])
 
-echo "RES: " & fmt"{res:#b}"
+# echo "RES: " & fmt"{res:#b}"
 
-var lim = 5_000_000
+# var lim = 5_000_000
 
 # var aa = @[1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3]
 # var bb = @[4,5,6]
