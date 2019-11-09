@@ -50,6 +50,11 @@ proc Core_loop*[F,X,V](f: F, xl: X): V {.inline.} =
 
         else: result = NULL
 
+proc Core_new*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v =  xl.validate(f)
+
+    result = valueCopy(v[0])
+
 proc Core_panic*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
