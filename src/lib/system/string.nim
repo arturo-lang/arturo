@@ -22,6 +22,51 @@ proc String_capitalizeI*[F,X,V](f: F, xl: X): V {.inline.} =
     S(0) = S(0).capitalize()
     result = v[0]
 
+proc String_char*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = STR($(chr(I(0))))
+
+proc String_chars*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = ARR(S(0).map((c)=>STR($c)))
+
+proc String_deletePrefix*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = STR(S(0).removingPrefix(S(1)))
+
+proc String_deletePrefixI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    S(0) = S(0).removingPrefix(S(1))
+    result = v[0]
+
+proc String_deleteSuffix*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = STR(S(0).removingSuffix(S(1)))
+
+proc String_deleteSuffixI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    S(0) = S(0).removingSuffix(S(1))
+    result = v[0]
+
+proc String_distance*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = INT(editDistanceAscii(S(0),S(1)))
+
+proc String_endsWith*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if unlikely(S(1).isRegex()):
+        result = BOOL(S(0).endsWith(re(prepareRegex(S(1)))))
+    else:
+        result = BOOL(S(0).endsWith(S(1)))
+
 proc String_isAlpha*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
@@ -91,6 +136,11 @@ proc String_join*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = STR(A(0).map((x) => x.s).join(separator))
 
+proc String_lines*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+    
+    result = STRARR(S(0).splitLines())
+
 proc String_lowercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
@@ -102,10 +152,88 @@ proc String_lowercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
     S(0) = S(0).toLower()
     result = v[0]
 
-proc String_lines*[F,X,V](f: F, xl: X): V {.inline.} =
+proc String_matches*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
-    
-    result = STRARR(S(0).splitLines())
+
+    result = STRARR(S(0).findAll(re(prepareRegex(S(1)))))
+
+proc String_padCenter*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = STR(center(S(0),I(1)))
+
+proc String_padCenterI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    S(0) = center(S(0),I(1))
+    result = v[0]
+
+proc String_padLeft*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = STR(unicode.align(S(0),I(1)))
+
+proc String_padLeftI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    S(0) = unicode.align(S(0),I(1))
+    result = v[0]
+
+proc String_padRight*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = STR(unicode.alignLeft(S(0),I(1)))
+
+proc String_padRightI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    S(0) = unicode.alignLeft(S(0),I(1))
+    result = v[0]
+
+proc String_replace*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if unlikely(S(1).isRegex()):
+        result = STR(S(0).replacef(re(prepareRegex(S(1))),S(2)))
+    else:
+        result = STR(S(0).replace(S(1),S(2)))
+
+proc String_replaceI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if unlikely(S(1).isRegex()):
+        S(0) = S(0).replace(re(prepareRegex(S(1))),S(2))
+        result = v[0]
+    else:
+        S(0) = S(0).replace(S(1),S(2))
+        result = v[0]
+ 
+proc String_split*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if unlikely(S(1).isRegex()):
+        result = STRARR(S(0).split(re(prepareRegex(S(1)))))
+    else:
+        result = STRARR(S(0).split(S(1)))
+
+proc String_startsWith*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if unlikely(S(1).isRegex()):
+        result = BOOL(S(0).startsWith(re(prepareRegex(S(1)))))
+    else:
+        result = BOOL(S(0).startsWith(S(1)))
+
+proc String_strip*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = STR(unicode.strip(S(0)))
+
+proc String_stripI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    S(0) = unicode.strip(S(0))
+    result = v[0]
 
 proc String_uppercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
