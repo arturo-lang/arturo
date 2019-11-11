@@ -1,11 +1,11 @@
 maxLimit: 1000
 
-factorial: [n]{ 
+factorial: @(n){ 
 	if n>0 { 
-		n * $(factorial n-1) 
+		n * [factorial n-1]
 	} { 1 } 
 }  
 
-loop $(range 0 maxLimit) {
-	print $(factorial &)
+loop 0..maxLimit {
+	print [factorial &]
 }

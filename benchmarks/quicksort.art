@@ -1,6 +1,6 @@
-quickSort: [items]{
-	if $(size items) < 2 { items } { 
-		$(quickSort|filter $(slice items 1) { & < items.0 }) + items.0 +  $(quickSort|filter $(slice items 1) { & >= items.0 })
+quickSort: @(items){
+	if [size items] < 2 { items } { 
+		[quickSort|filter [slice items 1] { & < items.0 }] + items.0 +  [quickSort|filter [slice items 1] { & >= items.0 }]
 	}
 }
 

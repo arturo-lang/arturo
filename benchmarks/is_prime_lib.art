@@ -1,5 +1,5 @@
 maxLimit: 5000
 
-loop $(range 0 maxLimit) {
-	print $(isPrime &)
+loop 0..maxLimit {
+	print [isPrime &]
 }
