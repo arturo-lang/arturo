@@ -23,8 +23,8 @@ template showMessage(msg:string,final:bool=false) =
         echo "------"
 
 template getCommand(cmdArgs:openArray[string]):string =
-    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --gcc.options.linker=\"-flto\""
-    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math \" --clang.options.linker=\"-flto\""
+    let gcc_flags   = "--gcc.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math -ldl\" --gcc.options.linker=\"-flto -ldl\""
+    let clang_flags = "--clang.options.speed=\"-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math -ldl\" --clang.options.linker=\"-flto -ldl\""
     # --embedsrc --genScript 
     "nim c " & gcc_flags & " " & clang_flags & " " & join(cmdArgs," ") & " --path:" & srcDir & " -o:" & bin[0] & " -f --nimcache:_cache --embedsrc --checks:off --overflowChecks:on " & srcDir & "/main.nim"
 
