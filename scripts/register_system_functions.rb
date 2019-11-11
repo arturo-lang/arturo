@@ -2,7 +2,7 @@ ind = 0
 lexer = ""
 compiler = "{.computedGoto.}\n"
 compiler += "case stm.code\n"
-File.read("src/compiler.nim").split("\n").each{|l|
+File.read("src/compiler.nim").force_encoding("utf-8").split("\n").each{|l|
 	if l.include? "SystemFunction(lib:\"" and !l.include?("#")
 		id = (l.scan /name:\"([^\"]+)\"/)[0][0]
 		lib = (l.scan /lib:\"([^\"]+)\"/)[0][0]
