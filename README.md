@@ -1,5 +1,3 @@
-<img align="left" src="/logo.png" width="170" />
-
 <h1>Art:uro</h1>
 
 ### Simple, modern and powerful<br/>interpreted programming language for super-fast scripting.
