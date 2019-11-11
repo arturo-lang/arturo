@@ -326,7 +326,6 @@ Just 2 commands and you'll have Arturo up'n'running.
 
 http://arturo-lang.io
 
----
 
 Editors & IDEs
 ------------------------------
