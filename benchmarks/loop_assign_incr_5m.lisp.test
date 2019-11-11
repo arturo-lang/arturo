@@ -1,6 +1,0 @@
-(setq a 0)
-
-(loop for n from 0 below 5000001
-  	   do (setq a (+ a 1)))
-(princ a)
-(terpri)
