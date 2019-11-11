@@ -291,8 +291,10 @@ The Library
 | logical | **xor** | bitwise/logical XOR | (bool,bool) / (int,int) -> [bool,int]|
 | array | **zip** | get array of element pairs using given arrays | (array,array) -> [array]|
 
-Build Instructions
+How to install
 ------------------------------
+
+### Manually
 
 **Prerequisites:**
 
@@ -312,8 +314,52 @@ Build Instructions
 
 	./arturo
 
-Or... Check it out online!
+### HomeBrew (for macOS)
+
+There is an Arturo formula here: https://github.com/arturo-lang/art-homebrew
+
+Just 2 commands and you'll have Arturo up'n'running.
+
+### or... Check it out online!
+
+http://arturo-lang.io
+
+Editors & IDEs
 ------------------------------
+
+If you prefer to use some specific editors, we already support the most popular ones:
+
+- **SublimeText**: https://github.com/arturo-lang/art-sublimetext-package
+- **Atom**: https://github.com/arturo-lang/art-atom-package
+- **Ace Editor**: https://github.com/arturo-lang/art-ace-editor
+
+### Manually
+
+**Prerequisites:**
+
+- Flex & Bison
+- GMP library
+- Nim/Nimble
+
+**Build:**
+
+	nimble release
+
+**Run script:**
+
+	./arturo <script>
+
+**REPL:**
+
+	./arturo
+
+### HomeBrew (for macOS)
+
+There is an Arturo formula here: https://github.com/arturo-lang/art-homebrew
+
+Just 2 commands and you'll have Arturo up'n'running.
+
+### or... Check it out online!
 
 http://arturo-lang.io
 
