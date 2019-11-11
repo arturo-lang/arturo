@@ -125,9 +125,9 @@ int yywrap() {
 
 %token <str> BEGIN_ARR "#("
 %token <str> BEGIN_DICT "#{"
-%token <str> BEGIN_INLINE "$("
-%token <str> BEGIN_FUNC "@{"
+%token <str> BEGIN_ARGS "@("
 
+%token <str> AT "@"
 %token <str> RANGE ".."
 %token <str> DOT "."
 %token <str> HASH "#"
@@ -146,7 +146,7 @@ int yywrap() {
 
 %token <str> NEW_LINE "End Of Line"
 
-%type <str> args
+%type <str> verbatim
 
 %type <compo> keypath
 %type <compo> string number boolean null
@@ -201,14 +201,14 @@ keypath                 :   ID DOT ID                                           
                         |   keypath[previous] DOT inline_call                                   { $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
                         ;       
 
-args                    :   ID[previous] COMMA ID                                               { strcat( $1, "," ); $$ = strcat($1, $3); }
+verbatim                :   ID[previous] ID                                                     { strcat( $1, "," ); $$ = strcat($1, $2); }
                         |   ID                                                                  { $$ = $1; }
                         |   /* Nothing */                                                       { }
                         ;
 
 
 string                  :   STRING                                                              { $$ = argumentFromStringLiteral($1); }
-                        |   TILDE ID                                                            { char *new_s = (char*)malloc(2 * sizeof(char) + strlen($ID)); sprintf(new_s, "\"%s\"", $ID); $$ = argumentFromStringLiteral(new_s); }
+                        |   AT ID                                                               { char *new_s = (char*)malloc(2 * sizeof(char) + strlen($ID)); sprintf(new_s, "\"%s\"", $ID); $$ = argumentFromStringLiteral(new_s); }
                         ;
 
 number                  :   INTEGER                                                             { $$ = argumentFromIntegerLiteral($1); }
@@ -230,13 +230,13 @@ dictionary              :   BEGIN_DICT statement_list RCURLY                    
                         ;
 
 function                :   LCURLY statement_list RCURLY                                        { $$ = argumentFromFunctionLiteral($2,""); }
-                        |   LSQUARE args RSQUARE LCURLY statement_list RCURLY                   { $$ = argumentFromFunctionLiteral($5,$2); }
+                        |   BEGIN_ARGS verbatim RPAREN LCURLY statement_list RCURLY             { $$ = argumentFromFunctionLiteral($5,$2); }
                         |   MAP ID                                                              { $$ = argumentFromMapId($ID);  }
                         |   MAP SYSTEM_CMD                                                      { $$ = argumentFromMapCommand($SYSTEM_CMD);}
                         |   MAP keypath                                                         { $$ = argumentFromMapKeypath($keypath); }
                         ;
 
-inline_call             :   BEGIN_INLINE statement RPAREN                                       { $$ = argumentFromInlineCallLiteral($2); }                 
+inline_call             :   LSQUARE statement RSQUARE                                           { $$ = argumentFromInlineCallLiteral($2); }                 
                         ;
 
 argument                :   ID                                                                  { $$ = argumentFromIdentifier($1); }

@@ -101,7 +101,9 @@ LETTER_OR_MISC      [a-zA-Z_]
 
 "#("                                                { return BEGIN_ARR; }
 "#{"                                                { return BEGIN_DICT; }
-"$("                                                { return BEGIN_INLINE; }
+"@("                                                { return BEGIN_ARGS; }
+
+"@"                                                 { return AT; }
 
 ".."                                                { return RANGE; }
 "."                                                 { return DOT; }
