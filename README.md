@@ -146,7 +146,7 @@ The Library
 | crypto | **decodeBase64** | Base64-decode given string | (str) -> [str]|
 | crypto | **decodeBase64!** | Base64-decode given string (in-place) | (str) -> [str]|
 | generic | **delete** | delete value from given array, dictionary or string | (array,any) / (dict,any) / (str,str) -> [array,str,dict]|
-| generic | **delete!** | delete value from given array, dictionary or string (in-place) | (array,str) / (array,int) / (array,bigInt) / (array,bool) / (array,array) / (array,dict) / (array,func) / (dict,str) / (dict,int) / (dict,bigInt) / (dict,bool) / (dict,array) / (dict,dict) / (dict,func) / (str,str) -> [array,str,dict]|
+| generic | **delete!** | delete value from given array, dictionary or string (in-place) | (array,any) / (dict,any) / (str,str) -> [array,str,dict]|
 | generic | **deleteBy** | delete index from given array, dictionary or string | (array,int) / (dict,str) / (str,int) -> [array,str,dict]|
 | generic | **deleteBy!** | delete index from given array, dictionary or string (in-place) | (array,int) / (dict,str) / (str,int) -> [array,str,dict]|
 | path | **deleteDir** | delete directory at given path | (str) -> [bool]|
