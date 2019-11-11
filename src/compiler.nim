@@ -566,7 +566,8 @@ let
         SystemFunction(lib:"terminal",      name:"clear",               call:Terminal_clear,            req: @[@[NV]],                                                                      ret: @[NV],             desc:"clear screen and move cursor to home"),
         SystemFunction(lib:"terminal",      name:"input",               call:Terminal_input,            req: @[@[NV]],                                                                      ret: @[SV],             desc:"read line from stdin"),
         SystemFunction(lib:"terminal",      name:"inputChar",           call:Terminal_inputChar,        req: @[@[NV]],                                                                      ret: @[SV],             desc:"read character from terminal, without being printed"),
-        SystemFunction(lib:"terminal",      name:"print",               call:Terminal_print,            req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen")
+        SystemFunction(lib:"terminal",      name:"print",               call:Terminal_print,            req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen"),
+        SystemFunction(lib:"terminal",      name:"prints",              call:Terminal_prints,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen without newline")
     ]
 
 ##---------------------------
