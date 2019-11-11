@@ -53,6 +53,8 @@ proc showFunctions() =
     for n in sorted(names):
         echo SystemFunctions[getSystemFunction(n)].getOneLineDescription()
 
+    echo sorted(names).join("|")
+
 proc showHelp() =
     echo CONSOLE_HELP_TXT
 
