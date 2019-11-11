@@ -7,8 +7,10 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, base64, bitops, macros, math, md5, os, parseutils, random, re, sequtils
-import std/editdistance, std/sha1, strformat, strutils, sugar, unicode, tables, terminal
+import algorithm, base64, bitops, macros, math, md5, os, osproc, parseutils, random, re
+import sequtils, std/editdistance, std/sha1, strformat, strutils, sugar, unicode, tables
+import terminal
+
 import bignum
 import panic, utils
 
@@ -282,7 +284,6 @@ var
 
     Stack*                  : seq[Context]
     FileName                : string
-    IsRepl                  : bool
 
     # Const literal arguments
 
@@ -567,7 +568,8 @@ let
         SystemFunction(lib:"terminal",      name:"input",               call:Terminal_input,            req: @[@[NV]],                                                                      ret: @[SV],             desc:"read line from stdin"),
         SystemFunction(lib:"terminal",      name:"inputChar",           call:Terminal_inputChar,        req: @[@[NV]],                                                                      ret: @[SV],             desc:"read character from terminal, without being printed"),
         SystemFunction(lib:"terminal",      name:"print",               call:Terminal_print,            req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen"),
-        SystemFunction(lib:"terminal",      name:"prints",              call:Terminal_prints,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen without newline")
+        SystemFunction(lib:"terminal",      name:"prints",              call:Terminal_prints,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen without newline"),
+        SystemFunction(lib:"terminal",      name:"shell",               call:Terminal_shell,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"execute given shell command and get string output")
     ]
 
 ##---------------------------
@@ -607,6 +609,8 @@ proc yy_delete_buffer(buff: yy_buffer_state) {.importc.}
 var yyfilename {.importc.}: cstring
 var yyin {.importc.}: File
 var yylineno {.importc.}: cint
+
+var isRepl {.importc.}: cint
 
 #[######################################################
     Context management
@@ -1832,8 +1836,7 @@ proc execute(sl: StatementList): Value =
         except ReturnValue:
             raise
         except Exception as e:
-            if IsRepl: raise
-            else: runtimeError(e.msg, FileName, sl.list[i].pos, IsRepl)
+            runtimeError(e.msg, FileName, sl.list[i].pos)
 
         inc(i)
 
@@ -1868,19 +1871,16 @@ proc runString*(src:string): string =
     yylineno = 0
     yyfilename = "-"
     FileName = "-"
-    IsRepl = true
+
+    QuitOnError = false
 
     yy_switch_to_buffer(buff)
 
     MainProgram = nil
-    discard yyparse()
+    if yyparse()==0:
+        yy_delete_buffer(buff)
 
-    yy_delete_buffer(buff)
-
-    try:
         result = MainProgram.execute().stringify()
-    except Exception as e:
-        runtimeError(e.msg, FileName, 0, IsRepl)
 
 
 proc runScript*(scriptPath:string, args: seq[string], includePath:string="", warnings:bool=false) = 
@@ -1895,16 +1895,16 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
     yylineno = 0
     yyfilename = scriptPath
     FileName = scriptPath
-    IsRepl = false
+
+    QuitOnError = true
 
     let success = open(yyin, scriptPath)
     if not success:
         cmdlineError("something went wrong when opening file")
     else:
         #benchmark "parsing":
-        discard yyparse()
-
-        discard MainProgram.execute()
+        if yyparse()==0:
+            discard MainProgram.execute()
 
 
 #[******************************************************

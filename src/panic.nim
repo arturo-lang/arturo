@@ -22,21 +22,24 @@ const
     CONSOLE_ERROR   = "✘ \x1B[4;1;35mConsole Error\x1B[0;37m | "
     CONSOLE_HELP    = "                | try `?help` for more information."
 
+var
+    QuitOnError*: bool
+
 #[######################################################
     Methods
   ======================================================]#
 
-proc runtimeError*(msg:string, filename:string="", line:int=0, isRepl:bool=false) {.exportc.} =
+proc runtimeError*(msg:string, filename:string="", line:int=0) {.exportc.} =
     echo RUNTIME_ERROR & "file: " & $filename & " - line: " & $line
     echo RUNTIME_PAD & $msg.split("\n").join("\n" & RUNTIME_PAD)
     echo ""
-    if not isRepl: quit()
+    if QuitOnError: quit()
 
 proc parseError*(msg:cstring, filename:cstring, line:cint) {.exportc.} =
     echo PARSE_ERROR & "file: " & $filename & " - line: " & $line
     echo PARSE_PAD & $msg
     echo ""
-    quit()
+    if QuitOnError: quit()
 
 proc cmdlineError*(msg:string, showHelp:bool=true) = 
     echo CMDLINE_ERROR & msg
