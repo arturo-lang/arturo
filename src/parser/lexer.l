@@ -23,7 +23,6 @@ void yyerror(const char* str);
 void count();
 
 extern char* yyfilename;
-
 extern void parseError(const char* msg, const char* filename, int line);
 
 %}
@@ -130,20 +129,6 @@ LETTER_OR_MISC      [a-zA-Z_]
  ****************************************/
 
 int yycolumn = 0;
-
-void count()
-{
-    /*int i;
-    
-    for (i = 0; yytext[i] != '\0'; i++)
-    {
-        if (yytext[i] == '\n') yycolumn = 0;
-        else if (yytext[i] == '\t') yycolumn += 8 - (yycolumn % 8);
-        else yycolumn++;
-    }*/
-
-    yylval.str=strdup(yytext);
-}
 
 void yyerror(const char *str)
 {
