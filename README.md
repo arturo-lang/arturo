@@ -1,4 +1,4 @@
-![](https://cdn1.imggmi.com/uploads/2019/11/11/488f6d693c6511dbd55b6967b650f8f9-full.png width=170)
+<img align="left" src="https://camo.githubusercontent.com/..." data-canonical-src="https://cdn1.imggmi.com/uploads/2019/11/11/488f6d693c6511dbd55b6967b650f8f9-full.png" width="170" />
 
 <h1>Art:uro</h1>
 
