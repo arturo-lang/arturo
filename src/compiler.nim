@@ -136,9 +136,9 @@ type
         lib*            : string
         call*           : SystemFunctionCall[SystemFunction,ExpressionList,Value]
         name*           : string
-        req             : FunctionConstraints
-        ret             : FunctionReturns
-        desc            : string
+        req*            : FunctionConstraints
+        ret*            : FunctionReturns
+        desc*           : string
 
     Function* = ref object
         id              : string
@@ -211,7 +211,7 @@ proc `^`(l: Value, r: Value): Value {.inline.}
 proc eq(l: Value, r: Value): bool {.inline.}
 proc lt(l: Value, r: Value): bool {.inline.}
 proc gt(l: Value, r: Value): bool {.inline.}
-proc valueKindToPrintable(s: string): string
+proc valueKindToPrintable*(s: string): string
 proc stringify*(v: Value, quoted: bool = true): string
 proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 
@@ -1222,7 +1222,7 @@ proc gt(l: Value, r: Value): bool {.inline.} =
 ## Inspection
 ##---------------------------
 
-proc valueKindToPrintable(s: string): string = 
+proc valueKindToPrintable*(s: string): string = 
     ## Convert ValueKind string representation to sth shorter and more readable
     ## ! Requires better rewriting
 
