@@ -333,36 +333,6 @@ If you prefer to use some specific editors, we already support the most popular 
 - **Atom**: https://github.com/arturo-lang/art-atom-package
 - **Ace Editor**: https://github.com/arturo-lang/art-ace-editor
 
-### Manually
-
-**Prerequisites:**
-
-- Flex & Bison
-- GMP library
-- Nim/Nimble
-
-**Build:**
-
-	nimble release
-
-**Run script:**
-
-	./arturo <script>
-
-**REPL:**
-
-	./arturo
-
-### HomeBrew (for macOS)
-
-There is an Arturo formula here: https://github.com/arturo-lang/art-homebrew
-
-Just 2 commands and you'll have Arturo up'n'running.
-
-### or... Check it out online!
-
-http://arturo-lang.io
-
 ---
 
 License
