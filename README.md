@@ -118,8 +118,8 @@ The Library
 | array | **all** | check if all elements of array are true or pass the condition of given function | (array) / (array,func) -> [bool]|
 | logical | **and** | bitwise/logical AND | (bool,bool) / (int,int) -> [bool,int]|
 | array | **any** | check if any elements of array are true or pass the condition of given function | (array) / (array,func) -> [bool]|
-| generic | **append** | append element to given array/string | (array,str) / (array,int) / (array,bigInt) / (array,bool) / (array,array) / (array,dict) / (array,func) / (str,str) -> [array,str]|
-| generic | **append!** | append element to given array/string (in-place) | (array,str) / (array,int) / (array,bigInt) / (array,bool) / (array,array) / (array,dict) / (array,func) / (str,str) -> [array,str]|
+| generic | **append** | append element to given array/string | (array,any) / (str,str) -> [array,str]|
+| generic | **append!** | append element to given array/string (in-place) | (array,any) / (str,str) -> [array,str]|
 | math | **asin** | get the inverse sine of given value | (real) -> [real]|
 | math | **asinh** | get the inverse hyperbolic sine of given value | (real) -> [real]|
 | math | **atan** | get the inverse tangent of given value | (real) -> [real]|
@@ -131,7 +131,7 @@ The Library
 | string | **char** | get ASCII character from given char code | (int) -> [str]|
 | string | **chars** | get string characters as an array | (str) -> [array]|
 | terminal | **clear** | clear screen and move cursor to home | (null) -> [null]|
-| generic | **contains** | check if collection contains given element | (array,str) / (array,int) / (array,bigInt) / (array,bool) / (array,array) / (array,dict) / (array,func) / (dict,str) / (dict,int) / (dict,bigInt) / (dict,bool) / (dict,array) / (dict,dict) / (dict,func) / (str,str) -> [bool]|
+| generic | **contains** | check if collection contains given element | (array,any) / (dict,any) / (str,str) -> [bool]|
 | path | **copyDir** | copy directory at path to given destination | (str,str) -> [bool]|
 | path | **copyFile** | copy file at path to given destination | (str,str) -> [bool]|
 | math | **cos** | get the cosine of given value | (real) -> [real]|
@@ -145,7 +145,7 @@ The Library
 | path | **currentDir** | get current directory or set it to given path | (null) / (str) -> [str]|
 | crypto | **decodeBase64** | Base64-decode given string | (str) -> [str]|
 | crypto | **decodeBase64!** | Base64-decode given string (in-place) | (str) -> [str]|
-| generic | **delete** | delete value from given array, dictionary or string | (array,str) / (array,int) / (array,bigInt) / (array,bool) / (array,array) / (array,dict) / (array,func) / (dict,str) / (dict,int) / (dict,bigInt) / (dict,bool) / (dict,array) / (dict,dict) / (dict,func) / (str,str) -> [array,str,dict]|
+| generic | **delete** | delete value from given array, dictionary or string | (array,any) / (dict,any) / (str,str) -> [array,str,dict]|
 | generic | **delete!** | delete value from given array, dictionary or string (in-place) | (array,str) / (array,int) / (array,bigInt) / (array,bool) / (array,array) / (array,dict) / (array,func) / (dict,str) / (dict,int) / (dict,bigInt) / (dict,bool) / (dict,array) / (dict,dict) / (dict,func) / (str,str) -> [array,str,dict]|
 | generic | **deleteBy** | delete index from given array, dictionary or string | (array,int) / (dict,str) / (str,int) -> [array,str,dict]|
 | generic | **deleteBy!** | delete index from given array, dictionary or string (in-place) | (array,int) / (dict,str) / (str,int) -> [array,str,dict]|
@@ -181,7 +181,7 @@ The Library
 | math | **inc!** | increase given value by 1 (in-place) | (int) / (bigInt) -> [int,bigInt]|
 | terminal | **input** | read line from stdin | (null) -> [str]|
 | terminal | **inputChar** | read character from terminal, without being printed | (null) -> [str]|
-| reflection | **inspect** | print given value to screen in a readable format | (str) / (array) / (int) / (bigInt) / (func) / (bool) / (real) / (dict) -> [str]|
+| reflection | **inspect** | print given value to screen in a readable format | (any) -> [str]|
 | string | **isAlpha** | check if all characters in given string are ASCII letters | (str) -> [bool]|
 | string | **isAlphaNumeric** | check if all characters in given string are ASCII letters or digits | (str) -> [bool]|
 | generic | **isEmpty** | check if given array, dictionary or string is empty | (array) / (str) / (dict) -> [bool]|
@@ -232,14 +232,14 @@ The Library
 | path | **pathFilename** | retrieve filename component from given path | (str) -> [str]|
 | array | **pop** | get last element of given array (same as 'last') | (array) -> [any]|
 | array | **pop!** | get last element of given array and delete it (in-place) | (array) -> [any]|
-| terminal | **print** | print given value to screen | (str) / (array) / (int) / (bigInt) / (func) / (bool) / (real) / (dict) -> [str]|
+| terminal | **print** | print given value to screen | (any) -> [str]|
 | math | **product** | return product of elements of given array | (array) -> [int,bigInt]|
 | math | **random** | generate random number in given range | (int,int) -> [int]|
 | array | **range** | get array from given range (from..to) with optional step | (int,int) -> [array]|
 | io | **read** | read string from file at given path | (str) -> [str]|
 | string | **replace** | get string by replacing occurences of string/regex with given replacement | (str,str,str) -> [str]|
 | string | **replace!** | get string by replacing occurences of string/regex with given replacement (in-place) | (str,str,str) -> [str]|
-| core | **return** | break execution and return given value | (str) / (array) / (int) / (bigInt) / (func) / (bool) / (real) -> [any]|
+| core | **return** | break execution and return given value | (any) -> [any]|
 | generic | **reverse** | reverse given array or string | (array) / (str) -> [array,str]|
 | generic | **reverse!** | reverse given array or string (in-place) | (array) / (str) -> [array,str]|
 | array | **rotate** | rotate given array, optionally by using step; negative values for left rotation | (array) / (array,int) -> [array]|
@@ -281,8 +281,8 @@ The Library
 | convert | **toNumber** | convert given string, real or boolean to an integer number | (str) / (real) / (bool) -> [int]|
 | convert | **toOct** | convert given number to its octal string representation | (int) -> [str]|
 | convert | **toReal** | convert given integer number to real | (int) -> [str]|
-| convert | **toString** | convert given value to string | (str) / (int) / (bigInt) / (real) / (array) / (dict) / (func) / (null) -> [str]|
-| reflection | **type** | get type of given object as a string | (str) / (array) / (int) / (bigInt) / (func) / (bool) / (real) / (dict) -> [str]|
+| convert | **toString** | convert given value to string | (any) -> [str]|
+| reflection | **type** | get type of given object as a string | (any) -> [str]|
 | array | **unique** | remove duplicates from given array | (array) -> [array]|
 | array | **unique!** | remove duplicates from given array (in-place) | (array) -> [array]|
 | string | **uppercase** | uppercase given string | (str) -> [str]|
