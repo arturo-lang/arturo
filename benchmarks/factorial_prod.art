@@ -1,5 +1,5 @@
 maxLimit: 1000
 
-loop $(range 1 maxLimit) {
-	print $(product $(range 1 &))
+loop 1..maxLimit {
+	print [product 1..&]
 }
