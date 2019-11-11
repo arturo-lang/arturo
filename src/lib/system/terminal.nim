@@ -27,6 +27,14 @@ proc Terminal_print*[F,X,V](f: F, xl: X): V {.inline.} =
     echo v[0].stringify(quoted=false)
     result = v[0]
 
+proc Terminal_prints*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    write(stdout,v[0].stringify(quoted=false))
+    flushFile(stdout)
+
+    result = v[0]  
+
 #[******************************************************
   ******************************************************
     UnitTests
