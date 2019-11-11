@@ -53,6 +53,16 @@ proc showFunctions() =
     for n in sorted(names):
         echo SystemFunctions[getSystemFunction(n)].getOneLineDescription()
 
+    for n in sorted(names):
+        let sf = SystemFunctions[getSystemFunction(n)]
+#| path | **createDir** | create directory at given path | [String] -> Boolean |
+        let args = 
+            if sf.req.len>0: sf.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
+            else: "()"
+
+        let ret = "[" & sf.ret.join(",").valueKindToPrintable() & "]"
+        echo "| " & sf.lib & " | **" & sf.name & "** | " & sf.desc & " | " & args & " -> " & ret & "|"
+
     echo sorted(names).join("|")
 
 proc showHelp() =
