@@ -171,7 +171,6 @@ int yywrap() {
 %left MULT_SG DIV_SG MOD_SG 
 %left POW_SG
 
-%nonassoc REDUCE
 %nonassoc ID
 
 %left INTEGER
@@ -201,9 +200,8 @@ keypath                 :   ID DOT ID                                           
                         |   keypath[previous] DOT inline_call                                   { $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
                         ;       
 
-verbatim                :   ID[previous] ID                                                     { strcat( $1, "," ); $$ = strcat($1, $2); }
-                        |   ID                                                                  { $$ = $1; }
-                        |   /* Nothing */                                                       { }
+verbatim                :   ID                                                                  { $$ = $1; }
+                        |   verbatim[previous] ID                                               { strcat( $1, "," ); $$ = strcat($1, $2); }
                         ;
 
 
