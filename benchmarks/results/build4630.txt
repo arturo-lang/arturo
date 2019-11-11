@@ -123,7 +123,7 @@ FIBONACCI_MEM                   |  Time         |   Mem
 Arturo                          |  X            |   X              
 Ruby                            |  6.11         |   34201600       
 Python                          |  0.04         |   6582272        
-Python                          |  -            |   -              
+Python3                         |  -            |   -              
 PHP                             |  X            |   X              
 Perl                            |  -            |   -              
 Lua                             |  -            |   -              
