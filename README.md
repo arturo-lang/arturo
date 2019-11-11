@@ -291,6 +291,8 @@ The Library
 | logical | **xor** | bitwise/logical XOR | (bool,bool) / (int,int) -> [bool,int]|
 | array | **zip** | get array of element pairs using given arrays | (array,array) -> [array]|
 
+---
+
 How to install
 ------------------------------
 
@@ -323,6 +325,8 @@ Just 2 commands and you'll have Arturo up'n'running.
 ### or... Check it out online!
 
 http://arturo-lang.io
+
+---
 
 Editors & IDEs
 ------------------------------
