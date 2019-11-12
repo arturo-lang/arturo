@@ -11,7 +11,7 @@ import algorithm, base64, bitops, macros, math, md5, os, osproc, parseutils, ran
 import sequtils, std/editdistance, std/sha1, strformat, strutils, sugar, unicode, tables
 import terminal
 
-import bignum
+import bignum, markdown, mustache
 import panic, utils
 
 #[######################################################
@@ -369,6 +369,7 @@ let
         SystemFunction(lib:"array",         name:"filter",              call:Array_filter,              req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function"),
         SystemFunction(lib:"array",         name:"filter!",             call:Array_filterI,             req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after filtering each element using given function (in-place)"),
         SystemFunction(lib:"array",         name:"first",               call:Array_first,               req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get first element of given array"),
+        SystemFunction(lib:"array",         name:"fold",                call:Array_fold,                req: @[@[AV,IV,FV],@[AV,BIV,FV],@[AV,SV,FV],@[AV,AV,FV],@[AV,DV,FV]],               ret: @[IV,BIV,SV,AV,DV],desc:"fold array using seed value and the given function"),
         SystemFunction(lib:"array",         name:"last",                call:Array_last,                req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array"),
         SystemFunction(lib:"array",         name:"map",                 call:Array_map,                 req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element"),
         SystemFunction(lib:"array",         name:"map!",                call:Array_mapI,                req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element (in-place)"),

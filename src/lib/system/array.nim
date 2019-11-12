@@ -79,6 +79,16 @@ proc Array_filterI*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = v[0]
 
+proc Array_fold*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = v[1]
+
+    var i = 0
+    while i<A(0).len:
+        result = FN(2).execute(ARR(@[result,A(0)[i]]))
+        inc(i)
+
 proc Array_last*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
@@ -109,10 +119,18 @@ proc Array_popI*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Array_range*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    if I(0)<I(1):    
-        result = ARR(toSeq(I(0)..I(1)).map((x) => INT(x)))
+    if I(0)<I(1):   
+        result = ARR(@[])
+        var i = I(0)
+        while i <= I(1):
+            result.a.add(INT(i))
+            inc(i)
     else:
-        result = ARR(toSeq(countdown(I(0),I(1))).map((x) => INT(x)))    
+        result = ARR(@[])
+        var i = I(0)
+        while i >= I(1):
+            result.a.add(INT(i))
+            dec(i)    
 
 proc Array_rotate*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
