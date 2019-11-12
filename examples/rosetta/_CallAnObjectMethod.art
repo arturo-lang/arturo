@@ -1,0 +1,22 @@
+Person: #{
+	name: ""
+	surname: ""
+
+	init: @(n s){
+		name: n
+		surname: s
+		syms ~
+	}
+
+	sayHello: {
+		print "Hello " + name + "!"
+		syms ~
+	}
+}
+
+p: new Person
+p.init "John" "Doe"
+p.sayHello ~
+
+inspect Person
+inspect p

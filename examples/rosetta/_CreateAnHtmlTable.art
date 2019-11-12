@@ -1,0 +1,22 @@
+use ~web
+
+table @tbl #{
+	row #{
+		cell ""
+		cell "X" #{ :header true }
+		cell "Y" #{ :header true }
+		cell "Z" #{ :header true }
+	}
+
+	join $(map $(range 0 3) {
+		r $(row #{
+			cell $(toString &) #{ :header true }
+			cell $(toString|random 0 1000)
+			cell $(toString|random 0 1000)
+			cell $(toString|random 0 1000)
+		})
+		r.render
+	}) ""
+}
+
+print $(tbl.render)
