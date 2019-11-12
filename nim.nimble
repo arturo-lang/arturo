@@ -87,6 +87,20 @@ template compileExperiment() =
 template runExperiment() =
     exec "./experimental"
 
+# template compileDocgen() = 
+#     showMessage("Compiling documentation generator")
+#     exec "nim c -d:release --opt:speed --hints:off --nimcache:_cache --threads:on --path:src -o:docgen docs/docgen.nim"
+
+# template runDocgen() =
+#     exec "./docgen"
+
+# template compileSitegen() = 
+#     showMessage("Compiling website generator")
+#     exec "nim c -d:release --opt:speed --hints:off --nimcache:_cache --threads:on --path:src -o:sitegen docs/sitegen.nim"
+
+# template runSitegen() =
+#     exec "./sitegen"
+
 template compileUnittests() = 
     showMessage("Compiling unittests")
     let args = @[
@@ -208,6 +222,16 @@ task experiment, "Run experiments":
     compileExperiment()
     showMessage "Done :)", true
     runExperiment()
+
+# task docgen, "Run documentation generator":
+#     compileDocgen()
+#     showMessage "Done :)", true
+#     runDocgen()
+
+# task sitegen, "Run website generator":
+#     compileSitegen()
+#     showMessage "Done :)", true
+#     runSitegen()
 
 task test, "Run Unittests":
     buildLibrary()
