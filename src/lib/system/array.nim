@@ -5,11 +5,18 @@
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
   * @file: lib/system/array.nim
+  * @description: Array/List manipulation
   *****************************************************************]#
 
 #[######################################################
     Functions
   ======================================================]#
+
+#**********************************************
+# @example: all
+# if [all #(true 2>1)] { print "yep" }
+# #= yep
+#**********************************************
 
 proc Array_all*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)

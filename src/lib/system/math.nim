@@ -5,6 +5,7 @@
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
   * @file: lib/system/math.nim
+  * @description: number-related & math operations
   *****************************************************************]#
 
 #[######################################################
