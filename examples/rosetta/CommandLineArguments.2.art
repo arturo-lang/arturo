@@ -1,5 +1,5 @@
-args &
+args: &
 
-loop args [arg]{
+loop args @(arg){
 	print arg
 }

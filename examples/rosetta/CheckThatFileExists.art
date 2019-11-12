@@ -1,5 +1,5 @@
-checkIfExists [file]{
-    if $(exists file) { print file + " exists" } { print file + " doesn't exist" }
+checkIfExists: @(file){
+    if [fileExists file] { print file + " exists" } { print file + " doesn't exist" }
 }
  
 checkIfExists "input.txt"

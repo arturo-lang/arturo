@@ -1,16 +1,16 @@
 // empty  array
-arrA #()
+arrA: #()
 
 // array with initial values
-arrB #("one" "two" "three")
+arrB: #("one" "two" "three")
 
 // adding an element to an existing array
-arrB arrB + "four"
+arrB: arrB + "four"
 print arrB
 
 // another way to add an element
-add arrB "five"
+append! arrB "five"
 print arrB
 
 // retrieve an element at some index
-print arrB.[1]
+print arrB.1

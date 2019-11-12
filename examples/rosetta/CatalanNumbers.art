@@ -1,11 +1,11 @@
-Catalan [n]{
+catalan: @(n){
 	if n=0 { 
 		return 1 
 	} {
-		return ((4*n-2)*$(Catalan n-1))/(n+1)
+		return ((4*n-2)*[catalan n-1])/(n+1)
 	}
 }
 
-loop $(range 0 15) {
-	print $(padRight $(toString &) 5) + "  " + $(padLeft $(toString $(Catalan &)) 20)
+loop 0..15 {
+	print [padRight [toString &] 5] + "  " + [padLeft [toString [catalan &]] 20]
 }

@@ -1,13 +1,13 @@
 // initialize dictionary
-dict #{
-	name "john"
-	surname "doe"
-	age 33
+dict: #{
+	name: 		"john"
+	surname: 	"doe"
+	age: 		33
 
-	preferedFood #("fruit" "pizza")
+	preferedFood: #("fruit" "pizza")
 }
 
 // add an element to the dictionary
-dict dict + #{ country "Spain" }
+dict: dict + #{ country: "Spain" }
 
-log dict
+inspect dict

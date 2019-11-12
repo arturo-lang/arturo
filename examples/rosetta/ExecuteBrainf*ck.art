@@ -3,71 +3,70 @@
  * In Art:uro
  *********************************/
 
-Tape                    #(0)
-DataPointer             0
-InstructionPointer      0
+Tape                : #(0)
+DataPointer         : 0
+InstructionPointer  : 0
 
-// Look for jumps in code an register them
+// Look for jumps in Code an register them
 // in the Jumps table
 
-precomputeJumps {
-    stack                   #()
-    jumphash                #{}
-    instrPointer            0
+precomputeJumps: {
+    stack           : #()
+    jumphash        : #{}
+    instrPointer    : 0
 
     loop instrPointer<CodeLength {
-        command $(get $(characters Code) instrPointer)
-        if command="[" { stack stack+instrPointer } {
+        command: [chars Code].[instrPointer]
+        if command="[" { stack: stack+instrPointer } {
             if command="]" {
-                target $(last stack)
-                deleteBy stack $(size stack)-1
-                set jumphash $(toString target) instrPointer
-                set jumphash $(toString instrPointer) target
+                target: last stack
+                deleteBy stack [size stack]-1
+                jumphash.[toString target]: instrPointer
+                jumphash.[toString instrPointer]: target
             }
         }
-        instrPointer instrPointer+1
+        instrPointer: instrPointer+1
     }
     jumphash
 }
 
 // Check if current state is valid
 
-StateIsValid {
-    all #(0<=DataPointer DataPointer<$(size Tape) 0<=InstructionPointer InstructionPointer<CodeLength)
+StateIsValid: {
+    all #(0<=DataPointer DataPointer<[size Tape] 0<=InstructionPointer InstructionPointer<CodeLength)
 }
 
 // Compile the program
 
-interpret {
-    loop $(StateIsValid) {
-        command $(get $(characters Code) InstructionPointer)
-
-        if command="+" { set Tape DataPointer Tape.[DataPointer]+1 }
-        if command="-" { set Tape DataPointer Tape.[DataPointer]-1 }
-        if command=">" { DataPointer DataPointer+1, if DataPointer=$(size Tape) { Tape Tape+0 } }
-        if command="<" { DataPointer DataPointer-1 }
-        if command="." { print $(char Tape.[DataPointer]) true }
+interpret: {
+    loop [StateIsValid ~] {
+        command: [chars Code].[InstructionPointer]
+        if command="+" { Tape.[DataPointer]: Tape.[DataPointer]+1 }
+        if command="-" { Tape.[DataPointer]: Tape.[DataPointer]-1 }
+        if command=">" { DataPointer: DataPointer+1, if DataPointer=[size Tape] { Tape: Tape+0 } }
+        if command="<" { DataPointer: DataPointer-1 }
+        if command="." { prints [char Tape.[DataPointer]] }
         if command="," {
-            inp $(toNumber input)
-            if inp=13 { inp 10 }
+            inp: toNumber|input ~
+            if inp=13 { inp: 10 }
             if inp=3  { panic "something went wrong!" }
-            set Tape DataPointer inp
+            Tape.DataPointer: inp
         }
         if command="[" {
-            if Tape.[DataPointer]=0 { InstructionPointer Jumps.[$(toString InstructionPointer)] }
+            if Tape.[DataPointer]=0 { InstructionPointer: Jumps.[toString InstructionPointer] }
         }
         if command="]" {
-            if Tape.[DataPointer]!=0 { InstructionPointer Jumps.[$(toString InstructionPointer)] }
+            if Tape.[DataPointer]!=0 { InstructionPointer: Jumps.[toString InstructionPointer] }
         }
 
-        InstructionPointer InstructionPointer+1
+        InstructionPointer: InstructionPointer+1
     }
 }
 
-if $(size &)<1 { panic "Not enough arguments - Usage: bfc <script>" }
+if [size &]<1 { panic "Not enough arguments - Usage: bfc <script>" }
 
-Code                    $(read &0)
-CodeLength              $(size Code)
-Jumps                   $(precomputeJumps)
+Code            : read &0
+CodeLength      : size Code
+Jumps           : precomputeJumps ~
 
-interpret
+interpret ~
