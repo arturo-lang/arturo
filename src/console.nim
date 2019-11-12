@@ -102,7 +102,7 @@ proc startRepl*() =
 
     while true:
         try:
-            currentExpression = readLineFromStdin(getPrompt(currentLine)).strip
+            currentExpression = readLineFromStdin(getPrompt(currentLine))
 
             if currentExpression.startsWith("?"):
                 let parts = currentExpression.split(" ")
@@ -118,7 +118,7 @@ proc startRepl*() =
                     else: consoleError("command '" & parts[0] & "' not found")
             
             else: 
-                echo "\e[2m= " & runString(currentExpression) & "\e[0;37m"
+                echo "\e[2m= " & runString(currentExpression & "\n") & "\e[0;37m"
                 source &= currentExpression & "\n"
                 inc(currentLine)
 
