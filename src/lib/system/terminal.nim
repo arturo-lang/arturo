@@ -5,6 +5,7 @@
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
   * @file: lib/system/terminal.nim
+  * @description: interacting with the terminal
   *****************************************************************]#
 
 #[######################################################
@@ -34,6 +35,13 @@ proc Terminal_prints*[F,X,V](f: F, xl: X): V {.inline.} =
     flushFile(stdout)
 
     result = v[0]  
+
+proc Terminal_shell*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    let (outp, errC) = execCmdEx(S(0))
+
+    result = STR(outp)
 
 #[******************************************************
   ******************************************************
