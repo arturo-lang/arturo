@@ -1,19 +1,19 @@
-isBalanced [s]{
-	cnt 0
+isBalanced: @(s){
+	cnt: 0
 
-	loop $(characters s) [c]{
-		if c="]" {
-			if $(cnt cnt-1)<0 { return false }
+	loop [chars s] {
+		if &="]" {
+			if [cnt: cnt-1]<0 { return false }
 		} {
-			if c="[" { cnt cnt+1 }
+			if &="[" { cnt: cnt+1 }
 		}
     }
 
     return cnt=0
 }
 
-loop $(range 1 9) [i]{
-	str $(join $(map $(range 0 2*i-1) { sample #("[" "]") }) "")
-	print str true
-	if $(isBalanced str) { print " OK" } { print " Not OK" }
+loop 1..9 @(i){
+	str: [join [map 0..2*i-1 { sample #("[" "]") }] ""]
+	prints str
+	if [isBalanced str] { print " OK" } { print " Not OK" }
 }

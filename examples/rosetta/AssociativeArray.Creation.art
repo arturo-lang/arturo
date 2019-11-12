@@ -1,8 +1,8 @@
 // create a dictionary
-dict #{
-	name 	"john"
-	surname "doe"
-	age 	33
+dict: #{
+	name: 		"john"
+	surname: 	"doe"
+	age: 		33
 }
 
 print dict
