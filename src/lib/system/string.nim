@@ -5,6 +5,7 @@
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
   * @file: lib/system/string.nim
+  * @description: String manipulation
   *****************************************************************]#
 
 #[######################################################

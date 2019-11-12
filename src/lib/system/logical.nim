@@ -5,6 +5,7 @@
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
   * @file: lib/system/logical.nim
+  * @description: logical and bitwise operations
   *****************************************************************]#
 
 #[######################################################

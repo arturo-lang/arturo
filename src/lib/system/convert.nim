@@ -5,6 +5,7 @@
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
   * @file: lib/system/convert.nim
+  * @description: converting between different values
   *****************************************************************]#
 
 #[######################################################
