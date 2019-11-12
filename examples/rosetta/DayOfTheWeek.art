@@ -1,3 +1,0 @@
-sundays $(filter $(range 2008 2121) { $(day &+"-12-25")="sun" })
-
-print sundays
