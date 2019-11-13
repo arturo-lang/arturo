@@ -9,7 +9,7 @@
 
 import algorithm, base64, bitops, httpClient, macros, math, md5, os, osproc, parseutils
 import random, re, sequtils, std/editdistance, std/sha1, strformat, strutils, sugar
-import unicode, tables, terminal
+import unicode, tables, terminal, times
 
 import bignum, markdown, mustache
 import panic, utils
@@ -196,6 +196,7 @@ proc inspectStack()
 
 proc INT(v: string): Value {.inline.}
 proc BIGINT*(v: string): Value {.inline.}
+proc REAL(v: string): Value {.inline.}
 proc STRARR(v: seq[string]): Value {.inline.}
 proc INTARR(v: seq[int]): Value {.inline.}
 proc BIGINTARR(v: seq[Int]): Value {.inline.}
@@ -354,6 +355,7 @@ include lib/system/path
 include lib/system/reflection
 include lib/system/string
 include lib/system/terminal
+include lib/system/time
 
 ##---------------------------
 ## Function registration
@@ -376,7 +378,8 @@ let
         SystemFunction(lib:"array",         name:"map!",                call:Array_mapI,                req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element (in-place)"),
         SystemFunction(lib:"array",         name:"pop",                 call:Array_pop,                 req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array (same as 'last')"),
         SystemFunction(lib:"array",         name:"pop!",                call:Array_popI,                req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array and delete it (in-place)"),
-        SystemFunction(lib:"array",         name:"range",               call:Array_range,               req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to) with optional step"),
+        SystemFunction(lib:"array",         name:"range",               call:Array_range,               req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to)"),
+        SystemFunction(lib:"array",         name:"rangeBy",             call:Array_rangeBy,             req: @[@[IV,IV,IV]],                                                                ret: @[AV],             desc:"get array from given range (from..to) with step"),
         SystemFunction(lib:"array",         name:"rotate",              call:Array_rotate,              req: @[@[AV],@[AV,IV]],                                                             ret: @[AV],             desc:"rotate given array, optionally by using step; negative values for left rotation"),
         SystemFunction(lib:"array",         name:"rotate!",             call:Array_rotateI,             req: @[@[AV],@[AV,IV]],                                                             ret: @[AV],             desc:"rotate given array, optionally by using step; negative values for left rotation (in-place)"),
         SystemFunction(lib:"array",         name:"sample",              call:Array_sample,              req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get random sample from given array"),
@@ -429,6 +432,7 @@ let
         SystemFunction(lib:"generic",       name:"deleteBy",            call:Generic_deleteBy,          req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[AV,SV,DV],       desc:"delete index from given array, dictionary or string"),
         SystemFunction(lib:"generic",       name:"deleteBy!",           call:Generic_deleteByI,         req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[AV,SV,DV],       desc:"delete index from given array, dictionary or string (in-place)"),
         SystemFunction(lib:"generic",       name:"get",                 call:Generic_get,               req: @[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[ANY],            desc:"get element from array, dictionary or string using given index/key"),
+        SystemFunction(lib:"generic",       name:"index",               call:Generic_index,             req: @[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[IV],             desc:"get index of string/element within string/array or -1 if not found"),
         SystemFunction(lib:"generic",       name:"isEmpty",             call:Generic_isEmpty,           req: @[@[AV],@[SV],@[DV]],                                                          ret: @[BV],             desc:"check if given array, dictionary or string is empty"),
         SystemFunction(lib:"generic",       name:"reverse",             call:Generic_reverse,           req: @[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string"),
         SystemFunction(lib:"generic",       name:"reverse!",            call:Generic_reverseI,          req: @[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string (in-place)"),
@@ -573,7 +577,10 @@ let
         SystemFunction(lib:"terminal",      name:"inputChar",           call:Terminal_inputChar,        req: @[@[NV]],                                                                      ret: @[SV],             desc:"read character from terminal, without being printed"),
         SystemFunction(lib:"terminal",      name:"print",               call:Terminal_print,            req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen"),
         SystemFunction(lib:"terminal",      name:"prints",              call:Terminal_prints,           req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen without newline"),
-        SystemFunction(lib:"terminal",      name:"shell",               call:Terminal_shell,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"execute given shell command and get string output")
+        SystemFunction(lib:"terminal",      name:"shell",               call:Terminal_shell,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"execute given shell command and get string output"),
+
+        SystemFunction(lib:"time",          name:"benchmark",           call:Time_benchmark,            req: @[@[FV]],                                                                      ret: @[IV],             desc:"time the execution of a given function in seconds"),
+        SystemFunction(lib:"time",          name:"delay",               call:Time_delay,                req: @[@[IV]],                                                                      ret: @[IV],             desc:"create system delay for given duration in milliseconds")
     ]
 
 ##---------------------------
