@@ -1,17 +1,18 @@
-bubbleSort [items]{
-    loop $(range $(size items)-1 0) [n]{
-        swapped false
-        loop $(range 0 n-1) [i]{
+bubbleSort: @(items){
+    changed: true
+
+    loop changed {
+        changed: false
+        i: 0
+        loop [size items]-1 {
             if items.[i]>items.[i+1] {
-                tmp items.[i+1]
-                items.[i+1] items.[i]
-                items.[i] tmp
-                swapped true
+                swap! items i i+1
+                changed: true
             }
+            i: i+1
         }
-        if $(not swapped) { return items }
     }
-    return items
+    items
 }
 
-print $(bubbleSort #(3 1 2 8 5 7 9 4 6))
+print [bubbleSort #(3 1 2 8 5 7 9 4 6)]

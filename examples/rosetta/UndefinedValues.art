@@ -1,3 +1,3 @@
-undef null
+undef: null
 
 print undef

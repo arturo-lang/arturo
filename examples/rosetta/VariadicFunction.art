@@ -1,4 +1,4 @@
-printAll [args]{
+printAll: @(args){
 	loop args {
 		print &
 	}

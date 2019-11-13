@@ -1,15 +1,15 @@
-num 10
-str "hello world"
+num: 10
+str: "hello world"
 
-arrA 1 2 3
-arrB "one" "two" "three"
-arrC 1 "two" #(3 4 5)
-arrD #("one" true { print "something"})
+arrA: #(1 2 3)
+arrB: #("one" "two" "three")
+arrC: #(1 "two" #(3 4 5))
+arrD: #("one" true { print "something"})
 
-dict #{
-	name "john"
-	surname "doe"
-	func {
+dict: #{
+	name: "john"
+	surname: "doe"
+	func: {
 		print "do sth"
 	}
 }

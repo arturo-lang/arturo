@@ -1,5 +1,5 @@
-str "alphaBETA"
+str: "alphaBETA"
 
-print "uppercase  : " + $(uppercase str)
-print "lowercase  : " + $(lowercase str)
-print "capitalize : " + $(capitalize str)
+print "uppercase  : " + [uppercase str]
+print "lowercase  : " + [lowercase str]
+print "capitalize : " + [capitalize str]

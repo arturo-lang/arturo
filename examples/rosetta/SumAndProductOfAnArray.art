@@ -1,4 +1,4 @@
-arr $(range 1 10)
+arr: 1..10
 
-print "Sum = " + $(sum arr)
-print "Product = " + $(product arr)
+print "Sum = " + [sum arr]
+print "Product = " + [product arr]

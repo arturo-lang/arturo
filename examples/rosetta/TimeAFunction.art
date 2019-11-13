@@ -1,5 +1,5 @@
-func {
+func: {
 	delay 2000
 }
 
-print "Function took: " + $(timer func) + "ms"
+print "Function took: " + [benchmark func] + "s"
