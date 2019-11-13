@@ -132,6 +132,22 @@ proc Array_range*[F,X,V](f: F, xl: X): V {.inline.} =
             result.a.add(INT(i))
             dec(i)    
 
+proc Array_rangeBy*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    if I(0)<I(1):   
+        result = ARR(@[])
+        var i = I(0)
+        while i <= I(1):
+            result.a.add(INT(i))
+            inc(i,I(2))
+    else:
+        result = ARR(@[])
+        var i = I(0)
+        while i >= I(1):
+            result.a.add(INT(i))
+            dec(i,I(2))   
+
 proc Array_rotate*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
