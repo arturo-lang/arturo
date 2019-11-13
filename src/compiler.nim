@@ -1119,12 +1119,17 @@ proc eq(l: Value, r: Value): bool {.inline.} =
             result = case r.kind
                 of SV: l.s==r.s
                 else: NotComparableError($(l.kind),$(r.kind))
-                    
         of IV:
             result = case r.kind
                 of IV: l.i==r.i
                 of BIV: l.i==r.bi
                 of RV: l.i==int(r.r)
+                else: NotComparableError($(l.kind),$(r.kind))
+        of BIV:
+            result = case r.kind
+                of IV: l.bi==r.i
+                of BIV: l.bi==r.bi
+                of RV: l.bi==int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
         of RV:
             result = case r.kind
@@ -1180,6 +1185,12 @@ proc lt(l: Value, r: Value): bool {.inline.} =
                 of BIV: l.i<r.bi
                 of RV: l.i<int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
+        of BIV:
+            result = case r.kind
+                of IV: l.bi<r.i
+                of BIV: l.bi<r.bi
+                of RV: l.bi<int(r.r)
+                else: NotComparableError($(l.kind),$(r.kind))
         of RV:
             result = case r.kind
                 of IV: int(l.r)<r.i
@@ -1205,17 +1216,23 @@ proc gt(l: Value, r: Value): bool {.inline.} =
         of SV:
             result = case r.kind
                 of SV: l.s>r.s
-                else: NotComparableError($(l.kind),$(r.kind))
-                    
+                else: NotComparableError($(l.kind),$(r.kind))   
         of IV:
             result = case r.kind
                 of IV: l.i>r.i
                 of BIV: l.i>r.bi
                 of RV: l.i>int(r.r)
                 else: NotComparableError($(l.kind),$(r.kind))
+        of BIV:
+            result = case r.kind
+                of IV: l.bi>r.i
+                of BIV: l.bi>r.bi
+                of RV: l.bi>int(r.r)
+                else: NotComparableError($(l.kind),$(r.kind))
         of RV:
             result = case r.kind
                 of IV: int(l.r)>r.i
+                of BIV: int(l.r)>r.bi
                 of RV: l.r>r.r
                 else: NotComparableError($(l.kind),$(r.kind))
         of AV:
