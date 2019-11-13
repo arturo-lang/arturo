@@ -11,7 +11,7 @@ _cache/*.deps
 _cache/*.sh
 _cache/*.json
 _cache/
-
+docgen.out
 /arturo
 /test.d
 #/test
