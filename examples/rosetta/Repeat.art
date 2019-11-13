@@ -1,10 +1,10 @@
-proc {
+proc: {
 	print "I'm in proc!"
 }
 
-repeat [func,times]{
-	loop $(range 0 times-1) {
-		func
+repeat: @(func times){
+	loop times {
+		func ~
 	}
 }
 

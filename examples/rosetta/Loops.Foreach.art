@@ -1,15 +1,15 @@
-array #("one" "two" "three")
+array: #("one" "two" "three")
 
-dict #{
-	name	"john"
-	surname	"doe"
-	age	33
+dict: #{
+	name:		"john"
+	surname:	"doe"
+	age:		33
 }
 
 loop array {
 	print &
 }
 
-loop dict [key,val]{
+loop dict @(key val){
 	print key + " => " + val
 }

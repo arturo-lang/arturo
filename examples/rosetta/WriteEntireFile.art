@@ -1,2 +1,2 @@
-contents "Hello World!"
-file:write "output.txt" contents
+contents: "Hello World!"
+write "output.txt" contents

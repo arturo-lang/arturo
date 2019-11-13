@@ -1,29 +1,29 @@
-leftTrunc [num]{
-	str $(toString num)
-	ret #()
-	loop $(range 0 $(size str)-1) [x]{
-		ret ret + $(slice str x $(size str))
+leftTrunc: @(num){
+	str: toString num
+	ret: #()
+	loop [range 0 [size str]-1] @(x){
+		ret: ret + [slice str x [size str]]
 	}
-	return $(map ret { toNumber & })
+	return [map ret => toNumber]
 }
 
-rightTrunc [num]{
-	str $(toString num)
-	ret #()
-	loop $(range $(size str) 1) [x]{
-		ret ret + $(slice str 0 x)
+rightTrunc: @(num){
+	str: toString num
+	ret: #()
+	loop [size str]..1 @(x){
+		ret: ret + [slice str 0 x]
 	}
-	return $(map ret { toNumber & })
+	return [map ret => toNumber]
 }
 
-isTruncatablePrime [nums]{ all nums { isPrime & } }
+isTruncatablePrime: @(nums){ all nums => isPrime }
 
-MaxLeft 0
-MaxRight 0
+MaxLeft: 0
+MaxRight: 0
 
-loop $(range 3 1000000 2) [n]{
-	if $(isTruncatablePrime $(leftTrunc n)) { MaxLeft n }
-	if $(isTruncatablePrime $(rightTrunc n)) { MaxRight n }
+loop [rangeBy 3 1000000 2] @(n){
+	if [isTruncatablePrime [leftTrunc n]] { MaxLeft: n }
+	if [isTruncatablePrime [rightTrunc n]] { MaxRight: n }
 }
 
 print "Max Left-Truncatable Prime found (<1000000): " + MaxLeft

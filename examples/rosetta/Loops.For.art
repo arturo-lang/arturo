@@ -1,6 +1,6 @@
-loop $(range 0 5) {
-	loop $(range 0 &) {
-		print "*" true
+loop 0..5 {
+	loop 0..& {
+		prints "*"
 	}
-	""
+	print ""
 }

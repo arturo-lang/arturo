@@ -1,6 +1,6 @@
-print "'abcd' starts with 'ab' = " + $(startsWith "abcd" "ab")
+print "'abcd' starts with 'ab' = " + [startsWith "abcd" "ab"]
 
-print "'abcd' contains 'bc' = " + $(contains "abcd" "bc")
-print "'bc' found in 'abcd' at location = " + $(find "abcd" "bc")
+print "'abcd' contains 'bc' = " + [contains "abcd" "bc"]
+print "'bc' found in 'abcd' at location = " + [index "abcd" "bc"]
 
-print "'abcd' ends with 'zn' = " + $(endsWith "abcd" "zn")
+print "'abcd' ends with 'zn' = " + [endsWith "abcd" "zn"]

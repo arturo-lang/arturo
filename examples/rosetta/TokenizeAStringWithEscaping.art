@@ -1,21 +1,21 @@
 
-tokenize [s,sep,esc]{
-	escaping 0
-	loop $(range 0 $(size s)-1) [i]{
-		chr $(get $(characters s) i) 
+tokenize: @(s sep esc){
+	escaping: 0
+	loop [range 0 [size s]-1] @(i){
+		chr: [chars s].[i]
 
 		if escaping=1 {
-			print chr true
-			escaping 0
+			prints chr
+			escaping: 0
 		} {
 			if chr=sep {
 				print ""
 
 			} {
 				if chr=esc {
-					escaping 1
+					escaping: 1
 				} {
-					print chr true
+					prints chr
 				}
 			}
 		}
@@ -23,5 +23,5 @@ tokenize [s,sep,esc]{
 	print ""
 }
 
-str "one^|uno||three^^^^|four^^^|^cuatro|" 
-print $(tokenize str "|" "^")
+str: "one^|uno||three^^^^|four^^^|^cuatro|" 
+print [tokenize str "|" "^"]

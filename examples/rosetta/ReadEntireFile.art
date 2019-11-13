@@ -1,1 +1,1 @@
-contents $(file:read "input.txt")
+contents: read "input.txt"
