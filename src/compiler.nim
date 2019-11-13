@@ -9,7 +9,7 @@
 
 import algorithm, base64, bitops, httpClient, macros, math, md5, os, osproc, parseutils
 import random, re, sequtils, std/editdistance, std/sha1, strformat, strutils, sugar
-import unicode, tables, terminal, times
+import unicode, tables, terminal, times, uri
 
 import bignum, markdown, mustache
 import panic, utils
@@ -202,6 +202,7 @@ proc INTARR(v: seq[int]): Value {.inline.}
 proc BIGINTARR(v: seq[Int]): Value {.inline.}
 proc REALARR(v: seq[float]): Value {.inline.}
 proc BOOLARR(v: seq[bool]): Value {.inline.}
+proc DICT(v: seq[(string,Value)]): Value {.inline.}
 proc valueCopy(v: Value): Value
 proc findValueInArray(v: Value, lookup: Value): int
 proc findValueInArray(v: seq[Value], lookup: Value): int
@@ -356,6 +357,7 @@ include lib/system/reflection
 include lib/system/string
 include lib/system/terminal
 include lib/system/time
+include lib/system/url
 
 ##---------------------------
 ## Function registration
@@ -580,7 +582,22 @@ let
         SystemFunction(lib:"terminal",      name:"shell",               call:Terminal_shell,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"execute given shell command and get string output"),
 
         SystemFunction(lib:"time",          name:"benchmark",           call:Time_benchmark,            req: @[@[FV]],                                                                      ret: @[IV],             desc:"time the execution of a given function in seconds"),
-        SystemFunction(lib:"time",          name:"delay",               call:Time_delay,                req: @[@[IV]],                                                                      ret: @[IV],             desc:"create system delay for given duration in milliseconds")
+        SystemFunction(lib:"time",          name:"delay",               call:Time_delay,                req: @[@[IV]],                                                                      ret: @[IV],             desc:"create system delay for given duration in milliseconds"),
+
+        SystemFunction(lib:"url",           name:"decodeUrl",           call:Url_decodeUrl,             req: @[@[SV]],                                                                      ret: @[SV],             desc:"decode given URL"),
+        SystemFunction(lib:"url",           name:"decodeUrl!",          call:Url_decodeUrlI,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"decode given URL (in-place)"),
+        SystemFunction(lib:"url",           name:"encodeUrl",           call:Url_encodeUrl,             req: @[@[SV]],                                                                      ret: @[SV],             desc:"encode given URL"),
+        SystemFunction(lib:"url",           name:"encodeUrl!",          call:Url_encodeUrlI,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"encode given URL (in-place)"),
+        SystemFunction(lib:"url",           name:"isAbsoluteUrl",       call:Url_isAbsoluteUrl,         req: @[@[SV]],                                                                      ret: @[BV],             desc:"check if given URL is absolute"),
+        SystemFunction(lib:"url",           name:"urlAnchor",           call:Url_urlAnchor,             req: @[@[SV]],                                                                      ret: @[SV],             desc:"get anchor component of given URL"),
+        SystemFunction(lib:"url",           name:"urlComponents",       call:Url_urlComponents,         req: @[@[SV]],                                                                      ret: @[DV],             desc:"get all components from given URL"),
+        SystemFunction(lib:"url",           name:"urlHost",             call:Url_urlHost,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"get host component from given URL"),
+        SystemFunction(lib:"url",           name:"urlPassword",         call:Url_urlPassword,           req: @[@[SV]],                                                                      ret: @[SV],             desc:"get password component from given URL"),
+        SystemFunction(lib:"url",           name:"urlPath",             call:Url_urlPath,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"get path from given URL"),
+        SystemFunction(lib:"url",           name:"urlPort",             call:Url_urlPort,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"get port component from given URL"),
+        SystemFunction(lib:"url",           name:"urlQuery",            call:Url_urlQuery,              req: @[@[SV]],                                                                      ret: @[SV],             desc:"get query part from given URL"),
+        SystemFunction(lib:"url",           name:"urlScheme",           call:Url_urlScheme,             req: @[@[SV]],                                                                      ret: @[SV],             desc:"get scheme part from given URL"),
+        SystemFunction(lib:"url",           name:"urlUser",             call:Url_urlUser,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"get username component from given URL")
     ]
 
 ##---------------------------
@@ -809,6 +826,9 @@ proc REALARR(v: seq[float]): Value {.inline.} =
 
 proc BOOLARR(v: seq[bool]): Value {.inline.} =
     result = ARR(v.map((x)=>BOOL(x)))
+
+proc DICT(v: seq[(string,Value)]): Value {.inline.} =
+    result = DICT(Context(list:v))
 
 proc valueCopy(v: Value): Value =
     {.computedGoto.}
@@ -1322,7 +1342,7 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
             result = "#{\n"
             
             if v.d.keys.len==0: return "#{}"
-            let items = sorted(v.d.keys).map((x) => repeat("\t",prepend) & repeat(" ",padding) & "\t" & KEY_COLOR & strutils.alignLeft(x,INSPECT_PADDING) & RESTORE_COLOR & "" & v.d.getValueForKey(x).inspect(prepend+1,true) & "\n")
+            let items = sorted(v.d.keys).map((x) => repeat("\t",prepend) & repeat(" ",padding) & "\t" & KEY_COLOR & strutils.alignLeft(x,INSPECT_PADDING) & RESTORE_COLOR & ": " & v.d.getValueForKey(x).inspect(prepend+1,true) & "\n")
 
             result &= items.join("")
             result &= repeat("\t",prepend) & repeat(" ",padding) & "}"
