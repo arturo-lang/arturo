@@ -22,7 +22,7 @@ proc removingSuffix*(s: string, pr: string): string =
     else: s
 
 template isRegex*(s: string): bool = 
-    s.startsWith("/") and s.endsWith("/")
+    s.len!=1 and s.startsWith("/") and s.endsWith("/")
 
 template prepareRegex*(s: string): string = 
     s.removingPrefix("/").removingSuffix("/")
