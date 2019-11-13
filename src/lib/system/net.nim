@@ -4,8 +4,8 @@
   * Programming Language + Interpreter
   * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
   *
-  * @file: lib/system/math.nim
-  * @description: number-related & math operations
+  * @file: lib/system/net.nim
+  * @description: network-related operations
   *****************************************************************]#
 
 #[######################################################
