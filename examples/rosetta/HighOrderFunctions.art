@@ -1,6 +1,6 @@
-doSthWith [x,y,func]{
-	$(func x y)
+doSthWith: @(x y func){
+	func x y
 }
 
-print "add: " + $(doSthWith 2 3 { &0 + &1 })
-print "multiply: " + $(doSthWith 2 3 { &0 * &1 })
+print "add: " + [doSthWith 2 3 { &0 + &1 }]
+print "multiply: " + [doSthWith 2 3 { &0 * &1 }]

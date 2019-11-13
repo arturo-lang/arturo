@@ -1,21 +1,21 @@
-iRoot [b,n] {
-    if b<2 -> b
+iRoot: @(b n){
+    if b<2 { return b }
 
-    n1 n-1
-    n2 n
-    n3 n1
-    c 1
-    d (n3+b)/n2
-    e (n3*d + b/d^n1)/n2
-    loop $(and c!=d c!=e) {
-        c d
-        d e
-        e (n3*e + b/e^n1)/n2
+    n1: n-1
+    n2: n
+    n3: n1
+    c: 1
+    d: (n3+b)/n2
+    e: (n3*d + b/d^n1)/n2
+    loop [and c!=d c!=e] {
+        c: d
+        d: e
+        e: (n3*e + b/e^n1)/n2
     }
-    if d<e -> d
+    if d<e { return d }
     return e
 }
 
-print "3rd root of 8 = " + $(iRoot 8 3)
-print "3rd root of 9 = " + $(iRoot 9 3)
-print "First 2001 digits of the square root of 2 = " + $(iRoot 100^2000*2 2)
+print "3rd root of 8 = " + [iRoot 8 3]
+print "3rd root of 9 = " + [iRoot 9 3]
+print "First 2001 digits of the square root of 2 = " + [iRoot 100^2000*2 2]

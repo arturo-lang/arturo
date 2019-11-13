@@ -1,1 +1,1 @@
-print $(gcd #(10 15))
+print [gcd #(10 15)]

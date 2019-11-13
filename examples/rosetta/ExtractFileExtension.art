@@ -1,6 +1,6 @@
-files #("http://example.com/download.tar.gz" "CharacterModel.3DS" ".desktop" "document" "document.txt_backup" "/etc/pam.d/login")
+files: #("http://example.com/download.tar.gz" "CharacterModel.3DS" ".desktop" "document" "document.txt_backup" "/etc/pam.d/login")
 
 loop files {
-	ext $(if $(not $(contains $(getExtension &) "_")) { $(getExtension &) } { ""+"" })
+	ext: if [not|contains [pathExtension &] "_"] { pathExtension & } { "" }
 	print & + " => extension: " + ext
 }

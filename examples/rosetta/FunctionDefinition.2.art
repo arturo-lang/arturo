@@ -1,5 +1,5 @@
-multiply [x,y]{
+multiply: @(x y){
 	return x*y
 }
 
-print $(multiply 3 7)
+print [multiply 3 7]
