@@ -87,12 +87,13 @@ template compileExperiment() =
 template runExperiment() =
     exec "./experimental"
 
-# template compileDocgen() = 
-#     showMessage("Compiling documentation generator")
-#     exec "nim c -d:release --opt:speed --hints:off --nimcache:_cache --threads:on --path:src -o:docgen docs/docgen.nim"
+template compileDocgen() = 
+    showMessage("Compiling documentation generator")
+    exec "nim c -d:release --opt:speed --hints:off --nimcache:_cache --threads:on --path:src -o:docgen scripts/docgen.nim"
 
-# template runDocgen() =
-#     exec "./docgen"
+template runDocgen() =
+    showMessage("Running documentation generator")
+    exec "./docgen.out"
 
 # template compileSitegen() = 
 #     showMessage("Compiling website generator")
@@ -185,6 +186,7 @@ task release, "Build a production-ready optimized release":
     updateBuild()
     compileCore()
     stripBinary()
+    runDocgen()
     cleanUp()
     showMessage "Done :)", true
 
@@ -223,10 +225,9 @@ task experiment, "Run experiments":
     showMessage "Done :)", true
     runExperiment()
 
-# task docgen, "Run documentation generator":
-#     compileDocgen()
-#     showMessage "Done :)", true
-#     runDocgen()
+task docgen, "Run documentation generator":
+    compileDocgen()
+    showMessage "Done :)", true
 
 # task sitegen, "Run website generator":
 #     compileSitegen()
