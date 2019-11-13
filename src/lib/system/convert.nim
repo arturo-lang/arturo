@@ -45,9 +45,12 @@ proc Convert_toNumber*[F,X,V](f: F, xl: X): V {.inline.} =
                     discard parseFloat(S(0),ret)
                     result = REAL(ret)
                 else:
-                    var ret = 0
-                    discard parseInt(S(0),ret)
-                    result = INT(ret)
+                    try: 
+                        var ret = 0
+                        discard parseInt(S(0),ret)
+                        result = INT(ret)
+                    except Exception as e: 
+                        result = BIGINT(S(0))
 
         of RV: result = INT(int(R(0)))
         of BV: (if B(0): result = INT(1) else: result = INT(0))
