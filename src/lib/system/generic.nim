@@ -38,7 +38,7 @@ proc Generic_contains*[F,X,V](f: F, xl: X): V {.inline.} =
     case v[0].kind
          of AV: result = BOOL(findValueInArray(v[0],v[1])!=(-1))
          of SV: 
-            if unlikely(S(0).isRegex()):
+            if unlikely(S(1).isRegex()):
                 result = BOOL(S(0).contains(re(prepareRegex(S(1)))))
             else:
                 result = BOOL(S(0).contains(S(1)))
@@ -109,6 +109,14 @@ proc Generic_get*[F,X,V](f: F, xl: X): V {.inline.} =
         of DV: result = D(0).getValueForKey(S(1))
         of SV: result = STR($(S(0)[I(1)]))
         else: discard
+
+proc Generic_index*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    case v[0].kind
+        of AV: result = INT(findValueInArray(A(0),v[1]))
+        of SV: result = INT(S(0).find(S(1)))
+        else: discard 
 
 proc Generic_isEmpty*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
