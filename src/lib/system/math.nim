@@ -59,6 +59,22 @@ proc isPrime*(n: uint32): bool {.noSideEffect.} =
 proc isPrime*(n: int32): bool {.noSideEffect.} =
     n >= 0 and n.uint32.isPrime
 
+proc primeFactors*(n: int): seq[int] =    
+    var res: seq[int] = @[]
+    var maxq = int(floor(sqrt(float(n))))
+    var d = 1
+    var q: int = (n %% 2) and 2 or 3  
+    while (q <= maxq) and ((n %% q) != 0):
+        q = 1 + d*4 - int(d /% 2)*2
+        d += 1
+    if q <= maxq:        
+        var q1: seq[int] = primeFactors(n /% q)
+        var q2: seq[int] = primeFactors(q)
+        res = concat(q2, q1, res)
+    else: 
+        res.add(n)    
+    result = res
+
 
 #[######################################################
     Functions
@@ -261,6 +277,11 @@ proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
         if A(0)[i].lt(result):
             result = A(0)[i]
         inc(i)
+
+proc Math_primeFactors*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = INTARR(primeFactors(I(0)))
 
 proc Math_product*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
