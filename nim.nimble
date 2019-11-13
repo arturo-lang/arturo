@@ -95,13 +95,6 @@ template runDocgen() =
     showMessage("Running documentation generator")
     exec "./docgen.out"
 
-# template compileSitegen() = 
-#     showMessage("Compiling website generator")
-#     exec "nim c -d:release --opt:speed --hints:off --nimcache:_cache --threads:on --path:src -o:sitegen docs/sitegen.nim"
-
-# template runSitegen() =
-#     exec "./sitegen"
-
 template compileUnittests() = 
     showMessage("Compiling unittests")
     let args = @[
@@ -228,11 +221,6 @@ task experiment, "Run experiments":
 task docgen, "Run documentation generator":
     compileDocgen()
     showMessage "Done :)", true
-
-# task sitegen, "Run website generator":
-#     compileSitegen()
-#     showMessage "Done :)", true
-#     runSitegen()
 
 task test, "Run Unittests":
     buildLibrary()
