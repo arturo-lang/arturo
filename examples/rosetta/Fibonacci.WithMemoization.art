@@ -1,5 +1,0 @@
-Fib $(memoize [x]{
-	if x<2 { 1 }{
-		$(Fib x-1) + $(Fib x-2)
-	} 
-})
