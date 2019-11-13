@@ -7,9 +7,9 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, base64, bitops, macros, math, md5, os, osproc, parseutils, random, re
-import sequtils, std/editdistance, std/sha1, strformat, strutils, sugar, unicode, tables
-import terminal
+import algorithm, base64, bitops, httpClient, macros, math, md5, os, osproc, parseutils
+import random, re, sequtils, std/editdistance, std/sha1, strformat, strutils, sugar
+import unicode, tables, terminal
 
 import bignum, markdown, mustache
 import panic, utils
@@ -349,6 +349,7 @@ include lib/system/generic
 include lib/system/io
 include lib/system/logical
 include lib/system/math
+include lib/system/net
 include lib/system/path
 include lib/system/reflection
 include lib/system/string
@@ -500,6 +501,8 @@ let
         SystemFunction(lib:"math",          name:"sum",                 call:Math_sum,                  req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return sum of elements of given array"),
         SystemFunction(lib:"math",          name:"tan",                 call:Math_tan,                  req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the tangent of given value"),
         SystemFunction(lib:"math",          name:"tanh",                call:Math_tanh,                 req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the hyperbolic tangent of given value"),
+
+        SystemFunction(lib:"net",           name:"download",            call:Net_download,              req: @[@[SV]],                                                                      ret: @[SV],             desc:"retrieve string contents from webpage using given URL"),
 
         SystemFunction(lib:"path",          name:"absolutePath",        call:Path_absolutePath,         req: @[@[SV]],                                                                      ret: @[SV],             desc:"get absolute path from given path"),
         SystemFunction(lib:"path",          name:"absolutePath!",       call:Path_absolutePathI,        req: @[@[SV]],                                                                      ret: @[SV],             desc:"get absolute path from given path (in-place)"),
@@ -1090,7 +1093,9 @@ proc `^`(l: Value, r: Value): Value {.inline.} =
     case l.kind
         of IV:
             result = case r.kind
-                of IV: INT(l.i ^ r.i)
+                of IV: 
+                    try: INT(l.i ^ r.i)
+                    except Exception as e: BIGINT(pow(newInt(l.i),culong(r.i)))
                 of RV: INT(l.i ^ int(r.r))
                 else: InvalidOperationError("^",$(l.kind),$(r.kind))
         of BIV:
