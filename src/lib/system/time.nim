@@ -21,6 +21,51 @@ proc Time_benchmark*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(elapsed)
 
+proc Time_datetime*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    case v[0].kind
+        of SV:
+            var dt: DateTime
+            if xl.list.len==2:
+                dt = parse(S(0), S(1))
+            else:
+                dt = parse(S(0), "dd-MM-yyyy HH:mm:ss")
+
+            result = INT(int(toUnix(dt.toTime())))
+        of IV:
+            let dt = fromUnix(int64(I(0))).local
+            var tf: TimeFormat
+
+            if xl.list.len==2:
+                tf = initTimeFormat(S(1))
+            else:
+                tf = initTimeFormat("dd-MM-yyyy HH:mm:ss")
+
+            result = STR(dt.format(tf))
+        else: discard
+
+proc Time_day*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    let dt = fromUnix(int64(I(0))).local
+
+    result = STR($(dt.weekday))
+
+proc Time_dayOfMonth*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    let dt = fromUnix(int64(I(0))).local
+
+    result = INT(dt.monthday)
+
+proc Time_dayOfYear*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    let dt = fromUnix(int64(I(0))).local
+
+    result = INT(dt.yearday)
+
 proc Time_delay*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
@@ -28,39 +73,45 @@ proc Time_delay*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = v[0]
 
+proc Time_hours*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    let dt = fromUnix(int64(I(0))).local
+
+    result = INT(dt.hour)
+
+proc Time_minutes*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    let dt = fromUnix(int64(I(0))).local
+
+    result = INT(dt.minute)
+
 proc Time_month*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    var f: TimeFormat
-    if xl.list.len==2:
-        f = initTimeFormat(S(1))
-    else:
-        f = initTimeFormat("dd-MM-yyyy")
-    
-    let dt = S(0).parse(f)
+    let dt = fromUnix(int64(I(0))).local
 
     result = STR($(dt.month))
 
 proc Time_now*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    let dt = now()
+    result = INT(int(toUnix(getTime())))
 
-    if v[0].kind == SV:
-        result = STR(dt.format(S(0)))
-    else:
-        result = STR(dt.format("HH:mm:ss"))
-
-proc Time_today*[F,X,V](f: F, xl: X): V {.inline.} =
+proc Time_seconds*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    let dt = now()
+    let dt = fromUnix(int64(I(0))).local
 
-    if v[0].kind == SV:
-        result = STR(dt.format(S(0)))
-    else:
-        result = STR(dt.format("dd-MM-yyyy"))
-    
+    result = INT(dt.second)
+
+proc Time_year*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    let dt = fromUnix(int64(I(0))).local
+
+    result = STR(dt.year)
 
 #[******************************************************
   ******************************************************
