@@ -55,7 +55,6 @@ proc showFunctions() =
 
     for n in sorted(names):
         let sf = SystemFunctions[getSystemFunction(n)]
-#| path | **createDir** | create directory at given path | [String] -> Boolean |
         let args = 
             if sf.req.len>0: sf.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
             else: "()"
