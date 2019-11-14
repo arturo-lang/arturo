@@ -59,7 +59,7 @@ proc isPrime*(n: uint32): bool {.noSideEffect.} =
 proc isPrime*(n: int32): bool {.noSideEffect.} =
     n >= 0 and n.uint32.isPrime
 
-proc primeFactors*(n: int): seq[int] =    
+proc primeFactors*(n: int): seq[int] {.noSideEffect.} =    
     var res: seq[int] = @[]
     var maxq = int(floor(sqrt(float(n))))
     var d = 1
@@ -75,6 +75,62 @@ proc primeFactors*(n: int): seq[int] =
         res.add(n)    
     result = res
 
+proc pollardG*(n: var Int, m: Int) {.inline.} =
+    discard mul(n,n,n)
+    discard add(n,n,1)
+    discard `mod`(n,n,m)
+
+proc pollardRho*(n: Int): Int {.noSideEffect.} =
+    var x = newInt(2)
+    var y = newInt(2)
+    var d = newInt(1)
+    var z = newInt(1)
+
+    var count = 0
+    var t = newInt(0)
+
+    while true:
+        pollardG(x,n)
+        pollardG(y,n)
+        pollardG(y,n)
+
+        discard abs(t,sub(t,x,y))
+        discard `mod`(t,t,n)
+        discard mul(z,z,t)
+
+        inc(count)
+        if count==100:
+            discard gcd(d,z,n)
+            if cmp(d,1)!=0:
+                break
+            discard set(z,1)
+            count = 0
+
+    if cmp(d,n)==0:
+        return newInt(0)
+    else:
+        return d
+
+proc primeFactors*(num: Int): seq[Int] {.noSideEffect.} =
+    result = @[]
+    var n = num
+
+    if n.probablyPrime(10)!=0:
+        result.add(n)
+
+    let factor1 = pollardRho(num)
+    if factor1==0:
+        return @[]
+
+    if factor1.probablyPrime(10)==0:
+        return @[]
+
+    let factor2 = n div factor1
+    if factor2.probablyPrime(10)==0:
+        return @[]
+
+    result.add(factor1)
+    result.add(factor2)
 
 #[######################################################
     Functions
@@ -281,7 +337,10 @@ proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Math_primeFactors*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    result = INTARR(primeFactors(I(0)))
+    case v[0].kind
+        of IV: result = INTARR(primeFactors(I(0)))
+        of BIV: result = BIGINTARR(primeFactors(BI(0)))
+        else: discard
 
 proc Math_product*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
