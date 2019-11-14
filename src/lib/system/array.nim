@@ -9,6 +9,39 @@
   *****************************************************************]#
 
 #[######################################################
+    Helpers
+  ======================================================]#
+
+proc permutate*(s: seq[Value], emit: proc(emit:seq[Value]) ) =
+    var s = @s
+    if s.len == 0: 
+        emit(s)
+        return
+ 
+    var rc : proc(np: int)
+    rc = proc(np: int) = 
+ 
+        if np == 1: 
+            emit(s)
+            return
+ 
+        var 
+            np1 = np - 1
+            pp = s.len - np1
+ 
+        rc(np1) # recurs prior swaps
+ 
+        for i in countDown(pp, 1):
+            swap s[i], s[i-1]
+            rc(np1) # recurs swap 
+ 
+        let w = s[0]
+        s[0..<pp] = s[1..pp]
+        s[pp] = w
+ 
+    rc(s.len)
+
+#[######################################################
     Functions
   ======================================================]#
 
@@ -105,6 +138,17 @@ proc Array_mapI*[F,X,V](f: F, xl: X): V {.inline.} =
     A(0).apply((x) => FN(1).execute(x))
 
     result = v[0]
+
+proc Array_permutations*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    var ret: seq[Value]
+ 
+    permutate(A(0), proc(s: seq[Value])= 
+        ret.add(ARR(s))
+    )
+
+    result = ARR(ret)
 
 proc Array_pop*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
