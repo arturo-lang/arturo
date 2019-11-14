@@ -7,7 +7,7 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, base64, bitops, httpClient, macros, math, md5, os, osproc, parseutils
+import algorithm, base64, bitops, httpClient, json, macros, math, md5, os, osproc, parseutils
 import random, re, sequtils, std/editdistance, std/sha1, strformat, strutils, sugar
 import unicode, tables, terminal, times, uri
 
@@ -267,6 +267,7 @@ proc getValue(a: Argument): Value {.inline.}
 # Setup
 
 proc setup*(args: seq[string] = @[])
+proc importModule*(path: string): Value
 
 #[######################################################
     Constants
@@ -286,6 +287,7 @@ var
 
     Stack*                  : seq[Context]
     FileName                : string
+    Paths                   : seq[string]
 
     # Const literal arguments
 
@@ -349,6 +351,7 @@ include lib/system/crypto
 include lib/system/dictionary
 include lib/system/generic
 include lib/system/io
+include lib/system/json
 include lib/system/logical
 include lib/system/math
 include lib/system/net
@@ -378,6 +381,7 @@ let
         SystemFunction(lib:"array",         name:"last",                call:Array_last,                req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array"),
         SystemFunction(lib:"array",         name:"map",                 call:Array_map,                 req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element"),
         SystemFunction(lib:"array",         name:"map!",                call:Array_mapI,                req: @[@[AV,FV]],                                                                   ret: @[AV],             desc:"get array after executing given function for each element (in-place)"),
+        SystemFunction(lib:"array",         name:"permutations",        call:Array_permutations,        req: @[@[AV]],                                                                      ret: @[AV],             desc:"get all permutations for given array"),
         SystemFunction(lib:"array",         name:"pop",                 call:Array_pop,                 req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array (same as 'last')"),
         SystemFunction(lib:"array",         name:"pop!",                call:Array_popI,                req: @[@[AV]],                                                                      ret: @[ANY],            desc:"get last element of given array and delete it (in-place)"),
         SystemFunction(lib:"array",         name:"range",               call:Array_range,               req: @[@[IV,IV]],                                                                   ret: @[AV],             desc:"get array from given range (from..to)"),
@@ -404,6 +408,7 @@ let
 
         SystemFunction(lib:"core",          name:"exec",                call:Core_exec,                 req: @[@[FV,AV]],                                                                   ret: @[ANY],            desc:"execute function using given array of values"),
         SystemFunction(lib:"core",          name:"if",                  call:Core_if,                   req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
+        SystemFunction(lib:"core",          name:"import",              call:Core_import,               req: @[@[SV]],                                                                      ret: @[ANY],            desc:"import module or object in given script path"),
         SystemFunction(lib:"core",          name:"loop",                call:Core_loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
         SystemFunction(lib:"core",          name:"new",                 call:Core_new,                  req: @[@[DV],@[AV],@[SV]],                                                          ret: @[ANY],            desc:"get new copy of given object"),
         SystemFunction(lib:"core",          name:"panic",               call:Core_panic,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
@@ -454,6 +459,9 @@ let
         SystemFunction(lib:"io",            name:"read",                call:Io_read,                   req: @[@[SV]],                                                                      ret: @[SV],             desc:"read string from file at given path"),
         SystemFunction(lib:"io",            name:"write",               call:Io_write,                  req: @[@[SV,SV]],                                                                   ret: @[SV],             desc:"write string to file at given path"),
 
+        SystemFunction(lib:"json",          name:"generateJson",        call:Json_generateJson,         req: @[@[SV],@[IV],@[RV],@[BV],@[AV],@[DV]],                                        ret: @[SV],             desc:"get JSON string from given value"),
+        SystemFunction(lib:"json",          name:"parseJson",           call:Json_parseJson,            req: @[@[SV]],                                                                      ret: @[SV,IV,RV,AV,DV], desc:"get object by parsing given JSON string"),
+
         SystemFunction(lib:"logical",       name:"and",                 call:Logical_and,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical AND"),
         SystemFunction(lib:"logical",       name:"nand",                call:Logical_nand,              req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical NAND"),
         SystemFunction(lib:"logical",       name:"nor",                 call:Logical_nor,               req: @[@[BV,BV],@[IV,IV]],                                                          ret: @[BV,IV],          desc:"bitwise/logical NOR"),
@@ -492,6 +500,7 @@ let
         SystemFunction(lib:"math",          name:"log10",               call:Math_log10,                req: @[@[RV]],                                                                      ret: @[RV],             desc:"get the common (base-10) logarithm of given value"),
         SystemFunction(lib:"math",          name:"max",                 call:Math_max,                  req: @[@[AV]],                                                                      ret: @[IV],             desc:"get maximum of the values in given array"),
         SystemFunction(lib:"math",          name:"min",                 call:Math_min,                  req: @[@[AV]],                                                                      ret: @[IV],             desc:"get minimum of the values in given array"),
+        SystemFunction(lib:"math",          name:"pi",                  call:Math_pi,                   req: @[@[NV]],                                                                      ret: @[RV],             desc:"get the circle constant PI"),
         SystemFunction(lib:"math",          name:"primeFactors",        call:Math_primeFactors,         req: @[@[IV],@[BIV]],                                                               ret: @[AV],             desc:"get array of prime factors of given number"),
         SystemFunction(lib:"math",          name:"product",             call:Math_product,              req: @[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return product of elements of given array"),
         SystemFunction(lib:"math",          name:"random",              call:Math_random,               req: @[@[IV,IV]],                                                                   ret: @[IV],             desc:"generate random number in given range"),
@@ -583,10 +592,16 @@ let
         SystemFunction(lib:"terminal",      name:"shell",               call:Terminal_shell,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"execute given shell command and get string output"),
 
         SystemFunction(lib:"time",          name:"benchmark",           call:Time_benchmark,            req: @[@[FV]],                                                                      ret: @[IV],             desc:"time the execution of a given function in seconds"),
+        SystemFunction(lib:"time",          name:"datetime",            call:Time_datetime,             req: @[@[SV],@[SV,SV],@[IV],@[IV,SV]],                                              ret: @[IV,SV],          desc:"get timestamp from given datetime string (dd-MM-yyyy HH:mm:ss), or string from given timestamp, optionally using a different format"),
+        SystemFunction(lib:"time",          name:"day",                 call:Time_day,                  req: @[@[IV]],                                                                      ret: @[SV],             desc:"get day of the week for given timestamp"),
+        SystemFunction(lib:"time",          name:"dayOfMonth",          call:Time_dayOfMonth,           req: @[@[IV]],                                                                      ret: @[IV],             desc:"get day of the month for given timestamp"),
+        SystemFunction(lib:"time",          name:"dayOfYear",           call:Time_dayOfYear,            req: @[@[IV]],                                                                      ret: @[IV],             desc:"get day of the year for given timestamp"),
         SystemFunction(lib:"time",          name:"delay",               call:Time_delay,                req: @[@[IV]],                                                                      ret: @[IV],             desc:"create system delay for given duration in milliseconds"),
-        SystemFunction(lib:"time",          name:"month",               call:Time_month,                req: @[@[SV],@[SV,SV]],                                                             ret: @[SV],             desc:"get month from date string, optionally using a specific date format"),
-        SystemFunction(lib:"time",          name:"now",                 call:Time_now,                  req: @[@[NV],@[SV]],                                                                ret: @[SV],             desc:"get current time string, optionally providing desired format"),
-        SystemFunction(lib:"time",          name:"today",               call:Time_today,                req: @[@[NV],@[SV]],                                                                ret: @[SV],             desc:"get current date string, optionally providing desired format"),    
+        SystemFunction(lib:"time",          name:"hours",               call:Time_hours,                req: @[@[IV]],                                                                      ret: @[IV],             desc:"get hours component from given timestamp"),
+        SystemFunction(lib:"time",          name:"minutes",             call:Time_minutes,              req: @[@[IV]],                                                                      ret: @[IV],             desc:"get minutes component from given timestamp"),
+        SystemFunction(lib:"time",          name:"month",               call:Time_month,                req: @[@[IV]],                                                                      ret: @[SV],             desc:"get month from given timestamp"),
+        SystemFunction(lib:"time",          name:"now",                 call:Time_now,                  req: @[@[NV]],                                                                      ret: @[IV],             desc:"get current timestamp"),
+        SystemFunction(lib:"time",          name:"seconds",             call:Time_seconds,              req: @[@[IV]],                                                                      ret: @[IV],             desc:"get seconds component from given timestamp"),
 
         SystemFunction(lib:"url",           name:"decodeUrl",           call:Url_decodeUrl,             req: @[@[SV]],                                                                      ret: @[SV],             desc:"decode given URL"),
         SystemFunction(lib:"url",           name:"decodeUrl!",          call:Url_decodeUrlI,            req: @[@[SV]],                                                                      ret: @[SV],             desc:"decode given URL (in-place)"),
@@ -1916,9 +1931,46 @@ proc setup*(args: seq[string] = @[]) =
     MAIN ENTRY
   ======================================================]#
 
+proc importModule*(path: string): Value =
+    ## Import a specific module from given path and return value
+    ## ! Used mainly from the Core.import function
+
+    var pathIndex = 0
+    var finalPath = Paths[pathIndex].joinPath(path)
+    var found = false
+
+    while not fileExists(finalPath) and pathIndex<Paths.len:
+        inc(pathIndex)
+        finalPath = Paths[pathIndex].joinPath(path)    
+
+    if not fileExists(finalPath): 
+        cmdlineError("path not found: '" & path & "'")
+
+    var (dir, name, ext) = splitFile(path)
+    Paths.add(dir)
+
+    var buff = yy_scan_string(readFile(finalPath))
+
+    yylineno = 0
+    yyfilename = finalPath
+    FileName = finalPath
+
+    QuitOnError = true
+
+    yy_switch_to_buffer(buff)
+    
+    MainProgram = nil
+    if yyparse()==0:
+        yy_delete_buffer(buff)
+
+        result = MainProgram.execute()
+
 proc runString*(src:string): string =
     ## Run a specific script from given string and return string output
     ## ! Used mainly from the Console module
+
+    if not Paths.contains(getCurrentDir()):
+        Paths.add(getCurrentDir())
 
     var buff = yy_scan_string(src)
 
@@ -1944,6 +1996,9 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
     if not fileExists(scriptPath): 
         cmdlineError("path not found: '" & scriptPath & "'")
 
+    var (dir, name, ext) = splitFile(scriptPath)
+    Paths.add(dir)
+
     setup(args)
 
     yylineno = 0
@@ -1953,12 +2008,9 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
     QuitOnError = true
 
     let success = open(yyin, scriptPath)
-    if not success:
-        cmdlineError("something went wrong when opening file")
-    else:
-        #benchmark "parsing":
-        if yyparse()==0:
-            discard MainProgram.execute()
+    #benchmark "parsing":
+    if yyparse()==0:
+        discard MainProgram.execute()
 
 
 #[******************************************************
