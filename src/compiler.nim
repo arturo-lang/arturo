@@ -7,9 +7,9 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, base64, bitops, httpClient, json, macros, math, md5, os, osproc, parseutils
-import random, re, sequtils, std/editdistance, std/sha1, strformat, strutils, sugar
-import unicode, tables, terminal, times, uri
+import algorithm, base64, bitops, httpClient, json, macros, math, md5, os, osproc
+import parsecsv, parseutils, random, re, sequtils, std/editdistance, std/sha1
+import streams, strformat, strutils, sugar, unicode, tables, terminal, times, uri
 
 import bignum, markdown, mustache
 import panic, utils
@@ -348,6 +348,7 @@ include lib/system/array
 include lib/system/convert
 include lib/system/core
 include lib/system/crypto
+include lib/system/csv
 include lib/system/dictionary
 include lib/system/generic
 include lib/system/io
@@ -423,6 +424,9 @@ let
         SystemFunction(lib:"crypto",        name:"md5!",                call:Crypto_md5I,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"MD5-encrypt given string (in-place)"),
         SystemFunction(lib:"crypto",        name:"sha1",                call:Crypto_sha1,               req: @[@[SV]],                                                                      ret: @[SV],             desc:"SHA1-encrypt given string"),
         SystemFunction(lib:"crypto",        name:"sha1!",               call:Crypto_sha1I,              req: @[@[SV]],                                                                      ret: @[SV],             desc:"SHA1-encrypt given string (in-place)"),
+
+        SystemFunction(lib:"csv",           name:"generateCsv",         call:Csv_generateCsv,           req: @[@[AV]],                                                                      ret: @[SV],             desc:"get CSV string from given array of rows"),
+        SystemFunction(lib:"csv",           name:"parseCsv",            call:Csv_parseCsv,              req: @[@[SV],@[SV,BV]],                                                             ret: @[AV],             desc:"get array of rows by parsing given CSV string, optionally using headers"),
 
         SystemFunction(lib:"dictionary",    name:"hasKey",              call:Dictionary_hasKey,         req: @[@[DV,SV]],                                                                   ret: @[BV],             desc:"check if dictionary contains key"),
         SystemFunction(lib:"dictionary",    name:"keys",                call:Dictionary_keys,           req: @[@[DV]],                                                                      ret: @[AV],             desc:"get array of dictionary keys"),
