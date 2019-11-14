@@ -26,6 +26,11 @@ proc Core_if*[F,X,V](f: F, xl: X): V {.inline.} =
         else:
             result = FALSE
 
+proc Core_import*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+    
+    result = importModule(S(0))
+
 proc Core_loop*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
