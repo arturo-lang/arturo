@@ -48,12 +48,12 @@ proc Crypto_md5I*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Crypto_sha1*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    result = STR($(S(0).secureHash()))
+    result = STR(($(S(0).secureHash())).toLower())
 
 proc Crypto_sha1I*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    S(0) = $(S(0).secureHash())
+    S(0) = ($(S(0).secureHash())).toLower()
     result = v[0]
 
 #[******************************************************
