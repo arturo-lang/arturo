@@ -85,11 +85,11 @@ LETTER_OR_MISC      [a-zA-Z_]
 "=>"                                                { return MAP; }
 
 "="                                                 { return EQ_OP; }
-"<="                                                { return LE_OP; }
-">="                                                { return GE_OP; }
+"<="|"≤"                                            { return LE_OP; }
+">="|"≥"                                            { return GE_OP; }
 "<"                                                 { return LT_OP; }
 ">"                                                 { return GT_OP; }
-"!="                                                { return NE_OP; }
+"!="|"≠"                                            { return NE_OP; }
 
 "+"                                                 { return PLUS_SG; }
 "-"                                                 { return MINUS_SG; }
