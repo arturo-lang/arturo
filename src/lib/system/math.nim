@@ -127,7 +127,7 @@ proc primeFactors*(num: Int): seq[Int] {.noSideEffect.} =
 
     let factor2 = n div factor1
     if factor2.probablyPrime(10)==0:
-        return @[]
+        return @[factor1]
 
     result.add(factor1)
     result.add(factor2)
@@ -333,6 +333,11 @@ proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
         if A(0)[i].lt(result):
             result = A(0)[i]
         inc(i)
+
+proc Math_pi*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v = xl.validate(f)
+
+    result = REAL(PI)
 
 proc Math_primeFactors*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
