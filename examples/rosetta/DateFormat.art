@@ -1,0 +1,4 @@
+currentDate: now ~
+
+print [datetime currentDate "yyyy-MM-dd"]
+print [datetime currentDate "dddd, MMMM dd, yyyy"]
