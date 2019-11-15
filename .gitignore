@@ -36,3 +36,4 @@ _legacy/
 _extras/
 experimental
 /src/experimental.nim
+parser.output
