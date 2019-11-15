@@ -16,7 +16,7 @@ rightTrunc: @(num){
 	return [map ret => toNumber]
 }
 
-isTruncatablePrime: @(nums){ all nums => isPrime }
+isTruncatablePrime: @(nums)-> all nums => isPrime
 
 MaxLeft: 0
 MaxRight: 0
