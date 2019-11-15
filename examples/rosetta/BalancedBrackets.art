@@ -3,9 +3,9 @@ isBalanced: @(s){
 
 	loop [chars s] {
 		if &="]" {
-			if [cnt: cnt-1]<0 { return false }
+			if [cnt: cnt-1]<0 -> return false
 		} {
-			if &="[" { cnt: cnt+1 }
+			if &="[" -> cnt: cnt+1
 		}
     }
 
@@ -13,7 +13,7 @@ isBalanced: @(s){
 }
 
 loop 1..9 @(i){
-	str: [join [map 0..2*i-1 { sample #("[" "]") }] ""]
+	str: [join [map 0..2*i-1 -> sample #("[" "]") ] ""]
 	prints str
 	if [isBalanced str] { print " OK" } { print " Not OK" }
 }

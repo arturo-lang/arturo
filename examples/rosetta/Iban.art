@@ -11,13 +11,13 @@ countryIbanSizes: #{
     AE: 23, GB: 22, VG: 24 
 }
 
-base36: [map 0..9 => toString] + [map 97..122 { uppercase|char & }]
+base36: [map 0..9 => toString] + [map 97..122 -> uppercase|char & ]
 
 validIban: @(iban){
     iban: replace iban " " ""
 
-    if [not|contains iban "/[0-9A-Z]+/"] { return false }
-    if [size iban]!=countryIbanSizes.[slice iban 0 1] { return false }
+    if [not|contains iban "/[0-9A-Z]+/"] -> return false
+    if [size iban]!=countryIbanSizes.[slice iban 0 1] -> return false
 
     iban: [slice iban 4 [size iban]-1] + [slice iban 0 3]
     iban: join [map [chars iban] { toString [index base36 &]}] ""

@@ -22,8 +22,8 @@ MaxLeft: 0
 MaxRight: 0
 
 loop [rangeBy 3 1000000 2] @(n){
-	if [isTruncatablePrime [leftTrunc n]] { MaxLeft: n }
-	if [isTruncatablePrime [rightTrunc n]] { MaxRight: n }
+	if [isTruncatablePrime [leftTrunc n]] -> MaxLeft: n
+	if [isTruncatablePrime [rightTrunc n]] -> MaxRight: n
 }
 
 print "Max Left-Truncatable Prime found (<1000000): " + MaxLeft

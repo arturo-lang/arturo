@@ -1,1 +1,1 @@
-print $(shell "ls")
+print [shell "ls"]
