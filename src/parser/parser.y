@@ -28,12 +28,15 @@ extern char* getNameOfSystemFunction(int n);
 
 extern void* keypathFromIdId(char* a, char* b);
 extern void* keypathFromIdInteger(char* a, char* b);
+extern void* keypathFromIdReal(char* a, char* b);
 extern void* keypathFromIdInline(char* a, void* b);
 extern void* keypathFromInlineId(void* a, char* b);
 extern void* keypathFromInlineInteger(void* a, char* b);
+extern void* keypathFromInlineReal(void* a, char* b);
 extern void* keypathFromInlineInline(void* a, void* b);
 extern void* keypathByAddingIdToKeypath(void* k, char* a);
 extern void* keypathByAddingIntegerToKeypath(void* k, char* a);
+extern void* keypathByAddingRealToKeypath(void* k, char* a);
 extern void* keypathByAddingInlineToKeypath(void* k, void* a);
 
 extern void* argumentFromIdentifier(char* i);
@@ -191,12 +194,15 @@ int yywrap() {
 
 keypath                 :   ID DOT ID                                                           { $$ = keypathFromIdId($1,$3); }
                         |   ID DOT INTEGER                                                      { $$ = keypathFromIdInteger($1,$3); }
+                        |   ID DOT REAL                                                         { $$ = keypathFromIdReal($1,$3); }
                         |   ID DOT inline_call                                                  { $$ = keypathFromIdInline($1,$3); }
                         |   inline_call DOT ID                                                  { $$ = keypathFromInlineId($1,$3); }
                         |   inline_call DOT INTEGER                                             { $$ = keypathFromInlineInteger($1,$3); }
+                        |   inline_call DOT REAL                                                { $$ = keypathFromInlineReal($1,$3); }
                         |   inline_call DOT inline_call                                         { $$ = keypathFromInlineInline($1,$3); }
                         |   keypath[previous] DOT ID                                            { $$ = keypathByAddingIdToKeypath($previous,$ID); }
                         |   keypath[previous] DOT INTEGER                                       { $$ = keypathByAddingIntegerToKeypath($previous,$INTEGER); }
+                        |   keypath[previous] DOT REAL                                          { $$ = keypathByAddingRealToKeypath($previous,$REAL); }
                         |   keypath[previous] DOT inline_call                                   { $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
                         ;       
 
