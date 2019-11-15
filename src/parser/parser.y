@@ -305,6 +305,8 @@ chained                 :   ID PIPE statement                                   
                         ;
 
 implies                 :   function_call IMPLIES statement                                     { $$ = statementByAddingImplication($function_call,$statement); }
+                        |   IMPLIES statement                                                   { $$ = statementFromExpression(expressionFromArgument(argumentFromFunctionLiteral(newStatementListWithStatement($statement),"")),yylineno); }
+                        |   BEGIN_ARGS verbatim RPAREN IMPLIES statement                        { $$ = statementFromExpression(expressionFromArgument(argumentFromFunctionLiteral(newStatementListWithStatement($statement),$2)),yylineno); }
                         ;
 
 statement               :   function_call
