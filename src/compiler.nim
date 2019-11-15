@@ -1858,11 +1858,14 @@ proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
     result = Statement(kind: expressionStatement, expression: x, pos: l)
 
 proc statementByAddingImplication(st: Statement, i: Statement): Statement {.exportc.} =
-    let e = expressionFromArgument(argumentFromFunctionLiteral(newStatementListWithStatement(st)))
+    let e = expressionFromArgument(argumentFromFunctionLiteral(newStatementListWithStatement(i)))
     case st.kind
-        of callStatement: st.arguments.list.add(e)
-        of commandStatement: st.expressions.list.add(e)
+        of callStatement: 
+            st.arguments.list.add(e)
+        of commandStatement: 
+            st.expressions.list.add(e)
         else: discard
+        
     result = st
 
 ##---------------------------
