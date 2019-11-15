@@ -32,20 +32,18 @@ precomputeJumps: {
 
 // Check if current state is valid
 
-StateIsValid: {
-    all #(0<=DataPointer DataPointer<[size Tape] 0<=InstructionPointer InstructionPointer<CodeLength)
-}
+StateIsValid: -> all #(0<=DataPointer DataPointer<[size Tape] 0<=InstructionPointer InstructionPointer<CodeLength)
 
 // Compile the program
 
 interpret: {
     loop [StateIsValid ~] {
         command: [chars Code].[InstructionPointer]
-        if command="+" { Tape.[DataPointer]: Tape.[DataPointer]+1 }
-        if command="-" { Tape.[DataPointer]: Tape.[DataPointer]-1 }
-        if command=">" { DataPointer: DataPointer+1, if DataPointer=[size Tape] { Tape: Tape+0 } }
-        if command="<" { DataPointer: DataPointer-1 }
-        if command="." { prints [char Tape.[DataPointer]] }
+        if command="+" -> Tape.[DataPointer]: Tape.[DataPointer]+1
+        if command="-" -> Tape.[DataPointer]: Tape.[DataPointer]-1
+        if command=">" { DataPointer: DataPointer+1, if DataPointer=[size Tape] -> Tape: Tape+0 }
+        if command="<" -> DataPointer: DataPointer-1
+        if command="." -> prints [char Tape.[DataPointer]]
         if command="," {
             inp: toNumber|input ~
             if inp=13 { inp: 10 }
@@ -53,17 +51,17 @@ interpret: {
             Tape.DataPointer: inp
         }
         if command="[" {
-            if Tape.[DataPointer]=0 { InstructionPointer: Jumps.[toString InstructionPointer] }
+            if Tape.[DataPointer]=0 -> InstructionPointer: Jumps.[toString InstructionPointer]
         }
         if command="]" {
-            if Tape.[DataPointer]!=0 { InstructionPointer: Jumps.[toString InstructionPointer] }
+            if Tape.[DataPointer]!=0 -> InstructionPointer: Jumps.[toString InstructionPointer]
         }
 
         InstructionPointer: InstructionPointer+1
     }
 }
 
-if [size &]<1 { panic "Not enough arguments - Usage: bfc <script>" }
+if [size &]<1 -> panic "Not enough arguments - Usage: bfc <script>"
 
 Code            : read &0
 CodeLength      : size Code

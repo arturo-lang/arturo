@@ -12,7 +12,7 @@ printAll: @(args){
 	}
 }
 
-getNumber: { 3 }
+getNumber: -> 3 
 
 // Calling a function that requires no arguments
 printHello ~
