@@ -1,4 +1,4 @@
-sumOfSquares: @(a){ sum|map 1..a { &^2 } }
+sumOfSquares: @(a){ sum|map 1..a -> &^2 }
 squareOfSum: @(n){ [sum 1..n]^2 }
 
 print [squareOfSum 100] - [sumOfSquares 100]
