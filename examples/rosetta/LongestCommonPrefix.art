@@ -5,9 +5,9 @@ lcp: @(list){
     loop true {
         thisLetter: ""
         loop list @(word){
-        	if idx=[size word] { return ret }
-        	if thisLetter="" { thisLetter: [chars word].[idx] }
-        	if thisLetter!=[chars word].[idx] { return ret }
+        	if idx=[size word] -> return ret
+        	if thisLetter="" -> thisLetter: [chars word].[idx]
+        	if thisLetter!=[chars word].[idx] -> return ret
 
         }
         ret: ret+thisLetter
