@@ -70,6 +70,7 @@ extern void* statementFromCallWithKeypath(void* k, void* xl, int pos);
 extern void* statementFromAssignment(char* i, void* st, int pos);
 extern void* statementFromAssignmentWithKeypath(void* k, void* st, int pos);
 extern void* statementFromExpression(void* x, int pos);
+extern void* statementByAddingImplication(void* st, void* i);
 
 extern void* newStatementList();
 extern void* newStatementListWithStatement(void* s);
@@ -111,6 +112,7 @@ int yywrap() {
 
 %token <str> PIPE "|"
 %token <str> MAP "=>"
+%token <str> IMPLIES "->"
 
 %token <str> EQ_OP "="
 %token <str> LE_OP "<="
@@ -133,7 +135,6 @@ int yywrap() {
 %token <str> AT "@"
 %token <str> RANGE ".."
 %token <str> DOT "."
-%token <str> HASH "#"
 %token <str> LPAREN "("
 %token <str> RPAREN ")"
 %token <str> LCURLY "{"
@@ -156,7 +157,7 @@ int yywrap() {
 %type <compo> array dictionary function inline_call
 
 %type <compo> argument expression expression_list
-%type <compo> function_call assignment chained
+%type <compo> function_call assignment chained implies
 %type <compo> statement statement_list
 
 /****************************************
@@ -303,10 +304,14 @@ chained                 :   ID PIPE statement                                   
                         |   keypath PIPE statement                                              { $$ = statementFromCallWithKeypath($keypath,expressionListWithChainedStatement($statement),yylineno); }
                         ;
 
+implies                 :   function_call IMPLIES statement                                     { $$ = statementByAddingImplication($function_call,$statement); }
+                        ;
+
 statement               :   function_call
                         |   assignment
                         |   expression                                                          { $$ = statementFromExpression($expression,yylineno); }
                         |   chained
+                        |   implies
                         ;
 
 statement_list          :   statement_list[previous] NEW_LINE statement                         { $$ = addStatement($previous, $statement); }
