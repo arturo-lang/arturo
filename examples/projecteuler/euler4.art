@@ -1,4 +1,4 @@
-isPalindrome: @(n){ n = [reverse n] }
+isPalindrome: @(n) -> n = [reverse n]
 
 maxPalindrome: 0
 
