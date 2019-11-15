@@ -3,7 +3,7 @@ nthPrime: @(n){
 	x: 1
 	loop i!=n {
 		x: x+2
-		if [isPrime x] { i: i+1 }
+		if [isPrime x] -> i: i+1
 	}
 	return x
 }
