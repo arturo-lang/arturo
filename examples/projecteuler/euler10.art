@@ -1,6 +1,3 @@
-primesBelow: @(n){
-	return #(2) + [filter [rangeBy 3 n-1 2] => isPrime]
-}
-
+primesBelow: @(n) -> #(2) + [filter [rangeBy 3 n-1 2] => isPrime]
 
 print [sum|primesBelow 2000000]
