@@ -89,7 +89,7 @@ template runExperiment() =
 
 template compileDocgen() = 
     showMessage("Compiling documentation generator")
-    exec "nim c -d:release --opt:speed --hints:off --nimcache:_cache --threads:on --path:src -o:docgen scripts/docgen.nim"
+    exec "nim c -d:release --passL:parser.a --opt:speed --hints:off -f --nimcache:_cache --threads:on --path:src -o:docgen scripts/docgen.nim"
 
 template runDocgen() =
     showMessage("Running documentation generator")
@@ -219,6 +219,7 @@ task experiment, "Run experiments":
     runExperiment()
 
 task docgen, "Run documentation generator":
+    buildParser()
     compileDocgen()
     showMessage "Done :)", true
 
