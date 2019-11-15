@@ -9,6 +9,44 @@
   *****************************************************************]#
 
 #[######################################################
+    Helpers
+  ======================================================]#
+
+proc importModule(path: string): Value =
+    ## Import a specific module from given path and return value
+    ## ! Used mainly from the Core.import function
+
+    var pathIndex = 0
+    var finalPath = Paths[pathIndex].joinPath(path)
+    var found = false
+
+    while not fileExists(finalPath) and pathIndex<Paths.len:
+        inc(pathIndex)
+        finalPath = Paths[pathIndex].joinPath(path)    
+
+    if not fileExists(finalPath): 
+        cmdlineError("path not found: '" & path & "'")
+
+    var (dir, name, ext) = splitFile(path)
+    Paths.add(dir)
+
+    var buff = yy_scan_string(readFile(finalPath))
+
+    yylineno = 0
+    yyfilename = finalPath
+    FileName = finalPath
+
+    QuitOnError = true
+
+    yy_switch_to_buffer(buff)
+    
+    MainProgram = nil
+    if yyparse()==0:
+        yy_delete_buffer(buff)
+
+        result = MainProgram.execute()
+
+#[######################################################
     Functions
   ======================================================]#
 
