@@ -251,6 +251,7 @@ proc execute(stm: Statement, parent: Value = nil): Value {.inline.}
 
 proc newStatementList: StatementList {.exportc.}
 proc newStatementList(sl: seq[Statement]): StatementList
+proc newStatementListWithStatement(s: Statement): StatementList {.exportc.}
 proc addStatement(sl: StatementList, s: Statement): StatementList {.exportc.}
 proc execute(sl: StatementList): Value
 
@@ -267,7 +268,36 @@ proc getValue(a: Argument): Value {.inline.}
 # Setup
 
 proc setup*(args: seq[string] = @[])
-proc importModule*(path: string): Value
+
+#[######################################################
+    Parser C Interface
+  ======================================================]#
+
+type
+    yy_buffer_state {.importc.} = ref object
+        yy_input_file       : File
+        yy_ch_buf           : cstring
+        yy_buf_pos          : cstring
+        yy_buf_size         : clong
+        yy_n_chars          : cint
+        yy_is_our_buffer    : cint
+        yy_is_interactive   : cint
+        yy_at_bol           : cint
+        yy_fill_buffer      : cint
+        yy_buffer_status    : cint
+
+proc yyparse(): cint {.importc.}
+proc yy_scan_buffer(buff: cstring, s: csize) {.importc.}
+
+proc yy_scan_string(str: cstring): yy_buffer_state {.importc.}
+proc yy_switch_to_buffer(buff: yy_buffer_state) {.importc.}
+proc yy_delete_buffer(buff: yy_buffer_state) {.importc.}
+
+var yyfilename {.importc.}: cstring
+var yyin {.importc.}: File
+var yylineno {.importc.}: cint
+
+var isRepl {.importc.}: cint
 
 #[######################################################
     Constants
@@ -632,36 +662,6 @@ let
     GET_CMD     =   cint(getSystemFunction("get"))
     RANGE_CMD   =   cint(getSystemFunction("range"))
     SET_CMD     =   cint(getSystemFunction("set!"))
-
-#[######################################################
-    Parser C Interface
-  ======================================================]#
-
-type
-    yy_buffer_state {.importc.} = ref object
-        yy_input_file       : File
-        yy_ch_buf           : cstring
-        yy_buf_pos          : cstring
-        yy_buf_size         : clong
-        yy_n_chars          : cint
-        yy_is_our_buffer    : cint
-        yy_is_interactive   : cint
-        yy_at_bol           : cint
-        yy_fill_buffer      : cint
-        yy_buffer_status    : cint
-
-proc yyparse(): cint {.importc.}
-proc yy_scan_buffer(buff: cstring, s: csize) {.importc.}
-
-proc yy_scan_string(str: cstring): yy_buffer_state {.importc.}
-proc yy_switch_to_buffer(buff: yy_buffer_state) {.importc.}
-proc yy_delete_buffer(buff: yy_buffer_state) {.importc.}
-
-var yyfilename {.importc.}: cstring
-var yyin {.importc.}: File
-var yylineno {.importc.}: cint
-
-var isRepl {.importc.}: cint
 
 #[######################################################
     Context management
@@ -1857,6 +1857,14 @@ proc statementFromAssignmentWithKeypath(k: KeyPath, st: Statement, l: cint=0): S
 proc statementFromExpression(x: Expression, l: cint=0): Statement {.exportc.} =
     result = Statement(kind: expressionStatement, expression: x, pos: l)
 
+proc statementByAddingImplication(st: Statement, i: Statement): Statement {.exportc.} =
+    let e = expressionFromArgument(argumentFromFunctionLiteral(newStatementListWithStatement(st)))
+    case st.kind
+        of callStatement: st.arguments.list.add(e)
+        of commandStatement: st.expressions.list.add(e)
+        else: discard
+    result = st
+
 ##---------------------------
 ## Methods
 ##---------------------------
@@ -1960,40 +1968,6 @@ proc setup*(args: seq[string] = @[]) =
 #[######################################################
     MAIN ENTRY
   ======================================================]#
-
-proc importModule*(path: string): Value =
-    ## Import a specific module from given path and return value
-    ## ! Used mainly from the Core.import function
-
-    var pathIndex = 0
-    var finalPath = Paths[pathIndex].joinPath(path)
-    var found = false
-
-    while not fileExists(finalPath) and pathIndex<Paths.len:
-        inc(pathIndex)
-        finalPath = Paths[pathIndex].joinPath(path)    
-
-    if not fileExists(finalPath): 
-        cmdlineError("path not found: '" & path & "'")
-
-    var (dir, name, ext) = splitFile(path)
-    Paths.add(dir)
-
-    var buff = yy_scan_string(readFile(finalPath))
-
-    yylineno = 0
-    yyfilename = finalPath
-    FileName = finalPath
-
-    QuitOnError = true
-
-    yy_switch_to_buffer(buff)
-    
-    MainProgram = nil
-    if yyparse()==0:
-        yy_delete_buffer(buff)
-
-        result = MainProgram.execute()
 
 proc runString*(src:string): string =
     ## Run a specific script from given string and return string output

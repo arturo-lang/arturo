@@ -83,6 +83,7 @@ LETTER_OR_MISC      [a-zA-Z_]
 
 "|"                                                 { return PIPE; }
 "=>"                                                { return MAP; }
+"->"                                                { return IMPLIES; }
 
 "="                                                 { return EQ_OP; }
 "<="|"≤"                                            { return LE_OP; }
