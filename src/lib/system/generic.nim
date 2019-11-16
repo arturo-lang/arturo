@@ -102,7 +102,7 @@ proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_get*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v = xl.list.map((x)=>x.evaluate())#xl.validate(f)
 
     case v[0].kind
         of AV: result = A(0)[I(1)]
@@ -159,7 +159,7 @@ proc Generic_reverseI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_set*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v = xl.list.map((x)=>x.evaluate())#xl.validate(f)
 
     case v[0].kind
         of AV: 
@@ -174,7 +174,7 @@ proc Generic_set*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_setI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v = xl.list.map((x)=>x.evaluate())#xl.validate(f)
 
     case v[0].kind
         of AV: 
