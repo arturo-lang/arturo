@@ -7,7 +7,7 @@ changes: @(amount coins){
 			ways.[j]: ways.[j]+ways.[j-coin]
 		}
 	}
-	return ways.[amount]
+	ways.[amount]
 }
  
 print [changes 100 #(1 5 10 25)]
