@@ -8,7 +8,7 @@
   *****************************************************************]#
 
 import algorithm, base64, bitops, httpClient, json, macros, math, md5, os, osproc
-import parsecsv, parseutils, random, re, sequtils, std/editdistance # segfaults
+import parsecsv, parseutils, random, re, segfaults, sequtils, std/editdistance
 import std/sha1, streams, strformat, strutils, sugar, unicode, tables, terminal
 import times, uri
 
@@ -163,14 +163,14 @@ type
 
     Value* = ref object
         case kind*: ValueKind:
-            of stringValue          : s: string
+            of stringValue          : s*: string
             of integerValue         : i*: int
             of bigIntegerValue      : bi*: Int
-            of realValue            : r: float
-            of booleanValue         : b: bool 
-            of arrayValue           : a: seq[Value]
-            of dictionaryValue      : d: Context
-            of functionValue        : f: Function
+            of realValue            : r*: float
+            of booleanValue         : b*: bool 
+            of arrayValue           : a*: seq[Value]
+            of dictionaryValue      : d*: Context
+            of functionValue        : f*: Function
             of nullValue            : discard
             of anyValue             : discard
 
@@ -204,7 +204,20 @@ proc BIGINTARR(v: seq[Int]): Value {.inline.}
 proc REALARR(v: seq[float]): Value {.inline.}
 proc BOOLARR(v: seq[bool]): Value {.inline.}
 proc DICT(v: seq[(string,Value)]): Value {.inline.}
-proc valueCopy(v: Value): Value
+proc valueCopy(v: Value): Value {.inline.}
+template valueSet(lValue: var Value, rValue: Value) =
+    {.computedGoto.}
+    case rValue.kind
+        of SV:  lValue.kind=SV; lValue.s=rValue.s
+        of IV:  lValue.kind=IV; lValue.i=rValue.i
+        of BIV: lValue.kind=BIV; lValue.bi=rValue.bi
+        of RV:  lValue.kind=RV; lValue.r=rValue.r
+        of BV:  shallowCopy(lValue,rValue)
+        of AV:  lValue.kind=AV; lValue.a=rValue.a
+        of DV:  lValue.kind=DV; lValue.d=rValue.d
+        of FV:  lValue.kind=FV; lValue.f=rValue.f
+        of NV:  lValue.kind=NV
+        of ANY: discard
 proc findValueInArray(v: Value, lookup: Value): int
 proc findValueInArray(v: seq[Value], lookup: Value): int
 proc `+`(l: Value, r: Value): Value {.inline.}
@@ -319,6 +332,9 @@ var
     Stack*                  : seq[Context]
     FileName                : string
     Paths                   : seq[string]
+
+    Returned                : Value
+    StatementLine           : int
 
     # Const literal arguments
 
@@ -726,23 +742,18 @@ proc getValueForKey*(ctx: Context, key: string): Value {.inline.} =
 
 proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} = 
     ## In a given Context, either update a key if it exists, or create it
-
+    #echo ":: in UpdateOrSet"
     var i = 0
     while i<ctx.list.len:
         if ctx.list[i][0]==k: 
-            if ctx.list[i][1].kind==v.kind:
-                case v.kind
-                    of IV: ctx.list[i][1].i=v.i
-                    of RV: ctx.list[i][1].r=v.r
-                    of BV: ctx.list[i][1].b=v.b
-                    else: ctx.list[i][1]=v
-            else:
-                ctx.list[i][1]=v
+            #echo ":: symbol found"
+            valueSet(ctx.list[i][1], v)
             #ctx.list[i][1] = v
             return
         inc(i)
 
-    ctx.list.add((k,v))
+    #echo ":: adding a new key-value pair"
+    ctx.list.add((k,valueCopy(v)))
 
 proc getSymbol(k: string): Value {.inline.} = 
     ## Get Value of key in the Stack
@@ -769,7 +780,8 @@ proc getAndSetSymbol(k: string, v: Value): Value {.inline.} =
         while j<Stack[i].list.len:
             if Stack[i].list[j][0]==k: 
                 result = Stack[i].list[j][1]
-                Stack[i].list[j][1] = v
+                valueSet(Stack[i].list[j][1], v)
+                #Stack[i].list[j][1] = v
                 return 
             inc(j)
         dec(i)
@@ -783,36 +795,22 @@ template resetSymbol(k: string, v: Value) =
 
 proc setSymbol(k: string, v: Value): Value {.inline.} = 
     ##  Set key in the Stack
-
+    #echo ":: trying to set symbol: " & k
     var i = len(Stack) - 1
     var j: int
     while i > -1:
         j = 0
         while j<Stack[i].list.len:
             if Stack[i].list[j][0]==k: 
-                if Stack[i].list[j][1].kind==v.kind:
-                    case v.kind
-                        of IV: Stack[i].list[j][1].i=v.i
-                        of RV: Stack[i].list[j][1].r=v.r
-                        of BV: Stack[i].list[j][1].b=v.b
-                        else: Stack[i].list[j][1]=v
-                else:
-                    Stack[i].list[j][1]=v
-                # if k=="i":
-                #     echo "setting i"
-                #     echo "\t\tV = " & fmt"{cast[int](unsafeAddr(v)):#x}"
-                #     echo "\t\tI = " & fmt"{cast[int](unsafeAddr(Stack[i].list[j][1])):#x}"
-                #     echo "\t\tv = " & fmt"{cast[int](unsafeAddr(v.i)):#x}"
-                #     echo "\t\ti = " & fmt"{cast[int](unsafeAddr(Stack[i].list[j][1].i)):#x}"
-                # #if v.kind==IV:
-                # #    Stack[i].list[j][1].i = v.i
-                # #else:
+                #echo ":: symbol existed"
+                valueSet(Stack[i].list[j][1], v)
                 # Stack[i].list[j][1]=v
                 return Stack[i].list[j][1]
             inc(j)
 
         dec(i)
 
+    #echo ":: symbol did NOT exist"
     Stack[^1].updateOrSet(k,v)
     result = v
 
@@ -885,7 +883,7 @@ proc BOOLARR(v: seq[bool]): Value {.inline.} =
 proc DICT(v: seq[(string,Value)]): Value {.inline.} =
     result = DICT(Context(list:v))
 
-proc valueCopy(v: Value): Value =
+proc valueCopy(v: Value): Value {.inline.} =
     {.computedGoto.}
     result = case v.kind
         of SV: STR(v.s)
@@ -1300,6 +1298,8 @@ proc gt(l: Value, r: Value): bool {.inline.} =
                 of SV: l.s>r.s
                 else: NotComparableError($(l.kind),$(r.kind))   
         of IV:
+            #echo "comparing: " & l.stringify() & " and " & r.stringify()
+            #echo "l.i>r.i: " & $(l.i>r.i)
             result = case r.kind
                 of IV: l.i>r.i
                 of BIV: l.i>r.bi
@@ -1483,11 +1483,14 @@ proc execute(f: Function, v: Value): Value {.inline.} =
             else: initTopContextWith(f.args[0],v)
         else: initTopContextWith(ARGV,v)
 
-        try                         : result = f.body.execute()
-        except ReturnValue as ret   : result = ret.value
-        finally                     : 
-            Stack[1]=oldSeq
-            if Stack[1].list.len==0: popContext()
+        result = f.body.execute()
+        if Returned!=nil: 
+            Returned = nil
+        #try                         : result = f.body.execute()
+        #except ReturnValue as ret   : result = ret.value
+        #finally                     : 
+        Stack[1] = oldSeq
+        if Stack[1].list.len==0: popContext()
     else:
         var stored: Value = nil
         if v!=NULL:
@@ -1500,11 +1503,11 @@ proc execute(f: Function, v: Value): Value {.inline.} =
                         resetSymbol(f.args[i],v.a[i])
                         inc(i)
                 else: resetSymbol(f.args[0],v)
-
-        try                         : result = f.body.execute()
-        except ReturnValue as ret   : raise
-        finally                     : 
-            if stored!=nil: discard setSymbol(ARGV,stored)
+        result = f.body.execute()
+        #try                         : result = f.body.execute()
+        #except ReturnValue as ret   : raise
+        #finally                     : 
+        if stored!=nil: discard setSymbol(ARGV,stored)
 
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.} =
     ## Validate given Expression against an array of ValueKind's
@@ -1907,6 +1910,8 @@ proc execute(stm: Statement, parent: Value = nil): Value {.inline.} =
     ## Execute given statement and return result
     ## parent = means statement is in a dictionary context
 
+    StatementLine = stm.pos
+
     case stm.kind
         of commandStatement:
             # System function calls
@@ -1972,12 +1977,14 @@ proc execute(sl: StatementList): Value {.inline.} =
 
     var i = 0
     while i < sl.list.len:
-        try:
-            result = sl.list[i].execute()
-        except ReturnValue:
-            raise
-        except Exception as e:
-            runtimeError(e.msg, FileName, sl.list[i].pos)
+        #try:
+        result = sl.list[i].execute()
+        if Returned != nil:
+            return Returned
+        #except ReturnValue:
+        #    raise
+        #except Exception as e:
+        #    runtimeError(e.msg, FileName, sl.list[i].pos)
 
         inc(i)
 
@@ -2013,8 +2020,8 @@ proc runString*(src:string): string =
     var buff = yy_scan_string(src)
 
     yylineno = 0
-    yyfilename = "-"
-    FileName = "-"
+    yyfilename = "<repl>"
+    FileName = "<repl>"
 
     QuitOnError = false
 
@@ -2024,7 +2031,10 @@ proc runString*(src:string): string =
     if yyparse()==0:
         yy_delete_buffer(buff)
 
-        result = MainProgram.execute().stringify()
+        try:
+            result = MainProgram.execute().stringify()
+        except NilAccessError as e:
+            runtimeError(e.msg, FileName, 1)
 
 
 proc runScript*(scriptPath:string, args: seq[string], includePath:string="", warnings:bool=false) = 
@@ -2048,7 +2058,12 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="", war
     let success = open(yyin, scriptPath)
     #benchmark "parsing":
     if yyparse()==0:
-        discard MainProgram.execute()
+        try:
+            discard MainProgram.execute()
+        except Exception as e:
+            runtimeError(e.msg, FileName, StatementLine)
+        except NilAccessError as e:
+            runtimeError(e.msg, FileName, 1)
 
 
 #[******************************************************
