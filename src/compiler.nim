@@ -213,10 +213,10 @@ template valueSet(lValue: var Value, rValue: Value) =
         of BIV: lValue.kind=BIV; lValue.bi=rValue.bi
         of RV:  lValue.kind=RV; lValue.r=rValue.r
         of BV:  shallowCopy(lValue,rValue)
-        of AV:  lValue.kind=AV; lValue.a=rValue.a
-        of DV:  lValue.kind=DV; lValue.d=rValue.d
-        of FV:  lValue.kind=FV; lValue.f=rValue.f
-        of NV:  lValue.kind=NV
+        of AV:  lValue = rValue#lValue.kind=AV; lValue.a = rValue.a
+        of DV:  deepCopy(lValue,rValue) # lValue.kind=DV; lValue.d=rValue.d
+        of FV:  deepCopy(lValue,rValue) #.kind=FV; lValue.f=rValue.f
+        of NV:  shallowCopy(lValue,rValue)
         of ANY: discard
 proc findValueInArray(v: Value, lookup: Value): int
 proc findValueInArray(v: seq[Value], lookup: Value): int
@@ -458,7 +458,7 @@ let
         SystemFunction(lib:"core",          name:"if",                  call:Core_if,                   req: @[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[ANY],            desc:"if condition is true, execute given function; else execute optional alternative function"),
         SystemFunction(lib:"core",          name:"import",              call:Core_import,               req: @[@[SV]],                                                                      ret: @[ANY],            desc:"import module or object in given script path"),
         SystemFunction(lib:"core",          name:"loop",                call:Core_loop,                 req: @[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[ANY],            desc:"execute given function for each element in collection, or while condition is true"),
-        SystemFunction(lib:"core",          name:"new",                 call:Core_new,                  req: @[@[DV],@[AV],@[SV]],                                                          ret: @[ANY],            desc:"get new copy of given object"),
+        SystemFunction(lib:"core",          name:"new",                 call:Core_new,                  req: @[@[SV],@[IV],@[BIV],@[RV],@[BV],@[AV],@[DV],@[FV]],                           ret: @[ANY],            desc:"get new copy of given object"),
         SystemFunction(lib:"core",          name:"panic",               call:Core_panic,                req: @[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message"),
         SystemFunction(lib:"core",          name:"return",              call:Core_return,               req: @[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[ANY],            desc:"break execution and return given value"),
         SystemFunction(lib:"core",          name:"syms",                call:Core_syms,                 req: @[@[NV]],                                                                      ret: @[ANY],            desc:"break execution and return given value"),
@@ -742,18 +742,14 @@ proc getValueForKey*(ctx: Context, key: string): Value {.inline.} =
 
 proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} = 
     ## In a given Context, either update a key if it exists, or create it
-    #echo ":: in UpdateOrSet"
     var i = 0
     while i<ctx.list.len:
         if ctx.list[i][0]==k: 
-            #echo ":: symbol found"
-            valueSet(ctx.list[i][1], v)
-            #ctx.list[i][1] = v
+            shallowCopy(ctx.list[i][1],v)
             return
         inc(i)
 
-    #echo ":: adding a new key-value pair"
-    ctx.list.add((k,valueCopy(v)))
+    ctx.list.add((k,v))
 
 proc getSymbol(k: string): Value {.inline.} = 
     ## Get Value of key in the Stack
@@ -780,8 +776,7 @@ proc getAndSetSymbol(k: string, v: Value): Value {.inline.} =
         while j<Stack[i].list.len:
             if Stack[i].list[j][0]==k: 
                 result = Stack[i].list[j][1]
-                valueSet(Stack[i].list[j][1], v)
-                #Stack[i].list[j][1] = v
+                shallowCopy(Stack[i].list[j][1],v)
                 return 
             inc(j)
         dec(i)
@@ -794,23 +789,18 @@ template resetSymbol(k: string, v: Value) =
     Stack[^1].updateOrSet(k,v)
 
 proc setSymbol(k: string, v: Value): Value {.inline.} = 
-    ##  Set key in the Stack
-    #echo ":: trying to set symbol: " & k
     var i = len(Stack) - 1
     var j: int
     while i > -1:
         j = 0
         while j<Stack[i].list.len:
             if Stack[i].list[j][0]==k: 
-                #echo ":: symbol existed"
-                valueSet(Stack[i].list[j][1], v)
-                # Stack[i].list[j][1]=v
+                shallowCopy(Stack[i].list[j][1],v)
                 return Stack[i].list[j][1]
             inc(j)
 
         dec(i)
 
-    #echo ":: symbol did NOT exist"
     Stack[^1].updateOrSet(k,v)
     result = v
 
@@ -1298,8 +1288,6 @@ proc gt(l: Value, r: Value): bool {.inline.} =
                 of SV: l.s>r.s
                 else: NotComparableError($(l.kind),$(r.kind))   
         of IV:
-            #echo "comparing: " & l.stringify() & " and " & r.stringify()
-            #echo "l.i>r.i: " & $(l.i>r.i)
             result = case r.kind
                 of IV: l.i>r.i
                 of BIV: l.i>r.bi
@@ -1475,9 +1463,9 @@ proc execute(f: Function, v: Value): Value {.inline.} =
 
     if f.hasContext:
         if Stack.len == 1: addContext()
-
+        #var oldSeq:Context
         let oldSeq = Stack[1]
-
+        #shallowCopy(oldSeq,Stack[1])
         if f.hasNamedArgs:
             if v.kind == AV: initTopContextWith(zip(f.args,v.a))
             else: initTopContextWith(f.args[0],v)
@@ -1490,24 +1478,27 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         #except ReturnValue as ret   : result = ret.value
         #finally                     : 
         Stack[1] = oldSeq
+        #shallowCopy(Stack[1],oldSeq)
         if Stack[1].list.len==0: popContext()
     else:
-        var stored: Value = nil
+        #var stored: Value = nil
         if v!=NULL:
-            if not f.hasNamedArgs:
-                stored = getAndSetSymbol(ARGV,v)
-            else:
+            let stored = getAndSetSymbol(ARGV,v)
+            if f.hasNamedArgs:
                 if v.kind == AV: 
                     var i = 0
                     while i<f.args.len:
                         resetSymbol(f.args[i],v.a[i])
                         inc(i)
                 else: resetSymbol(f.args[0],v)
-        result = f.body.execute()
+            result = f.body.execute()
+            discard setSymbol(ARGV,stored)
+        else:
+            result = f.body.execute()
         #try                         : result = f.body.execute()
         #except ReturnValue as ret   : raise
         #finally                     : 
-        if stored!=nil: discard setSymbol(ARGV,stored)
+        #if stored!=nil: discard setSymbol(ARGV,stored)
 
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.} =
     ## Validate given Expression against an array of ValueKind's
@@ -1827,10 +1818,10 @@ proc getValue(a: Argument): Value {.inline.} =
     {.computedGoto.}
     case a.kind
         of identifierArgument:
-            result = getSymbol(a.i)
+            shallowCopy(result,getSymbol(a.i))
             if result == nil: SymbolNotFoundError(a.i)
         of literalArgument:
-            result = a.v
+            result = valueCopy(a.v)
         of arrayArgument:
             result = a.a.evaluate(forceArray=true)
         of dictionaryArgument:
