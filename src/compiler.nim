@@ -8,8 +8,9 @@
   *****************************************************************]#
 
 import algorithm, base64, bitops, httpClient, json, macros, math, md5, os, osproc
-import parsecsv, parseutils, random, re, sequtils, std/editdistance, std/sha1
-import streams, strformat, strutils, sugar, unicode, tables, terminal, times, uri
+import parsecsv, parseutils, random, re, sequtils, std/editdistance # segfaults
+import std/sha1, streams, strformat, strutils, sugar, unicode, tables, terminal
+import times, uri
 
 import bignum, markdown, mustache
 import panic, utils
@@ -216,7 +217,7 @@ proc eq(l: Value, r: Value): bool {.inline.}
 proc lt(l: Value, r: Value): bool {.inline.}
 proc gt(l: Value, r: Value): bool {.inline.}
 proc valueKindToPrintable*(s: string): string
-proc stringify*(v: Value, quoted: bool = true): string
+proc stringify*(v: Value, quoted: bool = true): string {.inline.}
 proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 
 # Function
@@ -238,7 +239,7 @@ proc evaluate(x: Expression): Value {.inline.}
 proc newExpressionList: ExpressionList {.exportc.}
 proc newExpressionList(xl: seq[Expression]): ExpressionList
 proc addExpression(xl: ExpressionList, x: Expression): ExpressionList {.exportc.}
-proc evaluate(xl: ExpressionList, forceArray: bool=false): Value
+proc evaluate(xl: ExpressionList, forceArray: bool=false): Value {.inline.}
 
 # Statement
 
@@ -253,7 +254,7 @@ proc newStatementList: StatementList {.exportc.}
 proc newStatementList(sl: seq[Statement]): StatementList
 proc newStatementListWithStatement(s: Statement): StatementList {.exportc.}
 proc addStatement(sl: StatementList, s: Statement): StatementList {.exportc.}
-proc execute(sl: StatementList): Value
+proc execute(sl: StatementList): Value {.inline.}
 
 # Argument
 
@@ -358,7 +359,7 @@ template REAL(v:float):Value        = Value(kind: RV, r: v)
 template BOOL(v:bool):Value         = ( if v: TRUE else: FALSE )
 template ARR(v:seq[Value]):Value    = Value(kind: AV, a: v)
 template DICT(v:Context):Value      = Value(kind: DV, d: v)
-template FUNC(v:Function):Value     = Value(kind: FV, f: v)
+template FUNC(v:Function):Value     = Value(kind: FV, f: v)        
 
 #[######################################################
     Unittest setup
@@ -729,7 +730,15 @@ proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.} =
     var i = 0
     while i<ctx.list.len:
         if ctx.list[i][0]==k: 
-            ctx.list[i][1] = v
+            if ctx.list[i][1].kind==v.kind:
+                case v.kind
+                    of IV: ctx.list[i][1].i=v.i
+                    of RV: ctx.list[i][1].r=v.r
+                    of BV: ctx.list[i][1].b=v.b
+                    else: ctx.list[i][1]=v
+            else:
+                ctx.list[i][1]=v
+            #ctx.list[i][1] = v
             return
         inc(i)
 
@@ -739,8 +748,9 @@ proc getSymbol(k: string): Value {.inline.} =
     ## Get Value of key in the Stack
 
     var i = len(Stack) - 1
+    var j: int
     while i > -1:
-        var j = 0
+        j = 0
         while j<Stack[i].list.len:
             if Stack[i].list[j][0]==k: 
                 return Stack[i].list[j][1]
@@ -753,8 +763,9 @@ proc getAndSetSymbol(k: string, v: Value): Value {.inline.} =
     ## Set key in the Stack and return previous Value
 
     var i = len(Stack) - 1
+    var j: int
     while i > -1:
-        var j = 0
+        j = 0
         while j<Stack[i].list.len:
             if Stack[i].list[j][0]==k: 
                 result = Stack[i].list[j][1]
@@ -765,26 +776,45 @@ proc getAndSetSymbol(k: string, v: Value): Value {.inline.} =
 
     return nil
 
-proc setSymbol(k: string, v: Value, redefine: bool=false): Value {.inline.} = 
+template resetSymbol(k: string, v: Value) =
+    ##  Set key in the top Stack context
+
+    Stack[^1].updateOrSet(k,v)
+
+proc setSymbol(k: string, v: Value): Value {.inline.} = 
     ##  Set key in the Stack
 
-    if redefine:
-        Stack[^1].updateOrSet(k,v)
-        result = v
-    else:
-        var i = len(Stack) - 1
-        while i > -1:
-            var j = 0
-            while j<Stack[i].list.len:
-                if Stack[i].list[j][0]==k: 
+    var i = len(Stack) - 1
+    var j: int
+    while i > -1:
+        j = 0
+        while j<Stack[i].list.len:
+            if Stack[i].list[j][0]==k: 
+                if Stack[i].list[j][1].kind==v.kind:
+                    case v.kind
+                        of IV: Stack[i].list[j][1].i=v.i
+                        of RV: Stack[i].list[j][1].r=v.r
+                        of BV: Stack[i].list[j][1].b=v.b
+                        else: Stack[i].list[j][1]=v
+                else:
                     Stack[i].list[j][1]=v
-                    return v
-                inc(j)
+                # if k=="i":
+                #     echo "setting i"
+                #     echo "\t\tV = " & fmt"{cast[int](unsafeAddr(v)):#x}"
+                #     echo "\t\tI = " & fmt"{cast[int](unsafeAddr(Stack[i].list[j][1])):#x}"
+                #     echo "\t\tv = " & fmt"{cast[int](unsafeAddr(v.i)):#x}"
+                #     echo "\t\ti = " & fmt"{cast[int](unsafeAddr(Stack[i].list[j][1].i)):#x}"
+                # #if v.kind==IV:
+                # #    Stack[i].list[j][1].i = v.i
+                # #else:
+                # Stack[i].list[j][1]=v
+                return Stack[i].list[j][1]
+            inc(j)
 
-            dec(i)
+        dec(i)
 
-        Stack[^1].updateOrSet(k,v)
-        result = v
+    Stack[^1].updateOrSet(k,v)
+    result = v
 
 ##---------------------------
 ## Inspection
@@ -802,7 +832,9 @@ proc inspectStack() =
         echo tab,"----------------"
 
         for t in s.list:
-            echo tab,t[0]," -> ",t[1].stringify()
+            echo tab,t[0]," [" & fmt"{cast[int](unsafeAddr(t[1])):#x}" & "] -> ",t[1].stringify()
+            if t[1].kind==IV:
+                echo "\t\t" & fmt"{cast[int](unsafeAddr(t[1].i)):#x}"
 
         inc(i)
 
@@ -1306,7 +1338,7 @@ proc valueKindToPrintable*(s: string): string =
 
     s.replace("Value","").replace("ionary","").replace("tion","").replace("eger","").replace("ing","").replace("ean","")
 
-proc stringify*(v: Value, quoted: bool = true): string =
+proc stringify*(v: Value, quoted: bool = true): string {.inline.} =
     {.computedGoto.}
     case v.kind
         of SV   :   ( if quoted: result = escape(v.s) else: result = v.s )
@@ -1465,9 +1497,9 @@ proc execute(f: Function, v: Value): Value {.inline.} =
                 if v.kind == AV: 
                     var i = 0
                     while i<f.args.len:
-                        discard setSymbol(f.args[i],v.a[i],redefine=true)
+                        resetSymbol(f.args[i],v.a[i])
                         inc(i)
-                else: discard setSymbol(f.args[0],v,redefine=true)
+                else: resetSymbol(f.args[0],v)
 
         try                         : result = f.body.execute()
         except ReturnValue as ret   : raise
@@ -1480,11 +1512,15 @@ proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.i
 
     result = x.evaluate()
 
-    if unlikely(not (result.kind in req)):
+    if not likely(req.contains(result.kind)):
         let expected = req.map((x) => $(x)).join(" or ")
         IncorrectArgumentValuesError(name, expected, $(result.kind))
-    else:
-        return
+
+proc showValidationError(req:FunctionConstraints, vs:seq[Value], name: string) = 
+    let expected = req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" or ")
+    let got = vs.map((x) => ($(x.kind)).valueKindToPrintable()).join(",")
+
+    IncorrectArgumentValuesError(name, expected, got)
 
 proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
     ## Validate given ExpressionList against given array of constraints
@@ -1492,14 +1528,9 @@ proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
 
     result = xl.list.map((x) => x.evaluate())
 
-    if unlikely(not f.req.contains(result.map((x) => x.kind))):  
-        let expected = f.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" or ")
-        let got = result.map((x) => ($(x.kind)).valueKindToPrintable()).join(",")
-
-        IncorrectArgumentValuesError(f.name, expected, got)
-    else:
-        return
-
+    if not likely(f.req.contains(result.map((x) => x.kind))):
+        showValidationError(f.req, result, f.name)
+        
 proc getOneLineDescription*(f: SystemFunction): string =
     ## Get one-line description for given System function
     ## ! Called only from the Console module
@@ -1695,7 +1726,7 @@ proc addExpression(xl: ExpressionList, x: Expression): ExpressionList {.exportc.
 ## Methods
 ##---------------------------
 
-proc evaluate(xl: ExpressionList, forceArray: bool=false): Value = 
+proc evaluate(xl: ExpressionList, forceArray: bool=false): Value {.inline.} = 
     ## Evaluate given ExpressionList and return the result
 
     if forceArray or xl.list.len>1:
@@ -1936,7 +1967,7 @@ proc addStatement(sl: StatementList, s: Statement): StatementList {.exportc.} =
 ## Methods
 ##---------------------------
 
-proc execute(sl: StatementList): Value = 
+proc execute(sl: StatementList): Value {.inline.} = 
     ## Execute given StatementList and return result
 
     var i = 0
