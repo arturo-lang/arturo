@@ -6,6 +6,54 @@ import compiler
 
 import bignum
 
+var vS = Value(kind:stringValue, s:"done")
+var vI = Value(kind:integerValue, i: 2)
+var vR = Value(kind:realValue, r: 3.0)
+var vB = Value(kind:booleanValue, b: true)
+var vA = Value(kind:arrayValue, a: @[Value(kind:integerValue, i: 6),Value(kind:stringValue, s:"boom")])
+
+echo "vS: " & repr(unsafeAddr(vS)) & " -> " & vS.stringify()
+echo "vI: " & repr(unsafeAddr(vI)) & " -> " & vI.stringify()
+echo "vR: " & repr(unsafeAddr(vR)) & " -> " & vR.stringify()
+echo "vB: " & repr(unsafeAddr(vB)) & " -> " & vB.stringify()
+echo "vA: " & repr(unsafeAddr(vA)) & " -> " & vA.stringify()
+
+var vS2 = vS
+var vI2 = vI
+var vR2 = vR
+var vB2 = vB
+var vA2 = vA
+echo "======================================================"
+echo "AFTER"
+echo "======================================================"
+echo "vS2: " & repr(unsafeAddr(vS2)) & " -> " & vS2.stringify()
+echo "vI2: " & repr(unsafeAddr(vI2)) & " -> " & vI2.stringify()
+echo "vR2: " & repr(unsafeAddr(vR2)) & " -> " & vR2.stringify()
+echo "vB2: " & repr(unsafeAddr(vB2)) & " -> " & vB2.stringify()
+echo "vA2: " & repr(unsafeAddr(vA2)) & " -> " & vA2.stringify()
+
+echo "======================================================"
+echo "changing values directly"
+echo "======================================================"
+vS2.s = "ggg"
+vI2.i = 9
+vR2.r = 11.1
+vB2.b = false
+vA2.a = @[Value(kind:integerValue, i:666),Value(kind:stringValue, s:"Zoom")]
+
+echo "vS: " & repr(unsafeAddr(vS)) & " -> " & vS.stringify()
+echo "vI: " & repr(unsafeAddr(vI)) & " -> " & vI.stringify()
+echo "vR: " & repr(unsafeAddr(vR)) & " -> " & vR.stringify()
+echo "vB: " & repr(unsafeAddr(vB)) & " -> " & vB.stringify()
+echo "vA: " & repr(unsafeAddr(vA)) & " -> " & vA.stringify()
+
+echo "vS2: " & repr(unsafeAddr(vS2)) & " -> " & vS2.stringify()
+echo "vI2: " & repr(unsafeAddr(vI2)) & " -> " & vI2.stringify()
+echo "vR2: " & repr(unsafeAddr(vR2)) & " -> " & vR2.stringify()
+echo "vB2: " & repr(unsafeAddr(vB2)) & " -> " & vB2.stringify()
+echo "vA2: " & repr(unsafeAddr(vA2)) & " -> " & vA2.stringify()
+#[
+
 echo "hello/".removingSuffix("/")
 
 echo "hello/sdf".removingSuffix("/sdf")
@@ -20,6 +68,7 @@ echo "hello/aa".removingPrefix("/")
 echo "".removingPrefix("/")
 echo "//".removingPrefix("/")
 echo "/".removingPrefix("/")
+]#
 # type 
 #     ctx = TableRef[string,Value]
 #     ctxo = OrderedTableRef[string,Value]
