@@ -60,7 +60,7 @@ template compileCore() =
         "--threads:on",
         "--hints:off",
         "--opt:speed",
-        "--nilseqs:on",
+        #"--nilseqs:on",
         "--gc:regions"
     ]
     exec getCommand(args)
@@ -75,7 +75,7 @@ template compileMini() =
         "--threads:on",
         "--hints:off",
         "--opt:size",
-        "--nilseqs:on",
+        #"--nilseqs:on",
         "--gc:regions"
     ]
     exec getCommand(args)
