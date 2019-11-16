@@ -82,7 +82,7 @@ template compileMini() =
 
 template compileExperiment() = 
     showMessage("Compiling experimental module")
-    exec "nim c -d:release --opt:speed --nimcache:_cache --threads:on --path:src -o:experimental src/experimental.nim"
+    exec "nim c -d:release --passL:parser.a --opt:speed --nimcache:_cache --threads:on --path:src -o:experimental src/experimental.nim"
 
 template runExperiment() =
     exec "./experimental"
@@ -214,6 +214,7 @@ task debug, "Build a version for debugging":
     showMessage "Done :)", true
 
 task experiment, "Run experiments":
+    buildParser()
     compileExperiment()
     showMessage "Done :)", true
     runExperiment()
