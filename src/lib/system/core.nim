@@ -107,10 +107,13 @@ proc Core_panic*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Core_return*[F,X,V](f: F, xl: X): V {.inline.} =
     let v = xl.validate(f)
 
-    var ret = newException(ReturnValue, "return")
-    ret.value = v[0]
+    Returned = v[0]
 
-    raise ret
+    result = NULL
+    #var ret = newException(ReturnValue, "return")
+    #ret.value = v[0]
+
+    #raise ret
 
 proc Core_syms*[F,X,V](f: F, xl: X): V {.inline.} =
     inspectStack()
