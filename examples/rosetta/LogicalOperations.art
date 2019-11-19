@@ -1,7 +1,0 @@
-logic: @(a b){
-	print "a AND b = " + [and a b]
-	print "a OR b = " + [or a b]
-	print "NOT a = " + [not a]
-}
-
-logic true false

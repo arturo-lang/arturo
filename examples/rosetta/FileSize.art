@@ -1,3 +1,0 @@
-file: "input.txt"
-
-print file + " size: " + [fileSize file] + " bytes"

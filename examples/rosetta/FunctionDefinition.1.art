@@ -1,3 +1,0 @@
-multiply: -> &0 * &1
-
-print [multiply 3 7]

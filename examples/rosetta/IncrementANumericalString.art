@@ -1,3 +1,0 @@
-num: "12349"
-
-print "The next number is: " + ([toNumber num]+1)

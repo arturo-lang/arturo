@@ -1,3 +1,0 @@
-url: "http://foo bar/"
-
-print [encodeUrl url]
