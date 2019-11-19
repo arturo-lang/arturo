@@ -1,3 +1,0 @@
-fruit: #("apple" "orange")
-
-print "array length = " + [size fruit]

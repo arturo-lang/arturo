@@ -1,6 +1,0 @@
-Arturo
-    filter remove_matches ^\s*//
-    filter call_regexp_common C
-    extension art
-    extension artl
-    3rd_gen_scale 1.51

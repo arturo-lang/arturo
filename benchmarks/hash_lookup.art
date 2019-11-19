@@ -1,9 +1,0 @@
-dict: #{
-	name: "john"
-	surname: "doe"
-	country: "Spain"
-}
-
-loop 200000 {
-	print dict.surname
-}

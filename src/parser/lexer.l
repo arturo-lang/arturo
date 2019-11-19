@@ -7,7 +7,7 @@
  *
  * @file: parser/lexer.l
  *****************************************************************/
-
+//%%SYSTEM_CMD%%
 /****************************************
  Includes
  ****************************************/
@@ -62,8 +62,6 @@ LETTER_OR_MISC      [a-zA-Z_]
 
 "null"                                              { return NULLV; }
 "true"|"false"                                      { yylval.str=strdup(yytext); return BOOLEANV; }
-
-%%SYSTEM_CMD%%
 
 "&0"                                                { yylval.str="0"; return ARGV; }
 "&1"                                                { yylval.str="1"; return ARGV; }

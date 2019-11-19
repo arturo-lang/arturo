@@ -1,7 +1,0 @@
-// initialize array
-array: #("one" 2 "three" "four")
-
-// add an element to the array
-array: array + #(5)
-
-print array

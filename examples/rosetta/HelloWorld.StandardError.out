@@ -1,6 +1,0 @@
-[4;1;35mRuntime Error[0;32m  [1m@ File:[0;32m examples/rosetta/HelloWorld.StandardError.art, [1mLine:[0;32m 2[0;37m
-               [1m#[0;37m [1;37mProgram panic[0;37m
-
-                 Message: Goodbye, World!
-
-

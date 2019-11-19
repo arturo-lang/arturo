@@ -1,3 +1,0 @@
-sundays: filter [range 2008 2121] -> [day|datetime "25-12-"+& "dd-MM-yyyy"]="Sunday"
-
-print sundays

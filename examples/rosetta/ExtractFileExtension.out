@@ -1,6 +1,0 @@
-http://example.com/download.tar.gz => extension: .gz
-CharacterModel.3DS => extension: .3DS
-.desktop => extension: 
-document => extension: 
-document.txt_backup => extension: 
-/etc/pam.d/login => extension: 
