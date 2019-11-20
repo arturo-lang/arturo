@@ -1,0 +1,17 @@
+after omitting Context methods and using them directly
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           247         439         113         44          75          
+assign_print_120k         |   X           264         403         183         108         171         
+assign_print_480k         |   X           799         1512        X           414         633         
+assign_print_960k         |   X           1561        3098        X           818         1268        
+bubblesort                |   X           315         358         268         -           3099        
+factorial                 |   3910        310         X           X           X           X           
+factorial_prod            |   411         316         184         X           -           -           
+fibonacci                 |   6948        141         247         144         139         3915        
+fibonacci_mem             |   197         5978        56          X           -           -           
+is_prime_lib              |   26          88          537         70          12          43          
+loop_assign_incr_5m       |   6322        387         481         X           -           8048        
+quicksort                 |   2619        182         183         181         -           17344       
+single_comments_1m        |   299         176         194         84          4           69          

@@ -1,0 +1,5 @@
+maxLimit: 5000
+
+loop 0..maxLimit {
+	print [isPrime &]
+}

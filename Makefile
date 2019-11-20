@@ -16,7 +16,7 @@
 APP     = arturo
 
 # Environment
-
+#/Users/drkameleon/Documents/Code/OpenSource/3rd-party/Nim/bin/
 NIM     = nim 
 NIMBLE  = nimble
 FLEX    = flex
@@ -31,6 +31,7 @@ YES 	= yes
 DATE 	= date
 GIT 	= git
 AWK 	= awk
+RUBY 	= ruby
 
 STRIP   = strip
 UPX     = upx
@@ -46,7 +47,7 @@ NIM_MAIN = $(NIM_PATH)/main.nim
 
 INSTALL_DIR    	= /usr/local/bin
 
-PARSER_L        = $(NIM_PATH)/parser/lexer.l
+PARSER_L        = $(NIM_PATH)/parser/lexer_final.l
 PARSER_L_OUT    = lex.yy.c
 PARSER_L_OBJ    = lex.yy.o
 PARSER_P        = $(NIM_PATH)/parser/parser.y
@@ -56,7 +57,10 @@ PARSER_P_OBJ    = parser.tab.o
 PARSER          = parser.a
 
 BUILD_NO_TXT	= $(NIM_PATH)/rsrc/build.txt
+BUILD_NO_TMP 	= $(NIM_PATH)/rsrc/build.new.txt
 BUILD_DATE_TXT 	= $(NIM_PATH)/rsrc/build_date.txt
+
+BUILD_LIBRARY_SCRIPT	= build_library.rb
 
 # Configurations
 
@@ -91,6 +95,7 @@ CFG_MEMPROFILE 	= -d:release \
 			      --profiler:off \
 			      --stackTrace:on \
 			      \
+			      --gc:regions \
 			      --threads:on \
 			      --nimcache:.cache/memprofile
 EXT_MEMPROFILE	= _memprofile
@@ -108,13 +113,18 @@ EXT_DEBUG 		= _debug
 
 NIM_LANG    = c
 
+# 			  --hint[Conf]:off \
+# 			  --hint[Processing]:off \
+# 			  --hint[XDeclaredButNotUsed]:off \
+
 NIM_FLAGS   = --opt:speed \
 			  --hints:on \
 			  --passL:parser.a \
 			  --embedsrc \
 			  --checks:off \
 			  --overflowChecks:on \
-			  --forceBuild:on
+			  --forceBuild:on \
+			  --warnings:off
 
 NIM_GCC_FLAGS   = --gcc.options.speed="-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math -ldl" \
 				  --gcc.options.linker="-flto -ldl"
@@ -126,6 +136,9 @@ FLEX_FLAGS          = -F -8
 BISON_FLAGS         = -d 
 PARSER_GCC_FLAGS    = -O4 -Ofast -flto -fno-strict-aliasing -c 
 AR_FLAGS            = rvs
+UPX_FLAGS 			= -q
+
+BUILD_PRINT = \e[1;34mBuilding $<\e[0m
 
 # #================================================
 # # Tasks
@@ -134,60 +147,81 @@ AR_FLAGS            = rvs
 # Main
 
 release:
-	$(MAKE) $(PARSER)
+	@printf "\033[1;0m*************************************************\033[0m\n"
+	@printf "\033[1;0m* \033[1;32mArturo\033[0m\n"
+	@printf "\033[1;0m* \033[1;32mProgramming Language\033[0m\n"
+	@printf "\033[1;0m* \033[0m\n"
+	@printf "\033[1;0m* (c) 2019 Yanis Zafirópulos\033[0m\n"
+	@printf "\033[1;0m*************************************************\033[0m\n"
+	@$(MAKE) build_library
+	@$(MAKE) $(PARSER)
+	@printf "\n\033[1;35m> Compiling main...\033[0m\n\n"
 	$(NIM) $(NIM_LANG) $(NIM_GCC_FLAGS) $(NIM_CLANG_FLAGS) $(CFG_RELEASE) $(NIM_FLAGS) --path:$(NIM_PATH) -o:$(BIN)/$(APP) $(NIM_MAIN)
+	@printf "\n\033[1;35m> Compressing...\033[0m\n\n"
 ifdef UPX_EXISTS 
-	$(UPX) $(BIN)/$(APP)
+	$(UPX) $(UPX_FLAGS) $(BIN)/$(APP) > /dev/null 2>&1
 else
 	$(STRIP) $(BIN)/$(APP) 
 endif
-	$(MAKE) update_build
-	$(MAKE) clean
-
+	@$(MAKE) update_build
+	@$(MAKE) clean
+	@printf "\n\n"
+	@printf "\033[1;0m*************************************************\033[0m\n"
+	@printf "\033[1;0m*\033[0m \033[1;32mAll set! :)\033[0m\n"
+	@printf "\033[1;0m\n"
+	@printf "\033[1;0m*\033[0m You may access the binary via bin/arturo OR\n"
+	@printf "\033[1;0m*\033[0m install it globally using 'make install'.\n"
+	@printf "\033[1;0m*************************************************\033[0m\n\n"
 mini:
-	$(MAKE) $(PARSER)
+	@$(MAKE) $(PARSER)
 	$(NIM) $(NIM_LANG) $(NIM_GCC_FLAGS) $(NIM_CLANG_FLAGS) $(CFG_MINI) $(NIM_FLAGS) --path:$(NIM_PATH) -o:$(BIN)/$(APP)$(EXT_MINI) $(NIM_MAIN)
 ifdef UPX_EXISTS 
-	$(UPX) $(BIN)/$(APP)_mini
+	$(UPX) $(UPX_FLAGS) $(BIN)/$(APP)_mini > /dev/null 2>&1
 else
 	$(STRIP) $(BIN)/$(APP)_mini 
 endif
-	$(MAKE) update_build
-	$(MAKE) clean
+	@$(MAKE) update_build
+	@$(MAKE) clean
 
 profile:
-	$(MAKE) $(PARSER)
+	@$(MAKE) $(PARSER)
 	$(NIM) $(NIM_LANG) $(NIM_GCC_FLAGS) $(NIM_CLANG_FLAGS) $(CFG_PROFILE) $(NIM_FLAGS) --path:$(NIM_PATH) -o:$(BIN)/$(APP)$(EXT_PROFILE) $(NIM_MAIN)
-	$(MAKE) clean
+	@$(MAKE) clean
 
 memprofile:
-	$(MAKE) $(PARSER)
+	@$(MAKE) $(PARSER)
 	$(NIM) $(NIM_LANG) $(NIM_GCC_FLAGS) $(NIM_CLANG_FLAGS) $(CFG_MEMPROFILE) $(NIM_FLAGS) --path:$(NIM_PATH) -o:$(BIN)/$(APP)$(EXT_MEMPROFILE) $(NIM_MAIN)
-	$(MAKE) clean
+	@$(MAKE) clean
 
 debug:
-	$(MAKE) $(PARSER)
+	@$(MAKE) $(PARSER)
 	$(NIM) $(NIM_LANG) $(NIM_GCC_FLAGS) $(NIM_CLANG_FLAGS) $(CFG_DEBUG) $(NIM_FLAGS) --path:$(NIM_PATH) -o:$(BIN)/$(APP)$(EXT_DEBUG) $(NIM_MAIN)
-	$(MAKE) clean
+	@$(MAKE) clean
 
 # Installer
 
 install: $(BIN)/$(APP)
 	$(CP) $(BIN)/$(APP) $(INSTALL_DIR)
 
-# Helpers
+# Sub-tasks
+
+build_library:
+	@printf "\n\033[1;35m> Building system library...\033[0m\n\n"
+	$(RUBY) $(BUILD_LIBRARY_SCRIPT)
 
 $(PARSER): $(PARSER_L) $(PARSER_P)
+	@printf "\n\033[1;35m> Compiling parser...\033[0m\n\n"
 	$(FLEX) $(FLEX_FLAGS) $(PARSER_L)
 	$(BISON) $(BISON_FLAGS) $(PARSER_P)
 	$(CC) $(PARSER_GCC_FLAGS) $(PARSER_L_OUT)
 	$(CC) $(PARSER_GCC_FLAGS) $(PARSER_P_OUT)
-	$(AR) $(AR_FLAGS) $(PARSER) $(PARSER_L_OBJ) $(PARSER_P_OBJ)
+	$(AR) $(AR_FLAGS) $(PARSER) $(PARSER_L_OBJ) $(PARSER_P_OBJ) > /dev/null 2>&1
 
 update_build:
-	$(AWK) '/([0-9]+)/ { printf "%d", $$1+1 }' < $(BUILD_NO_TXT) > src/rsrc/build_new.txt
+	@printf "\n\033[1;35m> Updating build...\033[0m\n\n"
+	$(AWK) '/([0-9]+)/ { printf "%d", $$1+1 }' < $(BUILD_NO_TXT) > $(BUILD_NO_TMP)
 	$(YES) | $(RM) -rf $(BUILD_NO_TXT)
-	$(MV) src/rsrc/build_new.txt $(BUILD_NO_TXT)
+	$(MV) $(BUILD_NO_TMP) $(BUILD_NO_TXT)
 	$(DATE) +%d-%b-%Y > "$(BUILD_DATE_TXT)"
 
 git_commit:
@@ -195,4 +229,5 @@ git_commit:
 	$(GIT) commit -m "updated build number"
 
 clean:
-	rm -f $(PARSER_L_OUT) $(PARSER_P_OUT) $(PARSER_L_OBJ) $(PARSER_P_OBJ) *.h
+	@printf "\n\033[1;35m> Cleaning up...\033[0m\n\n"
+	rm -f $(PARSER_L_OUT) $(PARSER_P_OUT) $(PARSER_L_OBJ) $(PARSER_P_OBJ) $(PARSER) *.h

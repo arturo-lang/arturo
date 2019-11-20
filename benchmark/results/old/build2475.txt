@@ -1,0 +1,17 @@
+after setting all classes as final
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           242         413         112         46          88          
+assign_print_120k         |   X           256         402         181         117         176         
+assign_print_480k         |   X           869         1684        X           470         708         
+assign_print_960k         |   X           1485        3022        X           836         1263        
+bubblesort                |   X           302         296         267         -           2851        
+factorial                 |   3775        322         X           X           X           X           
+factorial_prod            |   530         323         184         X           -           -           
+fibonacci                 |   5508        143         247         147         140         3927        
+fibonacci_mem             |   192         6150        56          X           -           -           
+is_prime_lib              |   26          88          564         73          13          44          
+loop_assign_incr_5m       |   4850        374         474         X           -           8210        
+quicksort                 |   1937        194         185         191         -           25737       
+single_comments_1m        |   316         190         205         90          6           75          
