@@ -1,0 +1,11 @@
+maxLimit: 1000
+
+factorial: @(n){ 
+	if n>0 { 
+		n * [factorial n-1]
+	} { 1 } 
+}  
+
+loop 0..maxLimit {
+	print [factorial &]
+}

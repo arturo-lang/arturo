@@ -7,7 +7,7 @@
  *
  * @file: parser/lexer.l
  *****************************************************************/
-//%%SYSTEM_CMD%%
+
 /****************************************
  Includes
  ****************************************/
@@ -59,6 +59,8 @@ LETTER_OR_MISC      [a-zA-Z_]
 
 "//".*                                              { /* Single-line comment. Ignore. */ }
 "#!".*                                              { /* She-bang line. Ignore. */ }
+
+%%SYSTEM_CMD%%
 
 "null"                                              { return NULLV; }
 "true"|"false"                                      { yylval.str=strdup(yytext); return BOOLEANV; }

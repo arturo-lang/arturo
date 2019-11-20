@@ -1,0 +1,15 @@
+assign_incr_100k.art 		0.096 (^ was 0.082) (! was 0.084) (^ was 0.082) (! was 0.084)
+assign_print_120k.art 		0.098 (^ was 0.091) (! was 0.092) (! was 0.093) (! was 0.102)
+assign_print_480k.art 		0.376 (^ was 0.343) (! was 0.346) (! was 0.369) (! was 0.394)
+assign_print_960k.art 		0.748 (^ was 0.682) (! was 0.692) (! was 0.727) (! was 0.791)
+bubblesort.art 				2.014 (!! was 2.130) (! was 2.383) (! was 2.554) (! was 2.744)
+factorial.art 				X	   	(integer overflow)
+factorial_prod.art 			X	   	(integer overflow)
+fibonacci.art 				0.944 (!! was 1.299) (!! was 1.404)
+fibonacci_mem.art 			X		(memoize not implemented)
+is_prime_lib.art 			0.009 (^ was 0.007) (! was 0.008) (^ was 0.007)
+loop_assign_incr_5m.art		0.927 (! was 0.939) (! was 1.012) (^ was 0.932) (! was 0.986) (^^ (was 0.580))
+quicksort.art 				0.681 (! was 0.697) (! was 0.764) (! was 0.783) (^ (was 0.759))
+single_comments_1m.art 		0.108 (! was 0.138) (^?? was 0.109)
+
+AFTER a better storeSymbols + code cleanup

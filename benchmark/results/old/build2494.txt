@@ -1,0 +1,17 @@
+after destroy(ing) statements at root level
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           257         440         108         48          81          
+assign_print_120k         |   X           268         425         184         114         176         
+assign_print_480k         |   X           791         1612        X           441         678         
+assign_print_960k         |   X           1563        3476        X           860         1257        
+bubblesort                |   X           298         301         254         -           2787        
+factorial                 |   3545        312         X           X           X           X           
+factorial_prod            |   562         321         183         X           -           -           
+fibonacci                 |   5571        143         247         147         144         4207        
+fibonacci_mem             |   202         6168        57          X           -           -           
+is_prime_lib              |   25          88          473         71          13          45          
+loop_assign_incr_5m       |   4806        378         475         X           -           8037        
+quicksort                 |   1821        187         176         176         -           17549       
+single_comments_1m        |   300         179         190         85          5           68          
