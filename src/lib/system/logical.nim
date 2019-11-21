@@ -13,84 +13,91 @@
   ======================================================]#
 
 proc Logical_and*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = xl.list[0].validate("and",[BV,IV])
+    let v0 = VALID(0,BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of BV:
-            if not v0.b: return FALSE
-            if xl.list[1].validate("and",[BV]).b: return TRUE
+            if not B(v0): return FALSE
+            if B(VALID(1,BV)): return TRUE
             else: return FALSE
         of IV:
-            result = INT(bitand(v0.i, xl.list[1].validate("and",[IV]).i))
+            result = SINT(bitand(I(v0), I(VALID(1,IV))))
         else: discard
 
 proc Logical_nand*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = xl.list[0].validate("nand",[BV,IV])
+    let v0 = VALID(0,BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of BV:
-            if not v0.b: return TRUE
-            if xl.list[1].validate("nand",[BV]).b: return FALSE
+            if not B(v0): return TRUE
+            if B(VALID(1,BV)): return FALSE
             else: return TRUE
         of IV:
-            result = INT(bitnot(bitand(v0.i, xl.list[1].validate("nand",[IV]).i)))
+            result = SINT(bitnot(bitand(I(v0), I(VALID(1,IV)))))
         else: discard
 
 proc Logical_nor*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = xl.list[0].validate("nor",[BV,IV])
+    let v0 = VALID(0,BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of BV:
-            if v0.b: return FALSE
-            if xl.list[1].validate("nor",[BV]).b: return FALSE
+            if B(v0): return FALSE
+            if B(VALID(1,BV)): return FALSE
             else: return TRUE
         of IV:
-            result = INT(bitnot(bitor(v0.i, xl.list[1].validate("nor",[IV]).i)))
+            result = SINT(bitnot(bitor(I(v0), I(VALID(1,IV)))))
         else: discard
 
 proc Logical_not*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = xl.list[0].validate("not",[BV,IV])
+    let v0 = VALID(0,BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of BV:
-            if v0.b: result = FALSE
+            if B(v0): result = FALSE
             else: result = TRUE
         of IV:
-            result = INT(bitnot(v0.i))
+            result = SINT(bitnot(I(v0)))
         else: discard
 
 proc Logical_or*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = xl.list[0].validate("or",[BV,IV])
+    let v0 = VALID(0,BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of BV:
-            if v0.b: return TRUE
-            if xl.list[1].validate("or",[BV]).b: return TRUE
+            if B(v0): return TRUE
+            if B(VALID(1,BV)): return TRUE
             else: return FALSE
         of IV:
-            result = INT(bitor(v0.i, xl.list[1].validate("or",[IV]).i))
+            result = SINT(bitor(I(v0), I(VALID(1,IV))))
         else: discard
 
 proc Logical_xnor*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = xl.list[0].validate("xnor",[BV,IV])
+    let v0 = VALID(0,BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of BV:
-            let v1 = xl.list[1].validate("xnor",[BV])
-            result = BOOL( (v0.b and v1.b) or ((not v0.b) and (not v1.b)) )
+            let v1 = VALID(1,BV)
+            result = BOOL( (B(v0) and B(v1)) or ((not B(v0)) and (not B(v1))) )
         of IV:
-            result = INT(bitnot(bitxor(v0.i, xl.list[1].validate("xnor",[IV]).i)))
+            result = SINT(bitnot(bitxor(I(v0), I(VALID(1,IV)))))
         else: discard
 
 proc Logical_xor*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = xl.list[0].validate("xor",[BV,IV])
+    let v0 = VALID(0,BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of BV:
-            let v1 = xl.list[1].validate("xor",[BV])
-            result = BOOL( (v0.b and (not v1.b)) or ((not v0.b) and v1.b) )
+            let v1 = VALID(1,BV)
+            result = BOOL( (B(v0) and (not B(v1))) or ((not B(v0)) and B(v1)) )
         of IV:
-            result = INT(bitxor(v0.i, xl.list[1].validate("xor",[IV]).i))
+            result = SINT(bitxor(I(v0), I(VALID(1,IV))))
         else: discard
 
 #[******************************************************

@@ -13,48 +13,48 @@
   ======================================================]#
 
 proc Crypto_decodeBase64*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(S(v[0]).decode())
+    result = STR(S(v0).decode())
 
 proc Crypto_decodeBase64I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = S(v[0]).decode()
-    result = v[0]
+    S(v0) = S(v0).decode()
+    result = v0
 
 proc Crypto_encodeBase64*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(S(v[0]).encode())
+    result = STR(S(v0).encode())
 
 proc Crypto_encodeBase64I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = S(v[0]).encode()
-    result = v[0]
+    S(v0) = S(v0).encode()
+    result = v0
 
 proc Crypto_md5*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(S(v[0]).getMD5())
+    result = STR(S(v0).getMD5())
 
 proc Crypto_md5I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = S(v[0]).getMD5()
-    result = v[0]
+    S(v0) = S(v0).getMD5()
+    result = v0
 
 proc Crypto_sha1*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(($(S(v[0]).secureHash())).toLower())
+    result = STR(($(S(v0).secureHash())).toLower())
 
 proc Crypto_sha1I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = ($(S(v[0]).secureHash())).toLower()
-    result = v[0]
+    S(v0) = ($(S(v0).secureHash())).toLower()
+    result = v0
 
 #[******************************************************
   ******************************************************

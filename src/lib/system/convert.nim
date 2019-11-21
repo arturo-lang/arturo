@@ -13,61 +13,62 @@
   ======================================================]#
 
 proc Convert_toBin*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)# = xl.validate(f)
+    let v0 = VALID(0,IV)
 
     result = STR(fmt"{I(v0):#b}")
 
 proc Convert_toHex*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)#xl.validate(f)
+    let v0 = VALID(0,IV)
 
     result = STR(fmt"{I(v0):#x}")
 
 proc Convert_toNumber*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV|RV|BV)
 
-    # case v[0].kind
-    #     of SV:
-    #         if unlikely(S(v[0]).startsWith("0x")): 
-    #             var ret = 0
-    #             discard parseHex(S(v[0]),ret)
-    #             result = INT(ret)
-    #         elif unlikely(S(v[0]).startsWith("0b")):
-    #             var ret = 0
-    #             discard parseBin(S(v[0]),ret)
-    #             result = INT(ret)
-    #         elif unlikely(S(v[0]).startsWith("0o")):
-    #             var ret = 0
-    #             discard parseOct(S(v[0]),ret)
-    #             result = INT(ret)
-    #         else:
-    #             if S(v[0]).contains("."):
-    #                 var ret = 0.0
-    #                 discard parseFloat(S(v[0]),ret)
-    #                 result = REAL(ret)
-    #             else:
-    #                 try: 
-    #                     var ret = 0
-    #                     discard parseInt(S(v[0]),ret)
-    #                     result = INT(ret)
-    #                 except Exception as e: 
-    #                     result = BIGINT(S(v[0]))
+    {.computedGoTo.}
+    case v0.kind
+        of SV:
+            if unlikely(S(v0).startsWith("0x")): 
+                var ret = 0
+                discard parseHex(S(v0),ret)
+                result = SINT(ret)
+            elif unlikely(S(v0).startsWith("0b")):
+                var ret = 0
+                discard parseBin(S(v0),ret)
+                result = SINT(ret)
+            elif unlikely(S(v0).startsWith("0o")):
+                var ret = 0
+                discard parseOct(S(v0),ret)
+                result = SINT(ret)
+            else:
+                if S(v0).contains("."):
+                    var ret = 0.0
+                    discard parseFloat(S(v0),ret)
+                    result = REAL(ret)
+                else:
+                    try: 
+                        var ret = 0
+                        discard parseInt(S(v0),ret)
+                        result = SINT(ret)
+                    except Exception as e: 
+                        result = BIGINT(S(v0))
 
-    #     of RV: result = INT(int(R(0)))
-    #     of BV: (if B(0): result = INT(1) else: result = INT(0))
-    #     else: discard
+        of RV: result = SINT(int(R(v0)))
+        of BV: (if B(v0): result = SINT(1) else: result = SINT(0))
+        else: discard
 
 proc Convert_toOct*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)#xl.validate(f)
+    let v0 = VALID(0,IV)
 
     result = STR(fmt"{I(v0):#o}")
 
 proc Convert_toReal*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)# = xl.validate(f)
+    let v0 = VALID(0,IV)
 
     result = REAL(float(I(v0)))
 
 proc Convert_toString*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,ANY)# = xl.validate(f)
+    let v0 = VALID(0,ANY)
 
     result = STR(v0.stringify(quoted=false))
 

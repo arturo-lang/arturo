@@ -13,15 +13,16 @@
   ======================================================]#
 
 proc Io_read*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(readFile(S(v[0])))
+    result = STR(readFile(S(v0)))
 
 proc Io_write*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
+    let v1 = VALID(1,SV)
 
-    writeFile(S(v[0]),S(v[1]))
-    result = v[1]
+    writeFile(S(v0),S(v1))
+    result = v1
 
 #[******************************************************
   ******************************************************

@@ -12,8 +12,12 @@ import parsecsv, parseutils, random, re, sequtils, std/editdistance, std/sha1
 import streams, strformat, strutils, sugar, unicode, tables, terminal
 import times, uri
 
-import external/[bignum, markdown, mustache]
+import external/[markdown, mustache]
 import panic, utils
+
+when not defined(mini):
+    import re
+    import external/bignum
 
 #[######################################################
     Type definitions
@@ -132,9 +136,9 @@ type
         lib*            : string
         call*           : SystemFunctionCall[SystemFunction,ExpressionList,Value]
         name*           : string
-        req*            : FunctionConstraints
-        ret*            : FunctionReturns
-        desc*           : string
+        #req*            : FunctionConstraints
+        #ret*            : FunctionReturns
+        #desc*           : string
 
     Function* = ref object
         id              : int
@@ -164,10 +168,11 @@ type
 
     ValueRef {.union.} = ref object
         s: string
-        bi: Int
         a: Array
         d: Context
         f: Function
+        when not defined(mini):
+            bi: Int
 
     #[----------------------------------------
         C interface
@@ -255,6 +260,7 @@ var
 
 # Context
 
+proc getSymbolForHash(h:int):string {.inline.}
 proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.}
 proc keys*(ctx: Context): seq[string] {.inline.}
 proc values*(ctx: Context): seq[Value] {.inline.}
@@ -268,7 +274,8 @@ proc BIGINT*(v: string): Value {.inline.}
 proc REAL(v: string): Value {.inline.}
 proc STRARR(v: seq[string]): Value {.inline.}
 proc INTARR(v: seq[int]): Value {.inline.}
-proc BIGINTARR(v: seq[Int]): Value {.inline.}
+when not defined(mini):
+    proc BIGINTARR(v: seq[Int]): Value {.inline.}
 proc REALARR(v: seq[float]): Value {.inline.}
 proc BOOLARR(v: seq[bool]): Value {.inline.}
 proc DICT(v: seq[(string,Value)]): Value {.inline.}
@@ -284,7 +291,7 @@ proc `^^`(l: Value, r: Value): Value {.inline.}
 proc eq(l: Value, r: Value): bool {.inline.}
 proc lt(l: Value, r: Value): bool {.inline.}
 proc gt(l: Value, r: Value): bool {.inline.}
-proc valueKindToPrintable*(s: string): string
+proc valueKindToPrintable*(vk: int): string
 proc stringify*(v: Value, quoted: bool = true): string {.inline.}
 proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 
@@ -360,21 +367,24 @@ template kind*(v: Value): int       = cast[int](bitand(v,MASK) shr FIELD)
     
 template S(_:Value):string          = (cast[ValueRef](bitand(_,UNMASK))).s
 template I(_:Value):int             = cast[int](bitand(_,UNMASK))
-template BI(_:Value):Int            = (cast[ValueRef](bitand(_,UNMASK))).bi
-template R(_:Value):float           = cast[float](bitand(_,UNMASK))
+template R(_:Value):float32         = cast[float32](bitand(_,UNMASK))
 template B(_:Value):bool            = cast[bool](bitand(_,UNMASK))
 template A(_:Value):seq[Value]      = (cast[ValueRef](bitand(_,UNMASK))).a
 template D(_:Value):Context         = (cast[ValueRef](bitand(_,UNMASK))).d
 template FN(_:Value):Function       = cast[Function](bitand(_,UNMASK))
+when not defined(mini):
+    template BI(_:Value):Int        = (cast[ValueRef](bitand(_,UNMASK))).bi
 
 template STR(v:string):Value        = bitor(cast[Value](ValueRef(s:v)),SV_MASK)
 template SINT(v:int):Value          = bitor(cast[Value](v),IV_MASK)
-template BIGINT(v:Int):Value        = bitor(cast[Value](ValueRef(bi:v)),BIV_MASK)
-template REAL(v:float):Value        = bitor(cast[Value](v),RV_MASK)
+template REAL(v:float):Value        = bitor(cast[Value](float32(v)),RV_MASK)
+template REAL(v:float32):Value      = bitor(cast[Value](v),RV_MASK)
 template BOOL(v:bool):Value         = bitor(cast[Value](v),BV_MASK)
 template ARR(v:seq[Value]):Value    = bitor(cast[Value](ValueRef(a:v)),AV_MASK)
 template DICT(v:Context):Value      = bitor(cast[Value](ValueRef(d:v)),DV_MASK)
 template FUNC(v:Function):Value     = bitor(cast[Value](v),FV_MASK)   
+when not defined(mini):
+    template BIGINT(v:Int):Value    = bitor(cast[Value](ValueRef(bi:v)),BIV_MASK)
 
 template VALID(i:int, r:int): Value {.dirty.} =
     xl.list[i].validate(f.name,r)
@@ -394,26 +404,6 @@ when defined(unittest):
   ======================================================]#
 
 include lib/system
-
-#[######################################################
-    Helpers
-  ======================================================]#
-
-proc storeOrGetHash(k:cstring):int {.inline.}=
-    if Hashes.hasKey(k):
-        result = Hashes[k]
-    else:
-        let hsh = k.hash
-        Hashes[k]=hsh
-        result = hsh
-
-proc storeOrGetHash(k:string):int {.inline.}=
-    if Hashes.hasKey(k):
-        result = Hashes[k]
-    else:
-        let hsh = k.hash
-        Hashes[k]=hsh
-        result = hsh
 
 #[######################################################
     CORE OBJECTS

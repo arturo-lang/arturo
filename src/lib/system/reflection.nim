@@ -13,15 +13,15 @@
   ======================================================]#
 
 proc Reflection_inspect*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,ANY)
 
-    echo v[0].inspect()
-    result = v[0]
+    echo v0.inspect()
+    result = v0
 
 proc Reflection_type*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,ANY)
 
-    result = STR(valueKindToPrintable($(v[0].kind)))
+    result = STR(valueKindToPrintable(v0.kind))
 
 #[******************************************************
   ******************************************************

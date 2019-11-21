@@ -23,23 +23,23 @@ proc Terminal_inputChar*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR($(getch()))
 
 proc Terminal_print*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,ANY)#xl.validate(f)
+    let v0 = VALID(0,ANY)
 
     echo v0.stringify(quoted=false)
     result = v0
 
 proc Terminal_prints*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,ANY)
 
-    write(stdout,v[0].stringify(quoted=false))
+    write(stdout,v0.stringify(quoted=false))
     flushFile(stdout)
 
-    result = v[0]  
+    result = v0  
 
 proc Terminal_shell*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    let (outp, _) = execCmdEx(S(v[0]))
+    let (outp, _) = execCmdEx(S(v0))
 
     result = STR(outp)
 

@@ -1,7 +1,7 @@
 ind = 0
 lexer = ""
 File.read("src/lib/system.nim").force_encoding("utf-8").split("\n").each{|l|
-	if l.include? "SystemFunction(lib:\"" and !l.include?("#")
+	if l.include? "SystemFunction(lib:\""# and !l.include?("#")
 		id = (l.scan /name:\"([^\"]+)\"/)[0][0]
 		lexer += "\"#{id}\" { yylval.code = #{ind}; return SYSTEM_CMD; }\n"
 		ind = ind + 1
