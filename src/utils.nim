@@ -7,11 +7,14 @@
   * @file: utils.nim
   *****************************************************************]#
 
-import times, strutils
+import bitops, times, strutils
 
 #[######################################################
     Methods
   ======================================================]#
+
+template `|`*(a: int, b: int): int = 
+    a or b
 
 proc removingPrefix*(s: string, pr: string): string =
     if s.startsWith(pr): s[pr.len..^1]
