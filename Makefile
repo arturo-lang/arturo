@@ -230,4 +230,4 @@ git_commit:
 
 clean:
 	@printf "\n\033[1;35m> Cleaning up...\033[0m\n\n"
-	rm -f $(PARSER_L_OUT) $(PARSER_P_OUT) $(PARSER_L_OBJ) $(PARSER_P_OBJ) $(PARSER) *.h
+	rm -f $(PARSER_L_OUT) $(PARSER_P_OUT) $(PARSER_L_OBJ) $(PARSER_P_OBJ) $(PARSER) $(PARSER_L) *.h
