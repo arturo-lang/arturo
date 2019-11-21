@@ -57,20 +57,20 @@ proc parseCsv*(s: string, headers:bool): Value =
   ======================================================]#
 
 proc Csv_generateCsv*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    case A(v[0])[0].kind
-        of AV: result = STR(generateCsvFromArrays(A(v[0])))
-        of DV: result = STR(generateCsvFromDictionaries(A(v[0])))
+    case A(v0)[0].kind
+        of AV: result = STR(generateCsvFromArrays(A(v0)))
+        of DV: result = STR(generateCsvFromDictionaries(A(v0)))
         else: discard
 
 proc Csv_parseCsv*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     if xl.list.len==2:
-        result = parseCsv(S(v[0]),headers=B(1))
+        result = parseCsv(S(v0),headers=B(VALID(1,BV)))
     else:
-        result = parseCsv(S(v[0]),headers=false)
+        result = parseCsv(S(v0),headers=false)
 
 #[******************************************************
   ******************************************************

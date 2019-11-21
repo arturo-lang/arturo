@@ -13,19 +13,19 @@
   ======================================================]#
 
 proc Dictionary_hasKey*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,DV)
 
-    result = BOOL(S(v[1]) in D(0).keys())  
+    result = BOOL(S(VALID(1,SV)) in D(v0).keys())  
 
 proc Dictionary_keys*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,DV)
 
-    result = STRARR(D(0).keys())
+    result = STRARR(D(v0).keys())
 
 proc Dictionary_values*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,DV)
 
-    result = ARR(D(0).values())
+    result = ARR(D(v0).values())
 
 #[******************************************************
   ******************************************************

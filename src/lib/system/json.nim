@@ -23,10 +23,10 @@ proc generateJsonNode*(n: Value): JsonNode =
             result = newJArray()
             for v in A(n):
                 result.add(generateJsonNode(v))
-        # of DV       : 
-        #     result = newJObject()
-        #     for kv in D(n).list:
-        #         result.add(kv[0],generateJsonNode(kv[1]))
+        of DV       : 
+            result = newJObject()
+            for kv in D(n):
+                result.add(getSymbolForHash(kv[0]),generateJsonNode(kv[1]))
         else: discard
 
 proc parseJsonNode*(n: JsonNode): Value =
@@ -49,15 +49,15 @@ proc parseJsonNode*(n: JsonNode): Value =
   ======================================================]#
 
 proc Json_generateJson*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,ANY)
 
-    let root = generateJsonNode(v[0])
+    let root = generateJsonNode(v0)
     result = STR(root.pretty(indent=4))
 
 proc Json_parseJson*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
     
-    let root = parseJson(S(v[0]))
+    let root = parseJson(S(v0))
     result = parseJsonNode(root)
 
 #[******************************************************

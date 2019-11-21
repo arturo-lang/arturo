@@ -13,103 +13,103 @@
   ======================================================]#
 
 proc Url_decodeUrl*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(decodeUrl(S(v[0])))
+    result = STR(decodeUrl(S(v0)))
 
 proc Url_decodeUrlI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = decodeUrl(S(v[0]))
-    result = v[0]
+    S(v0) = decodeUrl(S(v0))
+    result = v0
 
 proc Url_encodeUrl*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(encodeUrl(S(v[0])))
+    result = STR(encodeUrl(S(v0)))
 
 proc Url_encodeUrlI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = encodeUrl(S(v[0]))
-    result = v[0]
+    S(v0) = encodeUrl(S(v0))
+    result = v0
 
 proc Url_isAbsoluteUrl*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    let u = parseUri(S(v[0]))
+    let u = parseUri(S(v0))
 
     result = BOOL(u.isAbsolute())
 
 proc Url_urlAnchor*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.anchor)
 
 proc Url_urlHost*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.hostname)
 
 proc Url_urlPassword*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.password)
 
 proc Url_urlPath*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.path)
 
 proc Url_urlPort*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.port)
 
 proc Url_urlQuery*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.query)
 
 proc Url_urlScheme*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.scheme)
 
 proc Url_urlUser*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = STR(res.username)
 
 proc Url_urlComponents*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     var res = initUri()
-    parseUri(S(v[0]), res)
+    parseUri(S(v0), res)
 
     result = DICT(@[
         ("scheme",  STR(res.scheme)),

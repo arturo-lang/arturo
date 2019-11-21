@@ -13,181 +13,187 @@
   ======================================================]#
 
 proc Path_absolutePath*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(absolutePath(S(v[0])))
+    result = STR(absolutePath(S(v0)))
 
 proc Path_absolutePathI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = absolutePath(S(v[0]))
-    result = v[0]
+    S(v0) = absolutePath(S(v0))
+    result = v0
 
 proc Path_copyDir*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
+    let v1 = VALID(1,SV)
 
     try:    
-        copyDir(S(v[0]),S(v[1]))
+        copyDir(S(v0),S(v1))
         result = TRUE
     except:
         result = FALSE
 
 proc Path_copyFile*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
+    let v1 = VALID(1,SV)
 
     try:    
-        copyFile(S(v[0]),S(v[1]))
+        copyFile(S(v0),S(v1))
         result = TRUE
     except:
         result = FALSE
 
 proc Path_createDir*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     try:    
-        createDir(S(v[0]))
+        createDir(S(v0))
         result = TRUE
     except:
         result = FALSE
 
 proc Path_currentDir*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,NV|SV)
 
-    if v[0].kind==NV:
+    if v0.kind==NV:
         result = STR(getCurrentDir())
     else:
-        setCurrentDir(S(v[0]))
-        result = v[0]
+        setCurrentDir(S(v0))
+        result = v0
 
 proc Path_deleteDir*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     try:    
-        removeDir(S(v[0]))
+        removeDir(S(v0))
         result = TRUE
     except:
         result = FALSE
 
 proc Path_deleteFile*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = BOOL(tryRemoveFile(S(v[0])))
+    result = BOOL(tryRemoveFile(S(v0)))
 
 proc Path_dirContent*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    if v.len==2:
+    if xl.list.len==2:
+        let v1 = VALID(1,SV)
         result = ARR(@[])
-        let pattern = re(prepareRegex(S(v[1])))
-        for kind,file in walkDir S(v[0]):
+        let pattern = re(prepareRegex(S(v1)))
+        for kind,file in walkDir S(v0):
             if file.match pattern:
-                result.a.add(STR(file))
+                A(result).add(STR(file))
     else:
         result = ARR(@[])
-        for kind,file in walkDir S(v[0]):
-            result.a.add(STR(file))
+        for kind,file in walkDir S(v0):
+            A(result).add(STR(file))
 
 proc Path_dirContents*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    if v.len==2:
+    if xl.list.len==2:
+        let v1 = VALID(1,SV)
         result = ARR(@[])
-        let pattern = re(prepareRegex(S(v[1])))
-        for file in walkDirRec S(v[0]):
+        let pattern = re(prepareRegex(S(v1)))
+        for file in walkDirRec S(v0):
             if file.match pattern:
-                result.a.add(STR(file))
+                A(result).add(STR(file))
     else:
         result = ARR(@[])
-        for file in walkDirRec S(v[0]):
-            result.a.add(STR(file))
+        for file in walkDirRec S(v0):
+            A(result).add(STR(file))
 
 proc Path_fileCreationTime*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR($(getCreationTime(S(v[0]))))
+    result = STR($(getCreationTime(S(v0))))
 
 proc Path_fileExists*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = BOOL(existsFile(S(v[0])))
+    result = BOOL(existsFile(S(v0)))
 
 proc Path_fileLastAccess*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR($(getLastAccessTime(S(v[0]))))
+    result = STR($(getLastAccessTime(S(v0))))
 
 proc Path_fileLastModification*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR($(getLastModificationTime(S(v[0]))))
+    result = STR($(getLastModificationTime(S(v0))))
 
 proc Path_fileSize*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
     try:    
-        result = INT(int(getFileSize(S(v[0]))))
+        result = SINT(int(getFileSize(S(v0))))
     except:
-        result = INT(-1)
+        result = SINT(-1)
 
 proc Path_dirExists*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = BOOL(existsDir(S(v[0])))
+    result = BOOL(existsDir(S(v0)))
 
 proc Path_moveDir*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
+    let v1 = VALID(1,SV)
 
     try:    
-        moveDir(S(v[0]),S(v[1]))
+        moveDir(S(v0),S(v1))
         result = TRUE
     except:
         result = FALSE
 
 proc Path_moveFile*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
+    let v1 = VALID(1,SV)
 
     try:    
-        moveFile(S(v[0]),S(v[1]))
+        moveFile(S(v0),S(v1))
         result = TRUE
     except:
         result = FALSE
 
 proc Path_normalizePath*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = STR(normalizedPath(S(v[0])))
+    result = STR(normalizedPath(S(v0)))
 
 proc Path_normalizePathI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    S(v[0]) = normalizedPath(S(v[0]))
-    result = v[0]
+    S(v0) = normalizedPath(S(v0))
+    result = v0
 
 proc Path_pathDir*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    var (dir, name, ext) = splitFile(S(v[0]))
+    var (dir, _, _) = splitFile(S(v0))
 
     result = STR(dir)
 
 proc Path_pathExtension*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    var (dir, name, ext) = splitFile(S(v[0]))
+    var (_, _, ext) = splitFile(S(v0))
 
     result = STR(ext)
 
 proc Path_pathFilename*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    var (dir, name, ext) = splitFile(S(v[0]))
+    var (_, name, _) = splitFile(S(v0))
 
     result = STR(name)
 
 proc Path_symlinkExists*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    result = BOOL(symlinkExists(S(v[0])))
+    result = BOOL(symlinkExists(S(v0)))
 
 #[******************************************************
   ******************************************************

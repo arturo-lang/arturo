@@ -7,6 +7,33 @@
   * @file: core/context.nim
   *****************************************************************]#
 
+#[######################################################
+    Helpers
+  ======================================================]#
+
+proc storeOrGetHash(k:cstring):int {.inline.} =
+    if Hashes.hasKey(k):
+        result = Hashes[k]
+    else:
+        let hsh = k.hash
+        Hashes[k]=hsh
+        result = hsh
+
+proc storeOrGetHash(k:string):int {.inline.} =
+    if Hashes.hasKey(k):
+        result = Hashes[k]
+    else:
+        let hsh = k.hash
+        Hashes[k]=hsh
+        result = hsh
+
+proc getSymbolForHash(h:int):string {.inline.} =
+    for k, v in Hashes.pairs:
+        if v==h:
+            return $k
+
+    return ""
+
 #[----------------------------------------
     Context Object
   ----------------------------------------]#
@@ -43,8 +70,8 @@ template popContext() =
 
 proc keys*(ctx: Context): seq[string] {.inline.} =
     ## Get array of keys in given Context
-    discard
-    #result = ctx.map((x) => x[0])
+    
+    result = ctx.map((x) => getSymbolForHash(x[0]))
 
 proc values*(ctx: Context): seq[Value] {.inline.} =
     ## Get array of values in given Context

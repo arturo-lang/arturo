@@ -31,7 +31,7 @@ proc REAL(v: string): Value {.inline.} =
     var floatValue: float
     discard parseFloat(v, floatValue)
 
-    result = REAL(floatValue)
+    result = REAL(float32(floatValue))
 
 proc STRARR(v: seq[string]): Value {.inline.} =
     result = ARR(v.map((x)=>STR(x)))
@@ -503,11 +503,24 @@ proc gt(l: Value, r: Value): bool {.inline.} =
 ## Inspection
 ##---------------------------
 
-proc valueKindToPrintable*(s: string): string = 
+proc valueKindToPrintable*(vk: int): string = 
     ## Convert ValueKind string representation to sth shorter and more readable
     ## ! Requires better rewriting
 
-    s.replace("Value","").replace("ionary","").replace("tion","").replace("eger","").replace("ing","").replace("ean","")
+    result = {
+        0   :"null",
+        1   :"int",
+        2   :"int+",
+        4   :"real",
+        8   :"bool",
+        16  :"string",
+        32  :"array",
+        64  :"dict",
+        128 :"func",
+        255 :"any"
+    }.toTable[vk]
+
+    #s.replace("Value","").replace("ionary","").replace("tion","").replace("eger","").replace("ing","").replace("ean","")
 
 proc stringify*(v: Value, quoted: bool = true): string {.inline.} =
     {.computedGoto.}

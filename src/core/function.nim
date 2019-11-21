@@ -133,8 +133,8 @@ proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.i
         IncorrectArgumentValuesError(name, expected, $(result.kind))
 
 proc showValidationError(req:FunctionConstraints, vs:seq[Value], name: string) = 
-    let expected = req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" or ")
-    let got = vs.map((x) => ($(x.kind)).valueKindToPrintable()).join(",")
+    let expected = req.map((x) => "(" & x.map((y) => valueKindToPrintable(y)).join(",") & ")").join(" or ")
+    let got = vs.map((x) => valueKindToPrintable(x.kind)).join(",")
 
     IncorrectArgumentValuesError(name, expected, got)
 
@@ -144,33 +144,33 @@ proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
 
     result = xl.list.map((x) => x.evaluate())
 
-    if not likely(f.req.contains(result.map((x) => x.kind))):
-        showValidationError(f.req, result, f.name)
+    #if not likely(f.req.contains(result.map((x) => x.kind))):
+    #    showValidationError(f.req, result, f.name)
         
 proc getOneLineDescription*(f: SystemFunction): string =
     ## Get one-line description for given System function
     ## ! Called only from the Console module
 
-    let args = 
-        if f.req.len>0: f.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
-        else: "()"
+    let args = "(ARGS)"
+    #    if f.req.len>0: f.req.map((x) => "(" & x.map((y) => valueKindToPrintable(y)).join(",") & ")").join(" / ")
+    #    else: "()"
 
-    let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
+    #let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
 
-    result = strutils.alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " \x1B[0;32m->\x1B[0;37m " & ret
+    result = strutils.alignLeft("\e[1m" & f.name & "\e[0m",20) & " " & args & " \x1B[0;32m->\x1B[0;37m "# & ret
 
 proc getFullDescription*(f: SystemFunction): string =
     ## Get full description for given System function
     ## ! Called only from the Console module
 
-    let args = 
-        if f.req.len>0: f.req.map((x) => "(" & x.map((y) => ($y).valueKindToPrintable()).join(",") & ")").join(" / ")
-        else: "()"
+    let args = "(ARGS)"
+    #    if f.req.len>0: f.req.map((x) => "(" & x.map((y) => valueKindToPrintable(y)).join(",") & ")").join(" / ")
+    #    else: "()"
 
-    let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
+    #let ret = "[" & f.ret.join(",").valueKindToPrintable() & "]"
 
     result  = "Function : \e[1m" & f.name & "\e[0m" & "\n"
-    result &= "       # : " & f.desc & "\n\n"
-    result &= "   usage : " & f.name & " " & args & "\n"
-    result &= "        \x1B[0;32m->\x1B[0;37m " & ret & "\n"
+    #result &= "       # : " & f.desc & "\n\n"
+    #result &= "   usage : " & f.name & " " & args & "\n"
+    #result &= "        \x1B[0;32m->\x1B[0;37m " & ret & "\n"
     

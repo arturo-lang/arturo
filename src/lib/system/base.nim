@@ -50,9 +50,10 @@ proc importModule(path: string): Value =
   ======================================================]#
 
 proc Base_exec*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,FV)
+    let v1 = VALID(1,ANY)
 
-    result = FN(v[0]).execute(v[1])
+    result = FN(v0).execute(v1)
 
 proc Base_if*[F,X,V](f: F, xl: X): V {.inline.} =
     if B(VALID(0,BV)):
@@ -64,55 +65,54 @@ proc Base_if*[F,X,V](f: F, xl: X): V {.inline.} =
             result = FALSE
 
 proc Base_import*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
     
-    result = importModule(S(v[0]))
+    result = importModule(S(v0))
 
 proc Base_loop*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|BV|IV) #xl.list[0].validate("loop",AV or BV or IV)#xl.validate(f)
+    let v0 = VALID(0,AV|BV|IV)
 
+    {.computedGoTo.}
     case v0.kind
         of AV:
+            let v1 = VALID(1,FV)
             var i = 0
             while i < A(v0).len:
-                result = FN(VALID(1,FV)).execute(A(v0)[i])
+                result = FN(v1).execute(A(v0)[i])
                 inc(i)
         # of DV:
-        #     for val in D(v[0]).list:
-        #         result = FN(v[1]).execute(ARR(@[STR(val[0]),val[1]]))
+        #     let v1 = VALID(1,DV)
+        #     for val in D(v0):
+        #         result = FN(v1).execute(ARR(@[STR(val[0]),val[1]]))
         of BV:
             if not B(v0): return NULL
+            let v1 = VALID(1,FV)
             while true:
-                result = FN(VALID(1,FV)).execute(NULL)
-                if not B(xl.list[0].evaluate()): break
+                result = FN(v1).execute(NULL)
+                if not B(VALID(0,BV)): break
         of IV:
+            let v1 = VALID(1,FV)
             var i = 0
             while i < I(v0):
-                result = FN(VALID(1,FV)).execute(NULL)
+                result = FN(v1).execute(NULL)
                 inc(i)
 
         else: result = NULL
 
 proc Base_new*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v =  xl.validate(f)
+    let v0 = VALID(0,ANY)
 
-    result = valueCopy(v[0])
+    result = valueCopy(v0)
 
 proc Base_panic*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
 
-    ProgramPanic(S(v[0]))
+    ProgramPanic(S(v0))
 
 proc Base_return*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
-
-    Returned = v[0]
+    Returned = VALID(0,ANY)
 
     result = NULL
-    #var ret = newException(ReturnValue, "return")
-    #ret.value = v[0]
-
-    #raise ret
 
 proc Base_syms*[F,X,V](f: F, xl: X): V {.inline.} =
     inspectStack()

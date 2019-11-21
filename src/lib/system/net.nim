@@ -13,10 +13,10 @@
   ======================================================]#
 
 proc Net_download*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,SV)
     
     var client = newHttpClient()
-    result = STR(client.getContent(S(v[0])))
+    result = STR(client.getContent(S(v0)))
 
 #[******************************************************
   ******************************************************
