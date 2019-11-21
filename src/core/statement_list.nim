@@ -37,14 +37,10 @@ proc execute(sl: StatementList): Value {.inline.} =
 
     var i = 0
     while i < sl.list.len:
-        #try:
         result = sl.list[i].execute()
+
         if Returned != 0:
             return Returned
-        #except ReturnValue:
-        #    raise
-        #except Exception as e:
-        #    runtimeError(e.msg, FileName, sl.list[i].pos)
 
         inc(i)
         
