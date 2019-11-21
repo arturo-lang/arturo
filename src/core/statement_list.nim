@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/statement_list.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    StatementList
+    StatementList Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -38,3 +47,4 @@ proc execute(sl: StatementList): Value {.inline.} =
         #    runtimeError(e.msg, FileName, sl.list[i].pos)
 
         inc(i)
+        

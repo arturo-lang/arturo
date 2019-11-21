@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/expression_list.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    ExpressionList
+    ExpressionList Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -35,10 +44,12 @@ proc addExpression(xl: ExpressionList, x: Expression): ExpressionList {.exportc.
 proc evaluate(xl: ExpressionList, forceArray: bool=false): Value {.inline.} = 
     ## Evaluate given ExpressionList and return the result
 
-    if forceArray or xl.list.len>1:
-        result = ARR(xl.list.map((x) => x.evaluate()))
-    else:
-        if xl.list.len==1:
-            result = xl.list[0].evaluate()
-        else:
-            result = ARR(@[])
+    ARR(xl.list.map((x) => x.evaluate()))
+
+    # if forceArray or xl.list.len>1:
+    #     result = ARR(xl.list.map((x) => x.evaluate()))
+    # else:
+    #     if xl.list.len==1:
+    #         result = xl.list[0].evaluate()
+    #     else:
+    #         result = ARR(@[])

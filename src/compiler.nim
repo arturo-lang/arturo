@@ -35,7 +35,7 @@ type
             of integerKeyPathPart   : i: int
             of inlineKeyPathPart    : a: Argument
 
-    KeyPath = ref object
+    KeyPath {.shallow.} = ref object
         parts: seq[KeyPathPart]
                 
     #[----------------------------------------
@@ -84,7 +84,7 @@ type
         ExpressionList
       ----------------------------------------]#
 
-    ExpressionList = ref object
+    ExpressionList {.shallow.} = ref object
         list    : seq[Expression]
 
     #[----------------------------------------
@@ -116,7 +116,7 @@ type
         StatementList
       ----------------------------------------]#
 
-    StatementList = ref object
+    StatementList {.shallow.} = ref object
         list    : seq[Statement]
 
     #[----------------------------------------
@@ -151,8 +151,9 @@ type
 
     Array = seq[Value]
 
-    Context = ref object
-        list    : seq[(int,Value)]
+    Context = seq[(int,Value)]
+    # Context = ref object
+    #     list    : seq[(int,Value)]
 
     #[----------------------------------------
         Value

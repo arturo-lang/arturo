@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/function.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    Function
+    Function Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -7,7 +16,7 @@
 ##---------------------------
 
 proc newUserFunction(s: StatementList, a: seq[string]): Function =
-    result = Function(id: 0, args: a.map((x)=>storeOrGetHash(x)), hasNamedArgs: (a.len!=0), body: s, hasContext: false, parentThis: 0, parentContext: nil)
+    result = Function(id: 0, args: a.map((x)=>storeOrGetHash(x)), hasNamedArgs: (a.len!=0), body: s, hasContext: false, parentThis: 0, parentContext: @[])
 
 ##---------------------------
 ## Getters/Setters
@@ -68,9 +77,9 @@ proc execute(f: Function, v: Value): Value {.inline.} =
 
     if f.hasContext:
         if Stack.len == 1: addContext()
-        #var oldSeq:Context
-        let oldSeq = Stack[1]
-        #shallowCopy(oldSeq,Stack[1])
+        var oldSeq:Context
+        #let oldSeq = Stack[1]
+        shallowCopy(oldSeq,Stack[1])
         if f.hasNamedArgs:
             if v.kind == AV: 
                 initTopContextWith(zip(f.args,A(v)))
@@ -83,9 +92,9 @@ proc execute(f: Function, v: Value): Value {.inline.} =
         #try                         : result = f.body.execute()
         #except ReturnValue as ret   : result = ret.value
         #finally                     : 
-        Stack[1] = oldSeq
-        #shallowCopy(Stack[1],oldSeq)
-        if Stack[1].list.len==0: popContext()
+        #Stack[1] = oldSeq
+        shallowCopy(Stack[1],oldSeq)
+        if Stack[1].len==0: popContext()
     else:
         #var stored: Value = nil
         if v!=NULL:
@@ -164,3 +173,4 @@ proc getFullDescription*(f: SystemFunction): string =
     result &= "       # : " & f.desc & "\n\n"
     result &= "   usage : " & f.name & " " & args & "\n"
     result &= "        \x1B[0;32m->\x1B[0;37m " & ret & "\n"
+    

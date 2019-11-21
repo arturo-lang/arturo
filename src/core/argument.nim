@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/argument.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    Argument
+    Argument Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -106,14 +115,15 @@ proc getValue(a: Argument): Value {.inline.} =
     {.computedGoto.}
     case a.kind
         of identifierArgument:
-            shallowCopy(result,getSymbol(a.i))
+            result = getSymbol(a.i)
             if result == 0: SymbolNotFoundError($(a.i))
         of literalArgument:
-            result = a.v #valueCopy(a.v)
+            result = a.v
         of arrayArgument:
-            result = a.a.evaluate(forceArray=true)
+            result = a.a.evaluate()
         of dictionaryArgument:
-            var ret = DICT(Context(list: @[]))
+            var ret = DICT(newSeq[(int,Value)]())
+            #var ret = DICT(cast[Context](@[]))
 
             addContext()
             for statement in a.d.list:

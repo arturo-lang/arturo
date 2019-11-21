@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/statement.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    Statement
+    Statement Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -76,7 +85,7 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
             if sym==0: SymbolNotFoundError($(stm.id))
             else: 
                 if sym.kind==FV:
-                    result = FN(sym).execute(stm.expressions.evaluate(forceArray=true))
+                    result = FN(sym).execute(stm.expressions.evaluate())
                 else: 
                     FunctionNotFoundError($(stm.id))
 
@@ -97,3 +106,4 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
             # Simple expression statements
 
             result = stm.expression.evaluate()
+            
