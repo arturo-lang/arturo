@@ -52,114 +52,118 @@ proc permutate*(s: seq[Value], emit: proc(emit:seq[Value]) ) =
 #**********************************************
 
 proc Array_all*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    if v.len==1:
+    if xl.list.len==1:
         var i = 0
-        while i < A(v[0]).len:
-            if not B(A(v[0])[i]): return FALSE
+        while i < A(v0).len:
+            if not B(A(v0)[i]): return FALSE
             inc(i)
         result = TRUE
     else:
+        let v1 = VALID(1,FV)
         var i = 0
-        while i < A(v[0]).len:
-            if not B(FN(v[1]).execute(A(v[0])[i])): return FALSE
+        while i < A(v0).len:
+            if not B(FN(v1).execute(A(v0)[i])): return FALSE
             inc(i)
         result = TRUE
 
 proc Array_any*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    if v.len==1:
+    if xl.list.len==1:
         var i = 0
-        while i < A(v[0]).len:
-            if B(A(v[0])[i]): return TRUE
+        while i < A(v0).len:
+            if B(A(v0)[i]): return TRUE
             inc(i)
         result = FALSE
     else:
+        let v1 = VALID(1,FV)
         var i = 0
-        while i < A(v[0]).len:
-            if not B(FN(v[1]).execute(A(v[0])[i])): return TRUE
+        while i < A(v0).len:
+            if not B(FN(v1).execute(A(v0)[i])): return TRUE
             inc(i)
         result = FALSE
 
 proc Array_count*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,FV)
 
     var cnt = 0
     var i = 0
-    while i < A(v[0]).len:
-        if B(FN(v[1]).execute(A(v[0])[i])):
+    while i < A(v0).len:
+        if B(FN(v1).execute(A(v0)[i])):
             inc(cnt)
         inc(i)
 
     result = SINT(cnt)
 
 proc Array_first*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
-
-    result = A(v[0])[0]
+    result = A(VALID(0,AV))[0]
 
 proc Array_filter*[F,X,V](f: F, xl: X): V {.inline.} =
-    result = ARR(A(VALID(0,AV)).filter((x) => B(FN(VALID(1,FV)).execute(x))))
+    let v1 = VALID(1,FV)
+    result = ARR(A(VALID(0,AV)).filter((x) => B(FN(v1).execute(x))))
 
 proc Array_filterI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,FV)
+    A(v0).keepIf((x) => B(FN(v1).execute(x)))
 
-    #A(v[0]).keepIf((x) => B(FN(v[1]).execute(x)))
-
-    result = v[0]
+    result = v0
 
 proc Array_fold*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
+    let v2 = VALID(2,FV)
 
-    result = v[1]
-
+    result = VALID(1,ANY)
     var i = 0
-    while i<A(v[0]).len:
-        result = FN(v[2]).execute(ARR(@[result,A(v[0])[i]]))
+    while i<A(v0).len:
+        result = FN(v2).execute(ARR(@[result,A(v0)[i]]))
         inc(i)
 
 proc Array_last*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    result = A(v[0])[^1]
+    result = A(v0)[^1]
 
 proc Array_map*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,FV)
 
-    result = ARR(A(v[0]).map((x) => FN(v[1]).execute(x)))
+    result = ARR(A(v0).map((x) => FN(v1).execute(x)))
 
 proc Array_mapI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,FV)
 
-    #A(v[0]).apply((x) => FN(v[1]).execute(x))
+    A(v0).apply((x) => FN(v1).execute(x))
 
-    result = v[0]
+    result = v0
 
 proc Array_permutations*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     var ret: seq[Value]
  
-    permutate(A(v[0]), proc(s: seq[Value])= 
+    permutate(A(v0), proc(s: seq[Value])= 
         ret.add(ARR(s))
     )
 
     result = ARR(ret)
 
 proc Array_pop*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    result = A(v[0])[^1]
+    result = A(v0)[^1]
 
 proc Array_popI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    #result = A(v[0]).pop()
+    result = A(v0).pop()
 
 proc Array_range*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)#xl.validate(f)
+    let v0 = VALID(0,IV)
     let v1 = VALID(1,IV)
 
     if I(v0)<I(v1): 
@@ -177,145 +181,136 @@ proc Array_range*[F,X,V](f: F, xl: X): V {.inline.} =
             ret.add(SINT(i))
             dec(i)
 
-        result = ARR(ret)
-
-    # if I(v[0])<I(v[1]):   
-    #     result = ARR(@[])
-    #     var i = I(v[0])
-    #     while i <= I(v[1]):
-    #         A(result).add(SINT(i))
-    #         inc(i)
-    # else:
-    #     result = ARR(@[])
-    #     var i = I(v[0])
-    #     while i >= I(v[1]):
-    #         result.a.add(INT(i))
-    #         dec(i)    
+        result = ARR(ret)   
 
 proc Array_rangeBy*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,IV)
+    let v1 = VALID(1,IV)
+    let v2 = VALID(2,IV)
 
-    # if I(v[0])<I(v[1]):   
-    #     result = ARR(@[])
-    #     var i = I(v[0])
-    #     while i <= I(v[1]):
-    #         result.a.add(INT(i))
-    #         inc(i,I(v[2]))
-    # else:
-    #     result = ARR(@[])
-    #     var i = I(v[0])
-    #     while i >= I(v[1]):
-    #         result.a.add(INT(i))
-    #         dec(i,I(v[2]))   
+    if I(v0)<I(v1):   
+        result = ARR(@[])
+        var i = I(v0)
+        while i <= I(v1):
+            A(result).add(SINT(i))
+            inc(i,I(v2))
+    else:
+        result = ARR(@[])
+        var i = I(v0)
+        while i >= I(v1):
+            A(result).add(SINT(i))
+            dec(i,I(v2))   
 
 proc Array_rotate*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     let step = 
-        if v.len==2: (-1)*I(v[1])
+        if xl.list.len==2: (-1)*I(VALID(1,IV))
         else: -1
 
-    result = ARR(A(v[0]).rotatedLeft(step))
+    result = ARR(A(v0).rotatedLeft(step))
 
 proc Array_rotateI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    # let step = 
-    #     if v.len==2: (-1)*I(v[1])
-    #     else: -1
+    let step = 
+        if xl.list.len==2: (-1)*I(VALID(1,IV))
+        else: -1
 
-    # A(v[0]).rotateLeft(step)
-    result = v[0]
+    A(v0).rotateLeft(step)
+    result = v0
 
 proc Array_sample*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     randomize()
-    result = sample(A(v[0]))
+    result = sample(A(v0))
 
 proc Array_shuffle*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     randomize()
-    result = ARR(A(v[0]))
-    #shuffle(result.a)
+    result = ARR(A(v0))
+    shuffle(A(result))
 
 proc Array_shuffleI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    # randomize()
-    # result = v[0]
-    # shuffle(result.a)
+    randomize()
+    result = v0
+    shuffle(A(result))
 
 proc Array_sort*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     proc opCmp(l: Value, r: Value): int =
         if (l.lt(r) or l.eq(r)): -1
         else: 1
 
-    result = ARR(A(v[0]).sorted(opCmp))
+    result = ARR(A(v0).sorted(opCmp))
 
 proc Array_sortI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
-    # proc opCmp(l: Value, r: Value): int =
-    #     if (l.lt(r) or l.eq(r)): -1
-    #     else: 1
+    proc opCmp(l: Value, r: Value): int =
+        if (l.lt(r) or l.eq(r)): -1
+        else: 1
 
-    # A(v[0]).sort(opCmp)
-    # result = v[0]
+    A(v0).sort(opCmp)
+    result = v0
 
 proc Array_swap*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,IV)
+    let v2 = VALID(2,IV)
 
-    result = ARR(A(v[0]))
-    #swap(A(result)[I(v[1])], A(result)[I(v[2])])
+    result = ARR(A(v0))
+    swap(A(result)[I(v1)], A(result)[I(v2)])
 
 proc Array_swapI*[F,X,V](f: F, xl: X): V {.inline.} =
-    #let v = xl.validate(f)
-    let v0 = VALID(0,AV)#xl.list[0].validate("swap!",AV)
-    let v1 = VALID(1,IV)#xl.list[1].validate("swap!",IV)
-    let v2 = VALID(2,IV)#xl.list[2].validate("swap!",IV)
-    swap(A(v0)[I(v1)], A(v0)[I(v2)])
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,IV)
+    let v2 = VALID(2,IV)
 
-    result = v0 # [0]
+    swap(A(v0)[I(v1)], A(v0)[I(v2)])
+    result = v0
 
 proc Array_unique*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     result = ARR(@[])
 
-    # var i = 0
-    # while i < A(v[0]).len:
-    #     if findValueInArray(result.a, A(v[0])[i])==(-1):
-    #         result.a.add(A(v[0])[i])
-    #     inc(i)
+    var i = 0
+    while i < A(v0).len:
+        if findValueInArray(A(result), A(v0)[i])==(-1):
+            A(result).add(A(v0)[i])
+        inc(i)
 
 proc Array_uniqueI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
 
     result = ARR(@[])
 
-    # var i = 0
-    # while i < A(v[0]).len:
-    #     if findValueInArray(result.a, A(v[0])[i])==(-1):
-    #         result.a.add(A(v[0])[i])
-    #     inc(i)
+    var i = 0
+    while i < A(v0).len:
+        if findValueInArray(A(result), A(v0)[i])==(-1):
+            A(result).add(A(v0)[i])
+        inc(i)
 
-    # A(v[0]) = result.a
+    A(v0) = A(result)
 
 proc Array_zip*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v = xl.validate(f)
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,AV)
 
     result = ARR(@[])
-    # let m = min(A(v[0]).len, A(v[1]).len)
-    # newSeq(result.a,m)
+    let m = min(A(v0).len, A(v1).len)
+    newSeq(A(result),m)
 
-    # var i = 0
-    # while i <= m:
-    #     result.a[i] = ARR(@[A(v[0])[i], A(v[1])[i]])
-    #     inc(i)
+    var i = 0
+    while i <= m:
+        A(result)[i] = ARR(@[A(v0)[i], A(v1)[i]])
+        inc(i)
 
 #[******************************************************
   ******************************************************

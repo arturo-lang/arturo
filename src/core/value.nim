@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/value.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    Value
+    Value Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -40,7 +49,7 @@ proc BOOLARR(v: seq[bool]): Value {.inline.} =
     result = ARR(v.map((x)=>BOOL(x)))
 
 proc DICT(v: seq[(string,Value)]): Value {.inline.} =
-    result = DICT(Context(list:v.map((x)=>(storeOrGetHash(x[0]),x[1]))))
+    result = DICT(v.map((x)=>(storeOrGetHash(x[0]),x[1])))
 
 proc valueCopy(v: Value): Value {.inline.} =
     {.computedGoto.}
@@ -568,3 +577,4 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string =
         of NV   :   result = "null"
         #of ANY  :   result = ""
         else : discard
+        

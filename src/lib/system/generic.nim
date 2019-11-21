@@ -124,7 +124,7 @@ proc Generic_isEmpty*[F,X,V](f: F, xl: X): V {.inline.} =
 
     case v[0].kind
         of AV: result = BOOL(A(v[0]).len==0)
-        of DV: result = BOOL(D(v[0]).list.len==0)
+        of DV: result = BOOL(D(v[0]).len==0)
         of SV: result = BOOL(S(v[0]).len==0)
         else: discard
 
@@ -196,7 +196,7 @@ proc Generic_size*[F,X,V](f: F, xl: X): V {.inline.} =
     case v0.kind
         of AV: result = SINT(A(v0).len)
         of SV: result = SINT(S(v0).len)
-        of DV: result = SINT(D(v0).list.len)
+        of DV: result = SINT(D(v0).len)
         else: discard
 
 proc Generic_slice*[F,X,V](f: F, xl: X): V {.inline.} =

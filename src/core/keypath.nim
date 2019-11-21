@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/keypath.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    KeyPath
+    Keypath Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -70,3 +79,4 @@ proc keypathByAddingRealToKeypath(k: KeyPath, a: cstring):KeyPath {.exportc.} =
 proc keypathByAddingInlineToKeypath(k: KeyPath, a: Argument): KeyPath {.exportc.} =
     k.parts.add(KeyPathPart(kind: inlineKeyPathPart, a: a))
     result = k
+    

@@ -1,5 +1,14 @@
+#[*****************************************************************
+  * Arturo
+  * 
+  * Programming Language + Interpreter
+  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+  *
+  * @file: core/expression.nim
+  *****************************************************************]#
+
 #[----------------------------------------
-    Expression
+    Expression Object
   ----------------------------------------]#
 
 ##---------------------------
@@ -65,3 +74,4 @@ proc evaluate(x: Expression): Value {.inline.} =
                 of LE_OP    : result = BOOL(left.lt(right) or left.eq(right))
                 of GE_OP    : result = BOOL(left.gt(right) or left.eq(right))
                 of NE_OP    : result = BOOL(not (left.eq(right)))
+                
