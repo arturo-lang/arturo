@@ -72,48 +72,64 @@ proc callFunction(f: string, v: seq[Value]): Value =
 
     result = fun.call(fun,exprs)
 
+proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
+    ## Execute user function with given ExpressionList
+    ## ! Call by Statement.execute
+    
+    if Stack.len == 1: addContext()
+    var oldSeq:Context
+    shallowCopy(oldSeq,Stack[1])
+
+    if f.hasNamedArgs:
+        var i = 0
+        var args = newSeq[(int,Value)](xl.list.len)
+        while i<xl.list.len:
+            args[i] = (f.args[i], xl.list[i].evaluate())
+            inc(i)
+        initTopContextWith(args)
+    else:
+        initTopContextWith(ARGV_HASH,ARR(xl.list.map((x)=>x.evaluate())))
+
+    result = f.body.execute()
+    if Returned!=0: 
+        Returned = 0
+
+    shallowCopy(Stack[1],oldSeq)
+    if Stack[1].len==0: popContext()
+
 proc execute(f: Function, v: Value): Value {.inline.} =
     ## Execute user function with given Value
 
-    if f.hasContext:
-        if Stack.len == 1: addContext()
-        var oldSeq:Context
-        #let oldSeq = Stack[1]
-        shallowCopy(oldSeq,Stack[1])
+    # if f.hasContext:
+    #     if Stack.len == 1: addContext()
+    #     var oldSeq:Context
+    #     shallowCopy(oldSeq,Stack[1])
+    #     if f.hasNamedArgs:
+    #         if v.kind == AV: 
+    #             initTopContextWith(zip(f.args,A(v)))
+    #         else: initTopContextWith(f.args[0],v)
+    #     else: initTopContextWith(ARGV_HASH,v)
+
+    #     result = f.body.execute()
+    #     if Returned!=0: 
+    #         Returned = 0
+
+    #     shallowCopy(Stack[1],oldSeq)
+    #     if Stack[1].len==0: popContext()
+    # else:
+    if v!=NULL:
+        let stored = getAndSetSymbol(ARGV_HASH,v)
         if f.hasNamedArgs:
             if v.kind == AV: 
-                initTopContextWith(zip(f.args,A(v)))
-            else: initTopContextWith(f.args[0],v)
-        else: initTopContextWith(ARGV_HASH,v)
-
+                var i = 0
+                while i<f.args.len:
+                    resetSymbol(f.args[i],A(v)[i])
+                    inc(i)
+            else: resetSymbol(f.args[0],v)
         result = f.body.execute()
-        if Returned!=0: 
-            Returned = 0
-        #try                         : result = f.body.execute()
-        #except ReturnValue as ret   : result = ret.value
-        #finally                     : 
-        #Stack[1] = oldSeq
-        shallowCopy(Stack[1],oldSeq)
-        if Stack[1].len==0: popContext()
+        discard setSymbol(ARGV_HASH,stored)
     else:
-        #var stored: Value = nil
-        if v!=NULL:
-            let stored = getAndSetSymbol(ARGV_HASH,v)
-            if f.hasNamedArgs:
-                if v.kind == AV: 
-                    var i = 0
-                    while i<f.args.len:
-                        resetSymbol(f.args[i],A(v)[i])
-                        inc(i)
-                else: resetSymbol(f.args[0],v)
-            result = f.body.execute()
-            discard setSymbol(ARGV_HASH,stored)
-        else:
-            result = f.body.execute()
-        #try                         : result = f.body.execute()
-        #except ReturnValue as ret   : raise
-        #finally                     : 
-        #if stored!=nil: discard setSymbol(ARGV,stored)
+        result = f.body.execute()
 
 proc validate(x: Expression, name: string, req: int): Value {.inline.} =
     result = x.evaluate()

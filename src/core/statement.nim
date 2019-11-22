@@ -76,7 +76,8 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
         of commandStatement:
             # System function calls
 
-            result = SystemFunctions[stm.code].call(SystemFunctions[stm.code],stm.arguments)
+            let sf = SystemFunctions[stm.code]
+            result = sf.call(sf,stm.arguments)
 
         of callStatement:
             # User function calls
@@ -85,7 +86,7 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
             if sym==0: SymbolNotFoundError($(stm.id))
             else: 
                 if sym.kind==FV:
-                    result = FN(sym).execute(stm.expressions.evaluate())
+                    result = FN(sym).execute(stm.expressions)
                 else: 
                     FunctionNotFoundError($(stm.id))
 
