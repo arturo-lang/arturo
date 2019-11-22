@@ -300,6 +300,7 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 proc getSystemFunction*(n: string): int {.inline.}
 proc getSystemFunctionInstance*(n: string): SystemFunction {.inline.}
 proc callFunction(f: string, v: seq[Value]): Value
+proc execute(f: Function, xl: ExpressionList): Value {.inline.}
 proc execute(f: Function, v: Value): Value {.inline.} 
 proc validate(x: Expression, name: string, req: int): Value {.inline.}
 proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.}

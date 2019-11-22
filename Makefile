@@ -101,8 +101,9 @@ CFG_MEMPROFILE  = -d:release \
 				  --nimcache:$(CACHE)/memprofile
 EXT_MEMPROFILE  = _memprofile
 
-CFG_DEBUG       = -d:release \
-				  -d:debug \
+CFG_DEBUG       = -d:debug \
+				  -d:useSysAssert \
+				  -d:useGcAssert \
 				  --debugger:native \
 				  \
 				  --gc:regions \
