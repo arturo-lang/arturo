@@ -6,6 +6,7 @@ def execute(comp,scpt,shld)
 	got = `/usr/bin/time -lp #{comp} #{scpt} 2>&1`
 	time = ""
 	mem = ""
+
 	if !got.strip.include?(shld.strip) 
 		return []
 	end
@@ -103,6 +104,16 @@ Dir["#{__dir__}/tests/*.art"].sort.each{|b|
 		end
 	else
 		puts ('%-30s' % 'Lisp') + "  |  " + ('%-10s' % "-") + "   |   " + ('%-15s' % "-")
+	end
+	if File.exist? (b.gsub(".art",".reb.test"))
+		got = execute("rebol -q -w -s",b.gsub(".art",".reb.test"),should)
+		if got==[]
+			puts ('%-30s' % 'Rebol') + "  |  " + ('%-10s' % "X").colorize(:red) + "   |   " + ('%-15s' % "X").colorize(:red)
+		else
+			puts ('%-30s' % 'Rebol') + "  |  " + ('%-10s' % got[0]) + "   |   " + ('%-15s' % got[1])
+		end
+	else
+		puts ('%-30s' % 'Rebol') + "  |  " + ('%-10s' % "-") + "   |   " + ('%-15s' % "-")
 	end
 	if File.exist? (b.gsub(".art",".tcl.test"))
 		got = execute("tclsh",b.gsub(".art",".tcl.test"),should)
