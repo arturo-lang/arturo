@@ -379,19 +379,19 @@ proc eq(l: Value, r: Value): bool {.inline.} =
         of IV:
             result = case r.kind
                 of IV: I(l)==I(r)
-                #of BIV: I(l)==BI(r)
+                of BIV: int(I(l))==BI(r)
                 of RV: I(l)==int(R(r))
                 else: NotComparableError(l.kind,r.kind)
-        of BIV: discard
-            # result = case r.kind
-            #     #of IV: BI(l)==I(r)
-            #     #of BIV: BI(l)==BI(r)
-            #     of RV: BI(l)==int(R(r))
-            #     else: NotComparableError(l.kind,r.kind)
+        of BIV:
+            result = case r.kind
+                of IV: BI(l)==int(I(r))
+                of BIV: BI(l)==BI(r)
+                of RV: BI(l)==int(R(r))
+                else: NotComparableError(l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: int(R(l))==I(r)
-                #of BIV: int(R(l))==BI(r)
+                of BIV: int(R(l))==BI(r)
                 of RV: R(l)==R(r)
                 else: NotComparableError(l.kind,r.kind)
         of BV:
@@ -439,19 +439,19 @@ proc lt(l: Value, r: Value): bool {.inline.} =
         of IV:
             result = case r.kind
                 of IV: I(l)<I(r)
-                #of BIV: I(l)<BI(r)
+                of BIV: int(I(l))<BI(r)
                 of RV: I(l)<int(R(r))
                 else: NotComparableError(l.kind,r.kind)
-        of BIV: discard
-            # result = case r.kind
-            #     of IV: BI(l)<I(r)
-            #     of BIV: BI(l)<BI(r)
-            #     of RV: BI(l)<int(R(r))
-            #     else: NotComparableError(l.kind,r.kind)
+        of BIV:
+            result = case r.kind
+                of IV: BI(l)<int(I(r))
+                of BIV: BI(l)<BI(r)
+                of RV: BI(l)<int(R(r))
+                else: NotComparableError(l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: int(R(l))<I(r)
-                #of BIV: int(R(l))<BI(r)
+                of BIV: int(R(l))<BI(r)
                 of RV: R(l)<R(r)
                 else: NotComparableError(l.kind,r.kind)
         of AV:
@@ -477,19 +477,19 @@ proc gt(l: Value, r: Value): bool {.inline.} =
         of IV:
             result = case r.kind
                 of IV: I(l)>I(r)
-                #of BIV: I(l)>BI(r)
+                of BIV: int(I(l))>BI(r)
                 of RV: I(l)>int(R(r))
                 else: NotComparableError(l.kind,r.kind)
-        # of BIV:
-        #     result = case r.kind
-        #         of IV: BI(l)>I(r)
-        #         of BIV: BI(l)>BI(r)
-        #         of RV: BI(l)>int(R(r))
-        #         else: NotComparableError(l.kind,r.kind)
+        of BIV:
+            result = case r.kind
+                of IV: BI(l)>int(I(r))
+                of BIV: BI(l)>BI(r)
+                of RV: BI(l)>int(R(r))
+                else: NotComparableError(l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: int(R(l))>I(r)
-                #of BIV: int(R(l))>BI(r)
+                of BIV: int(R(l))>BI(r)
                 of RV: R(l)>R(r)
                 else: NotComparableError(l.kind,r.kind)
         of AV:

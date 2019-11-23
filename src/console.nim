@@ -119,8 +119,10 @@ proc startRepl*(includePath:string="") =
                     else: consoleError("command '" & parts[0] & "' not found")
             
             else: 
-                echo "\e[2m= " & runString(currentExpression & "\n") & "\e[0;37m"
-                source &= currentExpression & "\n"
+                let got = runString(currentExpression & "\n")
+                if got!="":
+                    echo "\e[2m= " & got & "\e[0;37m"
+                    source &= currentExpression & "\n"
                 inc(currentLine)
 
         except IOError:

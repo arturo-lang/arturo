@@ -181,7 +181,7 @@ proc Math_avg*[F,X,V](f: F, xl: X): V {.inline.} =
         result = result ++ A(v0)[i]
         inc(i)
 
-    result = REAL(I(result) / A(v0).len)
+    result = REAL(float32(I(result) / A(v0).len))
 
 proc Math_ceil*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
