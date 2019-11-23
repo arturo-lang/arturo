@@ -56,6 +56,9 @@ proc Crypto_sha1I*[F,X,V](f: F, xl: X): V {.inline.} =
     S(v0) = ($(S(v0).secureHash())).toLower()
     result = v0
 
+proc Crypto_uuid*[F,X,V](f: F, xl: X): V {.inline.} =
+    result = STR($(genOid()))
+
 #[******************************************************
   ******************************************************
     UnitTests

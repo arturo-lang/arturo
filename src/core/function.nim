@@ -60,22 +60,10 @@ proc getNameOfSystemFunction*(n: int): cstring {.exportc.} =
 ## Methods
 ##---------------------------
 
-proc callFunction(f: string, v: seq[Value]): Value = 
-    ## Call a function by string with a given array of Value's
-    ## ! Used only for UnitTests
-
-    let fun = getSystemFunctionInstance(f)
-    let exprs = newExpressionList()
-
-    for val in v:
-        discard exprs.addExpression(expressionFromArgument(Argument(kind: literalArgument, v: val)))
-
-    result = fun.call(fun,exprs)
-
 proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
     ## Execute user function with given ExpressionList
     ## ! Call by Statement.execute
-    
+
     if Stack.len == 1: addContext()
     var oldSeq:Context
     shallowCopy(oldSeq,Stack[1])
@@ -131,37 +119,12 @@ proc execute(f: Function, v: Value): Value {.inline.} =
     else:
         result = f.body.execute()
 
-proc validate(x: Expression, name: string, req: int): Value {.inline.} =
-    result = x.evaluate()
+proc validate(xl: ExpressionList, i: int, name: string, req: int): Value {.inline.} =
+    result = xl.list[i].evaluate()
 
     if bitand(result.kind,req)==0:
         let expected = "sth"#req.map((x) => $(x)).join(" or ")
-        IncorrectArgumentValuesError(name, expected, $(result.kind))
-
-proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.} =
-    ## Validate given Expression against an array of ValueKind's
-    ## ! Called only from System functions
-
-    result = x.evaluate()
-
-    if not likely(req.contains(result.kind)):
-        let expected = req.map((x) => $(x)).join(" or ")
-        IncorrectArgumentValuesError(name, expected, $(result.kind))
-
-proc showValidationError(req:FunctionConstraints, vs:seq[Value], name: string) = 
-    let expected = req.map((x) => "(" & x.map((y) => valueKindToPrintable(y)).join(",") & ")").join(" or ")
-    let got = vs.map((x) => valueKindToPrintable(x.kind)).join(",")
-
-    IncorrectArgumentValuesError(name, expected, got)
-
-proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.} =
-    ## Validate given ExpressionList against given array of constraints
-    ## ! Called only from System functions
-
-    result = xl.list.map((x) => x.evaluate())
-
-    #if not likely(f.req.contains(result.map((x) => x.kind))):
-    #    showValidationError(f.req, result, f.name)
+        IncorrectArgumentValuesError(i, name, req, result.kind)
         
 proc getOneLineDescription*(f: SystemFunction): string =
     ## Get one-line description for given System function
@@ -189,4 +152,18 @@ proc getFullDescription*(f: SystemFunction): string =
     #result &= "       # : " & f.desc & "\n\n"
     #result &= "   usage : " & f.name & " " & args & "\n"
     #result &= "        \x1B[0;32m->\x1B[0;37m " & ret & "\n"
+
+when defined(unittest):
+    proc callFunction(f: string, v: seq[Value]): Value = 
+        ## Call a function by string with a given array of Value's
+        ## ! Used only for UnitTests
+
+        let fun = getSystemFunctionInstance(f)
+        let exprs = newExpressionList()
+
+        for val in v:
+            discard exprs.addExpression(expressionFromArgument(Argument(kind: literalArgument, v: val)))
+
+        result = fun.call(fun,exprs)
+        
     

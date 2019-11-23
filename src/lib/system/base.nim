@@ -70,7 +70,7 @@ proc Base_import*[F,X,V](f: F, xl: X): V {.inline.} =
     result = importModule(S(v0))
 
 proc Base_loop*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|BV|IV)
+    let v0 = VALID(0,AV|DV|BV|IV)
 
     {.computedGoTo.}
     case v0.kind
@@ -80,10 +80,10 @@ proc Base_loop*[F,X,V](f: F, xl: X): V {.inline.} =
             while i < A(v0).len:
                 result = FN(v1).execute(A(v0)[i])
                 inc(i)
-        # of DV:
-        #     let v1 = VALID(1,DV)
-        #     for val in D(v0):
-        #         result = FN(v1).execute(ARR(@[STR(val[0]),val[1]]))
+        of DV:
+            let v1 = VALID(1,FV)
+            for val in D(v0):
+                result = FN(v1).execute(ARR(@[STR(getSymbolForHash(val[0])),val[1]]))
         of BV:
             if not B(v0): return NULL
             let v1 = VALID(1,FV)

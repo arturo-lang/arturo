@@ -99,7 +99,12 @@ proc Array_count*[F,X,V](f: F, xl: X): V {.inline.} =
     result = SINT(cnt)
 
 proc Array_first*[F,X,V](f: F, xl: X): V {.inline.} =
-    result = A(VALID(0,AV))[0]
+    let v0 = VALID(0,AV)
+
+    if xl.list.len==1:
+        result = A(v0)[0]
+    else:
+        result = ARR(A(v0)[0..I(VALID(1,IV))-1])
 
 proc Array_filter*[F,X,V](f: F, xl: X): V {.inline.} =
     let v1 = VALID(1,FV)
@@ -125,7 +130,10 @@ proc Array_fold*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Array_last*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV)
 
-    result = A(v0)[^1]
+    if xl.list.len==1:
+        result = A(v0)[^1]
+    else:
+        result = ARR(A(v0)[A(v0).len-I(VALID(1,IV))..^1])
 
 proc Array_map*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV)
@@ -254,6 +262,33 @@ proc Array_sortI*[F,X,V](f: F, xl: X): V {.inline.} =
 
     proc opCmp(l: Value, r: Value): int =
         if (l.lt(r) or l.eq(r)): -1
+        else: 1
+
+    A(v0).sort(opCmp)
+    result = v0
+
+proc Array_sortBy*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,FV)
+
+    proc opCmp(l: Value, r: Value): int =
+        let lv = FN(v1).execute(l)
+        let rv = FN(v1).execute(r)
+
+        if (lv.lt(rv) or lv.eq(rv)): -1
+        else: 1
+
+    result = ARR(A(v0).sorted(opCmp))
+
+proc Array_sortByI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,AV)
+    let v1 = VALID(1,FV)
+
+    proc opCmp(l: Value, r: Value): int =
+        let lv = FN(v1).execute(l)
+        let rv = FN(v1).execute(r)
+
+        if (lv.lt(rv) or lv.eq(rv)): -1
         else: 1
 
     A(v0).sort(opCmp)

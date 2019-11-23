@@ -25,6 +25,7 @@ include system/math
 include system/net
 include system/path
 include system/reflection
+include system/set
 include system/string
 include system/terminal
 include system/time
@@ -61,6 +62,8 @@ let
         SystemFunction(lib:"array",         name:"shuffle!",            call:Array_shuffleI),#            req:@[@[AV]],                                                                      ret: @[AV],             desc:"shuffle given array (in-place)"),
         SystemFunction(lib:"array",         name:"sort",                call:Array_sort),#                req:@[@[AV]],                                                                      ret: @[AV],             desc:"sort given array"),
         SystemFunction(lib:"array",         name:"sort!",               call:Array_sortI),#               req:@[@[AV]],                                                                      ret: @[AV],             desc:"sort given array (in-place)"),
+        SystemFunction(lib:"array",         name:"sortBy",              call:Array_sortBy),#                req:@[@[AV]],                                                                      ret: @[AV],             desc:"sort given array"),
+        SystemFunction(lib:"array",         name:"sortBy!",             call:Array_sortByI),
         SystemFunction(lib:"array",         name:"swap",                call:Array_swap),#                req:@[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices"),
         SystemFunction(lib:"array",         name:"swap!",               call:Array_swapI),#               req:@[@[AV,IV,IV]],                                                                ret: @[AV],             desc:"swap array elements at given indices (in-place)"),
         SystemFunction(lib:"array",         name:"unique",              call:Array_unique),#              req:@[@[AV]],                                                                      ret: @[AV],             desc:"remove duplicates from given array"),
@@ -78,6 +81,7 @@ let
 
         SystemFunction(lib:"convert",       name:"toBin",               call:Convert_toBin),#             req:@[@[IV]],                                                                      ret: @[SV],             desc:"convert given number to its binary string representation"),
         SystemFunction(lib:"convert",       name:"toHex",               call:Convert_toHex),#             req:@[@[IV]],                                                                      ret: @[SV],             desc:"convert given number to its hexadecimal string representation"),
+        SystemFunction(lib:"convert",       name:"toInt",               call:Convert_toInt),
         SystemFunction(lib:"convert",       name:"toNumber",            call:Convert_toNumber),#          req:@[@[SV],@[RV],@[BV]],                                                                ret: @[IV],             desc:"convert given string, real or boolean to an integer number"),
         SystemFunction(lib:"convert",       name:"toOct",               call:Convert_toOct),#             req:@[@[IV]],                                                                      ret: @[SV],             desc:"convert given number to its octal string representation"),
         SystemFunction(lib:"convert",       name:"toReal",              call:Convert_toReal),#            req:@[@[IV]],                                                                      ret: @[SV],             desc:"convert given integer number to real"),
@@ -91,6 +95,7 @@ let
         SystemFunction(lib:"crypto",        name:"md5!",                call:Crypto_md5I),#               req:@[@[SV]],                                                                      ret: @[SV],             desc:"MD5-encrypt given string (in-place)"),
         SystemFunction(lib:"crypto",        name:"sha1",                call:Crypto_sha1),#               req:@[@[SV]],                                                                      ret: @[SV],             desc:"SHA1-encrypt given string"),
         SystemFunction(lib:"crypto",        name:"sha1!",               call:Crypto_sha1I),#              req:@[@[SV]],                                                                      ret: @[SV],             desc:"SHA1-encrypt given string (in-place)"),
+        SystemFunction(lib:"crypto",        name:"uuid",                call:Crypto_uuid),
 
         SystemFunction(lib:"csv",           name:"generateCsv",         call:Csv_generateCsv),#           req:@[@[AV]],                                                                      ret: @[SV],             desc:"get CSV string from given array of rows"),
         SystemFunction(lib:"csv",           name:"parseCsv",            call:Csv_parseCsv),#              req:@[@[SV],@[SV,BV]],                                                             ret: @[AV],             desc:"get array of rows by parsing given CSV string, optionally using headers"),
@@ -112,6 +117,8 @@ let
         SystemFunction(lib:"generic",       name:"get",                 call:Generic_get),#               req:@[@[AV,IV],@[DV,SV],@[SV,IV]],                                                 ret: @[NV],            desc:"get element from array, dictionary or string using given index/key"),
         SystemFunction(lib:"generic",       name:"index",               call:Generic_index),#             req:@[@[AV,SV],@[AV,IV],@[AV,BIV],@[AV,BV],@[AV,AV],@[AV,DV],@[AV,FV],@[SV,SV]],   ret: @[IV],             desc:"get index of string/element within string/array or -1 if not found"),
         SystemFunction(lib:"generic",       name:"isEmpty",             call:Generic_isEmpty),#           req:@[@[AV],@[SV],@[DV]],                                                          ret: @[BV],             desc:"check if given array, dictionary or string is empty"),
+        SystemFunction(lib:"generic",       name:"prepend",             call:Generic_prepend),
+        SystemFunction(lib:"generic",       name:"prepend!",            call:Generic_prependI),
         SystemFunction(lib:"generic",       name:"reverse",             call:Generic_reverse),#           req:@[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string"),
         SystemFunction(lib:"generic",       name:"reverse!",            call:Generic_reverseI),#          req:@[@[AV],@[SV]],                                                                ret: @[AV,SV],          desc:"reverse given array or string (in-place)"),
         SystemFunction(lib:"generic",       name:"set",                 call:Generic_set),#               req:@[@[AV,IV,IV],@[AV,IV,RV],@[AV,IV,BV],@[AV,IV,AV],@[AV,IV,DV],@[AV,IV,FV],
@@ -170,6 +177,7 @@ let
         SystemFunction(lib:"math",          name:"log10",               call:Math_log10),#                req:@[@[RV]],                                                                      ret: @[RV],             desc:"get the common (base-10) logarithm of given value"),
         SystemFunction(lib:"math",          name:"max",                 call:Math_max),#                  req:@[@[AV]],                                                                      ret: @[IV],             desc:"get maximum of the values in given array"),
         SystemFunction(lib:"math",          name:"min",                 call:Math_min),#                  req:@[@[AV]],                                                                      ret: @[IV],             desc:"get minimum of the values in given array"),
+        SystemFunction(lib:"math",          name:"neg",                 call:Math_neg),
         SystemFunction(lib:"math",          name:"pi",                  call:Math_pi),#                   req:@[@[NV]],                                                                      ret: @[RV],             desc:"get the circle constant PI"),
         SystemFunction(lib:"math",          name:"primeFactors",        call:Math_primeFactors),#         req:@[@[IV],@[BIV]],                                                               ret: @[AV],             desc:"get array of prime factors of given number"),
         SystemFunction(lib:"math",          name:"product",             call:Math_product),#              req:@[@[AV]],                                                                      ret: @[IV,BIV],         desc:"return product of elements of given array"),
@@ -214,7 +222,20 @@ let
         SystemFunction(lib:"path",          name:"symlinkExists",       call:Path_symlinkExists),#        req:@[@[SV]],                                                                      ret: @[BV],             desc:"check if symlink exists at given path"),
 
         SystemFunction(lib:"reflection",    name:"inspect",             call:Reflection_inspect),#        req:@[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"print given value to screen in a readable format"),
+        SystemFunction(lib:"reflection",    name:"isArray",             call:Reflection_isArray),
+        SystemFunction(lib:"reflection",    name:"isBigint",            call:Reflection_isBigint),
+        SystemFunction(lib:"reflection",    name:"isBool",              call:Reflection_isBool),
+        SystemFunction(lib:"reflection",    name:"isDict",              call:Reflection_isDict),
+        SystemFunction(lib:"reflection",    name:"isFunc",              call:Reflection_isFunc),
+        SystemFunction(lib:"reflection",    name:"isNull",              call:Reflection_isNull),
+        SystemFunction(lib:"reflection",    name:"isReal",              call:Reflection_isReal),
+        SystemFunction(lib:"reflection",    name:"isString",            call:Reflection_isString),
         SystemFunction(lib:"reflection",    name:"type",                call:Reflection_type),#           req:@[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV],@[DV]],                           ret: @[SV],             desc:"get type of given object as a string"),
+
+        SystemFunction(lib:"set",           name:"difference",          call:Set_difference),
+        SystemFunction(lib:"set",           name:"intersection",        call:Set_intersection),
+        SystemFunction(lib:"set",           name:"symmetricDifference", call:Set_symmetricDifference),
+        SystemFunction(lib:"set",           name:"union",               call:Set_union),
 
         SystemFunction(lib:"string",        name:"capitalize",          call:String_capitalize),#         req:@[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string"),
         SystemFunction(lib:"string",        name:"capitalize!",         call:String_capitalizeI),#        req:@[@[SV]],                                                                      ret: @[SV],             desc:"capitalize given string (in-place)"),

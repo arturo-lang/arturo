@@ -69,7 +69,7 @@ proc statementByAddingImplication(st: Statement, i: Statement): Statement {.expo
 proc execute(stm: Statement, parent: Value = 0): Value {.inline.} = 
     ## Execute given statement and return result
     ## parent = means statement is in a dictionary context
-
+    
     StatementLine = stm.pos
 
     case stm.kind
@@ -83,12 +83,10 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
             # User function calls
 
             let sym = getSymbol(stm.id)
-            if sym==0: SymbolNotFoundError($(stm.id))
-            else: 
-                if sym.kind==FV:
-                    result = FN(sym).execute(stm.expressions)
-                else: 
-                    FunctionNotFoundError($(stm.id))
+            case sym.kind
+                of FV: result = FN(sym).execute(stm.expressions)
+                of NV: SymbolNotFoundError($(stm.id))
+                else: FunctionNotFoundError($(stm.id))
 
         of assignmentStatement:
             # Assignments

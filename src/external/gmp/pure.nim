@@ -62,9 +62,10 @@ type
   
 include extratypes
 
-const 
-  GMP_RAND_ALG_DEFAULT: gmp_randalg_t = 0.gmp_randalg_t
-  GMP_RAND_ALG_LC: gmp_randalg_t = GMP_RAND_ALG_DEFAULT
+# REMOVED AS SUPERFLUOUS
+# const 
+  # GMP_RAND_ALG_DEFAULT: gmp_randalg_t = 0.gmp_randalg_t
+  # GMP_RAND_ALG_LC: gmp_randalg_t = GMP_RAND_ALG_DEFAULT
 
 proc mpq_numref*(a2: mpq_ptr): mpz_ptr = a2.mp_num.addr
 proc mpq_numref*(a2: var mpq_t): mpz_ptr = mpq_numref(a2.addr)
