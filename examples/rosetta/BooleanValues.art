@@ -1,0 +1,5 @@
+a: true
+b: false
+
+if a { print "yep" } { print "nope" }
+if b { print "nope" } { print "yep" }

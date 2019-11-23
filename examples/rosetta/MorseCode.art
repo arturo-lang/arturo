@@ -1,0 +1,27 @@
+// set the morse code
+
+letters: #{
+    a: ".-", b: "-...", c: "-.-.", d: "-..", e: "."
+    f: "..-.", g: "--.", h: "....", i: "..", j: ".---"
+    k: "-.-", l: ".-..", m: "--", n: "-.", o: "---"
+    p: ".--.", q: "--.-", r: ".-.", s: "...", t: "-"
+    u: "..-", v: "...-", w: ".--", x: "-..-", y: "-.--"
+    z: "--.."
+}
+numbers: #("-----" ".----" "..---" "...--" "....-" "....." "-...." "--..." "---.." "----.")
+
+// print an encoded message
+
+str: "hello world 2019"
+
+loop [chars str] {
+    if [not|isWhitespace &] {
+        if [isNumber &] { 
+            prints numbers.[toNumber &] 
+        } {
+            prints letters.[&]
+        }
+    }
+}
+
+print ""

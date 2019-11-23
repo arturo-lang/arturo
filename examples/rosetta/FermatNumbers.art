@@ -1,0 +1,12 @@
+nPowers: #(1 2 4 8 16 32 64 128 256 512)
+fermatSet: map 0..9 -> 2^nPowers.[&]+1
+
+loop 0..9 {
+	print "F(" + & + ") = " + fermatSet.[&]
+}
+
+print ""
+
+loop 0..9 {
+	print "prime factors of F(" + & + ") = " + [primeFactors fermatSet.[&]]
+}

@@ -1,0 +1,10 @@
+str "Hello World"
+
+print $(color str "red")
+print $(color str "green")
+print $(color str "blue")
+print $(color str "magenta")
+print $(color str "yellow")
+print $(color str "cyan")
+print $(color str "black")
+print $(color str "white")

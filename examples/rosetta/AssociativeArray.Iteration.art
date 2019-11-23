@@ -1,0 +1,25 @@
+// create a dictionary
+dict: #{
+	name: 		"john"
+	surname: 	"doe"
+	age: 		33
+}
+
+// Iterate over key/value pairs
+loop dict {
+	print "key = " + &0 + ", value = " + &1
+}
+
+print "----"
+
+// Iterate over keys
+loop [keys dict] {
+	print "key = " + &
+}
+
+print "----"
+
+// Iterate over values
+loop [values dict] {
+	print "value = " + &
+}

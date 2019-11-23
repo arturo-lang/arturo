@@ -1,0 +1,1 @@
+print [sum|map [chars|toString 2^1000] => toNumber ]

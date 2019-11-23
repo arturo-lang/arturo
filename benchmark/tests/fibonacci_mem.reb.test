@@ -1,0 +1,39 @@
+REBOL [
+    Title:  "Whatever"
+    Date:   2-Feb-2000
+    File:   %whatever.reb
+    Author: "Whatever"
+    Version: 1.2.3
+]
+memo: func [
+	"Defines memoizing function -- keeps arguments/results for later use."
+	args [block!] "Function arguments. Just specify variable names."
+	body [block!] "The body block of the function."
+	/local m-args m-r
+][
+	do compose/deep [
+		func [
+			(args)
+			/dump "Dump memory."
+		][
+			m-args: []
+			if dump [return m-args]
+ 
+			if m-r: select/only m-args reduce [(args)] [return m-r]
+ 
+			m-r: do [(body)]
+			append m-args reduce [reduce [(args)] m-r]
+			m-r
+		]
+	]
+]
+
+maxLimit: 5000
+
+fib: memo [x][
+	either x < 1 [1][(fib x - 1) + (fib x - 2)]
+]
+
+for i 0 maxLimit - 1 1 [
+	print fib i
+]

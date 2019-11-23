@@ -1,0 +1,7 @@
+n: random 1 10
+print "Guess the number: "
+
+loop [toNumber|strip|input ~] != n {
+	print "Wrong! Guess again: "
+}
+print "Well guessed!"

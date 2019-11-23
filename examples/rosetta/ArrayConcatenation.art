@@ -1,0 +1,4 @@
+arr1: #(1 2 3)
+arr2: #("four" "five" "six")
+
+print arr1 + arr2

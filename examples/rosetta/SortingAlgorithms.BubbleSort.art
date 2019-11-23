@@ -1,0 +1,18 @@
+bubbleSort: @(items){
+    changed: true
+
+    loop changed {
+        changed: false
+        i: 0
+        loop [size items]-1 {
+            if items.[i]>items.[i+1] {
+                swap! items i i+1
+                changed: true
+            }
+            i: i+1
+        }
+    }
+    items
+}
+
+print [bubbleSort #(3 1 2 8 5 7 9 4 6)]

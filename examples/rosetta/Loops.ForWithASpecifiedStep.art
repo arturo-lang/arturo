@@ -1,0 +1,3 @@
+loop [rangeBy 0 10 2] {
+	print &
+}

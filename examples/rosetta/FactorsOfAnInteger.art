@@ -1,0 +1,3 @@
+factors: @(num) -> filter 1..36 -> num%&=0 
+
+print [factors 36]

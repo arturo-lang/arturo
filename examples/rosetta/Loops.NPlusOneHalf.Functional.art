@@ -1,0 +1,1 @@
+print [join [map 1..10 => toString] ", "]

@@ -1,0 +1,9 @@
+hanoi: @(n from to via){
+	if n>0 {
+		hanoi n-1 from via to
+		print "Move disk " + n + " from " + from + " to " + to
+		hanoi n-1 via to from
+	}
+}
+ 
+hanoi 3 "L" "M" "R"

@@ -1,0 +1,7 @@
+printAll: @(args){
+	loop args {
+		print &
+	}
+}
+
+printAll #("one" "two" "three")

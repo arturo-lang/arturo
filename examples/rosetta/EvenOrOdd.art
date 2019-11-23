@@ -1,0 +1,7 @@
+loop [range 0-5 5] {
+	if [isEven &] { 
+		print [padLeft [toString &] 4] + ": even"
+	} { 
+		print [padLeft [toString &] 4] + ": odd"
+	}
+}

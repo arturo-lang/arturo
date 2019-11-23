@@ -1,0 +1,12 @@
+fileExtensions: #("zip" "rar" "7z" "gz" "archive" "A##")
+
+hasExtension: @(file){
+	lowercased: map fileExtensions => lowercase
+	contains lowercased [lowercase|replace [pathExtension file] "." ""]
+}
+
+files: #("MyData.a##" "MyData.tar.Gz" "MyData.gzip" "MyData.7z.backup" "MyData..." "MyData")
+
+loop files {
+	print & + " => hasExtension: " + [hasExtension &]
+}
