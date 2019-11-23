@@ -470,6 +470,9 @@ proc runString*(src:string): string =
 
         try:
             result = MainProgram.execute().stringify()
+        except Exception as e:
+            runtimeError(e.msg, FileName, StatementLine)
+            result = ""
         except NilAccessError as e:
             runtimeError(e.msg, FileName, 1)
 
