@@ -322,6 +322,15 @@ proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
             result = A(v0)[i]
         inc(i)
 
+proc Math_neg*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|RV|BIV)
+
+    case v0.kind
+        of IV: result = SINT(-1 * I(v0))
+        of RV: result = REAL(float32(-1.0 * R(v0)))
+        of BIV: result = BIGINT(-1 * BI(v0))
+        else: discard
+
 proc Math_pi*[F,X,V](f: F, xl: X): V {.inline.} =
     result = REAL(PI)
 

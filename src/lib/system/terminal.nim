@@ -23,13 +23,13 @@ proc Terminal_inputChar*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR($(getch()))
 
 proc Terminal_print*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,ANY)
+    let v0 = EVAL(0)
 
     echo v0.stringify(quoted=false)
     result = v0
 
 proc Terminal_prints*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,ANY)
+    let v0 = EVAL(0)
 
     write(stdout,v0.stringify(quoted=false))
     flushFile(stdout)

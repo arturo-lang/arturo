@@ -105,13 +105,13 @@ proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_get*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|SV|DV)
+    let v0 = xl.list[0].evaluate()#VALID(0,AV|SV|DV)
 
     {.computedGoTo.}
     case v0.kind
-        of AV: result = A(v0)[I(VALID(1,IV))]
-        of SV: result = STR($(S(v0)[I(VALID(1,IV))]))
-        of DV: result = D(v0).getValueForKey(S(VALID(1,SV)))
+        of AV: result = A(v0)[I(EVAL(1))]#A(v0)[I(VALID(1,IV))]
+        of SV: result = STR($(S(v0)[I(EVAL(1))]))##VALID(1,IV))]))
+        of DV: result = D(v0).getValueForKey(S(EVAL(1)))#VALID(1,SV)))
         else: discard
 
 proc Generic_index*[F,X,V](f: F, xl: X): V {.inline.} =
@@ -129,6 +129,26 @@ proc Generic_isEmpty*[F,X,V](f: F, xl: X): V {.inline.} =
         of AV: result = BOOL(A(v0).len==0)
         of SV: result = BOOL(S(v0).len==0)
         of DV: result = BOOL(D(v0).len==0)
+        else: discard
+
+proc Generic_prepend*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,AV|SV)
+
+    case v0.kind
+        of AV: result = ARR(VALID(1,ANY) & A(v0))
+        of SV: result = STR(S(VALID(1,SV)) & S(v0))
+        else: discard
+
+proc Generic_prependI*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,AV|SV)
+
+    case v0.kind
+        of AV: 
+            A(v0).insert(VALID(1,ANY))
+            result = v0
+        of SV: 
+            S(v0) = S(VALID(1,SV)) & S(v0)
+            result = v0
         else: discard
 
 proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =

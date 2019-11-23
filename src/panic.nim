@@ -56,15 +56,15 @@ proc consoleError*(msg:string, showHelp:bool=true) =
     Templates
   ======================================================]#
 
-template NotComparableError*(l: string, r: string) =
+template NotComparableError*(l: int, r: int) =
     raise newException(Exception,"cannot compare arguments\n" &
-                 "lValue: " & l.replace("Value","") & "\n" &
-                 "rValue: " & r.replace("Value",""))
+                 "lValue: " & valueKindToPrintable(l) & "\n" &
+                 "rValue: " & valueKindToPrintable(r))
 
-template InvalidOperationError*(op: string, l: string, r: string) =
+template InvalidOperationError*(op: string, l: int, r: int) =
     raise newException(Exception,"invalid arguments for operator '" & op & "'\n" &
-                 "lValue: " & l.replace("Value","") & "\n" &
-                 "rValue: " & r.replace("Value",""))
+                 "lValue: " & valueKindToPrintable(l) & "\n" &
+                 "rValue: " & valueKindToPrintable(r))
 
 template SymbolNotFoundError*(s: string) =
     raise newException(Exception,"symbol not found: '" & s & "'")
@@ -75,10 +75,10 @@ template FunctionNotFoundError*(s: string) =
 template IncorrectArgumentNumberError*(f: string) =
     raise newException(Exception,"incorrect number of arguments for function '" & f & "'")
 
-template IncorrectArgumentValuesError*(f: string, e: string, g: string) =
-    raise newException(Exception,"incorrect arguments for function '" & f & "'\n" &
-                 "expected: " & e & "\n" &
-                 "got: " & g)
+template IncorrectArgumentValuesError*(no: int, f: string, e: int, g: int) =
+    raise newException(Exception,"incorrect argument [" & $no & "] for function '" & f & "'\n" &
+                 "expected: " & valueKindsToPrintable(e) & "\n" &
+                 "got: " & valueKindToPrintable(g))
 
 template ProgramPanic*(msg: string) =
     raise newException(Exception,"program panic\n" &

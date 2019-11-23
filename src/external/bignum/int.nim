@@ -1,7 +1,8 @@
 type Int* = ref mpz_t
   ## An Int represents a signed multi-precision integer.
 
-const LLP64_ULONG_MAX = 0xFFFFFFFF
+# REMOVED AS SUPERFLUOUS
+# const LLP64_ULONG_MAX = 0xFFFFFFFF
 
 proc isLLP64: bool {.compileTime.} =
   # LLP64 programming model
@@ -9,13 +10,14 @@ proc isLLP64: bool {.compileTime.} =
 
 {.push hints: off.}
 
-proc fitsLLP64Long(x: int): bool =
-  # Returns whether `x` fits in a LLP64 signed long int.
-  return x >= low(clong) and x <= high(clong)
+# REMOVED AS SUPERFLUOUS
+# proc fitsLLP64Long(x: int): bool =
+#   # Returns whether `x` fits in a LLP64 signed long int.
+#   return x >= low(clong) and x <= high(clong)
 
-proc fitsLLP64ULong(x: int): bool =
-  # Returns whether `x` fits in a LLP64 unsigned long int.
-  return x >= 0 and x <= LLP64_ULONG_MAX
+# proc fitsLLP64ULong(x: int): bool =
+#   # Returns whether `x` fits in a LLP64 unsigned long int.
+#   return x >= 0 and x <= LLP64_ULONG_MAX
 
 {.pop.}
 

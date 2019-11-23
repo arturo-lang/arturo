@@ -46,8 +46,8 @@ proc showInfo(symbol: string) =
 
 proc showSymbols() = 
     for n in sorted(Stack[0].keys):
-        let k = $((Stack[0].getValueForKey(n)).kind)
-        echo alignLeft("\e[1m" & n & "\e[0m",20) & align("\e[34m" & k.replace("Value","") & "\e[39m",20) & " = " & (Stack[0].getValueForKey(n)).stringify()
+        let k = valueKindToPrintable(Stack[0].getValueForKey(n).kind)
+        echo alignLeft("\e[1m" & n & "\e[0m",20) & align("\e[34m" & k & "\e[39m",20) & " = " & (Stack[0].getValueForKey(n)).stringify()
 
 proc showFunctions() =
     # let names = SystemFunctions.map((x) => x.name)
