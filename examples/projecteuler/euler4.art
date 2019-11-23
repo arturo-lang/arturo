@@ -1,0 +1,16 @@
+isPalindrome: @(n) -> n = [reverse n]
+
+maxPalindrome: 0
+
+loop 1..999 @(a){
+	loop 1..999 @(b){
+		if a<=b {
+			p: a*b
+			if [isPalindrome|toString p] {
+				if p>maxPalindrome -> maxPalindrome: p
+			}
+		}
+	}
+}
+
+print maxPalindrome

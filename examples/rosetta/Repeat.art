@@ -1,0 +1,11 @@
+proc: {
+	print "I'm in proc!"
+}
+
+repeat: @(func times){
+	loop times {
+		func ~
+	}
+}
+
+repeat proc 3

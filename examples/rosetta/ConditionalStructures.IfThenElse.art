@@ -1,0 +1,7 @@
+num: 2
+
+if num=2 {
+	"yep, num is 2"
+} {
+	"something went wrong..."
+}

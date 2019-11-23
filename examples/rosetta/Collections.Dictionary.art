@@ -1,0 +1,13 @@
+// initialize dictionary
+dict: #{
+	name: 		"john"
+	surname: 	"doe"
+	age: 		33
+
+	preferedFood: #("fruit" "pizza")
+}
+
+// add an element to the dictionary
+dict: dict + #{ country: "Spain" }
+
+inspect dict

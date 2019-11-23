@@ -1,0 +1,11 @@
+i: 42
+n: 0
+
+loop n<42 {
+    if [isPrime i] {
+        n: n+1
+        print "n = " + [padLeft [toString n] 2] + [padLeft [toString i] 20]
+        i: 2*i-1
+    }
+    i: i+1
+}

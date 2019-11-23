@@ -1,0 +1,1 @@
+factorial: @(n) -> product|range 1 n

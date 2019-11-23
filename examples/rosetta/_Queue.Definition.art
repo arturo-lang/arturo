@@ -1,0 +1,25 @@
+Queue #{
+	list #()
+
+	push {
+		list list+&
+	}
+
+	pop {
+		if $(empty) {
+			panic "trying to pop from an empty queue!"
+		}
+
+		first_item $(first list)
+		list $(deleteBy list 0)
+		return first_item
+	}
+
+	empty {
+		$(size list)=0
+	}
+
+	inspect {
+		log this
+	}
+}

@@ -1,0 +1,6 @@
+loop 0..5 {
+	loop 0..& {
+		prints "*"
+	}
+	print ""
+}

@@ -1,0 +1,22 @@
+// define a new class-type dictionary 
+person #{
+	name ""
+	surname ""
+
+	init [n,s]{
+		name n
+		surname s
+	}
+
+	sayHello {
+		print "Hello " + name + "!"
+	}
+}
+
+// create a new Person object and initialize it
+p $(new ~person "John" "Doe")
+
+// use an inner function
+p.sayHello
+
+log person

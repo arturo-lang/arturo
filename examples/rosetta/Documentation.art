@@ -1,0 +1,15 @@
+:doc #{
+	project:		~Arturo
+
+	author: 		"Dr.Kameleon"
+	email:			"drkameleon@gmail.com"
+	license:		"MIT"
+
+	file: 			"Documentation.art"
+}
+
+someFunc: {
+	:doc #{ description: "takes two numbers and adds them up" }
+
+	return &0+&1
+}

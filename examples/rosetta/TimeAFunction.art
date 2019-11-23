@@ -1,0 +1,5 @@
+func: {
+	delay 2000
+}
+
+print "Function took: " + [benchmark func] + "s"
