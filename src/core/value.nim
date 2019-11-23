@@ -19,7 +19,10 @@ proc SINT(v: string): Value {.inline.} =
     var intValue: int
     try: 
         discard parseInt(v, intValue)
-        result = SINT(intValue)
+        if intValue>MAX_INT:
+            result = BIGINT(v)
+        else:
+            result = SINT(intValue)
     except: 
         result = BIGINT(v)
 
@@ -58,7 +61,7 @@ proc valueCopy(v: Value): Value {.inline.} =
         of IV: SINT(I(v))
         of RV: REAL(R(v))
         of AV: ARR(A(v).map((x) => valueCopy(x)))
-        #of DV: DICT(Context(list:D(v).list.map((x) => (x[0],valueCopy(x[1])))))
+        of DV: DICT(D(v).map((x) => (x[0],valueCopy(x[1]))))
         else: v
 
 ##---------------------------
@@ -96,25 +99,26 @@ proc `++`(l: Value, r: Value): Value {.inline.} =
                 of RV: STR(S(l) & $(R(r)))
                 else: STR(S(l) & r.stringify())
         of IV:
+            {.computedGoto.}
             result = case r.kind
                 of SV: STR($(I(l)) & S(r))
                 of IV: 
-                    try: SINT(I(l) + I(r))
-                    except Exception: BIGINT(newInt(I(l))+I(r))
-                of BIV: BIGINT(I(l)+BI(r))
+                    try: SINT(cast[int32](I(l)+I(r)))
+                    except Exception: BIGINT(newInt(I(l))+int(I(r)))
+                of BIV: BIGINT(int(I(l))+BI(r))
                 of RV: REAL(float(I(l))+R(r))
-                else: InvalidOperationError("+",$(l.kind),$(r.kind))
+                else: InvalidOperationError("+",l.kind,r.kind)
         of BIV:
             result = case r.kind
-                of IV: BIGINT(BI(l) + I(r))
+                of IV: BIGINT(BI(l) + int(I(r)))
                 of BIV: BIGINT(BI(l)+BI(r))
-                else: InvalidOperationError("+",$(l.kind),$(r.kind))
+                else: InvalidOperationError("+",l.kind,r.kind)
         of RV:
             result = case r.kind
                 of SV: STR($(R(l)) & S(r))
                 of IV: REAL(R(l) + float(I(r)))
                 of RV: REAL(R(l)+R(r))
-                else: InvalidOperationError("+",$(l.kind),$(r.kind))
+                else: InvalidOperationError("+",l.kind,r.kind)
         of AV:
             if r.kind!=AV:
                 result = ARR(A(l) & r)
@@ -123,12 +127,12 @@ proc `++`(l: Value, r: Value): Value {.inline.} =
         of DV:
             if r.kind==DV:
                 result = valueCopy(l)
-                #for k in D(r).keys:
-                #    D(result).updateOrSet(k,D(r).getValueForKey(k))
+                for k in D(r).keys:
+                   D(result).updateOrSet(k,D(r).getValueForKey(k))
 
-            else: InvalidOperationError("+",$(l.kind),$(r.kind))
+            else: InvalidOperationError("+",l.kind,r.kind)
         else:
-            InvalidOperationError("+",$(l.kind),$(r.kind))
+            InvalidOperationError("+",l.kind,r.kind)
 
 proc `--`(l: Value, r: Value): Value {.inline.} =
     ## Subtraction
@@ -139,32 +143,32 @@ proc `--`(l: Value, r: Value): Value {.inline.} =
             result = case r.kind
                 of SV: STR(S(l).replace(S(r),""))
                 of IV: STR(S(l).replace($(I(r)),""))
-                #of BIV: STR(S(l).replace($(BI(r)),""))
+                of BIV: STR(S(l).replace($(BI(r)),""))
                 of RV: STR(S(l).replace($(R(r)),""))
-                else: InvalidOperationError("-",$(l.kind),$(r.kind))
+                else: InvalidOperationError("-",l.kind,r.kind)
         of IV:
             result = case r.kind
-                of IV: SINT(I(l) - I(r))
-                #of BIV: BIGINT(I(l) - BI(r))
+                of IV: SINT(cast[int32](I(l) - I(r)))
+                of BIV: BIGINT(int(I(l)) - BI(r))
                 of RV: REAL(float(I(l))-R(r))
-                else: InvalidOperationError("-",$(l.kind),$(r.kind))
-        of BIV: discard
-            # result = case r.kind
-            #     of IV: BIGINT(BI(l) - I(r))
-            #     of BIV: BIGINT(BI(l) - BI(r))
-            #     else: InvalidOperationError("-",$(l.kind),$(r.kind))
+                else: InvalidOperationError("-",l.kind,r.kind)
+        of BIV:
+            result = case r.kind
+                of IV: BIGINT(BI(l) - int(I(r)))
+                of BIV: BIGINT(BI(l) - BI(r))
+                else: InvalidOperationError("-",l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: REAL(R(l) - float(I(r)))
                 of RV: REAL(R(l)-R(r))
-                else: InvalidOperationError("-",$(l.kind),$(r.kind))
+                else: InvalidOperationError("-",l.kind,r.kind)
         of AV:
             result = valueCopy(l)
-            # if r.kind!=AV:
-            #     A(result).delete(l.findValueInArray(r))
-            # else:
-            #     for item in A(r):
-            #         A(result).delete(result.findValueInArray(item))
+            if r.kind!=AV:
+                A(result).delete(l.findValueInArray(r))
+            else:
+                for item in A(r):
+                    A(result).delete(result.findValueInArray(item))
 
         of DV:
             result = valueCopy(l)
@@ -175,7 +179,7 @@ proc `--`(l: Value, r: Value): Value {.inline.} =
             #     inc(i)
 
         else:
-            InvalidOperationError("-",$(l.kind),$(r.kind))
+            InvalidOperationError("-",l.kind,r.kind)
 
 proc `**`(l: Value, r: Value): Value {.inline.} = 
     ## Multiplication
@@ -186,32 +190,32 @@ proc `**`(l: Value, r: Value): Value {.inline.} =
             result = case r.kind
                 of IV: STR(S(l).repeat(I(r)))
                 of RV: STR(S(l).repeat(int(R(r))))
-                else: InvalidOperationError("*",$(l.kind),$(r.kind))
+                else: InvalidOperationError("*",l.kind,r.kind)
         of IV:
             result = case r.kind
                 of SV: STR(S(r).repeat(I(l)))
                 of IV: 
                     try:
                         if I(l)*I(r)>MAX_INT:
-                            BIGINT(newInt(I(l))*I(r))
+                            BIGINT(newInt(I(l))*int(I(r)))
                         else:
                             SINT(I(l) * I(r))
                     except Exception: 
-                        BIGINT(newInt(I(l))*I(r))
-                of BIV: BIGINT(I(l) * BI(r))
+                        BIGINT(newInt(I(l))*int(I(r)))
+                of BIV: BIGINT(int(I(l)) * BI(r))
                 of RV: REAL(float(I(l))*R(r))
-                else: InvalidOperationError("*",$(l.kind),$(r.kind))
+                else: InvalidOperationError("*",l.kind,r.kind)
         of BIV:
             result = case r.kind
-                of IV: BIGINT(BI(l) * I(r))
+                of IV: BIGINT(BI(l) * int(I(r)))
                 of BIV: BIGINT(BI(l) * BI(r))
-                else: InvalidOperationError("*",$(l.kind),$(r.kind))
+                else: InvalidOperationError("*",l.kind,r.kind)
         of RV:
             result = case r.kind
                 of SV: STR(S(r).repeat(int(R(l))))
                 of IV: REAL(R(l) * float(I(r)))
                 of RV: REAL(R(l)*R(r))
-                else: InvalidOperationError("*",$(l.kind),$(r.kind))
+                else: InvalidOperationError("*",l.kind,r.kind)
         of AV:
             result = ARR(@[])
             if r.kind==IV or r.kind==RV:
@@ -224,9 +228,9 @@ proc `**`(l: Value, r: Value): Value {.inline.} =
                     for item in A(l):
                         A(result).add(valueCopy(item))
                     inc(i)
-            else: InvalidOperationError("*",$(l.kind),$(r.kind))
+            else: InvalidOperationError("*",l.kind,r.kind)
         else:
-            InvalidOperationError("*",$(l.kind),$(r.kind))
+            InvalidOperationError("*",l.kind,r.kind)
 
 proc `//`(l: Value, r: Value): Value {.inline.} = 
     ## (Integer) division
@@ -257,42 +261,42 @@ proc `//`(l: Value, r: Value): Value {.inline.} =
             #                 resp = ""
             #             inc(k)
 
-            #     else: InvalidOperationError("/",$(l.kind),$(r.kind))
+            #     else: InvalidOperationError("/",l.kind,r.kind))
         of IV:
             result = case r.kind
                 of IV: SINT(I(l) div I(r))
                 #of BIV: BIGINT(I(l) div BI(r))
                 of RV: REAL(float(I(l)) / R(r))
-                else: InvalidOperationError("/",$(l.kind),$(r.kind))
-        of BIV: discard
-            # result = case r.kind
-            #     of IV: BIGINT(BI(l) div I(r))
-            #     of BIV: BIGINT(BI(l) div BI(r))
-            #     else: InvalidOperationError("/",$(l.kind),$(r.kind))
+                else: InvalidOperationError("/",l.kind,r.kind)
+        of BIV:
+            result = case r.kind
+                of IV: BIGINT(BI(l) div int(I(r)))
+                of BIV: BIGINT(BI(l) div BI(r))
+                else: InvalidOperationError("/",l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: REAL(R(l) / float(I(r)))
                 of RV: REAL(R(l) / R(r))
-                else: InvalidOperationError("/",$(l.kind),$(r.kind))
+                else: InvalidOperationError("/",l.kind,r.kind)
         of AV:
             result = ARR(@[])
-            # if r.kind==IV or r.kind==RV:
-            #     var limit:int
-            #     if r.kind==IV: limit = I(r)
-            #     else: limit = int(R(r))
+            if r.kind==IV or r.kind==RV:
+                var limit:int
+                if r.kind==IV: limit = I(r)
+                else: limit = int(R(r))
 
-            #     var k = 0
-            #     var resp = ARR(@[])
-            #     while k<A(l).len:
-            #         resp.a.add(valueCopy(A(l)[k]))
-            #         if ((k+1) mod limit)==0: 
-            #             result.a.add(resp)
-            #             resp = ARR(@[])
-            #         inc(k)
+                var k = 0
+                var resp = ARR(@[])
+                while k<A(l).len:
+                    A(resp).add(valueCopy(A(l)[k]))
+                    if ((k+1) mod limit)==0: 
+                        A(result).add(resp)
+                        resp = ARR(@[])
+                    inc(k)
 
-            # else: InvalidOperationError("/",$(l.kind),$(r.kind))
+            else: InvalidOperationError("/",l.kind,r.kind)
         else:
-            InvalidOperationError("/",$(l.kind),$(r.kind))
+            InvalidOperationError("/",l.kind,r.kind)
 
 proc `%%`(l: Value, r: Value): Value {.inline.} =
     ## Modulo
@@ -309,35 +313,35 @@ proc `%%`(l: Value, r: Value): Value {.inline.} =
                     let le = (S(l).len mod int(R(r)))
                     result = STR(S(l)[S(l).len-le..^1])
 
-                else: InvalidOperationError("%",$(l.kind),$(r.kind))
+                else: InvalidOperationError("%",l.kind,r.kind)
         of IV:
             result = case r.kind
-                of IV: SINT(I(l) mod I(r))
-                #of BIV: BIGINT(I(l) mod BI(r))
+                of IV: SINT(cast[int32](I(l) mod I(r)))
+                of BIV: BIGINT(int(I(l)) mod BI(r))
                 of RV: SINT(I(l) mod int(R(r)))
-                else: InvalidOperationError("%",$(l.kind),$(r.kind))
-        of BIV: discard
-            # result = case r.kind
-            #     of IV: BIGINT(BI(l) mod I(r))
-            #     of BIV: BIGINT(BI(l) mod BI(r))
-            #     else: InvalidOperationError("%",$(l.kind),$(r.kind))
+                else: InvalidOperationError("%",l.kind,r.kind)
+        of BIV:
+            result = case r.kind
+                of IV: BIGINT(BI(l) mod int(I(r)))
+                of BIV: BIGINT(BI(l) mod BI(r))
+                else: InvalidOperationError("%",l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: SINT(int(R(l)) mod I(r))
                 of RV: SINT(int(R(l)) mod int(R(r)))
-                else: InvalidOperationError("%",$(l.kind),$(r.kind))
+                else: InvalidOperationError("%",l.kind,r.kind)
         of AV:
             result = ARR(@[])
-            # if r.kind==IV or r.kind==RV:
-            #     var limit:int
-            #     if r.kind==IV: limit = I(r)
-            #     else: limit = int(R(r))
+            if r.kind==IV or r.kind==RV:
+                var limit:int
+                if r.kind==IV: limit = I(r)
+                else: limit = int(R(r))
 
-            #     let le = (A(l).len mod limit)
-            #     result = ARR(A(l)[A(l).len-le..^1])
-            # else: InvalidOperationError("%",$(l.kind),$(r.kind))
+                let le = (A(l).len mod limit)
+                result = ARR(A(l)[A(l).len-le..^1])
+            else: InvalidOperationError("%",l.kind,r.kind)
         else:
-            InvalidOperationError("%",$(l.kind),$(r.kind))
+            InvalidOperationError("%",l.kind,r.kind)
 
 proc `^^`(l: Value, r: Value): Value {.inline.} =
     ## Powers
@@ -350,18 +354,18 @@ proc `^^`(l: Value, r: Value): Value {.inline.} =
                     try: SINT(I(l) ^ I(r))
                     except Exception: BIGINT(pow(newInt(I(l)),culong(I(r))))
                 of RV: SINT(I(l) ^ int(R(r)))
-                else: InvalidOperationError("^",$(l.kind),$(r.kind))
+                else: InvalidOperationError("^",l.kind,r.kind)
         # of BIV:
         #     result = case r.kind
         #         of IV: BIGINT(BI(l) ^ culong(I(r)))
-        #         else: InvalidOperationError("^",$(l.kind),$(r.kind))
+        #         else: InvalidOperationError("^",l.kind,r.kind))
         of RV:
             result = case r.kind
                 of IV: SINT(int(R(l)) ^ I(r))
                 of RV: REAL(pow(R(l),R(r)))
-                else: InvalidOperationError("^",$(l.kind),$(r.kind))
+                else: InvalidOperationError("^",l.kind,r.kind)
         else:
-            InvalidOperationError("^",$(l.kind),$(r.kind))
+            InvalidOperationError("^",l.kind,r.kind)
 
 proc eq(l: Value, r: Value): bool {.inline.} =
     ## The `==` operator
@@ -371,29 +375,29 @@ proc eq(l: Value, r: Value): bool {.inline.} =
         of SV:
             result = case r.kind
                 of SV: S(l)==S(r)
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of IV:
             result = case r.kind
                 of IV: I(l)==I(r)
                 #of BIV: I(l)==BI(r)
                 of RV: I(l)==int(R(r))
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of BIV: discard
             # result = case r.kind
             #     #of IV: BI(l)==I(r)
             #     #of BIV: BI(l)==BI(r)
             #     of RV: BI(l)==int(R(r))
-            #     else: NotComparableError($(l.kind),$(r.kind))
+            #     else: NotComparableError(l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: int(R(l))==I(r)
                 #of BIV: int(R(l))==BI(r)
                 of RV: R(l)==R(r)
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of BV:
             result = case r.kind
                 of BV: l==r
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of AV:
             case r.kind
                 of AV:
@@ -404,7 +408,7 @@ proc eq(l: Value, r: Value): bool {.inline.} =
                             if not (A(l)[i].eq(A(r)[i])): return false
                             inc(i)
                         result = true
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of DV:
             case r.kind
                 of DV:
@@ -418,9 +422,9 @@ proc eq(l: Value, r: Value): bool {.inline.} =
                         #     inc(i)
 
                         result = true 
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
 
-        else: NotComparableError($(l.kind),$(r.kind))
+        else: NotComparableError(l.kind,r.kind)
 
 proc lt(l: Value, r: Value): bool {.inline.} =
     ## The `<` operator
@@ -430,36 +434,36 @@ proc lt(l: Value, r: Value): bool {.inline.} =
         of SV:
             result = case r.kind
                 of SV: S(l)<S(r)
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
                     
         of IV:
             result = case r.kind
                 of IV: I(l)<I(r)
                 #of BIV: I(l)<BI(r)
                 of RV: I(l)<int(R(r))
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of BIV: discard
             # result = case r.kind
             #     of IV: BI(l)<I(r)
             #     of BIV: BI(l)<BI(r)
             #     of RV: BI(l)<int(R(r))
-            #     else: NotComparableError($(l.kind),$(r.kind))
+            #     else: NotComparableError(l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: int(R(l))<I(r)
                 #of BIV: int(R(l))<BI(r)
                 of RV: R(l)<R(r)
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of AV:
             result = case r.kind
                 of AV: A(l).len < A(r).len
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of DV:
             result = case r.kind
                 of DV: D(l).keys.len < D(r).keys.len
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
 
-        else: NotComparableError($(l.kind),$(r.kind))
+        else: NotComparableError(l.kind,r.kind)
 
 proc gt(l: Value, r: Value): bool {.inline.} =
     ## The `>` operator
@@ -469,35 +473,35 @@ proc gt(l: Value, r: Value): bool {.inline.} =
         of SV:
             result = case r.kind
                 of SV: S(l)>S(r)
-                else: NotComparableError($(l.kind),$(r.kind))   
+                else: NotComparableError(l.kind,r.kind)   
         of IV:
             result = case r.kind
                 of IV: I(l)>I(r)
                 #of BIV: I(l)>BI(r)
                 of RV: I(l)>int(R(r))
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         # of BIV:
         #     result = case r.kind
         #         of IV: BI(l)>I(r)
         #         of BIV: BI(l)>BI(r)
         #         of RV: BI(l)>int(R(r))
-        #         else: NotComparableError($(l.kind),$(r.kind))
+        #         else: NotComparableError(l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: int(R(l))>I(r)
                 #of BIV: int(R(l))>BI(r)
                 of RV: R(l)>R(r)
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of AV:
             result = case r.kind
                 of AV: A(l).len > A(r).len
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
         of DV:
             result = case r.kind
                 of DV: D(l).keys.len > D(r).keys.len
-                else: NotComparableError($(l.kind),$(r.kind))
+                else: NotComparableError(l.kind,r.kind)
 
-        else: NotComparableError($(l.kind),$(r.kind))
+        else: NotComparableError(l.kind,r.kind)
 
 ##---------------------------
 ## Inspection
@@ -520,7 +524,31 @@ proc valueKindToPrintable*(vk: int): string =
         255 :"any"
     }.toTable[vk]
 
-    #s.replace("Value","").replace("ionary","").replace("tion","").replace("eger","").replace("ing","").replace("ean","")
+proc valueKindsToPrintable*(vk: int): string = 
+    ## Convert ValueKind string representation to sth shorter and more readable
+    ## ! Requires better rewriting
+
+    let vks = {
+        0   :"null",
+        1   :"int",
+        2   :"int+",
+        4   :"real",
+        8   :"bool",
+        16  :"string",
+        32  :"array",
+        64  :"dict",
+        128 :"func"
+    }.toTable
+
+    var ret: seq[string]
+    if vk==ANY:
+        return "any"
+    else:
+        for k,v in vks.pairs:
+            if bitand(vk,k) != 0 :
+                ret.add(v)
+
+        result = ret.join(", ")
 
 proc stringify*(v: Value, quoted: bool = true): string {.inline.} =
     {.computedGoto.}
