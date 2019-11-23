@@ -7,12 +7,13 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, base64, bitops, hashes, httpClient, json, macros, math, md5, os, osproc
-import parsecsv, parseutils, random, re, sequtils, std/editdistance, std/sha1
-import streams, strformat, strutils, sugar, unicode, tables, terminal
+import algorithm, base64, bitops, hashes, httpClient, json, macros, math, md5, oids, os
+import osproc, parsecsv, parseutils, random, re, segfaults, sequtils, sets, std/editdistance
+import std/sha1, streams, strformat, strutils, sugar, unicode, tables, terminal
 import times, uri
 
 import external/[markdown, mustache]
+import memo
 import panic, utils
 
 when not defined(mini):
@@ -71,7 +72,7 @@ type
         PLUS_SG, MINUS_SG, MULT_SG, DIV_SG, MOD_SG, POW_SG,
         EQ_OP, LT_OP, GT_OP, LE_OP, GE_OP, NE_OP
 
-    ExpressionKind = enum
+    ExpressionKind {.size: sizeof(cint),pure.} = enum
         argumentExpression, 
         normalExpression
 
@@ -129,16 +130,10 @@ type
 
     SystemFunctionCall[F,X,V]   = proc(f: F, xl: X): V {.inline.}
 
-    FunctionConstraints         = seq[seq[ValueKind]]
-    FunctionReturns             = seq[ValueKind]
-
     SystemFunction* = ref object
         lib*            : string
         call*           : SystemFunctionCall[SystemFunction,ExpressionList,Value]
         name*           : string
-        #req*            : FunctionConstraints
-        #ret*            : FunctionReturns
-        #desc*           : string
 
     Function* = ref object
         id              : int
@@ -198,7 +193,8 @@ const
     ARGV        = "&"
     ARGV_HASH   = ARGV.hash
 
-    MAX_INT     = 0xffffffffffffff
+    MIN_INT     = -2147483648
+    MAX_INT     = 0x7FFFFFFF
 
     NV          = 0
     IV          = 1
@@ -221,7 +217,8 @@ const
     AV_MASK     = cast[Value](AV shl FIELD)
     DV_MASK     = cast[Value](DV shl FIELD)
     FV_MASK     = cast[Value](FV shl FIELD)
-    MASK        = cast[Value](0xff00000000000000)
+    MASK        = cast[Value](0xFF00000000000000)
+    INT_MASK    = cast[Value](0xFFFFFFFF)
     UNMASK      = bitnot(MASK)
 
 #[######################################################
@@ -299,12 +296,11 @@ proc inspect*(v: Value, prepend: int = 0, isKeyVal: bool = false): string
 
 proc getSystemFunction*(n: string): int {.inline.}
 proc getSystemFunctionInstance*(n: string): SystemFunction {.inline.}
-proc callFunction(f: string, v: seq[Value]): Value
 proc execute(f: Function, xl: ExpressionList): Value {.inline.}
 proc execute(f: Function, v: Value): Value {.inline.} 
-proc validate(x: Expression, name: string, req: int): Value {.inline.}
-proc validate(x: Expression, name: string, req: openArray[ValueKind]): Value {.inline.}
-proc validate(xl: ExpressionList, f: SystemFunction): seq[Value] {.inline.}
+proc validate(xl: ExpressionList, i: int, name: string, req: int): Value {.inline.}
+when defined(unittest):
+    proc callFunction(f: string, v: seq[Value]): Value
 
 # Expression
 
@@ -367,7 +363,7 @@ var yylineno {.importc.}: cint
 template kind*(v: Value): int       = cast[int](bitand(v,MASK) shr FIELD)
     
 template S(_:Value):string          = (cast[ValueRef](bitand(_,UNMASK))).s
-template I(_:Value):int             = cast[int](bitand(_,UNMASK))
+template I(_:Value):int32           = cast[int32](bitand(_,UNMASK))
 template R(_:Value):float32         = cast[float32](bitand(_,UNMASK))
 template B(_:Value):bool            = cast[bool](bitand(_,UNMASK))
 template A(_:Value):seq[Value]      = (cast[ValueRef](bitand(_,UNMASK))).a
@@ -377,9 +373,12 @@ when not defined(mini):
     template BI(_:Value):Int        = (cast[ValueRef](bitand(_,UNMASK))).bi
 
 template STR(v:string):Value        = bitor(cast[Value](ValueRef(s:v)),SV_MASK)
-template SINT(v:int):Value          = bitor(cast[Value](v),IV_MASK)
-template REAL(v:float):Value        = bitor(cast[Value](float32(v)),RV_MASK)
-template REAL(v:float32):Value      = bitor(cast[Value](v),RV_MASK)
+template SINT(v:int): Value         =
+    if v<=MAX_INT and v>=MIN_INT: bitor(bitand(cast[Value](int32(v)),INT_MASK),IV_MASK)
+    else: bitor(cast[Value](ValueRef(bi:newInt(v))),BIV_MASK)
+template SINT(v:int32):Value        = bitor(bitand(cast[Value](v),INT_MASK),IV_MASK)
+#template REAL(v:float):Value        = bitor(cast[Value](float32(v)),RV_MASK)
+template REAL(v:float32):Value      = bitor(bitand(cast[Value](v),INT_MASK),RV_MASK)
 template BOOL(v:bool):Value         = bitor(cast[Value](v),BV_MASK)
 template ARR(v:seq[Value]):Value    = bitor(cast[Value](ValueRef(a:v)),AV_MASK)
 template DICT(v:Context):Value      = bitor(cast[Value](ValueRef(d:v)),DV_MASK)
@@ -387,8 +386,8 @@ template FUNC(v:Function):Value     = bitor(cast[Value](v),FV_MASK)
 when not defined(mini):
     template BIGINT(v:Int):Value    = bitor(cast[Value](ValueRef(bi:v)),BIV_MASK)
 
-template VALID(i:int, r:int): Value {.dirty.} =
-    xl.list[i].validate(f.name,r)
+template VALID(i:int, r:int): Value {.dirty.} = xl.validate(i,f.name,r)
+template EVAL(i:int): Value {.dirty.}         = xl.list[i].evaluate()
 
 #[######################################################
     Unittest setup
