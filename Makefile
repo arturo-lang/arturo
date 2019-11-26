@@ -17,7 +17,7 @@ APP     = arturo
 
 # Environment
 #/Users/drkameleon/Documents/Code/OpenSource/3rd-party/Nim/bin/
-NIM     = nim 
+NIM     = nim #/Users/drkameleon/Documents/Code/OpenSource/3rd-party/Nim/bin/nim 
 NIMBLE  = nimble
 FLEX    = flex
 BISON   = bison
@@ -65,6 +65,13 @@ BUILD_DATE_TXT  = $(NIM_PATH)/rsrc/build_date.txt
 BUILD_LIBRARY_SCRIPT    = build_library.rb
 
 # Configurations
+
+# 				  --gc:refc \
+# 				  --define:useRealtimeGC \
+# 				  --tlsEmulation:off \
+
+# 				  --define:useRealtimeGC \
+# 				  --tlsEmulation:off \
 
 CFG_RELEASE     = -d:release \
 				  -d:danger \
@@ -126,7 +133,7 @@ NIM_FLAGS   = --opt:speed \
 			  --checks:off \
 			  --overflowChecks:on \
 			  --forceBuild:on \
-			  --warnings:off
+			  --warnings:on
 
 NIM_GCC_FLAGS   = --gcc.options.speed="-O4 -Ofast -flto -march=native -fno-strict-aliasing -ffast-math -ldl" \
 				  --gcc.options.linker="-flto -ldl"
@@ -246,3 +253,4 @@ clean:
 	$(RM) -f "bin/arturo "*
 	$(RM) -f "src/rsrc/build "*
 	$(RM) -f "src/parser/lexer_final "*
+	$(RM) -f "src/core/statement_final"*

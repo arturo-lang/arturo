@@ -15,40 +15,40 @@
 ## Constructors
 ##---------------------------
 
-proc argumentFromIdentifier(i: cstring): Argument {.exportc.} =
-    if ConstIds.hasKey(i):
-        result = ConstIds[i]
-    else:
-        result = Argument(kind: identifierArgument, i: storeOrGetHash(i))
-        ConstIds[i] = result
+proc argumentFromIdentifier(i: cstring): Argument {.exportc,memoized.} =
+    #if ConstIds.hasKey(i):
+    #    result = ConstIds[i]
+    #else:
+    result = Argument(kind: identifierArgument, i: storeOrGetHash(i))
+    #ConstIds[i] = result
 
-proc argumentFromCommandIdentifier(i: cint): Argument {.exportc.} =
-    if ConstCmds.hasKey(i):
-        result = ConstCmds[i]
-    else:
-        result = Argument(kind: identifierArgument, i: storeOrGetHash(SystemFunctions[i].name))
-        ConstCmds[i] = result
+proc argumentFromCommandIdentifier(i: cint): Argument {.exportc,memoized.} =
+    #if ConstCmds.hasKey(i):
+    #    result = ConstCmds[i]
+    #else:
+    result = Argument(kind: identifierArgument, i: storeOrGetHash(SystemFunctions[i].name))
+    #ConstCmds[i] = result
 
-proc argumentFromStringLiteral(l: cstring): Argument {.exportc.} =
-    if ConstStrings.hasKey(l):
-        result = ConstStrings[l]
-    else:
-        result = Argument(kind: literalArgument, v: STR(unescape($l).replace("\\n","\n")))
-        ConstStrings[l] = result
+proc argumentFromStringLiteral(l: cstring): Argument {.exportc,memoized.} =
+    #if ConstStrings.hasKey(l):
+    #    result = ConstStrings[l]
+    #else:
+    result = Argument(kind: literalArgument, v: STR(unescape($l).replace("\\n","\n")))
+    #    ConstStrings[l] = result
 
-proc argumentFromIntegerLiteral(l: cstring): Argument {.exportc.} =
-    if ConstInts.hasKey(l):
-        result = ConstInts[l]
-    else:
-        result = Argument(kind: literalArgument, v: SINT($l))
-        ConstInts[l] = result
+proc argumentFromIntegerLiteral(l: cstring): Argument {.exportc,memoized.} =
+    #if ConstInts.hasKey(l):
+    #    result = ConstInts[l]
+    #else:
+    result = Argument(kind: literalArgument, v: SINT($l))
+    #    ConstInts[l] = result
 
-proc argumentFromRealLiteral(l: cstring): Argument {.exportc.} =
-    Argument(kind: literalArgument, v: REAL($l))
+proc argumentFromRealLiteral(l: cstring): Argument {.exportc,memoized.} =
+    result = Argument(kind: literalArgument, v: REAL($l))
 
-proc argumentFromBooleanLiteral(l: cstring): Argument {.exportc.} =
-    if l=="true": Argument(kind: literalArgument, v: TRUE)
-    else: Argument(kind: literalArgument, v: FALSE)
+proc argumentFromBooleanLiteral(l: cstring): Argument {.exportc,memoized.} =
+    if l=="true": result = Argument(kind: literalArgument, v: TRUE)
+    else: result = Argument(kind: literalArgument, v: FALSE)
 
 proc argumentFromKeypath(k: KeyPath): Argument {.exportc.} =
     var exprA = expressionFromKeyPathPart(k.parts[0], true)

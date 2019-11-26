@@ -7,13 +7,12 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, base64, bitops, hashes, httpClient, json, macros, math, md5, oids, os
+import algorithm, system/ansi_c, base64, bitops, hashes, httpClient, json, macros, math, md5, oids, os
 import osproc, parsecsv, parseutils, random, re, segfaults, sequtils, sets, std/editdistance
 import std/sha1, streams, strformat, strutils, sugar, unicode, tables, terminal
 import times, uri
 
-import external/[markdown, mustache]
-import memo
+import external/[markdown, memo, mustache]
 import panic, utils
 
 when not defined(mini):
@@ -100,7 +99,7 @@ type
         commandStatement,
         callStatement,
         assignmentStatement,
-        expressionStatement,
+        expressionStatement
 
     Statement = ref object
         pos: int
@@ -128,11 +127,11 @@ type
         Function
       ----------------------------------------]#
 
-    SystemFunctionCall[F,X,V]   = proc(f: F, xl: X): V {.inline.}
+    SystemFunctionCall* = proc(f: SystemFunction, xl: ExpressionList): Value {.inline.}
 
     SystemFunction* = ref object
         lib*            : string
-        call*           : SystemFunctionCall[SystemFunction,ExpressionList,Value]
+        call*           : SystemFunctionCall
         name*           : string
 
     Function* = ref object
@@ -151,8 +150,6 @@ type
     Array = seq[Value]
 
     Context = seq[(int,Value)]
-    # Context = ref object
-    #     list    : seq[(int,Value)]
 
     #[----------------------------------------
         Value
@@ -335,6 +332,8 @@ proc argumentFromIdentifier(i: cstring): Argument {.exportc.}
 proc argumentFromCommandIdentifier(i: cint): Argument {.exportc.}
 proc argumentFromStringLiteral(l: cstring): Argument {.exportc.}
 proc argumentFromIntegerLiteral(l: cstring): Argument {.exportc.}
+proc argumentFromRealLiteral(l: cstring): Argument {.exportc.}
+proc argumentFromBooleanLiteral(l: cstring): Argument {.exportc.}
 proc argumentFromInlineCallLiteral(l: Statement): Argument {.exportc.}
 proc argumentFromCommand(cmd: cint, xl: ExpressionList): Argument
 proc hash(a: Argument): Hash {.inline.}    
@@ -386,7 +385,7 @@ template FUNC(v:Function):Value     = bitor(cast[Value](v),FV_MASK)
 when not defined(mini):
     template BIGINT(v:Int):Value    = bitor(cast[Value](ValueRef(bi:v)),BIV_MASK)
 
-template VALID(i:int, r:int): Value {.dirty.} = xl.validate(i,f.name,r)
+template VALID(i:int, r:int): Value {.dirty.} = xl.validate(i,static "",r)
 template EVAL(i:int): Value {.dirty.}         = xl.list[i].evaluate()
 
 #[######################################################
@@ -495,16 +494,18 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="") =
     FileName = scriptPath
 
     QuitOnError = true
-
+    #GC_disable()
     discard open(yyin, scriptPath)
     #benchmark "parsing":
-    if yyparse()==0:
-        try:
-            discard MainProgram.execute()
-        except Exception as e:
-            runtimeError(e.msg, FileName, StatementLine)
-        except NilAccessError as e:
-            runtimeError(e.msg, FileName, 1)
+    #setupForeignThreadGc()
+    discard yyparse()
+    #tearDownForeignThreadGc()
+    try:
+        discard MainProgram.execute()
+    except Exception as e:
+        runtimeError(e.msg, FileName, StatementLine)
+    except NilAccessError as e:
+        runtimeError(e.msg, FileName, 1)
 
 
 #[******************************************************

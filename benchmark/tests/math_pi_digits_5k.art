@@ -11,7 +11,7 @@ pi_digits: @(x){
 
     loop [size digits]!=x {
         if 4*q+r-t < n*t {
-            digits: digits + n
+            append! digits n
             nr: 10*(r-n*t)
             n: ((10*(3*q+r)) / t) - 10*n
             q: q*10
@@ -29,6 +29,8 @@ pi_digits: @(x){
     }
 }
 
-[pi_digits 10000]
-print digits
+[pi_digits 5000]
 
+loop digits {
+    print &
+}

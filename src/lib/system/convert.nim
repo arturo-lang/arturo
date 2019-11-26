@@ -13,14 +13,16 @@
   ======================================================]#
 
 proc Convert_toBin*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)
+    discard
+    # let v0 = I(VALID(0,IV))
 
-    result = STR(fmt"{I(v0):#b}")
+    # result = STR(fmt"{v0:#b}")
 
 proc Convert_toHex*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)
+    discard
+    # let v0 = I(VALID(0,IV))
 
-    result = STR(fmt"{I(v0):#x}")
+    # result = STR(fmt"{v0:#x}")
 
 proc Convert_toInt*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
@@ -56,9 +58,10 @@ proc Convert_toNumber*[F,X,V](f: F, xl: X): V {.inline.} =
                 result = BIGINT(S(v0))
 
 proc Convert_toOct*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV)
+    discard
+    #let v0 = I(VALID(0,IV))
 
-    result = STR(fmt"{I(v0):#o}")
+    #result = STR(fmt"{v0:#o}")
 
 proc Convert_toReal*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV)

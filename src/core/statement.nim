@@ -76,8 +76,10 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
         of commandStatement:
             # System function calls
 
-            let sf = SystemFunctions[stm.code]
-            result = sf.call(sf,stm.arguments)
+            #let f = SystemFunctions[stm.code]
+            result = SystemFunctions[stm.code].call(nil,stm.arguments)
+            #result = stm.call(nil,stm.arguments)
+            #result = f.call(f, stm.arguments)
 
         of callStatement:
             # User function calls
