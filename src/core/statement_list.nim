@@ -25,6 +25,7 @@ proc newStatementListWithStatement(s: Statement): StatementList {.exportc.} =
     result = StatementList(list: @[s])
 
 proc addStatement(sl: StatementList, s: Statement): StatementList {.exportc.} =
+    GC_ref(sl)
     sl.list.add(s)
     result = sl
 

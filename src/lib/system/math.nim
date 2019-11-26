@@ -375,7 +375,7 @@ proc Math_sech*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(sech(R(v0)))
 
-proc Math_shl*[F,X,V](f: F, xl: X): V  {.inline.} =
+proc Math_shl*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV|BIV)
     let v1 = VALID(1,IV)
 
@@ -384,7 +384,7 @@ proc Math_shl*[F,X,V](f: F, xl: X): V  {.inline.} =
     else:
         result = BIGINT(BI(v0) shl culong(I(v1)))
 
-proc Math_shr*[F,X,V](f: F, xl: X): V  {.inline.} =
+proc Math_shr*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV|BIV)
     let v1 = VALID(1,IV)
 

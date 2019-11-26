@@ -34,6 +34,7 @@ proc copyExpressionList(xl: ExpressionList): ExpressionList {.exportc.} =
     ExpressionList(list: xl.list)
 
 proc addExpression(xl: ExpressionList, x: Expression): ExpressionList {.exportc.} =
+    GC_ref(xl)
     xl.list.add(x)
     result = xl
 

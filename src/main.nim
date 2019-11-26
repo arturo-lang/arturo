@@ -35,6 +35,9 @@ template showHelp() =
   ======================================================]#
 
 when isMainModule:
+    #GC_disable()
+    #GC_setMaxPause(1_000)
+
     var scriptPath = ""
     var includePath = ""
 

@@ -173,10 +173,10 @@ proc `--`(l: Value, r: Value): Value {.inline.} =
         of DV:
             result = valueCopy(l)
             var i = 0
-            # while i < D(l).list.len:
-            #     if D(l).list[i][1].eq(r):
-            #         D(result).list.del(i)
-            #     inc(i)
+            while i < D(l).len:
+                if D(l)[i][1].eq(r):
+                    D(result).del(i)
+                inc(i)
 
         else:
             InvalidOperationError("-",l.kind,r.kind)
