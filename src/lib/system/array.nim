@@ -231,7 +231,6 @@ proc Array_rotateI*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Array_sample*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV)
 
-    randomize()
     result = sample(A(v0))
 
 proc Array_shuffle*[F,X,V](f: F, xl: X): V {.inline.} =

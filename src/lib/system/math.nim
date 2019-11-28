@@ -496,8 +496,6 @@ proc Math_random*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV)
     let v1 = VALID(1,IV)
 
-    randomize()
-
     result = SINT(rand(I(v0)..I(v1)))
 
 proc Math_round*[F,X,V](f: F, xl: X): V {.inline.} =
