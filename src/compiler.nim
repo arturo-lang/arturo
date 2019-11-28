@@ -88,7 +88,7 @@ type
         ExpressionList
       ----------------------------------------]#
 
-    ExpressionList {.shallow.} = ref object
+    ExpressionList = ref object
         list    : seq[Expression]
 
     #[----------------------------------------
@@ -120,7 +120,7 @@ type
         StatementList
       ----------------------------------------]#
 
-    StatementList {.shallow.} = ref object
+    StatementList = ref object
         list    : seq[Statement]
 
     #[----------------------------------------
@@ -158,7 +158,7 @@ type
     ValueKind* = int
     Value* = uint64
 
-    ValueRef {.union.} = ref object
+    ValueRef = ref object
         s: string
         a: Array
         d: Context
@@ -170,7 +170,7 @@ type
         C interface
       ----------------------------------------]#
 
-    yy_buffer_state {.importc.} = ref object
+    yy_buffer_state {.importc.} = ptr object
         yy_input_file       : File
         yy_ch_buf           : cstring
         yy_buf_pos          : cstring
@@ -233,6 +233,8 @@ var
 
     Returned                : Value
     StatementLine           : int
+    BI_CNT                  : int
+    BI_CNT_del              : int
 
     # Const literal arguments
 
@@ -359,6 +361,23 @@ var yylineno {.importc.}: cint
     Global templates
   ======================================================]#
 
+template ITEM*():untyped {.dirty.} =
+    Stack[i][j][1]
+
+template inPlace*(code: untyped): untyped {.dirty.} =
+    let hs = xl.list[0].a.i
+    var i = len(Stack) - 1
+    var j: int
+    while i > -1:
+        j = 0
+        while j<Stack[i].len:
+            if Stack[i][j][0]==hs: 
+                code
+                return
+            inc(j)
+
+        dec(i)
+
 template kind*(v: Value): int       = cast[int](bitand(v,MASK) shr FIELD)
     
 template S(_:Value):string          = (cast[ValueRef](bitand(_,UNMASK))).s
@@ -371,7 +390,26 @@ template FN(_:Value):Function       = cast[Function](bitand(_,UNMASK))
 when not defined(mini):
     template BI(_:Value):Int        = (cast[ValueRef](bitand(_,UNMASK))).bi
 
-template STR(v:string):Value        = bitor(cast[Value](ValueRef(s:v)),SV_MASK)
+proc STRREF(v:string):ValueRef      {.inline.} = 
+    let ret = ValueRef(s:v); GC_ref(ret); ret
+proc ARRREF(v:seq[Value]):ValueRef  {.inline.} = 
+    let ret = ValueRef(a:v); GC_ref(ret); ret
+proc DICTREF(v:Context):ValueRef    {.inline.} = 
+    let ret = ValueRef(d:v); GC_ref(ret); ret
+proc BIREF(v:Int):ValueRef          {.inline.} = 
+    let ret = ValueRef(bi:v); GC_ref(ret); ret
+
+template STRUNREF(_:Value) = 
+    GC_unref(cast[ValueRef](bitand(_,UNMASK)))
+template ARRUNREF(_:Value) = 
+    GC_unref(cast[ValueRef](bitand(_,UNMASK)))
+template DICTUNREF(_:Value) = 
+    GC_unref(cast[ValueRef](bitand(_,UNMASK)))
+template BIUNREF(_:Value) = 
+    #clear(BI(_)); 
+    GC_unref(cast[ValueRef](bitand(_,UNMASK)))
+
+template STR(v:string):Value        = bitor(cast[Value](STRREF(v)),SV_MASK)
 template SINT(v:int): Value         =
     if v<=MAX_INT and v>=MIN_INT: bitor(bitand(cast[Value](int32(v)),INT_MASK),IV_MASK)
     else: bitor(cast[Value](ValueRef(bi:newInt(v))),BIV_MASK)
@@ -379,11 +417,12 @@ template SINT(v:int32):Value        = bitor(bitand(cast[Value](v),INT_MASK),IV_M
 #template REAL(v:float):Value        = bitor(cast[Value](float32(v)),RV_MASK)
 template REAL(v:float32):Value      = bitor(bitand(cast[Value](v),INT_MASK),RV_MASK)
 template BOOL(v:bool):Value         = bitor(cast[Value](v),BV_MASK)
-template ARR(v:seq[Value]):Value    = bitor(cast[Value](ValueRef(a:v)),AV_MASK)
-template DICT(v:Context):Value      = bitor(cast[Value](ValueRef(d:v)),DV_MASK)
+template ARR(v:seq[Value]):Value    = bitor(cast[Value](ARRREF(v)),AV_MASK)
+template DICT(v:Context):Value      = bitor(cast[Value](DICTREF(v)),DV_MASK)
 template FUNC(v:Function):Value     = bitor(cast[Value](v),FV_MASK)   
 when not defined(mini):
-    template BIGINT(v:Int):Value    = bitor(cast[Value](ValueRef(bi:v)),BIV_MASK)
+    #template BIGINT(v:Int):Value    = bitor(cast[Value](ValueRef(bi:v)),BIV_MASK)
+    template BIGINT(v:Int):Value    = bitor(cast[Value](BIREF(v)),BIV_MASK)
 
 template VALID(i:int, r:int): Value {.dirty.} = xl.validate(i,static "",r)
 template EVAL(i:int): Value {.dirty.}         = xl.list[i].evaluate()
@@ -460,6 +499,8 @@ proc runString*(src:string): string =
     FileName = "<repl>"
 
     QuitOnError = false
+    GC_setMaxPause(500)
+    GC_disableMarkAndSweep()
 
     yy_switch_to_buffer(buff)
 
@@ -469,6 +510,7 @@ proc runString*(src:string): string =
 
         try:
             result = MainProgram.execute().stringify()
+            echo GC_getStatistics()
         except Exception as e:
             runtimeError(e.msg, FileName, StatementLine)
             result = ""
@@ -494,6 +536,9 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="") =
     FileName = scriptPath
 
     QuitOnError = true
+    GC_setMaxPause(1_000)
+    GC_disableMarkAndSweep()
+    #GC_setMaxPause(5_000)
     #GC_disable()
     discard open(yyin, scriptPath)
     #benchmark "parsing":
@@ -502,6 +547,7 @@ proc runScript*(scriptPath:string, args: seq[string], includePath:string="") =
     #tearDownForeignThreadGc()
     try:
         discard MainProgram.execute()
+        #echo GC_getStatistics()
     except Exception as e:
         runtimeError(e.msg, FileName, StatementLine)
     except NilAccessError as e:
