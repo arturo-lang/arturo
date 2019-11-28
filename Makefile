@@ -76,7 +76,8 @@ BUILD_LIBRARY_SCRIPT    = build_library.rb
 CFG_RELEASE     = -d:release \
 				  -d:danger \
 				  \
-				  --gc:regions \
+				  --gc:refc \
+				  --d:useRealtimeGC \
 				  --threads:on \
 				  --nimcache:$(CACHE)/release
 
@@ -112,8 +113,10 @@ CFG_DEBUG       = -d:debug \
 				  -d:useSysAssert \
 				  -d:useGcAssert \
 				  --debugger:native \
+				  --stackTrace:on \
+				  --d:useRealtimeGC \
 				  \
-				  --gc:regions \
+				  --gc:refc \
 				  --threads:on \
 				  --nimcache:$(CACHE)/debug
 EXT_DEBUG       = _debug
