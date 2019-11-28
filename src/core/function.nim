@@ -67,7 +67,6 @@ proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
     if Stack.len == 1: addContext()
     var oldSeq:Context
     shallowCopy(oldSeq,Stack[1])
-
     if f.hasNamedArgs:
         var i = 0
         var args = newSeq[(int,Value)](xl.list.len)
@@ -82,7 +81,18 @@ proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
     if Returned!=0: 
         Returned = 0
 
-    shallowCopy(Stack[1],oldSeq)
+    # var i=0
+    # while i<args.len:
+    #     if xl.list[i].kind!=argumentExpression or (xl.list[i].kind==argumentExpression and xl.list[i].a.kind==literalArgument):
+    #         case args[i][1].kind
+    #             of BIV: BIUNREF(args[i][1]); clear(BI(args[i][1]))
+    #             of AV: ARRUNREF(args[i][1])
+    #             of DV: DICTUNREF(args[i][1])
+    #             of SV: STRUNREF(args[i][1])
+    #             else: discard
+    #     inc(i)
+
+    shallowCopy(Stack[1],oldSeq)   
     if Stack[1].len==0: popContext()
 
 proc execute(f: Function, v: Value): Value {.inline.} =
