@@ -40,6 +40,7 @@ when isMainModule:
 
     var scriptPath = ""
     var includePath = ""
+    var useGC = false
 
     var p = initOptParser(commandLineParams())
 
@@ -62,11 +63,17 @@ when isMainModule:
                     quit(0)
             of "i","include":   
                 includePath = p.val
+            of "s","safe":   
+                useGC = true
             else:
                 scriptPath = p.key
                 break
 
         p.next()
+
+    #if not useGC:
+    #GC_disable()
+    #GC_disableMarkAndSweep()
 
     if scriptPath=="":
         console.startRepl(includePath)
