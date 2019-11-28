@@ -192,6 +192,7 @@ const
 
     MIN_INT     = -2147483648
     MAX_INT     = 0x7FFFFFFF
+    MAX_INT_SU1 = MAX_INT-1
 
     NV          = 0
     IV          = 1
@@ -216,6 +217,7 @@ const
     FV_MASK     = cast[Value](FV shl FIELD)
     MASK        = cast[Value](0xFF00000000000000)
     INT_MASK    = cast[Value](0xFFFFFFFF)
+    NEG_BIT     = cast[Value](0x80000000)
     UNMASK      = bitnot(MASK)
 
 #[######################################################
@@ -249,6 +251,19 @@ var
     TRUE                    : Value
     FALSE                   : Value
     NULL                    : Value
+
+#[######################################################
+    C Builtins
+  ======================================================]#
+
+proc addWillOverflow(a, b: int32, c: var int32): bool {.
+    importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
+
+proc subWillOverflow(a, b: int32, c: var int32): bool {.
+    importc: "__builtin_ssub_overflow", nodecl, nosideeffect.}
+
+proc mulWillOverflow(a, b: int32, c: var int32): bool {.
+    importc: "__builtin_smul_overflow", nodecl, nosideeffect.}
 
 #[######################################################
     Forward declarations
@@ -368,6 +383,9 @@ template VERBATIM*(x:int): untyped {.dirty.} =
     xl.list[x].a.i
 
 template IN_PLACE*(code: untyped): untyped {.dirty.} =
+    if xl.list[0].kind!=argumentExpression or xl.list[0].a.kind!=identifierArgument:
+        IncorrectInPlaceArgumentsError(0, "", xl.list[0].evaluate().kind)
+
     let hs = VERBATIM(0)
     var i = len(Stack) - 1
     var j: int
@@ -380,6 +398,7 @@ template IN_PLACE*(code: untyped): untyped {.dirty.} =
             inc(j)
 
         dec(i)
+    IncorrectInPlaceArgumentsError(0, f.name, xl.list[0].evaluate().kind)
 
 template kind*(v: Value): int       = cast[int](bitand(v,MASK) shr FIELD)
     
@@ -429,6 +448,8 @@ when not defined(mini):
 
 template VALID(i:int, r:int): Value {.dirty.} = xl.validate(i,static "",r)
 template EVAL(i:int): Value {.dirty.}         = xl.list[i].evaluate()
+
+template IS_NEGATIVE(x:Value):bool                 = bitand(x,NEG_BIT)==NEG_BIT
 
 #[######################################################
     Unittest setup
