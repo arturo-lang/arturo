@@ -16,18 +16,27 @@
 ##---------------------------
 
 proc newStatementList: StatementList {.exportc.} =
-    result = StatementList(list: @[])
+    let ret = StatementList(list: @[])
+    GC_ref(ret)
+    result = ret
 
 proc newStatementList(sl: seq[Statement]): StatementList =
-    result = StatementList(list: sl)
+    let ret = StatementList(list: sl)
+    GC_ref(ret)
+    result = ret
 
 proc newStatementListWithStatement(s: Statement): StatementList {.exportc.} =
-    result = StatementList(list: @[s])
+    let ret = StatementList(list: @[s])
+    GC_ref(ret)
+    result = ret
 
 proc addStatement(sl: StatementList, s: Statement): StatementList {.exportc.} =
-    GC_ref(sl)
+    #GC_ref(sl)
     sl.list.add(s)
     result = sl
+    #let ret = sl
+    #GC_ref(ret)
+    #result = ret
 
 ##---------------------------
 ## Methods
@@ -44,4 +53,5 @@ proc execute(sl: StatementList): Value {.inline.} =
             return Returned
 
         inc(i)
+    #GC_step(100)
         
