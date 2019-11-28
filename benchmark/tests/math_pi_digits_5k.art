@@ -2,7 +2,7 @@ digits: #()
 
 
 pi_digits: @(x){
-    q:1
+    q: toMutable 1
     r:0
     t:1
     k:1
@@ -14,7 +14,7 @@ pi_digits: @(x){
             append! digits n
             nr: 10*(r-n*t)
             n: ((10*(3*q+r)) / t) - 10*n
-            q: q*10
+            mul! q 10
             r: nr
         } {
             nr : (2*q+r) * l

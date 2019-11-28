@@ -2,7 +2,7 @@
 a: 0
 
 loop 5000001 {
-	a: a+1
+	inc! a // a: a+1
 }
 
 print a
