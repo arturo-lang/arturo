@@ -270,13 +270,14 @@ proc Math_gcd*[F,X,V](f: F, xl: X): V {.inline.} =
     result = SINT(current)
 
 proc Math_incI*[F,X,V](f: F, xl: X): V {.inline.} =
-    inPlace:
-        case ITEM.kind
+    IN_PLACE:
+        case DEST.kind
             of IV: 
-                ITEM += 1
-                return ITEM
+                DEST += 1
+                return DEST
             of BIV:
-                BI(ITEM).inc(1)
+                BI(DEST).inc(1)
+                return DEST
             else: discard
 
 proc Math_isEven*[F,X,V](f: F, xl: X): V {.inline.} =
