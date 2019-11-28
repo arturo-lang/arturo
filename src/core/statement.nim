@@ -87,8 +87,8 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
             let sym = getSymbol(stm.id)
             case sym.kind
                 of FV: result = FN(sym).execute(stm.expressions)
-                of NV: SymbolNotFoundError($(stm.id))
-                else: FunctionNotFoundError($(stm.id))
+                of NV: SymbolNotFoundError(getSymbolForHash(stm.id))
+                else: FunctionNotFoundError(getSymbolForHash(stm.id))
 
         of assignmentStatement:
             # Assignments
