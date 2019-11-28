@@ -2,7 +2,7 @@ digits: #()
 
 
 pi_digits: @(x){
-    q: toMutable 1
+    q:1
     r:0
     t:1
     k:1
@@ -10,19 +10,20 @@ pi_digits: @(x){
     l:3
 
     loop [size digits]!=x {
-        if 4*q+r-t < n*t {
+        nt: n*t
+        if 4*q+r-t < nt {
             append! digits n
-            nr: 10*(r-n*t)
+            nr: 10*(r-nt)
             n: ((10*(3*q+r)) / t) - 10*n
-            mul! q 10
+            mul! q 10//: q * 10
             r: nr
         } {
             nr : (2*q+r) * l
             nn : (q*(7*k+2)+r*l) / (t*l)
-            q : q * k
-            t : t * l
-            l : l + 2
-            k : k + 1
+            mul! q k//q : q * k
+            mul! t l//t : t * l
+            add! l 2//l: l + 2 //l : l + 2
+            inc! k //k:k+1//inc! k// : k + 1
             n : nn
             r : nr
         }
