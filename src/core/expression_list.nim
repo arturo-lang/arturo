@@ -16,13 +16,19 @@
 ##---------------------------
 
 proc newExpressionList: ExpressionList {.exportc.} =
-    result = ExpressionList(list: @[])
+    let ret = ExpressionList(list: @[])
+    GC_ref(ret)
+    result = ret
 
 proc newExpressionList(xl: seq[Expression]): ExpressionList =
-    result = ExpressionList(list: xl)
+    let ret = ExpressionList(list: xl)
+    GC_ref(ret)
+    result = ret
 
 proc newExpressionListWithExpression(x: Expression): ExpressionList {.exportc.} =
-    result = ExpressionList(list: @[x])
+    let ret = ExpressionList(list: @[x])
+    GC_ref(ret)
+    result = ret
 
 proc expressionListWithChainedStatement(st: Statement): ExpressionList {.exportc.} =
     newExpressionListWithExpression(expressionFromArgument(argumentFromInlineCallLiteral(st)))
@@ -34,7 +40,6 @@ proc copyExpressionList(xl: ExpressionList): ExpressionList {.exportc.} =
     ExpressionList(list: xl.list)
 
 proc addExpression(xl: ExpressionList, x: Expression): ExpressionList {.exportc.} =
-    GC_ref(xl)
     xl.list.add(x)
     result = xl
 
