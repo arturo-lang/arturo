@@ -166,7 +166,7 @@ Dir["#{__dir__}/tests/*.art"].sort.each{|b|
 			if val.length==0
 				9999999
 			else
-				(val[0].to_f) 
+				(val[1].to_f) 
 			end
 		else 
 			9999999
