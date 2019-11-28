@@ -27,7 +27,7 @@ proc SINT(v: string): Value {.inline.} =
         result = BIGINT(v)
 
 proc BIGINT*(v: string): Value {.inline.} =
-    bitor(cast[Value](ValueRef(bi:newInt(v))),BIV_MASK)
+    bitor(cast[Value](BIREF(newInt(v))),BIV_MASK)
     #Value(kind: BIV, bi: newInt(v))
 
 proc REAL(v: string): Value {.inline.} =
