@@ -74,4 +74,20 @@ proc evaluate(x: Expression): Value {.inline.} =
                 of LE_OP    : result = BOOL(left.lt(right) or left.eq(right))
                 of GE_OP    : result = BOOL(left.gt(right) or left.eq(right))
                 of NE_OP    : result = BOOL(not (left.eq(right)))
+
+            # if x.left.kind!=argumentExpression or (x.left.kind==argumentExpression and x.left.a.kind==literalArgument):
+            #     case left.kind
+            #         of BIV: BI_CNT_del = BI_CNT_del+1 #BIUNREF(left); clear(BI(left))
+            #         #of AV: ARRUNREF(left)
+            #         #of DV: DICTUNREF(left)
+            #         #of SV: STRUNREF(left)
+            #         else: discard
+
+            # if x.right.kind!=argumentExpression or (x.right.kind==argumentExpression and x.right.a.kind==literalArgument):
+            #     case right.kind
+            #         of BIV: BI_CNT_del = BI_CNT_del+1 #BIUNREF(left); clear(BI(left))
+            #         #of AV: ARRUNREF(right)
+            #         #of DV: DICTUNREF(right)
+            #         #of SV: STRUNREF(right)
+            #         else: discard
                 
