@@ -15,6 +15,7 @@ import compiler, panic, version
   ======================================================]#
 
 const
+    LOGO                = readFile("src/rsrc/logo.txt").replace("\\e","\e")
     CONSOLE_PROMPT_HEAD =  "$ :"
     CONSOLE_PROMPT_TAIL =  "> "
 
@@ -90,6 +91,10 @@ proc doExit() =
   ======================================================]#
 
 proc startRepl*(includePath:string="") = 
+    #echo LOGO
+
+    #echo ""
+
     showVersion()
 
     compiler.setup()
