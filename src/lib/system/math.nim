@@ -151,20 +151,30 @@ proc Math_acosh*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(arccosh(R(v0)))
 
-# proc Math_add*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,IV|BIV)
-#     let v1 = VALID(1,IV|BIV)
+proc Math_add*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
+    let v1 = VALID(1,IV|BIV)
 
-#     result = v0 ++ v1
+    result = v0 ++ v1
 
-# proc Math_addI*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,BIV)
-#     let v1 = VALID(1,IV|BIV)
-
-#     if v1.kind==IV: discard BI(v0).add(BI(v0),I(v1))
-#     else: discard BI(v0).add(BI(v0),BI(v1))
-
-#     result = v0
+proc Math_addI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v1 = VALID(1,IV|BIV)
+        case DEST.kind
+            of IV: 
+                if v1.kind==IV: 
+                    var res: int32
+                    if addWillOverflow(I(DEST),I(v1),res):
+                        DEST = BIGINT(newInt(int(I(DEST)) + I(v1)))
+                    else:
+                        DEST = SINT(res)
+                else: DEST = BIGINT(int(I(DEST)) + BI(v1))
+                return DEST
+            of BIV:
+                if v1.kind==IV: discard add(BI(DEST),BI(DEST),int(I(v1)))
+                else: discard add(BI(DEST),BI(DEST),BI(v1))
+                return DEST
+            else: discard
 
 proc Math_asin*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
@@ -269,11 +279,25 @@ proc Math_gcd*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = SINT(current)
 
+proc Math_inc*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
+
+    if v0.kind==IV: 
+        if I(v0) > MAX_INT_SU1:
+            result = BIGINT(newInt(int(I(v0))+1))
+        else:
+            result = SINT(I(v0)+1)
+    else: result = BIGINT(BI(v0)+1)
+
 proc Math_incI*[F,X,V](f: F, xl: X): V {.inline.} =
     IN_PLACE:
         case DEST.kind
             of IV: 
-                DEST += 1
+                var res: int32
+                if addWillOverflow(I(DEST),1,res):
+                    DEST = BIGINT(newInt(int(I(DEST))+1))
+                else:
+                    DEST = SINT(res)
                 return DEST
             of BIV:
                 BI(DEST).inc(1)
@@ -358,26 +382,30 @@ proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
             result = A(v0)[i]
         inc(i)
 
-# proc Math_mul*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,IV|BIV)
-#     let v1 = VALID(1,IV|BIV)
+proc Math_mul*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
+    let v1 = VALID(1,IV|BIV)
 
-#     result = v0 ** v1
+    result = v0 ** v1
 
-# proc Math_mulI*[F,X,V](f: F, xl: X): V {.inline.} =
-#     #let v0 = VALID(0,SV)
-
-#     #echo "in mul"
-
-#     result = incSymbolInPlace(xl.list[0].a.i)
-#     # let v1 = VALID(1,IV|BIV)
-
-#     # var bi0 = BI(v0)
-
-#     # if v1.kind==IV: discard bignum.mul(bi0,bi0,I(v1))
-#     # else: discard bignum.mul(bi0,bi0,BI(v1))
-
-#     #result = v0
+proc Math_mulI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v1 = VALID(1,IV|BIV)
+        case DEST.kind
+            of IV: 
+                if v1.kind==IV: 
+                    var res: int32
+                    if mulWillOverflow(I(DEST),I(v1),res):
+                        DEST = BIGINT(newInt(int(I(DEST)) * I(v1)))
+                    else:
+                        DEST = SINT(res)
+                else: DEST = BIGINT(int(I(DEST)) * BI(v1))
+                return DEST
+            of BIV:
+                if v1.kind==IV: discard mul(BI(DEST),BI(DEST),int(I(v1)))
+                else: discard mul(BI(DEST),BI(DEST),BI(v1))
+                return DEST
+            else: discard
 
 proc Math_neg*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV|RV|BIV)
