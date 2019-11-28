@@ -7,9 +7,9 @@
   * @file: compiler.nim
   *****************************************************************]#
 
-import algorithm, system/ansi_c, base64, bitops, hashes, httpClient, json, macros, math, md5, oids, os
-import osproc, parsecsv, parseutils, random, re, segfaults, sequtils, sets, std/editdistance
-import std/sha1, streams, strformat, strutils, sugar, unicode, tables, terminal
+import algorithm, system/ansi_c, base64, bitops, hashes, httpClient, json, macros, math, md5
+import mersenne, oids, os, osproc, parsecsv, parseutils, random, re, segfaults, sequtils, sets
+import std/editdistance, std/sha1, streams, strformat, strutils, sugar, unicode, tables, terminal
 import times, uri
 
 import external/[markdown, memo, mustache]
@@ -498,6 +498,8 @@ template initializeConsts() =
     FALSE           = BOOL(false)
     NULL            = NV
     Hashes          = {cstring(ARGV):ARGV_HASH}.toTable
+
+    randomize()
 
 proc setup*(args: seq[string] = @[]) = 
     initializeConsts()
