@@ -80,6 +80,11 @@ template IncorrectArgumentValuesError*(no: int, f: string, e: int, g: int) =
                  "expected: " & valueKindsToPrintable(e) & "\n" &
                  "got: " & valueKindToPrintable(g))
 
+template IncorrectInPlaceArgumentsError*(no: int, f: string, g: int) =
+    raise newException(Exception,"incorrect argument [" & $no & "] for in-place function '" & f & "'\n" &
+                 "expected: identifier\n" &
+                 "got: " & valueKindToPrintable(g))
+
 template ProgramPanic*(msg: string) =
     raise newException(Exception,"program panic\n" &
                  "msg: " & msg)
