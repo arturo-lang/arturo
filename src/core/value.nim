@@ -103,8 +103,11 @@ proc `++`(l: Value, r: Value): Value {.inline.} =
             result = case r.kind
                 of SV: STR($(I(l)) & S(r))
                 of IV: 
-                    try: SINT(cast[int32](I(l)+I(r)))
-                    except Exception: BIGINT(newInt(I(l))+int(I(r)))
+                    var res: int32
+                    if addWillOverflow(I(l),I(r),res):
+                        BIGINT(newInt(I(l))+int(I(r)))
+                    else:
+                        SINT(res)
                 of BIV: BIGINT(int(I(l))+BI(r))
                 of RV: REAL(float(I(l))+R(r))
                 else: InvalidOperationError("+",l.kind,r.kind)
@@ -148,7 +151,12 @@ proc `--`(l: Value, r: Value): Value {.inline.} =
                 else: InvalidOperationError("-",l.kind,r.kind)
         of IV:
             result = case r.kind
-                of IV: SINT(cast[int32](I(l) - I(r)))
+                of IV: 
+                    var res: int32
+                    if subWillOverflow(I(l),I(r),res):
+                        BIGINT(newInt(I(l))-int(I(r)))
+                    else:
+                        SINT(res)
                 of BIV: BIGINT(int(I(l)) - BI(r))
                 of RV: REAL(float(I(l))-R(r))
                 else: InvalidOperationError("-",l.kind,r.kind)
@@ -195,13 +203,11 @@ proc `**`(l: Value, r: Value): Value {.inline.} =
             result = case r.kind
                 of SV: STR(S(r).repeat(I(l)))
                 of IV: 
-                    try:
-                        if I(l)*I(r)>MAX_INT:
-                            BIGINT(newInt(I(l))*int(I(r)))
-                        else:
-                            SINT(I(l) * I(r))
-                    except Exception: 
+                    var res: int32
+                    if mulWillOverflow(I(l),I(r),res):
                         BIGINT(newInt(I(l))*int(I(r)))
+                    else:
+                        SINT(res)
                 of BIV: BIGINT(int(I(l)) * BI(r))
                 of RV: REAL(float(I(l))*R(r))
                 else: InvalidOperationError("*",l.kind,r.kind)
