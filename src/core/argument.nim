@@ -116,7 +116,7 @@ proc getValue(a: Argument): Value {.inline.} =
     case a.kind
         of identifierArgument:
             result = getSymbol(a.i)
-            if result == 0: SymbolNotFoundError($(a.i))
+            if result == 0: SymbolNotFoundError(getSymbolForHash(a.i))
         of literalArgument:
             result = a.v
         of arrayArgument:
