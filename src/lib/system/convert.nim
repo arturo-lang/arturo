@@ -29,11 +29,11 @@ proc Convert_toInt*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = SINT(int(R(v0)))
 
-proc Convert_toMutable*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV|BIV)
+# proc Convert_toMutable*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,IV|BIV)
 
-    if v0.kind==IV: result = BIGINT(newInt(I(v0)))
-    else: result = v0
+#     if v0.kind==IV: result = BIGINT(newInt(I(v0)))
+#     else: result = v0
 
 proc Convert_toNumber*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
