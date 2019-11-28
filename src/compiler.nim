@@ -361,11 +361,14 @@ var yylineno {.importc.}: cint
     Global templates
   ======================================================]#
 
-template ITEM*():untyped {.dirty.} =
+template DEST*():untyped {.dirty.} =
     Stack[i][j][1]
 
-template inPlace*(code: untyped): untyped {.dirty.} =
-    let hs = xl.list[0].a.i
+template VERBATIM*(x:int): untyped {.dirty.} =
+    xl.list[x].a.i
+
+template IN_PLACE*(code: untyped): untyped {.dirty.} =
+    let hs = VERBATIM(0)
     var i = len(Stack) - 1
     var j: int
     while i > -1:
@@ -510,7 +513,7 @@ proc runString*(src:string): string =
 
         try:
             result = MainProgram.execute().stringify()
-            echo GC_getStatistics()
+            #echo GC_getStatistics()
         except Exception as e:
             runtimeError(e.msg, FileName, StatementLine)
             result = ""
