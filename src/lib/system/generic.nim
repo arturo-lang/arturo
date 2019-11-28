@@ -21,16 +21,42 @@ proc Generic_append*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_appendI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|SV)
+    IN_PLACE:
+        case DEST.kind
+            of AV:
+                A(DEST).add(VALID(1,ANY))
+                return DEST
+            of SV:
+                S(DEST).add(S(VALID(1,SV)))
+                return DEST
+            else: discard
 
-    case v0.kind
-        of AV: 
-            A(v0).add(VALID(1,ANY))
-            result = v0
-        of SV: 
-            S(v0).add(S(VALID(1,SV)))
-            result = v0
-        else: discard
+        # let v1 = VALID(1,IV|BIV)
+        # case DEST.kind
+        #     of IV: 
+        #         if v1.kind==IV: 
+        #             var res: int32
+        #             if addWillOverflow(I(DEST),I(v1),res):
+        #                 DEST = BIGINT(newInt(int(I(DEST)) + I(v1)))
+        #             else:
+        #                 DEST = SINT(res)
+        #         else: DEST = BIGINT(int(I(DEST)) + BI(v1))
+        #         return DEST
+        #     of BIV:
+        #         if v1.kind==IV: discard add(BI(DEST),BI(DEST),int(I(v1)))
+        #         else: discard add(BI(DEST),BI(DEST),BI(v1))
+        #         return DEST
+        #     else: discard
+    # let v0 = VALID(0,AV|SV)
+
+    # case v0.kind
+    #     of AV: 
+    #         A(v0).add(VALID(1,ANY))
+    #         result = v0
+    #     of SV: 
+    #         S(v0).add(S(VALID(1,SV)))
+    #         result = v0
+    #     else: discard
 
 proc Generic_contains*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV|SV|DV)
@@ -198,19 +224,37 @@ proc Generic_set*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_setI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|SV|DV)
+    IN_PLACE:
+        case DEST.kind
+            of AV:
+                A(DEST)[I(VALID(1,IV))] = VALID(2,ANY)
+                return DEST
+            of DV:
+                D(DEST).updateOrSet(S(VALID(1,SV)),VALID(2,ANY))
+                return DEST
+            of SV:
+                S(DEST)[I(VALID(1,IV))] = S(VALID(2,SV))[0]
+                return DEST
+            else: discard
 
-    case v0.kind
-        of AV: 
-            A(v0)[I(VALID(1,IV))] = VALID(2,ANY)
-            result = v0
-        of DV: 
-            D(v0).updateOrSet(S(VALID(1,SV)),VALID(2,ANY))
-            result = v0
-        of SV: 
-            S(v0)[I(VALID(1,IV))] = S(VALID(2,SV))[0]
-            result = v0
-        else: discard
+    #     let v1 = VALID(1,IV)
+    #     let v2 = VALID(2,IV)
+
+    #     swap(A(DEST)[I(v1)],A(DEST)[I(v2)])
+    #     return DEST
+    # let v0 = VALID(0,AV|SV|DV)
+
+    # case v0.kind
+    #     of AV: 
+    #         A(v0)[I(VALID(1,IV))] = VALID(2,ANY)
+    #         result = v0
+    #     of DV: 
+    #         D(v0).updateOrSet(S(VALID(1,SV)),VALID(2,ANY))
+    #         result = v0
+    #     of SV: 
+    #         S(v0)[I(VALID(1,IV))] = S(VALID(2,SV))[0]
+    #         result = v0
+    #     else: discard
 
 proc Generic_size*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV|SV|DV)
