@@ -17,7 +17,7 @@ APP     = arturo
 
 # Environment
 #/Users/drkameleon/Documents/Code/OpenSource/3rd-party/Nim/bin/
-NIM     = nim #/Users/drkameleon/Documents/Code/OpenSource/3rd-party/Nim/bin/nim 
+NIM     = nim
 NIMBLE  = nimble
 FLEX    = flex
 BISON   = bison
