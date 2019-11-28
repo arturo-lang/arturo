@@ -303,12 +303,18 @@ proc Array_swap*[F,X,V](f: F, xl: X): V {.inline.} =
     swap(A(result)[I(v1)], A(result)[I(v2)])
 
 proc Array_swapI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV)
-    let v1 = VALID(1,IV)
-    let v2 = VALID(2,IV)
+    IN_PLACE:
+        let v1 = VALID(1,IV)
+        let v2 = VALID(2,IV)
 
-    swap(A(v0)[I(v1)], A(v0)[I(v2)])
-    result = v0
+        swap(A(DEST)[I(v1)],A(DEST)[I(v2)])
+        return DEST
+    # let v0 = VALID(0,AV)
+    # let v1 = VALID(1,IV)
+    # let v2 = VALID(2,IV)
+
+    # swap(A(v0)[I(v1)], A(v0)[I(v2)])
+    # result = v0
 
 proc Array_unique*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV)
