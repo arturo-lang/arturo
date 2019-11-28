@@ -243,20 +243,50 @@ proc Math_ctanh*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(coth(R(v0)))
 
-# proc Math_div*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,IV|BIV)
-#     let v1 = VALID(1,IV|BIV)
+proc Math_dec*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
 
-#     result = v0 // v1
+    if v0.kind==IV: 
+        if I(v0) > MAX_INT_SU1:
+            result = BIGINT(newInt(int(I(v0))-1))
+        else:
+            result = SINT(I(v0)-1)
+    else: result = BIGINT(BI(v0)-1)
 
-# proc Math_divI*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,BIV)
-#     let v1 = VALID(1,IV|BIV)
+proc Math_decI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        case DEST.kind
+            of IV: 
+                var res: int32
+                if subWillOverflow(I(DEST),1,res):
+                    DEST = BIGINT(newInt(int(I(DEST))-1))
+                else:
+                    DEST = SINT(res)
+                return DEST
+            of BIV:
+                BI(DEST).dec(1)
+                return DEST
+            else: discard
 
-#     if v1.kind==IV: discard BI(v0).div(BI(v0),I(v1))
-#     else: discard BI(v0).div(BI(v0),BI(v1))
+proc Math_div*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
+    let v1 = VALID(1,IV|BIV)
 
-#     result = v0
+    result = v0 // v1
+
+proc Math_divI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v1 = VALID(1,IV|BIV)
+        case DEST.kind
+            of IV: 
+                if v1.kind==IV: DEST = SINT(I(DEST) div I(v1))
+                else: DEST = BIGINT(int(I(DEST)) div BI(v1))
+                return DEST
+            of BIV:
+                if v1.kind==IV: discard `div`(BI(DEST),BI(DEST),int(I(v1)))
+                else: discard `div`(BI(DEST),BI(DEST),BI(v1))
+                return DEST
+            else: discard
 
 proc Math_exp*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
@@ -382,6 +412,26 @@ proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
             result = A(v0)[i]
         inc(i)
 
+proc Math_mod*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
+    let v1 = VALID(1,IV|BIV)
+
+    result = v0 %% v1
+
+proc Math_modI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v1 = VALID(1,IV|BIV)
+        case DEST.kind
+            of IV: 
+                if v1.kind==IV: DEST = SINT(I(DEST) mod I(v1))
+                else: DEST = BIGINT(int(I(DEST)) mod BI(v1))
+                return DEST
+            of BIV:
+                if v1.kind==IV: discard `mod`(BI(DEST),BI(DEST),int(I(v1)))
+                else: discard `mod`(BI(DEST),BI(DEST),BI(v1))
+                return DEST
+            else: discard
+
 proc Math_mul*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV|BIV)
     let v1 = VALID(1,IV|BIV)
@@ -411,9 +461,14 @@ proc Math_neg*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV|RV|BIV)
 
     case v0.kind
-        of IV: result = SINT(-1 * I(v0))
+        of IV: 
+            var res: int32
+            if mulWillOverflow(I(v0),-1,res):
+                result = BIGINT(newInt(I(v0))*(-1))
+            else:
+                result = SINT(res)
         of RV: result = REAL(float32(-1.0 * R(v0)))
-        of BIV: result = BIGINT(-1 * BI(v0))
+        of BIV: result = BIGINT(BI(v0)*(-1))
         else: discard
 
 proc Math_pi*[F,X,V](f: F, xl: X): V {.inline.} =
@@ -493,20 +548,30 @@ proc Math_sqrt*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(sqrt(R(v0)))
 
-# proc Math_sub*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,IV|BIV)
-#     let v1 = VALID(1,IV|BIV)
+proc Math_sub*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
+    let v1 = VALID(1,IV|BIV)
 
-#     result = v0 -- v1
+    result = v0 -- v1
 
-# proc Math_subI*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,BIV)
-#     let v1 = VALID(1,IV|BIV)
-
-#     if v1.kind==IV: discard BI(v0).sub(BI(v0),I(v1))
-#     else: discard BI(v0).sub(BI(v0),BI(v1))
-
-#     result = v0
+proc Math_subI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v1 = VALID(1,IV|BIV)
+        case DEST.kind
+            of IV: 
+                if v1.kind==IV: 
+                    var res: int32
+                    if subWillOverflow(I(DEST),I(v1),res):
+                        DEST = BIGINT(newInt(int(I(DEST)) - I(v1)))
+                    else:
+                        DEST = SINT(res)
+                else: DEST = BIGINT(int(I(DEST)) - BI(v1))
+                return DEST
+            of BIV:
+                if v1.kind==IV: discard add(BI(DEST),BI(DEST),int(I(v1)))
+                else: discard add(BI(DEST),BI(DEST),BI(v1))
+                return DEST
+            else: discard
 
 proc Math_sum*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV)
