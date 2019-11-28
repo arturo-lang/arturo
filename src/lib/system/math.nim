@@ -151,6 +151,21 @@ proc Math_acosh*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(arccosh(R(v0)))
 
+# proc Math_add*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,IV|BIV)
+#     let v1 = VALID(1,IV|BIV)
+
+#     result = v0 ++ v1
+
+# proc Math_addI*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,BIV)
+#     let v1 = VALID(1,IV|BIV)
+
+#     if v1.kind==IV: discard BI(v0).add(BI(v0),I(v1))
+#     else: discard BI(v0).add(BI(v0),BI(v1))
+
+#     result = v0
+
 proc Math_asin*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
 
@@ -218,6 +233,21 @@ proc Math_ctanh*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(coth(R(v0)))
 
+# proc Math_div*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,IV|BIV)
+#     let v1 = VALID(1,IV|BIV)
+
+#     result = v0 // v1
+
+# proc Math_divI*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,BIV)
+#     let v1 = VALID(1,IV|BIV)
+
+#     if v1.kind==IV: discard BI(v0).div(BI(v0),I(v1))
+#     else: discard BI(v0).div(BI(v0),BI(v1))
+
+#     result = v0
+
 proc Math_exp*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
 
@@ -239,10 +269,15 @@ proc Math_gcd*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = SINT(current)
 
-proc Math_inc*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,IV|BIV)
-
-    result = v0 ++ 1
+proc Math_incI*[F,X,V](f: F, xl: X): V {.inline.} =
+    inPlace:
+        case ITEM.kind
+            of IV: 
+                ITEM += 1
+                return ITEM
+            of BIV:
+                BI(ITEM).inc(1)
+            else: discard
 
 proc Math_isEven*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV|BIV)
@@ -321,6 +356,27 @@ proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
         if A(v0)[i].lt(result):
             result = A(v0)[i]
         inc(i)
+
+# proc Math_mul*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,IV|BIV)
+#     let v1 = VALID(1,IV|BIV)
+
+#     result = v0 ** v1
+
+# proc Math_mulI*[F,X,V](f: F, xl: X): V {.inline.} =
+#     #let v0 = VALID(0,SV)
+
+#     #echo "in mul"
+
+#     result = incSymbolInPlace(xl.list[0].a.i)
+#     # let v1 = VALID(1,IV|BIV)
+
+#     # var bi0 = BI(v0)
+
+#     # if v1.kind==IV: discard bignum.mul(bi0,bi0,I(v1))
+#     # else: discard bignum.mul(bi0,bi0,BI(v1))
+
+#     #result = v0
 
 proc Math_neg*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV|RV|BIV)
@@ -407,6 +463,21 @@ proc Math_sqrt*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
 
     result = REAL(sqrt(R(v0)))
+
+# proc Math_sub*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,IV|BIV)
+#     let v1 = VALID(1,IV|BIV)
+
+#     result = v0 -- v1
+
+# proc Math_subI*[F,X,V](f: F, xl: X): V {.inline.} =
+#     let v0 = VALID(0,BIV)
+#     let v1 = VALID(1,IV|BIV)
+
+#     if v1.kind==IV: discard BI(v0).sub(BI(v0),I(v1))
+#     else: discard BI(v0).sub(BI(v0),BI(v1))
+
+#     result = v0
 
 proc Math_sum*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV)
