@@ -177,6 +177,27 @@ proc setSymbol(hs: int, v: Value): Value {.inline.} =
     Stack[^1].updateOrSet(hs,v)
     result = v
 
+# proc incSymbolInPlace(hs: int): Value {.inline.} = 
+#     var i = len(Stack) - 1
+#     var j: int
+#     #let hs = k.hash
+#     while i > -1:
+#         j = 0
+#         while j<Stack[i].len:
+#             if Stack[i][j][0]==hs: 
+#                 case Stack[i][j][1].kind
+#                     of IV: 
+#                         Stack[i][j][1]+=1
+#                         return Stack[i][j][1]
+#                     of BIV: 
+#                         BI(Stack[i][j][1]).inc(1)
+#                         return Stack[i][j][1]
+#                     else: discard
+#                 return
+#             inc(j)
+
+#         dec(i)
+
 ##---------------------------
 ## Inspection
 ##---------------------------
