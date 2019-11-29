@@ -67,6 +67,12 @@ proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
     if Stack.len == 1: addContext()
     var oldSeq:Context
     shallowCopy(oldSeq,Stack[1])
+    
+    # set IN_ARGS flag, for expressions like f(g(x)), 
+    # so that the inside function call doesn't pop Stack[1]
+    let old_not_in_args = NOT_IN_ARGS
+    NOT_IN_ARGS = false
+    
     if f.hasNamedArgs:
         var i = 0
         var args = newSeq[(int,Value)](xl.list.len)
@@ -78,6 +84,8 @@ proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
         initTopContextWith(args)
     else:
         initTopContextWith(ARGV_HASH,ARR(xl.list.map((x)=>x.evaluate())))
+    
+    NOT_IN_ARGS = old_not_in_args
 
     result = f.body.execute()
     if Returned!=0: 
@@ -95,7 +103,7 @@ proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
     #     inc(i)
 
     shallowCopy(Stack[1],oldSeq)   
-    if Stack[1].len==0: popContext()
+    if Stack[1].len==0 and NOT_IN_ARGS: popContext()
 
 proc execute(f: Function, v: Value): Value {.inline.} =
     ## Execute user function with given Value
