@@ -1,0 +1,23 @@
+f: @(x) {
+	//syms ~
+	print "F = (x): " + x
+	//syms ~
+	return x+2
+}
+
+g: @(y) {
+	//syms ~
+	print "G = (x): " + y
+	//syms ~
+	return 2*y
+}
+
+loop 1..3 @(n){
+	print "N = " + n
+	print "==================="
+	//print [f n]
+	print [g [f n]]
+	//syms ~
+	//print [g [f n]]
+	//syms ~
+}
