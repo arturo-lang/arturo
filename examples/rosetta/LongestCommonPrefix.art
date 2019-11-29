@@ -8,7 +8,6 @@ lcp: @(list){
         	if idx=[size word] -> return ret
         	if thisLetter="" -> thisLetter: [chars word].[idx]
         	if thisLetter!=[chars word].[idx] -> return ret
-
         }
         ret: ret+thisLetter
         idx: idx+1
