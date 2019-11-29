@@ -85,7 +85,8 @@ CFG_MINI        = -d:release \
 				  -d:danger \
 				  -d:mini \
 				  \
-				  --gc:regions \
+				  --gc:refc \
+				  --d:useRealtimeGC \
 				  --threads:on \
 				  --nimcache:$(CACHE)/mini
 EXT_MINI        = _mini
