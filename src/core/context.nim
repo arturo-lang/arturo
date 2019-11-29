@@ -214,7 +214,7 @@ proc inspectStack() =
         echo tab,"----------------"
 
         for t in s:
-            echo tab,$t[0]," [" & fmt"{cast[int](unsafeAddr(t[1])):#x}" & "] -> ",t[1].stringify(), " -> #: "#, $t[2]
+            echo tab,$t[0],"= ",getSymbolForHash(t[0])," [" & fmt"{cast[int](unsafeAddr(t[1])):#x}" & "] -> ",t[1].stringify(), " -> #: "#, $t[2]
             #if t[1].kind==IV:
             #    echo "\t\t" & fmt"{cast[int](unsafeAddr(I(t[1]))):#x}"
 
