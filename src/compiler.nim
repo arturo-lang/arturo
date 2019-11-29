@@ -138,6 +138,7 @@ type
         id              : int
         args            : seq[int]
         hasNamedArgs    : bool
+        isArgument      : bool
         body            : StatementList
         hasContext      : bool
         parentThis      : Value
@@ -394,7 +395,6 @@ template IN_PLACE*(code: untyped): untyped {.dirty.} =
         while j<Stack[i].len:
             if Stack[i][j][0]==hs: 
                 code
-                return
             inc(j)
 
         dec(i)
@@ -408,7 +408,7 @@ template R(_:Value):float32         = cast[float32](bitand(_,UNMASK))
 template B(_:Value):bool            = cast[bool](bitand(_,UNMASK))
 template A(_:Value):seq[Value]      = (cast[ValueRef](bitand(_,UNMASK))).a
 template D(_:Value):Context         = (cast[ValueRef](bitand(_,UNMASK))).d
-template FN(_:Value):Function       = cast[Function](bitand(_,UNMASK))
+template FN(_:Value):Function       = cast[Function](bitand(_,UNMASK)) #(cast[ValueRef](bitand(_,UNMASK))).f
 when not defined(mini):
     template BI(_:Value):Int        = (cast[ValueRef](bitand(_,UNMASK))).bi
 
@@ -420,6 +420,8 @@ proc DICTREF(v:Context):ValueRef    {.inline.} =
     let ret = ValueRef(d:v); GC_ref(ret); ret
 proc BIREF(v:Int):ValueRef          {.inline.} = 
     let ret = ValueRef(bi:v); GC_ref(ret); ret
+proc FUNCREF(v:Function):ValueRef   {.inline.} = 
+    let ret = ValueRef(f:v); GC_ref(ret); ret
 
 template STRUNREF(_:Value) = 
     GC_unref(cast[ValueRef](bitand(_,UNMASK)))
@@ -441,7 +443,7 @@ template REAL(v:float32):Value      = bitor(bitand(cast[Value](v),INT_MASK),RV_M
 template BOOL(v:bool):Value         = bitor(cast[Value](v),BV_MASK)
 template ARR(v:seq[Value]):Value    = bitor(cast[Value](ARRREF(v)),AV_MASK)
 template DICT(v:Context):Value      = bitor(cast[Value](DICTREF(v)),DV_MASK)
-template FUNC(v:Function):Value     = bitor(cast[Value](v),FV_MASK)   
+template FUNC(v:Function):Value     = bitor(cast[Value](v),FV_MASK) #bitor(cast[Value](FUNCREF(v)),FV_MASK)
 when not defined(mini):
     #template BIGINT(v:Int):Value    = bitor(cast[Value](ValueRef(bi:v)),BIV_MASK)
     template BIGINT(v:Int):Value    = bitor(cast[Value](BIREF(v)),BIV_MASK)
