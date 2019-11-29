@@ -109,7 +109,7 @@ proc `++`(l: Value, r: Value): Value {.inline.} =
                     else:
                         SINT(res)
                 of BIV: BIGINT(int(I(l))+BI(r))
-                of RV: REAL(float(I(l))+R(r))
+                of RV: REAL(float32(I(l))+float32(R(r)))
                 else: InvalidOperationError("+",l.kind,r.kind)
         of BIV:
             result = case r.kind
@@ -119,8 +119,8 @@ proc `++`(l: Value, r: Value): Value {.inline.} =
         of RV:
             result = case r.kind
                 of SV: STR($(R(l)) & S(r))
-                of IV: REAL(R(l) + float(I(r)))
-                of RV: REAL(R(l)+R(r))
+                of IV: REAL(float32(R(l)) + float32(I(r)))
+                of RV: REAL(float32(R(l))+float32(R(r)))
                 else: InvalidOperationError("+",l.kind,r.kind)
         of AV:
             if r.kind!=AV:
@@ -158,7 +158,7 @@ proc `--`(l: Value, r: Value): Value {.inline.} =
                     else:
                         SINT(res)
                 of BIV: BIGINT(int(I(l)) - BI(r))
-                of RV: REAL(float(I(l))-R(r))
+                of RV: REAL(float32(I(l))-float32(R(r)))
                 else: InvalidOperationError("-",l.kind,r.kind)
         of BIV:
             result = case r.kind
@@ -167,8 +167,8 @@ proc `--`(l: Value, r: Value): Value {.inline.} =
                 else: InvalidOperationError("-",l.kind,r.kind)
         of RV:
             result = case r.kind
-                of IV: REAL(R(l) - float(I(r)))
-                of RV: REAL(R(l)-R(r))
+                of IV: REAL(float32(R(l)) - float32(I(r)))
+                of RV: REAL(float32(R(l))-float32(R(r)))
                 else: InvalidOperationError("-",l.kind,r.kind)
         of AV:
             result = valueCopy(l)
@@ -197,7 +197,7 @@ proc `**`(l: Value, r: Value): Value {.inline.} =
         of SV:
             result = case r.kind
                 of IV: STR(S(l).repeat(I(r)))
-                of RV: STR(S(l).repeat(int(R(r))))
+                of RV: STR(S(l).repeat(int(float32(R(r)))))
                 else: InvalidOperationError("*",l.kind,r.kind)
         of IV:
             result = case r.kind
@@ -209,7 +209,7 @@ proc `**`(l: Value, r: Value): Value {.inline.} =
                     else:
                         SINT(res)
                 of BIV: BIGINT(int(I(l)) * BI(r))
-                of RV: REAL(float(I(l))*R(r))
+                of RV: REAL(float32(I(l))*float32(R(r)))
                 else: InvalidOperationError("*",l.kind,r.kind)
         of BIV:
             result = case r.kind
@@ -219,8 +219,8 @@ proc `**`(l: Value, r: Value): Value {.inline.} =
         of RV:
             result = case r.kind
                 of SV: STR(S(r).repeat(int(R(l))))
-                of IV: REAL(R(l) * float(I(r)))
-                of RV: REAL(R(l)*R(r))
+                of IV: REAL(float32(R(l)) * float32(I(r)))
+                of RV: REAL(float32(R(l))* float32(R(r)))
                 else: InvalidOperationError("*",l.kind,r.kind)
         of AV:
             result = ARR(@[])
@@ -281,8 +281,8 @@ proc `//`(l: Value, r: Value): Value {.inline.} =
                 else: InvalidOperationError("/",l.kind,r.kind)
         of RV:
             result = case r.kind
-                of IV: REAL(R(l) / float(I(r)))
-                of RV: REAL(R(l) / R(r))
+                of IV: REAL(float32(R(l)) / float32(I(r)))
+                of RV: REAL(float32(R(l)) / float32(R(r)))
                 else: InvalidOperationError("/",l.kind,r.kind)
         of AV:
             result = ARR(@[])
