@@ -27,7 +27,7 @@ printAll #("one" "two" "three")
 if true -> printHello ~
 
 // Using a function in first-class context within an expression
-if [getNumber ~]=3 -> "yep, it worked"
+if [getNumber ~]=3 -> print "yep, it worked"
 
 // Obtaining the return value of a function:
 num: getNumber ~

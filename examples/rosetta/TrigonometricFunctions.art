@@ -1,16 +1,16 @@
 pi: 4*[atan 1.0]
 
-radians: pi/4
+radians: pi/4.0
 degrees: 45.0
 
 print "sine"
-print [sin radians] + " " + [sin degrees*pi/180]
+print [sin radians] + " " + [sin degrees*pi/180.0]
 
 print "cosine"
-print [cos radians] + " " + [cos degrees*pi/180]
+print [cos radians] + " " + [cos degrees*pi/180.0]
 
 print "tangent"
-print [tan radians] + " " + [tan degrees*pi/180]
+print [tan radians] + " " + [tan degrees*pi/180.0]
 
 print "arcsine"
 print [asin|sin radians] + " " + [asin|sin radians]*180/pi
