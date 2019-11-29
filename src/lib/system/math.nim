@@ -409,6 +409,25 @@ proc Math_max*[F,X,V](f: F, xl: X): V {.inline.} =
             result = A(v0)[i]
         inc(i)
 
+proc Math_median*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,AV)
+
+    proc opCmp(l: Value, r: Value): int =
+        if (l.lt(r) or l.eq(r)): -1
+        else: 1
+
+    let s = A(v0).sorted(opCmp)
+
+    if s.len mod 2==1:
+        result = s[s.len div 2]
+    else:
+        let middleSum = s[s.len div 2-1] ++ s[s.len div 2]
+        case middleSum.kind
+            of IV: result = REAL(float32(I(middleSum))/float32(2.0))
+            of BIV: result = REAL(float32(toInt(BI(middleSum)))/float32(2.0))
+            of RV: result = REAL(float32(R(middleSum))/float32(2.0))
+            else: discard
+
 proc Math_min*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV)
 
