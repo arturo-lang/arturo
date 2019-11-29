@@ -18,10 +18,13 @@ proc String_capitalize*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).capitalize())
 
 proc String_capitalizeI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = S(DEST).capitalize()
+        return DEST
+    # let v0 = VALID(0,SV)
     
-    S(v0) = S(v0).capitalize()
-    result = v0
+    # S(v0) = S(v0).capitalize()
+    # result = v0
 
 proc String_char*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV)
@@ -40,11 +43,16 @@ proc String_deletePrefix*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).removingPrefix(S(v1)))
 
 proc String_deletePrefixI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-    let v1 = VALID(1,SV)
+    IN_PLACE:
+        let v1 = VALID(1,SV)
 
-    S(v0) = S(v0).removingPrefix(S(v1))
-    result = v0
+        S(DEST) = S(DEST).removingPrefix(S(v1))
+        return DEST
+    # let v0 = VALID(0,SV)
+    # let v1 = VALID(1,SV)
+
+    # S(v0) = S(v0).removingPrefix(S(v1))
+    # result = v0
 
 proc String_deleteSuffix*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -53,11 +61,16 @@ proc String_deleteSuffix*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).removingSuffix(S(v1)))
 
 proc String_deleteSuffixI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-    let v1 = VALID(1,SV)
+    IN_PLACE:
+        let v1 = VALID(1,SV)
 
-    S(v0) = S(v0).removingSuffix(S(v1))
-    result = v0
+        S(DEST) = S(DEST).removingSuffix(S(v1))
+        return DEST
+    # let v0 = VALID(0,SV)
+    # let v1 = VALID(1,SV)
+
+    # S(v0) = S(v0).removingSuffix(S(v1))
+    # result = v0
 
 proc String_distance*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -154,10 +167,13 @@ proc String_lowercase*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).toLower())
 
 proc String_lowercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = S(DEST).toLower()
+        return DEST
+    # let v0 = VALID(0,SV)
     
-    S(v0) = S(v0).toLower()
-    result = v0
+    # S(v0) = S(v0).toLower()
+    # result = v0
 
 proc String_matches*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -172,11 +188,16 @@ proc String_padCenter*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(center(S(v0),I(v1)))
 
 proc String_padCenterI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-    let v1 = VALID(1,IV)
+    IN_PLACE:
+        let v1 = VALID(1,IV)
 
-    S(v0) = center(S(v0),I(v1))
-    result = v0
+        S(DEST) = center(S(DEST),I(v1))
+        return DEST
+    # let v0 = VALID(0,SV)
+    # let v1 = VALID(1,IV)
+
+    # S(v0) = center(S(v0),I(v1))
+    # result = v0
 
 proc String_padLeft*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -185,11 +206,16 @@ proc String_padLeft*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(unicode.align(S(v0),I(v1)))
 
 proc String_padLeftI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-    let v1 = VALID(1,IV)
+    IN_PLACE:
+        let v1 = VALID(1,IV)
 
-    S(v0) = unicode.align(S(v0),I(v1))
-    result = v0
+        S(DEST) = unicode.align(S(DEST),I(v1))
+        return DEST
+    # let v0 = VALID(0,SV)
+    # let v1 = VALID(1,IV)
+
+    # S(v0) = unicode.align(S(v0),I(v1))
+    # result = v0
 
 proc String_padRight*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -198,11 +224,16 @@ proc String_padRight*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(unicode.alignLeft(S(v0),I(v1)))
 
 proc String_padRightI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-    let v1 = VALID(1,IV)
+    IN_PLACE:
+        let v1 = VALID(1,IV)
 
-    S(v0) = unicode.alignLeft(S(v0),I(v1))
-    result = v0
+        S(DEST) = unicode.alignLeft(S(DEST),I(v1))
+        return DEST
+    # let v0 = VALID(0,SV)
+    # let v1 = VALID(1,IV)
+
+    # S(v0) = unicode.alignLeft(S(v0),I(v1))
+    # result = v0
 
 proc String_replace*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -215,16 +246,26 @@ proc String_replace*[F,X,V](f: F, xl: X): V {.inline.} =
         result = STR(S(v0).replace(S(v1),S(v2)))
 
 proc String_replaceI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-    let v1 = VALID(1,SV)
-    let v2 = VALID(2,SV)
+    IN_PLACE:
+        let v1 = VALID(1,SV)
+        let v2 = VALID(2,SV)
 
-    if unlikely(S(v1).isRegex()):
-        S(v0) = S(v0).replace(re(prepareRegex(S(v1))),S(v2))
-        result = v0
-    else:
-        S(v0) = S(v0).replace(S(v1),S(v2))
-        result = v0
+        if unlikely(S(v1).isRegex()):
+            S(DEST) = S(DEST).replace(re(prepareRegex(S(v1))),S(v2))
+            return DEST
+        else:
+            S(DEST) = S(DEST).replace(S(v1),S(v2))
+            return DEST
+    # let v0 = VALID(0,SV)
+    # let v1 = VALID(1,SV)
+    # let v2 = VALID(2,SV)
+
+    # if unlikely(S(v1).isRegex()):
+    #     S(v0) = S(v0).replace(re(prepareRegex(S(v1))),S(v2))
+    #     result = v0
+    # else:
+    #     S(v0) = S(v0).replace(S(v1),S(v2))
+    #     result = v0
  
 proc String_split*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -250,10 +291,13 @@ proc String_strip*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(unicode.strip(S(v0)))
 
 proc String_stripI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = unicode.strip(S(DEST))
+        return DEST
+    # let v0 = VALID(0,SV)
 
-    S(v0) = unicode.strip(S(v0))
-    result = v0
+    # S(v0) = unicode.strip(S(v0))
+    # result = v0
 
 proc String_uppercase*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -261,10 +305,13 @@ proc String_uppercase*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).toUpper())
 
 proc String_uppercaseI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = S(DEST).toUpper()
+        return DEST
+    # let v0 = VALID(0,SV)
     
-    S(v0) = S(v0).toUpper()
-    result = v0
+    # S(v0) = S(v0).toUpper()
+    # result = v0
 
 #[******************************************************
   ******************************************************

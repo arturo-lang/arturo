@@ -18,10 +18,13 @@ proc Url_decodeUrl*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(decodeUrl(S(v0)))
 
 proc Url_decodeUrlI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = decodeUrl(S(DEST))
+        return DEST
+    # let v0 = VALID(0,SV)
 
-    S(v0) = decodeUrl(S(v0))
-    result = v0
+    # S(v0) = decodeUrl(S(v0))
+    # result = v0
 
 proc Url_encodeUrl*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -29,10 +32,13 @@ proc Url_encodeUrl*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(encodeUrl(S(v0)))
 
 proc Url_encodeUrlI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = encodeUrl(S(DEST))
+        return DEST
+    # let v0 = VALID(0,SV)
 
-    S(v0) = encodeUrl(S(v0))
-    result = v0
+    # S(v0) = encodeUrl(S(v0))
+    # result = v0
 
 proc Url_isAbsoluteUrl*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
