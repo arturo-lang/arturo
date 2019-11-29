@@ -252,6 +252,7 @@ var
     TRUE                    : Value
     FALSE                   : Value
     NULL                    : Value
+    NOT_IN_ARGS             : bool
 
 #[######################################################
     C Builtins
@@ -500,6 +501,8 @@ template initializeConsts() =
     FALSE           = BOOL(false)
     NULL            = NV + 1
     Hashes          = {cstring(ARGV):ARGV_HASH}.toTable
+
+    NOT_IN_ARGS     = true
 
     randomize()
 
