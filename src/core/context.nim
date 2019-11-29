@@ -61,7 +61,7 @@ template initTopContextWith(pairs:seq[(int,Value)]) =
 
 template popContext() =
     ## Discard topmost Context
-
+    
     discard Stack.pop()
 
 ##---------------------------
@@ -204,7 +204,7 @@ proc setSymbol(hs: int, v: Value): Value {.inline.} =
 
 proc inspectStack() =
     ## Utility method print out all Context's in the Stack
-
+    echo "Inspecting stack: len=", Stack.len
     var i = 0
     for s in Stack:
         var tab = ""
