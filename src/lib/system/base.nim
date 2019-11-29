@@ -79,22 +79,30 @@ proc Base_loop*[F,X,V](f: F, xl: X): V {.inline.} =
             var i = 0
             while i < A(v0).len:
                 result = FN(v1).execute(A(v0)[i])
+                if Returned != 0:
+                    return Returned
                 inc(i)
         of DV:
             let v1 = VALID(1,FV)
             for val in D(v0):
                 result = FN(v1).execute(ARR(@[STR(getSymbolForHash(val[0])),val[1]]))
+                if Returned != 0:
+                    return Returned
         of BV:
             if not B(v0): return NULL
             let v1 = VALID(1,FV)
             while true:
                 result = FN(v1).execute(NULL)
+                if Returned != 0:
+                    return Returned
                 if not B(VALID(0,BV)): break
         of IV:
             let v1 = VALID(1,FV)
             var i = 0
             while i < I(v0):
                 result = FN(v1).execute(NULL)
+                if Returned != 0:
+                    return Returned
                 inc(i)
 
         else: result = NULL
