@@ -86,7 +86,11 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
 
             let sym = getSymbol(stm.id)
             case sym.kind
-                of FV: result = FN(sym).execute(stm.expressions)
+                of FV: 
+                    let fn = FN(sym)
+                    result = 
+                        if unlikely(fn.isArgument): fn.execute(stm.expressions.evaluate())
+                        else: fn.execute(stm.expressions)
                 of NV: SymbolNotFoundError(getSymbolForHash(stm.id))
                 else: FunctionNotFoundError(getSymbolForHash(stm.id))
 
