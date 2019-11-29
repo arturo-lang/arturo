@@ -243,35 +243,35 @@ proc `//`(l: Value, r: Value): Value {.inline.} =
 
     {.computedGoto.}
     case l.kind
-        of SV: discard
-            # case r.kind
-            #     of IV: 
-            #         var k=0
-            #         var resp=""
-            #         result = ARR(@[])
-            #         while k<S(l).len:
-            #             resp &= S(l)[k]
-            #             if ((k+1) mod I(r))==0: 
-            #                 result.a.add(STR(resp))
-            #                 resp = ""
-            #             inc(k)
+        of SV:
+            case r.kind
+                of IV: 
+                    var k=0
+                    var resp=""
+                    result = ARR(@[])
+                    while k<S(l).len:
+                        resp &= S(l)[k]
+                        if ((k+1) mod I(r))==0: 
+                            A(result).add(STR(resp))
+                            resp = ""
+                        inc(k)
                 
-            #     of RV: 
-            #         var k=0
-            #         var resp=""
-            #         result = ARR(@[])
-            #         while k<S(l).len:
-            #             resp &= S(l)[k]
-            #             if ((k+1) mod int(R(r)))==0: 
-            #                 result.a.add(STR(resp))
-            #                 resp = ""
-            #             inc(k)
+                of RV: 
+                    var k=0
+                    var resp=""
+                    result = ARR(@[])
+                    while k<S(l).len:
+                        resp &= S(l)[k]
+                        if ((k+1) mod int(R(r)))==0: 
+                            A(result).add(STR(resp))
+                            resp = ""
+                        inc(k)
 
-            #     else: InvalidOperationError("/",l.kind,r.kind))
+                else: InvalidOperationError("/",l.kind,r.kind)
         of IV:
             result = case r.kind
                 of IV: SINT(I(l) div I(r))
-                #of BIV: BIGINT(I(l) div BI(r))
+                of BIV: BIGINT(int(I(l)) div BI(r))
                 of RV: REAL(float(I(l)) / R(r))
                 else: InvalidOperationError("/",l.kind,r.kind)
         of BIV:
@@ -361,10 +361,10 @@ proc `^^`(l: Value, r: Value): Value {.inline.} =
                     except Exception: BIGINT(pow(newInt(I(l)),culong(I(r))))
                 of RV: SINT(I(l) ^ int(R(r)))
                 else: InvalidOperationError("^",l.kind,r.kind)
-        # of BIV:
-        #     result = case r.kind
-        #         of IV: BIGINT(BI(l) ^ culong(I(r)))
-        #         else: InvalidOperationError("^",l.kind,r.kind))
+        of BIV:
+            result = case r.kind
+                of IV: BIGINT(BI(l) ^ culong(I(r)))
+                else: InvalidOperationError("^",l.kind,r.kind)
         of RV:
             result = case r.kind
                 of IV: SINT(int(R(l)) ^ I(r))
