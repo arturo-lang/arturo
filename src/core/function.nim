@@ -16,7 +16,7 @@
 ##---------------------------
 
 proc newUserFunction(s: StatementList, a: seq[string]): Function =
-    result = Function(id: 0, args: a.map((x)=>storeOrGetHash(x)), hasNamedArgs: (a.len!=0), body: s, hasContext: false, parentThis: 0, parentContext: @[])
+    result = Function(id: 0, args: a.map((x)=>storeOrGetHash(x)), hasNamedArgs: (a.len!=0), isArgument: false, body: s, hasContext: false, parentThis: 0, parentContext: @[])
 
 ##---------------------------
 ## Getters/Setters
@@ -71,6 +71,8 @@ proc execute(f: Function, xl: ExpressionList): Value {.inline.} =
         var i = 0
         var args = newSeq[(int,Value)](xl.list.len)
         while i<xl.list.len:
+            if xl.list[i].kind==argumentExpression and xl.list[i].a.kind==functionArgument:
+                xl.list[i].a.f.isArgument = true
             args[i] = (f.args[i], xl.list[i].evaluate())
             inc(i)
         initTopContextWith(args)
