@@ -498,7 +498,7 @@ template initializeConsts() =
     ConstInts       = newTable[cstring,Argument]()
     TRUE            = BOOL(true)
     FALSE           = BOOL(false)
-    NULL            = NV
+    NULL            = NV + 1
     Hashes          = {cstring(ARGV):ARGV_HASH}.toTable
 
     randomize()
