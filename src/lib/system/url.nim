@@ -15,11 +15,11 @@
 proc Url_decodeUrl*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
 
-    result = STR(decodeUrl(S(v0)))
+    result = STR(decodeUrl(S(v0),decodePlus=false))
 
 proc Url_decodeUrlI*[F,X,V](f: F, xl: X): V {.inline.} =
     IN_PLACE:
-        S(DEST) = decodeUrl(S(DEST))
+        S(DEST) = decodeUrl(S(DEST),decodePlus=false)
         return DEST
     # let v0 = VALID(0,SV)
 
@@ -29,11 +29,11 @@ proc Url_decodeUrlI*[F,X,V](f: F, xl: X): V {.inline.} =
 proc Url_encodeUrl*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
 
-    result = STR(encodeUrl(S(v0)))
+    result = STR(encodeUrl(S(v0),usePlus=false))
 
 proc Url_encodeUrlI*[F,X,V](f: F, xl: X): V {.inline.} =
     IN_PLACE:
-        S(DEST) = encodeUrl(S(DEST))
+        S(DEST) = encodeUrl(S(DEST),usePlus=false)
         return DEST
     # let v0 = VALID(0,SV)
 
