@@ -1,0 +1,27 @@
+hailstone: @(n){
+	ret: #(n)
+	loop n>1 {
+		if [and n 1]=1 {
+			n: 3*n+1
+		}{
+			n: n/2
+		}
+		ret: ret+n
+	}
+}
+
+print "Hailstone sequence for 27:"
+print [hailstone 27]
+
+maxHailstoneLength: 0
+maxHailstone: 0
+
+loop [range 2 100000] {
+	l: size|hailstone &
+	if l>maxHailstoneLength {
+		maxHailstoneLength: l
+		maxHailstone: &
+	}
+}
+
+print "max hailstone sequence found (<100000): of length " + maxHailstoneLength + " for " + maxHailstone
