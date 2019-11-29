@@ -88,8 +88,11 @@ proc execute(stm: Statement, parent: Value = 0): Value {.inline.} =
             case sym.kind
                 of FV: 
                     let fn = FN(sym)
+                    #echo "function: ",getSymbolForHash(stm.id)
+                    #if fn.isArgument: echo " is an argument!!!!!!"
                     result = 
-                        if unlikely(fn.isArgument): fn.execute(stm.expressions.evaluate())
+                        if unlikely(fn.isArgument): 
+                            fn.execute(stm.expressions.evaluate())
                         else: fn.execute(stm.expressions)
                 of NV: SymbolNotFoundError(getSymbolForHash(stm.id))
                 else: FunctionNotFoundError(getSymbolForHash(stm.id))
