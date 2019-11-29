@@ -79,14 +79,22 @@ proc Generic_delete*[F,X,V](f: F, xl: X): V {.inline.} =
     result = v0--v1
 
 proc Generic_deleteI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|SV|DV)
-    let v1 = VALID(1,ANY)
+    IN_PLACE:
+        let v1 = VALID(1,ANY)
+        case DEST.kind
+            of AV: result = DEST--v1; A(DEST) = A(result)
+            of SV: result = DEST--v1; S(DEST) = S(result)
+            of DV: result = DEST--v1; D(DEST) = D(result)
+            else: discard
+        return
+    # let v0 = VALID(0,AV|SV|DV)
+    # let v1 = VALID(1,ANY)
 
-    case v0.kind
-        of AV: result = v0--v1; A(v0) = A(result)
-        of SV: result = v0--v1; S(v0) = S(result)
-        of DV: result = v0--v1; D(v0) = D(result)
-        else: discard
+    # case v0.kind
+    #     of AV: result = v0--v1; A(v0) = A(result)
+    #     of SV: result = v0--v1; S(v0) = S(result)
+    #     of DV: result = v0--v1; D(v0) = D(result)
+    #     else: discard
 
 proc Generic_deleteBy*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV|SV|DV)
@@ -110,25 +118,43 @@ proc Generic_deleteBy*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_deleteByI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|SV|DV)
+    IN_PLACE:
+        case DEST.kind
+            of AV: 
+                A(DEST).delete(I(VALID(1,IV)))
+                return DEST
+            of SV: 
+                let v1 = VALID(1,IV)
+                S(DEST).delete(I(v1),I(v1))
+                return DEST
+            of DV: 
+                let v1 = VALID(1,SV)
+                var z = 0
+                while z < D(DEST).len:
+                    if D(DEST)[z][0] == S(v1).hash:
+                        D(DEST).del(z)
+                    inc(z)
+                return DEST
+            else: discard
+    # let v0 = VALID(0,AV|SV|DV)
 
-    case v0.kind
-        of AV: 
-            A(v0).delete(I(VALID(1,IV)))
-            result = v0
-        of SV: 
-            let v1 = VALID(1,IV)
-            S(v0).delete(I(v1),I(v1))
-            result = v0
-        of DV: 
-            let v1 = VALID(1,SV)
-            var i = 0
-            while i < D(v0).len:
-                if D(v0)[i][0] == S(v1).hash:
-                    D(v0).del(i)
-                inc(i)
-            result = v0
-        else: discard
+    # case v0.kind
+    #     of AV: 
+    #         A(v0).delete(I(VALID(1,IV)))
+    #         result = v0
+    #     of SV: 
+    #         let v1 = VALID(1,IV)
+    #         S(v0).delete(I(v1),I(v1))
+    #         result = v0
+    #     of DV: 
+    #         let v1 = VALID(1,SV)
+    #         var i = 0
+    #         while i < D(v0).len:
+    #             if D(v0)[i][0] == S(v1).hash:
+    #                 D(v0).del(i)
+    #             inc(i)
+    #         result = v0
+    #     else: discard
 
 proc Generic_get*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = xl.list[0].evaluate()#VALID(0,AV|SV|DV)
@@ -166,16 +192,25 @@ proc Generic_prepend*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_prependI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|SV)
+    IN_PLACE:
+        case DEST.kind
+            of AV: 
+                A(DEST).insert(VALID(1,ANY))
+                return DEST
+            of SV: 
+                S(DEST) = S(VALID(1,SV)) & S(DEST)
+                return DEST
+            else: discard            
+    # let v0 = VALID(0,AV|SV)
 
-    case v0.kind
-        of AV: 
-            A(v0).insert(VALID(1,ANY))
-            result = v0
-        of SV: 
-            S(v0) = S(VALID(1,SV)) & S(v0)
-            result = v0
-        else: discard
+    # case v0.kind
+    #     of AV: 
+    #         A(v0).insert(VALID(1,ANY))
+    #         result = v0
+    #     of SV: 
+    #         S(v0) = S(VALID(1,SV)) & S(v0)
+    #         result = v0
+    #     else: discard
 
 proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV|SV)
@@ -193,20 +228,33 @@ proc Generic_reverse*[F,X,V](f: F, xl: X): V {.inline.} =
         else: discard
 
 proc Generic_reverseI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,AV|SV)
+    IN_PLACE:
+        case DEST.kind
+            of AV: 
+                A(DEST).reverse()
+                return DEST
+            of SV: 
+                var z = 0
+                while z<S(DEST).high div 2:
+                    swap(S(DEST)[z],S(DEST)[S(DEST).high - z])
+                    inc(z)
+                
+                return DEST
+            else: discard   
+    # let v0 = VALID(0,AV|SV)
 
-    case v0.kind
-        of AV: 
-            A(v0).reverse()
-            result = v0
-        of SV: 
-            var i = 0
-            while i<S(v0).high div 2:
-                swap(S(v0)[i],S(v0)[S(v0).high - i])
-                inc(i)
+    # case v0.kind
+    #     of AV: 
+    #         A(v0).reverse()
+    #         result = v0
+    #     of SV: 
+    #         var i = 0
+    #         while i<S(v0).high div 2:
+    #             swap(S(v0)[i],S(v0)[S(v0).high - i])
+    #             inc(i)
             
-            result = v0
-        else: discard
+    #         result = v0
+    #     else: discard
 
 proc Generic_set*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV|SV|DV)

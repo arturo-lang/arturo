@@ -18,10 +18,9 @@ proc Crypto_decodeBase64*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).decode())
 
 proc Crypto_decodeBase64I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-
-    S(v0) = S(v0).decode()
-    result = v0
+    IN_PLACE:
+        S(DEST) = S(DEST).decode()
+        return DEST
 
 proc Crypto_encodeBase64*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -29,10 +28,9 @@ proc Crypto_encodeBase64*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).encode())
 
 proc Crypto_encodeBase64I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-
-    S(v0) = S(v0).encode()
-    result = v0
+    IN_PLACE:
+        S(DEST) = S(DEST).encode()
+        return DEST
 
 proc Crypto_md5*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -40,10 +38,9 @@ proc Crypto_md5*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(S(v0).getMD5())
 
 proc Crypto_md5I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-
-    S(v0) = S(v0).getMD5()
-    result = v0
+    IN_PLACE:
+        S(DEST) = S(DEST).getMD5()
+        return DEST
 
 proc Crypto_sha1*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -51,10 +48,9 @@ proc Crypto_sha1*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(($(S(v0).secureHash())).toLower())
 
 proc Crypto_sha1I*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
-
-    S(v0) = ($(S(v0).secureHash())).toLower()
-    result = v0
+    IN_PLACE:
+        S(DEST) = ($(S(DEST).secureHash())).toLower()
+        return DEST
 
 proc Crypto_uuid*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR($(genOid()))

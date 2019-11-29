@@ -18,10 +18,13 @@ proc Path_absolutePath*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(absolutePath(S(v0)))
 
 proc Path_absolutePathI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = absolutePath(S(DEST))
+        return DEST
+    # let v0 = VALID(0,SV)
 
-    S(v0) = absolutePath(S(v0))
-    result = v0
+    # S(v0) = absolutePath(S(v0))
+    # result = v0
 
 proc Path_copyDir*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -164,10 +167,13 @@ proc Path_normalizePath*[F,X,V](f: F, xl: X): V {.inline.} =
     result = STR(normalizedPath(S(v0)))
 
 proc Path_normalizePathI*[F,X,V](f: F, xl: X): V {.inline.} =
-    let v0 = VALID(0,SV)
+    IN_PLACE:
+        S(DEST) = normalizedPath(S(DEST))
+        return DEST
+    # let v0 = VALID(0,SV)
 
-    S(v0) = normalizedPath(S(v0))
-    result = v0
+    # S(v0) = normalizedPath(S(v0))
+    # result = v0
 
 proc Path_pathDir*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)

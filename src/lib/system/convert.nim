@@ -13,27 +13,40 @@
   ======================================================]#
 
 proc Convert_toBin*[F,X,V](f: F, xl: X): V {.inline.} =
-    discard
-    # let v0 = I(VALID(0,IV))
+    let v0 = I(VALID(0,IV))
 
-    # result = STR(fmt"{v0:#b}")
+    result = STR(fmt"{v0:#b}")
+
+proc Convert_toBinI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v0 = I(DEST)
+
+        DEST = STR(fmt"{v0:#b}")
+        return DEST
 
 proc Convert_toHex*[F,X,V](f: F, xl: X): V {.inline.} =
-    discard
-    # let v0 = I(VALID(0,IV))
+    let v0 = I(VALID(0,IV))
 
-    # result = STR(fmt"{v0:#x}")
+    result = STR(fmt"{v0:#x}")
+
+proc Convert_toHexI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v0 = I(DEST)
+
+        DEST = STR(fmt"{v0:#x}")
+        return DEST
 
 proc Convert_toInt*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
 
     result = SINT(int(R(v0)))
 
-# proc Convert_toMutable*[F,X,V](f: F, xl: X): V {.inline.} =
-#     let v0 = VALID(0,IV|BIV)
+proc Convert_toIntI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v0 = R(DEST)
 
-#     if v0.kind==IV: result = BIGINT(newInt(I(v0)))
-#     else: result = v0
+        DEST = SINT(int(v0))
+        return DEST
 
 proc Convert_toNumber*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,SV)
@@ -63,21 +76,71 @@ proc Convert_toNumber*[F,X,V](f: F, xl: X): V {.inline.} =
             except Exception: 
                 result = BIGINT(S(v0))
 
-proc Convert_toOct*[F,X,V](f: F, xl: X): V {.inline.} =
-    discard
-    #let v0 = I(VALID(0,IV))
+proc Convert_toNumberI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v0 = DEST
 
-    #result = STR(fmt"{v0:#o}")
+        if unlikely(S(v0).startsWith("0x")): 
+            var ret = 0
+            discard parseHex(S(v0),ret)
+            DEST = SINT(ret)
+        elif unlikely(S(v0).startsWith("0b")):
+            var ret = 0
+            discard parseBin(S(v0),ret)
+            DEST = SINT(ret)
+        elif unlikely(S(v0).startsWith("0o")):
+            var ret = 0
+            discard parseOct(S(v0),ret)
+            DEST = SINT(ret)
+        else:
+            if S(v0).contains("."):
+                var ret = 0.0
+                discard parseFloat(S(v0),ret)
+                DEST = REAL(ret)
+            else:
+                try: 
+                    var ret = 0
+                    discard parseInt(S(v0),ret)
+                    DEST = SINT(ret)
+                except Exception: 
+                    DEST = BIGINT(S(v0))
+        return DEST
+
+proc Convert_toOct*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = I(VALID(0,IV))
+
+    result = STR(fmt"{v0:#o}")
+
+proc Convert_toOctI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v0 = I(DEST)
+
+        DEST = STR(fmt"{v0:#o}")
+        return DEST
 
 proc Convert_toReal*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,IV)
 
     result = REAL(float32(I(v0)))
 
+proc Convert_toRealI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v0 = I(DEST)
+
+        DEST = REAL(float32(v0))
+        return DEST
+
 proc Convert_toString*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,ANY)
 
     result = STR(v0.stringify(quoted=false))
+
+proc Convert_toStringI*[F,X,V](f: F, xl: X): V {.inline.} =
+    IN_PLACE:
+        let v0 = DEST
+
+        DEST = STR(DEST.stringify(quoted=false))
+        return DEST
 
 #[******************************************************
   ******************************************************

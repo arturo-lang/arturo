@@ -293,6 +293,13 @@ proc Math_exp*[F,X,V](f: F, xl: X): V {.inline.} =
 
     result = REAL(exp(R(v0)))
 
+proc Math_fact*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV)
+
+    let ret = bignum.fac(int(I(v0)))
+
+    result = BIGINT(ret)
+
 proc Math_floor*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,RV)
 
@@ -470,6 +477,12 @@ proc Math_neg*[F,X,V](f: F, xl: X): V {.inline.} =
         of RV: result = REAL(float32(-1.0 * R(v0)))
         of BIV: result = BIGINT(BI(v0)*(-1))
         else: discard
+
+proc Math_nextPrime*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,IV|BIV)
+
+    if v0.kind==IV: result = BIGINT(bignum.nextPrime(newInt(I(v0))))
+    else: result = BIGINT(bignum.nextPrime(BI(v0)))
 
 proc Math_pi*[F,X,V](f: F, xl: X): V {.inline.} =
     result = REAL(PI)
