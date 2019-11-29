@@ -191,6 +191,7 @@ let
         SystemFunction(lib:"math",          name:"log2",                call:Math_log2),#                 req:@[@[RV]],                                                                      ret: @[RV],             desc:"get the binary (base-2) logarithm of given value",
         SystemFunction(lib:"math",          name:"log10",               call:Math_log10),#                req:@[@[RV]],                                                                      ret: @[RV],             desc:"get the common (base-10) logarithm of given value",
         SystemFunction(lib:"math",          name:"max",                 call:Math_max),#                  req:@[@[AV]],                                                                      ret: @[IV],             desc:"get maximum of the values in given array",
+        SystemFunction(lib:"math",          name:"median",              call:Math_median),
         SystemFunction(lib:"math",          name:"min",                 call:Math_min),#                  req:@[@[AV]],                                                                      ret: @[IV],             desc:"get minimum of the values in given array",
         SystemFunction(lib:"math",          name:"mod",                 call:Math_mod),
         SystemFunction(lib:"math",          name:"mod!",                call:Math_modI),
