@@ -69,6 +69,12 @@ proc Base_import*[F,X,V](f: F, xl: X): V {.inline.} =
     
     result = importModule(S(v0))
 
+proc Base_let*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,SV)
+    let v1 = VALID(1,ANY)
+
+    result = setSymbol(storeOrGetHash(S(v0)),v1)
+
 proc Base_loop*[F,X,V](f: F, xl: X): V {.inline.} =
     let v0 = VALID(0,AV|DV|BV|IV)
 
@@ -126,6 +132,11 @@ proc Base_syms*[F,X,V](f: F, xl: X): V {.inline.} =
     inspectStack()
 
     result = NULL
+
+proc Base_var*[F,X,V](f: F, xl: X): V {.inline.} =
+    let v0 = VALID(0,SV)
+
+    result = getSymbol(storeOrGetHash(S(v0)))
 
 #[******************************************************
   ******************************************************
