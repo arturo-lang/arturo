@@ -1,0 +1,2 @@
+str: "ha" * 5
+print str

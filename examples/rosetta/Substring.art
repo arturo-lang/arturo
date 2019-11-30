@@ -1,0 +1,22 @@
+s: "abcdefgh"
+n: 2
+m: 3
+c: "d"
+cs: "cd"
+
+// starting from n=2 characters in and m=3 in length
+print [slice s n-1 n+m-2]
+
+// starting from n characters in, up to the end of the string
+print [slice s n-1]
+
+// whole string minus last character
+print [slice s 0 [size s]-2]
+
+// starting from a known character c='d' within the string and of m length
+i: index s c
+print [slice s i i+m-1]
+
+// starting from a known substring cs="cd" within the string and of m length
+i: index s cs
+print [slice s i i+m-1]
