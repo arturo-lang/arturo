@@ -1,0 +1,4 @@
+A: #(@John @Bob @Mary @Serena)
+B: #(@Jim @Mary @John @Bob)
+
+print [symmetricDifference A B]

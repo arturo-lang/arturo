@@ -1,0 +1,6 @@
+print "enter a variable name: " , name: strip|input ~
+print "enter a variable value: ", val: strip|input ~
+
+let name val
+
+print "your variable is: " + [var name]

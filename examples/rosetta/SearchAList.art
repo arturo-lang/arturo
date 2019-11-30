@@ -1,0 +1,6 @@
+haystack: #("Zig" "Zag" "Wally" "Ronald" "Bush" "Krusty" "Charlie" "Bush" "Bozo")
+
+loop #("Bush" "Washington") @(needle){
+	f: index haystack needle
+	if f>=0 { print f + " => " + needle } { panic "'" + needle + "' not in haystack" }
+}
