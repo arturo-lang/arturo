@@ -273,8 +273,12 @@ proc mulWillOverflow(a, b: int32, c: var int32): bool {.
 
 # Context
 
+proc storeOrGetHash(k:cstring):int {.inline.}
+proc storeOrGetHash(k:string):int {.inline.}
 proc getSymbolForHash(h:int):string {.inline.}
 proc updateOrSet(ctx: var Context, k: string, v: Value) {.inline.}
+proc getSymbol(hs: int): Value {.inline.}
+proc setSymbol(hs: int, v: Value): Value {.inline.}
 proc keys*(ctx: Context): seq[string] {.inline.}
 proc values*(ctx: Context): seq[Value] {.inline.}
 proc getValueForKey*(ctx: Context, key: string): Value {.inline.}
