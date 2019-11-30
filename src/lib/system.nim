@@ -73,11 +73,13 @@ let
         SystemFunction(lib:"base",          name:"exec",                call:Base_exec),#                 req:@[@[FV,AV]],                                                                   ret: @[NV],            desc:"execute function using given array of values",
         SystemFunction(lib:"base",          name:"if",                  call:Base_if),#                   req:@[@[BV,FV],@[BV,FV,FV]],                                                       ret: @[NV],            desc:"if condition is true, execute given function; else execute optional alternative function",
         SystemFunction(lib:"base",          name:"import",              call:Base_import),#               req:@[@[SV]],                                                                      ret: @[NV],            desc:"import module or object in given script path",
+        SystemFunction(lib:"base",          name:"let",                 call:Base_let),
         SystemFunction(lib:"base",          name:"loop",                call:Base_loop),#                 req:@[@[AV,FV],@[DV,FV],@[BV,FV],@[IV,FV]],                                        ret: @[NV],            desc:"execute given function for each element in collection, or while condition is true",
         SystemFunction(lib:"base",          name:"new",                 call:Base_new),#                  req:@[@[SV],@[IV],@[BIV],@[RV],@[BV],@[AV],@[DV],@[FV]],                           ret: @[NV],            desc:"get new copy of given object",
         SystemFunction(lib:"base",          name:"panic",               call:Base_panic),#                req:@[@[SV]],                                                                      ret: @[SV],             desc:"exit program printing given error message",
         SystemFunction(lib:"base",          name:"return",              call:Base_return),#               req:@[@[SV],@[AV],@[IV],@[BIV],@[FV],@[BV],@[RV]],                                 ret: @[NV],            desc:"break execution and return given value",
         SystemFunction(lib:"base",          name:"syms",                call:Base_syms),#                 req:@[@[NV]],                                                                      ret: @[NV],            desc:"break execution and return given value",
+        SystemFunction(lib:"base",          name:"var",                 call:Base_var),
 
         SystemFunction(lib:"convert",       name:"toBin",               call:Convert_toBin),#             req:@[@[IV]],                                                                      ret: @[SV],             desc:"convert given number to its binary string representation",
         SystemFunction(lib:"convert",       name:"toBin!",              call:Convert_toBinI),
