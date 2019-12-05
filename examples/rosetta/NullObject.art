@@ -1,0 +1,3 @@
+v: null
+
+if v=null -> print "got NULL!"

@@ -1,0 +1,13 @@
+knuth: @(arr){
+	if [size arr]=0 -> return #()
+
+	loop [range [size arr]-1 0] {
+		j: random 0 &
+		swap! arr & j
+	}
+}
+
+print|knuth #()
+print|knuth #(10)
+print|knuth #(10 20)
+print|knuth #(10 20 30)

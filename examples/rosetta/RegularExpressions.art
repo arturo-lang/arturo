@@ -1,0 +1,8 @@
+s: "This is a string"
+
+// check for a match
+if [contains s "/string$/"] -> print "Yes, it ends with string!"
+
+// replace some characters
+replace! s "/[as]/" "x"
+print s
