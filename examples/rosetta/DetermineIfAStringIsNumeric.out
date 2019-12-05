@@ -1,0 +1,4 @@
+hello -> isNumeric? false
+123hello -> isNumeric? false
+123 -> isNumeric? true
+12.34 -> isNumeric? true

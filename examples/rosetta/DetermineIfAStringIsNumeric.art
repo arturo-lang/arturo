@@ -1,0 +1,3 @@
+arr: #("hello" "123hello" "123" "12.34")
+
+loop arr -> print & + " -> isNumeric? " + [isNumber &]
