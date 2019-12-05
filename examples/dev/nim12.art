@@ -1,0 +1,45 @@
+x: 2
+syms ~
+fun:@(x){
+	syms~
+	x: 5
+	print x
+	syms~
+}
+
+fun 10
+syms~
+
+incVar:@(v){
+	inc! v
+	syms ~
+}
+
+appendTo:@(arr item \ x y z){
+	append! arr item
+	syms~
+}
+c: 3
+incVar c
+syms~
+
+inc! c
+syms~
+aa: #(1 2 3)
+appendTo 3 4
+syms~
+
+dict: #{
+	name: "john"
+	surname: "doe"
+}
+boom: #{
+	name: "jane"
+	surname: "dob"
+}
+print dict.name
+print boom.name
+print dict.surname
+print boom.surname
+dict.name: 123
+print dict.name
