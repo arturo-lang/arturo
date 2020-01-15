@@ -146,20 +146,20 @@ ids                     :   ids ID                                      { aAdd(L
 verbatim                :   LSQUARE statements RSQUARE
                         ;  
 
-block_start             :   LPAREN ids RPAREN LCURLY                    { printf("found block_start\n"); signalGotInBlock(); }
-                        |   LCURLY                                      { printf("found block_start\n"); signalGotInBlock(); }
+block_start             :   LPAREN ids RPAREN LCURLY                    { signalGotInBlock(); }
+                        |   LCURLY                                      { signalGotInBlock(); }
                         ;
 
-block_end               :   RCURLY                                      { printf("found block_end\n"); signalGotOutOfBlock(); }
+block_end               :   RCURLY                                      {signalGotOutOfBlock(); }
                         ;
 
-block                   :   block_start statements block_end            { printf("found block section\n"); }
+block                   :   block_start statements block_end            { }
                         ;
 
-function_specifier      :   FUNC                                        { signalGotInFunction(); printf("found function specifier\n"); }
+function_specifier      :   FUNC                                        { signalGotInFunction(); }
                         ;
 
-function                :   function_specifier block                    { printf("found function section\n"); signalFoundFunction(); }
+function                :   function_specifier block                    { signalFoundFunction(); }
                         ;
 
 array_specifier         :   ARRAY                                       { signalGotInArray(); }
@@ -205,7 +205,7 @@ expression              :   number
 
                         |   verbatim
                         |   block
-                        |   function                                { printf("found function\n"); }
+                        |   function                                
                         |   array
                         |   dictionary
                         ;
@@ -214,44 +214,11 @@ expressions             :   expressions expression
                         |   expression
                         ;
 
-
-
-// expression              :   STRING                              { emitOpValue(PUSH, strToStringValue($STRING)); }
-//                         |   number                              {  }
-//                         |   symbol                              { processLoad($symbol); }
-//                         |   array inlined                         { signalGotOutOfArray(); }
-//                         |   range                               { }
-//                         |   dict inlined                          { /*signalGotOutOfDict();*/ }
-//                         |   block                                 { /*emitFunctionEnd(); signalGotOutOfFunction(); $$ = "<func>";*/ }
-//                         //|   func LPAREN comma_ids RPAREN inlined  { /*emitFunctionEndWithArgs($comma_ids); signalGotOutOfFunction();*/ }
-//                         |   inlined                               { /*emitBlockEnd();*/ }
-//                         //|   LPAREN expression RPAREN            { }
-//                         |   expression PLUS_OP expression       { emitOp(ADD); }
-//                         |   expression MINUS_OP expression      { emitOp(SUB); }
-//                         |   expression MUL_OP expression        { emitOp(MUL); }
-//                         |   IMPL_MUL                            {  }
-//                         |   expression DIV_OP expression        { emitOp(DIV); }
-//                         |   expression FDIV_OP expression       { emitOp(FDIV); }
-//                         |   expression MOD_OP expression        { emitOp(MOD); }
-//                         |   expression POW_OP expression        { emitOp(POW); }
-//                         |   NEG_OP expression %prec NEG_PREC    { emitOp(NEG); }
-//                         |   NOT_OP expression %prec NOT_PREC    { emitOp(NOT); }
-//                         |   expression AND_OP expression        { emitOp(AND); }
-//                         |   expression OR_OP expression         { emitOp(OR); }
-//                         |   expression XOR_OP expression        { emitOp(XOR); }
-//                         |   expression EQ_OP expression         { emitOp(CMPEQ); }
-//                         |   expression NE_OP expression         { emitOp(CMPNE); }
-//                         |   expression GT_OP expression         { emitOp(CMPGT); }
-//                         |   expression GE_OP expression         { emitOp(CMPGE); }
-//                         |   expression LT_OP expression         { emitOp(CMPLT); }
-//                         |   expression LE_OP expression         { emitOp(CMPLE); }
-//                         ;
-
 //==============================
 // Special tokens
 //==============================
 
-if_cmd                  :   IF_CMD                          { signalFoundIf(); printf("found IF\n"); }
+if_cmd                  :   IF_CMD                          { signalFoundIf(); }
                         ;
 
 //==============================
@@ -298,160 +265,5 @@ statements              :   statements NL statement
 
 program                 :   statements                      { emitOp(END); }
                         ;
-
-// // number                  :   INTEGER             { doPushInt(strToIntValue($INTEGER)); }
-// //                         |   BIG_INTEGER         { emitOpValue(PUSH,strToBigintValue($BIG_INTEGER)); }
-// //                         |   BIN_INTEGER
-// //                         |   OCT_INTEGER
-// //                         |   HEX_INTEGER
-// //                         |   REAL                { emitOpValue(PUSH,strToRealValue($REAL)); }
-// //                         ;
-
-// // piped_symbols           :   piped_symbols PIPE symbol
-// //                         |   symbol
-// //                         ;
-
-// // comma_ids               :   comma_ids[prev] COMMA ID   { /* $$ = funcArgsAddArg($prev,$ID); emitLocalArgument($ID);*/ }
-// //                         |   ID                   { /*$$ = funcArgsWithArg($ID); emitLocalArgument($ID);*/  }
-// //                         ;
-
-// // loop                    :   LOOP             { /*emitLoopStart();*/ }
-// //                         ;
-
-// // inlined_start             :   INLINE_START      { /*emitBlockStart();*/ }                   
-// //                         ;
-
-// // inlined_end               :   INLINE_END        {  }                     
-// //                         ;
-
-// // inlined                   :   inlined_start statements_section inlined_end     { }
-// //                         ;
-
-// // // implies                 :   IMPLIES { /*emitBlockStart();*/ }
-// // //                         ;
-
-// // // implied                 :   implies comma_statements NL
-// // //                         |   implies comma_statements BLOCK_STOP
-// // //                         ;
-
-// // // function                :   FUNC inlined {  }    
-// // //                         |   FUNC LPAREN comma_ids RPAREN inlined { /*emitFunctionEndWithArgs($comma_ids); printf("found function with comma_ids\n");*/ }
-// // //                         |   implied { /*emitFunctionEnd();*/ }
-// // //                         |   FUNC LPAREN comma_ids RPAREN implied { /*emitFunctionEnd();*/ }
-// // //                         |   ACTION piped_symbols 
-// // //                         ;
-
-// // conditional_inlined       :   FUNC inlined { /*emitConditionalEnd();*/ }
-// //                         ;
-
-// //==============================
-// // Expressions
-// //==============================
-
-// func                    : FUNC            { /*signalGotInFunction();*/ }
-//                         ;
-  
-// array                   : ARRAY           { signalGotInArray(); }
-//                         ;
-
-// dict                    : DICT            { /*signalGotInDict();*/ }
-//                         ;
-
-// block_start             :   BLOCK_START    { signalGotInBlock(); }
-//                         ;
-
-// block_end               :   BLOCK_END      { signalGotOutOfBlock(); }
-//                         ;
-
-// block                   :   block_start statements_section block_end { printf("found block!\n"); }
-//                         |   LPAREN comma_ids RPAREN block_start statements_section block_end
-//                         ;
-
-
-// expression              :   STRING                              { emitOpValue(PUSH, strToStringValue($STRING)); }
-//                         |   number                              {  }
-//                         |   symbol                              { processLoad($symbol); }
-//                         |   array inlined                         { signalGotOutOfArray(); }
-//                         |   range                               { }
-//                         |   dict inlined                          { /*signalGotOutOfDict();*/ }
-//                         |   block                                 { /*emitFunctionEnd(); signalGotOutOfFunction(); $$ = "<func>";*/ }
-//                         //|   func LPAREN comma_ids RPAREN inlined  { /*emitFunctionEndWithArgs($comma_ids); signalGotOutOfFunction();*/ }
-//                         |   inlined                               { /*emitBlockEnd();*/ }
-//                         //|   LPAREN expression RPAREN            { }
-//                         |   expression PLUS_OP expression       { emitOp(ADD); }
-//                         |   expression MINUS_OP expression      { emitOp(SUB); }
-//                         |   expression MUL_OP expression        { emitOp(MUL); }
-//                         |   IMPL_MUL                            {  }
-//                         |   expression DIV_OP expression        { emitOp(DIV); }
-//                         |   expression FDIV_OP expression       { emitOp(FDIV); }
-//                         |   expression MOD_OP expression        { emitOp(MOD); }
-//                         |   expression POW_OP expression        { emitOp(POW); }
-//                         |   NEG_OP expression %prec NEG_PREC    { emitOp(NEG); }
-//                         |   NOT_OP expression %prec NOT_PREC    { emitOp(NOT); }
-//                         |   expression AND_OP expression        { emitOp(AND); }
-//                         |   expression OR_OP expression         { emitOp(OR); }
-//                         |   expression XOR_OP expression        { emitOp(XOR); }
-//                         |   expression EQ_OP expression         { emitOp(CMPEQ); }
-//                         |   expression NE_OP expression         { emitOp(CMPNE); }
-//                         |   expression GT_OP expression         { emitOp(CMPGT); }
-//                         |   expression GE_OP expression         { emitOp(CMPGE); }
-//                         |   expression LT_OP expression         { emitOp(CMPLT); }
-//                         |   expression LE_OP expression         { emitOp(CMPLE); }
-//                         ;
-
-// expressions             :   expressions expression             { }
-//                         |   expression                         { }
-//                         ;
-
-// //==============================
-// // Statements
-// //==============================
-
-// call_statement          :   symbol expressions        { /*emitCall($symbol);*/ }
-//                         |   IF expression conditional_inlined          { /*emitOp(JMPIF);*/ }
-//                         |   IF expression conditional_inlined conditional_inlined { /*emitOp(JMPIFE);*/ }
-//                         |   loop expression conditional_inlined        { /*emitLoop();*/ }
-//                         |   RETURN expression               { /*emitOp(RET);*/ }
-//                         |   SYSCMD1 expression      { emitOp((OPCODE)$SYSCMD1); }
-//                         ;
-
-// label_statement         :   symbol LABEL statement          { processStore($symbol); }
-//                         ;
-
-// piped_statement         :   symbol PIPE statement           { /*emitCall($symbol);*/ }
-//                         |   SYSCMD1 PIPE statement          { /*emitOp($SYSCMD1);*/ }
-//                         ;
-
-// inplace_statement       :   symbol INPLACE SYSCMD1 expression     { /*processInPlace((OPCODE)$SYSCMD1,$symbol);*/ }
-//                         |   symbol INPLACE SYSCMD0                { /*processInPlace((OPCODE)$SYSCMD0,$symbol);*/ }
-//                         ;
-
-// statement               :   call_statement                  { }
-//                         |   label_statement                 { }
-//                         |   inplace_statement               { }
-//                         |   expression                      { }
-//                         |   piped_statement           {  }
-//                         ;
-
-// comma_statements        :   comma_statements COMMA statement
-//                         |   statement
-//                         ;
-
-// statements              :   statements NL statement         {  }
-//                         |   comma_statements
-//                         ;
-
-// statements_section      :   statements
-//                         |   statements NL
-//                         |   NL statements
-//                         |   NL statements NL
-//                         ;
-
-// //==============================
-// // Entry point
-// //==============================
-
-// program                 :   statements_section              { emitOp(END); }
-//                         ;
 
 %%
