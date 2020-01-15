@@ -1,80 +1,20 @@
 %{
 /*****************************************************************
- * Arturo
+ * Arturo :VM
  * 
- * Programming Language + Interpreter
+ * Programming Language + Compiler
  * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
  *
- * @file: parser/parser.y
+ * @file: src/parser/parser.y
  *****************************************************************/
+
+#include "src/arturo.h"
 
 /****************************************
  Extern & Forward declarations
  ****************************************/
 
-// Parser interface
-
-extern void yyerror(const char* str);
-extern int yyparse(void);
 extern int yylex();
-extern int yylineno;
-char* yyfilename;
-
-// External function - from Nim
-
-extern void* MainProgram;
-
-extern char* getNameOfSystemFunction(int n);
-
-extern void* keypathFromIdId(char* a, char* b);
-extern void* keypathFromIdInteger(char* a, char* b);
-extern void* keypathFromIdReal(char* a, char* b);
-extern void* keypathFromIdInline(char* a, void* b);
-extern void* keypathFromInlineId(void* a, char* b);
-extern void* keypathFromInlineInteger(void* a, char* b);
-extern void* keypathFromInlineReal(void* a, char* b);
-extern void* keypathFromInlineInline(void* a, void* b);
-extern void* keypathByAddingIdToKeypath(void* k, char* a);
-extern void* keypathByAddingIntegerToKeypath(void* k, char* a);
-extern void* keypathByAddingRealToKeypath(void* k, char* a);
-extern void* keypathByAddingInlineToKeypath(void* k, void* a);
-
-extern void* argumentFromIdentifier(char* i);
-extern void* argumentFromCommandIdentifier(int i);
-extern void* argumentFromKeypath(void* k);
-extern void* argumentFromStringLiteral(char* l);
-extern void* argumentFromIntegerLiteral(char* l);
-extern void* argumentFromRealLiteral(char* l);
-extern void* argumentFromBooleanLiteral(char* l);
-extern void* argumentFromNullLiteral();
-extern void* argumentFromArrayLiteral(void* l);
-extern void* argumentFromDictionaryLiteral(void* l);
-extern void* argumentFromFunctionLiteral(void* l, char* args);
-extern void* argumentFromInlineCallLiteral(void* l);
-extern void* argumentFromMapId(void* i);
-extern void* argumentFromMapCommand(int c);
-extern void* argumentFromMapKeypath(void* k);
-
-extern void* expressionFromArgument(void *a);
-extern void* expressionFromRange(void* a, void* b);
-extern void* expressionFromExpressions(void* l, char* op, void* r);
-
-extern void* newExpressionList();
-extern void* newExpressionListWithExpression(void* x);
-extern void* expressionListWithChainedStatement(void* st);
-extern void* addExpression(void* xl, void* x);
-
-extern void* statementFromCommand(int i, void* xl, int pos);
-extern void* statementFromCall(char* i, void* xl, int pos);
-extern void* statementFromCallWithKeypath(void* k, void* xl, int pos);
-extern void* statementFromAssignment(char* i, void* st, int pos);
-extern void* statementFromAssignmentWithKeypath(void* k, void* st, int pos);
-extern void* statementFromExpression(void* x, int pos);
-extern void* statementByAddingImplication(void* st, void* i);
-
-extern void* newStatementList();
-extern void* newStatementListWithStatement(void* s);
-extern void* addStatement(void* sl, void* s);
 
 /****************************************
  Functions
@@ -83,6 +23,10 @@ extern void* addStatement(void* sl, void* s);
 int yywrap() {
     return 1;
 } 
+
+void yyerror (char const *s) {
+    printf("parse error: %s\n",s);
+}
 
 %}
 
@@ -93,94 +37,82 @@ int yywrap() {
 %union {
     char* str;
     void* compo;
-    int code;
+    int op;
 }
 
 /****************************************
- Tokens & Types
+ Tokens
  ****************************************/
 
-%token <str> ID "ID"
+%token <str> STRING             "STRING LITERAL"
 
-%token <str> INTEGER "Integer"
-%token <str> REAL "Real"
-%token <str> STRING "String Literal"
-%token <str> NULLV "Null"
-%token <str> BOOLEANV "Boolean"
+%token <str> ID                 "IDENTIFIER"
+%token <op>  SYSCALL0           "SYSTEM CALL/0"
+%token <op>  SYSCALL1           "SYSTEM CALL/1"
+%token <op>  SYSCALL2           "SYSTEM CALL/2"
+%token <str> INTEGER            "INTEGER"
+%token <str> BIG_INTEGER        "BIG INTEGER"
+%token <str> REAL               "REAL"
 
-%token <str> ARGV "&"
+%token <str> ADD_OP             "`+` (plus operator)"
+%token <str> SUB_OP             "`-` (minus operator)"
+%token <str> MUL_OP             "`*` (multiplication v)"
+%token <str> DIV_OP             "`/` (division operator)"
+%token <str> MOD_OP             "`%` (modulo operator)"
+%token <str> POW_OP             "`^` (power operator)"
 
-%token <str> PIPE "|"
-%token <str> MAP "=>"
-%token <str> IMPLIES "->"
+%token <str> EQ_OP              "`=` (equality operator)"
+%token <str> NE_OP              "`≠` (inequality operator)"
+%token <str> GT_OP              "`>` (greater-than operator)"
+%token <str> GE_OP              "`≥` (greater-than-or-equal operator)"
+%token <str> LT_OP              "`>` (less-than operator)"
+%token <str> LE_OP              "`≤` (less-than-or-equal operator)"
 
-%token <str> EQ_OP "="
-%token <str> LE_OP "<="
-%token <str> LT_OP "<"
-%token <str> GE_OP ">="
-%token <str> GT_OP ">"
-%token <str> NE_OP "!="
+%token <str> DOT                "`.` (dot)"
+%token <str> FIELD              "``` (field)"
+%token <str> COLON              "`:` (colon)"
+%token <str> COMMA              "`,` (comma)"
+%token <str> PIPE               "`|` (pipe)"
 
-%token <str> PLUS_SG "+"
-%token <str> MINUS_SG "-"
-%token <str> MULT_SG "*"
-%token <str> DIV_SG "/"
-%token <str> MOD_SG "%"
-%token <str> POW_SG "^"
+%token <str> FUNC               "`$` (function specifier)"
+%token <str> ARRAY              "`@` (array specifier)"
+%token <str> DICT               "`#` (dictionary specifier)"
 
-%token <str> BEGIN_ARR "#("
-%token <str> BEGIN_DICT "#{"
-%token <str> BEGIN_ARGS "@("
+%token <str> LPAREN             "`(` (opening parenthesis)"
+%token <str> RPAREN             "`)` (closing parenthesis)"
+%token <str> LSQUARE            "`[` (opening square bracket)"
+%token <str> RSQUARE            "`]` (closing square bracket)"
+%token <str> LCURLY             "`{` (opening curly bracket)"
+%token <str> RCURLY             "`}` (closing curly bracket)"
 
-%token <str> AT "@"
-%token <str> RANGE ".."
-%token <str> DOT "."
-%token <str> LPAREN "("
-%token <str> RPAREN ")"
-%token <str> LCURLY "{"
-%token <str> RCURLY "}"
-%token <str> LSQUARE "["
-%token <str> RSQUARE "]"
-%token <str> COMMA ","
-%token <str> SEMICOLON ";"
-%token <str> COLON ":"
-%token <str> TILDE "~"
+%token <str> NL                 "NEWLINE"
 
-%token <code> SYSTEM_CMD "<system command>"
-
-%token <str> NEW_LINE "End Of Line"
-
-%type <str> verbatim
-
-%type <compo> keypath
-%type <compo> string number boolean null
-%type <compo> array dictionary function inline_call
-
-%type <compo> argument expression expression_list
-%type <compo> function_call assignment chained implies
-%type <compo> statement statement_list
+%token <str> IF_CMD             "IF_CMD"
 
 /****************************************
- Directives
+ Token precedence
  ****************************************/
 
 %glr-parser
-%locations
-%define parse.error verbose
 
-%right TILDE
-%nonassoc EQ_OP LE_OP GE_OP LT_OP GT_OP NE_OP 
+%nonassoc EQ_OP NE_OP GT_OP GE_OP LT_OP LE_OP
 
-%left PLUS_SG MINUS_SG
-%left MULT_SG DIV_SG MOD_SG 
-%left POW_SG
-
-%nonassoc ID
+%left ADD_OP SUB_OP
+%left MUL_OP DIV_OP MOD_OP
+%right POW_OP
+%left DOT
+%left FIELD
 
 %left INTEGER
 %left REAL
 
+/****************************************
+ Options
+ ****************************************/
+
 %start program
+%define parse.error verbose
+%locations
 
 %%
 
@@ -189,150 +121,337 @@ int yywrap() {
  ****************************************/
 
 //==============================
-// Building blocks
+// Basic arguments
+//==============================    
+
+number                  :   INTEGER             { doPushInt(strToIntValue($INTEGER)); }
+                        |   BIG_INTEGER         { emitOpWord(PUSH,storeValueData(strToBigintValue($BIG_INTEGER))); }
+                        |   REAL                { emitOpWord(PUSH,storeValueData(strToRealValue($REAL))); }
+                        ;
+
+string                  :   STRING              { emitOpWord(PUSH, storeValueData(strToStringValue($STRING))); }
+                        ;
+
+id                      :   ID                  { processLoad($ID); }
+                        ;
+
+//==============================
+// Blocks
 //==============================
 
-
-keypath                 :   ID DOT ID                                                           { $$ = keypathFromIdId($1,$3); }
-                        |   ID DOT INTEGER                                                      { $$ = keypathFromIdInteger($1,$3); }
-                        |   ID DOT REAL                                                         { $$ = keypathFromIdReal($1,$3); }
-                        |   ID DOT inline_call                                                  { $$ = keypathFromIdInline($1,$3); }
-                        |   inline_call DOT ID                                                  { $$ = keypathFromInlineId($1,$3); }
-                        |   inline_call DOT INTEGER                                             { $$ = keypathFromInlineInteger($1,$3); }
-                        |   inline_call DOT REAL                                                { $$ = keypathFromInlineReal($1,$3); }
-                        |   inline_call DOT inline_call                                         { $$ = keypathFromInlineInline($1,$3); }
-                        |   keypath[previous] DOT ID                                            { $$ = keypathByAddingIdToKeypath($previous,$ID); }
-                        |   keypath[previous] DOT INTEGER                                       { $$ = keypathByAddingIntegerToKeypath($previous,$INTEGER); }
-                        |   keypath[previous] DOT REAL                                          { $$ = keypathByAddingRealToKeypath($previous,$REAL); }
-                        |   keypath[previous] DOT inline_call                                   { $$ = keypathByAddingInlineToKeypath($previous,$inline_call); }
-                        ;       
-
-verbatim                :   ID                                                                  { $$ = $1; }
-                        |   verbatim[previous] ID                                               { strcat( $1, "," ); $$ = strcat($1, $2); }
+ids                     :   ids ID                                      { aAdd(LocalLookup,$ID); argCounter++; }
+                        |   ID                                          { aAdd(LocalLookup,$ID); argCounter++; }
                         ;
 
+verbatim                :   LSQUARE statements RSQUARE
+                        ;  
 
-string                  :   STRING                                                              { $$ = argumentFromStringLiteral($1); }
-                        |   AT ID                                                               { char *new_s = (char*)malloc(2 * sizeof(char) + strlen($ID)); sprintf(new_s, "\"%s\"", $ID); $$ = argumentFromStringLiteral(new_s); }
+block_start             :   LPAREN ids RPAREN LCURLY                    { printf("found block_start\n"); signalGotInBlock(); }
+                        |   LCURLY                                      { printf("found block_start\n"); signalGotInBlock(); }
                         ;
 
-number                  :   INTEGER                                                             { $$ = argumentFromIntegerLiteral($1); }
-                        |   REAL                                                                { $$ = argumentFromRealLiteral($1); }
+block_end               :   RCURLY                                      { printf("found block_end\n"); signalGotOutOfBlock(); }
                         ;
 
-boolean                 :   BOOLEANV                                                            { $$ = argumentFromBooleanLiteral($1); }
+block                   :   block_start statements block_end            { printf("found block section\n"); }
                         ;
 
-null                    :   NULLV                                                               { $$ = argumentFromNullLiteral(); }
-                        |   TILDE                                                               { $$ = argumentFromNullLiteral(); }
+function_specifier      :   FUNC                                        { signalGotInFunction(); printf("found function specifier\n"); }
                         ;
 
-array                   :   BEGIN_ARR expression_list RPAREN                                    { $$ = argumentFromArrayLiteral($2); }
-                        |   BEGIN_ARR RPAREN                                                    { $$ = argumentFromArrayLiteral(NULL); }
+function                :   function_specifier block                    { printf("found function section\n"); signalFoundFunction(); }
                         ;
 
-dictionary              :   BEGIN_DICT statement_list RCURLY                                    { $$ = argumentFromDictionaryLiteral($2); }
+array_specifier         :   ARRAY                                       { signalGotInArray(); }
                         ;
 
-function                :   LCURLY statement_list RCURLY                                        { $$ = argumentFromFunctionLiteral($2,""); }
-                        |   BEGIN_ARGS verbatim RPAREN LCURLY statement_list RCURLY             { $$ = argumentFromFunctionLiteral($5,$2); }
-                        |   MAP ID                                                              { $$ = argumentFromMapId($ID);  }
-                        |   MAP SYSTEM_CMD                                                      { $$ = argumentFromMapCommand($SYSTEM_CMD);}
-                        |   MAP keypath                                                         { $$ = argumentFromMapKeypath($keypath); }
+array                   :   array_specifier verbatim                    { signalFoundArray(); }
+                        |   array_specifier block                       { signalFoundArray(); }
                         ;
 
-inline_call             :   LSQUARE statement RSQUARE                                           { $$ = argumentFromInlineCallLiteral($2); }                 
+dictionary_specifier    :   DICT                                        { signalGotInDictionary(); }
                         ;
 
-argument                :   ID                                                                  { $$ = argumentFromIdentifier($1); }
-                        |   SYSTEM_CMD                                                          { $$ = argumentFromCommandIdentifier($1); }
-                        |   keypath                                                             { $$ = argumentFromKeypath($1); }
-                        |   ARGV                                                                { $$ = argumentFromKeypath(keypathFromIdInteger("&",$1)); }
-                        |   number                                                              
-                        |   string
-                        |   boolean                                                             
-                        |   null                                                                
-                        |   array
-                        |   dictionary
-                        |   function
-                        |   inline_call
+dictionary              :   dictionary_specifier verbatim               { signalFoundDictionary(); }
+                        |   dictionary_specifier block                  { signalFoundDictionary(); }
                         ;
 
 //==============================
 // Expressions
 //==============================
 
-expression              :   argument                                                            { $$ = expressionFromArgument($1); }
-                        |   argument RANGE argument                                             { $$ = expressionFromRange($1,$3); }
-                        |   LPAREN expression[main] RPAREN                                      { $$ = $main; }
-                        |   expression[left] PLUS_SG expression[right]                          { $$ = expressionFromExpressions($left, "PLUS_SG", $right); }
-                        |   expression[left] MINUS_SG expression[right]                         { $$ = expressionFromExpressions($left, "MINUS_SG", $right); }
-                        |   expression[left] MULT_SG expression[right]                          { $$ = expressionFromExpressions($left, "MULT_SG", $right); }
-                        |   expression[left] DIV_SG expression[right]                           { $$ = expressionFromExpressions($left, "DIV_SG", $right); }
-                        |   expression[left] MOD_SG expression[right]                           { $$ = expressionFromExpressions($left, "MOD_SG", $right); }
-                        |   expression[left] POW_SG expression[right]                           { $$ = expressionFromExpressions($left, "POW_SG", $right); }
-                        |   expression[left] EQ_OP expression[right]                            { $$ = expressionFromExpressions($left, "EQ_OP", $right); }
-                        |   expression[left] LT_OP expression[right]                            { $$ = expressionFromExpressions($left, "LT_OP", $right); } 
-                        |   expression[left] GT_OP expression[right]                            { $$ = expressionFromExpressions($left, "GT_OP", $right); }  
-                        |   expression[left] LE_OP expression[right]                            { $$ = expressionFromExpressions($left, "LE_OP", $right); } 
-                        |   expression[left] GE_OP expression[right]                            { $$ = expressionFromExpressions($left, "GE_OP", $right); } 
-                        |   expression[left] NE_OP expression[right]                            { $$ = expressionFromExpressions($left, "NE_OP", $right); } 
+expression              :   number
+                        |   string
+                        |   id                                                                 
+
+                        |   expression ADD_OP expression            { emitOp(ADD); }
+                        |   expression SUB_OP expression            { emitOp(SUB); }
+                        |   expression MUL_OP expression            { emitOp(MUL); }
+                        |   expression DIV_OP expression            { emitOp(DIV); }
+                        |   expression MOD_OP expression            { emitOp(MOD); }
+                        |   expression POW_OP expression            { emitOp(POW); }
+
+                        |   expression EQ_OP expression             { emitOp(CMPEQ); }
+                        |   expression NE_OP expression             { emitOp(CMPNE); }
+                        |   expression GT_OP expression             { emitOp(CMPGT); }
+                        |   expression GE_OP expression             { emitOp(CMPGE); }
+                        |   expression LT_OP expression             { emitOp(CMPLT); }
+                        |   expression LE_OP expression             { emitOp(CMPLE); }
+
+                        |   expression DOT ID                       { processCall($ID); }
+                        |   expression DOT SYSCALL1                 { emitOp((OPCODE)$SYSCALL1); }
+                        |   expression DOT SYSCALL2                 { emitOp((OPCODE)$SYSCALL2); }
+                        |   expression FIELD expression             { emitOp((OPCODE)DO_GET); }
+
+                        |   verbatim
+                        |   block
+                        |   function                                { printf("found function\n"); }
+                        |   array
+                        |   dictionary
+                        ;
+
+expressions             :   expressions expression
+                        |   expression
                         ;
 
 
-expression_list         :   expression                                                          { $$ = newExpressionListWithExpression($expression); }
-                        |   expression_list[previous] expression                                { $$ = addExpression($previous, $expression); }
-                        |   expression_list[previous] SEMICOLON NEW_LINE expression             { $$ = addExpression($previous, $expression); }
+
+// expression              :   STRING                              { emitOpValue(PUSH, strToStringValue($STRING)); }
+//                         |   number                              {  }
+//                         |   symbol                              { processLoad($symbol); }
+//                         |   array inlined                         { signalGotOutOfArray(); }
+//                         |   range                               { }
+//                         |   dict inlined                          { /*signalGotOutOfDict();*/ }
+//                         |   block                                 { /*emitFunctionEnd(); signalGotOutOfFunction(); $$ = "<func>";*/ }
+//                         //|   func LPAREN comma_ids RPAREN inlined  { /*emitFunctionEndWithArgs($comma_ids); signalGotOutOfFunction();*/ }
+//                         |   inlined                               { /*emitBlockEnd();*/ }
+//                         //|   LPAREN expression RPAREN            { }
+//                         |   expression PLUS_OP expression       { emitOp(ADD); }
+//                         |   expression MINUS_OP expression      { emitOp(SUB); }
+//                         |   expression MUL_OP expression        { emitOp(MUL); }
+//                         |   IMPL_MUL                            {  }
+//                         |   expression DIV_OP expression        { emitOp(DIV); }
+//                         |   expression FDIV_OP expression       { emitOp(FDIV); }
+//                         |   expression MOD_OP expression        { emitOp(MOD); }
+//                         |   expression POW_OP expression        { emitOp(POW); }
+//                         |   NEG_OP expression %prec NEG_PREC    { emitOp(NEG); }
+//                         |   NOT_OP expression %prec NOT_PREC    { emitOp(NOT); }
+//                         |   expression AND_OP expression        { emitOp(AND); }
+//                         |   expression OR_OP expression         { emitOp(OR); }
+//                         |   expression XOR_OP expression        { emitOp(XOR); }
+//                         |   expression EQ_OP expression         { emitOp(CMPEQ); }
+//                         |   expression NE_OP expression         { emitOp(CMPNE); }
+//                         |   expression GT_OP expression         { emitOp(CMPGT); }
+//                         |   expression GE_OP expression         { emitOp(CMPGE); }
+//                         |   expression LT_OP expression         { emitOp(CMPLT); }
+//                         |   expression LE_OP expression         { emitOp(CMPLE); }
+//                         ;
+
+//==============================
+// Special tokens
+//==============================
+
+if_cmd                  :   IF_CMD                          { signalFoundIf(); printf("found IF\n"); }
                         ;
 
 //==============================
 // Statements
-//==============================    
+//==============================
 
-function_call           :   ID expression_list                                                  { $$ = statementFromCall($ID,$expression_list,yylineno); }
-                        |   SYSTEM_CMD expression_list                                          { $$ = statementFromCommand($SYSTEM_CMD,$expression_list,yylineno); }
-                        |   keypath expression_list                                             { $$ = statementFromCallWithKeypath($keypath,$expression_list,yylineno); }
+label_statement         :   ID COLON statement              { processStore($ID); }
                         ;
 
-assignment              :   ID COLON statement                                                  { $$ = statementFromAssignment($ID,$statement,yylineno); }
-                        |   SYSTEM_CMD COLON statement                                          { $$ = statementFromAssignment(getNameOfSystemFunction($SYSTEM_CMD),$statement,yylineno); }
-                        |   keypath COLON statement                                             { $$ = statementFromAssignmentWithKeypath($keypath,$statement,yylineno); }
-                        ;     
-
-chained                 :   ID PIPE statement                                                   { $$ = statementFromCall($ID,expressionListWithChainedStatement($statement),yylineno); }
-                        |   SYSTEM_CMD PIPE statement                                           { $$ = statementFromCommand($SYSTEM_CMD,expressionListWithChainedStatement($statement),yylineno); }                      
-                        |   keypath PIPE statement                                              { $$ = statementFromCallWithKeypath($keypath,expressionListWithChainedStatement($statement),yylineno); }
+call_statement          :   ID expressions                        { processCall($ID); }
+                        |   expression DOT ID expressions         { processCall($ID); }
+                        |   SYSCALL0                              { emitOp((OPCODE)$SYSCALL0); }
+                        |   SYSCALL1 expression                   { emitOp((OPCODE)$SYSCALL1); }
+                        |   SYSCALL2 expression expression        { emitOp((OPCODE)$SYSCALL2); }
+                        |   expression DOT SYSCALL2 expression    { emitOp((OPCODE)$SYSCALL2); }
                         ;
 
-implies                 :   function_call IMPLIES statement                                     { $$ = statementByAddingImplication($function_call,$statement); }
-                        |   IMPLIES statement                                                   { $$ = statementFromExpression(expressionFromArgument(argumentFromFunctionLiteral(newStatementListWithStatement($statement),"")),yylineno); }
-                        |   BEGIN_ARGS verbatim RPAREN IMPLIES statement                        { $$ = statementFromExpression(expressionFromArgument(argumentFromFunctionLiteral(newStatementListWithStatement($statement),$2)),yylineno); }
+special_statement       :   if_cmd expression block         { finalizeIf(); }
+                        |   if_cmd expression block block   { finalizeIf(); }
                         ;
 
-statement               :   function_call
-                        |   assignment
-                        |   expression                                                          { $$ = statementFromExpression($expression,yylineno); }
-                        |   chained
-                        |   implies
+pipe_statement          :   ID PIPE statement               { }
+                        |   SYSCALL1 PIPE statement         { emitOp((OPCODE)$SYSCALL1); }
                         ;
 
-statement_list          :   statement_list[previous] NEW_LINE statement                         { $$ = addStatement($previous, $statement); }
-                        |   statement_list[previous] COMMA statement                            { $$ = addStatement($previous, $statement); }
-                        |   statement_list[previous] NEW_LINE                                   { $$ = $previous; }
-                        |   statement                                                           { $$ = newStatementListWithStatement($statement); }
-                        |   /* Nothing */                                                       { $$ = newStatementList(); }
+statement               :   label_statement
+                        |   call_statement
+                        |   special_statement
+                        |   pipe_statement
+                        |   expression
+                        ;
+
+statements              :   statements NL statement
+                        |   statements COMMA statement
+                        |   statements COMMA
+                        |   statements NL
+                        |   statement
+                        |   
                         ;
 
 //==============================
 // Entry point
 //==============================
 
-program                 :   statement_list                                                      { MainProgram = $statement_list; }
+program                 :   statements                      { emitOp(END); }
                         ;
 
-%%
+// // number                  :   INTEGER             { doPushInt(strToIntValue($INTEGER)); }
+// //                         |   BIG_INTEGER         { emitOpValue(PUSH,strToBigintValue($BIG_INTEGER)); }
+// //                         |   BIN_INTEGER
+// //                         |   OCT_INTEGER
+// //                         |   HEX_INTEGER
+// //                         |   REAL                { emitOpValue(PUSH,strToRealValue($REAL)); }
+// //                         ;
 
-/****************************************
-  This is the end,
-  my only friend, the end...
- ****************************************/
+// // piped_symbols           :   piped_symbols PIPE symbol
+// //                         |   symbol
+// //                         ;
+
+// // comma_ids               :   comma_ids[prev] COMMA ID   { /* $$ = funcArgsAddArg($prev,$ID); emitLocalArgument($ID);*/ }
+// //                         |   ID                   { /*$$ = funcArgsWithArg($ID); emitLocalArgument($ID);*/  }
+// //                         ;
+
+// // loop                    :   LOOP             { /*emitLoopStart();*/ }
+// //                         ;
+
+// // inlined_start             :   INLINE_START      { /*emitBlockStart();*/ }                   
+// //                         ;
+
+// // inlined_end               :   INLINE_END        {  }                     
+// //                         ;
+
+// // inlined                   :   inlined_start statements_section inlined_end     { }
+// //                         ;
+
+// // // implies                 :   IMPLIES { /*emitBlockStart();*/ }
+// // //                         ;
+
+// // // implied                 :   implies comma_statements NL
+// // //                         |   implies comma_statements BLOCK_STOP
+// // //                         ;
+
+// // // function                :   FUNC inlined {  }    
+// // //                         |   FUNC LPAREN comma_ids RPAREN inlined { /*emitFunctionEndWithArgs($comma_ids); printf("found function with comma_ids\n");*/ }
+// // //                         |   implied { /*emitFunctionEnd();*/ }
+// // //                         |   FUNC LPAREN comma_ids RPAREN implied { /*emitFunctionEnd();*/ }
+// // //                         |   ACTION piped_symbols 
+// // //                         ;
+
+// // conditional_inlined       :   FUNC inlined { /*emitConditionalEnd();*/ }
+// //                         ;
+
+// //==============================
+// // Expressions
+// //==============================
+
+// func                    : FUNC            { /*signalGotInFunction();*/ }
+//                         ;
+  
+// array                   : ARRAY           { signalGotInArray(); }
+//                         ;
+
+// dict                    : DICT            { /*signalGotInDict();*/ }
+//                         ;
+
+// block_start             :   BLOCK_START    { signalGotInBlock(); }
+//                         ;
+
+// block_end               :   BLOCK_END      { signalGotOutOfBlock(); }
+//                         ;
+
+// block                   :   block_start statements_section block_end { printf("found block!\n"); }
+//                         |   LPAREN comma_ids RPAREN block_start statements_section block_end
+//                         ;
+
+
+// expression              :   STRING                              { emitOpValue(PUSH, strToStringValue($STRING)); }
+//                         |   number                              {  }
+//                         |   symbol                              { processLoad($symbol); }
+//                         |   array inlined                         { signalGotOutOfArray(); }
+//                         |   range                               { }
+//                         |   dict inlined                          { /*signalGotOutOfDict();*/ }
+//                         |   block                                 { /*emitFunctionEnd(); signalGotOutOfFunction(); $$ = "<func>";*/ }
+//                         //|   func LPAREN comma_ids RPAREN inlined  { /*emitFunctionEndWithArgs($comma_ids); signalGotOutOfFunction();*/ }
+//                         |   inlined                               { /*emitBlockEnd();*/ }
+//                         //|   LPAREN expression RPAREN            { }
+//                         |   expression PLUS_OP expression       { emitOp(ADD); }
+//                         |   expression MINUS_OP expression      { emitOp(SUB); }
+//                         |   expression MUL_OP expression        { emitOp(MUL); }
+//                         |   IMPL_MUL                            {  }
+//                         |   expression DIV_OP expression        { emitOp(DIV); }
+//                         |   expression FDIV_OP expression       { emitOp(FDIV); }
+//                         |   expression MOD_OP expression        { emitOp(MOD); }
+//                         |   expression POW_OP expression        { emitOp(POW); }
+//                         |   NEG_OP expression %prec NEG_PREC    { emitOp(NEG); }
+//                         |   NOT_OP expression %prec NOT_PREC    { emitOp(NOT); }
+//                         |   expression AND_OP expression        { emitOp(AND); }
+//                         |   expression OR_OP expression         { emitOp(OR); }
+//                         |   expression XOR_OP expression        { emitOp(XOR); }
+//                         |   expression EQ_OP expression         { emitOp(CMPEQ); }
+//                         |   expression NE_OP expression         { emitOp(CMPNE); }
+//                         |   expression GT_OP expression         { emitOp(CMPGT); }
+//                         |   expression GE_OP expression         { emitOp(CMPGE); }
+//                         |   expression LT_OP expression         { emitOp(CMPLT); }
+//                         |   expression LE_OP expression         { emitOp(CMPLE); }
+//                         ;
+
+// expressions             :   expressions expression             { }
+//                         |   expression                         { }
+//                         ;
+
+// //==============================
+// // Statements
+// //==============================
+
+// call_statement          :   symbol expressions        { /*emitCall($symbol);*/ }
+//                         |   IF expression conditional_inlined          { /*emitOp(JMPIF);*/ }
+//                         |   IF expression conditional_inlined conditional_inlined { /*emitOp(JMPIFE);*/ }
+//                         |   loop expression conditional_inlined        { /*emitLoop();*/ }
+//                         |   RETURN expression               { /*emitOp(RET);*/ }
+//                         |   SYSCMD1 expression      { emitOp((OPCODE)$SYSCMD1); }
+//                         ;
+
+// label_statement         :   symbol LABEL statement          { processStore($symbol); }
+//                         ;
+
+// piped_statement         :   symbol PIPE statement           { /*emitCall($symbol);*/ }
+//                         |   SYSCMD1 PIPE statement          { /*emitOp($SYSCMD1);*/ }
+//                         ;
+
+// inplace_statement       :   symbol INPLACE SYSCMD1 expression     { /*processInPlace((OPCODE)$SYSCMD1,$symbol);*/ }
+//                         |   symbol INPLACE SYSCMD0                { /*processInPlace((OPCODE)$SYSCMD0,$symbol);*/ }
+//                         ;
+
+// statement               :   call_statement                  { }
+//                         |   label_statement                 { }
+//                         |   inplace_statement               { }
+//                         |   expression                      { }
+//                         |   piped_statement           {  }
+//                         ;
+
+// comma_statements        :   comma_statements COMMA statement
+//                         |   statement
+//                         ;
+
+// statements              :   statements NL statement         {  }
+//                         |   comma_statements
+//                         ;
+
+// statements_section      :   statements
+//                         |   statements NL
+//                         |   NL statements
+//                         |   NL statements NL
+//                         ;
+
+// //==============================
+// // Entry point
+// //==============================
+
+// program                 :   statements_section              { emitOp(END); }
+//                         ;
+
+%%
