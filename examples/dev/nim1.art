@@ -1,2 +1,0 @@
-if true { print "done" }
-if true -> print "done"

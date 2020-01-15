@@ -1,3 +1,0 @@
-loop true {
-	print "SPAM"
-}

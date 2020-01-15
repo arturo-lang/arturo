@@ -1,3 +1,0 @@
-print [toBin 5]
-print [toBin 50]
-print [toBin 9000]

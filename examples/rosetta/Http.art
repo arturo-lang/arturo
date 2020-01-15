@@ -1,1 +1,0 @@
-print [download "http://google.com"]

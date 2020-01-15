@@ -1,4 +1,0 @@
-$ :001> f: @(a b sep) -> a + 2*sep + b
-= <function> 
-$ :002> f "Rosetta" "Code" ":"
-= "Rosetta::Code"

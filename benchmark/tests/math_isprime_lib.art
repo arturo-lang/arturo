@@ -1,5 +1,0 @@
-maxLimit: 10000-1
-
-loop 0..maxLimit {
-	print [isPrime &]
-}

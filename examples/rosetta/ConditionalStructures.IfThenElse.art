@@ -1,7 +1,0 @@
-num: 2
-
-if num=2 {
-	print "yep, num is 2"
-} {
-	print "something went wrong..."
-}

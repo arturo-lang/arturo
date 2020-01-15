@@ -1,9 +1,0 @@
-checkIfExists: @(file){
-    if [fileExists file] { print file + " exists" } { print file + " doesn't exist" }
-}
- 
-checkIfExists "input.txt"
-checkIfExists "docs"
- 
-checkIfExists "/input.txt"
-checkIfExists "/docs"

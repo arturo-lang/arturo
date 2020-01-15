@@ -1,7 +1,0 @@
-print "Enter a string: "
-str: strip|input ~
-
-print "Enter an integer: "
-num: toNumber|strip|input ~
-
-print "Got: " + str + ", " + num

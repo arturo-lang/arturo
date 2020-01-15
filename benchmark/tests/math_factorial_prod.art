@@ -1,5 +1,0 @@
-maxLimit: 1000
-
-loop 1..maxLimit {
-	print [product 1..&]
-}

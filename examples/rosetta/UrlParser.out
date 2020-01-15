@@ -1,1 +1,0 @@
-#{ anchor: "nose", host: "example.com", password: "", path: "/over/there", port: "8042", query: "name=ferret", scheme: "foo", user: "" }

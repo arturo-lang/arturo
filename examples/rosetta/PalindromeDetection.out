@@ -1,5 +1,0 @@
-abba: isPalindrome? true
-boom: isPalindrome? false
-radar: isPalindrome? true
-civic: isPalindrome? true
-great: isPalindrome? false
