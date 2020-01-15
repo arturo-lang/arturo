@@ -91,7 +91,7 @@ printf "  dP\"\"\"\"Yb 88  Yb   88   \`YbodP' 88  Yb  YbodP\e[0m\n"
 printf "\n"
 printf "=================================================>\n"
 printf "  \033[1mArturo\033[0m :VM\n"
-printf "  (c) 2019, Yanis Zafirópulos\n"
+printf "  (c) 2019-2020 Yanis Zafirópulos\n"
 printf "=================================================>\n\n"
 
 ##=========================
@@ -112,7 +112,13 @@ print_task "Updating build..."
     echo "" >> version.h
     echo "#endif" >> version.h
     cd ../..
-end_task
+    git add src/version/BuildNo
+    git add src/version/BuildDate
+    git add src/version/version.h
+    git commit -m "build update (automatic)" >/dev/null 2>&1
+end_task 
+
+echo ""
 
 print_task_main "Building parser..."
     print_subtask "[FLEX] src/parser/lexer.l"
@@ -152,6 +158,8 @@ end_task
 print_task "Compressing binary..."
     $UPX -q bin/$BINARY >/dev/null 2>&1
 end_task
+
+echo ""
 
 print_task "Cleaning up..."
     mv *.s *.i .cache/
