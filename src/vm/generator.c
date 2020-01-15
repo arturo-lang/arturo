@@ -339,7 +339,6 @@ void signalFoundDictionary() {
 void signalFoundIf() {
 	inIf = true;
 	ifsFound+=2;
-	printf("signalFoundIf: %d\n",ifsFound);
 }
 
 void finalizeIf() {
@@ -410,7 +409,7 @@ void signalFoundFunction() {
 	int pos = BlockStarts->data[BlockStarts->size] + 1;
 	reemitDword(pos,BCode->size);
 	Func* f = fNew(pos+4,argCounter);
-	printf("created new func: %p :: ip: %d, args: %d\n",f,f->ip,f->args);
+	//printf("created new func: %p :: ip: %d, args: %d\n",f,f->ip,f->args);
 	emitOpWord(PUSH,storeValueData(toF(f)));	   	// move pointer to next instruction (Dword = 4 bytes)
 	argCounter = 0;
 }
