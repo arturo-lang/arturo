@@ -72,7 +72,7 @@ That's it!
 
 **Execute precompiled object file:**
 
-	arturo -c <object file>
+	arturo -x <object file>
 
 **REPL:**
 
