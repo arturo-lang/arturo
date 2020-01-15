@@ -14,7 +14,7 @@
   Constants
  **************************************/
 
-#define LOG_INT_MAX 21.48756259		// The result of log(INT_MAX)
+#define LOG_INT_MAX 21.48756259     // The result of log(INT_MAX)
 
 /**************************************
   Static methods

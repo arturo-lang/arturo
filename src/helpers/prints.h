@@ -14,8 +14,8 @@
   Constants
  **************************************/
 
-#define print(X) 	fputs(X,stdout)		// print str
-#define printLn(X)	puts(X)				// print str WITH newline
-#define printC(X)	putc(X,stdout)		// print char
+#define print(X)    fputs(X,stdout)     // print str
+#define printLn(X)  puts(X)             // print str WITH newline
+#define printC(X)   putc(X,stdout)      // print char
 
 #endif

@@ -21,7 +21,7 @@ typedef mpz_srcptr Bignum_p;
   Aliases
  **************************************/
 
-#define newBignum()			malloc(sizeof(mpz_t))
+#define newBignum()         malloc(sizeof(mpz_t))
 #define bignumToCstring(X)  mpz_get_str(NULL, 10, X)
 
 #endif

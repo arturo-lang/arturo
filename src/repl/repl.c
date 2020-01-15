@@ -10,5 +10,5 @@
 #include "../arturo.h"
 
 void replStart() {
-	printf("starting REPL\n");
+    printf("starting REPL\n");
 }
