@@ -1,9 +1,0 @@
-use ~gui
-
-window @mainWindow #{
-	:title 	"Hello World"
-	:size 	#(300 300)
-}
-
-app @main "TestWindow" mainWindow #{}
-main.run

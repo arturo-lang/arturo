@@ -1,5 +1,0 @@
-isPalindrome: @(seq) -> seq = [reverse seq]
-
-loop #("abba" "boom" "radar" "civic" "great") {
-	print & + ": isPalindrome? " + [isPalindrome &]
-}

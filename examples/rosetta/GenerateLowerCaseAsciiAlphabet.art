@@ -1,3 +1,0 @@
-lcase: map 97..122 => char
-
-print lcase

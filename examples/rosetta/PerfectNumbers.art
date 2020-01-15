@@ -1,4 +1,0 @@
-divisors  : @(n)-> filter 1..[n/2+1] -> n % & = 0
-isPerfect : @(n)-> n = [sum|divisors n]
-
-loop 2..10000 -> if [isPerfect &] => print

@@ -1,4 +1,0 @@
-factorial: @(n) -> product 1..n 
-digitSum: @(x) -> sum|map [chars|toString x] => toNumber
-
-print [digitSum|factorial 100]

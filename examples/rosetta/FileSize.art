@@ -1,3 +1,0 @@
-file: "examples/rosetta/input.txt"
-
-print "size: " + [fileSize file] + " bytes"

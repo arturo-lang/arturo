@@ -1,5 +1,0 @@
-args: &
-
-loop args @(arg){
-	print arg
-}

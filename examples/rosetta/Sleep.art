@@ -1,5 +1,0 @@
-print "Enter a time (in ms): ", ms: toNumber|strip|input ~
-
-print "Sleeping..."
-delay ms
-print "Awake!"

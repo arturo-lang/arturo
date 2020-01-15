@@ -1,6 +1,0 @@
-a: #("one" "two" "three" "four")
-b: #(1 2 3 4)
-
-dict: toDictionary|zip a b
-
-print dict

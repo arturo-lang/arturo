@@ -1,5 +1,0 @@
-loop 1..3 @(x){ syms~, print x }
-//loop 1..10 {
-//	print &
-//}
-//print b

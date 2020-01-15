@@ -1,9 +1,0 @@
-loop 1..100 {
-	if &%15=0 { print "FizzBuzz" } {
-		if &%3=0 { print "Fizz" } {
-			if &%5=0 { print "Buzz" } {
-				print &
-			}
-		}
-	}
-}

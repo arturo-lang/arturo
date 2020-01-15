@@ -1,9 +1,0 @@
-\e[1;37musage:\e[00m arturo [options] <path>
-
-\e[1;36mcommand\e[00m
-    -h, --help              - show (this) help information
-    -v, --version           - show version
-
-\e[1;36moptions\e[00m
-    -i, --include=PATH      - set include path
-    -s, --safe              - run in safe mode, with GC enabled

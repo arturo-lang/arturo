@@ -1,4 +1,0 @@
-loop [filter 2..60 => isPrime] @(num){
-	n: 2^num-1
-	print "2^" + num + "-1 = " + n + " => prime decomposition: " + [primeFactors n]
-}

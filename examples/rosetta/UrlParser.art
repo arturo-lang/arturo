@@ -1,3 +1,0 @@
-url: "foo://example.com:8042/over/there?name=ferret#nose"
-
-print [urlComponents url]

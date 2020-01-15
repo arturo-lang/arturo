@@ -1,9 +1,0 @@
-isOpen: #(false)*101
-
-loop 1..100 @(pass){
-	loop [rangeBy pass 100 pass] @(door){
-		isOpen.[door]: not isOpen.[door]
-	}
-}
-
-loop 1..100 -> if isOpen.[&] -> print "Door " + &  + " is open."

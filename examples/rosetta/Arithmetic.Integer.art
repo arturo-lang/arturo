@@ -1,9 +1,0 @@
-print "give me the first number  : ", a: toNumber|strip|input ~
-print "give me the second number : ", b: toNumber|strip|input ~
-
-print a + " + " + b + " = " + (a+b)
-print a + " - " + b + " = " + (a-b)
-print a + " * " + b + " = " + (a*b)
-print a + " / " + b + " = " + (a/b)
-print a + " % " + b + " = " + (a%b)
-print a + " ^ " + b + " = " + (a^b)

@@ -1,6 +1,0 @@
-d: #{
-	name: "john"
-	surname: "doe"
-}
-print d.name
-print d
