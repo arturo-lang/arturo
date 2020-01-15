@@ -11,8 +11,6 @@ The Language
 
 Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Ruby, Haskell, D, SDL, Tcl and Lisp.
 
-It is implemented in ANSI C (99) as a fast Bytecode Stack-based VM and should run in most architectures.
-
 The language has been designed following some very simple and straightforward principles:
 
 ### Everything is a simple statement
@@ -37,6 +35,13 @@ There are 3 types of statements.
 **Pro tip:** Do you want to use the result of a statement as part of an expression? Just enclose the function call in square brackets `[...]`	E.g.: `print [reverse #(1 2 3)]`. But don't be fooled: square brackets are nothing but a way to mark an expression's precedence, pretty much like what you'd do with a pair of parentheses.
 
 Simple, isn't it?
+
+The Compiler
+------------------------------
+
+The main compiler is implemented in ANSI C (99) as a Bytecode interpreter / Stack-based VM and should run in most architectures.
+
+The main goals are: performance, energy-efficiency and portability. (With that exact order)
 
 How to Build & Install
 ------------------------------
