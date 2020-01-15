@@ -32,7 +32,7 @@ There are 3 types of statements.
 - Expressions (Yes, `1+2` is also a valid statement)
 - Labeled statements (see: assignments)  like `a: 2`
 
-**Pro tip:** Do you want to use the result of a statement as part of an expression? Just enclose the function call in square brackets `[...]`	E.g.: `print [reverse #(1 2 3)]`. But don't be fooled: square brackets are nothing but a way to mark an expression's precedence, pretty much like what you'd do with a pair of parentheses.
+**Pro tip:** Do you want to use the result of a statement as part of an expression? Just enclose the function call in square brackets `[...]`	E.g.: `print [reverse @[1,2,3]]`. But don't be fooled: square brackets are nothing but a way to mark an expression's precedence, pretty much like what you'd do with a pair of parentheses.
 
 Simple, isn't it?
 
