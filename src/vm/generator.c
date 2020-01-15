@@ -83,7 +83,6 @@ int storeValueData(Value v) {
 			if ((Kind(BData->data[i])==SV) && 
 				(!strcmp(S(BData->data[i])->content, S(v)->content))) { S(v)->refc++; return i; }
 		}
-		//printf("str not found\n");
 		aAdd(BData, v);
 		S(v)->refc++;
 		return BData->size-1;
@@ -96,7 +95,7 @@ int storeValueData(Value v) {
 		aAdd(BData,v);
 		return BData->size-1;
 	}
-
+	return -1;
 }
 
 /**************************************
