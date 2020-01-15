@@ -2,7 +2,7 @@
  * Arturo :VM
  * 
  * Programming Language + Compiler
- * (c) 2019 Yanis Zafirópulos (aka Dr.Kameleon)
+ * (c) 2019-2020 Yanis Zafirópulos (aka Dr.Kameleon)
  *
  * @file: src/main.c
  *****************************************************************/
@@ -19,7 +19,7 @@ void showVersion() {
 	uname(&unameData);
 
     printf("\x1B[32m\x1B[1mArturo %s\x1B[0m (%s build %s) [%s-%s]\n",Version,BuildDate,BuildNo,unameData.machine,unameData.sysname);
-    printf("(c) 2019 Yanis Zafirópulos\n");
+    printf("(c) 2019-2020 Yanis Zafirópulos\n");
     printf("\n");
 }
 
