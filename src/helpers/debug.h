@@ -14,7 +14,7 @@
   Aliases
  **************************************/
 
-#define debugHeader(X) 	printf("\e[1;32m|== %s /======================>\e[0;37m\n",X)
-#define debugFooter(X) 	printf("\e[1;32m==/ %s =======================|\e[0;37m\n",X)
+#define debugHeader(X)  printf("\e[1;32m|== %s /======================>\e[0;37m\n",X)
+#define debugFooter(X)  printf("\e[1;32m==/ %s =======================|\e[0;37m\n",X)
 
 #endif

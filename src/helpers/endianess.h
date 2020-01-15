@@ -11,8 +11,8 @@
 #define __ENDIANESS_H__
 
 #define IS_LITTLE_ENDIAN ({ \
-	int n = 1;								\
-	(*(char *)&n == 1);						\
+    int n = 1;                              \
+    (*(char *)&n == 1);                     \
 })
 
 #endif
