@@ -451,12 +451,11 @@ char* execute() {
 		OPCASE(EXEC) 	 :
 		OPCASE(JUMP) 	 : { 
 			Dword addr = nextDword; 
-			printf("jumping to: %d\n",addr); 
 			ip=addr; 
 			DISPATCH(); }
 		OPCASE(JMPIFNOT) : {
 			if (!B(popS())) { 
-				Dword addr = nextDword; printf("jumping to %d\n",addr); 
+				Dword addr = nextDword;
 				ip=addr; 
 			} 
 			DISPATCH();
