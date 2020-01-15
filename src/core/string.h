@@ -19,8 +19,8 @@
 typedef struct {
     int refc;
 
-    size_t size;
-    size_t cap;
+    int size;
+    int cap;
     char* content;
 } String;
 
