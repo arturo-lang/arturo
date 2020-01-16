@@ -13,75 +13,71 @@
   Debugging helpers
  **************************************/
 
-#ifdef DEBUG
+void inspectByteCode() {
+	debugHeader("Data Segment");
+	aEach(BData, i) {
+		String* vStr = stringify(BData->data[i]);
+		printf("%-4d: [%-6s]= %.*s\n",i,getValueTypeStr(BData->data[i]),vStr->size, vStr->content);
+	}
+	debugFooter("Data Segment");
+	printf("\n");
 
-	void inspectByteCode() {
-		debugHeader("Data Segment");
-		aEach(BData, i) {
-			String* vStr = stringify(BData->data[i]);
-			printf("%-4d: [%-6s]= %.*s\n",i,getValueTypeStr(BData->data[i]),vStr->size, vStr->content);
-		}
-		debugFooter("Data Segment");
-		printf("\n");
+	///
 
-		///
+	debugHeader("Bytecode Listing");
 
-		debugHeader("Bytecode Listing");
+	int IP = 0;
+	int cmd = -1;
 
-		int IP = 0;
-		int cmd = -1;
+	while (true) {
+		cmd++;
+		printf("%-4d\e[2m:%-8d\e[0;37m",cmd,IP);
+		OPCODE op = readByte(BCode,IP++);
+		printf("%s",OpCodeStr[op]);
 
-		while (true) {
-			cmd++;
-			printf("%-4d\e[2m:%-8d\e[0;37m",cmd,IP);
-			OPCODE op = readByte(BCode,IP++);
-			printf("%s",OpCodeStr[op]);
-
-			switch(op) {
-				case DSTORE:{
-					Value vv = readValue(BCode,IP);
-					String* vvStr = stringify(vv);
-					printf(" [Value] (%s) -> %.*s\n", getValueTypeStr(vv), vvStr->size, vvStr->content);
-					IP+=8;
-					break;
-				}
-				case JUMP:
-				case JMPIFNOT:
-					printf(" [Dword] %d\n", readDword(BCode,IP));
-					IP+=4;
-					break;
-				case COPY: {
-					Word first = readWord(BCode,IP); IP+=2;
-					Word second = readWord(BCode,IP); IP+=2;
-					printf(" [Word] %d -> [Word] %d\n", first, second);
-					break;
-				}
-				case PUSH:
-				case GLOAD:
-				case LLOAD:
-				case GSTORE:
-				case LSTORE:
-				case GCALL:
-				case LCALL:
-				case DO_APPEND:
-					printf(" [Word] %d\n", readWord(BCode,IP));
-					IP+=2;
-					break;
-				case END:
-					printf("\n");
-					goto exitProfileLoop_;
-				default:
-					printf("\n");
+		switch(op) {
+			case DSTORE:{
+				Value vv = readValue(BCode,IP);
+				String* vvStr = stringify(vv);
+				printf(" [Value] (%s) -> %.*s\n", getValueTypeStr(vv), vvStr->size, vvStr->content);
+				IP+=8;
+				break;
 			}
+			case JUMP:
+			case JMPIFNOT:
+				printf(" [Dword] %d\n", readDword(BCode,IP));
+				IP+=4;
+				break;
+			case COPY: {
+				Word first = readWord(BCode,IP); IP+=2;
+				Word second = readWord(BCode,IP); IP+=2;
+				printf(" [Word] %d -> [Word] %d\n", first, second);
+				break;
+			}
+			case PUSH:
+			case GLOAD:
+			case LLOAD:
+			case GSTORE:
+			case LSTORE:
+			case GCALL:
+			case LCALL:
+			case DO_APPEND:
+				printf(" [Word] %d\n", readWord(BCode,IP));
+				IP+=2;
+				break;
+			case END:
+				printf("\n");
+				goto exitProfileLoop_;
+			default:
+				printf("\n");
 		}
-
-		exitProfileLoop_:
-
-		printf("\n");
-		debugFooter("Bytecode Listing");
 	}
 
-#endif
+	exitProfileLoop_:
+
+	printf("\n");
+	debugFooter("Bytecode Listing");
+}
 
 /**************************************
   The main interpreter loop
@@ -110,16 +106,18 @@ char* execute() {
 		else if (k==GV) { mpz_clear((mpz_ptr)G(GlobalTable[X])); }		\
 		GlobalTable[X] = popped;										\
 	}	
-
+	//printf("calling func with arg: %d\n", I(Stack[sp-(z-i-1)]));
 	#define callGlobal(X) { \
 		Func* f = F(GlobalTable[X]);									\
-		CallFrame fr = { 												\
-			.ip = ip 													\
-		};																\
 		Byte z = f->args;												\
+		CallFrame fr = { 												\
+			.ip = ip, 													\
+			.size = z 													\
+		};																\
 		for (int i=0; i<z; i++) {										\
 			fr.Locals[i] = Stack[sp-(z-i-1)];							\
 		}																\
+		sp -= f->args;													\
 		pushF(fr);														\
 		ip = f->ip;														\
 	}	
@@ -133,11 +131,13 @@ char* execute() {
 	}
 
 	#define freeFrame() { \
-		for (int i=0; i<fp; i++) {											\
-			int k = Kind(topF0.Locals[i]);									\
-			if (k==SV) { sFree(S(topF0.Locals[i])); }						\
-			else if (k==AV) { aFree(A(topF0.Locals[i])); }					\
-			else if (k==GV) { mpz_clear((mpz_ptr)G(topF0.Locals[i])); }		\
+		Byte z = topF0.size;												\
+		Value* topLocals = topF0.Locals;									\
+		for (int i=0; i<z; i++) {											\
+			int k = Kind(topLocals[i]);										\
+			if (k==SV) { sFree(S(topLocals[i])); }							\
+			else if (k==AV) { aFree(A(topLocals[i])); }						\
+			else if (k==GV) { mpz_clear((mpz_ptr)G(topLocals[i])); }		\
 		}																	\
 	}
 
@@ -452,10 +452,11 @@ char* execute() {
 		OPCASE(JUMP) 	 : { 
 			Dword addr = nextDword; 
 			ip=addr; 
-			DISPATCH(); }
+			DISPATCH(); 
+		}
 		OPCASE(JMPIFNOT) : {
+			Dword addr = nextDword;
 			if (!B(popS())) { 
-				Dword addr = nextDword;
 				ip=addr; 
 			} 
 			DISPATCH();
@@ -601,9 +602,9 @@ void vmCompileScript(char* script) {
 		sFree(target);
 		sFree(ext);
 
-		#ifdef DEBUG
+		if (Env.debugBytecode) {
 			inspectByteCode();
-		#endif
+		}
 	}
 
 	vmCleanUp();
@@ -614,9 +615,9 @@ void vmRunObject(char* script) {
 
 	readObjFile(script);
 
-	#ifdef DEBUG
+	if (Env.debugBytecode) {
 		inspectByteCode();
-	#endif
+	}
 
 	execute();
 
@@ -628,12 +629,11 @@ char* vmRunScript(char* script) {
 	
 	if (generateBytecode(script)) {
 	
-		#ifdef DEBUG
+		if (Env.debugBytecode) {
 			inspectByteCode();
-		#endif
+		}
 		
 		execute();
-
 	}
 
 	vmCleanUp();
