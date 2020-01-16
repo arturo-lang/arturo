@@ -59,6 +59,9 @@ void signalFoundFunction();
 void signalFoundIf();
 void finalizeIf();
 
+void signalFoundLoop();
+void finalizeLoop();
+
 void generatorSetup();
 void generatorFinalize();
 
@@ -75,8 +78,14 @@ intArray*			LocalLookupStack;
 intArray* BlockStarts;
 
 intArray* IfStarts;
+intArray* LoopStarts;
+intArray* LoopHeaders;
 int ifsFound;
 bool inIf;
+int inLoop;
+
+bool weAreInIf;
+bool weAreInLoop;
 
 int argCounter;
 
