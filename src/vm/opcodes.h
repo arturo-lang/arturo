@@ -213,15 +213,11 @@ typedef enum OpCode OPCODE;
   Globals
  **************************************/
 
-#ifdef DEBUG
+#define GENERATE_OP_STRING(ENUM,_) #ENUM,
 
-    #define GENERATE_OP_STRING(ENUM,_) #ENUM,
-
-    static const char *OpCodeStr[] = {
-        OPCODES(GENERATE_OP_STRING)
-    };
-
-#endif
+static const char *OpCodeStr[] = {
+    OPCODES(GENERATE_OP_STRING)
+};
 
 /**************************************
   Aliases
