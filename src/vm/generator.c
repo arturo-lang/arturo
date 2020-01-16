@@ -339,6 +339,8 @@ void signalFoundDictionary() {
 void signalFoundIf() {
 	inIf = true;
 	ifsFound+=2;
+	weAreInLoop = false;
+	weAreInIf = true;
 }
 
 void finalizeIf() {
@@ -348,12 +350,36 @@ void finalizeIf() {
 	if (BCode->data[addr]==JUMP) {
 		reemitDword(target+1, addr+5);
 	}
+	weAreInIf = false;
+}
+
+void signalFoundLoop() {
+	inLoop += 1;
+	weAreInLoop = true;
+	weAreInIf = false;
+	aAdd(LoopHeaders,BCode->size);
+	//printf("found loop @ %d\n",BCode->size);
+}
+
+void finalizeLoop() {
+	weAreInLoop = (--inLoop);
+	int target = aPop(LoopStarts);
+	Dword addr = readDword(BCode, target+1);
+	reemitOp(target, JMPIFNOT);
+	emitOpDword(JUMP, aPop(LoopHeaders));
+	if (BCode->data[addr]==JUMP) {
+		reemitDword(target+1, addr+5);
+	}
+	//printf("finalizing loop @ %d\n",BCode->size);
 }
 
 void signalGotInBlock() {
 	//printf("got in block! @ %d\n",BCode->size);
 	if (inIf) {
 		aAdd(IfStarts,BCode->size);
+	}
+	if (weAreInLoop) {
+		aAdd(LoopStarts,BCode->size);
 	}
 	aAdd(BlockStarts, BCode->size);
 	//printf("pushing to lookup stack\n");
@@ -428,9 +454,15 @@ inline void generatorSetup() {
 
 	BlockStarts 	= aNew(int,0);
 	IfStarts 		= aNew(int,0);
+	LoopStarts 		= aNew(int,0);
+	LoopHeaders 	= aNew(int,0);
+
+	weAreInIf 		= false;
+	weAreInLoop		= false;
 
 	ifsFound 		= 0;
 	inIf 			= false;
+	inLoop			= 0;
 
 	argCounter 		= 0;
 
@@ -445,6 +477,8 @@ inline void generatorFinalize() {
 
 	aFree(BlockStarts);
 	aFree(IfStarts);
+	aFree(LoopStarts);
+	aFree(LoopHeaders);
 }
 
 inline bool generateBytecode(const char* script) {
