@@ -88,6 +88,7 @@ void yyerror (char const *s) {
 %token <str> NL                 "NEWLINE"
 
 %token <str> IF_CMD             "IF_CMD"
+%token <str> LOOP_CMD           "LOOP_CMD"
 
 /****************************************
  Token precedence
@@ -221,6 +222,9 @@ expressions             :   expressions expression
 if_cmd                  :   IF_CMD                          { signalFoundIf(); }
                         ;
 
+loop_cmd                :   LOOP_CMD                        { signalFoundLoop(); }
+                        ;
+
 //==============================
 // Statements
 //==============================
@@ -238,6 +242,7 @@ call_statement          :   ID expressions                        { processCall(
 
 special_statement       :   if_cmd expression block         { finalizeIf(); }
                         |   if_cmd expression block block   { finalizeIf(); }
+                        |   loop_cmd expression block       { finalizeLoop(); }
                         ;
 
 pipe_statement          :   ID PIPE statement               { }
