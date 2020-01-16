@@ -56,9 +56,11 @@ LETTER              [A-Za-z_]
 "#!".*                  { /* She-bang line. Ignore. */ }
 
 "if"                    { return IF_CMD; }
+"loop"					{ return LOOP_CMD; }
 "print"                 { yylval.op = DO_PRINT; return SYSCALL1; }
 "size"                  { yylval.op = GET_SIZE; return SYSCALL1; }
 "get"|"!"               { yylval.op = DO_GET; return SYSCALL2; }
+"return"				{ yylval.op = RET; return SYSCALL1; }
 
 {LETTER}+               { yylval.str=strdup(yytext); return ID; }
 {DIGIT}{0,10}           { yylval.str=strdup(yytext); return INTEGER; }
