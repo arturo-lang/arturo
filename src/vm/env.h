@@ -24,6 +24,7 @@ typedef struct {
 
 	char*	include;
 	bool	optimize;
+	bool 	debugBytecode;
 } Environment;
 
 /**************************************
