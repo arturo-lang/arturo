@@ -14,7 +14,7 @@
   Inline methods
  **************************************/
 
-static inline int nextPowerOf2(int v) {
+static INLINED int nextPowerOf2(int v) {
     v |= v >> 1;
     v |= v >> 2;
     v |= v >> 4;
