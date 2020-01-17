@@ -144,13 +144,13 @@
     OPC(SWAP,               0x57)           \
     OPC(NOP,                0x58)           \
                                             \
-    OPC(X01,                0x59)           \
-    OPC(X02,                0x5A)           \
-    OPC(X03,                0x5B)           \
-    OPC(X04,                0x5C)           \
-    OPC(X05,                0x5D)           \
-    OPC(X06,                0x5E)           \
-    OPC(X07,                0x5F)           \
+    OPC(X01,                0x59)           \/* ! empty slot */
+    OPC(X02,                0x5A)           \/* ! empty slot */
+    OPC(X03,                0x5B)           \/* ! empty slot */
+    OPC(X04,                0x5C)           \/* ! empty slot */
+    OPC(X05,                0x5D)           \/* ! empty slot */
+    OPC(X06,                0x5E)           \/* ! empty slot */
+    OPC(X07,                0x5F)           \/* ! empty slot */
                                             \
     /* arithmetic/logical operators */      \
                                             \
@@ -172,8 +172,8 @@
     OPC(SHL,                0x6C)           \
     OPC(SHR,                0x6D)           \
                                             \
-    OPC(X08,                0x6E)           \
-    OPC(X09,                0x6F)           \
+    OPC(X08,                0x6E)           \/* ! empty slot */
+    OPC(X09,                0x6F)           \/* ! empty slot */
                                             \
     /* comparisons & flow control */        \
                                             \
@@ -192,11 +192,11 @@
                                             \
     OPC(END,                0x7A)           \
                                             \
-    OPC(X10,                0x7B)           \
-    OPC(X11,                0x7C)           \
-    OPC(X12,                0x7D)           \
-    OPC(X13,                0x7E)           \
-    OPC(X14,                0x7F)           \
+    OPC(X10,                0x7B)           \/* ! empty slot */
+    OPC(X11,                0x7C)           \/* ! empty slot */
+    OPC(X12,                0x7D)           \/* ! empty slot */
+    OPC(X13,                0x7E)           \/* ! empty slot */
+    OPC(X14,                0x7F)           \/* ! empty slot */
                                             \
     /* system calls (128 slots) */          \
                                             \
