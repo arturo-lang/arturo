@@ -51,13 +51,16 @@ void inspectByteCode(Byte* bcode) {
 
             case CPUSH:
             case GLOAD:
-            case LLOAD:
             case GSTORE:
-            case LSTORE:
             case GCALL:
-            case LCALL:
                 printf(" [Word] %d\n", readWord(bcode,IP));
                 IP+=2;
+                break;
+            case LLOAD:
+            case LSTORE:
+            case LCALL:
+                printf(" [Byte] %d\n", readByte(bcode,IP));
+                IP+=1;
                 break;
             case END:
                 printf("\n");
@@ -294,7 +297,7 @@ char* execute(register Byte* bcode) {
         OPCASE(LLOAD3)   : pushS(topF0.Locals[3]);  DISPATCH();
 
         OPCASE(LLOAD)    : { 
-            Word ind = nextWord;
+            Word ind = nextByte;
             pushS(topF0.Locals[ind]); 
             DISPATCH();
         }
@@ -326,7 +329,7 @@ char* execute(register Byte* bcode) {
         OPCASE(LSTORE3)  : storeLocal(3);  DISPATCH();
 
         OPCASE(LSTORE)   : {
-            Word ind = nextWord;
+            Word ind = nextByte;
             storeLocal(ind); 
             DISPATCH();
         }
