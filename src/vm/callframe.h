@@ -18,8 +18,8 @@
 
 typedef struct {
 	Value Locals[LOCALSTACK_SIZE];
-	int size;
-	int ip;
+	unsigned int size;
+	unsigned int ip;
 } CallFrame;
 
 #endif
