@@ -35,7 +35,13 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+// 3rd party libraries
+
 #include <gmp.h>
+
+// Vendor
+
+#include "vendor/murmur3/murmur3.h"
 
 // Helpers
 
@@ -43,7 +49,9 @@
 #include "helpers/builtin.h"
 #include "helpers/debug.h"
 #include "helpers/endianess.h"
+#include "helpers/hash.h"
 #include "helpers/i32tos.h"
+#include "helpers/inlined.h"
 #include "helpers/lowmath.h"
 #include "helpers/memory.h"
 #include "helpers/powersoftwo.h"
@@ -55,6 +63,7 @@
 #include "core/string.h"
 #include "core/array.h"
 #include "core/bignum.h"
+#include "core/dict.h"
 
 // Repl
 
