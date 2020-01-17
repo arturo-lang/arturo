@@ -115,7 +115,7 @@ void processCall(char* id) {
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
 			if (ind<=3)  { emitOp((OPCODE)(LCALL0 + ind)); }
-			else 		 { emitOpWord(LCALL, ind); }
+			else 		 { emitOpByte(LCALL, ind); }
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
@@ -153,7 +153,7 @@ void processLoad(char* id) {
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
 			if (ind<=3)  { emitOp((OPCODE)(LLOAD0 + ind)); }
-			else 		 { emitOpWord(LLOAD, ind); }
+			else 		 { emitOpByte(LLOAD, ind); }
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
@@ -194,7 +194,7 @@ void processStore(char* id) {
 			if (ind!=-1) {
 				//printf("-- found in local scope\n");
 				if (ind<=3)  { emitOp((OPCODE)(LSTORE0 + ind)); }
-				else   		 { emitOpWord(LSTORE, ind); }
+				else   		 { emitOpByte(LSTORE, ind); }
 			}
 			else {
 				//printf("-- NOT found in local scope\n");
@@ -209,7 +209,7 @@ void processStore(char* id) {
 					aAdd(LocalLookup,id);
 					ind = LocalLookup->size-1;
 					if (ind<=3)  { emitOp((OPCODE)(LSTORE0 + ind)); }
-					else   		 { emitOpWord(LSTORE, ind); }
+					else   		 { emitOpByte(LSTORE, ind); }
 				}
 			}
 		}
