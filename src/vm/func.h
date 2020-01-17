@@ -29,7 +29,7 @@ typedef struct {
 // Constructor
 //-------------------------
 
-static inline Func* fNew(Dword ip, Byte args) {
+static INLINED Func* fNew(Dword ip, Byte args) {
     Func* ret = malloc(sizeof(Func));
     ret->ip = ip;
     ret->args = args;
@@ -40,7 +40,7 @@ static inline Func* fNew(Dword ip, Byte args) {
 // Destructor
 //-------------------------
 
-static inline void fFree(Func* dest) {
+static INLINED void fFree(Func* dest) {
     free(dest);
 }
 
