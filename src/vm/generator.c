@@ -298,7 +298,7 @@ void signalFoundIf() {
 
 void finalizeIf() {
 	unsigned int target = aPop(IfStarts);
-	Dword addr = readDword(BCode, target+1);
+	Dword addr = readDword(BCode->data, target+1);
 	reemitOp(target, JMPIFNOT);
 	if (BCode->data[addr]==JUMP) {
 		reemitDword(target+1, addr+5);
@@ -316,7 +316,7 @@ void signalFoundLoop() {
 void finalizeLoop() {
 	weAreInLoop = (--inLoop);
 	unsigned int target = aPop(LoopStarts);
-	Dword addr = readDword(BCode, target+1);
+	Dword addr = readDword(BCode->data, target+1);
 	reemitOp(target, JMPIFNOT);
 	emitOpDword(JUMP, aPop(LoopHeaders));
 	if (BCode->data[addr]==JUMP) {
