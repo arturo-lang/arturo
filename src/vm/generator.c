@@ -55,11 +55,11 @@ void emitOpValue(OPCODE op, Value v) {
  **************************************/
 
 void doPushInt(Value v) {
-	if (Kind(v)==IV && I(v)<=12) {
-		emitOp((OPCODE)(CONST0 + I(v)));
+	if (Kind(v)==IV && I(v)<=10) {
+		emitOp((OPCODE)(IPUSH0 + I(v)));
 	}
 	else {
-		emitOpWord(PUSH, storeValueData(v));
+		processConst(v);
 	}
 }
 
@@ -98,6 +98,13 @@ int storeValueData(Value v) {
 	return -1;
 }
 
+void processConst(Value v) {
+	int ind = storeValueData(v);
+
+	if (ind<=14) { emitOp((OPCODE)(CPUSH0 + ind)); }
+	else 		 { emitOpWord(CPUSH, ind); }
+}
+
 /**************************************
   Loads, Stores & Calls
  **************************************/
@@ -107,21 +114,21 @@ void processCall(char* id) {
 		int ind;
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=14) { emitOp((OPCODE)(LCALL0 + ind)); }
+			if (ind<=3)  { emitOp((OPCODE)(LCALL0 + ind)); }
 			else 		 { emitOpWord(LCALL, ind); }
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
 			if (ind!=-1) {
 				//printf("-- found in global scope\n");
-				if (ind<=14) { emitOp((OPCODE)(GCALL0 + ind)); }
+				if (ind<=9)  { emitOp((OPCODE)(GCALL0 + ind)); }
 				else 		 { emitOpWord(GCALL, ind); }
 			}
 			else {
 				// pretend it exists in global
 				aAdd(GlobalLookup,id);
 				ind = GlobalLookup->size-1;
-				if (ind<=14) { emitOp((OPCODE)(GCALL0 + ind)); }
+				if (ind<=9)  { emitOp((OPCODE)(GCALL0 + ind)); }
 				else 		 { emitOpWord(GCALL, ind); }
 			}
 		}
@@ -130,7 +137,7 @@ void processCall(char* id) {
 		int ind;
 		aFindCStr(GlobalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=14) { emitOp((OPCODE)(GCALL0 + ind)); }
+			if (ind<=9)  { emitOp((OPCODE)(GCALL0 + ind)); }
 			else 		 { emitOpWord(GCALL, ind); }
 		}
 		else {
@@ -145,14 +152,14 @@ void processLoad(char* id) {
 		int ind;
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=14) { emitOp((OPCODE)(LLOAD0 + ind)); }
+			if (ind<=3)  { emitOp((OPCODE)(LLOAD0 + ind)); }
 			else 		 { emitOpWord(LLOAD, ind); }
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
 			if (ind!=-1) {
 				//printf("-- found in global scope\n");
-				if (ind<=14) { emitOp((OPCODE)(GLOAD0 + ind)); }
+				if (ind<=9)  { emitOp((OPCODE)(GLOAD0 + ind)); }
 				else 		 { emitOpWord(GLOAD, ind); }
 			}
 			else {
@@ -165,7 +172,7 @@ void processLoad(char* id) {
 		int ind;
 		aFindCStr(GlobalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=14) { emitOp((OPCODE)(GLOAD0 + ind)); }
+			if (ind<=9)  { emitOp((OPCODE)(GLOAD0 + ind)); }
 			else 		 { emitOpWord(GLOAD, ind); }
 		}
 		else {
@@ -176,115 +183,61 @@ void processLoad(char* id) {
 }
 
 void processStore(char* id) {
-	//printf("trying to see where to store: %s\n",id);
-	// if ((lastOp>=GLOAD0) && (lastOp<=GLOAD15)) {
-	// 	if (weAreInFunc) {
+	if (weAreInBlock) {
+		//printf("-- we are in a block\n");
+		if (weAreInDict) {
 
-	// 	}
-	// 	else {
-	// 		if (weAreInDict) {
-
-	// 		}
-	// 		else {
-	// 			int ind = findStringInBuffer(GlobalLookup, id);
-	// 			if (ind!=-1) {
-	// 				rewriteByte(BCode,COPY);
-	// 				writeWord(BCode,(Word)(GLOAD15-lastOp-0xF));
-	// 				writeWord(BCode,(Word)ind);
-	// 				lastOp = COPY;
-	// 				// rewriteByte(lastOp);
-	// 				// writeWord(BCode,(Word)(GLOAD15-lastOp));
-	// 				// writeWord(BCode,(Word)ind);
-	// 				// if (ind<=15) { emitOp((OPCODE)(GSTORE0 + ind)); }
-	// 				// else 		 { emitOpWord(GSTORE, ind); }
-	// 			}
-	// 			else {
-	// 				writeStringToBuffer(GlobalLookup,id);
-	// 				ind = findStringInBuffer(GlobalLookup, id);
-	// 				rewriteByte(BCode,COPY);
-	// 				writeWord(BCode,(Word)(GLOAD15-lastOp-0xF));
-	// 				writeWord(BCode,(Word)ind);
-	// 				lastOp = COPY;
-	// 				// if (ind<=15) { emitOp((OPCODE)(GSTORE0 + ind)); }
-	// 				// else 		 { emitOpWord(GSTORE, ind); }
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// else {
-		if (weAreInBlock) {
-			//printf("-- we are in a block\n");
-			if (weAreInDict) {
-
-			}
-			else {
-				int ind;
-				aFindCStr(LocalLookup,id,ind);
-				if (ind!=-1) {
-					//printf("-- found in local scope\n");
-					if (ind<=14) { emitOp((OPCODE)(LSTORE0 + ind)); }
-					else   		 { emitOpWord(LSTORE, ind); }
-				}
-				else {
-					//printf("-- NOT found in local scope\n");
-					aFindCStr(GlobalLookup,id,ind);
-					if (ind!=-1) {
-						//printf("-- found in global scope\n");
-						if (ind<=14) { emitOp((OPCODE)(GSTORE0 + ind)); }
-						else 		 { emitOpWord(GSTORE, ind); }
-					}
-					else {
-						//printf("-- NOT found anywhere, adding to local scope\n");
-						aAdd(LocalLookup,id);
-						ind = LocalLookup->size-1;
-						if (ind<=14) { emitOp((OPCODE)(LSTORE0 + ind)); }
-						else   		 { emitOpWord(LSTORE, ind); }
-					}
-				}
-			}
-        // if weAreInDict>0:
-        //     emitOpValue(DSTORE,toS($s))
-        // else:
-        //     var ind = localLookup.find(s)
-        //     if ind != -1:
-        //         if ind<=15: emitOp(constOp(LSTORE0))
-        //         else: emitOpWord(LSTORE,ind)
-        //     else:
-        //         ind = globalLookup.find(s)
-        //         if ind != -1:
-        //             if ind<=15: emitOp(constOp(GSTORE0))
-        //             else: emitOpWord(GSTORE,ind)
-        //         else:
-        //             localLookup.add(s)
-        //             ind = localLookup.find(s)
-        //             if ind<=15: emitOp(constOp(LSTORE0))
-        //             else: emitOpWord(LSTORE,ind)
 		}
 		else {
-			//printf("-- we are NOT in a block\n");
-			if (weAreInDict) {
-
+			int ind;
+			aFindCStr(LocalLookup,id,ind);
+			if (ind!=-1) {
+				//printf("-- found in local scope\n");
+				if (ind<=3)  { emitOp((OPCODE)(LSTORE0 + ind)); }
+				else   		 { emitOpWord(LSTORE, ind); }
 			}
 			else {
-				int ind;
+				//printf("-- NOT found in local scope\n");
 				aFindCStr(GlobalLookup,id,ind);
 				if (ind!=-1) {
 					//printf("-- found in global scope\n");
-					if (ind<=14) { emitOp((OPCODE)(GSTORE0 + ind)); }
+					if (ind<=9)  { emitOp((OPCODE)(GSTORE0 + ind)); }
 					else 		 { emitOpWord(GSTORE, ind); }
 				}
 				else {
-					//printf("-- NOT found in global scope, add it\n");
-					aAdd(GlobalLookup,id);
-					ind = GlobalLookup->size-1;
-					if (ind<=14) { emitOp((OPCODE)(GSTORE0 + ind)); }
-					else 		 { emitOpWord(GSTORE, ind); }
+					//printf("-- NOT found anywhere, adding to local scope\n");
+					aAdd(LocalLookup,id);
+					ind = LocalLookup->size-1;
+					if (ind<=3)  { emitOp((OPCODE)(LSTORE0 + ind)); }
+					else   		 { emitOpWord(LSTORE, ind); }
 				}
 			}
 		}
-	// }
-}
+	}
+	else {
+		//printf("-- we are NOT in a block\n");
+		if (weAreInDict) {
 
+		}
+		else {
+			int ind;
+			aFindCStr(GlobalLookup,id,ind);
+			if (ind!=-1) {
+				//printf("-- found in global scope\n");
+				if (ind<=9)  { emitOp((OPCODE)(GSTORE0 + ind)); }
+				else 		 { emitOpWord(GSTORE, ind); }
+			}
+			else {
+				//printf("-- NOT found in global scope, add it\n");
+				aAdd(GlobalLookup,id);
+				ind = GlobalLookup->size-1;
+				if (ind<=9)  { emitOp((OPCODE)(GSTORE0 + ind)); }
+				else 		 { emitOpWord(GSTORE, ind); }
+			}
+		}
+	}
+}
+/*
 void processInPlace(OPCODE op, char* id) {
 	if (weAreInBlock) {
 
@@ -306,7 +259,7 @@ void processInPlace(OPCODE op, char* id) {
 			}
 		}
 	}
-}
+}*/
 
 /**************************************
   Arrays
@@ -344,7 +297,7 @@ void signalFoundIf() {
 }
 
 void finalizeIf() {
-	int target = aPop(IfStarts);
+	unsigned int target = aPop(IfStarts);
 	Dword addr = readDword(BCode, target+1);
 	reemitOp(target, JMPIFNOT);
 	if (BCode->data[addr]==JUMP) {
@@ -358,23 +311,20 @@ void signalFoundLoop() {
 	weAreInLoop = true;
 	weAreInIf = false;
 	aAdd(LoopHeaders,BCode->size);
-	//printf("found loop @ %d\n",BCode->size);
 }
 
 void finalizeLoop() {
 	weAreInLoop = (--inLoop);
-	int target = aPop(LoopStarts);
+	unsigned int target = aPop(LoopStarts);
 	Dword addr = readDword(BCode, target+1);
 	reemitOp(target, JMPIFNOT);
 	emitOpDword(JUMP, aPop(LoopHeaders));
 	if (BCode->data[addr]==JUMP) {
 		reemitDword(target+1, addr+5);
 	}
-	//printf("finalizing loop @ %d\n",BCode->size);
 }
 
 void signalGotInBlock() {
-	//printf("got in block! @ %d\n",BCode->size);
 	if (inIf) {
 		aAdd(IfStarts,BCode->size);
 	}
@@ -382,45 +332,21 @@ void signalGotInBlock() {
 		aAdd(LoopStarts,BCode->size);
 	}
 	aAdd(BlockStarts, BCode->size);
-	//printf("pushing to lookup stack\n");
-	//printf("LocalLookup->size before: %zu\n",LocalLookup->size);
-
-	//if (ifsFound%2==0) {
-	//	printf("ifsFound%2==0 : emit JUMP\n");
-		emitOpDword(JUMP,0);
-	//}
+	emitOpDword(JUMP,0);
 }
 
 void signalGotOutOfBlock() {
 	inIf = false;
-	//emitOp(RET);
-	//printf("got out of block @ %d\n",BCode->size);
 	int pos = aPop(BlockStarts)+1; 				// move pointer to Dword after JUMP (1 byte)
-	  	// fix JMP param to point to current pointer
-	reemitDword(pos,BCode->size);
-	/*if (ifsFound>0) {
-		if (ifsFound%2==0) {
-			printf("converting JUMP to JMPIFNOT\n");
-			
-			reemitOp(pos-1, JMPIFNOT);
-			reemitDword(pos,BCode->size + 5);
-		}
-		ifsFound--;
-		printf("decreased ifsFound :: %d\n", ifsFound);
-	}	*/		
-	//Func* f = fNew(pos+4,0);
-	//printf("created new func: %p :: ip: %d, args: %d\n",f,f->ip,f->args);
-	//emitOpValue(PUSH,toF(f));	   	// move pointer to next instruction (Dword = 4 bytes)
+	reemitDword(pos,BCode->size);				// fix JMP param to point to current pointer
 }
 
 void signalGotInFunction() {
-
 	if (LocalLookupStack->size > 0) {
 		aAdd(LocalLookupStack, LocalLookup->size);
 	}
 	else {
 		aAdd(LocalLookupStack,0);
-		// aAdd(LocalLookups, aNew(CString, 0));
 	}
 	weAreInBlock = true;
 	argCounter = 0;
@@ -432,11 +358,11 @@ void signalFoundFunction() {
 		weAreInBlock = false;
 	}
 	emitOp(RET);
-	int pos = BlockStarts->data[BlockStarts->size] + 1;
+	unsigned int pos = BlockStarts->data[BlockStarts->size] + 1;
 	reemitDword(pos,BCode->size);
 	Func* f = fNew(pos+4,argCounter);
 	//printf("created new func: %p :: ip: %d, args: %d\n",f,f->ip,f->args);
-	emitOpWord(PUSH,storeValueData(toF(f)));	   	// move pointer to next instruction (Dword = 4 bytes)
+	processConst(toF(f));
 	argCounter = 0;
 }
 
