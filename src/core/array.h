@@ -65,6 +65,10 @@ typedef Array(int)              intArray;
     aGrow(DEST,1);                                                          \
     DEST->data[DEST->size-1] = X
 
+#define aDelete(DEST,IDX) \
+    memmove(&(DEST->data[IDX]), &(DEST->data[IDX+1]), (DEST->size-IDX-1) * DEST->typeSize); \
+    DEST->size--;
+
 #define aPop(DEST) \
     DEST->data[--DEST->size]
 
