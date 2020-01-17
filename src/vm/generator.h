@@ -35,14 +35,15 @@ void emitOpWord(OPCODE op, Word w);
 void emitOpDword(OPCODE op, Dword d);
 void emitOpValue(OPCODE op, Value v);
 
-int storeValueData(Value v);
-
 void doPushInt(Value v);
+
+int storeValueData(Value v);
+void processConst(Value v);
 
 void processCall(char* id);
 void processLoad(char* id);
 void processStore(char* id);
-void processInPlace(OPCODE op, char* id);
+//void processInPlace(OPCODE op, char* id);
 
 void signalGotInArray();
 void signalFoundArray();
