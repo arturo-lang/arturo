@@ -36,8 +36,6 @@ typedef float Float32;
 
 typedef enum ValueType VALUETYPE;
 
-typedef Array(Value)    ValueArray;
-
 /**************************************
   Masks
  **************************************/
@@ -88,6 +86,8 @@ typedef Array(Value)    ValueArray;
 #define INTV11  toI(11)
 #define INTV12  toI(12)
 
+#define FLOATV1 toR(1.0)
+
 #define TRUEV  	((Value)(1) | MASK(BV))
 #define FALSEV 	((Value)(0) | MASK(BV))
 
@@ -125,15 +125,15 @@ void printLnValue(Value v);
   Static Methods
  **************************************/
 
-static inline bool neValues(Value l, Value r) {
+static INLINED bool neValues(Value l, Value r) {
 	return (!eqValues(l,r));
 }
 
-static inline bool geValues(Value l, Value r) {
+static INLINED bool geValues(Value l, Value r) {
 	return (gtValues(l,r) || eqValues(l,r));
 }
 
-static inline bool leValues(Value l, Value r) {
+static INLINED bool leValues(Value l, Value r) {
 	return (ltValues(l,r) || eqValues(l,r));
 }
 
