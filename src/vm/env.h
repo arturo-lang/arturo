@@ -17,14 +17,14 @@
  **************************************/
 
 typedef struct {
-	char** 	argv;
-	int 	argi;
+	char** 			argv;
+	unsigned int 	argi;
 
-	bool	littleEndian;
+	bool			littleEndian;
 
-	char*	include;
-	bool	optimize;
-	bool 	debugBytecode;
+	char*			include;
+	bool			optimize;
+	bool 			debugBytecode;
 } Environment;
 
 /**************************************
