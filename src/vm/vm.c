@@ -13,7 +13,7 @@
   Debugging helpers
  **************************************/
 
-void inspectByteCode() {
+void inspectByteCode(Byte* bcode) {
     debugHeader("Data Segment");
     aEach(BData, i) {
         String* vStr = stringify(BData->data[i]);
@@ -32,12 +32,12 @@ void inspectByteCode() {
     while (true) {
         cmd++;
         printf("%-4d\e[2m:%-8d\e[0;37m",cmd,IP);
-        OPCODE op = readByte(BCode,IP++);
+        OPCODE op = readByte(bcode,IP++);
         printf("%s",OpCodeStr[op]);
 
         switch(op) {
             case DSTORE:{
-                Value vv = readValue(BCode,IP);
+                Value vv = readValue(bcode,IP);
                 String* vvStr = stringify(vv);
                 printf(" [Value] (%s) -> %.*s\n", getValueTypeStr(vv), vvStr->size, vvStr->content);
                 IP+=8;
@@ -45,7 +45,7 @@ void inspectByteCode() {
             }
             case JUMP:
             case JMPIFNOT:
-                printf(" [Dword] %d\n", readDword(BCode,IP));
+                printf(" [Dword] %d\n", readDword(bcode,IP));
                 IP+=4;
                 break;
 
@@ -56,7 +56,7 @@ void inspectByteCode() {
             case LSTORE:
             case GCALL:
             case LCALL:
-                printf(" [Word] %d\n", readWord(BCode,IP));
+                printf(" [Word] %d\n", readWord(bcode,IP));
                 IP+=2;
                 break;
             case END:
@@ -77,20 +77,20 @@ void inspectByteCode() {
   The main interpreter loop
  **************************************/
 
-char* execute() {   
+char* execute(register Byte* bcode) {   
     //-------------------------
     // Our registers
     //-------------------------
 
     register int sp = -1;
     register int fp = -1;
-    register int ip = 0;
+    register unsigned int ip = 0;
 
     //-------------------------
     // The Global Table
     //-------------------------
 
-    Value GlobalTable[GLOBAL_SIZE];
+    register Value GlobalTable[GLOBAL_SIZE];
 
     #define storeGlobal(X) { \
         int k = Kind(GlobalTable[X]);                                   \
@@ -126,7 +126,7 @@ char* execute() {
 
     #define freeFrame() { \
         Byte z = topF0.size;                                                \
-        Value* topLocals = topF0.Locals;                                    \
+        volatile Value* topLocals = topF0.Locals;                           \
         for (int i=0; i<z; i++) {                                           \
             int k = Kind(topLocals[i]);                                     \
             if (k==SV) { sFree(S(topLocals[i])); }                          \
@@ -139,7 +139,7 @@ char* execute() {
     // Stack handling
     //-------------------------
 
-    Value Stack[STACK_SIZE];
+    register Value Stack[STACK_SIZE];
 
     #define pushS(X)    Stack[sp+1] = X; sp++
     #define popS()      Stack[sp--]
@@ -147,7 +147,7 @@ char* execute() {
     #define topS1       Stack[sp-1]
     #define topS2       Stack[sp-2]
 
-    CallFrame FrameStack[FRAMESTACK_SIZE];
+    register CallFrame FrameStack[FRAMESTACK_SIZE];
 
     #define pushF(X)    FrameStack[fp+1] = X; fp++
     #define popF()      FrameStack[fp--]
@@ -161,11 +161,11 @@ char* execute() {
 
     OPCODE op;
 
-    #define nextOp      readByte(BCode,ip++)
-    #define nextByte    readByte(BCode,ip++)
-    #define nextWord    readWord(BCode,ip);  ip+=2;
-    #define nextDword   readDword(BCode,ip); ip+=4;
-    #define nextValue   readValue(BCode,ip); ip+=8;
+    #define nextOp      readByte(bcode,ip++)
+    #define nextByte    readByte(bcode,ip++)
+    #define nextWord    readWord(bcode,ip);  ip+=2;
+    #define nextDword   readDword(bcode,ip); ip+=4;
+    #define nextValue   readValue(bcode,ip); ip+=8;
 
     //-------------------------
     // Computed Goto
@@ -386,7 +386,7 @@ char* execute() {
         OPCASE(DSTORE)   : /* not implemented */ DISPATCH();
 
         OPCASE(POP)      : sp--; DISPATCH();
-        OPCASE(DUP)      : pushS(topS0); DISPATCH();
+        OPCASE(DUP)      : sp++; topS0=topS1; DISPATCH();
         OPCASE(SWAP)     : {
             Value tmp = topS0;
             topS0 = topS1;
@@ -413,6 +413,9 @@ char* execute() {
         OPCASE(AND)      : topS1 = toB(B(topS1) && B(topS0)); sp--; DISPATCH();
         OPCASE(OR)       : topS1 = toB(B(topS1) || B(topS0)); sp--; DISPATCH();
         OPCASE(XOR)      : topS1 = toB((B(topS1) || B(topS0)) && !(B(topS1) && B(topS0))); sp--; DISPATCH();
+
+        OPCASE(SHL)      : topS1 = toI(I(topS1) << I(topS0)); sp--; DISPATCH();
+        OPCASE(SHR)      : topS1 = toI(I(topS1) >> I(topS1)); sp--; DISPATCH();
 
         //---------------------------------------
         // comparisons & flow control
@@ -493,9 +496,7 @@ char* execute() {
         OPCASE(X11)      :
         OPCASE(X12)      : 
         OPCASE(X13)      : 
-        OPCASE(X14)      : 
-        OPCASE(X15)      : 
-        OPCASE(X16)      : DISPATCH();
+        OPCASE(X14)      : DISPATCH();
 
         // //=======================================
         // // Arithmetic & Logical Operations
@@ -654,7 +655,7 @@ void vmCompileScript(char* script) {
         sFree(ext);
 
         if (Env.debugBytecode) {
-            inspectByteCode();
+            inspectByteCode(BCode->data);
         }
     }
 
@@ -667,10 +668,10 @@ void vmRunObject(char* script) {
     readObjFile(script);
 
     if (Env.debugBytecode) {
-        inspectByteCode();
+        inspectByteCode(BCode->data);
     }
 
-    execute();
+    execute(BCode->data);
 
     vmCleanUp();
 }
@@ -681,10 +682,10 @@ char* vmRunScript(char* script) {
     if (generateBytecode(script)) {
     
         if (Env.debugBytecode) {
-            inspectByteCode();
+            inspectByteCode(BCode->data);
         }
         
-        execute();
+        execute(BCode->data);
     }
 
     vmCleanUp();
