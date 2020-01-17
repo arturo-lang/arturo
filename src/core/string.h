@@ -58,7 +58,7 @@ typedef char* CString;
 // Constructor
 //-------------------------
 
-static inline String* sNew(const CString old) {
+static INLINED String* sNew(const CString old) {
     String* ret = malloc(sizeof(String));
     ret->size = strlen(old);
     ret->cap = nextPowerOf2(ret->size+1); 
@@ -69,7 +69,7 @@ static inline String* sNew(const CString old) {
     return ret;
 }
 
-static inline String* sDup(const String* old) {
+static INLINED String* sDup(const String* old) {
     String* ret = malloc(sizeof(String));
     ret->size = old->size;
     ret->cap = old->cap;
@@ -83,13 +83,13 @@ static inline String* sDup(const String* old) {
 // Main Functions
 //-------------------------
 
-static inline void sCat(String* dest, String* orig) {
+static INLINED void sCat(String* dest, String* orig) {
     sGrow(dest, orig->size);
     memcpy(dest->content + (dest->size-orig->size), orig->content, orig->size);
     dest->content[dest->size]='\0';
 }
 
-static inline void sPrint(String* str) {
+static INLINED void sPrint(String* str) {
     for (int i=0; i<str->size; i++) {
         putc(str->content[i],stdout);
     }
