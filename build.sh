@@ -34,6 +34,10 @@ LIBGMP="/usr/local/opt/gmp/lib/libgmp.a"
 ## sources
 ##=========================
 
+VENDOR=(
+    vendor/murmur3/murmur3
+)
+
 SOURCES=(
     helpers/benchmark
     helpers/i32tos
@@ -47,8 +51,10 @@ SOURCES=(
     main
 )
 
-OBJECTS=("${SOURCES[@]##*/}")
+OBJECTS=("${VENDOR[@]##*/}" "${SOURCES[@]##*/}")
+echo ${OBJECTS[@]}
 OBJECTS=("${OBJECTS[@]/%/.o}")
+echo ${OBJECTS[@]}
 
 ##=========================
 ## helpers
@@ -136,11 +142,13 @@ print_task_main "Building parser..."
 
     echo ""
 
-# print_task_main "Building external libraries..."
-#   print_subtask "[C] src/3rdparty/sds"
-#       $CC -O3 -std=c99 --save-temps=.cache -c src/3rdparty/sds/sds.c
-
-#   echo ""
+print_task_main "Building external sources..."
+    for s in ${VENDOR[@]}; do
+        file=src/$s.c
+        print_subtask "[C] $file"
+            $CC -O3 -std=c99 --save-temps=.cache -Isrc/ -c $file
+    done
+    echo ""
 
 print_task_main "Building core..."
     for s in ${SOURCES[@]}; do
