@@ -14,6 +14,10 @@
   The Instruction Set
  **************************************/
 
+//-------------------------------------------
+//  Instruction          |  Code  | Args    |
+//-------------------------------------------
+
 #define OPCODES(OPC)                        \
                                             \
     /* integer/float/boolean constants */   \
@@ -57,7 +61,7 @@
     OPC(CPUSH13,            0x1D)           \
     OPC(CPUSH14,            0x1E)           \
                                             \
-    OPC(CPUSH,              0x1F)           \
+    OPC(CPUSH,              0x1F) /* Word */\
                                             \
     /* load global/local variable */        \
                                             \
@@ -72,14 +76,14 @@
     OPC(GLOAD8,             0x28)           \
     OPC(GLOAD9,             0x29)           \
                                             \
-    OPC(GLOAD,              0x2A)           \
+    OPC(GLOAD,              0x2A) /* Word */\
                                             \
     OPC(LLOAD0,             0x2B)           \
     OPC(LLOAD1,             0x2C)           \
     OPC(LLOAD2,             0x2D)           \
     OPC(LLOAD3,             0x2E)           \
                                             \
-    OPC(LLOAD,              0x2F)           \
+    OPC(LLOAD,              0x2F) /* Byte */\
                                             \
     /* store global/local variable */       \
                                             \
@@ -94,14 +98,14 @@
     OPC(GSTORE8,            0x38)           \
     OPC(GSTORE9,            0x39)           \
                                             \
-    OPC(GSTORE,             0x3A)           \
+    OPC(GSTORE,             0x3A) /* Word */\
                                             \
     OPC(LSTORE0,            0x3B)           \
     OPC(LSTORE1,            0x3C)           \
     OPC(LSTORE2,            0x3D)           \
     OPC(LSTORE3,            0x3E)           \
                                             \
-    OPC(LSTORE,             0x3F)           \
+    OPC(LSTORE,             0x3F) /* Byte */\
                                             \
     /* call global/local function */        \
                                             \
@@ -116,14 +120,14 @@
     OPC(GCALL8,             0x48)           \
     OPC(GCALL9,             0x49)           \
                                             \
-    OPC(GCALL,              0x4A)           \
+    OPC(GCALL,              0x4A) /* Word */\
                                             \
     OPC(LCALL0,             0x4B)           \
     OPC(LCALL1,             0x4C)           \
     OPC(LCALL2,             0x4D)           \
     OPC(LCALL3,             0x4E)           \
                                             \
-    OPC(LCALL,              0x4F)           \
+    OPC(LCALL,              0x4F) /* Byte */\
                                             \
     /* miscellaneous stack functions */     \
                                             \
@@ -165,10 +169,11 @@
     OPC(OR,                 0x6A)           \
     OPC(XOR,                0x6B)           \
                                             \
-    OPC(X08,                0x6C)           \
-    OPC(X09,                0x6D)           \
-    OPC(X10,                0x6E)           \
-    OPC(X11,                0x6F)           \
+    OPC(SHL,                0x6C)           \
+    OPC(SHR,                0x6D)           \
+                                            \
+    OPC(X08,                0x6E)           \
+    OPC(X09,                0x6F)           \
                                             \
     /* comparisons & flow control */        \
                                             \
@@ -179,19 +184,19 @@
     OPC(CMPLT,              0x74)           \
     OPC(CMPLE,              0x75)           \
                                             \
-    OPC(JUMP,               0x76)           \
-    OPC(JMPIFNOT,           0x77)           \
+    OPC(JUMP,               0x76)/* DWord */\
+    OPC(JMPIFNOT,           0x77)/* DWord */\
     OPC(RET,                0x78)           \
                                             \
     OPC(EXEC,               0x79)           \
                                             \
     OPC(END,                0x7A)           \
                                             \
-    OPC(X12,                0x7B)           \
-    OPC(X13,                0x7C)           \
-    OPC(X14,                0x7D)           \
-    OPC(X15,                0x7E)           \
-    OPC(X16,                0x7F)           \
+    OPC(X10,                0x7B)           \
+    OPC(X11,                0x7C)           \
+    OPC(X12,                0x7D)           \
+    OPC(X13,                0x7E)           \
+    OPC(X14,                0x7F)           \
                                             \
     /* system calls (128 slots) */          \
                                             \
