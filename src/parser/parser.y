@@ -126,11 +126,11 @@ void yyerror (char const *s) {
 //==============================    
 
 number                  :   INTEGER             { doPushInt(strToIntValue($INTEGER)); }
-                        |   BIG_INTEGER         { emitOpWord(PUSH,storeValueData(strToBigintValue($BIG_INTEGER))); }
-                        |   REAL                { emitOpWord(PUSH,storeValueData(strToRealValue($REAL))); }
+                        |   BIG_INTEGER         { processConst(strToBigintValue($BIG_INTEGER)); }
+                        |   REAL                { processConst(strToRealValue($REAL)); }
                         ;
 
-string                  :   STRING              { emitOpWord(PUSH, storeValueData(strToStringValue($STRING))); }
+string                  :   STRING              { processConst(strToStringValue($STRING)); }
                         ;
 
 id                      :   ID                  { processLoad($ID); }
