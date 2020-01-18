@@ -57,6 +57,7 @@ typedef enum ValueType VALUETYPE;
 #define G(v) 	((Bignum_p)(v & UNMASK))
 #define S(v) 	((String*)(v & UNMASK))
 #define A(v)	((ValueArray*)(v & UNMASK))
+#define D(v) 	((Dict*)(v & UNMASK))
 #define F(v)	((Func*)(v & UNMASK))
 
 #define toI(v)  ( (Value)(v & 0xFFFFFFFFu) | MASK(IV) )
@@ -64,6 +65,7 @@ typedef enum ValueType VALUETYPE;
 #define toG(v)  ( (Value)(v) | MASK(GV) )
 #define toS(v)  ( (Value)(v) | MASK(SV) )
 #define toA(v)  ( (Value)(v) | MASK(AV) )
+#define toD(v)  ( (Value)(v) | MASK(DV) )
 #define toF(v)	( (Value)(v) | MASK(FV) )
 
 /**************************************
