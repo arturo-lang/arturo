@@ -90,4 +90,8 @@
 ByteArray*  BCode;
 ValueArray* BData;
 
+#ifdef PROFILE
+	Dict* Prof;
+#endif
+
 #endif
