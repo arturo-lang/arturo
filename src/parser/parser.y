@@ -202,7 +202,9 @@ expression              :   number
                         |   expression DOT ID                       { processCall($ID); }
                         |   expression DOT SYSCALL1                 { emitOp((OPCODE)$SYSCALL1); }
                         |   expression DOT SYSCALL2                 { emitOp((OPCODE)$SYSCALL2); }
-                        |   expression FIELD expression             { emitOp((OPCODE)DO_GET); }
+                        |   expression FIELD number                 { emitOp((OPCODE)DO_GET); }
+                        |   expression FIELD ID                     { processConst(strToStringValue($ID)); emitOp((OPCODE)DO_GET); }
+                        |   expression FIELD verbatim               { emitOp((OPCODE)DO_GET); }
 
                         |   verbatim
                         |   block
