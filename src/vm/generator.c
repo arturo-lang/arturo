@@ -185,8 +185,9 @@ void processLoad(char* id) {
 void processStore(char* id) {
 	if (weAreInBlock) {
 		//printf("-- we are in a block\n");
-		if (weAreInDict) {
-
+		if (dictsFound>0) {
+			int ind = storeValueData(strToStringValue(id));
+			emitOpWord(DSTORE, ind);
 		}
 		else {
 			int ind;
@@ -216,8 +217,9 @@ void processStore(char* id) {
 	}
 	else {
 		//printf("-- we are NOT in a block\n");
-		if (weAreInDict) {
-
+		if (dictsFound>0) {
+			int ind = storeValueData(strToStringValue(id));
+			emitOpWord(DSTORE, ind);
 		}
 		else {
 			int ind;
@@ -278,10 +280,12 @@ void signalFoundArray() {
  **************************************/
 
 void signalGotInDictionary() {
+	dictsFound++;
 	emitOp(NEWDIC);
 }
 
 void signalFoundDictionary() {
+	dictsFound--;
 	emitOp(PUSHD);
 }
 
@@ -389,6 +393,8 @@ inline void generatorSetup() {
 	ifsFound 		= 0;
 	inIf 			= false;
 	inLoop			= 0;
+
+	dictsFound 		= 0;
 
 	argCounter 		= 0;
 
