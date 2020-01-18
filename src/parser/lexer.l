@@ -59,7 +59,6 @@ LETTER              [A-Za-z_]
 "loop"					{ return LOOP_CMD; }
 "print"                 { yylval.op = DO_PRINT; return SYSCALL1; }
 "size"                  { yylval.op = GET_SIZE; return SYSCALL1; }
-"get"|"!"               { yylval.op = DO_GET; return SYSCALL2; }
 "return"				{ yylval.op = RET; return SYSCALL1; }
 
 {LETTER}+               { yylval.str=strdup(yytext); return ID; }
@@ -82,7 +81,7 @@ LETTER              [A-Za-z_]
 "<="|"≤"                { return LE_OP; }
 
 "."                     { return DOT; }
-"`"                     { return FIELD; }
+"'"                     { return FIELD; }
 ":"                     { return COLON; }
 ","                     { return COMMA; }
 "|"                     { return PIPE; }
