@@ -13,9 +13,9 @@
   Methods
  **************************************/
 
-double getCurrentTime() {
+unsigned long long getCurrentTime() {
     struct timeval t;
     struct timezone tzp;
     gettimeofday(&t, &tzp);
-    return t.tv_sec + t.tv_usec*1e-6;
+    return t.tv_sec*1000000 + t.tv_usec;
 }

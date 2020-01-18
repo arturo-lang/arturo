@@ -14,6 +14,6 @@
   Methods
  **************************************/
 
-double getCurrentTime();
+unsigned long long getCurrentTime();
 
 #endif
