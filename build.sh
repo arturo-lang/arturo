@@ -52,9 +52,7 @@ SOURCES=(
 )
 
 OBJECTS=("${VENDOR[@]##*/}" "${SOURCES[@]##*/}")
-echo ${OBJECTS[@]}
 OBJECTS=("${OBJECTS[@]/%/.o}")
-echo ${OBJECTS[@]}
 
 ##=========================
 ## helpers
