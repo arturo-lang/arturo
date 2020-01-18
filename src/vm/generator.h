@@ -84,6 +84,7 @@ intArray* LoopHeaders;
 int ifsFound;
 bool inIf;
 int inLoop;
+int dictsFound;
 
 bool weAreInIf;
 bool weAreInLoop;
