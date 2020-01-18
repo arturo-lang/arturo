@@ -27,6 +27,8 @@
 #define INITIAL_BCODE_SIZE  128     // Initially allocated memory for Bytecode
 #define INITIAL_BDATA_SIZE  32      // Initially allocated memory for Data Segment
 
+#define INITIAL_DICT_SIZE	64 		// Initially allocated capacity for user dictionaries
+
 /**************************************
   Debugging
  **************************************/
