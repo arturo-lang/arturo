@@ -8,6 +8,7 @@
  *****************************************************************/
 
 #include "../arturo.h"
+#include "../lib/system.h"
 
 /**************************************
   Debugging helpers
@@ -534,18 +535,7 @@ char* execute(register Byte* bcode) {
             }
             DISPATCH();
         }
-        OPCASE(GET_SIZE)        : {
-            Value popped = popS();
-            switch (Kind(popped)) {
-                case SV: pushS(toI(sSize(S(popped)))); break;
-                case AV: pushS(toI(aSize(A(popped)))); break;
-                case DV: pushS(toI(dSize(D(popped)))); break;
-                default: print("cannot get 'size' for value: ");
-                         printLnValue(popped);
-                         exit(1);
-            }
-            DISPATCH();
-        }
+        OPCASE(GET_SIZE)        : sys_getSize(); DISPATCH();
 
         /***************************
           Empty slots
