@@ -36,13 +36,6 @@ void inspectByteCode(Byte* bcode) {
         printf("%s",OpCodeStr[op]);
 
         switch(op) {
-            case DSTORE:{
-                Value vv = readValue(bcode,IP);
-                String* vvStr = stringify(vv);
-                printf(" [Value] (%s) -> %.*s\n", getValueTypeStr(vv), vvStr->size, vvStr->content);
-                IP+=8;
-                break;
-            }
             case JUMP:
             case JMPIFNOT:
                 printf(" [Dword] %d\n", readDword(bcode,IP));
@@ -52,6 +45,7 @@ void inspectByteCode(Byte* bcode) {
             case CPUSH:
             case GLOAD:
             case GSTORE:
+            case DSTORE:
             case GCALL:
                 printf(" [Word] %d\n", readWord(bcode,IP));
                 IP+=2;
@@ -75,6 +69,33 @@ void inspectByteCode(Byte* bcode) {
     printf("\n");
     debugFooter("Bytecode Listing");
 }
+
+#ifdef PROFILE
+    void inspectProfiler() {
+        debugHeader("Profiler");
+
+        String* countField = sNew("count");
+        String* timeField = sNew("time");
+
+        Value totalMs = 0;
+
+        aEach(Prof->keys,i) {
+            Dict* sub = D(dGet(Prof,Prof->keys->data[i]));
+            totalMs += dGet(sub,timeField);
+        }
+
+        printf("\n");
+        printf("%-10s : %-13s | %-10s | %-10s | %s\n","OPCODE","Count","Total (μs)","Ratio (%)","Avg (μs/instr)");
+        printf("===================================================================\n");
+        aEach(Prof->keys,i) {
+            Dict* sub = D(dGet(Prof,Prof->keys->data[i]));
+            printf("%-10s : %-13llu | %-10llu | %-10llu | %-7.2f\n",Prof->keys->data[i]->content, dGet(sub,countField), dGet(sub,timeField), (dGet(sub,timeField)*100)/totalMs, (float)((float)dGet(sub,timeField)/(float)dGet(sub,countField)));
+        }
+
+        printf("\n");
+        debugFooter("Profiler");
+    }
+#endif
 
 /**************************************
   The main interpreter loop
@@ -104,6 +125,10 @@ char* execute(register Byte* bcode) {
         GlobalTable[X] = popped;                                        \
     }   
 
+    // for (int i=0; i<z; i++) {                                       \
+    //         fr.Locals[i] = Stack[sp-(z-i-1)];                           \
+    //     }                                                               \
+
     #define callGlobal(X) { \
         Func* f = F(GlobalTable[X]);                                    \
         Byte z = f->args;                                               \
@@ -111,10 +136,26 @@ char* execute(register Byte* bcode) {
             .ip = ip,                                                   \
             .size = z                                                   \
         };                                                              \
-        for (int i=0; i<z; i++) {                                       \
-            fr.Locals[i] = Stack[sp-(z-i-1)];                           \
+        switch (z) {                                                    \
+            case 0: break;                                              \
+            case 1: fr.Locals[0] = Stack[sp-(z-0-1)]; break;            \
+            case 2: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
+                    fr.Locals[1] = Stack[sp-(z-1-1)]; break;            \
+            case 3: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
+                    fr.Locals[1] = Stack[sp-(z-1-1)];                   \
+                    fr.Locals[2] = Stack[sp-(z-2-1)]; break;            \
+            case 4: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
+                    fr.Locals[1] = Stack[sp-(z-1-1)];                   \
+                    fr.Locals[2] = Stack[sp-(z-2-1)];                   \
+                    fr.Locals[3] = Stack[sp-(z-3-1)]; break;            \
+            case 5: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
+                    fr.Locals[1] = Stack[sp-(z-1-1)];                   \
+                    fr.Locals[2] = Stack[sp-(z-2-1)];                   \
+                    fr.Locals[3] = Stack[sp-(z-3-1)];                   \
+                    fr.Locals[4] = Stack[sp-(z-4-1)]; break;            \
+            default: break;                                             \
         }                                                               \
-        sp -= f->args;                                                  \
+        sp -= z;                                                        \
         pushF(fr);                                                      \
         ip = f->ip;                                                     \
     }   
@@ -162,7 +203,7 @@ char* execute(register Byte* bcode) {
     // Instruction handling
     //-------------------------
 
-    OPCODE op;
+    OPCODE op = END;
 
     #define nextOp      readByte(bcode,ip++)
     #define nextByte    readByte(bcode,ip++)
@@ -184,13 +225,44 @@ char* execute(register Byte* bcode) {
 
         #define OPCASE(name)            case_##name
 
-        #if defined(PROFILE) || defined(DEBUG)
+        #if defined(PROFILE)
+            String* countField = sNew("count");
+            String* timeField = sNew("time");
+            double startTime;
+            #define DISPATCH()                                          \
+                if (op!=END) {                                          \
+                    Value timeMs = getCurrentTime()-startTime;          \
+                    String* ss = sNew((char*)OpCodeStr[op]);            \
+                    Dict* sub = D(dGet(Prof,ss));                       \
+                    dSet(sub,timeField,dGet(sub,timeField)+timeMs);     \
+                }                                                       \
+                op = nextOp;                                            \
+                {                                                       \
+                    String* ss = sNew((char*)OpCodeStr[op]);            \
+                    if (dHasKey(Prof,ss)) {                             \
+                        Dict* sub = D(dGet(Prof,ss));                   \
+                        dSet(sub,countField,dGet(sub,countField)+1);    \
+                    }                                                   \
+                    else {                                              \
+                        Dict* sub = dNew(4);                            \
+                        dAdd(sub,countField,1);                         \
+                        dAdd(sub,timeField,0);                          \
+                        dAdd(Prof,ss,toD(sub));                         \
+                    }                                                   \
+                }                                                       \
+                startTime = getCurrentTime();                           \
+                goto *dispatchTable[op];
+
+        #elif defined(DEBUG)
             #define DISPATCH()                                          \
                 op = nextOp;                                            \
                 printf("exec: %s\n",OpCodeStr[op]);                     \
                 goto *dispatchTable[op];
+
         #else   
-            #define DISPATCH()      goto *dispatchTable[op = nextOp]
+            #define DISPATCH()                                          \
+                goto *dispatchTable[op = nextOp]
+
         #endif
     #else
         #ifdef PROFILE
@@ -370,7 +442,10 @@ char* execute(register Byte* bcode) {
             aAdd(ArrayStarts, sp+1);
             DISPATCH();
         }
-        OPCASE(NEWDIC)   : /* not implemented */ DISPATCH();
+        OPCASE(NEWDIC)   : {
+            aAdd(DictArray, dNew(INITIAL_DICT_SIZE));
+            DISPATCH();
+        }
 
         OPCASE(PUSHA)    : {
             int start_index  = aPop(ArrayStarts);
@@ -384,9 +459,14 @@ char* execute(register Byte* bcode) {
             pushS(toA(ret));
             DISPATCH();
         }
-        OPCASE(PUSHD)    : /* not implemented */ DISPATCH();
+        OPCASE(PUSHD)    : pushS(toD(aPop(DictArray))); DISPATCH();
 
-        OPCASE(DSTORE)   : /* not implemented */ DISPATCH();
+        OPCASE(DSTORE)   : {
+            //Dicts[^1][S(readValue())] = pop()
+            Word addr = nextWord;
+            dAdd(aLast(DictArray),S(BData->data[addr]),popS());
+            DISPATCH();
+        }
 
         OPCASE(POP)      : sp--; DISPATCH();
         OPCASE(DUP)      : sp++; topS0=topS1; DISPATCH();
@@ -466,6 +546,7 @@ char* execute(register Byte* bcode) {
             Value collection = popS();
             switch (Kind(collection)) {
                 case AV: pushS(A(collection)->data[I(index)]); break;
+                case DV: pushS(dGet(D(collection),S(index))); break;
                 default: printLn("cannot get index for object\n");
             }
             DISPATCH();
@@ -475,6 +556,7 @@ char* execute(register Byte* bcode) {
             switch (Kind(popped)) {
                 case SV: pushS(toI(sSize(S(popped)))); break;
                 case AV: pushS(toI(aSize(A(popped)))); break;
+                case DV: pushS(toI(dSize(D(popped)))); break;
                 default: print("cannot get 'size' for value: ");
                          printLnValue(popped);
                          exit(1);
@@ -624,6 +706,10 @@ char* execute(register Byte* bcode) {
 
     exitLoop_:
 
+    #ifdef PROFILE
+        inspectProfiler();
+    #endif
+
     return "";
 }
 
@@ -633,11 +719,21 @@ char* execute(register Byte* bcode) {
 
 static inline void vmInit() {
     ArrayStarts = aNew(int,0);
+    DictArray = aNew(DictP,0);
+
+    #ifdef PROFILE
+        Prof = dNew(128);
+    #endif
 }
 
 static inline void vmCleanUp() {
     aFree(ArrayStarts);
+    aFree(DictArray);
     aFree(BCode);
+
+    #ifdef PROFILE
+        dFree(Prof);
+    #endif
 }
 
 /**************************************
