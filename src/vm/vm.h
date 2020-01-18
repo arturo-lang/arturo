@@ -23,5 +23,6 @@ char* vmRunScript(char* script);
  **************************************/
 
 intArray* ArrayStarts;
+DictPArray* DictArray;
 
 #endif
