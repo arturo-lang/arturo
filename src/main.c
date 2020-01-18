@@ -46,7 +46,9 @@ void showHelp(){
  **************************************/
 
 int main(int argc, char** argv) {
+
     // process command-line arguments
+    
 	char* includePath = NULL;
     bool compileOnly = false;
     bool executeObject = false;
