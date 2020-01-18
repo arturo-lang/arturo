@@ -27,6 +27,9 @@ typedef struct {
 	ValueArray* table;
 } Dict;
 
+typedef Dict* DictP;
+typedef Array(DictP) DictPArray;
+
 /**************************************
   Inline Methods
  **************************************/
@@ -59,5 +62,31 @@ static INLINED Value dGet(Dict* dest, String* key) {
 	ind %= dest->table->cap;
 	return dest->table->data[ind];
 }
+
+static INLINED void dSet(Dict* dest, String* key, Value v) {
+	Hash32 ind;
+	hash32String(key,ind);
+	ind %= dest->table->cap;
+	dest->table->data[ind] = v;
+}
+
+static INLINED bool dHasKey(Dict* dest, String* key) {
+	aEach(dest->keys,i){
+		if (!strcmp(dest->keys->data[i]->content, key->content)) return true;
+	}
+	return false;
+}
+
+/**************************************
+  Macros
+ **************************************/
+
+ #define dSize(DEST) \
+    DEST->size
+
+ #define dFree(DEST) \
+    aFree(DEST->keys); \
+    aFree(DEST->table);	\
+    free(DEST);
 
 #endif
