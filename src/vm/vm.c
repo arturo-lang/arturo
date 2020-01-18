@@ -125,36 +125,19 @@ char* execute(register Byte* bcode) {
         GlobalTable[X] = popped;                                        \
     }   
 
-    // for (int i=0; i<z; i++) {                                       \
-    //         fr.Locals[i] = Stack[sp-(z-i-1)];                           \
-    //     }                                                               \
-
     #define callGlobal(X) { \
         Func* f = F(GlobalTable[X]);                                    \
         Byte z = f->args;                                               \
+        int newsp = sp-z;                                               \
         CallFrame fr = {                                                \
             .ip = ip,                                                   \
             .size = z                                                   \
         };                                                              \
-        switch (z) {                                                    \
-            case 0: break;                                              \
-            case 1: fr.Locals[0] = Stack[sp-(z-0-1)]; break;            \
-            case 2: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
-                    fr.Locals[1] = Stack[sp-(z-1-1)]; break;            \
-            case 3: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
-                    fr.Locals[1] = Stack[sp-(z-1-1)];                   \
-                    fr.Locals[2] = Stack[sp-(z-2-1)]; break;            \
-            case 4: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
-                    fr.Locals[1] = Stack[sp-(z-1-1)];                   \
-                    fr.Locals[2] = Stack[sp-(z-2-1)];                   \
-                    fr.Locals[3] = Stack[sp-(z-3-1)]; break;            \
-            case 5: fr.Locals[0] = Stack[sp-(z-0-1)];                   \
-                    fr.Locals[1] = Stack[sp-(z-1-1)];                   \
-                    fr.Locals[2] = Stack[sp-(z-2-1)];                   \
-                    fr.Locals[3] = Stack[sp-(z-3-1)];                   \
-                    fr.Locals[4] = Stack[sp-(z-4-1)]; break;            \
-            default: break;                                             \
-        }                                                               \
+        fr.Locals[0] = Stack[newsp+1];                                  \
+        fr.Locals[1] = Stack[newsp+2];                                  \
+        fr.Locals[2] = Stack[newsp+3];                                  \
+        fr.Locals[3] = Stack[newsp+4];                                  \
+        fr.Locals[4] = Stack[newsp+5];                                  \
         sp -= z;                                                        \
         pushF(fr);                                                      \
         ip = f->ip;                                                     \
