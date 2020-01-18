@@ -137,7 +137,7 @@
     OPC(PUSHA,              0x52)           \
     OPC(PUSHD,              0x53)           \
                                             \
-    OPC(DSTORE,             0x54)           \
+    OPC(DSTORE,             0x54) /* Word */\
                                             \
     OPC(POP,                0x55)           \
     OPC(DUP,                0x56)           \
