@@ -510,8 +510,19 @@ inline void printValue(Value v) {
         	break;
         }
         case DV : {
-        	print("printing dict");
-        	break;
+        	Dict* dict = D(v);
+        	printC('#');
+        	printC('[');
+        	aEach(dict->keys,i) {
+        		print(dict->keys->data[i]->content);
+        		printC(':');
+        		printValue(dGet(dict,dict->keys->data[i]));
+        		if (i!=dict->size-1) {
+        			printC(',');
+        			printC(' ');
+        		}
+        	}
+        	printC(']');
         }
         default : {
         	break;
@@ -557,7 +568,19 @@ inline void printLnValue(Value v) {
         	break;
         }
         case DV : {
-        	printLn("printing dict");
+        	Dict* dict = D(v);
+        	printC('#');
+        	printC('[');
+        	aEach(dict->keys,i) {
+        		print(dict->keys->data[i]->content);
+        		printC(':');
+        		printValue(dGet(dict,dict->keys->data[i]));
+        		if (i!=dict->size-1) {
+        			printC(',');
+        			printC(' ');
+        		}
+        	}
+        	printLn("]");
         	break;
         }
         default : {
