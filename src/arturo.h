@@ -92,6 +92,9 @@ ValueArray* BData;
 
 #ifdef PROFILE
 	Dict* Prof;
+	
+	float Prof_genTime;
+	float Prof_execTime;
 #endif
 
 #endif
