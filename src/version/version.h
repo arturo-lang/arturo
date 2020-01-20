@@ -1,17 +1,18 @@
 #ifndef __VERSION_H__
 #define __VERSION_H__
 
-unsigned char Version[] = {
+unsigned char src_version_Version[] = {
   0x30, 0x2e, 0x38
 };
-unsigned int Version_len = 3;
-unsigned char BuildNo[] = {
-  0x31, 0x30, 0x36, 0x34, 0x30
+unsigned int src_version_Version_len = 3;
+unsigned char src_version_BuildNo[] = {
+  0x31
 };
-unsigned int BuildNo_len = 5;
-unsigned char BuildDate[] = {
-  0x31, 0x38, 0x2d, 0x4a, 0x61, 0x6e, 0x2d, 0x32, 0x30, 0x32, 0x30
+unsigned int src_version_BuildNo_len = 1;
+unsigned char src_version_BuildDate[] = {
+  0x2d, 0x6e, 0x20, 0x32, 0x30, 0x2d, 0x4a, 0x61, 0x6e, 0x2d, 0x32, 0x30,
+  0x32, 0x30, 0x0a
 };
-unsigned int BuildDate_len = 11;
+unsigned int src_version_BuildDate_len = 15;
 
 #endif
