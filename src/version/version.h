@@ -6,7 +6,7 @@ unsigned char Version[] = {
 };
 unsigned int Version_len = 3;
 unsigned char BuildNo[] = {
-  0x34, 0x38
+  0x34, 0x39
 };
 unsigned int BuildNo_len = 2;
 unsigned char BuildDate[] = {
