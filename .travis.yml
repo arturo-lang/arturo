@@ -1,5 +1,20 @@
 language: c
-compiler: clang
-os: osx
-osx_image: xcode11.3
+compiler: 
+  - gcc
+  - clang
+
+matrix:
+  include:
+    - os: osx
+      osx_image: xcode11.3
+      compiler: clang
+      script: |
+        brew update
+        brew install bison flex || true
+        ci/do-ut || true
+    - os: linux
+      dist: xenial
+      sudo: true
+      compiler: gcc
+
 script: ./build.sh
