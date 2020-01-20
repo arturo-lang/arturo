@@ -1,3 +1,5 @@
 language: c
 compiler: clang
+os: osx
+osx_image: xcode11.3
 script: ./build.sh
