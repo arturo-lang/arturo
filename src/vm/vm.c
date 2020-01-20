@@ -21,7 +21,6 @@ void inspectByteCode(Byte* bcode) {
         printf("%-4d: [%-6s]= %.*s\n",i,getValueTypeStr(BData->data[i]),vStr->size, vStr->content);
     }
     debugFooter("Data Segment");
-    printf("\n");
 
     ///
 
@@ -67,12 +66,13 @@ void inspectByteCode(Byte* bcode) {
 
     exitProfileLoop_:
 
-    printf("\n");
     debugFooter("Bytecode Listing");
 }
 
 #ifdef PROFILE
     void inspectProfiler() {
+        printf("\n");
+
         debugHeader("Profiler");
 
         String* countField = sNew("count");
@@ -86,14 +86,22 @@ void inspectByteCode(Byte* bcode) {
         }
 
         printf("\n");
-        printf("%-10s : %-13s | %-10s | %-10s | %s\n","OPCODE","Count","Total (μs)","Ratio (%)","Avg (μs/instr)");
-        printf("===================================================================\n");
+        printf(" %-10s : %-13s | %-10s | %-10s | %s\n","OPCODE","Count","Total (μs)","Ratio (%)","Avg (μs/instr)");
+        printf("=========================================================================\n");
         aEach(Prof->keys,i) {
             Dict* sub = D(dGet(Prof,Prof->keys->data[i]));
-            printf("%-10s : %-13llu | %-10llu | %-10llu | %-7.2f\n",Prof->keys->data[i]->content, dGet(sub,countField), dGet(sub,timeField), (dGet(sub,timeField)*100)/totalMs, (float)((float)dGet(sub,timeField)/(float)dGet(sub,countField)));
+            printf(" %-10s : %-13llu | %-10llu | %-10llu | %-7.2f\n",Prof->keys->data[i]->content, dGet(sub,countField), dGet(sub,timeField), (dGet(sub,timeField)*100)/totalMs, (float)((float)dGet(sub,timeField)/(float)dGet(sub,countField)));
         }
 
         printf("\n");
+
+        printf(" TIMINGS\n");
+        printf("=========================================================================\n");
+        printf(" bytecode generation   : %.3fs\n",Prof_genTime);
+        printf(" code execution        : %.3fs\n",Prof_execTime);
+
+        printf("\n");
+
         debugFooter("Profiler");
     }
 #endif
@@ -679,10 +687,6 @@ char* execute(register Byte* bcode) {
 
     exitLoop_:
 
-    #ifdef PROFILE
-        inspectProfiler();
-    #endif
-
     return "";
 }
 
@@ -737,27 +741,63 @@ void vmCompileScript(char* script) {
 void vmRunObject(char* script) {
     vmInit();
 
+    #ifdef PROFILE
+        unsigned long long timer = getCurrentTime();
+    #endif
+
     readObjFile(script);
+
+    #ifdef PROFILE
+        Prof_genTime = (float)(getCurrentTime()-timer)/1000000;
+    #endif
 
     if (Env.debugBytecode) {
         inspectByteCode(BCode->data);
     }
 
+    #ifdef PROFILE
+        timer = getCurrentTime();
+    #endif
+
     execute(BCode->data);
+
+    #ifdef PROFILE
+        Prof_execTime = (float)(getCurrentTime()-timer)/1000000;
+
+        inspectProfiler();
+    #endif
 
     vmCleanUp();
 }
 
 char* vmRunScript(char* script) {
     vmInit();
+
+    #ifdef PROFILE
+        unsigned long long timer = getCurrentTime();
+    #endif
     
     if (generateBytecode(script)) {
+
+        #ifdef PROFILE
+            Prof_genTime = (float)(getCurrentTime()-timer)/1000000;
+        #endif
     
         if (Env.debugBytecode) {
             inspectByteCode(BCode->data);
         }
         
+        #ifdef PROFILE
+            timer = getCurrentTime();
+        #endif
+
         execute(BCode->data);
+
+        #ifdef PROFILE
+            Prof_execTime = (float)(getCurrentTime()-timer)/1000000;
+
+            inspectProfiler();
+        #endif
     }
 
     vmCleanUp();
