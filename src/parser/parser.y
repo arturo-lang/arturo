@@ -112,7 +112,7 @@ void yyerror (char const *s) {
  ****************************************/
 
 %start program
-%define "parse.error" "verbose"
+%define parse.error verbose
 %locations
 
 %%
