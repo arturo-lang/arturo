@@ -4,7 +4,7 @@
 
 ---
 
-![GitHub](https://img.shields.io/github/license/arturo-lang/arturo) ![Language](https://img.shields.io/badge/Language-C-blue.svg?style=flat-square) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo)
+![GitHub](https://img.shields.io/github/license/arturo-lang/arturo) ![Language](https://img.shields.io/badge/Language-C-blue.svg?style=flat-square) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo) [![Build Status](https://travis-ci.com/arturo-lang/arturo.svg?branch=master)](https://travis-ci.com/arturo-lang/arturo)
 
 The Language
 ------------------------------
