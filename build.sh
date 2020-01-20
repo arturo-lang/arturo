@@ -136,10 +136,10 @@ print_task_main "Building parser..."
         # -v --report-file=parser.debug
 
     print_subtask "[C] lex.yy.c"
-        $CC -O3 -I/Users/drkameleon/Downloads/mimalloc-1.2.2/include/ -c lex.yy.c
+        $CC -O3 -c lex.yy.c
 
     print_subtask "[C] parser.tab.c"
-        $CC -O3 -I/Users/drkameleon/Downloads/mimalloc-1.2.2/include/ -c parser.tab.c
+        $CC -O3 -c parser.tab.c
 
     echo ""
 
