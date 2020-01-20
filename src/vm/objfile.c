@@ -63,6 +63,14 @@ void writeObjFile(const char* filename) {
 				fwrite(str, sizeof(char), sz, fp); 				// X bytes -> String
 				break;
 			}
+			case FV: {
+				Dword ip = F(BData->data[i])->ip;
+				fwrite(&ip, sizeof(Dword), 1, fp);
+
+				Byte args = F(BData->data[i])->args;
+				fwrite(&args, sizeof(Byte), 1, fp);
+				break;
+			}
 			default: {
 				printf("whatever...\n");
 			}
@@ -134,10 +142,18 @@ void readObjFile(const char* filename) {
 				int sz = getNextDword();
 
 				char* str = malloc(sz+1);
-				memcpy(str,buffer,sz+1);
+				memcpy(str,buffer,sz);
+				str[sz] = '\0';
 				buffer += sz;
 				storeValueData(strToStringValue(str));
 				free(str);
+				break;
+			}
+			case FV: {
+				Dword ip = getNextDword();
+				Byte args = getNextByte();
+
+				storeValueData(toF(fNew(ip,args)));
 				break;
 			}
 			default: {
