@@ -53,6 +53,8 @@ void yyerror (char const *s) {
 %token <str> INTEGER            "INTEGER"
 %token <str> BIG_INTEGER        "BIG INTEGER"
 %token <str> REAL               "REAL"
+%token <str> BOOL_TRUE          "`true`"
+%token <str> BOOL_FALSE         "`false`"
 
 %token <str> ADD_OP             "`+` (plus operator)"
 %token <str> SUB_OP             "`-` (minus operator)"
@@ -102,6 +104,8 @@ void yyerror (char const *s) {
 %left MUL_OP DIV_OP MOD_OP
 %right POW_OP
 %left DOT
+%left SYSCALL1
+%left SYSCALL2
 %left FIELD
 
 %left INTEGER
@@ -128,6 +132,10 @@ void yyerror (char const *s) {
 number                  :   INTEGER             { doPushInt(strToIntValue($INTEGER)); }
                         |   BIG_INTEGER         { processConst(strToBigintValue($BIG_INTEGER)); }
                         |   REAL                { processConst(strToRealValue($REAL)); }
+                        ;
+
+boolean                 :   BOOL_TRUE           { emitOp(BPUSHT); }
+                        |   BOOL_FALSE          { emitOp(BPUSHF); }
                         ;
 
 string                  :   STRING              { processConst(strToStringValue($STRING)); }
@@ -182,6 +190,7 @@ dictionary              :   dictionary_specifier verbatim               { signal
 //==============================
 
 expression              :   number
+                        |   boolean
                         |   string
                         |   id                                                                 
 
@@ -201,7 +210,6 @@ expression              :   number
 
                         |   expression DOT ID                       { processCall($ID); }
                         |   expression DOT SYSCALL1                 { emitOp((OPCODE)$SYSCALL1); }
-                        |   expression DOT SYSCALL2                 { emitOp((OPCODE)$SYSCALL2); }
                         |   expression FIELD number                 { emitOp((OPCODE)DO_GET); }
                         |   expression FIELD ID                     { processConst(strToStringValue($ID)); emitOp((OPCODE)DO_GET); }
                         |   expression FIELD verbatim               { emitOp((OPCODE)DO_GET); }
