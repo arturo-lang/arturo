@@ -20,7 +20,6 @@
 
 #define COMPUTED_GOTO               // Use Computed Goto VS Switch
 #define STACK_SIZE          5000    // Maximum Value Stack size
-#define FRAMESTACK_SIZE     3000    // Maximum Call Stack size
 #define LOCALSTACK_SIZE     255     // Maxium Local Value Stack size
 #define GLOBAL_SIZE         1000    // Maximum Global Table size
 
@@ -28,6 +27,8 @@
 #define INITIAL_BDATA_SIZE  32      // Initially allocated memory for Data Segment
 
 #define INITIAL_DICT_SIZE	64 		// Initially allocated capacity for user dictionaries
+
+//#define DYNAMIC_STACK
 
 /**************************************
   Debugging
