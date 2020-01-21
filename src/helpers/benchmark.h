@@ -15,5 +15,6 @@
  **************************************/
 
 unsigned long long getCurrentTime();
+unsigned long long getCurrentCycles();
 
 #endif
