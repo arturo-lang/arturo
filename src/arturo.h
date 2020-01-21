@@ -49,6 +49,7 @@
 #include "helpers/builtin.h"
 #include "helpers/debug.h"
 #include "helpers/endianess.h"
+#include "helpers/expect.h"
 #include "helpers/hash.h"
 #include "helpers/i32tos.h"
 #include "helpers/inlined.h"
