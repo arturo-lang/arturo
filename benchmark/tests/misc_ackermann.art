@@ -1,4 +1,4 @@
-ackermann: @(m n){
+ackermann: $(m n){
 	if m=0 { n+1 } {
 		if n=0 { ackermann m-1 1 } {
 			ackermann m-1 [ackermann m n-1]
@@ -6,8 +6,12 @@ ackermann: @(m n){
 	}
 }
 
-loop 0..3 @(m){
-	loop 0..10 @(n) {
+m: 0
+loop m<4 {
+	n: 0
+	loop n<11 {
 		print [ackermann m n]
+		n: n+1
 	}
+	m: m+1
 }
