@@ -205,7 +205,9 @@
     OPC(DO_APPEND,          0x82)           \
     OPC(DO_LOG,             0x83)           \
     OPC(DO_GET,             0x84)           \
-    OPC(GET_SIZE,           0x85)
+    OPC(GET_SIZE,           0x85)           \
+    OPC(GET_ABS,            0x86)           \
+    OPC(GET_SQRT,           0x87)
 
 /**************************************
   Enums
