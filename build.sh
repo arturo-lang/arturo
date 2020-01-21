@@ -136,10 +136,10 @@ print_task_main "Building parser..."
         # -v --report-file=parser.debug
 
     print_subtask "[C] lex.yy.c"
-        $CC -O3 -c lex.yy.c
+        $CC -O3 -flto -c lex.yy.c
 
     print_subtask "[C] parser.tab.c"
-        $CC -O3 -c parser.tab.c
+        $CC -O3 -flto -c parser.tab.c
 
     echo ""
 
@@ -147,7 +147,7 @@ print_task_main "Building external sources..."
     for s in ${VENDOR[@]}; do
         file=src/$s.c
         print_subtask "[C] $file"
-            $CC -O3 -std=c99 --save-temps=.cache -Isrc/ -c $file
+            $CC -O3 -flto -m64 -std=c99 --save-temps=.cache -Isrc/ -c $file
     done
     echo ""
 
@@ -155,12 +155,12 @@ print_task_main "Building core..."
     for s in ${SOURCES[@]}; do
         file=src/$s.c
         print_subtask "[C] $file"
-            $CC -O3 -std=c99 --save-temps=.cache -Isrc/ -c $file
+            $CC -O3 -flto -m64 -std=c99 --save-temps=.cache -Isrc/ -c $file
     done
     echo ""
 
 print_task "Linking..."
-    $CC parser.tab.o lex.yy.o ${OBJECTS[@]} $LIBGMP -o bin/$BINARY
+    $CC parser.tab.o lex.yy.o ${OBJECTS[@]} $LIBGMP -flto -o bin/$BINARY
     #-lpthread 
 end_task
 
@@ -171,7 +171,7 @@ end_task
 echo ""
 
 print_task "Cleaning up..."
-    mv *.s *.i .cache/
+    mv -f *.i .cache/
     rm -f *.c *.o *.h *.a *.bc *.ii
     cd src/3rdparty/libsrt
     make -f Makefile.posix clean >/dev/null 2>&1
