@@ -55,11 +55,19 @@ LETTER              [A-Za-z_]
 "||"[^\r\n]*[\r\n]      { /* Single-line comment. Ignore. */ }
 "#!".*                  { /* She-bang line. Ignore. */ }
 
+"true"					{ return BOOL_TRUE; }
+"false"					{ return BOOL_FALSE; }
+
 "if"                    { return IF_CMD; }
 "loop"					{ return LOOP_CMD; }
 "print"                 { yylval.op = DO_PRINT; return SYSCALL1; }
+"log"					{ yylval.op = DO_LOG; return SYSCALL1; }
 "size"                  { yylval.op = GET_SIZE; return SYSCALL1; }
+"abs"					{ yylval.op = GET_ABS; return SYSCALL1; }
 "return"				{ yylval.op = RET; return SYSCALL1; }
+
+"or"					{ yylval.op = OR; return SYSCALL2; }
+"sqrt"					{ yylval.op = GET_SQRT; return SYSCALL1; }
 
 {LETTER}+               { yylval.str=strdup(yytext); return ID; }
 {DIGIT}{0,10}           { yylval.str=strdup(yytext); return INTEGER; }
