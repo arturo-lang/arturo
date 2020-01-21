@@ -1,11 +1,13 @@
 maxLimit: 33
 
-fib: @(x){
+fib: $(x){
 	if x<2 { 1 }{
 		[fib x-1] + [fib x-2]
 	} 
 }
 
-loop 0..maxLimit {
-	print [fib &]
+i: 0
+loop i<maxLimit {
+	print [fib i]
+	i: i+1
 }
