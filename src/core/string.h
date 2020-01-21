@@ -60,7 +60,7 @@ typedef char* CString;
 
 static INLINED String* sNew(const CString old) {
     String* ret = malloc(sizeof(String));
-    ret->size = strlen(old);
+    ret->size = __builtin_strlen(old);
     ret->cap = nextPowerOf2(ret->size+1); 
     ret->content = malloc(ret->cap);
     ret->refc = 1;
