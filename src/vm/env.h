@@ -23,6 +23,8 @@ typedef struct {
 	bool			littleEndian;
 
 	char*			include;
+	unsigned int    stackSize;
+
 	bool			optimize;
 	bool 			debugBytecode;
 } Environment;
