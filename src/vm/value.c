@@ -89,14 +89,13 @@ Value addValues(Value l, Value r) {
                 	return toR(I(l)+R(r));
                 }
                 case SV: {
-                	/*
-                	VString left = stringify(l);
-                	VString right = dupString(S(r));
-                	concatString(left, right);
-                	freeString(right);
-                	return toS(left);*/
+                	String* left = stringify(l);
+                	String* right = sDup(S(r));
+                	sCat(left,right);
+                	sFree(right);
+                	return toS(left);
                 }
-				default: invalidOperationError('+');
+				default: printf("%s/%s\n",getValueTypeStr(l),getValueTypeStr(r)); invalidOperationError('+');
 			}
 		case GV:
 			switch (Kind(r)) {
@@ -399,6 +398,13 @@ bool gtValues(Value l, Value r) {
 		case IV:
 			switch (Kind(r)) {
 				case IV: return (I(l)>I(r) ? true : false);
+				case RV: return (I(l)>R(r) ? true : false);
+				default: printf("error: values cannot be compared\n");
+			}
+		case RV:
+			switch (Kind(r)) {
+				case IV: return (R(l)>I(r) ? true : false);
+				case RV: return (R(l)>R(r) ? true : false);
 				default: printf("error: values cannot be compared\n");
 			}
 		default: printf("error: values cannot be compared\n");
@@ -411,6 +417,13 @@ bool ltValues(Value l, Value r) {
 		case IV:
 			switch (Kind(r)) {
 				case IV: return (I(l)<I(r) ? true : false);
+				case RV: return (I(l)<R(r) ? true : false);
+				default: printf("error: values cannot be compared\n");
+			}
+		case RV:
+			switch (Kind(r)) {
+				case IV: return (R(l)<I(r) ? true : false);
+				case RV: return (R(l)<R(r) ? true : false);
 				default: printf("error: values cannot be compared\n");
 			}
 		default: printf("error: values cannot be compared\n");
