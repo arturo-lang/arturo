@@ -77,6 +77,7 @@ void inspectByteCode(Byte* bcode) {
 
         String* countField = sNew("count");
         String* timeField = sNew("time");
+        String* cyclesField = sNew("cycles");
 
         Value totalMs = 0;
 
@@ -86,17 +87,17 @@ void inspectByteCode(Byte* bcode) {
         }
 
         printf("\n");
-        printf(" %-10s : %-13s | %-10s | %-10s | %s\n","OPCODE","Count","Total (μs)","Ratio (%)","Avg (μs/instr)");
-        printf("=========================================================================\n");
+        printf(" %-10s : %-13s | %-10s | %-10s | %-11s | %s\n","OPCODE","Count","Total (μs)","Ratio (%)","μs/instr", "Cycles/instr");
+        printf("=====================================================================================\n");
         aEach(Prof->keys,i) {
             Dict* sub = D(dGet(Prof,Prof->keys->data[i]));
-            printf(" %-10s : %-13llu | %-10llu | %-10llu | %-7.2f\n",Prof->keys->data[i]->content, dGet(sub,countField), dGet(sub,timeField), (dGet(sub,timeField)*100)/totalMs, (float)((float)dGet(sub,timeField)/(float)dGet(sub,countField)));
+            printf(" %-10s : %-13llu | %-10llu | %-10llu | %-10.2f | %-10.2f\n",Prof->keys->data[i]->content, dGet(sub,countField), dGet(sub,timeField), (dGet(sub,timeField)*100)/totalMs, (float)((float)dGet(sub,timeField)/(float)dGet(sub,countField)), (float)((float)dGet(sub,cyclesField)/(float)dGet(sub,countField)));
         }
 
         printf("\n");
 
         printf(" TIMINGS\n");
-        printf("=========================================================================\n");
+        printf("=====================================================================================\n");
         printf(" bytecode generation   : %.3fs\n",Prof_genTime);
         printf(" code execution        : %.3fs\n",Prof_execTime);
 
@@ -110,7 +111,9 @@ void inspectByteCode(Byte* bcode) {
   The main interpreter loop
  **************************************/
 
-char* execute(register Byte* bcode) {   
+typedef Array(CallFrame)        CallFrameArray;
+
+char* execute(Byte* bcode) {   
     //-------------------------
     // Our registers
     //-------------------------
@@ -175,7 +178,7 @@ char* execute(register Byte* bcode) {
     // Stack handling
     //-------------------------
 
-    register Value Stack[STACK_SIZE];
+    register Value* Stack = malloc(nextPowerOf2(Env.stackSize)*sizeof(Value));
 
     #define pushS(X)    Stack[sp+1] = X; sp++
     #define popS()      Stack[sp--]
@@ -183,7 +186,7 @@ char* execute(register Byte* bcode) {
     #define topS1       Stack[sp-1]
     #define topS2       Stack[sp-2]
 
-    register CallFrame FrameStack[FRAMESTACK_SIZE];
+    register CallFrame* FrameStack = malloc(nextPowerOf2(Env.stackSize)*sizeof(CallFrame));
 
     #define pushF(X)    FrameStack[fp+1] = X; fp++
     #define popF()      FrameStack[fp--]
@@ -195,7 +198,7 @@ char* execute(register Byte* bcode) {
     // Instruction handling
     //-------------------------
 
-    OPCODE op = END;
+    register OPCODE op = END;
 
     #define nextOp      readByte(bcode,ip++)
     #define nextByte    readByte(bcode,ip++)
@@ -220,13 +223,17 @@ char* execute(register Byte* bcode) {
         #if defined(PROFILE)
             String* countField = sNew("count");
             String* timeField = sNew("time");
+            String* cyclesField = sNew("cycles");
             double startTime;
+            unsigned long long startCycles;
             #define DISPATCH()                                          \
                 if (op!=END) {                                          \
                     Value timeMs = getCurrentTime()-startTime;          \
+                    Value cyclesD = getCurrentCycles()-startCycles;     \
                     String* ss = sNew((char*)OpCodeStr[op]);            \
                     Dict* sub = D(dGet(Prof,ss));                       \
                     dSet(sub,timeField,dGet(sub,timeField)+timeMs);     \
+                    dSet(sub,cyclesField,dGet(sub,cyclesField)+cyclesD);\
                 }                                                       \
                 op = nextOp;                                            \
                 {                                                       \
@@ -239,10 +246,12 @@ char* execute(register Byte* bcode) {
                         Dict* sub = dNew(4);                            \
                         dAdd(sub,countField,1);                         \
                         dAdd(sub,timeField,0);                          \
+                        dAdd(sub,cyclesField,0);                        \
                         dAdd(Prof,ss,toD(sub));                         \
                     }                                                   \
                 }                                                       \
                 startTime = getCurrentTime();                           \
+                startCycles = getCurrentCycles();                       \
                 goto *dispatchTable[op];
 
         #elif defined(DEBUG)
@@ -253,7 +262,7 @@ char* execute(register Byte* bcode) {
 
         #else   
             #define DISPATCH()                                          \
-                goto *dispatchTable[op = nextOp]
+                goto *dispatchTable[nextOp]
 
         #endif
     #else
@@ -474,8 +483,8 @@ char* execute(register Byte* bcode) {
         // arithmetic/logical operators
         //---------------------------------------
 
-        OPCASE(ADD)      : topS1 = addValues(topS1,topS0);  sp--; DISPATCH();
-        OPCASE(SUB)      : topS1 = subValues(topS1,topS0);  sp--; DISPATCH();
+        OPCASE(ADD)      : topS1 = addValues(topS1,topS0); sp--; DISPATCH(); //topS1 = addValues(topS1,topS0);  sp--; DISPATCH();
+        OPCASE(SUB)      : topS1 = subValues(topS1,topS0); sp--; DISPATCH(); //topS1 = subValues(topS1,topS0);  sp--; DISPATCH();
         OPCASE(MUL)      : topS1 = mulValues(topS1,topS0);  sp--; DISPATCH();
         OPCASE(DIV)      : topS1 = divValues(topS1,topS0);  sp--; DISPATCH();
         OPCASE(FDIV)     : topS1 = fdivValues(topS1,topS0); sp--; DISPATCH();
@@ -532,7 +541,7 @@ char* execute(register Byte* bcode) {
         OPCASE(DO_PRINT)        : printLnValue(popS()); DISPATCH();
         OPCASE(DO_INC)          : /* not implemented */ DISPATCH();
         OPCASE(DO_APPEND)       : /* not implemented */ DISPATCH();
-        OPCASE(DO_LOG)          : /* not implemented */ DISPATCH();
+        OPCASE(DO_LOG)          : printf("stack size: %d, callframe size: %d\n",sp,fp); popS();/* not implemented */ DISPATCH();
         OPCASE(DO_GET)          : {
             Value index = popS();
             Value collection = popS();
@@ -544,6 +553,8 @@ char* execute(register Byte* bcode) {
             DISPATCH();
         }
         OPCASE(GET_SIZE)        : sys_getSize(); DISPATCH();
+        OPCASE(GET_ABS)         : sys_getAbs(); DISPATCH();
+        OPCASE(GET_SQRT)        : sys_getSqrt(); DISPATCH();
 
         /***************************
           Empty slots
@@ -687,6 +698,9 @@ char* execute(register Byte* bcode) {
 
     exitLoop_:
 
+    free(Stack);
+    free(FrameStack);
+
     return "";
 }
 
@@ -772,6 +786,23 @@ void vmRunObject(char* script) {
 
 char* vmRunScript(char* script) {
     vmInit();
+
+    // {
+    //     #define PROC proc1
+    //     DO_ARG0(1);
+
+    //     isI: printf("isI\n"); FINISH();
+    //     isR: printf("isR\n"); FINISH();
+    //     isB: printf("isB\n"); FINISH();
+    //     isG:
+    //     isS:
+    //     isA:
+    //     isD:
+    //     isF: printf("not supported\n");
+
+    //     PROC_END:;
+    //     #undef PROC
+    // }
 
     #ifdef PROFILE
         unsigned long long timer = getCurrentTime();
