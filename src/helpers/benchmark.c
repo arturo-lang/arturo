@@ -19,3 +19,7 @@ unsigned long long getCurrentTime() {
     gettimeofday(&t, &tzp);
     return t.tv_sec*1000000 + t.tv_usec;
 }
+
+unsigned long long getCurrentCycles() {
+	return __builtin_readcyclecounter();
+}
