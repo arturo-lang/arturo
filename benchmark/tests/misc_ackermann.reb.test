@@ -1,0 +1,21 @@
+REBOL [
+    Title:  "Whatever"
+    Date:   2-Feb-2000
+    File:   %whatever.reb
+    Author: "Whatever"
+    Version: 1.2.3
+]
+
+ackermann: func [m n] [
+    case [
+        m = 0 [n + 1]
+        n = 0 [ackermann m - 1 1]
+        true [ackermann m - 1 ackermann m n - 1]
+    ]
+]
+
+for m 0 3 1 [
+	for n 0 10 1 [
+		print ackermann m n
+	]
+]

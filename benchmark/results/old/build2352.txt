@@ -1,0 +1,17 @@
+after searching for system functions first in globals _getSymbol
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           226         395         103         42          73          
+assign_print_120k         |   473         262         395         176         108         194         
+assign_print_480k         |   X           800         1529        X           414         633         
+assign_print_960k         |   X           1725        3503        X           892         1298        
+bubblesort                |   X           301         307         272         -           2876        
+factorial                 |   4042        336         X           X           X           X           
+factorial_prod            |   448         321         184         X           -           -           
+fibonacci                 |   6959        138         245         145         139         3931        
+fibonacci_mem             |   196         6013        55          X           -           -           
+is_prime_lib              |   26          88          522         72          12          42          
+loop_assign_incr_5m       |   6278        385         485         X           -           8049        
+quicksort                 |   2419        183         177         174         -           17446       
+single_comments_1m        |   285         173         189         84          5           70          

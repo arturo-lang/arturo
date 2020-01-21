@@ -1,0 +1,17 @@
+after replacing several simple arrays with DynamicArrays
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           285         450         133         52          97          
+assign_print_120k         |   X           274         414         184         113         171         
+assign_print_480k         |   X           787         1553        X           414         646         
+assign_print_960k         |   X           1492        3056        X           820         1229        
+bubblesort                |   4554        288         317         252         -           3191        
+factorial                 |   7339        316         X           X           X           X           
+factorial_prod            |   391         318         185         X           -           -           
+fibonacci                 |   7832        139         246         146         141         4009        
+fibonacci_mem             |   197         6067        54          X           -           -           
+is_prime_lib              |   26          95          852         73          13          41          
+loop_assign_incr_5m       |   6428        373         483         X           -           8204        
+quicksort                 |   2647        188         185         179         -           17765       
+single_comments_1m        |   283         173         191         84          4           71          

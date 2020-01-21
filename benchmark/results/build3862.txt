@@ -1,0 +1,15 @@
+assign_incr_100k.art 		0.084
+assign_print_120k.art 		0.102
+assign_print_480k.art 		0.394
+assign_print_960k.art 		0.791
+bubblesort.art 				2.744
+factorial.art 				X	   	(integer overflow)
+factorial_prod.art 			X	   	(integer overflow)
+fibonacci.art 				1.498
+fibonacci_mem.art 			X		(memoize not implemented)
+is_prime_lib.art 			0.007
+loop_assign_incr_5m.art		0.986   # ^^ (was 0.580)
+quicksort.art 				0.833   # ^ (was 0.759)
+single_comments_1m.art 		0.108		
+
+AFTER changing assignment statement and optimizing bison + setting up Global/Local Stack

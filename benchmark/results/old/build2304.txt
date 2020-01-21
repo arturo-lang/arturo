@@ -1,0 +1,17 @@
+after replacing Stack.X method calls with inline Stack.list.X calls
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           283         436         200         51          114         
+assign_print_120k         |   X           256         402         178         109         173         
+assign_print_480k         |   X           782         1534        X           413         640         
+assign_print_960k         |   X           1558        3143        X           832         1207        
+bubblesort                |   4701        295         314         259         -           2909        
+factorial                 |   6762        313         X           X           X           X           
+factorial_prod            |   447         322         186         X           -           -           
+fibonacci                 |   7944        150         248         146         147         3916        
+fibonacci_mem             |   239         6041        63          X           -           -           
+is_prime_lib              |   68          101         873         77          14          44          
+loop_assign_incr_5m       |   6372        385         483         X           -           8350        
+quicksort                 |   2805        184         182         179         -           18011       
+single_comments_1m        |   341         184         194         88          4           71          
