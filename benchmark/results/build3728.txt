@@ -1,0 +1,15 @@
+assign_incr_100k.art 		0.087
+assign_print_120k.art 		0.101
+assign_print_480k.art 		0.391
+assign_print_960k.art 		0.788
+bubblesort.art 				X      	(return not implemented)
+factorial.art 				X	   	(integer overflow)
+factorial_prod.art 			X	   	(integer overflow)
+fibonacci.art 				1.857
+fibonacci_mem.art 			X		(memoize not implemented)
+is_prime_lib.art 			0.007
+loop_assign_incr_5m.art		0.580
+quicksort.art 				0.759
+single_comments_1m.art 		0.108		
+
+AFTER changing stack tables to stack sequences

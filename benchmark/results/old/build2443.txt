@@ -1,0 +1,17 @@
+after union-izing Expression class
+--------------------------------------------------------------------------------------------------------
+Algorithm                 |   Arturo      Ruby        Python      PHP         Lua         Tcl         
+--------------------------------------------------------------------------------------------------------
+assign_incr_100k          |   X           307         462         129         52          98          
+assign_print_120k         |   X           274         430         213         121         187         
+assign_print_480k         |   X           860         1700        X           437         663         
+assign_print_960k         |   4238        1603        3200        X           856         1281        
+bubblesort                |   X           290         323         261         -           2925        
+factorial                 |   3676        316         X           X           X           X           
+factorial_prod            |   420         322         188         X           -           -           
+fibonacci                 |   5887        147         250         148         149         4008        
+fibonacci_mem             |   196         6204        59          X           -           -           
+is_prime_lib              |   26          99          880         75          14          44          
+loop_assign_incr_5m       |   5063        380         495         X           -           8103        
+quicksort                 |   2003        191         181         172         -           17460       
+single_comments_1m        |   292         189         202         146         5           75          
