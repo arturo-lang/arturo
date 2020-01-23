@@ -13,8 +13,6 @@
   Converters
  **************************************/
 
-mpz_t* bigint;
-
 Float32 R(Value v) {
 	union {
 		float fl[2];
@@ -41,9 +39,7 @@ Value strToIntValue(char* str) {
 }
 
 Value strToBigintValue(char* str) {
-	bigint = newBignum();
-    mpz_init_set_str(*bigint, str, 10);
-    return toG(*(bigint++));
+	return toG(bNewFromCString(str));
 }
  
 Value strToRealValue(char* str) {
@@ -61,8 +57,6 @@ Value strToStringValue(char* str) {
   Arithmetic operations
  **************************************/
 
-mpz_t* ret;
-
 Value addValues(Value l, Value r) {
 	switch (Kind(l)) {
 		case IV: 
@@ -70,20 +64,18 @@ Value addValues(Value l, Value r) {
 				case IV: {
 					Int32 res;
                     if (addWillOverflow(I(l),I(r),&res)) {
-                    	ret = newBignum();
-    					mpz_init_set_si(*ret,I(l));
-    					mpz_add_ui(*ret,*ret,I(r));
-    					return toG(*(ret++));
+                    	Bignum* ret = bNewFromI(I(l));
+                    	bAddI(ret,I(r));
+    					return toG(ret);
                     }
                     else {
                     	return toI(res);
                     }
                 }
                 case GV: {
-                	ret = newBignum();
-                	mpz_init_set(*ret,G(r));
-                	mpz_add_ui(*ret,*ret,I(l));
-                	return toG(*(ret++));
+                	Bignum* ret = bDup(G(r));
+                	bAddI(ret,I(l));
+                	return toG(ret);
                 }
                 case RV: {
                 	return toR(I(l)+R(r));
@@ -100,16 +92,14 @@ Value addValues(Value l, Value r) {
 		case GV:
 			switch (Kind(r)) {
 				case IV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_add_ui(*ret,*ret,I(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bAddI(ret,I(r));
+					return toG(ret);
 				}
 				case GV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_add(*ret,*ret,G(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bAdd(ret,G(r));
+					return toG(ret);
 				}
 				default: invalidOperationError('+');
 			}
@@ -138,27 +128,18 @@ Value addValues(Value l, Value r) {
 			}
 		}
 		case AV: {
-			// for (int i=0; i<A(l)->size; i++){
-			// 	printf("item/%d: %s\n",i,stringify(A(l)->data[i])->data);
-			// }
-			//srt_vector* vec = sv_alloca_t(SV_U64,0);
-			/*srt_vector* ret = sv_dup(A(l));
-			// for (int i=0; i<ret->size; i++){
-			// 	printf("item/%d: %s\n",i,stringify(ret->data[i])->data);
-			// }
+			ValueArray* left = A(l);
+			ValueArray* ret = aDup(Value, left);
 			if (Kind(r)==AV) {
-				srt_vector* right = A(r);
-				for (int i=0; i<sv_size(right); i++) {
-					sv_push_u(&ret,sv_at_u(right,i));
+				ValueArray* right = A(r);
+				aEach(right,i) {
+					aAdd(ret, right->data[i]);
 				}
-			}
+			} 
 			else {
-				sv_push_u(&ret,r);
+				aAdd(ret, r);
 			}
-			// for (int i=0; i<ret->size; i++){
-			// 	printf("item/%d: %s\n",i,stringify(ret->data[i])->data);
-			// }
-			return toA(ret);*/
+			return toA(ret);
 		}
 		default: printf("error: values cannot be added\n");
 	}
@@ -172,20 +153,18 @@ Value subValues(Value l, Value r) {
 				case IV: {
 					Int32 res;
                     if (subWillOverflow(I(l),I(r),&res)) {
-                    	ret = newBignum();
-    					mpz_init_set_si(*ret,I(l));
-    					mpz_sub_ui(*ret,*ret,I(r));
-    					return toG(*(ret++));
+                    	Bignum* ret = bNewFromI(I(l));
+                    	bSubI(ret,I(r));
+    					return toG(ret);
                     }
                     else {
                     	return toI(res);
                     }
                 }
                 case GV: {
-                	ret = newBignum();
-                	mpz_init_set_si(*ret,I(l));
-                	mpz_sub(*ret,*ret,G(r));
-                	return toG(*(ret++));
+                	Bignum* ret = bNewFromI(I(l));
+                	bSub(ret,G(r));
+                	return toG(ret);
                 }
                 case RV: {
                 	return toR(I(l)-R(r));
@@ -195,16 +174,14 @@ Value subValues(Value l, Value r) {
 		case GV:
 			switch (Kind(r)) {
 				case IV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_sub_ui(*ret,*ret,I(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bSubI(ret,I(r));
+					return toG(ret);
 				}
 				case GV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_sub(*ret,*ret,G(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bSub(ret,G(r));
+					return toG(ret);
 				}
 				default: printf("error: values cannot be subtracted");
 			}
@@ -230,19 +207,17 @@ Value mulValues(Value l, Value r) {
 			switch (Kind(r)) {
 				case IV: 
 					if (mulWillOverflow(I(l),I(r),&res)) {
-                        ret = newBignum();
-    					mpz_init_set_si(*ret,I(l));
-    					mpz_mul_ui(*ret,*ret,I(r));
-    					return toG(*(ret++));
+						Bignum* ret = bNewFromI(I(l));
+						bMulI(ret,I(r));
+    					return toG(ret);
                     }
                     else {
                     	return toI(res);
                     }
                 case GV: {
-                	ret = newBignum();
-					mpz_init_set_si(*ret,I(l));
-					mpz_mul(*ret,*ret,G(r));
-					return toG(*(ret++));
+                	Bignum* ret = bNewFromI(I(l));
+                	bMul(ret,G(r));
+					return toG(ret);
                 }
                 case RV: {
                 	return toR(I(l)*R(r));
@@ -252,16 +227,14 @@ Value mulValues(Value l, Value r) {
 		case GV:
 			switch (Kind(r)) {
 				case IV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_mul_ui(*ret,*ret,I(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bMulI(ret,I(r));
+					return toG(ret);
 				}
 				case GV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_mul(*ret,*ret,G(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bMul(ret,G(r));
+					return toG(ret);
 				}
 				default: printf("error: values cannot be multiplicated\n");
 			}
@@ -282,16 +255,14 @@ Value divValues(Value l, Value r) {
 		case GV:
 			switch (Kind(r)) {
 				case IV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_tdiv_q_ui(*ret,*ret,I(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bDivI(ret,I(r));
+					return toG(ret);
 				}
 				case GV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_tdiv_q(*ret,*ret,G(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bDiv(ret,G(r));
+					return toG(ret);
 				}
 				default: printf("error: values cannot be divided\n");
 			}
@@ -328,16 +299,21 @@ Value modValues(Value l, Value r) {
 		case GV:
 			switch (Kind(r)) {
 				case IV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_tdiv_r_ui(*ret,*ret,I(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bModI(ret,I(r));
+
+					// ret = newBignum();
+					// mpz_init_set(*ret,G(l));
+					// mpz_tdiv_r_ui(*ret,*ret,I(r));
+					return toG(ret);
 				}
 				case GV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_tdiv_r(*ret,*ret,G(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bMod(ret,G(r));
+					// ret = newBignum();
+					// mpz_init_set(*ret,G(l));
+					// mpz_tdiv_r(*ret,*ret,G(r));
+					return toG(ret);
 				}
 				default: printf("error: values cannot be moduloed\n");
 			}
@@ -353,10 +329,11 @@ Value powValues(Value l, Value r) {
 			switch (Kind(r)) {
 				case IV: 
 					if (powWillOverflow(I(l),I(r))) {
-						ret = newBignum();
-						mpz_init(*ret);
-						mpz_ui_pow_ui(*ret,I(l),I(r));
-						return toG(*(ret++));
+						// Bignum* ret = bDup(ret)
+						// ret = newBignum();
+						// mpz_init(*ret);
+						// mpz_ui_pow_ui(*ret,I(l),I(r));
+						// return toG(*(ret++));
 					}
 					else {
 						return toI((Int32)(pow(I(l),I(r))));
@@ -369,10 +346,12 @@ Value powValues(Value l, Value r) {
 		case GV:
 			switch (Kind(r)) {
 				case IV: {
-					ret = newBignum();
-					mpz_init_set(*ret,G(l));
-					mpz_pow_ui(*ret,*ret,I(r));
-					return toG(*(ret++));
+					Bignum* ret = bDup(G(l));
+					bPowI(ret,I(r));
+					// ret = newBignum();
+					// mpz_init_set(*ret,G(l));
+					// mpz_pow_ui(*ret,*ret,I(r));
+					return toG(ret);
 				}
 				default: printf("error: values cannot be pow'ed\n");
 			}
@@ -386,6 +365,13 @@ bool eqValues(Value l, Value r) {
 		case IV:
 			switch (Kind(r)) {
 				case IV: return (I(l)==I(r) ? true : false);
+				case GV: return !(bCmpI(G(r),I(l)));
+				default: printf("error: values cannot be compared\n");
+			}
+		case GV:
+			switch (Kind(r)) {
+				case IV: return !(bCmpI(G(l),I(r)));
+				case GV: return !(bCmp(G(l),G(r)));
 				default: printf("error: values cannot be compared\n");
 			}
 		default: printf("error: values cannot be compared\n");
@@ -399,6 +385,7 @@ bool gtValues(Value l, Value r) {
 			switch (Kind(r)) {
 				case IV: return (I(l)>I(r) ? true : false);
 				case RV: return (I(l)>R(r) ? true : false);
+				case GV: return bCmpI(G(r),I(l)) <= 0;
 				default: printf("error: values cannot be compared\n");
 			}
 		case RV:
@@ -406,6 +393,11 @@ bool gtValues(Value l, Value r) {
 				case IV: return (R(l)>I(r) ? true : false);
 				case RV: return (R(l)>R(r) ? true : false);
 				default: printf("error: values cannot be compared\n");
+			}
+		case GV:
+			switch (Kind(r)) {
+				case IV: return bCmpI(G(l),I(r)) > 0;
+				case GV: return bCmp(G(l),G(r)) > 0;
 			}
 		default: printf("error: values cannot be compared\n");
 	}
@@ -418,6 +410,7 @@ bool ltValues(Value l, Value r) {
 			switch (Kind(r)) {
 				case IV: return (I(l)<I(r) ? true : false);
 				case RV: return (I(l)<R(r) ? true : false);
+				case GV: return bCmpI(G(r),I(l)) >= 0;
 				default: printf("error: values cannot be compared\n");
 			}
 		case RV:
@@ -425,6 +418,11 @@ bool ltValues(Value l, Value r) {
 				case IV: return (R(l)<I(r) ? true : false);
 				case RV: return (R(l)<R(r) ? true : false);
 				default: printf("error: values cannot be compared\n");
+			}
+		case GV:
+			switch (Kind(r)) {
+				case IV: return bCmpI(G(l),I(r)) < 0;
+				case GV: return bCmp(G(l),G(r)) < 0;
 			}
 		default: printf("error: values cannot be compared\n");
 	}
@@ -446,6 +444,8 @@ inline String* stringify(Value v) {
 			return ret;
 		}
 		case GV :
+			ret = sNew(bToCString(G(v)));
+			return ret;
 			//return dupCstring(bignumToCstring(G(v)));
 		case RV : {
 			//String* ret;
@@ -500,7 +500,7 @@ inline void printValue(Value v) {
 			print(buffer);
         	break;
         }
-        case GV : print(bignumToCstring(G(v))); break;
+        case GV : print(bToCString(G(v))); break;
         case RV : {
         	printf("%f",R(v));
         	break;
@@ -552,7 +552,7 @@ inline void printLnValue(Value v) {
 			printLn(buffer);
         	break;
         }
-        case GV : printLn(bignumToCstring(G(v))); break;
+        case GV : printLn(bToCString(G(v))); break;
         case RV : {
         	//VString s = realToString(R(v),s);
         	printf("%f\n",R(v));
