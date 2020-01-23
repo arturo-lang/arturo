@@ -13,6 +13,12 @@
 #include "opcodes.h"
 
 /**************************************
+  Definitions
+ **************************************/
+
+#define LOCAL_VAR 	0x8000
+
+/**************************************
   External declarations
  **************************************/
 
@@ -43,7 +49,7 @@ void processConst(Value v);
 void processCall(char* id);
 void processLoad(char* id);
 void processStore(char* id);
-//void processInPlace(OPCODE op, char* id);
+void processInPlace(OPCODE op, char* id);
 
 void signalGotInArray();
 void signalFoundArray();
