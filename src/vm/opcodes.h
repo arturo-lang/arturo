@@ -207,7 +207,15 @@
     OPC(DO_GET,             0x84)           \
     OPC(GET_SIZE,           0x85)           \
     OPC(GET_ABS,            0x86)           \
-    OPC(GET_SQRT,           0x87)
+    OPC(GET_SQRT,           0x87)           \
+    OPC(GET_RANGE,          0x88)           \
+    OPC(GET_PRODUCT,        0x89)           \
+    OPC(IN_INC,             0x8A)           \
+    OPC(IN_APPEND,          0x8B)           \
+    OPC(CHECK_ISPRIME,      0x8C)           \
+    OPC(DO_SORT,            0x8D)           \
+    OPC(IN_SORT,            0x8E)           \
+    OPC(IN_SWAP,            0x8F)
 
 /**************************************
   Enums

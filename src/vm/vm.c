@@ -47,6 +47,8 @@ void inspectByteCode(Byte* bcode) {
             case GSTORE:
             case DSTORE:
             case GCALL:
+            case IN_INC:
+            case IN_APPEND:
                 printf(" [Word] %d\n", readWord(bcode,IP));
                 IP+=2;
                 break;
@@ -133,7 +135,7 @@ char* execute(Byte* bcode) {
         Value popped = popS();                                          \
         if (k==SV) { S(popped)->refc++; sFree(S(GlobalTable[X])); }     \
         else if (k==AV) { aFree(A(GlobalTable[X])); }                   \
-        else if (k==GV) { mpz_clear((mpz_ptr)G(GlobalTable[X])); }      \
+        else if (k==GV) { bFree(G(GlobalTable[X])); }                   \
         GlobalTable[X] = popped;                                        \
     }   
 
@@ -170,8 +172,22 @@ char* execute(Byte* bcode) {
             int k = Kind(topLocals[i]);                                     \
             if (k==SV) { sFree(S(topLocals[i])); }                          \
             else if (k==AV) { aFree(A(topLocals[i])); }                     \
-            else if (k==GV) { mpz_clear((mpz_ptr)G(topLocals[i])); }        \
+            else if (k==GV) { bFree(G(topLocals[i])); }                     \
         }                                                                   \
+    }
+
+    //-------------------------
+    // InPlace methods
+    //-------------------------  
+
+    #define callInPlace(FUNC) {              \
+        Word ind = nextWord;                 \
+        if ((ind & LOCAL_VAR) == LOCAL_VAR) {\
+            FUNC(topF0.Locals[ind])          \
+        }                                    \
+        else {                               \
+            FUNC(GlobalTable[ind]);          \
+        }                                    \
     }
 
     //-------------------------
@@ -541,7 +557,7 @@ char* execute(Byte* bcode) {
         OPCASE(DO_PRINT)        : printLnValue(popS()); DISPATCH();
         OPCASE(DO_INC)          : /* not implemented */ DISPATCH();
         OPCASE(DO_APPEND)       : /* not implemented */ DISPATCH();
-        OPCASE(DO_LOG)          : printf("stack size: %d, callframe size: %d\n",sp,fp); popS();/* not implemented */ DISPATCH();
+        OPCASE(DO_LOG)          : printf("stack size: %d, callframe size: %d\n",sp,fp); (void)popS();/* not implemented */ DISPATCH();
         OPCASE(DO_GET)          : {
             Value index = popS();
             Value collection = popS();
@@ -555,6 +571,14 @@ char* execute(Byte* bcode) {
         OPCASE(GET_SIZE)        : sys_getSize(); DISPATCH();
         OPCASE(GET_ABS)         : sys_getAbs(); DISPATCH();
         OPCASE(GET_SQRT)        : sys_getSqrt(); DISPATCH();
+        OPCASE(GET_RANGE)       : sys_getRange(); DISPATCH();
+        OPCASE(GET_PRODUCT)     : sys_getProduct(); DISPATCH();
+        OPCASE(IN_INC)          : callInPlace(sys_inInc); DISPATCH();
+        OPCASE(IN_APPEND)       : callInPlace(sys_inAppend); DISPATCH();
+        OPCASE(CHECK_ISPRIME)   : sys_checkIsPrime(); DISPATCH();
+        OPCASE(DO_SORT)         : sys_doSort(); DISPATCH();
+        OPCASE(IN_SORT)         : callInPlace(sys_inSort); DISPATCH();
+        OPCASE(IN_SWAP)         : callInPlace(sys_inSwap); DISPATCH();
 
         /***************************
           Empty slots
