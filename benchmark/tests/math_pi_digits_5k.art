@@ -1,7 +1,6 @@
-digits: #()
+digits: @[]
 
-
-pi_digits: @(x){
+pi_digits: $(x){
     q:1
     r:0
     t:1
@@ -9,29 +8,33 @@ pi_digits: @(x){
     n:3
     l:3
 
-    loop [size digits]!=x {
+    loop digits.size/=x {
         nt: n*t
-        if 4*q+r-t < nt {
+        if [4*q+r-t] < nt {
+            print "appending: " + n
             append! digits n
-            nr: 10*(r-nt)
-            n: ((10*(3*q+r)) / t) - 10*n
-            mul! q 10//: q * 10
+            nr: 10*[r-nt]
+            n: [[10*[3*q+r]] / t] - 10*n
+            q: q*10
             r: nr
         } {
-            nr : (2*q+r) * l
-            nn : (q*(7*k+2)+r*l) / (t*l)
-            mul! q k//q : q * k
-            mul! t l//t : t * l
-            add! l 2//l: l + 2 //l : l + 2
-            inc! k //k:k+1//inc! k// : k + 1
+            nr : [2*q+r] * l
+            nn : [q*[7*k+2]+r*l] / [t*l]
+            q: q*k
+            t: t*l
+            l: l+2
+            inc! k
             n : nn
             r : nr
         }
     }
 }
 
-[pi_digits 5000]
+pi_digits 50
 
-loop digits {
-    print &
+sz: digits.size
+i:0
+loop i<sz {
+    print digits'[i]
+    inc! i
 }

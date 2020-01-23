@@ -1,5 +1,7 @@
-maxLimit: 10000-1
+maxLimit: 10000
 
-loop 0..maxLimit {
-	print [isPrime &]
+i: 0
+loop i<maxLimit {
+	print [isPrime i]
+	inc! i
 }
