@@ -33,5 +33,6 @@
 
 #include "system/generic.h"
 #include "system/numbers.h"
+#include "system/arrays.h"
 
 #endif
