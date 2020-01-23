@@ -11,6 +11,9 @@ def execute(comp,scpt,shld)
 	real = ""
 
 	if !got.encode!('UTF-8', 'UTF-8', :invalid => :replace).force_encoding("UTF-8").strip.encode('UTF-8', 'UTF-8', :invalid => :replace).include?(shld.strip) 
+		#puts "notin"
+		#puts "SHOULD = " + shld
+		#puts "GOT = " + got.encode!('UTF-8', 'UTF-8', :invalid => :replace).force_encoding("UTF-8").strip.encode('UTF-8', 'UTF-8', :invalid => :replace)
 		return []
 	end
 
