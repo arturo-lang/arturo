@@ -239,6 +239,37 @@ void processStore(char* id) {
 		}
 	}
 }
+
+void processInPlace(OPCODE op, char* id) {
+	if (weAreInBlock) {
+		int ind;
+		aFindCStr(LocalLookup, id, ind);
+		if (ind!=-1) {
+			emitOpWord(op, (LOCAL_VAR|(Word)ind));
+		}
+		else {
+			aFindCStr(GlobalLookup,id,ind);
+			if (ind!=-1) {
+				emitOpWord(op, (Word)ind);
+			}
+			else {
+				printf("Symbol not found: %s\n",id);
+				exit(1);
+			}
+		}
+	}
+	else {
+		int ind;
+		aFindCStr(GlobalLookup, id, ind);
+		if (ind!=-1) {
+			emitOpWord(op, (Word)ind);
+		}
+		else {
+			printf("!! Symbol not found: %s\n",id);
+			exit(1);
+		}
+	}
+}
 /*
 void processInPlace(OPCODE op, char* id) {
 	if (weAreInBlock) {
@@ -262,6 +293,8 @@ void processInPlace(OPCODE op, char* id) {
 		}
 	}
 }*/
+
+
 
 /**************************************
   Arrays
