@@ -47,32 +47,25 @@ void showHelp(){
   The Main Entry
  **************************************/
 
-int main(int argc, char** argv) {
+#define GG(v)    ((mpz_t*)(v & UNMASK))
 
-    // process command-line arguments
-    /*
-    {
-        static void* caseArg0[] = {
-            &&I0, &&R0
-        };
-
-        goto *caseArg0[1];
-
-        I0: printf("in I0\n"); goto endd;
-        R0: printf("in R0\n"); goto endd;
-        endd: printf("after IF\n");
+Value addNumbers(int a, int b) {
+    Int32 res;
+    if (addWillOverflow(a,b,&res)) {
+        printf("overflow\n");
+        mpz_t* ret = malloc(sizeof(mpz_t));
+        mpz_init_set_si(*ret,a);
+        mpz_add_ui(*ret,*ret,b);
+        return toG(ret);
     }
-    {
-        __label__ caseArg0[] = {
-            &I0, &R0
-        };
+    else {
+        printf("normal addition\n");
+        return toI(res);
+    }
+}
 
-        goto *caseArg0[1];
-
-        I0: printf("in I0\n"); goto endd;
-        R0: printf("in R0\n"); goto endd;
-        endd: printf("after IF\n");
-    }*/
+int main(int argc, char** argv) {
+    // process command-line arguments
     
 	char* includePath = NULL;
     unsigned int stackSize = 0;
