@@ -53,7 +53,7 @@ typedef enum ValueType VALUETYPE;
 
 #define I(v)    ((Int32)(v & UNMASK))
 #define B(v)	((bool)(v & UNMASK))
-#define G(v) 	((Bignum_p)(v & UNMASK))
+#define G(v) 	((Bignum*)(v & UNMASK))
 #define S(v) 	((String*)(v & UNMASK))
 #define A(v)	((ValueArray*)(v & UNMASK))
 #define D(v) 	((Dict*)(v & UNMASK))
