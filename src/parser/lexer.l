@@ -66,8 +66,17 @@ LETTER              [A-Za-z_]
 "abs"					{ yylval.op = GET_ABS; return SYSCALL1; }
 "return"				{ yylval.op = RET; return SYSCALL1; }
 
+"inc!"					{ yylval.op = IN_INC; return INPLACE1; }
+"append!"				{ yylval.op = IN_APPEND; return INPLACE2; }
+"swap!"					{ yylval.op = IN_SWAP; return INPLACE3; }
+
 "or"					{ yylval.op = OR; return SYSCALL2; }
 "sqrt"					{ yylval.op = GET_SQRT; return SYSCALL1; }
+"range"					{ yylval.op = GET_RANGE; return SYSCALL2; }
+"product"				{ yylval.op = GET_PRODUCT; return SYSCALL1; }
+"isPrime"				{ yylval.op = CHECK_ISPRIME; return SYSCALL1; }
+"sort!"					{ yylval.op = IN_SORT; return SYSCALL1; }
+"sort"					{ yylval.op = DO_SORT; return SYSCALL1; }
 
 {LETTER}+               { yylval.str=strdup(yytext); return ID; }
 {DIGIT}{0,10}           { yylval.str=strdup(yytext); return INTEGER; }
@@ -87,6 +96,8 @@ LETTER              [A-Za-z_]
 ">="|"≥"                { return GE_OP; }
 "<"                     { return LT_OP; }
 "<="|"≤"                { return LE_OP; }
+
+".."					{ return RANGE; }
 
 "."                     { return DOT; }
 "'"                     { return FIELD; }

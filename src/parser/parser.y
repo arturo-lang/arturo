@@ -50,6 +50,9 @@ void yyerror (char const *s) {
 %token <op>  SYSCALL0           "SYSTEM CALL/0"
 %token <op>  SYSCALL1           "SYSTEM CALL/1"
 %token <op>  SYSCALL2           "SYSTEM CALL/2"
+%token <op>  INPLACE1           "INPLACE/1"
+%token <op>  INPLACE2           "INPLACE/2"
+%token <op>  INPLACE3           "INPLACE/3"
 %token <str> INTEGER            "INTEGER"
 %token <str> BIG_INTEGER        "BIG INTEGER"
 %token <str> REAL               "REAL"
@@ -69,6 +72,8 @@ void yyerror (char const *s) {
 %token <str> GE_OP              "`≥` (greater-than-or-equal operator)"
 %token <str> LT_OP              "`>` (less-than operator)"
 %token <str> LE_OP              "`≤` (less-than-or-equal operator)"
+
+%token <str> RANGE              "`..` (range)"
 
 %token <str> DOT                "`.` (dot)"
 %token <str> FIELD              "``` (field)"
@@ -104,9 +109,12 @@ void yyerror (char const *s) {
 %left MUL_OP DIV_OP MOD_OP
 %right POW_OP
 %left DOT
-%left SYSCALL1
+%left SYSCALL1 
+%left INPLACE1
 %left SYSCALL2
+%left INPLACE2
 %left FIELD
+%left RANGE
 
 %left INTEGER
 %left REAL
@@ -209,10 +217,12 @@ expression              :   number
                         |   expression LE_OP expression             { emitOp(CMPLE); }
 
                         |   expression DOT ID                       { processCall($ID); }
-                        |   expression DOT SYSCALL1                 { emitOp((OPCODE)$SYSCALL1); }
+                        |   expression DOT SYSCALL1                 { emitOp((OPCODE)$SYSCALL1); }                        
                         |   expression FIELD number                 { emitOp((OPCODE)DO_GET); }
                         |   expression FIELD ID                     { processConst(strToStringValue($ID)); emitOp((OPCODE)DO_GET); }
                         |   expression FIELD verbatim               { emitOp((OPCODE)DO_GET); }
+
+                        |   expression RANGE expression             { emitOp(GET_RANGE); }
 
                         |   verbatim
                         |   block
@@ -248,6 +258,9 @@ call_statement          :   ID expressions                        { processCall(
                         |   SYSCALL1 expression                   { emitOp((OPCODE)$SYSCALL1); }
                         |   SYSCALL2 expression expression        { emitOp((OPCODE)$SYSCALL2); }
                         |   expression DOT SYSCALL2 expression    { emitOp((OPCODE)$SYSCALL2); }
+                        |   INPLACE1 ID                           { processInPlace((OPCODE)$INPLACE1,$ID); }
+                        |   INPLACE2 ID expression                { processInPlace((OPCODE)$INPLACE2,$ID); }
+                        |   INPLACE3 ID expression expression     { processInPlace((OPCODE)$INPLACE3,$ID); }
                         ;
 
 special_statement       :   if_cmd expression block         { finalizeIf(); }
