@@ -44,6 +44,16 @@ typedef Array(int)              intArray;
     DEST;                                                                   \
 })
 
+#define aDup(TYPE,ORIG) (TYPE##Array*)({                      \
+    Array(TYPE)* DEST = malloc(sizeof(Array(TYPE)));          \
+    DEST->size = ORIG->size;                                  \
+    DEST->typeSize = ORIG->typeSize;                          \
+    DEST->cap = ORIG->cap;                                    \
+    DEST->data = calloc(DEST->cap, DEST->typeSize);           \
+    memcpy(DEST->data, ORIG->data, DEST->size*DEST->typeSize);\
+    DEST;                                                     \
+})
+
 //-------------------------
 // Resizing
 //-------------------------
