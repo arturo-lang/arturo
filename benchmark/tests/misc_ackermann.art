@@ -11,7 +11,7 @@ loop m<4 {
 	n: 0
 	loop n<11 {
 		print [ackermann m n]
-		n: n+1
+		inc! n
 	}
-	m: m+1
+	inc! m
 }

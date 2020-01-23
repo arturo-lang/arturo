@@ -1,4 +1,4 @@
-maxLimit: 33
+maxLimit: 29
 
 fib: $(x){
 	if x<2 { 1 }{
@@ -9,5 +9,5 @@ fib: $(x){
 i: 0
 loop i<maxLimit {
 	print [fib i]
-	i: i+1
+	inc! i
 }
