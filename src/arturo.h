@@ -65,6 +65,7 @@
 #include "core/array.h"
 #include "core/bignum.h"
 #include "core/dict.h"
+#include "core/func.h"
 
 // Repl
 
@@ -75,7 +76,6 @@
 #include "vm/bytecode.h"
 #include "vm/callframe.h"
 #include "vm/env.h"
-#include "vm/func.h"
 #include "vm/generator.h"
 #include "vm/objfile.h"
 #include "vm/opcodes.h"
