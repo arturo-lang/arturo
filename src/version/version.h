@@ -1,12 +1,12 @@
-#ifndef __VERSION_H__
-#define __VERSION_H__
+#ifndef __ART_VERSION_H__
+#define __ART_VERSION_H__
 
 unsigned char Version[] = {
   0x30, 0x2e, 0x38
 };
 unsigned int Version_len = 3;
 unsigned char BuildNo[] = {
-  0x34, 0x32, 0x31
+  0x34, 0x32, 0x32
 };
 unsigned int BuildNo_len = 3;
 unsigned char BuildDate[] = {
