@@ -329,11 +329,9 @@ Value powValues(Value l, Value r) {
 			switch (Kind(r)) {
 				case IV: 
 					if (powWillOverflow(I(l),I(r))) {
-						// Bignum* ret = bDup(ret)
-						// ret = newBignum();
-						// mpz_init(*ret);
-						// mpz_ui_pow_ui(*ret,I(l),I(r));
-						// return toG(*(ret++));
+						Bignum* ret = bNewFromI(I(l));
+						bPowI(ret,I(r));
+						return toG(ret);
 					}
 					else {
 						return toI((Int32)(pow(I(l),I(r))));
@@ -348,9 +346,6 @@ Value powValues(Value l, Value r) {
 				case IV: {
 					Bignum* ret = bDup(G(l));
 					bPowI(ret,I(r));
-					// ret = newBignum();
-					// mpz_init_set(*ret,G(l));
-					// mpz_pow_ui(*ret,*ret,I(r));
 					return toG(ret);
 				}
 				default: printf("error: values cannot be pow'ed\n");
@@ -362,19 +357,64 @@ Value powValues(Value l, Value r) {
 
 bool eqValues(Value l, Value r) {
 	switch (Kind(l)) {
+		case NV:
+			return (Kind(r)==NV);
 		case IV:
 			switch (Kind(r)) {
-				case IV: return (I(l)==I(r) ? true : false);
+				case IV: return I(l)==I(r);
+				case RV: return I(l)==R(r);
 				case GV: return !(bCmpI(G(r),I(l)));
-				default: printf("error: values cannot be compared\n");
+				default: return false;
 			}
+		case RV:
+			switch (Kind(r)) {
+				case IV: return R(l)==I(r);
+				case RV: return R(l)==R(r);
+				case GV: return !(bCmpI(G(r),(int)R(l)));
+				default: return false;
+			}
+		case BV:
+			if (Kind(r)==BV) return B(l)==B(r);
+			else return false;
 		case GV:
 			switch (Kind(r)) {
 				case IV: return !(bCmpI(G(l),I(r)));
+				case RV: return !(bCmpI(G(l),(int)R(r)));
 				case GV: return !(bCmp(G(l),G(r)));
-				default: printf("error: values cannot be compared\n");
+				default: return false;
 			}
-		default: printf("error: values cannot be compared\n");
+		case SV:
+		 	if (Kind(r)==SV) return !(sCmp(S(l),S(r)));
+		 	else return false;
+		case AV:
+			if (Kind(r)==AV) {
+				if (A(l)->size!=A(r)->size) return false;
+				else {
+					ValueArray* left = A(l);
+					ValueArray* right = A(r);
+					aEach(left,i) {
+						if (!eqValues(left->data[i],right->data[i])) return false;
+					}
+					return true;
+				}
+			}
+			else return false;
+		case DV:
+			if (Kind(r)==DV) {
+				if (D(l)->size!=D(r)->size) return false;
+				else {
+					Dict* left = D(l);
+					Dict* right = D(r);
+					aEach(left->keys,i){
+						if (!sCmp(left->keys->data[i], right->keys->data[i])) return false;
+						if (!eqValues(dGet(left,left->keys->data[i]), dGet(right,right->keys->data[i]))) return false;
+					}
+					return true;
+				}
+			}
+			else return false;
+		case FV:
+			return F(l)->ip==F(r)->ip;
 	}
 	return false;
 }
