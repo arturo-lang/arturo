@@ -6,7 +6,7 @@ unsigned char Version[] = {
 };
 unsigned int Version_len = 3;
 unsigned char BuildNo[] = {
-  0x34, 0x31, 0x38
+  0x34, 0x31, 0x39
 };
 unsigned int BuildNo_len = 3;
 unsigned char BuildDate[] = {
@@ -14,7 +14,7 @@ unsigned char BuildDate[] = {
 };
 unsigned int BuildDate_len = 11;
 
-void showVersion() {
+static inline void showVersion() {
 struct utsname unameData;
 uname(&unameData);
 printf("\x1B[32m\x1B[1mArturo %s\x1B[0m (%s build %s) [%s-%s]\n",Version,BuildDate,BuildNo,unameData.machine,unameData.sysname);
