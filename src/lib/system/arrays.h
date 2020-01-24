@@ -10,7 +10,7 @@
 #ifndef __LIB_SYSTEM_ARRAYS_H__
 #define __LIB_SYSTEM_ARRAYS_H__
 
-static INLINED int cmpI (const void* left, const void* right) {
+static INLINED int sortCmpI (const void* left, const void* right) {
     int l = I(*((Value*)left));
     int r = I(*((Value*)right));
     if (l > r) return  1;
@@ -18,51 +18,19 @@ static INLINED int cmpI (const void* left, const void* right) {
     return 0;
 }
 
-static INLINED int cmpS (const void* left, const void* right) {
+static INLINED int sortCmpS (const void* left, const void* right) {
     String* l = S(*((Value*)left));
     String* r = S(*((Value*)right));
 
-    unsigned int len = l->size;
-
-    int fast = len/sizeof(size_t) + 1;
-  	int offset = (fast-1)*sizeof(size_t);
-  	int current_block = 0;
-
-  	if( len <= sizeof(size_t)){ fast = 0; }
-
-  	const char* ptr0 = l->content;
-  	const char* ptr1 = r->content;
-
-  	size_t *lptr0 = (size_t*)ptr0;
-  	size_t *lptr1 = (size_t*)ptr1;
-
-  	while( current_block < fast ){
-    	if( (lptr0[current_block] ^ lptr1[current_block] )){
-      		int pos;
-      		for(pos = current_block*sizeof(size_t); pos < len ; ++pos ){
-        		if( (ptr0[pos] ^ ptr1[pos]) || (ptr0[pos] == 0) || (ptr1[pos] == 0) ){
-          			return  (int)((unsigned char)ptr0[pos] - (unsigned char)ptr1[pos]);
-          		}
-        	}
-      	}
-    	++current_block;
-    }
-
-  	while( len > offset ){
-    	if( (ptr0[offset] ^ ptr1[offset] )){ 
-      		return (int)((unsigned char)ptr0[offset] - (unsigned char)ptr1[offset]); 
-      	}
-    	++offset;
-    }
-	return 0;
+    return sCmp(l,r);
 }
 
 #define sys_doSort() {\
 	Value arg0 = popS();\
 	ValueArray* arr = aDup(Value,A(arg0));\
 	switch (Kind(arr->data[0])) {\
-		case IV: qsort(arr->data,arr->size,arr->typeSize,cmpI); break;\
-		case SV: qsort(arr->data,arr->size,arr->typeSize,cmpS); break;\
+		case IV: qsort(arr->data,arr->size,arr->typeSize,sortCmpI); break;\
+		case SV: qsort(arr->data,arr->size,arr->typeSize,sortCmpS); break;\
 		default: printf("cannot sort\n");\
 	}\
 	pushS(toA(arr));\
@@ -71,8 +39,8 @@ static INLINED int cmpS (const void* left, const void* right) {
 #define sys_inSort(ARG) {\
 	ValueArray* arr = A(ARG);\
 	switch (Kind(arr->data[0])) {\
-		case IV: qsort(arr->data,arr->size,arr->typeSize,cmpI); break;\
-		case SV: qsort(arr->data,arr->size,arr->typeSize,cmpS); break;\
+		case IV: qsort(arr->data,arr->size,arr->typeSize,sortCmpI); break;\
+		case SV: qsort(arr->data,arr->size,arr->typeSize,sortCmpS); break;\
 		default: printf("cannot sort\n");\
 	}\
 }
