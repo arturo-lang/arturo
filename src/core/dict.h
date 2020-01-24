@@ -72,7 +72,7 @@ static INLINED void dSet(Dict* dest, String* key, Value v) {
 
 static INLINED bool dHasKey(Dict* dest, String* key) {
 	aEach(dest->keys,i){
-		if (!strcmp(dest->keys->data[i]->content, key->content)) return true;
+		if (!sCmp(dest->keys->data[i], key)) return true;
 	}
 	return false;
 }
