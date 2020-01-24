@@ -171,7 +171,7 @@ end_task
 echo ""
 
 print_task "Cleaning up..."
-    mv -f *.s *.i .cache/
+    mv -f *.i .cache/
     rm -f *.c *.o *.h *.a *.bc *.ii
     cd src/3rdparty/libsrt
     make -f Makefile.posix clean >/dev/null 2>&1
