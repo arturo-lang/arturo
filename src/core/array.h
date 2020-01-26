@@ -113,11 +113,19 @@ typedef Array(int)              intArray;
 #define aFindStr(DEST,LOOKUP,INDEX) \
     INDEX = -1;                                                             \
     aEach(DEST,i) {                                                         \
-        if (!sCompare(DEST->data[i],LOOKUP)) {                            \
+        if (!sCompare(DEST->data[i],LOOKUP)) {                              \
             INDEX = i;                                                      \
             break;                                                          \
         }                                                                   \
     }
+
+#define aContains(DEST,LOOKUP) ({                                           \
+    bool ret = true;                                                        \
+    aEach(DEST,i) {                                                         \
+        if (!eqValues(DEST->data[i],LOOKUP)) { ret = false; break; }        \
+    }                                                                       \
+    ret;                                                                    \
+})
 
 #define aSize(DEST) \
     DEST->size
