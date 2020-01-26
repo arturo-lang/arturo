@@ -110,14 +110,23 @@ print_task "Updating build..."
     mv src/version/BuildNo.tmp src/version/BuildNo
     echo -n `date +%d-%b-%Y` > src/version/BuildDate
     cd src/version
-    echo "#ifndef __VERSION_H__" > version.h
-    echo "#define __VERSION_H__" >> version.h
+    echo "#ifndef __ART_VERSION_H__" > version.h
+    echo "#define __ART_VERSION_H__" >> version.h
     echo "" >> version.h
     xxd -i Version >> version.h
     xxd -i BuildNo >> version.h
     xxd -i BuildDate >> version.h
     echo "" >> version.h
+    echo "static inline void showVersion() {" >> version.h
+    echo "struct utsname unameData;" >> version.h
+    echo "uname(&unameData);" >> version.h
+    echo "printf(\"\x1B[32m\x1B[1mArturo %.*s\x1B[0m (%.*s build %.*s) [%s-%s]\n\",3,Version,11,BuildDate,5,BuildNo,unameData.machine,unameData.sysname);" >> version.h
+    echo "printf(\"(c) 2019-2020 Yanis Zafirópulos\n\");" >> version.h
+    echo "printf(\"\n\");" >> version.h
+    echo "}" >> version.h
     echo "#endif" >> version.h
+    sed 's/unsigned/static unsigned/g' version.h > version.tmp
+    mv version.tmp version.h
     cd ../..
     git add src/version/BuildNo
     git add src/version/BuildDate
