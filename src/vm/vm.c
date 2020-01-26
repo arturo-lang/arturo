@@ -163,8 +163,8 @@ Value execute(Byte* bcode) {
     //-------------------------  
 
     #define callFunction(X) { \
-        Func* f = X;                                                    \
-        Byte z = f->args;                                               \
+        Func* fun = X;                                                  \
+        Byte z = fun->args;                                             \
         int newsp = sp-z;                                               \
         CallFrame fr = {                                                \
             .ip = ip,                                                   \
@@ -177,7 +177,7 @@ Value execute(Byte* bcode) {
         fr.Locals[4] = Stack[newsp+5];                                  \
         sp -= z;                                                        \
         pushF(fr);                                                      \
-        ip = f->ip;                                                     \
+        ip = fun->ip;                                                   \
     } 
 
     #define callInPlace(FUNC) {              \
@@ -276,7 +276,7 @@ Value execute(Byte* bcode) {
         #elif defined(DEBUG)
             #define DISPATCH()                                          \
                 op = nextOp;                                            \
-                printf("exec: %s\n",OpCodeStr[op]);                     \
+                printf("%d -> exec: %s\n",ip-1,OpCodeStr[op]);          \
                 goto *dispatchTable[op];
 
         #else   
@@ -550,12 +550,10 @@ Value execute(Byte* bcode) {
         OPCASE(RET)      : {
             freeFrame(); 
             if (!return_point) {
-                printf("RET: normal\n");
                 ip = popF().ip; 
                 DISPATCH(); 
             }
             else {
-                printf("RET: -->\n");
                 (void)popF();
                 goto *return_point;
             }
