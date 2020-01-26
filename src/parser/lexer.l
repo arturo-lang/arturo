@@ -77,6 +77,11 @@ LETTER              [A-Za-z_]
 "isPrime"				{ yylval.op = CHECK_ISPRIME; return SYSCALL1; }
 "sort!"					{ yylval.op = IN_SORT; return SYSCALL1; }
 "sort"					{ yylval.op = DO_SORT; return SYSCALL1; }
+"unique"				{ yylval.op = DO_UNIQUE; return SYSCALL1; }
+"contains"				{ yylval.op = CHECK_CONTAINS; return SYSCALL2; }
+"uppercase"				{ yylval.op = DO_UPPERCASE; return SYSCALL1; }
+"lowercase"				{ yylval.op = DO_LOWERCASE; return SYSCALL1; }
+"smap"					{ yylval.op = DO_MAP; return SYSCALL2; }
 
 {LETTER}+               { yylval.str=strdup(yytext); return ID; }
 {DIGIT}{0,10}           { yylval.str=strdup(yytext); return INTEGER; }
