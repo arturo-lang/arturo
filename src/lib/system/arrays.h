@@ -10,6 +10,10 @@
 #ifndef __LIB_SYSTEM_ARRAYS_H__
 #define __LIB_SYSTEM_ARRAYS_H__
 
+/**************************************
+  Helpers
+ **************************************/
+
 static INLINED int sortCmpI (const void* left, const void* right) {
     int l = I(*((Value*)left));
     int r = I(*((Value*)right));
@@ -23,6 +27,29 @@ static INLINED int sortCmpS (const void* left, const void* right) {
     String* r = S(*((Value*)right));
 
     return sCmp(l,r);
+}
+
+/**************************************
+  Functions
+ **************************************/
+
+#define sys_doMap() {\
+	Func* f = F(popS());\
+	ValueArray* arr = A(popS());\
+	ValueArray* ret = aNew(Value,arr->size);\
+	aEach(arr,i) {\
+		pushS(arr->data[i]);\
+		printf("pushing\n");\
+		callFunction(f);\
+		printf("called\n");\
+		return_point = &&map_return;\
+		DISPATCH();\
+		map_return:\
+		printf("returned\n");\
+		aAdd(ret,popS());\
+	}\
+	return_point=NULL;\
+	pushS(toA(arr));\
 }
 
 #define sys_doSort() {\
@@ -43,6 +70,18 @@ static INLINED int sortCmpS (const void* left, const void* right) {
 		case SV: qsort(arr->data,arr->size,arr->typeSize,sortCmpS); break;\
 		default: printf("cannot sort\n");\
 	}\
+}
+
+#define sys_doUnique() {\
+	Value arg0 = popS();\
+	if (Kind(arg0)!=AV) { printf("not an array\n"); exit(1); }\
+	ValueArray* arr = aNew(Value,A(arg0)->size);\
+	aEach(A(arg0),i) {\
+		if (!vaContains(arr,A(arg0)->data[i])) {\
+			aAdd(arr,A(arg0)->data[i]);\
+		}\
+	}\
+	pushS(toA(arr));\
 }
 
 #define sys_inSwap(ARG) {               	\
