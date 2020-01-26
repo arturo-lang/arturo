@@ -74,14 +74,14 @@
     OPC(GLOAD6,             0x26)           \
     OPC(GLOAD7,             0x27)           \
     OPC(GLOAD8,             0x28)           \
-    OPC(GLOAD9,             0x29)           \
                                             \
-    OPC(GLOAD,              0x2A) /* Word */\
+    OPC(GLOAD,              0x29) /* Word */\
                                             \
-    OPC(LLOAD0,             0x2B)           \
-    OPC(LLOAD1,             0x2C)           \
-    OPC(LLOAD2,             0x2D)           \
-    OPC(LLOAD3,             0x2E)           \
+    OPC(LLOAD0,             0x2A)           \
+    OPC(LLOAD1,             0x2B)           \
+    OPC(LLOAD2,             0x2C)           \
+    OPC(LLOAD3,             0x2D)           \
+    OPC(LLOAD4,             0x2E)           \
                                             \
     OPC(LLOAD,              0x2F) /* Byte */\
                                             \
@@ -96,14 +96,14 @@
     OPC(GSTORE6,            0x36)           \
     OPC(GSTORE7,            0x37)           \
     OPC(GSTORE8,            0x38)           \
-    OPC(GSTORE9,            0x39)           \
                                             \
-    OPC(GSTORE,             0x3A) /* Word */\
+    OPC(GSTORE,             0x39) /* Word */\
                                             \
-    OPC(LSTORE0,            0x3B)           \
-    OPC(LSTORE1,            0x3C)           \
-    OPC(LSTORE2,            0x3D)           \
-    OPC(LSTORE3,            0x3E)           \
+    OPC(LSTORE0,            0x3A)           \
+    OPC(LSTORE1,            0x3B)           \
+    OPC(LSTORE2,            0x3C)           \
+    OPC(LSTORE3,            0x3D)           \
+    OPC(LSTORE4,            0x3E)           \
                                             \
     OPC(LSTORE,             0x3F) /* Byte */\
                                             \
@@ -118,14 +118,14 @@
     OPC(GCALL6,             0x46)           \
     OPC(GCALL7,             0x47)           \
     OPC(GCALL8,             0x48)           \
-    OPC(GCALL9,             0x49)           \
                                             \
-    OPC(GCALL,              0x4A) /* Word */\
+    OPC(GCALL,              0x49) /* Word */\
                                             \
-    OPC(LCALL0,             0x4B)           \
-    OPC(LCALL1,             0x4C)           \
-    OPC(LCALL2,             0x4D)           \
-    OPC(LCALL3,             0x4E)           \
+    OPC(LCALL0,             0x4A)           \
+    OPC(LCALL1,             0x4B)           \
+    OPC(LCALL2,             0x4C)           \
+    OPC(LCALL3,             0x4D)           \
+    OPC(LCALL4,             0x4E)           \
                                             \
     OPC(LCALL,              0x4F) /* Byte */\
                                             \
@@ -215,7 +215,12 @@
     OPC(CHECK_ISPRIME,      0x8C)           \
     OPC(DO_SORT,            0x8D)           \
     OPC(IN_SORT,            0x8E)           \
-    OPC(IN_SWAP,            0x8F)
+    OPC(IN_SWAP,            0x8F)           \
+    OPC(DO_UNIQUE,          0x90)           \
+    OPC(CHECK_CONTAINS,     0x91)           \
+    OPC(DO_UPPERCASE,       0x92)           \
+    OPC(DO_LOWERCASE,       0x93)           \
+    OPC(DO_MAP,             0x94)
 
 /**************************************
   Enums
