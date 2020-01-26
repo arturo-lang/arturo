@@ -115,7 +115,7 @@ void inspectByteCode(Byte* bcode) {
 
 typedef Array(CallFrame)        CallFrameArray;
 
-char* execute(Byte* bcode) {   
+Value execute(Byte* bcode) {   
     //-------------------------
     // Our registers
     //-------------------------
@@ -137,25 +137,7 @@ char* execute(Byte* bcode) {
         else if (k==AV) { aFree(A(GlobalTable[X])); }                   \
         else if (k==GV) { bFree(G(GlobalTable[X])); }                   \
         GlobalTable[X] = popped;                                        \
-    }   
-
-    #define callGlobal(X) { \
-        Func* f = F(GlobalTable[X]);                                    \
-        Byte z = f->args;                                               \
-        int newsp = sp-z;                                               \
-        CallFrame fr = {                                                \
-            .ip = ip,                                                   \
-            .size = z                                                   \
-        };                                                              \
-        fr.Locals[0] = Stack[newsp+1];                                  \
-        fr.Locals[1] = Stack[newsp+2];                                  \
-        fr.Locals[2] = Stack[newsp+3];                                  \
-        fr.Locals[3] = Stack[newsp+4];                                  \
-        fr.Locals[4] = Stack[newsp+5];                                  \
-        sp -= z;                                                        \
-        pushF(fr);                                                      \
-        ip = f->ip;                                                     \
-    }   
+    }    
 
     //-------------------------
     // The Local Table
@@ -177,15 +159,34 @@ char* execute(Byte* bcode) {
     }
 
     //-------------------------
-    // InPlace methods
+    // Function calls
     //-------------------------  
+
+    #define callFunction(X) { \
+        Func* f = X;                                                    \
+        Byte z = f->args;                                               \
+        int newsp = sp-z;                                               \
+        CallFrame fr = {                                                \
+            .ip = ip,                                                   \
+            .size = z                                                   \
+        };                                                              \
+        fr.Locals[0] = Stack[newsp+1];                                  \
+        fr.Locals[1] = Stack[newsp+2];                                  \
+        fr.Locals[2] = Stack[newsp+3];                                  \
+        fr.Locals[3] = Stack[newsp+4];                                  \
+        fr.Locals[4] = Stack[newsp+5];                                  \
+        sp -= z;                                                        \
+        pushF(fr);                                                      \
+        ip = f->ip;                                                     \
+    } 
 
     #define callInPlace(FUNC) {              \
         Word ind = nextWord;                 \
-        if ((ind & LOCAL_VAR) == LOCAL_VAR) {\
+        if ((ind & GLOBAL_VAR)!=GLOBAL_VAR) {\
             FUNC(topF0.Locals[ind])          \
         }                                    \
         else {                               \
+            ind &= ~GLOBAL_VAR;              \
             FUNC(GlobalTable[ind]);          \
         }                                    \
     }
@@ -227,6 +228,8 @@ char* execute(Byte* bcode) {
     //-------------------------
 
     #ifdef COMPUTED_GOTO
+
+        static void* return_point = NULL;
 
         static void* dispatchTable[] = {
             OPCODES(GENERATE_OP_DISPATCH)
@@ -372,7 +375,6 @@ char* execute(Byte* bcode) {
         OPCASE(GLOAD6)   : pushS(GlobalTable[6]);  DISPATCH();
         OPCASE(GLOAD7)   : pushS(GlobalTable[7]);  DISPATCH();
         OPCASE(GLOAD8)   : pushS(GlobalTable[8]);  DISPATCH();
-        OPCASE(GLOAD9)   : pushS(GlobalTable[9]);  DISPATCH();
         
         OPCASE(GLOAD)    : { 
             Word ind = nextWord;
@@ -384,9 +386,10 @@ char* execute(Byte* bcode) {
         OPCASE(LLOAD1)   : pushS(topF0.Locals[1]);  DISPATCH();
         OPCASE(LLOAD2)   : pushS(topF0.Locals[2]);  DISPATCH();
         OPCASE(LLOAD3)   : pushS(topF0.Locals[3]);  DISPATCH();
+        OPCASE(LLOAD4)   : pushS(topF0.Locals[4]);  DISPATCH();
 
         OPCASE(LLOAD)    : { 
-            Word ind = nextByte;
+            Byte ind = nextByte;
             pushS(topF0.Locals[ind]); 
             DISPATCH();
         }
@@ -404,7 +407,6 @@ char* execute(Byte* bcode) {
         OPCASE(GSTORE6)  : storeGlobal(6);  DISPATCH();
         OPCASE(GSTORE7)  : storeGlobal(7);  DISPATCH();
         OPCASE(GSTORE8)  : storeGlobal(8);  DISPATCH();
-        OPCASE(GSTORE9)  : storeGlobal(9);  DISPATCH();
 
         OPCASE(GSTORE)   : {
             Word ind = nextWord;
@@ -416,9 +418,10 @@ char* execute(Byte* bcode) {
         OPCASE(LSTORE1)  : storeLocal(1);  DISPATCH();
         OPCASE(LSTORE2)  : storeLocal(2);  DISPATCH();
         OPCASE(LSTORE3)  : storeLocal(3);  DISPATCH();
+        OPCASE(LSTORE4)  : storeLocal(4);  DISPATCH();
 
         OPCASE(LSTORE)   : {
-            Word ind = nextByte;
+            Byte ind = nextByte;
             storeLocal(ind); 
             DISPATCH();
         }
@@ -427,29 +430,33 @@ char* execute(Byte* bcode) {
         // call global/local function
         //---------------------------------------
 
-        OPCASE(GCALL0)   : callGlobal(0);  DISPATCH();
-        OPCASE(GCALL1)   : callGlobal(1);  DISPATCH();
-        OPCASE(GCALL2)   : callGlobal(2);  DISPATCH();
-        OPCASE(GCALL3)   : callGlobal(3);  DISPATCH();
-        OPCASE(GCALL4)   : callGlobal(4);  DISPATCH();
-        OPCASE(GCALL5)   : callGlobal(5);  DISPATCH();
-        OPCASE(GCALL6)   : callGlobal(6);  DISPATCH();
-        OPCASE(GCALL7)   : callGlobal(7);  DISPATCH();
-        OPCASE(GCALL8)   : callGlobal(8);  DISPATCH();
-        OPCASE(GCALL9)   : callGlobal(9);  DISPATCH();
+        OPCASE(GCALL0)   : callFunction(F(GlobalTable[0]));  DISPATCH();
+        OPCASE(GCALL1)   : callFunction(F(GlobalTable[1]));  DISPATCH();
+        OPCASE(GCALL2)   : callFunction(F(GlobalTable[2]));  DISPATCH();
+        OPCASE(GCALL3)   : callFunction(F(GlobalTable[3]));  DISPATCH();
+        OPCASE(GCALL4)   : callFunction(F(GlobalTable[4]));  DISPATCH();
+        OPCASE(GCALL5)   : callFunction(F(GlobalTable[5]));  DISPATCH();
+        OPCASE(GCALL6)   : callFunction(F(GlobalTable[6]));  DISPATCH();
+        OPCASE(GCALL7)   : callFunction(F(GlobalTable[7]));  DISPATCH();
+        OPCASE(GCALL8)   : callFunction(F(GlobalTable[8]));  DISPATCH();
 
         OPCASE(GCALL)    : {
             Word ind = nextWord;
-            callGlobal(ind); 
+            callFunction(F(GlobalTable[ind]));
             DISPATCH();
         }
 
-        OPCASE(LCALL0)   : /* not implemented */
-        OPCASE(LCALL1)   : /* not implemented */
-        OPCASE(LCALL2)   : /* not implemented */
-        OPCASE(LCALL3)   : /* not implemented */
+        OPCASE(LCALL0)   : callFunction(F(topF0.Locals[0])); DISPATCH();
+        OPCASE(LCALL1)   : callFunction(F(topF0.Locals[1])); DISPATCH();
+        OPCASE(LCALL2)   : callFunction(F(topF0.Locals[2])); DISPATCH();
+        OPCASE(LCALL3)   : callFunction(F(topF0.Locals[3])); DISPATCH();
+        OPCASE(LCALL4)   : callFunction(F(topF0.Locals[4])); DISPATCH();
 
-        OPCASE(LCALL)    : /* not implemented */ DISPATCH();
+        OPCASE(LCALL)    : {
+            Byte ind = nextByte;
+            callFunction(F(topF0.Locals[ind]));
+            DISPATCH();
+        }
 
         //---------------------------------------
         // miscellaneous stack functions
@@ -542,8 +549,16 @@ char* execute(Byte* bcode) {
         }
         OPCASE(RET)      : {
             freeFrame(); 
-            ip = popF().ip; 
-            DISPATCH();
+            if (!return_point) {
+                printf("RET: normal\n");
+                ip = popF().ip; 
+                DISPATCH(); 
+            }
+            else {
+                printf("RET: -->\n");
+                (void)popF();
+                goto *return_point;
+            }
         }
 
         OPCASE(EXEC)     : /* not implemented */ DISPATCH();
@@ -580,6 +595,13 @@ char* execute(Byte* bcode) {
         OPCASE(IN_SORT)         : callInPlace(sys_inSort); DISPATCH();
         OPCASE(IN_SWAP)         : callInPlace(sys_inSwap); DISPATCH();
 
+        OPCASE(DO_UNIQUE)       : sys_doUnique(); DISPATCH();
+        OPCASE(CHECK_CONTAINS)  : sys_checkContains(); DISPATCH();
+        OPCASE(DO_UPPERCASE)    : sys_doUppercase(); DISPATCH();
+        OPCASE(DO_LOWERCASE)    : sys_doLowercase(); DISPATCH();
+
+        OPCASE(DO_MAP)          : sys_doMap(); DISPATCH();
+
         /***************************
           Empty slots
          ***************************/
@@ -599,125 +621,6 @@ char* execute(Byte* bcode) {
         OPCASE(X13)      : 
         OPCASE(X14)      : DISPATCH();
 
-        // //=======================================
-        // // Arithmetic & Logical Operations
-        // //=======================================
-
-        // OPCASE(ADD)      : topS1 = addValues(topS1,topS0);  sp--; DISPATCH();
-        // OPCASE(SUB)      : topS1 = subValues(topS1,topS0);  sp--; DISPATCH();
-        // OPCASE(MUL)      : topS1 = mulValues(topS1,topS0);  sp--; DISPATCH();
-        // OPCASE(DIV)      : topS1 = divValues(topS1,topS0);  sp--; DISPATCH();
-        // OPCASE(FDIV)     : topS1 = fdivValues(topS1,topS0); sp--; DISPATCH();
-        // OPCASE(MOD)      : topS1 = modValues(topS1,topS0);  sp--; DISPATCH();
-        // OPCASE(POW)      : topS1 = powValues(topS1,topS0);  sp--; DISPATCH();
-        // OPCASE(NEG)      : topS0 = mulValues(topS0,INTV1M); DISPATCH();
-        // OPCASE(NOT)      : topS0 = toB(!(B(topS0))); DISPATCH();
-        // OPCASE(AND)      : topS1 = toB(B(topS1) && B(topS0)); sp--; DISPATCH();
-        // OPCASE(OR)       : topS1 = toB(B(topS1) || B(topS0)); sp--; DISPATCH();
-        // OPCASE(XOR)      : topS1 = toB((B(topS1) || B(topS0)) && !(B(topS1) && B(topS0))); sp--; DISPATCH();
-
-        // //=======================================
-        // // Control Flow
-        // //=======================================
-
-        // OPCASE(EXEC)     :
-        // OPCASE(JUMP)     : { 
-        //     Dword addr = nextDword; 
-        //     ip=addr; 
-        //     DISPATCH(); 
-        // }
-        // OPCASE(JMPIFNOT) : {
-        //     Dword addr = nextDword;
-        //     if (!B(popS())) { 
-        //         ip=addr; 
-        //     } 
-        //     DISPATCH();
-        // }
-        // OPCASE(JMPIFE)   :
-        // OPCASE(LOOPIF)   :
-
-        // OPCASE(RETC)     : DISPATCH();
-        // OPCASE(END)      : goto exitLoop_;
-
-        // OPCASE(CMPEQ)    : topS1 = toB(eqValues(topS1,topS0)); sp--; DISPATCH();
-        // OPCASE(CMPNE)    : topS1 = toB(neValues(topS1,topS0)); sp--; DISPATCH();
-        // OPCASE(CMPGT)    : topS1 = toB(gtValues(topS1,topS0)); sp--; DISPATCH();
-        // OPCASE(CMPGE)    : topS1 = toB(geValues(topS1,topS0)); sp--; DISPATCH();
-        // OPCASE(CMPLT)    : topS1 = toB(ltValues(topS1,topS0)); sp--; DISPATCH();
-        // OPCASE(CMPLE)    : topS1 = toB(leValues(topS1,topS0)); sp--; DISPATCH();
-
-
-
-        // //=======================================
-        // // Core Commands [96 slots]
-        // //=======================================
-
-        // OPCASE(DO_PRINT) : printLnValue(popS()); DISPATCH();
-        
-        // OPCASE(DO_APPEND): { 
-        //     /*
-        //     Word inPlace = nextWord; 
-        //     if (inPlaceIsGlobal) {
-        //         opAppend(&GlobalTable[inPlaceIndex],pop());
-        //     }*/
-        //     DISPATCH(); 
-        // }
-        // OPCASE(DO_INC)   : {
-        //     /*
-        //     Word inPlace = nextWord;
-        //     if (inPlaceIsGlobal) {
-        //         int index = inPlaceIndex;
-        //         GlobalTable[index] = addValues(GlobalTable[index],INTV1);
-        //     }
-        //     */
-        //     DISPATCH();
-        // }
-
-        // OPCASE(COPY)     : {
-        //     /*
-        //     printf("found value copy\n");
-        //     Word nxt = nextWord;
-        //     printf("from: %d -> ",nxt);
-        //     nxt = nextWord;
-        //     printf("to: %d\n",nxt);
-        //     */
-        //     DISPATCH();
-        // }
-
-        // OPCASE(DO_LOG)   : {
-        //     /*
-        //     Value popped = pop();
-        //     printf("v: %llu = %s",popped,ss_to_c(stringify(popped)));
-        //     if (Kind(popped)>=GV) {
-        //         printf(" @ %p\n", (void*)(popped & UNMASK));
-        //     }
-        //     else {
-        //         printf("\n");
-        //     }*/
-        //     DISPATCH();
-        // }
-
-        // OPCASE(GET_SIZE)     : {
-        //     Value popped = popS();
-        //     switch (Kind(popped)) {
-        //         case SV: pushS(toI(sSize(S(popped)))); break;
-        //         case AV: pushS(toI(aSize(A(popped)))); break;
-        //         default: print("cannot get 'size' for value: ");
-        //                  printLnValue(popped);
-        //                  exit(1);
-        //     }
-        //     DISPATCH();
-        // }
-
-        // OPCASE(DO_GET)      : {
-        //     Value index = popS();
-        //     Value collection = popS();
-        //     switch (Kind(collection)) {
-        //         case AV: pushS(A(collection)->data[I(index)]); break;
-        //         default: printLn("cannot get index for object\n");
-        //     }
-        //     DISPATCH();
-        // }
     }
 
     exitLoop_:
@@ -725,7 +628,9 @@ char* execute(Byte* bcode) {
     free(Stack);
     free(FrameStack);
 
-    return "";
+    return (sp>=0) ? popS() : Stack[0];
+
+    return popS();
 }
 
 /**************************************
@@ -755,11 +660,11 @@ static inline void vmCleanUp() {
   Methods
  **************************************/
 
-void vmCompileScript(char* script) {
+void vmCompileScript(FILE* script, char* scriptPath) {
     vmInit();
 
     if (generateBytecode(script)) {
-        String* target = sNew(script);
+        String* target = sNew(scriptPath);
         String* ext = sNew(".obj");
         sCat(target,ext);
 
@@ -776,16 +681,16 @@ void vmCompileScript(char* script) {
     vmCleanUp();
 }
 
-void vmRunObject(char* script) {
+Value vmRunObject(char* scriptPath) {
     vmInit();
 
     #ifdef PROFILE
         unsigned long long timer = getCurrentTime();
     #endif
 
-    readObjFile(script);
+    readObjFile(scriptPath);
 
-    #ifdef PROFILE
+    #ifdef PROFILEs
         Prof_genTime = (float)(getCurrentTime()-timer)/1000000;
     #endif
 
@@ -797,7 +702,7 @@ void vmRunObject(char* script) {
         timer = getCurrentTime();
     #endif
 
-    execute(BCode->data);
+    Value ret = execute(BCode->data);
 
     #ifdef PROFILE
         Prof_execTime = (float)(getCurrentTime()-timer)/1000000;
@@ -806,27 +711,14 @@ void vmRunObject(char* script) {
     #endif
 
     vmCleanUp();
+
+    return ret;
 }
 
-char* vmRunScript(char* script) {
+Value vmRunScript(FILE* script) {
+    Value ret = NULLV;
+
     vmInit();
-
-    // {
-    //     #define PROC proc1
-    //     DO_ARG0(1);
-
-    //     isI: printf("isI\n"); FINISH();
-    //     isR: printf("isR\n"); FINISH();
-    //     isB: printf("isB\n"); FINISH();
-    //     isG:
-    //     isS:
-    //     isA:
-    //     isD:
-    //     isF: printf("not supported\n");
-
-    //     PROC_END:;
-    //     #undef PROC
-    // }
 
     #ifdef PROFILE
         unsigned long long timer = getCurrentTime();
@@ -846,16 +738,17 @@ char* vmRunScript(char* script) {
             timer = getCurrentTime();
         #endif
 
-        execute(BCode->data);
+        ret = execute(BCode->data);
 
         #ifdef PROFILE
             Prof_execTime = (float)(getCurrentTime()-timer)/1000000;
 
             inspectProfiler();
         #endif
+
     }
 
     vmCleanUp();
 
-    return "";
+    return ret;
 }
