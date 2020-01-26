@@ -106,6 +106,8 @@ Value strToBigintValue(char* str);
 Value strToRealValue(char* str);
 Value strToStringValue(char* str);
 
+bool vaContains(ValueArray* va, Value v);
+
 Value addValues(Value l, Value r);
 Value subValues(Value l, Value r);
 Value mulValues(Value l, Value r);
