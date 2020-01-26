@@ -35,21 +35,20 @@ static INLINED int sortCmpS (const void* left, const void* right) {
 
 #define sys_doMap() {\
 	Func* f = F(popS());\
+	int ip_before = ip;\
 	ValueArray* arr = A(popS());\
 	ValueArray* ret = aNew(Value,arr->size);\
 	aEach(arr,i) {\
 		pushS(arr->data[i]);\
-		printf("pushing\n");\
 		callFunction(f);\
-		printf("called\n");\
 		return_point = &&map_return;\
 		DISPATCH();\
 		map_return:\
-		printf("returned\n");\
 		aAdd(ret,popS());\
 	}\
 	return_point=NULL;\
-	pushS(toA(arr));\
+	pushS(toA(ret));\
+	ip = ip_before;\
 }
 
 #define sys_doSort() {\
