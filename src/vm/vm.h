@@ -14,9 +14,10 @@
   Methods
  **************************************/
 
-void vmCompileScript(char* script);
-void vmRunObject(char* script);
-char* vmRunScript(char* script);
+void vmCompileScript(FILE* script, char* scriptPath);
+
+Value vmRunObject(char* scriptPath);
+Value vmRunScript(FILE* script);
 
 /**************************************
   Globals
