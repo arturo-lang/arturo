@@ -114,21 +114,21 @@ void processCall(char* id) {
 		int ind;
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=3)  { emitOp((OPCODE)(LCALL0 + ind)); }
+			if (ind<=4)  { emitOp((OPCODE)(LCALL0 + ind)); }
 			else 		 { emitOpByte(LCALL, ind); }
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
 			if (ind!=-1) {
 				//printf("-- found in global scope\n");
-				if (ind<=9)  { emitOp((OPCODE)(GCALL0 + ind)); }
+				if (ind<=8)  { emitOp((OPCODE)(GCALL0 + ind)); }
 				else 		 { emitOpWord(GCALL, ind); }
 			}
 			else {
 				// pretend it exists in global
 				aAdd(GlobalLookup,id);
 				ind = GlobalLookup->size-1;
-				if (ind<=9)  { emitOp((OPCODE)(GCALL0 + ind)); }
+				if (ind<=8)  { emitOp((OPCODE)(GCALL0 + ind)); }
 				else 		 { emitOpWord(GCALL, ind); }
 			}
 		}
@@ -137,7 +137,7 @@ void processCall(char* id) {
 		int ind;
 		aFindCStr(GlobalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=9)  { emitOp((OPCODE)(GCALL0 + ind)); }
+			if (ind<=8)  { emitOp((OPCODE)(GCALL0 + ind)); }
 			else 		 { emitOpWord(GCALL, ind); }
 		}
 		else {
@@ -152,14 +152,14 @@ void processLoad(char* id) {
 		int ind;
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=3)  { emitOp((OPCODE)(LLOAD0 + ind)); }
+			if (ind<=4)  { emitOp((OPCODE)(LLOAD0 + ind)); }
 			else 		 { emitOpByte(LLOAD, ind); }
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
 			if (ind!=-1) {
 				//printf("-- found in global scope\n");
-				if (ind<=9)  { emitOp((OPCODE)(GLOAD0 + ind)); }
+				if (ind<=8)  { emitOp((OPCODE)(GLOAD0 + ind)); }
 				else 		 { emitOpWord(GLOAD, ind); }
 			}
 			else {
@@ -172,7 +172,7 @@ void processLoad(char* id) {
 		int ind;
 		aFindCStr(GlobalLookup, id, ind);
 		if (ind!=-1) {
-			if (ind<=9)  { emitOp((OPCODE)(GLOAD0 + ind)); }
+			if (ind<=8)  { emitOp((OPCODE)(GLOAD0 + ind)); }
 			else 		 { emitOpWord(GLOAD, ind); }
 		}
 		else {
@@ -194,7 +194,7 @@ void processStore(char* id) {
 			aFindCStr(LocalLookup,id,ind);
 			if (ind!=-1) {
 				//printf("-- found in local scope\n");
-				if (ind<=3)  { emitOp((OPCODE)(LSTORE0 + ind)); }
+				if (ind<=4)  { emitOp((OPCODE)(LSTORE0 + ind)); }
 				else   		 { emitOpByte(LSTORE, ind); }
 			}
 			else {
@@ -202,14 +202,14 @@ void processStore(char* id) {
 				aFindCStr(GlobalLookup,id,ind);
 				if (ind!=-1) {
 					//printf("-- found in global scope\n");
-					if (ind<=9)  { emitOp((OPCODE)(GSTORE0 + ind)); }
+					if (ind<=8)  { emitOp((OPCODE)(GSTORE0 + ind)); }
 					else 		 { emitOpWord(GSTORE, ind); }
 				}
 				else {
 					//printf("-- NOT found anywhere, adding to local scope\n");
 					aAdd(LocalLookup,id);
 					ind = LocalLookup->size-1;
-					if (ind<=3)  { emitOp((OPCODE)(LSTORE0 + ind)); }
+					if (ind<=4)  { emitOp((OPCODE)(LSTORE0 + ind)); }
 					else   		 { emitOpByte(LSTORE, ind); }
 				}
 			}
@@ -226,14 +226,14 @@ void processStore(char* id) {
 			aFindCStr(GlobalLookup,id,ind);
 			if (ind!=-1) {
 				//printf("-- found in global scope\n");
-				if (ind<=9)  { emitOp((OPCODE)(GSTORE0 + ind)); }
+				if (ind<=8)  { emitOp((OPCODE)(GSTORE0 + ind)); }
 				else 		 { emitOpWord(GSTORE, ind); }
 			}
 			else {
 				//printf("-- NOT found in global scope, add it\n");
 				aAdd(GlobalLookup,id);
 				ind = GlobalLookup->size-1;
-				if (ind<=9)  { emitOp((OPCODE)(GSTORE0 + ind)); }
+				if (ind<=8)  { emitOp((OPCODE)(GSTORE0 + ind)); }
 				else 		 { emitOpWord(GSTORE, ind); }
 			}
 		}
@@ -245,12 +245,12 @@ void processInPlace(OPCODE op, char* id) {
 		int ind;
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
-			emitOpWord(op, (LOCAL_VAR|(Word)ind));
+			emitOpWord(op, (Word)ind);
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
 			if (ind!=-1) {
-				emitOpWord(op, (Word)ind);
+				emitOpWord(op, (GLOBAL_VAR|(Word)ind));
 			}
 			else {
 				printf("Symbol not found: %s\n",id);
@@ -262,7 +262,7 @@ void processInPlace(OPCODE op, char* id) {
 		int ind;
 		aFindCStr(GlobalLookup, id, ind);
 		if (ind!=-1) {
-			emitOpWord(op, (Word)ind);
+			emitOpWord(op, (GLOBAL_VAR|(Word)ind));
 		}
 		else {
 			printf("!! Symbol not found: %s\n",id);
@@ -446,10 +446,10 @@ inline void generatorFinalize() {
 	aFree(LoopHeaders);
 }
 
-inline bool generateBytecode(const char* script) {
+inline bool generateBytecode(FILE* script) {
 	generatorSetup();
 	
-	yyin = fopen(script, "r");
+	yyin = script;
 	bool result = !yyparse();
 
 	if (Env.optimize) {
