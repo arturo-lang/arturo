@@ -47,10 +47,10 @@ static inline void optimizeMulDivs(unsigned int i) {
 
 static inline void optimizeDistributiveProperty(unsigned int i) {
     if (matchesByte(i+2,MUL) && matchesByte(i+5,MUL) && matchesByte(i+6,ADD)) {
-        if ((matchesByteInRange(i, GLOAD0, GLOAD9)   || matchesByteInRange(i, LLOAD0, LLOAD3) || matchesByteInRange(i, IPUSH0, IPUSH10)) && 
-            (matchesByteInRange(i+1, GLOAD0, GLOAD9) || matchesByteInRange(i+1, LLOAD0, LLOAD3) || matchesByteInRange(i+1, IPUSH0, IPUSH10))&&
-            (matchesByteInRange(i+3, GLOAD0, GLOAD9) || matchesByteInRange(i+3, LLOAD0, LLOAD3) || matchesByteInRange(i+3, IPUSH0, IPUSH10))&&
-            (matchesByteInRange(i+4, GLOAD0, GLOAD9) || matchesByteInRange(i, LLOAD0, LLOAD3) || matchesByteInRange(i+4, IPUSH0, IPUSH10))
+        if ((matchesByteInRange(i, GLOAD0, GLOAD8)   || matchesByteInRange(i, LLOAD0, LLOAD4) || matchesByteInRange(i, IPUSH0, IPUSH10)) && 
+            (matchesByteInRange(i+1, GLOAD0, GLOAD8) || matchesByteInRange(i+1, LLOAD0, LLOAD4) || matchesByteInRange(i+1, IPUSH0, IPUSH10))&&
+            (matchesByteInRange(i+3, GLOAD0, GLOAD8) || matchesByteInRange(i+3, LLOAD0, LLOAD4) || matchesByteInRange(i+3, IPUSH0, IPUSH10))&&
+            (matchesByteInRange(i+4, GLOAD0, GLOAD8) || matchesByteInRange(i, LLOAD0, LLOAD4) || matchesByteInRange(i+4, IPUSH0, IPUSH10))
            ) {
             if (BCode->data[i]==BCode->data[i+3]) {
                 BCode->data[i]=BCode->data[i+1];
