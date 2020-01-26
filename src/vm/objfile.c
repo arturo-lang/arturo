@@ -67,6 +67,9 @@ void writeObjFile(const char* filename) {
 				Dword ip = F(BData->data[i])->ip;
 				fwrite(&ip, sizeof(Dword), 1, fp);
 
+				ip = F(BData->data[i])->to;
+				fwrite(&ip, sizeof(Dword), 1, fp);
+
 				Byte args = F(BData->data[i])->args;
 				fwrite(&args, sizeof(Byte), 1, fp);
 				break;
@@ -151,9 +154,10 @@ void readObjFile(const char* filename) {
 			}
 			case FV: {
 				Dword ip = getNextDword();
+				Dword to = getNextDword();
 				Byte args = getNextByte();
 
-				storeValueData(toF(fNew(ip,args)));
+				storeValueData(toF(fNew(ip,to,args)));
 				break;
 			}
 			default: {
