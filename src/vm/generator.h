@@ -16,7 +16,7 @@
   Definitions
  **************************************/
 
-#define LOCAL_VAR 	0x8000
+#define GLOBAL_VAR 	0x8000
 
 /**************************************
   External declarations
@@ -72,7 +72,7 @@ void finalizeLoop();
 void generatorSetup();
 void generatorFinalize();
 
-bool generateBytecode(const char* script);
+bool generateBytecode(FILE* script);
 
 /**************************************
   Globals
