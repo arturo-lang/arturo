@@ -53,6 +53,13 @@ Value strToStringValue(char* str) {
 	return toS(newStr);
 }
 
+bool vaContains(ValueArray* va, Value v) {   
+	aEach(va,i) {
+		if (eqValues(va->data[i],v)) return true;
+	}         
+	return false;
+}
+
 /**************************************
   Arithmetic operations
  **************************************/
@@ -584,6 +591,8 @@ inline void printValue(Value v) {
 }
 
 inline void printLnValue(Value v) {
+	// printf("trying to print v: %llu\n",v);
+	// printf("kind: %d\n",Kind(v));
 	switch (Kind(v)) {
 		case NV : printLn("null"); break;
 		case IV : {
@@ -634,6 +643,11 @@ inline void printLnValue(Value v) {
         		}
         	}
         	printLn("]");
+        	break;
+        }
+        case FV : {
+        	Func* func = F(v);
+        	printf("<func: %p>\n",func);
         	break;
         }
         default : {
