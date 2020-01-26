@@ -91,6 +91,11 @@ int storeValueData(Value v) {
 		aEach(BData,i) {
 			if ((Kind(BData->data[i])==FV) && 
 				(F(BData->data[i])->ip==F(v)->ip)) { return i; }
+
+			// FIX!
+			if (!memcmp(BCode+F(BData->data[i])->ip, BCode+F(v)->ip, (F(v)->to-F(v)->ip))) {
+				return i;
+			}
 		}
 		aAdd(BData,v);
 		return BData->size-1;
@@ -397,7 +402,7 @@ void signalFoundFunction() {
 	emitOp(RET);
 	unsigned int pos = BlockStarts->data[BlockStarts->size] + 1;
 	reemitDword(pos,BCode->size);
-	Func* f = fNew(pos+4,argCounter);
+	Func* f = fNew(pos+4,BCode->size-1,argCounter);
 	//printf("created new func: %p :: ip: %d, args: %d\n",f,f->ip,f->args);
 	processConst(toF(f));
 	argCounter = 0;
