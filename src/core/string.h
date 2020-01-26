@@ -131,6 +131,10 @@ static INLINED int sCmp (const String* l, const String* r) {
     return 0;
 }
 
+static INLINED bool sContains(const String* haystack, const String* needle) {
+    return (strstr(haystack->content,needle->content)!=NULL);
+}
+
 //-------------------------
 // Destructor
 //-------------------------
