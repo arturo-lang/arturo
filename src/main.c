@@ -8,20 +8,10 @@
  *****************************************************************/
 
 #include "arturo.h"
-#include "version/version.h"
 
 /**************************************
   Helpers
  **************************************/
-
-void showVersion() {
-	struct utsname unameData;
-	uname(&unameData);
-
-    printf("\x1B[32m\x1B[1mArturo %s\x1B[0m (%s build %s) [%s-%s]\n",Version,BuildDate,BuildNo,unameData.machine,unameData.sysname);
-    printf("(c) 2019-2020 Yanis Zafirópulos\n");
-    printf("\n");
-}
 
 void showHelp(){
 	showVersion();
@@ -140,13 +130,15 @@ int main(int argc, char** argv) {
     }
     else {
         if (compileOnly) {
-            vmCompileScript(argv[optind]);
+            FILE* script = fopen(argv[optind], "r");
+            vmCompileScript(script, argv[optind]);
         }
         else if (executeObject) {
-            vmRunObject(argv[optind]);
+            (void)vmRunObject(argv[optind]);
         }
         else {
-            vmRunScript(argv[optind]);
+            FILE* script = fopen(argv[optind], "r");
+            (void)vmRunScript(script);
         }
     }
 
