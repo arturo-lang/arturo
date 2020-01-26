@@ -522,8 +522,11 @@ inline String* stringify(Value v) {
 		}
 		case FV : {
 			String* ret = sNew("function <");
-			char buffer[15];
+			char buffer[25];
 			i32tos(F(v)->ip,buffer);
+			sCat(ret,sNew(buffer));
+			sCat(ret,sNew(","));
+			i32tos(F(v)->to,buffer);
 			sCat(ret,sNew(buffer));
 			sCat(ret,sNew(","));
 			i32tos(F(v)->args,buffer);
