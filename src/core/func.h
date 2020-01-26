@@ -18,6 +18,7 @@
 
 typedef struct {
     Dword ip;
+    Dword to;
     Byte args;
 } Func;
 
@@ -29,9 +30,10 @@ typedef struct {
 // Constructor
 //-------------------------
 
-static INLINED Func* fNew(Dword ip, Byte args) {
+static INLINED Func* fNew(Dword ip, Dword to, Byte args) {
     Func* ret = malloc(sizeof(Func));
     ret->ip = ip;
+    ret->to = to;
     ret->args = args;
     return ret;
 }
