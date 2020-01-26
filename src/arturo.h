@@ -21,6 +21,7 @@
   Global includes
  **************************************/
 
+#include <ctype.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -33,6 +34,7 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/utsname.h>
+#include <termios.h>
 #include <unistd.h>
 
 // 3rd party libraries
@@ -42,6 +44,10 @@
 // Vendor
 
 #include "vendor/murmur3/murmur3.h"
+
+// Version
+
+#include "version/version.h"
 
 // Helpers
 
