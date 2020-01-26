@@ -31,8 +31,9 @@
 #define DO_ARG0(X) static void* procArg0[] = {&& CONCAT(PROC,I0), && CONCAT(PROC,R0), && CONCAT(PROC,B0), && CONCAT(PROC,G0), && CONCAT(PROC,S0), && CONCAT(PROC,A0), && CONCAT(PROC,D0), && CONCAT(PROC,F0)}; \
     goto *procArg0[X];
 
+#include "system/arrays.h"
 #include "system/generic.h"
 #include "system/numbers.h"
-#include "system/arrays.h"
+#include "system/strings.h"
 
 #endif
