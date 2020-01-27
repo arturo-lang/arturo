@@ -89,12 +89,14 @@ int storeValueData(Value v) {
 	}
 	else if (Kind(v)==FV) {
 		aEach(BData,i) {
-			if ((Kind(BData->data[i])==FV) && 
-				(F(BData->data[i])->ip==F(v)->ip)) { return i; }
+			if (Kind(BData->data[i])==FV) {
+				if (F(BData->data[i])->ip==F(v)->ip) { return i; }
 
-			// FIX!
-			if (!memcmp(BCode+F(BData->data[i])->ip, BCode+F(v)->ip, (F(v)->to-F(v)->ip))) {
-				return i;
+				unsigned int memsize = F(v)->to-F(v)->ip;
+				if (!memcmp(BCode->data+F(BData->data[i])->ip, BCode->data+F(v)->ip, memsize)) {
+					BCode->size = F(v)->ip-5;
+					return i;
+				}
 			}
 		}
 		aAdd(BData,v);
