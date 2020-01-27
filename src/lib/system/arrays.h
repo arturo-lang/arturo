@@ -34,20 +34,63 @@ static INLINED int sortCmpS (const void* left, const void* right) {
  **************************************/
 
 #define sys_doMap() {\
-	Func* f = F(popS());\
 	int ip_before = ip;\
+	Func* f = F(popS());\
 	ValueArray* arr = A(popS());\
 	ValueArray* ret = aNew(Value,arr->size);\
 	aEach(arr,i) {\
 		pushS(arr->data[i]);\
-		callFunction(f);\
-		return_point = &&map_return;\
-		DISPATCH();\
-		map_return:\
+		callFunctionAndReturn(f,doMap);\
 		aAdd(ret,popS());\
 	}\
-	return_point=NULL;\
 	pushS(toA(ret));\
+	ip = ip_before;\
+}
+
+#define sys_inMap(ARG,G) {\
+	int ip_before = ip;\
+	Func* f = F(popS());\
+	ValueArray* arr = A(ARG);\
+	aEach(arr,i) {\
+		pushS(arr->data[i]);\
+		callFunctionAndReturn(f,inMap##G);\
+		arr->data[i]=popS();\
+	}\
+	ip = ip_before;\
+}
+
+#define sys_doFilter() {\
+	int ip_before = ip;\
+	Func* f = F(popS());\
+	ValueArray* arr = A(popS());\
+	ValueArray* ret = aNew(Value,arr->size);\
+	unsigned int cnt = 0;\
+	aEach(arr,i) {\
+		pushS(arr->data[i]);\
+		callFunctionAndReturn(f,doFilter);\
+		if (B(popS())) {\
+			ret->data[cnt++] = arr->data[i];\
+		}\
+	}\
+	ret->size = cnt;\
+	pushS(toA(ret));\
+	ip = ip_before;\
+}
+
+
+#define sys_inFilter(ARG,G) {\
+	int ip_before = ip;\
+	Func* f = F(popS());\
+	ValueArray* arr = A(ARG);\
+	unsigned int cnt = 0;\
+	aEach(arr,i) {\
+		pushS(arr->data[i]);\
+		callFunctionAndReturn(f,inFilter##G);\
+		if (B(popS())) {\
+			arr->data[cnt++] = arr->data[i];\
+		}\
+	}\
+	arr->size = cnt;\
 	ip = ip_before;\
 }
 
@@ -62,7 +105,7 @@ static INLINED int sortCmpS (const void* left, const void* right) {
 	pushS(toA(arr));\
 }
 
-#define sys_inSort(ARG) {\
+#define sys_inSort(ARG,G) {\
 	ValueArray* arr = A(ARG);\
 	switch (Kind(arr->data[0])) {\
 		case IV: qsort(arr->data,arr->size,arr->typeSize,sortCmpI); break;\
@@ -83,7 +126,7 @@ static INLINED int sortCmpS (const void* left, const void* right) {
 	pushS(toA(arr));\
 }
 
-#define sys_inSwap(ARG) {               	\
+#define sys_inSwap(ARG,G) {               	\
 	ValueArray* arr = A(ARG);               \
 	Value arg1 = popS();                    \
 	Value arg0 = popS();                    \
