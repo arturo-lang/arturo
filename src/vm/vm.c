@@ -180,14 +180,20 @@ Value execute(Byte* bcode) {
         ip = fun->ip;                                                   \
     } 
 
+    #define callFunctionAndReturn(X,RETP) \
+        callFunction(f);\
+        aAdd(returnPoints,&&ret_##RETP);\
+        DISPATCH();\
+        ret_##RETP:
+
     #define callInPlace(FUNC) {              \
         Word ind = nextWord;                 \
         if ((ind & GLOBAL_VAR)!=GLOBAL_VAR) {\
-            FUNC(topF0.Locals[ind])          \
+            FUNC(topF0.Locals[ind],g)        \
         }                                    \
         else {                               \
             ind &= ~GLOBAL_VAR;              \
-            FUNC(GlobalTable[ind]);          \
+            FUNC(GlobalTable[ind],l);        \
         }                                    \
     }
 
@@ -227,78 +233,60 @@ Value execute(Byte* bcode) {
     // Computed Goto
     //-------------------------
 
-    #ifdef COMPUTED_GOTO
+    voidPArray* returnPoints = aNew(voidP,4);
 
-        static void* return_point = NULL;
+    static void* dispatchTable[] = {
+        OPCODES(GENERATE_OP_DISPATCH)
+    }; 
 
-        static void* dispatchTable[] = {
-            OPCODES(GENERATE_OP_DISPATCH)
-        }; 
+    #define INTERPRETER_LOOP        DISPATCH();
 
-        #define INTERPRETER_LOOP        DISPATCH();
+    #define OPCASE(name)            case_##name
 
-        #define OPCASE(name)            case_##name
+    #if defined(PROFILE)
+        String* countField = sNew("count");
+        String* timeField = sNew("time");
+        String* cyclesField = sNew("cycles");
+        double startTime;
+        unsigned long long startCycles;
+        #define DISPATCH()                                          \
+            if (op!=END) {                                          \
+                Value timeMs = getCurrentTime()-startTime;          \
+                Value cyclesD = getCurrentCycles()-startCycles;     \
+                String* ss = sNew((char*)OpCodeStr[op]);            \
+                Dict* sub = D(dGet(Prof,ss));                       \
+                dSet(sub,timeField,dGet(sub,timeField)+timeMs);     \
+                dSet(sub,cyclesField,dGet(sub,cyclesField)+cyclesD);\
+            }                                                       \
+            op = nextOp;                                            \
+            {                                                       \
+                String* ss = sNew((char*)OpCodeStr[op]);            \
+                if (dHasKey(Prof,ss)) {                             \
+                    Dict* sub = D(dGet(Prof,ss));                   \
+                    dSet(sub,countField,dGet(sub,countField)+1);    \
+                }                                                   \
+                else {                                              \
+                    Dict* sub = dNew(4);                            \
+                    dAdd(sub,countField,1);                         \
+                    dAdd(sub,timeField,0);                          \
+                    dAdd(sub,cyclesField,0);                        \
+                    dAdd(Prof,ss,toD(sub));                         \
+                }                                                   \
+            }                                                       \
+            startTime = getCurrentTime();                           \
+            startCycles = getCurrentCycles();                       \
+            goto *dispatchTable[op];
 
-        #if defined(PROFILE)
-            String* countField = sNew("count");
-            String* timeField = sNew("time");
-            String* cyclesField = sNew("cycles");
-            double startTime;
-            unsigned long long startCycles;
-            #define DISPATCH()                                          \
-                if (op!=END) {                                          \
-                    Value timeMs = getCurrentTime()-startTime;          \
-                    Value cyclesD = getCurrentCycles()-startCycles;     \
-                    String* ss = sNew((char*)OpCodeStr[op]);            \
-                    Dict* sub = D(dGet(Prof,ss));                       \
-                    dSet(sub,timeField,dGet(sub,timeField)+timeMs);     \
-                    dSet(sub,cyclesField,dGet(sub,cyclesField)+cyclesD);\
-                }                                                       \
-                op = nextOp;                                            \
-                {                                                       \
-                    String* ss = sNew((char*)OpCodeStr[op]);            \
-                    if (dHasKey(Prof,ss)) {                             \
-                        Dict* sub = D(dGet(Prof,ss));                   \
-                        dSet(sub,countField,dGet(sub,countField)+1);    \
-                    }                                                   \
-                    else {                                              \
-                        Dict* sub = dNew(4);                            \
-                        dAdd(sub,countField,1);                         \
-                        dAdd(sub,timeField,0);                          \
-                        dAdd(sub,cyclesField,0);                        \
-                        dAdd(Prof,ss,toD(sub));                         \
-                    }                                                   \
-                }                                                       \
-                startTime = getCurrentTime();                           \
-                startCycles = getCurrentCycles();                       \
-                goto *dispatchTable[op];
+    #elif defined(DEBUG)
+        #define DISPATCH()                                          \
+            op = nextOp;                                            \
+            printf("%d -> exec: %s\n",ip-1,OpCodeStr[op]);          \
+            goto *dispatchTable[op];
 
-        #elif defined(DEBUG)
-            #define DISPATCH()                                          \
-                op = nextOp;                                            \
-                printf("%d -> exec: %s\n",ip-1,OpCodeStr[op]);          \
-                goto *dispatchTable[op];
+    #else   
+        #define DISPATCH()                                          \
+            goto *dispatchTable[nextOp]
 
-        #else   
-            #define DISPATCH()                                          \
-                goto *dispatchTable[nextOp]
-
-        #endif
-    #else
-        #ifdef PROFILE
-            #define INTERPRETER_LOOP                                    \
-                startLoop_:                                             \
-                    op = nextOp;                                        \
-                    printf("exec: %s\n",OpCodeStr[op]);                 \
-                    switch(op)
-        #else
-            #define INTERPRETER_LOOP                                    \
-                startLoop_:                                             \
-                    switch(op = nextOp)             
-        #endif
-
-        #define OPCASE(name)    case name
-        #define DISPATCH()      goto startLoop_
     #endif
 
     //-------------------------
@@ -549,13 +537,13 @@ Value execute(Byte* bcode) {
         }
         OPCASE(RET)      : {
             freeFrame(); 
-            if (!return_point) {
+            if (!(returnPoints->size)) {
                 ip = popF().ip; 
                 DISPATCH(); 
             }
             else {
                 (void)popF();
-                goto *return_point;
+                goto *aPop(returnPoints);
             }
         }
 
@@ -599,6 +587,9 @@ Value execute(Byte* bcode) {
         OPCASE(DO_LOWERCASE)    : sys_doLowercase(); DISPATCH();
 
         OPCASE(DO_MAP)          : sys_doMap(); DISPATCH();
+        OPCASE(IN_MAP)          : callInPlace(sys_inMap); DISPATCH();
+        OPCASE(DO_FILTER)       : sys_doFilter(); DISPATCH();
+        OPCASE(IN_FILTER)       : callInPlace(sys_inFilter); DISPATCH();
 
         /***************************
           Empty slots
