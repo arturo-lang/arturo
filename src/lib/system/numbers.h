@@ -47,7 +47,7 @@ static INLINED bool isPrime(Int32 number) {
 	}														\
 }
 
-#define sys_inInc(ARG) {\
+#define sys_inInc(ARG,G) {\
 	ARG += 1;           \
 }
 
