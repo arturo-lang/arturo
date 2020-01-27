@@ -220,7 +220,10 @@
     OPC(CHECK_CONTAINS,     0x91)           \
     OPC(DO_UPPERCASE,       0x92)           \
     OPC(DO_LOWERCASE,       0x93)           \
-    OPC(DO_MAP,             0x94)
+    OPC(DO_MAP,             0x94)           \
+    OPC(IN_MAP,             0x95)           \
+    OPC(DO_FILTER,          0x96)           \
+    OPC(IN_FILTER,          0x97)
 
 /**************************************
   Enums
