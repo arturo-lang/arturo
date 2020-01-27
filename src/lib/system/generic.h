@@ -33,7 +33,7 @@
     }                                                   \
 }
 
-#define sys_inAppend(ARG) {\
+#define sys_inAppend(ARG,G) {\
 	Value arg0 = popS();\
 	switch (Kind(ARG)) {\
 		case SV: {\
