@@ -24,8 +24,11 @@
         TYPE *data; \
     }
 
+typedef void*                   voidP;
+
 typedef Array(CString)          CStringArray;
 typedef Array(int)              intArray;
+typedef Array(voidP)            voidPArray;
 
 /**************************************
   Macros
