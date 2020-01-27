@@ -75,13 +75,16 @@ LETTER              [A-Za-z_]
 "range"					{ yylval.op = GET_RANGE; return SYSCALL2; }
 "product"				{ yylval.op = GET_PRODUCT; return SYSCALL1; }
 "isPrime"				{ yylval.op = CHECK_ISPRIME; return SYSCALL1; }
-"sort!"					{ yylval.op = IN_SORT; return SYSCALL1; }
+"sort!"					{ yylval.op = IN_SORT; return INPLACE1; }
 "sort"					{ yylval.op = DO_SORT; return SYSCALL1; }
 "unique"				{ yylval.op = DO_UNIQUE; return SYSCALL1; }
 "contains"				{ yylval.op = CHECK_CONTAINS; return SYSCALL2; }
 "uppercase"				{ yylval.op = DO_UPPERCASE; return SYSCALL1; }
 "lowercase"				{ yylval.op = DO_LOWERCASE; return SYSCALL1; }
-"smap"					{ yylval.op = DO_MAP; return SYSCALL2; }
+"map!"					{ yylval.op = IN_MAP; return INPLACE2; }
+"map"					{ yylval.op = DO_MAP; return SYSCALL2; }
+"filter!"				{ yylval.op = IN_FILTER; return INPLACE2; }
+"filter"				{ yylval.op = DO_FILTER; return SYSCALL2; }
 
 {LETTER}+               { yylval.str=strdup(yytext); return ID; }
 {DIGIT}{0,10}           { yylval.str=strdup(yytext); return INTEGER; }
