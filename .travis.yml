@@ -1,11 +1,5 @@
 language: c
 
-os: osx
-osx_image: xcode11.3
 compiler: clang
 script: |
-  brew update
-  brew install bison flex || true
-  echo 'export PATH="/usr/local/opt/bison/bin:$PATH"' >> ~/.bash_profile
-  ci/do-ut || true
   ./build.sh
