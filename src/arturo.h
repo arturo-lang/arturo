@@ -35,6 +35,7 @@
 #include <sys/time.h>
 #include <sys/utsname.h>
 #include <termios.h>
+#include <time.h>
 #include <unistd.h>
 
 // 3rd party libraries
