@@ -662,6 +662,14 @@ void vmCompileScript(FILE* script, char* scriptPath) {
         sFree(target);
         sFree(ext);
 
+        if (Env.generateImage) {
+            target = sNew(scriptPath);
+            ext = sNew(".bmp");
+            sCat(target,ext);
+
+            writeImgFile(target->content);
+        }
+
         if (Env.debugBytecode) {
             inspectByteCode(BCode->data);
         }
