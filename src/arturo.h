@@ -53,6 +53,7 @@
 // Helpers
 
 #include "helpers/benchmark.h"
+#include "helpers/bitmap.h"
 #include "helpers/builtin.h"
 #include "helpers/debug.h"
 #include "helpers/endianess.h"
@@ -84,6 +85,7 @@
 #include "vm/callframe.h"
 #include "vm/env.h"
 #include "vm/generator.h"
+#include "vm/imgcode.h"
 #include "vm/objfile.h"
 #include "vm/opcodes.h"
 #include "vm/optimizer.h"
