@@ -43,10 +43,12 @@ VENDOR=(
 
 SOURCES=(
     helpers/benchmark
+    helpers/bitmap
     helpers/i32tos
     helpers/stoi32
     repl/repl 
     vm/generator
+    vm/imgcode
     vm/objfile
     vm/optimizer
     vm/value
