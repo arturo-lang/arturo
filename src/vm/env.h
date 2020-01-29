@@ -27,6 +27,7 @@ typedef struct {
 
 	bool			optimize;
 	bool 			debugBytecode;
+	bool 			generateImage;
 } Environment;
 
 /**************************************
