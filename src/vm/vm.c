@@ -559,16 +559,8 @@ Value execute(Byte* bcode) {
         OPCASE(DO_INC)          : /* not implemented */ DISPATCH();
         OPCASE(DO_APPEND)       : /* not implemented */ DISPATCH();
         OPCASE(DO_LOG)          : printf("stack size: %d, callframe size: %d\n",sp,fp); (void)popS();/* not implemented */ DISPATCH();
-        OPCASE(DO_GET)          : {
-            Value index = popS();
-            Value collection = popS();
-            switch (Kind(collection)) {
-                case AV: pushS(A(collection)->data[I(index)]); break;
-                case DV: pushS(dGet(D(collection),S(index))); break;
-                default: printLn("cannot get index for object\n");
-            }
-            DISPATCH();
-        }
+        
+        OPCASE(DO_GET)          : sys_doGet(); DISPATCH();
         OPCASE(GET_SIZE)        : sys_getSize(); DISPATCH();
         OPCASE(GET_ABS)         : sys_getAbs(); DISPATCH();
         OPCASE(GET_SQRT)        : sys_getSqrt(); DISPATCH();
@@ -590,6 +582,8 @@ Value execute(Byte* bcode) {
         OPCASE(IN_MAP)          : callInPlace(sys_inMap); DISPATCH();
         OPCASE(DO_FILTER)       : sys_doFilter(); DISPATCH();
         OPCASE(IN_FILTER)       : callInPlace(sys_inFilter); DISPATCH();
+
+        OPCASE(DO_SET)          : sys_doSet(); DISPATCH();
 
         /***************************
           Empty slots

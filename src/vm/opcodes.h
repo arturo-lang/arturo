@@ -223,7 +223,8 @@
     OPC(DO_MAP,             0x94)           \
     OPC(IN_MAP,             0x95)           \
     OPC(DO_FILTER,          0x96)           \
-    OPC(IN_FILTER,          0x97)
+    OPC(IN_FILTER,          0x97)           \
+    OPC(DO_SET,             0x98)   
 
 /**************************************
   Enums

@@ -249,7 +249,10 @@ loop_cmd                :   LOOP_CMD                        { signalFoundLoop();
 // Statements
 //==============================
 
-label_statement         :   ID COLON statement              { processStore($ID); }
+label_statement         :   ID COLON statement                          { processStore($ID); }
+                        |   expression FIELD number COLON statement     { emitOp((OPCODE)DO_SET); }
+                        |   expression FIELD ID COLON statement         { processConst(strToStringValue($ID)); emitOp((OPCODE)DO_SET); }
+                        |   expression FIELD verbatim COLON statement   { emitOp((OPCODE)DO_SET); }
                         ;
 
 call_statement          :   ID expressions                        { processCall($ID); }

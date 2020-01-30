@@ -21,6 +21,37 @@
 	}                                                      						\
 }
 
+#define sys_doGet() {\
+	Value index = popS();\
+    Value collection = popS();\
+    switch (Kind(collection)) {\
+        case AV: pushS(A(collection)->data[I(index)]); break;\
+        case DV: pushS(dGet(D(collection),S(index))); break;\
+        default: printLn("cannot get index for object\n");\
+    }\
+}
+
+#define sys_doSet() {\
+	Value collection = topS2;\
+    switch (Kind(collection)) {\
+        case AV: {\
+            Value val = popS();\
+            Value index = popS();\
+            (void)popS();\
+            A(collection)->data[I(index)]=val; break;\
+        }\
+        case DV: {\
+            Value index = popS();\
+            Value val = popS();\
+            (void)popS();\
+            dSet(D(collection),S(index),val); break;\
+        }\
+        default: {\
+            printLn("cannot set index for object\n");\
+        }\
+    }\
+}
+
 #define sys_getSize() {                                 \
     Value popped = popS();                              \
     switch (Kind(popped)) {                             \
