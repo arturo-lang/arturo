@@ -110,7 +110,6 @@ void writeImgFile(const char* filename) {
 	int optimal = nextPowerOf2(sqrt(fsize));// + 2; for the border
     int counter = 0;
 
-    printf("optimal: %d\n",optimal);
     RGB_data buffer[optimal][optimal];
 
     memset(buffer, 0, sizeof(buffer));
