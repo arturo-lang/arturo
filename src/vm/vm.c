@@ -208,14 +208,16 @@ Value execute(Byte* bcode) {
     #define topS0       Stack[sp]
     #define topS1       Stack[sp-1]
     #define topS2       Stack[sp-2]
+    #define StackSize   (sp+1)
 
     register CallFrame* FrameStack = malloc(nextPowerOf2(Env.stackSize)*sizeof(CallFrame));
 
-    #define pushF(X)    FrameStack[fp+1] = X; fp++
-    #define popF()      FrameStack[fp--]
-    #define topF0       FrameStack[fp]
-    #define topF1       FrameStack[fp-1]
-    #define topF2       FrameStack[fp-2]
+    #define pushF(X)        FrameStack[fp+1] = X; fp++
+    #define popF()          FrameStack[fp--]
+    #define topF0           FrameStack[fp]
+    #define topF1           FrameStack[fp-1]
+    #define topF2           FrameStack[fp-2]
+    #define FrameStackSize  (fp+1)
 
     //-------------------------
     // Instruction handling
@@ -281,6 +283,15 @@ Value execute(Byte* bcode) {
         #define DISPATCH()                                          \
             op = nextOp;                                            \
             printf("%d -> exec: %s\n",ip-1,OpCodeStr[op]);          \
+            for (int i=0; i<StackSize; i++) {\
+                                    printf("S:%d -> ",i);\
+                                    printLnValue(Stack[i]);\
+                                  }\
+            if (FrameStackSize>0)\
+            for (int i=0; i<topF0.size; i++){\
+                printf("F:%d -> ",i);\
+                printLnValue(topF0.Locals[i]);\
+            }\
             goto *dispatchTable[op];
 
     #else   
@@ -558,8 +569,13 @@ Value execute(Byte* bcode) {
         OPCASE(DO_PRINT)        : printLnValue(popS()); DISPATCH();
         OPCASE(DO_INC)          : /* not implemented */ DISPATCH();
         OPCASE(DO_APPEND)       : /* not implemented */ DISPATCH();
-        OPCASE(DO_LOG)          : printf("stack size: %d, callframe size: %d\n",sp,fp); (void)popS();/* not implemented */ DISPATCH();
-        
+        OPCASE(DO_LOG)          : {(void)popS();printf("stack size: %d, callframe size: %d\n",StackSize,FrameStackSize); /* not implemented */
+                                  for (int i=0; i<StackSize; i++) {
+                                    printf("S:%d -> ",i);
+                                    printLnValue(Stack[i]);
+                                  }
+                                DISPATCH();
+        }
         OPCASE(DO_GET)          : sys_doGet(); DISPATCH();
         OPCASE(GET_SIZE)        : sys_getSize(); DISPATCH();
         OPCASE(GET_ABS)         : sys_getAbs(); DISPATCH();
@@ -584,6 +600,8 @@ Value execute(Byte* bcode) {
         OPCASE(IN_FILTER)       : callInPlace(sys_inFilter); DISPATCH();
 
         OPCASE(DO_SET)          : sys_doSet(); DISPATCH();
+
+        OPCASE(GET_SLICE)       : sys_getSlice(); DISPATCH();
 
         /***************************
           Empty slots
