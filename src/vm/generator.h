@@ -95,7 +95,7 @@ int dictsFound;
 bool weAreInIf;
 bool weAreInLoop;
 
-int argCounter;
+intArray* argCounters;
 
 bool weAreInBlock;
 bool weAreInDict;
