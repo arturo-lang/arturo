@@ -19,7 +19,7 @@
 //---------------------
 
 #define COMPUTED_GOTO               // Use Computed Goto VS Switch
-#define STACK_SIZE          5000    // Maximum Value Stack size
+#define STACK_SIZE          10000   // Maximum Value Stack size
 #define LOCALSTACK_SIZE     255     // Maxium Local Value Stack size
 #define GLOBAL_SIZE         1000    // Maximum Global Table size
 
