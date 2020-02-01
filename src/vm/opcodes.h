@@ -224,7 +224,8 @@
     OPC(IN_MAP,             0x95)           \
     OPC(DO_FILTER,          0x96)           \
     OPC(IN_FILTER,          0x97)           \
-    OPC(DO_SET,             0x98)   
+    OPC(DO_SET,             0x98)           \
+    OPC(GET_SLICE,          0x99)
 
 /**************************************
   Enums
