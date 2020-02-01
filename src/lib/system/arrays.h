@@ -94,6 +94,17 @@ static INLINED int sortCmpS (const void* left, const void* right) {
 	ip = ip_before;\
 }
 
+#define sys_getSlice() {\
+	unsigned int to = I(popS());\
+	unsigned int from = I(popS());\
+	ValueArray* arr = A(popS());\
+	ValueArray* ret = aNew(Value,arr->size);\
+	for (unsigned int i=from; i<to; i++) {\
+		aAdd(ret,arr->data[i]);\
+	}\
+	pushS(toA(ret));\
+}
+
 #define sys_doSort() {\
 	Value arg0 = popS();\
 	ValueArray* arr = aDup(Value,A(arg0));\
