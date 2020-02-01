@@ -85,6 +85,7 @@ LETTER              [A-Za-z_]
 "map"					{ yylval.op = DO_MAP; return SYSCALL2; }
 "filter!"				{ yylval.op = IN_FILTER; return INPLACE2; }
 "filter"				{ yylval.op = DO_FILTER; return SYSCALL2; }
+"slice"					{ yylval.op = GET_SLICE; return SYSCALL3; }
 
 {LETTER}+               { yylval.str=strdup(yytext); return ID; }
 {DIGIT}{0,10}           { yylval.str=strdup(yytext); return INTEGER; }
@@ -97,6 +98,9 @@ LETTER              [A-Za-z_]
 "/"                     { return DIV_OP; }
 "%"                     { return MOD_OP; }
 "^"                     { return POW_OP; }
+
+"->"					{ return IMPLIES; }
+";"						{ return SEMIC; }
 
 "="                     { return EQ_OP; }
 "/="|"≠"                { return NE_OP; }
