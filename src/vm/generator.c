@@ -155,12 +155,14 @@ void processCall(char* id) {
 }
 
 void processLoad(char* id) {
+	printf("processLoad: %s\n",id);
 	if (weAreInBlock) {
 		int ind;
 		aFindCStr(LocalLookup, id, ind);
 		if (ind!=-1) {
 			if (ind<=4)  { emitOp((OPCODE)(LLOAD0 + ind)); }
 			else 		 { emitOpByte(LLOAD, ind); }
+			printf("\temit as local: %d\n",ind);
 		}
 		else {
 			aFindCStr(GlobalLookup,id,ind);
@@ -168,6 +170,7 @@ void processLoad(char* id) {
 				//printf("-- found in global scope\n");
 				if (ind<=8)  { emitOp((OPCODE)(GLOAD0 + ind)); }
 				else 		 { emitOpWord(GLOAD, ind); }
+				printf("\temit as global: %d\n",ind);
 			}
 			else {
 				printf("Symbol not found: %s\n",id);
@@ -181,6 +184,7 @@ void processLoad(char* id) {
 		if (ind!=-1) {
 			if (ind<=8)  { emitOp((OPCODE)(GLOAD0 + ind)); }
 			else 		 { emitOpWord(GLOAD, ind); }
+			printf("\temit as global: %d\n",ind);
 		}
 		else {
 			printf("!! Symbol not found: %s\n",id);
@@ -190,6 +194,7 @@ void processLoad(char* id) {
 }
 
 void processStore(char* id) {
+	printf("processStore: %s\n",id);
 	if (weAreInBlock) {
 		//printf("-- we are in a block\n");
 		if (dictsFound>0) {
@@ -203,6 +208,7 @@ void processStore(char* id) {
 				//printf("-- found in local scope\n");
 				if (ind<=4)  { emitOp((OPCODE)(LSTORE0 + ind)); }
 				else   		 { emitOpByte(LSTORE, ind); }
+				printf("\temit as local: %d\n",ind);
 			}
 			else {
 				//printf("-- NOT found in local scope\n");
@@ -211,6 +217,7 @@ void processStore(char* id) {
 					//printf("-- found in global scope\n");
 					if (ind<=8)  { emitOp((OPCODE)(GSTORE0 + ind)); }
 					else 		 { emitOpWord(GSTORE, ind); }
+					printf("\temit as global: %d\n",ind);
 				}
 				else {
 					//printf("-- NOT found anywhere, adding to local scope\n");
@@ -218,6 +225,7 @@ void processStore(char* id) {
 					ind = LocalLookup->size-1;
 					if (ind<=4)  { emitOp((OPCODE)(LSTORE0 + ind)); }
 					else   		 { emitOpByte(LSTORE, ind); }
+					printf("\temit as local: %d\n",ind);
 				}
 			}
 		}
@@ -386,6 +394,7 @@ void signalGotOutOfBlock() {
 }
 
 void signalGotInFunction() {
+	printf("signalGotInFunction\n");
 	if (LocalLookupStack->size > 0) {
 		aAdd(LocalLookupStack, LocalLookup->size);
 	}
@@ -393,7 +402,7 @@ void signalGotInFunction() {
 		aAdd(LocalLookupStack,0);
 	}
 	weAreInBlock = true;
-	argCounter = 0;
+	aAdd(argCounters,0);
 }
 
 void signalFoundFunction() {
@@ -404,10 +413,9 @@ void signalFoundFunction() {
 	emitOp(RET);
 	unsigned int pos = BlockStarts->data[BlockStarts->size] + 1;
 	reemitDword(pos,BCode->size);
-	Func* f = fNew(pos+4,BCode->size-1,argCounter);
+	Func* f = fNew(pos+4,BCode->size-1,aPop(argCounters));
 	//printf("created new func: %p :: ip: %d, args: %d\n",f,f->ip,f->args);
 	processConst(toF(f));
-	argCounter = 0;
 }
 
 /**************************************
@@ -436,7 +444,7 @@ inline void generatorSetup() {
 
 	dictsFound 		= 0;
 
-	argCounter 		= 0;
+	argCounters 	= aNew(int,0);
 
 	weAreInBlock 	= false;
 	weAreInDict 	= false;
@@ -451,6 +459,8 @@ inline void generatorFinalize() {
 	aFree(IfStarts);
 	aFree(LoopStarts);
 	aFree(LoopHeaders);
+
+	aFree(argCounters);
 }
 
 inline bool generateBytecode(FILE* script) {
