@@ -50,6 +50,7 @@ void yyerror (char const *s) {
 %token <op>  SYSCALL0           "SYSTEM CALL/0"
 %token <op>  SYSCALL1           "SYSTEM CALL/1"
 %token <op>  SYSCALL2           "SYSTEM CALL/2"
+%token <op>  SYSCALL3           "SYSTEM CALL/3"
 %token <op>  INPLACE1           "INPLACE/1"
 %token <op>  INPLACE2           "INPLACE/2"
 %token <op>  INPLACE3           "INPLACE/3"
@@ -58,6 +59,9 @@ void yyerror (char const *s) {
 %token <str> REAL               "REAL"
 %token <str> BOOL_TRUE          "`true`"
 %token <str> BOOL_FALSE         "`false`"
+
+%token <str> IMPLIES            "`->` (implication)"
+%token <str> SEMIC              "`;` (semicolon)"
 
 %token <str> ADD_OP             "`+` (plus operator)"
 %token <str> SUB_OP             "`-` (minus operator)"
@@ -156,8 +160,8 @@ id                      :   ID                  { processLoad($ID); }
 // Blocks
 //==============================
 
-ids                     :   ids ID                                      { aAdd(LocalLookup,$ID); argCounter++; }
-                        |   ID                                          { aAdd(LocalLookup,$ID); argCounter++; }
+ids                     :   ids ID                                      { aAdd(LocalLookup,$ID); aLast(argCounters) += 1; printf("found args\n");  }
+                        |   ID                                          { aAdd(LocalLookup,$ID); aLast(argCounters) += 1; printf("found args\n"); }
                         ;
 
 verbatim                :   LSQUARE statements RSQUARE
@@ -167,10 +171,16 @@ block_start             :   LPAREN ids RPAREN LCURLY                    { signal
                         |   LCURLY                                      { signalGotInBlock(); }
                         ;
 
+implied_block_start     :   LPAREN ids RPAREN IMPLIES                   { signalGotInBlock(); }
+                        |   IMPLIES                                     { signalGotInBlock(); }
+                        ;
+
+
 block_end               :   RCURLY                                      {signalGotOutOfBlock(); }
                         ;
 
 block                   :   block_start statements block_end            { }
+                        |   implied_block_start statements SEMIC        { signalGotOutOfBlock(); }
                         ;
 
 function_specifier      :   FUNC                                        { signalGotInFunction(); }
@@ -255,15 +265,17 @@ label_statement         :   ID COLON statement                          { proces
                         |   expression FIELD verbatim COLON statement   { emitOp((OPCODE)DO_SET); }
                         ;
 
-call_statement          :   ID expressions                        { processCall($ID); }
-                        |   expression DOT ID expressions         { processCall($ID); }
-                        |   SYSCALL0                              { emitOp((OPCODE)$SYSCALL0); }
-                        |   SYSCALL1 expression                   { emitOp((OPCODE)$SYSCALL1); }
-                        |   SYSCALL2 expression expression        { emitOp((OPCODE)$SYSCALL2); }
-                        |   expression DOT SYSCALL2 expression    { emitOp((OPCODE)$SYSCALL2); }
-                        |   INPLACE1 ID                           { processInPlace((OPCODE)$INPLACE1,$ID); }
-                        |   INPLACE2 ID expression                { processInPlace((OPCODE)$INPLACE2,$ID); }
-                        |   INPLACE3 ID expression expression     { processInPlace((OPCODE)$INPLACE3,$ID); }
+call_statement          :   ID expressions                                    { processCall($ID); }
+                        |   expression DOT ID expressions                     { processCall($ID); }
+                        |   SYSCALL0                                          { emitOp((OPCODE)$SYSCALL0); }
+                        |   SYSCALL1 expression                               { emitOp((OPCODE)$SYSCALL1); }
+                        |   SYSCALL2 expression expression                    { emitOp((OPCODE)$SYSCALL2); }
+                        |   SYSCALL3 expression expression expression         { emitOp((OPCODE)$SYSCALL3); }
+                        |   expression DOT SYSCALL2 expression                { emitOp((OPCODE)$SYSCALL2); }
+                        |   expression DOT SYSCALL3 expression expression     { emitOp((OPCODE)$SYSCALL3); }
+                        |   INPLACE1 ID                                       { processInPlace((OPCODE)$INPLACE1,$ID); }
+                        |   INPLACE2 ID expression                            { processInPlace((OPCODE)$INPLACE2,$ID); }
+                        |   INPLACE3 ID expression expression                 { processInPlace((OPCODE)$INPLACE3,$ID); }
                         ;
 
 special_statement       :   if_cmd expression block         { finalizeIf(); }
