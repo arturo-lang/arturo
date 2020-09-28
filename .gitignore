@@ -3,5 +3,4 @@
 /.cache
 .gitignore
 .gitattributes
-.tokeignore
 .travis.yml
