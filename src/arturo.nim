@@ -55,6 +55,9 @@ Usage:
 Options:
   -e --evaluate       Evaluate given code
   -c --console        Show repl / interactive console
+
+  -u --update         Update to latest version
+  
   -h --help           Show this help screen
   -v --version        Show current version
 """
@@ -70,6 +73,7 @@ when isMainModule:
     var action: CmdAction = evalCode
     var filename: string = ""
     var runConsole = static readFile("src/system/console.art")
+    var runUpdate = static readFile("src/system/update.art")
     var code: string = ""
     var arguments: ValueArray = @[]
 
@@ -90,6 +94,9 @@ when isMainModule:
                     of "e","evaluate":
                         action = evalCode
                         code = token.val
+                    of "u","update":
+                        action = evalCode
+                        code = runUpdate
                     of "h","help":
                         action = showHelp
                     of "v","version":
