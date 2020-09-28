@@ -1,6 +1,6 @@
 <h1>Art:uro</h1>
 
-### Simple, modern and powerful<br/>interpreted programming language for super-fast scripting.
+### Simple, modern and portable interpreted programming language for efficient scripting.
 
 ---
 
@@ -9,37 +9,29 @@
 The Language
 ------------------------------
 
-Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Ruby, Haskell, D, SDL, Tcl and Lisp.
+Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Rebol, Forth, Ruby, Haskell, D, SDL, Tcl and Lisp.
 
 The language has been designed following some very simple and straightforward principles:
 
-### Everything is a simple statement
+- Code is just a list of words and symbols
+- Words and symbols within a block are interpreted according to the context
+- No reserved words or keyword. Look for them as hard as you can; there are absolutely none.
 
-There are no "special" language constructs. Everything you see is a statement in the form `ID <expression> <expression> <expression> ...`. An assignment is nothing but a labeled statement. `LABEL: <statement>`
+```
+	print "Hello world!"
 
-### Code is data - and data is code
-
-Arturo can be used both as a data-interchange format and a programming language. Basically all data structures are valid code and all code can be represented as a data structure. Think of it as SDL/Json/YAML/XML combined with the power of Lisp - but without the... sea of opening and closing parentheses.
-
-### Each statement returns a value
-
-Whether what you would consider a "function" or any other statement, it will return a value. If it's a block of code (see: *function*), the last statement's result will be return - unless specified otherwise.
-
-### Uniform syntax
-
-There are 3 types of statements. 
-- Simple statements, that work as a function call in the form of `ID <expressions>`
-- Expressions (Yes, `1+2` is also a valid statement)
-- Labeled statements (see: assignments)  like `a: 2`
-
-**Pro tip:** Do you want to use the result of a statement as part of an expression? Just enclose the function call in square brackets `[...]`	E.g.: `print [reverse @[1,2,3]]`. But don't be fooled: square brackets are nothing but a way to mark an expression's precedence, pretty much like what you'd do with a pair of parentheses.
+	loop 1..10 [x][
+		if? even? x -> print [x "is even"]
+		else		-> print [x "is odd"]
+	]
+```
 
 Simple, isn't it?
 
 The Compiler
 ------------------------------
 
-The main compiler is implemented in ANSI C (99) as a Bytecode interpreter / Stack-based VM and should run in most architectures.
+The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
 
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
 
@@ -50,13 +42,12 @@ How to Build & Install
 
 **Prerequisites:**
 
-- Flex & Bison
-- GMP library
+- Nim compiler
 - A modern C compiler
 
 **Build:**
 
-	sudo ./build.sh
+	./build install
 
 The compiler will be built and installed automatically in your `/usr/local/bin`. (So, make sure the folder is in your `$PATH` variable!)
 
@@ -66,15 +57,7 @@ That's it!
 
 	arturo <script>
 
-**Compile script:**
-
-	arturo -c <script>
-
-**Execute precompiled object file:**
-
-	arturo -x <object file>
-
-**REPL:**
+**REPL/Interactive Console:**
 
 	arturo
 
