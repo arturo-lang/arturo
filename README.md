@@ -12,7 +12,7 @@
 The Language
 ------------------------------
 
-Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Rebol, Forth, Ruby, Haskell, D, SDL, Tcl and Lisp.
+Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl and Lisp.
 
 The language has been designed following some very simple and straightforward principles:
 
