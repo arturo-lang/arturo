@@ -1,6 +1,6 @@
 <img align="left" width="160" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/logo.png"/>
 
-<h1>Art:uro</h1>
+<h1>Arturo</h1>
 
 ### Simple, modern and portable<br>interpreted programming language for efficient scripting.
 
