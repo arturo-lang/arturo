@@ -4,7 +4,7 @@
 
 ---
 
-![Language](https://img.shields.io/badge/Language-Nim-yellow.svg?style=flat-square) ![GitHub](https://img.shields.io/github/license/arturo-lang/arturo) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo) [![Build Status](https://travis-ci.com/arturo-lang/arturo.svg?branch=master)](https://travis-ci.com/arturo-lang/arturo)
+![Language](https://img.shields.io/badge/Language-Nim-yellow.svg?style=flat-square) ![GitHub](https://img.shields.io/github/license/arturo-lang/arturo?style=flat-square) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo?style=flat-square) [![Build Status](https://img.shields.io/travis/com/arturo-lang/arturo/master?style=flat-square)](https://travis-ci.com/arturo-lang/arturo)
 
 The Language
 ------------------------------
