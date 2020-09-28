@@ -15,7 +15,7 @@ The language has been designed following some very simple and straightforward pr
 
 - Code is just a list of words and symbols
 - Words and symbols within a block are interpreted - when needed - according to the context
-- No reserved words or keyword - look for them as hard as you can; there are absolutely none
+- No reserved words or keywords - look for them as hard as you can; there are absolutely none
 
 ```
 print "Hello world!"
@@ -27,6 +27,8 @@ loop 1..10 'x [
 ```
 
 Simple, isn't it?
+
+*For more - working - examples, just have a look into the /examples folder*
 
 The Compiler
 ------------------------------
