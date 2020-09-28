@@ -1,0 +1,9 @@
+hanoi: func [n from dir via][
+	if n>0 [
+		hanoi n-1 from via dir
+		print ["Move disk" n "from" from "to" dir]
+		hanoi n-1 via dir from
+	]
+]
+ 
+hanoi 3 'L 'M 'R

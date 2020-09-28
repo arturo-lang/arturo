@@ -1,0 +1,25 @@
+; create a dictionary
+d: #[
+	name: 		"john"
+	surname: 	"doe"
+	age: 		34
+]
+
+; Iterate over key/value pairs
+loop d [key,value][
+	print ["key =" key ", value =" value]
+]
+
+print "----"
+
+; Iterate over keys
+loop keys d [k][
+	print ["key =" k]
+]
+
+print "----"
+
+; Iterate over values
+loop values d [v][
+	print ["value =" v]
+]

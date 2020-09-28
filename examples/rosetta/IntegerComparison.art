@@ -1,0 +1,6 @@
+a: to :integer input "enter a value for a: "
+b: to :integer input "enter a value for b: "
+
+if a<b [ print [ a "is less than" b ] ]
+if a>b [ print [ a "is greater than" b ] ]
+if a=b [ print [ a "is equal to" b ] ]

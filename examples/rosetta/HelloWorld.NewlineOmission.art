@@ -1,0 +1,1 @@
+prints "Hello world!"

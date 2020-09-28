@@ -1,0 +1,3 @@
+lcase: map 97..123 [x][to :char x]
+
+print lcase

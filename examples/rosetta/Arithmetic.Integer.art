@@ -1,0 +1,9 @@
+a: to :integer input "give me the first number  : "
+b: to :integer input "give me the second number : "
+
+print [a "+" b "=" a+b]
+print [a "-" b "=" a-b]
+print [a "*" b "=" a*b]
+print [a "/" b "=" a/b]
+print [a "%" b "=" a%b]
+print [a "^" b "=" a^b]

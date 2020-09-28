@@ -1,0 +1,51 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Arturo
+;; Programming Language + Bytecode VM compiler
+;; (c) 2019-2020 Yanis Zafirópulos
+;;
+;; @file: tools/console.art
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; templates
+
+LongHeader: 
+---
+|color.green.bold "Arturo"|  
+|Arturo\copyright| |Arturo\author|
+
+version : |Arturo\version| 
+build   : |Arturo\build| (|Arturo\buildDate|) 
+system  : |Arturo\cpu|/|Arturo\os|
+---
+
+Subheader: 
+---
+# Type <info 'function> for info about a specific built-in function
+# Type <help> to get a list of all available functions
+
+# Launching interactive console; Rock on.
+---
+
+;; print header
+
+print "" 
+print ~LongHeader 
+print ""
+print color.rgb:208 Subheader
+print ""
+
+;; start the REPL
+
+while [true] [
+	push null
+	Got: null
+	
+	do.import input "$> " 
+	StackSize: size stack
+	
+	if StackSize > 0 	-> Got: pop 1 
+	if Got <> null 		-> print color.gray ~"=> |Got|"
+
+	globalize
+	print ""
+]

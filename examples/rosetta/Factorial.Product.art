@@ -1,0 +1,5 @@
+factorial: $[n][product 1..n+1]
+
+loop 1..21 [x][
+	print ["Factorial of" x "=" factorial x]
+]
