@@ -1,4 +1,5 @@
 <h1>Art:uro</h1>
+![Arturo Logo](logo.png)
 
 ### Simple, modern and portable<br>interpreted programming language for efficient scripting.
 
