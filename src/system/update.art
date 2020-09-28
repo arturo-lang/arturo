@@ -1,0 +1,22 @@
+print color.green "- Checking Arturo repository..."
+execute "git clone https://github.com/arturo-lang/arturo.git"
+print [
+	color.green "- Latest version found:" 
+	strip read "arturo/version/version" 
+	"( build" 
+		strip read "arturo/version/build" 
+	")"
+]
+
+confirm: input "  ** Are you sure you want to install it? [y/n]: "
+
+if? (strip lower confirm)="y" [
+	print color.green "- Installing... (Please wait)"
+	execute "cd arturo && ./build.sh install"
+	print color.green "- Cleaning up..."
+	execute "rm -rf arturo"
+	print color.green "- Done. Enjoy! :)"
+]
+else [
+	print "- Terminating..."
+]
