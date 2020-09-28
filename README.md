@@ -28,7 +28,7 @@ loop 1..10 'x [
 
 Simple, isn't it?
 
-*For more - working - examples, just have a look into the /examples folder*
+*[For more - working - examples, just have a look into the /examples folder]*
 
 The Compiler
 ------------------------------
