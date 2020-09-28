@@ -2,7 +2,7 @@
 
 <h1>Arturo</h1>
 
-### Simple, modern and portable<br>interpreted programming language for efficient scripting.
+### Simple, modern and portable<br>interpreted programming language for efficient scripting
 
 ---
 
