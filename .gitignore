@@ -1,6 +1,6 @@
-/bin/arturo
+/arturo*
+/bin/arturo*
 /tests
 /.cache
 .gitignore
 .gitattributes
-.travis.yml

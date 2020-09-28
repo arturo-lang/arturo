@@ -7,7 +7,7 @@
 # @file: build
 ######################################################
 
-awk '{sub(/[[:digit:]]+$/,$NF+1)}1' build_number > build_number_tmp && mv build_number_tmp build_number
+awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
 
 # print header
 
@@ -100,7 +100,7 @@ echo ""
 printf "\e[1;35m●\e[0m Building Arturo\e[0m"
 echo ""
 printf "  \e[0;90mversion: "
-cat version
+cat version/version
 printf "\e[0m"
 
 #--passC:"-O3 -flto" --passL:"-flto"

@@ -27,8 +27,8 @@ when defined(BENCHMARK):
 #=======================================
 
 const 
-    Version = static readFile("version").strip()
-    Build = static readFile("build_number").strip()
+    Version = static readFile("version/version").strip()
+    Build = static readFile("version/build").strip()
 
 #=======================================
 # Types
@@ -69,7 +69,7 @@ when isMainModule:
 
     var action: CmdAction = evalCode
     var filename: string = ""
-    var runConsole = static readFile("src/tools/console.art")
+    var runConsole = static readFile("src/system/console.art")
     var code: string = ""
     var arguments: ValueArray = @[]
 
