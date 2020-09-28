@@ -45,6 +45,11 @@ How to Build & Install
 
 ### Manually
 
+**Works on:**
+- Windows
+- Linux
+- Mac OS
+
 **Prerequisites:**
 
 - [Nim compiler](https://nim-lang.org/)
