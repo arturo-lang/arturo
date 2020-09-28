@@ -1,6 +1,6 @@
 <h1>Art:uro</h1>
 
-### Simple, modern and portable interpreted programming language for efficient scripting.
+### Simple, modern and portable<br>interpreted programming language for efficient scripting.
 
 ---
 
@@ -14,8 +14,8 @@ Arturo is a modern programming language, vaguely inspired by various other ones 
 The language has been designed following some very simple and straightforward principles:
 
 - Code is just a list of words and symbols
-- Words and symbols within a block are interpreted according to the context
-- No reserved words or keyword. Look for them as hard as you can; there are absolutely none.
+- Words and symbols within a block are interpreted - when needed - according to the context
+- No reserved words or keyword - look for them as hard as you can; there are absolutely none
 
 ```
 	print "Hello world!"
