@@ -47,7 +47,7 @@ How to Build & Install
 
 **Prerequisites:**
 
-- Nim compiler
+- [Nim compiler](https://nim-lang.org/)
 - A modern C compiler
 
 **Build:**
@@ -65,6 +65,12 @@ That's it!
 **REPL/Interactive Console:**
 
     arturo
+
+### Docker
+
+Just use the existing docker image:
+
+	docker run -it fingidor/arturo-repl
 
 Editors & IDEs
 ------------------------------
