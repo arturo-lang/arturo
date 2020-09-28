@@ -68,7 +68,8 @@ Editors & IDEs
 
 If you prefer to use some specific editors, check which one are already supported:
 
-- **SublimeText**: https://github.com/arturo-lang/art-sublimetext-package
+- **SublimeText**: 
+https://github.com/arturo-lang/art-sublimetext-package
 
 ---
 
