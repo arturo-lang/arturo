@@ -1,7 +1,0 @@
-maxLimit: 1000
-
-i: 0
-loop i<1001 {
-	print [product 1..i]
-	inc! i
-}
