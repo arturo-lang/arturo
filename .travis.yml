@@ -5,8 +5,8 @@ services:
 before_install:
   - docker pull yglukhov/nim-base
 script:
-  - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get update
-  - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get install libgtk-3-dev
-  - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get install libwebkit2gtk-4.0
+  # - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get update
+  # - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get install libgtk-3-dev
+  # - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get install libwebkit2gtk-4.0
   - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base nim --version
   - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base "./build"
