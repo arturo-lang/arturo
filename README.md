@@ -1,5 +1,5 @@
 <h1>Art:uro</h1>
-![Arturo Logo](logo.png)
+![Arturo Logo](https://github.com/arturo-lang/arturo/blob/master/logo.png?raw=true)
 
 ### Simple, modern and portable<br>interpreted programming language for efficient scripting.
 
