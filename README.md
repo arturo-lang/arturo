@@ -66,11 +66,9 @@ That's it!
 Editors & IDEs
 ------------------------------
 
-If you prefer to use some specific editors, the most popular ones are already supported:
+If you prefer to use some specific editors, check which one are already supported:
 
 - **SublimeText**: https://github.com/arturo-lang/art-sublimetext-package
-- **Atom**: https://github.com/arturo-lang/art-atom-package
-- **Ace Editor**: https://github.com/arturo-lang/art-ace-editor
 
 ---
 
