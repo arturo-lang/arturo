@@ -34,7 +34,7 @@ import lib/[
     Strings
 ]
 
-import extras/webview
+#import extras/webview
 import translator/eval, translator/parse
 import vm/bytecode, vm/stack, vm/value
 
