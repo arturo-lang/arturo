@@ -1,10 +1,11 @@
+<img align="left" width="150" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/logo.png"/>
+
 <h1>Art:uro</h1>
 
 ### Simple, modern and portable<br>interpreted programming language for efficient scripting.
 
 ---
 
-![Arturo Logo](https://raw.githubusercontent.com/arturo-lang/arturo/master/logo.png)
 
 ![Total Lines](https://img.shields.io/tokei/lines/github/arturo-lang/arturo?color=purple&style=flat-square) ![Language](https://img.shields.io/badge/Language-Nim-yellow.svg?style=flat-square) ![GitHub](https://img.shields.io/github/license/arturo-lang/arturo?style=flat-square) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo?style=flat-square) [![Build Status](https://img.shields.io/travis/com/arturo-lang/arturo/master?style=flat-square)](https://travis-ci.com/arturo-lang/arturo)
 
