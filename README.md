@@ -18,12 +18,12 @@ The language has been designed following some very simple and straightforward pr
 - No reserved words or keyword - look for them as hard as you can; there are absolutely none
 
 ```
-	print "Hello world!"
+print "Hello world!"
 
-	loop 1..10 [x][
-		if? even? x -> print [x "is even"]
-		else		-> print [x "is odd"]
-	]
+loop 1..10 'x [
+    if? even? x -> print [x "is even"]
+    else        -> print [x "is odd"]
+]
 ```
 
 Simple, isn't it?
@@ -47,7 +47,7 @@ How to Build & Install
 
 **Build:**
 
-	./build install
+    ./build install
 
 The compiler will be built and installed automatically in your `/usr/local/bin`. (So, make sure the folder is in your `$PATH` variable!)
 
@@ -55,11 +55,11 @@ That's it!
 
 **Run script:**
 
-	arturo <script>
+    arturo <script>
 
 **REPL/Interactive Console:**
 
-	arturo
+    arturo
 
 Editors & IDEs
 ------------------------------
