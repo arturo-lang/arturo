@@ -47,7 +47,7 @@ How to Build & Install
 
 **Build:**
 
-    ./build install
+    ./build.sh install
 
 The compiler will be built and installed automatically in your `/usr/local/bin`. (So, make sure the folder is in your `$PATH` variable!)
 
