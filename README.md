@@ -66,7 +66,7 @@ That's it!
 Editors & IDEs
 ------------------------------
 
-If you prefer to use some specific editors, we already support the most popular ones:
+If you prefer to use some specific editors, the most popular ones are already supported:
 
 - **SublimeText**: https://github.com/arturo-lang/art-sublimetext-package
 - **Atom**: https://github.com/arturo-lang/art-atom-package
