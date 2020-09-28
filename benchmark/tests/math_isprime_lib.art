@@ -1,7 +1,0 @@
-maxLimit: 10000
-
-i: 0
-loop i<maxLimit {
-	print [isPrime i]
-	inc! i
-}

@@ -1,6 +1,0 @@
-a: 0
-loop a<5000001 {
-	inc! a
-}
-
-print a
