@@ -1,0 +1,9 @@
+a: 255
+b: 2
+
+print [a "AND" b "=" and a b]
+print [a "OR" b "=" or a b]
+print [a "XOR" b "=" xor a b]
+print ["NOT" a "=" not a]
+print [a "SHL" b "=" shl a b]
+print [a "SHR" b "=" shr a b]

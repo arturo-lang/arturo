@@ -1,0 +1,3 @@
+arr: [5 4 2 9 7 3]
+
+print max arr

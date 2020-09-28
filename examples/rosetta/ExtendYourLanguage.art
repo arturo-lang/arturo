@@ -1,0 +1,12 @@
+if2: func [cond1 cond2 both one two none][
+	case []
+		when? [and? cond1 cond2] [both]
+		when? [cond1] [one]
+		when? [cond2] [two]
+		else  [none]
+]
+
+if2 false false $[][print "both"]
+				$[][print "only first"]
+				$[][print "only second"]
+				$[][print "none"]

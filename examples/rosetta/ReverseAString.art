@@ -1,0 +1,3 @@
+str: "Hello World"
+
+print reverse str

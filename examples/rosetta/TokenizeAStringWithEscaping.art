@@ -1,0 +1,22 @@
+tokenize: func [s sep esc][
+	escaping: 0
+
+	loop 0..(size s)-1 [i][
+		chr: (split s)\i
+
+		if? escaping=1 [
+			prints chr
+			escaping: 0
+		]
+		else [
+			case [chr]
+				when? [=sep] [print ""]
+				when? [=esc] [escaping: 1]
+				else [prints chr]
+		]
+	]
+	print ""
+]
+
+str: "one^|uno||three^^^^|four^^^|^cuatro|" 
+tokenize str "|" "^"

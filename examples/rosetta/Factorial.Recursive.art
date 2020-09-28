@@ -1,0 +1,8 @@
+factorial: $[n][
+	if? n>0 [n * factorial n-1]
+	else [1]
+] 
+
+loop 1..21 [x][
+	print ["Factorial of" x "=" factorial x]
+]

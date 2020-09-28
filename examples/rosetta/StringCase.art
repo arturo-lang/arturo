@@ -1,0 +1,5 @@
+str: "alphaBETA"
+
+print ["uppercase  :" upper str]
+print ["lowercase  :" lower str]
+print ["capitalize :" capitalize str]

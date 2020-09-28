@@ -1,0 +1,4 @@
+loop (neg 5)..5 [x][
+	if? even? x -> print [pad to :string x 4 ": even"]
+	else -> print [pad to :string x 4 ": odd"]
+]

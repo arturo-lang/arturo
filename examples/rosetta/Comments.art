@@ -1,0 +1,6 @@
+; This is a simple single-line comment
+
+a: 10 ; another single-line comment
+
+; Now, this is a
+; multi-line comment

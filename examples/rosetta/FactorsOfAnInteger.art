@@ -1,0 +1,7 @@
+factors: $[num][
+	select 1..num [x][
+		(num%x)=0
+	]
+]
+
+print factors 36

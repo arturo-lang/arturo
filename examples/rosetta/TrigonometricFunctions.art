@@ -1,0 +1,22 @@
+pi: 4*atan 1.0
+
+radians: pi/4
+degrees: 45.0
+
+print "sine"
+print [sin radians, sin degrees*pi/180]
+
+print "cosine"
+print [cos radians, cos degrees*pi/180]
+
+print "tangent"
+print [tan radians, tan degrees*pi/180]
+
+print "arcsine"
+print [asin sin radians, (asin sin radians)*180/pi]
+
+print "arccosine"
+print [acos cos radians, (acos cos radians)*180/pi]
+
+print "arctangent"
+print [atan tan radians, (atan tan radians)*180/pi]
