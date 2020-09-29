@@ -33,19 +33,19 @@ Simple, isn't it?
 
 *[For more - working - examples, just have a look into the /examples folder]*
 
-Check it out online!
-------------------------------
-
-### [@ arturo-lang.io](http://arturo-lang.io/)
-
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
-
 The Compiler
 ------------------------------
 
 The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
 
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
+
+Check it out online!
+------------------------------
+
+### [@ arturo-lang.io](http://arturo-lang.io/)
+
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
 
 How to Build & Install
 ------------------------------
