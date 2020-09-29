@@ -33,7 +33,7 @@ Simple, isn't it?
 
 *[For more - working - examples, just have a look into the /examples folder]*
 
-Check it out online
+Check it out online!
 ------------------------------
 
 ### [@ arturo-lang.io](http://arturo-lang.io/)
