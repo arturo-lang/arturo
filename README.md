@@ -36,7 +36,7 @@ Simple, isn't it?
 Check it out online
 ------------------------------
 
-<img align="left" width="160" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
 
 The Compiler
 ------------------------------
