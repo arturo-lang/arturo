@@ -11,7 +11,7 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver, base64
-import std/editdistance, htmlParser, httpClient, json
+import cgi, std/editdistance, htmlParser, httpClient, json
 import linenoise, math, md5, os, osproc, random, rdstdin
 import re, sequtils, smtp, std/sha1, strformat, strutils
 import sugar, tables, times, xmlparser, xmltree
@@ -28,6 +28,7 @@ import lib/[
     Logic, 
     Net,
     Numbers,
+    Path,
     Reflection,
     Shell,
     StackOps,
@@ -633,6 +634,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opUntil: Core.Until()
 
             of opGlobalize: Core.Globalize()
+
+            of opRelative: Path.Relative()
 
         i += 1
 
