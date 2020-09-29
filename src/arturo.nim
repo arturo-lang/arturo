@@ -10,13 +10,14 @@
 # Libraries
 #=======================================
 
-import parseopt, strformat, strutils, tables, times
+import os, parseopt, segFaults
+import strformat, strutils, tables, times
 
 when defined(PROFILE):
     import nimprof
 
 import translator/eval, translator/parse
-import vm/exec, vm/value
+import vm/env, vm/exec, vm/value
 
 when defined(BENCHMARK):
     import strutils
@@ -57,7 +58,7 @@ Options:
   -c --console        Show repl / interactive console
 
   -u --update         Update to latest version
-  
+
   -h --help           Show this help screen
   -v --version        Show current version
 """
@@ -115,10 +116,10 @@ when isMainModule:
                     let parsed = doParse(move code, isFile = action==execFile)
                     let evaled = parsed.doEval()
             else:
-                var env: ValueDict = initOrderedTable[string,Value]()
-                env["arg"] = newArray(arguments)
+                var presets: ValueDict = initOrderedTable[string,Value]()
+                presets["arg"] = newArray(arguments)
 
-                env["Arturo"] = newDictionary({
+                presets["Arturo"] = newDictionary({
                     "author"    : newString("Yanis Zafirópulos"),
                     "copyright" : newString("(c) 2019-2020"),
                     "version"   : newString(Version),
@@ -127,10 +128,17 @@ when isMainModule:
                     "cpu"       : newString(hostCPU),
                     "os"        : newString(hostOS)
                 }.toOrderedTable)
+
+                initEnv()
+                if action==execFile:
+                    env.addPath(code)
+                else:
+                    env.addPath(getCurrentDir())
+
                 let parsed = doParse(move code, isFile = action==execFile)
                 let evaled = parsed.doEval()
                 initVM()
-                discard doExec(evaled, withSyms=addr env)
+                discard doExec(evaled, withSyms=addr presets)
 
                 showVMErrors()
         of showHelp:
