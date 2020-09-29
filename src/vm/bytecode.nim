@@ -369,6 +369,8 @@ type
         
         opGlobalize     = 0xF0
 
+        opRelative      = 0xF1
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -1846,6 +1848,15 @@ const
     
                                 ret     : {Null},      
                                 desc    : "make all symbols within current context global"),
+
+
+        opRelative  : OpSpec(   name    : "relative",        
+                                args    : 1,   
+    
+                                an      : "path",
+                                a       : {String},
+                                ret     : {String},      
+                                desc    : "get relative path for given path~based on current script's location"),
 
 
     ]
