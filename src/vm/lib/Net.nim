@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import vm/stack, vm/value
+import vm/env, vm/stack, vm/value
 import utils
 
 #=======================================
@@ -64,7 +64,19 @@ template Serve*():untyped =
 
     proc handler(req: Request) {.async,gcsafe.} =
         if verbose:
-            echo fgMagenta & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & fgWhite & req.url.path & " // " & req.url.query
+            stdout.write fgMagenta & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & fgWhite & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
+            if req.url.query!="":
+                stdout.write "?" & req.url.query
+
+            stdout.write "\n"
+            stdout.flushFile()
+
+        # echo "body: " & req.body
+
+        # echo "========"
+        # for k,v in pairs(req.headers):
+        #     echo k & " => " & v
+        # echo "========"
 
         var status = 200
         var headers = newHttpHeaders()
@@ -84,17 +96,32 @@ template Serve*():untyped =
                 for group,capture in captures:
                     args.add(newString(group))
 
+                if req.reqMethod==HttpPost:
+                    for d in decodeData(req.body):
+                        args.add(newString(d[0]))
+
+                    for d in (toSeq(decodeData(req.body))).reversed:
+                        stack.push(newString(d[1]))
+
                 for capture in (toSeq(pairs(captures))).reversed:
                     stack.push(newString(capture[1]))
 
-                discard execBlock(routes.d[k], execInParent=true, useArgs=true, args=args)
+                try:
+                    discard execBlock(routes.d[k], execInParent=true, useArgs=true, args=args)
+                except:
+                    let e = getCurrentException()
+                    echo "Something went wrong." & e.msg
                 body = stack.pop().s
                 routeFound = k
                 break
 
         if routeFound=="":
-            status = 404
-            body = "page not found!"
+            let subpath = joinPath(env.currentPath(),req.url.path)
+            if fileExists(subpath):
+                body = readFile(subpath)
+            else:
+                status = 404
+                body = "page not found!"
 
         if verbose:
             echo fgGreen & ">> [" & $(status) & "] " & routeFound & fgWhite
