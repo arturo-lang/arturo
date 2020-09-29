@@ -33,6 +33,11 @@ Simple, isn't it?
 
 *[For more - working - examples, just have a look into the /examples folder]*
 
+Check it out online
+------------------------------
+
+<img align="left" width="160" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
+
 The Compiler
 ------------------------------
 
