@@ -35,9 +35,7 @@ template Decode*():untyped =
 template GetHash*():untyped =
     require(opGetHash)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("sha"):
+    if (getAttr("sha") != VNULL):
         if x.kind==Literal:
             syms[x.s] = newString(($(secureHash(syms[x.s].s))).toLowerAscii())
         else:
@@ -47,3 +45,5 @@ template GetHash*():untyped =
             syms[x.s] = newString(($(toMD5(syms[x.s].s))).toLowerAscii())
         else:
             stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
+
+    emptyAttrs()

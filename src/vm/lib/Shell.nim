@@ -26,17 +26,16 @@ template Execute*():untyped =
 
 template List*():untyped =
     require(opList)
-    
-    let attrs = getAttrs()
 
-    if attrs.hasKey("select"):
-        if attrs.hasKey("relative"):
-            stack.push(newStringArray((toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])).filter((x) => x.contains attrs["select"].s)))
+    if (let aSelect = getAttr("select"); aSelect != VNULL):
+        if (getAttr("relative") != VNULL):
+            stack.push(newStringArray((toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
         else:
-            stack.push(newStringArray((toSeq(walkDir(x.s)).map((x)=>x[1])).filter((x) => x.contains attrs["select"].s)))
+            stack.push(newStringArray((toSeq(walkDir(x.s)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
     else:
-        if attrs.hasKey("relative"):
+        if (getAttr("relative") != VNULL):
             stack.push(newStringArray(toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])))
         else:
             stack.push(newStringArray(toSeq(walkDir(x.s)).map((x)=>x[1])))
 
+    emptyAttrs()

@@ -133,29 +133,17 @@ template Benchmark*():untyped =
 template GetAttr*():untyped =
     require(opGetAttr)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey(x.s): stack.push(attrs[x.s])
-    else: stack.push(VNULL)
+    stack.push(getAttr("x.s"))
 
 template HasAttr*():untyped =
     require(opHasAttr)
 
-    var tmp = AP
-    var found = false
-    while tmp>0:
-        let label = stack.Attrs[tmp-1].r
-        if label == x.s: 
-            stack.push(VTRUE)
-            found = true 
-            break
-
-        tmp -= 2
-
-    if not found:
+    if getAttr("x.s") != VNULL:
+        stack.push(VTRUE)
+    else:
         stack.push(VFALSE)
 
 template GetAttrs*():untyped =
     require(opGetAttrs)
 
-    stack.push(newDictionary(getAttrs()))
+    stack.push(getAttrsDict())
