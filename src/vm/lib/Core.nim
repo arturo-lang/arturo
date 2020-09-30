@@ -38,8 +38,7 @@ template Return*():untyped =
 template Do*():untyped =
     require(opDo)
 
-    let attrs = getAttrs()
-    var execInParent = attrs.hasKey("import")
+    var execInParent = (getAttr("import") != VNULL)
 
     if x.kind==Block:
         if execInParent:
@@ -60,6 +59,8 @@ template Do*():untyped =
                 showVMErrors()
             else:
                 discard execBlock(doParse(x.s, isFile=false))
+
+    emptyAttrs()
 
 template If*():untyped =
     require(opIf)
@@ -126,12 +127,12 @@ template When*():untyped =
 template Exit*():untyped =
     require(opExit)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("with"):
-        quit(attrs["with"].i)
+    if (let aWith = getAttr("with"); aWith != VNULL):
+        quit(aWith.i)
     else:
         quit()
+
+    emptyAttrs()
 
 template Print*():untyped =
     require(opPrint)

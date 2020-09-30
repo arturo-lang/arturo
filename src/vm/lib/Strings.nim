@@ -64,17 +64,17 @@ template Capitalize*():untyped =
 template Pad*():untyped =
     require(opPad)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("right"):
+    if (getAttr("right") != VNULL):
         if x.kind==String: stack.push(newString(alignLeft(x.s, y.i)))
         else: syms[x.s].s = alignLeft(syms[x.s].s, y.i)
-    elif attrs.hasKey("center"):
+    elif (getAttr("center") != VNULL):
         if x.kind==String: stack.push(newString(center(x.s, y.i)))
         else: syms[x.s].s = center(syms[x.s].s, y.i)
     else:
         if x.kind==String: stack.push(newString(align(x.s, y.i)))
         else: syms[x.s].s = align(syms[x.s].s, y.i)
+
+    emptyAttrs()
 
 template Replace*():untyped =
     require(opReplace)
@@ -118,36 +118,34 @@ template Levenshtein*():untyped =
 template Color*():untyped =
     require(opColor)
 
-    let attrs = getAttrs()
-
     var pre: string = "\e[0;"
     let reset = "\e[0m"
 
-    if attrs.hasKey("rgb"):
-        pre = "\e[38;5;" & $(attrs["rgb"].i)
+    if (let aRgb = getAttr("rgb"); aRgb != VNULL):
+        pre = "\e[38;5;" & $(aRgb.i)
     else:
-        if attrs.hasKey("bold"):
+        if (getAttr("bold") != VNULL):
             pre = "\e[1"
-        elif attrs.hasKey("underline"):
+        elif (getAttr("underline") != VNULL):
             pre = "\e[4"
 
-        if attrs.hasKey("black"):
+        if (getAttr("black") != VNULL):
             pre &= ";30"
-        elif attrs.hasKey("red"):
+        elif (getAttr("red") != VNULL):
             pre &= ";31"
-        elif attrs.hasKey("green"):
+        elif (getAttr("green") != VNULL):
             pre &= ";32"
-        elif attrs.hasKey("yellow"):
+        elif (getAttr("yellow") != VNULL):
             pre &= ";33"
-        elif attrs.hasKey("blue"):
+        elif (getAttr("blue") != VNULL):
             pre &= ";34"
-        elif attrs.hasKey("magenta"):
+        elif (getAttr("magenta") != VNULL):
             pre &= ";35"
-        elif attrs.hasKey("cyan"):
+        elif (getAttr("cyan") != VNULL):
             pre &= ";36"
-        elif attrs.hasKey("white"):
+        elif (getAttr("white") != VNULL):
             pre &= ";37"
-        elif attrs.hasKey("gray"):
+        elif (getAttr("gray") != VNULL):
             pre &= ";90"
         else:
             pre &= ""
@@ -156,18 +154,18 @@ template Color*():untyped =
 
     stack.push(newString(pre & x.s & reset))
 
+    emptyAttrs()
+
 template Render*():untyped =
     require(opRender)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("with"):
+    if (let aWith = getAttr("with"); aWith != VNULL):
         if x.kind==String:
             stack.push(newString(x.s.replace(nre.re"\|([^\|]+)\|",
                 proc (match: RegexMatch): string =
-                    var args: ValueArray = (toSeq(keys(attrs["with"].d))).map((x) => newString(x))
+                    var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
-                    for v in ((toSeq(values(attrs["with"].d))).reversed):
+                    for v in ((toSeq(values(aWith.d))).reversed):
                         stack.push(v)
                     discard execBlock(doParse(match.captures[0], isFile=false), useArgs=true, args=args)
                     $(stack.pop())
@@ -175,9 +173,9 @@ template Render*():untyped =
         elif x.kind==Literal:
             syms[x.s].s = syms[x.s].s.replace(nre.re"\|([^\|]+)\|",
                 proc (match: RegexMatch): string =
-                    var args: ValueArray = (toSeq(keys(attrs["with"].d))).map((x) => newString(x))
+                    var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
-                    for v in ((toSeq(values(attrs["with"].d))).reversed):
+                    for v in ((toSeq(values(aWith.d))).reversed):
                         stack.push(v)
                     discard execBlock(doParse(match.captures[0], isFile=false), useArgs=true, args=args)
                     $(stack.pop())
@@ -206,3 +204,5 @@ template Render*():untyped =
                     discard execBlock(doParse(match.captures[0], isFile=false))
                     $(stack.pop())
             )
+
+    emptyAttrs()

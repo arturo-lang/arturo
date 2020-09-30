@@ -113,14 +113,6 @@ template require(op: OpCode): untyped =
     when (static OpSpecs[op].args)>=3:
         var z {.inject.} = stack.pop()
 
-proc getAttrs(): ValueDict {.inline.} =
-    result = initOrderedTable[string,Value]()
-    while AP>0:
-        let label = stack.popAttr().r
-        let value = stack.popAttr()
-
-        result[label] = value
-
 template execBlock(blk: Value, dictionary: bool = false, useArgs: bool = false, args: ValueArray = @[], usePreeval: bool = false, evaluated: Translation = (@[],@[]), execInParent: bool = false): untyped =
     #when dictionary:
         #echo "Executing execBlock as dictionary"

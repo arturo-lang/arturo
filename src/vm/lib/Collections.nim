@@ -151,26 +151,26 @@ template IsAny*():untyped =
 template First*():untyped = 
     require(opFirst)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("n"):
-        if x.kind==String: stack.push(newString(x.s[0..attrs["n"].i-1]))
-        else: stack.push(newArray(x.a[0..attrs["n"].i-1]))
+    if (let aN = getAttr("n"); aN != VNULL):
+        if x.kind==String: stack.push(newString(x.s[0..aN.i-1]))
+        else: stack.push(newArray(x.a[0..aN.i-1]))
     else:
         if x.kind==String: stack.push(newChar(x.s[0]))
         else: stack.push(x.a[0])
 
+    emptyAttrs()
+
 template Last*():untyped =
     require(opLast)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("n"):
-        if x.kind==String: stack.push(newString(x.s[x.s.len-attrs["n"].i..^1]))
-        else: stack.push(newArray(x.a[x.a.len-attrs["n"].i..^1]))
+    if (let aN = getAttr("n"); aN != VNULL):
+        if x.kind==String: stack.push(newString(x.s[x.s.len-aN.i..^1]))
+        else: stack.push(newArray(x.a[x.a.len-aN.i..^1]))
     else:
         if x.kind==String: stack.push(newChar(x.s[x.s.len-1]))
         else: stack.push(x.a[x.a.len-1])
+
+    emptyAttrs()
 
 template Loop*():untyped =
     require(opLoop)
@@ -314,10 +314,9 @@ template Range*():untyped =
 
     var res = newArray()
 
-    let attrs = getAttrs()
     var step = 1
-    if attrs.hasKey("step"):
-        step = attrs["step"].i
+    if (let aStep = getAttr("step"); aStep != VNULL):
+        step = aStep.i
 
     if x.i < y.i:
         var j = x.i
@@ -331,6 +330,8 @@ template Range*():untyped =
             j -= step
 
     stack.push(res)
+
+    emptyAttrs()
 
 template Sample*():untyped =
     require(opSample)
@@ -488,11 +489,9 @@ template Reverse*():untyped =
 template Join*():untyped =
     require(opJoin)
 
-    let attrs = getAttrs()
-
     var sep = ""
-    if attrs.hasKey("with"):
-        sep = attrs["with"].s
+    if (let aWith = getAttr("with"); aWith != VNULL):
+        sep = aWith.s
 
     if x.kind==Literal:
         if syms[x.s].kind==Array: syms[x.s] = newString(syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
@@ -500,6 +499,8 @@ template Join*():untyped =
     else:
         if x.kind==Array: stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
         elif x.kind==Block: stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
+
+    emptyAttrs()
 
 template Max*():untyped =
     require(opMax)
@@ -598,142 +599,142 @@ template Append*():untyped =
 template Remove*():untyped =
     require(opRemove)
 
-    let attrs = getAttrs()
-
     if x.kind==Literal:
         if syms[x.s].kind==String:
-            if attrs.hasKey("once"):
+            if (getAttr("once") != VNULL):
                 syms[x.s] = newString(syms[x.s].s.removeFirst(y.s))
             else:
                 syms[x.s] = newString(syms[x.s].s.replace(y.s))
         elif syms[x.s].kind==Array: 
-            if attrs.hasKey("once"):
+            if (getAttr("once") != VNULL):
                 syms[x.s] = newArray(syms[x.s].a.removeFirst(y))
-            elif attrs.hasKey("index"):
-                syms[x.s] = newArray(syms[x.s].a.removeByIndex(attrs["index"].i))
+            elif (let aIndex = getAttr("index"); aIndex != VNULL):
+                syms[x.s] = newArray(syms[x.s].a.removeByIndex(aIndex.i))
             else:
                 syms[x.s] = newArray(syms[x.s].a.removeAll(y))
         elif syms[x.s].kind==Block: 
-            if attrs.hasKey("once"):
+            if (getAttr("once") != VNULL):
                 syms[x.s] = newBlock(syms[x.s].a.removeFirst(y))
-            elif attrs.hasKey("index"):
-                syms[x.s] = newBlock(syms[x.s].a.removeByIndex(attrs["index"].i))
+            elif (let aIndex = getAttr("index"); aIndex != VNULL):
+                syms[x.s] = newBlock(syms[x.s].a.removeByIndex(aIndex.i))
             else:
                 syms[x.s] = newBlock(syms[x.s].a.removeAll(y))
         elif syms[x.s].kind==Dictionary:
-            let key = attrs.hasKey("key")
-            if attrs.hasKey("once"):
+            let key = (getAttr("key") != VNULL)
+            if (getAttr("once") != VNULL):
                 syms[x.s] = newDictionary(syms[x.s].d.removeFirst(y, key))
             else:
                 syms[x.s] = newDictionary(syms[x.s].d.removeAll(y, key))
     else:
         if x.kind==String:
-            if attrs.hasKey("once"):
+            if (getAttr("once") != VNULL):
                 stack.push(newString(x.s.removeFirst(y.s)))
             else:
                 stack.push(newString(x.s.replace(y.s)))
         elif x.kind==Array: 
-            if attrs.hasKey("once"):
+            if (getAttr("once") != VNULL):
                 stack.push(newArray(x.a.removeFirst(y)))
-            elif attrs.hasKey("index"):
-                stack.push(newArray(x.a.removeByIndex(attrs["index"].i)))
+            elif (let aIndex = getAttr("index"); aIndex != VNULL):
+                stack.push(newArray(x.a.removeByIndex(aIndex.i)))
             else:
                 stack.push(newArray(x.a.removeAll(y)))
         elif x.kind==Block: 
-            if attrs.hasKey("once"):
+            if (getAttr("once") != VNULL):
                 stack.push(newBlock(x.a.removeFirst(y)))
-            elif attrs.hasKey("index"):
-                stack.push(newBlock(x.a.removeByIndex(attrs["index"].i)))
+            elif (let aIndex = getAttr("index"); aIndex != VNULL):
+                stack.push(newBlock(x.a.removeByIndex(aIndex.i)))
             else:
                 stack.push(newBlock(x.a.removeAll(y)))
         elif x.kind==Dictionary:
-            let key = attrs.hasKey("key")
-            if attrs.hasKey("once"):
+            let key = (getAttr("key") != VNULL)
+            if (getAttr("once") != VNULL):
                 stack.push(newDictionary(x.d.removeFirst(y, key)))
             else:
                 stack.push(newDictionary(x.d.removeAll(y, key)))
 
+    emptyAttrs()
+
 template Split*():untyped =
     require(opSplit)
 
-    let attrs = getAttrs()
-
     if x.kind==Literal:
         if syms[x.s].kind==String:
-            if attrs.hasKey("words"):
+            if (getAttr("words") != VNULL):
                 syms[x.s] = newStringArray(syms[x.s].s.splitWhitespace())
-            elif attrs.hasKey("lines"):
+            elif (getAttr("lines") != VNULL):
                 syms[x.s] = newStringArray(syms[x.s].s.splitLines())
-            elif attrs.hasKey("by"):
-                syms[x.s] = newStringArray(syms[x.s].s.split(attrs["by"].s))
-            elif attrs.hasKey("at"):
-                syms[x.s] = newStringArray(@[syms[x.s].s[0..attrs["at"].i-1], syms[x.s].s[attrs["at"].i..^1]])
-            elif attrs.hasKey("every"):
+            elif (let aBy = getAttr("by"); aBy != VNULL):
+                syms[x.s] = newStringArray(syms[x.s].s.split(aBy.s))
+            elif (let aAt = getAttr("at"); aAt != VNULL):
+                syms[x.s] = newStringArray(@[syms[x.s].s[0..aAt.i-1], syms[x.s].s[aAt.i..^1]])
+            elif (let aEvery = getAttr("every"); aEvery != VNULL):
                 var ret: seq[string] = @[]
                 var length = syms[x.s].s.len
                 var i = 0
 
                 while i<length:
-                    ret.add(syms[x.s].s[i..i+attrs["every"].i-1])
-                    i += attrs["every"].i
+                    ret.add(syms[x.s].s[i..i+aEvery.i-1])
+                    i += aEvery.i
 
                 syms[x.s] = newStringArray(ret)
             else:
                 syms[x.s] = newStringArray(syms[x.s].s.map(proc (x:char):string = $(x)))
         else:
-            if attrs.hasKey("at"):
-                syms[x.s] = newArray(@[newArray(syms[x.s].a[0..attrs["at"].i]), newArray(syms[x.s].a[attrs["at"].i..^1])])
-            elif attrs.hasKey("every"):
+            if (let aAt = getAttr("at"); aAt != VNULL):
+                syms[x.s] = newArray(@[newArray(syms[x.s].a[0..aAt.i]), newArray(syms[x.s].a[aAt.i..^1])])
+            elif (let aEvery = getAttr("every"); aEvery != VNULL):
                 var ret: ValueArray = @[]
                 var length = syms[x.s].a.len
                 var i = 0
 
                 while i<length:
-                    ret.add(syms[x.s].a[i..i+attrs["every"].i-1])
-                    i += attrs["every"].i
+                    ret.add(syms[x.s].a[i..i+aEvery.i-1])
+                    i += aEvery.i
 
                 syms[x.s] = newArray(ret)
             else: discard
 
     elif x.kind==String:
-        if attrs.hasKey("words"):
+        if (getAttr("words") != VNULL):
             stack.push(newStringArray(x.s.splitWhitespace()))
-        elif attrs.hasKey("lines"):
+        elif (getAttr("lines") != VNULL):
             stack.push(newStringArray(x.s.splitLines()))
-        elif attrs.hasKey("by"):
-            stack.push(newStringArray(x.s.split(attrs["by"].s)))
-        elif attrs.hasKey("at"):
-            stack.push(newStringArray(@[x.s[0..attrs["at"].i-1], x.s[attrs["at"].i..^1]]))
-        elif attrs.hasKey("every"):
+        elif (let aBy = getAttr("by"); aBy != VNULL):
+            stack.push(newStringArray(x.s.split(aBy.s)))
+        elif (let aAt = getAttr("at"); aAt != VNULL):
+            stack.push(newStringArray(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
+        elif (let aEvery = getAttr("every"); aEvery != VNULL):
             var ret: seq[string] = @[]
             var length = x.s.len
             var i = 0
 
             while i<length:
-                ret.add(x.s[i..i+attrs["every"].i-1])
-                i += attrs["every"].i
+                ret.add(x.s[i..i+aEvery.i-1])
+                i += aEvery.i
 
             stack.push(newStringArray(ret))
         else:
             stack.push(newStringArray(x.s.map(proc (x:char):string = $(x))))
     else:
-        if attrs.hasKey("at"):
-            stack.push(newArray(@[newArray(x.a[0..attrs["at"].i-1]), newArray(x.a[attrs["at"].i..^1])]))
-        elif attrs.hasKey("every"):
+        if (let aAt = getAttr("at"); aAt != VNULL):
+            stack.push(newArray(@[newArray(x.a[0..aAt.i-1]), newArray(x.a[aAt.i..^1])]))
+        elif (let aEvery = getAttr("every"); aEvery != VNULL):
             var ret: ValueArray = @[]
             var length = x.a.len
             var i = 0
 
             while i<length:
-                if i+attrs["every"].i > length:
+                if i+aEvery.i > length:
                     ret.add(newArray(x.a[i..^1]))
                 else:
-                    ret.add(newArray(x.a[i..i+attrs["every"].i-1]))
+                    ret.add(newArray(x.a[i..i+aEvery.i-1]))
 
-                i += attrs["every"].i
+                i += aEvery.i
 
             stack.push(newArray(ret))
         else: stack.push(x)
+
+    emptyAttrs()
 
 template Combine*():untyped =
     require(opCombine)
@@ -750,10 +751,8 @@ template Fold*():untyped =
 
     var val: Value
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("first"):
-        val = attrs["first"]
+    if (let aFirst = getAttr("first"); aFirst != VNULL):
+        val = aFirst
     else:
         if x.a[0].kind == Integer:
             val = I0
@@ -770,3 +769,5 @@ template Fold*():untyped =
         val = stack.pop()
 
     stack.push(val)
+
+    emptyAttrs()

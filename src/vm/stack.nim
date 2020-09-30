@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+import tables
+
 import vm/value
 
 #=======================================
@@ -60,3 +62,26 @@ template pushAttr*(v: Value) =
 template popAttr*(): Value =
     AP -= 1
     Attrs[AP]
+
+template attrTop*(): Value =
+    Stack[AP-1]
+
+template emptyAttrs*() =
+    AP = 0
+
+proc getAttr*(attr: string): Value =
+    var tmp = AP
+    while tmp>0:
+        if Attrs[tmp-1].r == attr: 
+            return Attrs[tmp-2]
+        tmp -= 2
+
+    return VNULL
+
+proc getAttrsDict*(): Value =
+    result = newDictionary()
+    var tmp = AP
+    while tmp>0:
+        result.d[Attrs[tmp-1].r] = Attrs[tmp-2]
+    
+        tmp -= 2

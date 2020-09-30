@@ -111,12 +111,10 @@ proc isUrl*(s: string): bool {.inline.} =
 template Read*():untyped =
     require(opRead)
 
-    let attrs = getAttrs()
-
     var action: proc(path:string):string
     var download = false
     
-    if attrs.hasKey("binary"):
+    if (getAttr("binary") != VNULL):
         var f: File
         discard f.open(x.s)
         var b: seq[byte] = newSeq[byte](f.getFileSize())
@@ -134,12 +132,12 @@ template Read*():untyped =
             action = proc (path:string):string =
                 readFile(path)
 
-        if attrs.hasKey("lines"): 
+        if (getAttr("lines") != VNULL):
             if download:
                 stack.push(newStringArray(action(x.s).split('\n')))
             else:
                 stack.push(newStringArray(toSeq(x.s.lines)))
-        elif attrs.hasKey("json"):
+        elif (getAttr("json") != VNULL):
             stack.push(parseJsonNode(parseJson(action(x.s))))
         # elif attrs.hasKey("html"):
         #     echo "parsing as html"
@@ -151,28 +149,30 @@ template Read*():untyped =
         else:
             stack.push(newString(action(x.s)))
 
+    emptyAttrs()
+
 template Write*():untyped =
     require(opWrite)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("binary"):
+    if (getAttr("binary") != VNULL):
         var f: File
         discard f.open(x.s, mode=fmWrite)
         discard f.writeBytes(y.n, 0, y.n.len)
 
         f.close()
     else:
-        if attrs.hasKey("json"):
+        if (getAttr("json") != VNULL):
             writeFile(x.s, json.pretty(generateJsonNode(y), indent=4))
         else:
             writeFile(x.s, y.s)
 
+    emptyAttrs()
+
 template Exists*():untyped =
     require(opExists)
 
-    let attrs = getAttrs()
-
-    if attrs.hasKey("dir"): stack.push(newBoolean(dirExists(x.s)))
+    if (getAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))
     else: stack.push(newBoolean(fileExists(x.s)))
+
+    emptyAttrs()
     
