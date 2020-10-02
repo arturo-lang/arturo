@@ -99,7 +99,9 @@ template makeFunc*():untyped =
     if (let aExport = popAttr("export"); aExport != VNULL):
         exports = aExport
 
-    stack.push(newFunction(x,y,exports))
+    let isPure = popAttr("pure")!=VNULL
+
+    stack.push(newFunction(x,y,exports,isPure))
 
 #=======================================
 # Methods

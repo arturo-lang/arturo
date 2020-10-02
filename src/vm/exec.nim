@@ -75,7 +75,10 @@ template callByIndex(idx: byte):untyped =
     let symIndx = cnst[idx].s
     let fun = syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
-    discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
+    if fun.pure:
+        discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports, isPureFunc=true)
+    else:
+        discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports, isPureFunc=false)
 
 # template callFromStack():untyped =
 #     let fun = stack.pop()
@@ -113,12 +116,30 @@ template require(op: OpCode): untyped =
     when (static OpSpecs[op].args)>=3:
         var z {.inject.} = stack.pop()
 
-template execBlock(blk: Value, dictionary: bool = false, useArgs: bool = false, args: ValueArray = @[], usePreeval: bool = false, evaluated: Translation = (@[],@[]), execInParent: bool = false, isFuncBlock: bool = false, exports: Value = VNULL): untyped =
+template execBlock(
+        blk             : Value, 
+        dictionary      : bool = false, 
+        useArgs         : bool = false, 
+        args            : ValueArray = NoValues, 
+        usePreeval      : bool = false, 
+        evaluated       : Translation = NoTranslation, 
+        execInParent    : bool = false, 
+        isFuncBlock     : bool = false, 
+        exports         : Value = VNULL, 
+        isPureFunc      : bool = false
+): untyped =
+
     #-----------------------------
     # store previous symbols
     #-----------------------------
-    when not isFuncBlock and not execInParent:
+
+    when (not isFuncBlock and not execInParent) or isPureFunc:
+        # save previous symbols 
         let previous = syms
+
+        when isPureFunc:
+            # and cleanup current ones
+            syms = initOrderedTable[string,Value]()
 
     #-----------------------------
     # pre-process arguments
@@ -128,9 +149,10 @@ template execBlock(blk: Value, dictionary: bool = false, useArgs: bool = false, 
         for arg in args:
             let symIndx = arg.s
 
-            # if argument already exists, save it
-            if syms.hasKey(symIndx):
-                saved[symIndx] = syms[symIndx]
+            if not isPureFunc:
+                # if argument already exists, save it
+                if syms.hasKey(symIndx):
+                    saved[symIndx] = syms[symIndx]
 
             # pop argument and set it
             syms[symIndx] = stack.pop()
@@ -149,7 +171,8 @@ template execBlock(blk: Value, dictionary: bool = false, useArgs: bool = false, 
     #-----------------------------
     # execute it
     #-----------------------------
-    var subSyms = doExec(evaled, depth+1, addr syms)
+
+    let subSyms = doExec(evaled, depth+1, addr syms)
 
     #-----------------------------
     # update symbols
@@ -165,23 +188,34 @@ template execBlock(blk: Value, dictionary: bool = false, useArgs: bool = false, 
                 if previous.hasKey(k):
                     syms[k] = v
 
-            when useArgs:
+        when useArgs:
+            # go through the arguments
+            for arg in args:
                 # if the symbol already existed restore it
+                # otherwise, remove it
+                if saved.hasKey(arg.s):
+                    syms[arg.s] = saved[arg.s]
+                else:
+                    syms.del(arg.s)
+    else:
+        when isPureFunc:
+            # nothing will be touched,
+            # so let's restore them all
+            syms = previous
+
+        else:
+            # if the symbol already existed (e.g. nested functions)
+            # restore it as we normally would
+            for k, v in pairs(subSyms):
                 if saved.hasKey(k):
                     syms[k] = saved[k]
-    else:
-        # if the symbol already existed (e.g. nested functions)
-        # restore it as we normally would
-        for k, v in pairs(subSyms):
-            if saved.hasKey(k):
-                    syms[k] = saved[k]
 
-        # if there are exportable variables
-        # do set them in parent
-        if exports!=VNULL:
-            for k in exports.a:
-                if subSyms.hasKey(k.s):
-                    syms[k.s] = subSyms[k.s]
+            # if there are exportable variables
+            # do set them in parent
+            if exports!=VNULL:
+                for k in exports.a:
+                    if subSyms.hasKey(k.s):
+                        syms[k.s] = subSyms[k.s]
 
     #-----------------------------
     # return
