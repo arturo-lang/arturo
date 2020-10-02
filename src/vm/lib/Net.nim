@@ -39,7 +39,7 @@ template Download*():untyped =
 
     var target: string
 
-    if (let aAs = getAttr("as"); aAs!=VNULL):
+    if (let aAs = popAttr("as"); aAs!=VNULL):
         target = aAs.s
     else:
         target = extractFilename(path)
@@ -47,7 +47,6 @@ template Download*():untyped =
     var client = newHttpClient()
     client.downloadFile(path,target)
 
-    emptyAttrs()
 
 template Serve*():untyped =
     require(opServe)
@@ -55,8 +54,8 @@ template Serve*():untyped =
     let routes = x
 
     var port = 18966
-    var verbose = (getAttr("verbose") != VNULL)
-    if (let aPort = getAttr("port"); aPort != VNULL):
+    var verbose = (popAttr("verbose") != VNULL)
+    if (let aPort = popAttr("port"); aPort != VNULL):
         port = aPort.i
 
     var server = newAsyncHttpServer()
@@ -134,5 +133,3 @@ template Serve*():untyped =
         let e = getCurrentException()
         echo "Something went wrong." & e.msg
         server.close()
-
-    emptyAttrs()

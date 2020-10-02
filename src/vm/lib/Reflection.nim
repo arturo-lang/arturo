@@ -133,12 +133,12 @@ template Benchmark*():untyped =
 template GetAttr*():untyped =
     require(opGetAttr)
 
-    stack.push(getAttr("x.s"))
+    stack.push(popAttr(x.s))
 
 template HasAttr*():untyped =
     require(opHasAttr)
 
-    if getAttr("x.s") != VNULL:
+    if getAttr(x.s) != VNULL:
         stack.push(VTRUE)
     else:
         stack.push(VFALSE)

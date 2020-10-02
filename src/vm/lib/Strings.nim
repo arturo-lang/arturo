@@ -64,17 +64,16 @@ template Capitalize*():untyped =
 template Pad*():untyped =
     require(opPad)
 
-    if (getAttr("right") != VNULL):
+    if (popAttr("right") != VNULL):
         if x.kind==String: stack.push(newString(alignLeft(x.s, y.i)))
         else: syms[x.s].s = alignLeft(syms[x.s].s, y.i)
-    elif (getAttr("center") != VNULL):
+    elif (popAttr("center") != VNULL):
         if x.kind==String: stack.push(newString(center(x.s, y.i)))
         else: syms[x.s].s = center(syms[x.s].s, y.i)
     else:
         if x.kind==String: stack.push(newString(align(x.s, y.i)))
         else: syms[x.s].s = align(syms[x.s].s, y.i)
 
-    emptyAttrs()
 
 template Replace*():untyped =
     require(opReplace)
@@ -121,31 +120,31 @@ template Color*():untyped =
     var pre: string = "\e[0;"
     let reset = "\e[0m"
 
-    if (let aRgb = getAttr("rgb"); aRgb != VNULL):
+    if (let aRgb = popAttr("rgb"); aRgb != VNULL):
         pre = "\e[38;5;" & $(aRgb.i)
     else:
-        if (getAttr("bold") != VNULL):
+        if (popAttr("bold") != VNULL):
             pre = "\e[1"
-        elif (getAttr("underline") != VNULL):
+        elif (popAttr("underline") != VNULL):
             pre = "\e[4"
 
-        if (getAttr("black") != VNULL):
+        if (popAttr("black") != VNULL):
             pre &= ";30"
-        elif (getAttr("red") != VNULL):
+        elif (popAttr("red") != VNULL):
             pre &= ";31"
-        elif (getAttr("green") != VNULL):
+        elif (popAttr("green") != VNULL):
             pre &= ";32"
-        elif (getAttr("yellow") != VNULL):
+        elif (popAttr("yellow") != VNULL):
             pre &= ";33"
-        elif (getAttr("blue") != VNULL):
+        elif (popAttr("blue") != VNULL):
             pre &= ";34"
-        elif (getAttr("magenta") != VNULL):
+        elif (popAttr("magenta") != VNULL):
             pre &= ";35"
-        elif (getAttr("cyan") != VNULL):
+        elif (popAttr("cyan") != VNULL):
             pre &= ";36"
-        elif (getAttr("white") != VNULL):
+        elif (popAttr("white") != VNULL):
             pre &= ";37"
-        elif (getAttr("gray") != VNULL):
+        elif (popAttr("gray") != VNULL):
             pre &= ";90"
         else:
             pre &= ""
@@ -154,12 +153,11 @@ template Color*():untyped =
 
     stack.push(newString(pre & x.s & reset))
 
-    emptyAttrs()
 
 template Render*():untyped =
     require(opRender)
 
-    if (let aWith = getAttr("with"); aWith != VNULL):
+    if (let aWith = popAttr("with"); aWith != VNULL):
         if x.kind==String:
             stack.push(newString(x.s.replace(nre.re"\|([^\|]+)\|",
                 proc (match: RegexMatch): string =
@@ -204,5 +202,3 @@ template Render*():untyped =
                     discard execBlock(doParse(match.captures[0], isFile=false))
                     $(stack.pop())
             )
-
-    emptyAttrs()
