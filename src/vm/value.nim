@@ -123,6 +123,14 @@ type
                 params* : Value         
                 main*   : Value
                 exports*: Value
+                pure*   : bool
+
+#=======================================
+# Constants
+#=======================================
+
+const
+    NoValues* = @[]
 
 #=======================================
 # Constant Values
@@ -258,8 +266,8 @@ proc newStringArray*(a: seq[string]): Value {.inline.} =
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value, exports: Value = VNULL): Value {.inline.} =
-    Value(kind: Function, params: params, main: main, exports: exports)
+proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool = false): Value {.inline.} =
+    Value(kind: Function, params: params, main: main, exports: exports, pure: pure)
 
 proc newInline*(a: ValueArray = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)

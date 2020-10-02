@@ -675,7 +675,8 @@ const
                                 bn      : "body",        
                                 b       : {Block},
                                 ret     : {Function},  
-                                attrs   :   ".export :block -> export given symbols to parent",     
+                                attrs   :   ".export :block -> export given symbols to parent~" &
+                                            ".pure -> denotes pure function with no access to parent",     
                                 desc    : "create function with given arguments and body" ),
 
         # [0x7] #
@@ -1861,6 +1862,8 @@ const
 
 
     ]
+
+    NoTranslation*  = (@[],@[])
 
 #=======================================
 # Helpers
