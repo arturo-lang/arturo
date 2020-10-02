@@ -26,7 +26,7 @@ template Push*():untyped =
 template Pop*():untyped =
     require(opPop)
 
-    let doDiscard = (getAttr("discard") != VNULL)
+    let doDiscard = (popAttr("discard") != VNULL)
 
     if x.i==1:
         if doDiscard: discard stack.pop()
@@ -44,5 +44,4 @@ template Pop*():untyped =
                 res.add stack.pop()
                 i+=1
             stack.push(newArray(res))
-            
-    emptyAttrs()   
+   
