@@ -1,4 +1,4 @@
-1
+11
 11
 in G: x= 20 , s= 20 
 in F: x= 10 , s= 10 
@@ -10,9 +10,9 @@ b: not set
 in p: r = 123 
 va: not set
 j : 10 
-i: not set
+o: not set
 j : 10 
-i: not set
+o: not set
 h: not set
 2 4 6 8 
 m: not set
