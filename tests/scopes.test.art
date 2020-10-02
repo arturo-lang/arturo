@@ -111,11 +111,11 @@ loop [1 2 3 4] 'o [
 
 print ["j :" j]
 
-if? set? 'i [
-	print i
+if? set? 'o [
+	print o
 ]
 else [
-	print "i: not set"
+	print "o: not set"
 ]
 
 ; LOOP BLOCK WITH INTERNAL VARS
@@ -131,11 +131,11 @@ loop [1 2 3 4] 'o [
 
 print ["j :" j]
 
-if? set? 'i [
-	print i
+if? set? 'o [
+	print o
 ]
 else [
-	print "i: not set"
+	print "o: not set"
 ]
 
 if? set? 'h [
