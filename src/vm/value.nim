@@ -122,6 +122,7 @@ type
             of Function:    
                 params* : Value         
                 main*   : Value
+                exports*: Value
 
 #=======================================
 # Constant Values
@@ -257,8 +258,8 @@ proc newStringArray*(a: seq[string]): Value {.inline.} =
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value): Value {.inline.} =
-    Value(kind: Function, params: params, main: main)
+proc newFunction*(params: Value, main: Value, exports: Value = VNULL): Value {.inline.} =
+    Value(kind: Function, params: params, main: main, exports: exports)
 
 proc newInline*(a: ValueArray = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)
