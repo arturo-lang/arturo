@@ -674,7 +674,8 @@ const
                                 a       : {Block},      
                                 bn      : "body",        
                                 b       : {Block},
-                                ret     : {Function},      
+                                ret     : {Function},  
+                                attrs   :   ".export :block -> export given symbols to parent",     
                                 desc    : "create function with given arguments and body" ),
 
         # [0x7] #
