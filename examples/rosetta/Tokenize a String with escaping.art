@@ -1,4 +1,4 @@
-tokenize: func [s sep esc][
+tokenize: function [s sep esc][
 	escaping: 0
 
 	loop 0..(size s)-1 [i][

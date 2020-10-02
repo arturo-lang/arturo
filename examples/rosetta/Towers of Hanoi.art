@@ -1,4 +1,4 @@
-hanoi: func [n from dir via][
+hanoi: function [n from dir via][
 	if n>0 [
 		hanoi n-1 from via dir
 		print ["Move disk" n "from" from "to" dir]

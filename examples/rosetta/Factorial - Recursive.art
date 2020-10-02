@@ -3,6 +3,6 @@ factorial: $[n][
 	else [1]
 ] 
 
-loop 1..21 [x][
+loop 1..19 [x][
 	print ["Factorial of" x "=" factorial x]
 ]

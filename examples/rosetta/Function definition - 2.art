@@ -1,4 +1,4 @@
-multiply: func[x,y][
+multiply: function [x,y][
 	return x*y
 ]
 

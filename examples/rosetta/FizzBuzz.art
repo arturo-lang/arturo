@@ -1,7 +1,7 @@
 loop 1..100 [x][
 	case []
-		when? [(x%15)=0] [print "FizzBuzz"]
-		when? [(x%3)=0] [print "Fizz"]
-		when? [(x%5)=0] [print "Buzz"]
-		else  [print x]
+		when? [0=x%15] -> print "FizzBuzz"
+		when? [0=x%3]  -> print "Fizz"
+		when? [0=x%5]  -> print "Buzz"
+		else  		   -> print x
 ]
