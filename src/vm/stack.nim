@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import tables
+import sequtils, tables
 
 import vm/value
 
@@ -29,6 +29,7 @@ var Stack*{.threadvar.}: seq[Value]
 var Attrs*{.threadvar.}: seq[Value]
 var SP*: int
 var AP*: int
+var CSP*: int
 
 #=======================================
 # Methods
@@ -78,6 +79,18 @@ proc getAttr*(attr: string): Value =
 
     return VNULL
 
+proc popAttr*(attr: string): Value =
+    var tmp = AP
+    while tmp>0:
+        if Attrs[tmp-1].r == attr: 
+            result = Attrs[tmp-2]
+            delete(Attrs,tmp-2,tmp-1)
+            AP -= 2
+            return
+        tmp -= 2
+
+    return VNULL
+
 proc getAttrsDict*(): Value =
     result = newDictionary()
     var tmp = AP
@@ -85,3 +98,5 @@ proc getAttrsDict*(): Value =
         result.d[Attrs[tmp-1].r] = Attrs[tmp-2]
     
         tmp -= 2
+
+    emptyAttrs()
