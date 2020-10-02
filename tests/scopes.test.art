@@ -1,0 +1,173 @@
+; NORMAL FUNCTION CALL
+; from the inside can we access the outer variable
+; but not modify it
+
+x: 1
+
+f: function[][
+    x: x+10
+]
+
+f
+print x
+
+; FUNCTION CALL WITH .EXPORT
+; from the inside can we access the outer variable
+; and modify it
+
+y: 1
+
+g: function [] .export:[y][
+    y: y+10
+]
+
+g
+print y
+
+; NESTED FUNCTION CALLS
+; the local variables should remain intact
+; between different function calls
+
+z: function[x][
+	s: x
+	print ["in G: x=" x ", s=" s]
+]
+
+w: function[x y][
+	s: x
+	do y
+	print ["in F: x=" x ", s=" s]
+]
+
+w 10 [z 20]
+
+; NESTED FUNCTION CALLS (WITH STRINGS)
+; as above
+
+
+l: function[x][
+	m: x
+	print ["in L: x=" x ", m=" m]
+]
+
+k: function[x y][
+	m: x
+	do y
+	print ["in K: x=" x ", m=" m]
+]
+
+k "boom" [l "zoom"]
+
+; MULTIPLE NESTED DO-BLOCKS
+; children can access and modify parents' scope symbols
+; but not create new ones in them
+
+do [
+	a:9
+	do [	
+		b:4
+		x:a+b
+		do [	
+			y:x+b
+			print [x a b y]
+		]
+		print [x a b y]
+	]	a
+
+	if? set? 'b [
+ 		print [a b y x]
+ 	]
+ 	else [
+ 		print "b: not set"
+ 	]
+]
+
+; .PURE FUNCTION CALL
+; a function can only access its own parameters
+
+va: 34
+p: function[r].pure[
+	print ["in p: r =" r]
+
+	if? set? 'va [
+		print va
+	]
+	else [
+		print "va: not set"
+	]
+]
+
+p 123
+
+; LOOP BLOCK
+; the local parameters have to remain local
+; and be removed afterwards
+
+j: 0 
+
+loop [1 2 3 4] 'o [
+	j: j + o
+]
+
+print ["j :" j]
+
+if? set? 'i [
+	print i
+]
+else [
+	print "i: not set"
+]
+
+; LOOP BLOCK WITH INTERNAL VARS
+; the local parameters and variables have to remain local
+; and be removed afterwards
+
+j: 0 
+
+loop [1 2 3 4] 'o [
+	j: j + o
+	h: 2*o
+]
+
+print ["j :" j]
+
+if? set? 'i [
+	print i
+]
+else [
+	print "i: not set"
+]
+
+if? set? 'h [
+	print h
+]
+else [
+	print "h: not set"
+]
+
+; MAP BLOCK
+; the local parameters have to remain local
+; and be removed afterwards
+
+print map [1 2 3 4] 'm [
+	2*m
+]
+
+if? set? 'm [
+	print m
+]
+else [
+	print "m: not set"
+]
+
+; DO WITH .IMPORT
+; all variables modified or created inside
+; should be merged into the parent block
+
+do.import [
+	j: 666
+	u: "zap!"
+]
+
+print j
+print u

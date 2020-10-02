@@ -1,0 +1,30 @@
+print ---
+=================================
+Arturo Unit Tester
+=================================
+---
+print ""
+
+tests: list.select:"test.art" relative "."
+success: 0
+
+loop tests 'test [
+	prints [color.magenta "- Running:" test]
+
+	result: strip execute ~"arturo |test|"
+	expected: strip read replace test ".art" ".res"
+
+	if? result=expected [
+		print color.green.bold "[ OK ]"
+		success: success + 1
+	]
+	else -> print color.red "[ Error ]"
+]
+
+print ""
+print render ---
+*********************
+* |success| of |size tests|
+* tests succeeded.
+*********************
+---
