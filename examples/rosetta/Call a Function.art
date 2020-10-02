@@ -3,7 +3,7 @@ printHello: $[][
 ]
 
 sayHello: $[name][
-	print ["Hello" name '!]
+	print ["Hello" name "!"]
 ]
 
 printAll: $[args][
@@ -26,10 +26,11 @@ printAll ["one" "two" "three"]
 ; Using a function in statement context
 if true [printHello]
 print getNumber
+
 ; Using a function in first-class context within an expression
-if eq? getNumber 3 [print "yep, it worked"]
+if getNumber=3 [print "yep, it worked"]
 
 ; Obtaining the return value of a function:
-;num: getNumber
+num: getNumber
 
-;print num
+print num

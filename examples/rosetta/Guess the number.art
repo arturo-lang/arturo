@@ -1,0 +1,7 @@
+n: random 1 10
+
+while [notEqual? to :integer input "Guess the number: " n] [
+	print "Wrong!"
+] 
+
+print "Well guessed!"

@@ -1,0 +1,5 @@
+sumMul35: function [n][
+	sum select 1..n-1 [x][or? 0=x%3 0=x%5]
+]
+
+print sumMul35 1000

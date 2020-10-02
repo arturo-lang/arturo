@@ -1,4 +1,4 @@
-doSthWith: func [x y f][
+doSthWith: function [x y f][
 	f x y
 ]
 
