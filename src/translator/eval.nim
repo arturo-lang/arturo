@@ -540,6 +540,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "relative"   : addCommand(opRelative)
 
+                    of "average"    : addCommand(opAverage)
+                    of "median"     : addCommand(opMedian)
+
+                    of "as"         : addCommand(opAs)
+
+                    of "gcd"        : addCommand(opGcd)
+                    of "prime?"     : addCommand(opPrime)
+
+                    of "permutate"  : addCommand(opPermutate)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
