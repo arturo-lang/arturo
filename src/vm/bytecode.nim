@@ -371,6 +371,16 @@ type
 
         opRelative      = 0xF1
 
+        opAverage       = 0xF2
+        opMedian        = 0xF3
+
+        opAs            = 0xF4
+
+        opGcd           = 0xF5
+        opPrime         = 0xF6
+
+        opPermutate     = 0xF7
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -1860,7 +1870,56 @@ const
                                 ret     : {String},      
                                 desc    : "get relative path for given path~based on current script's location"),
 
+        opAverage   : OpSpec(   name    : "average",        
+                                args    : 1,   
+    
+                                an      : "collection",
+                                a       : {Array,Block},
+                                ret     : {Integer,Floating},      
+                                desc    : "get average from given collection of numbers"),
 
+        opMedian    : OpSpec(   name    : "median",        
+                                args    : 1,   
+    
+                                an      : "collection",
+                                a       : {Array,Block},
+                                ret     : {Integer,Floating,Null},      
+                                desc    : "get median from given collection of numbers"),
+
+        opAs        : OpSpec(   name    : "as",        
+                                args    : 1,   
+    
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Any},      
+                                attrs   :   ".binary -> format integer as binary~" &
+                                            ".hex -> format integer as hexadecimal~" &
+                                            ".octal -> format integer as octal", 
+                                desc    : "format given value as given type (attribute)"),
+
+        opGcd       : OpSpec(   name    : "gcd",      
+                                args    : 1,   
+
+                                an      : "numbers",        
+                                a       : {Array,Block},          
+                                ret     : {Integer},      
+                                desc    : "calculate greatest common divisor~for given collection of integers" ),
+
+        opPrime     : OpSpec(   name    : "prime?",      
+                                args    : 1,   
+
+                                an      : "number",        
+                                a       : {Integer},          
+                                ret     : {Boolean},      
+                                desc    : "check if given integer is prime" ),
+
+        opPermutate : OpSpec(   name    : "permutate",      
+                                args    : 1,   
+
+                                an      : "collection",        
+                                a       : {Array,Block},          
+                                ret     : {Array,Block},      
+                                desc    : "get all possible permutations~of the elements in given collection" ),
     ]
 
     NoTranslation*  = (@[],@[])
