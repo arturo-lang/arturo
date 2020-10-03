@@ -362,6 +362,8 @@ proc `==`*(x: Value, y: Value): bool =
                     if not (v==y.d[k]): return false
 
                 return true
+            of Function:
+                return x.params == y.params and x.main == y.main and x.exports == y.exports and x.pure == y.pure
             else:
                 return false
 
