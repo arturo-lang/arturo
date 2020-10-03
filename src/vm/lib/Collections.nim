@@ -71,6 +71,35 @@ proc removeAll*(dict: ValueDict, what: Value, key: bool): ValueDict =
             if v!=what:
                 result[k] = v
 
+proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
+    var s = @s
+    if s.len == 0: 
+        emit(s)
+        return
+ 
+    var rc : proc(np: int)
+    rc = proc(np: int) = 
+ 
+        if np == 1: 
+            emit(s)
+            return
+ 
+        var 
+            np1 = np - 1
+            pp = s.len - np1
+ 
+        rc(np1) # recurs prior swaps
+ 
+        for i in countDown(pp, 1):
+            swap s[i], s[i-1]
+            rc(np1) # recurs swap 
+ 
+        let w = s[0]
+        s[0..<pp] = s[1..pp]
+        s[pp] = w
+ 
+    rc(s.len)
+
 #=======================================
 # Constructors
 #=======================================
@@ -588,13 +617,23 @@ template Append*():untyped =
         if syms[x.s].kind==String:
             syms[x.s].s &= y.s
         else:
-            syms[x.s].a.add(y)
+            if y.kind==Array or y.kind==Block:
+                for item in y.a:
+                    syms[x.s].a.add(item)
+            else:
+                syms[x.s].a.add(y)
     else:
         if x.kind==String:
             stack.push(newString(x.s & y.s))
         else:
             var ret = newArray(x.a)
-            ret.a.add(y)
+
+            if y.kind==Array or y.kind==Block:
+                for item in y.a:
+                    ret.a.add(item)
+            else:
+                ret.a.add(y)
+                
             stack.push(ret)
 
 template Remove*():untyped =
@@ -768,3 +807,14 @@ template Fold*():untyped =
         val = stack.pop()
 
     stack.push(val)
+
+template Permutate*():untyped =
+    require(opPermutate)
+
+    var ret: ValueArray = @[]
+ 
+    permutate(x.a, proc(s: ValueArray)= 
+        ret.add(newBlock(s))
+    )
+
+    stack.push(newBlock(ret))
