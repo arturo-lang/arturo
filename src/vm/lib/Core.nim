@@ -33,6 +33,7 @@ template Return*():untyped =
     require(opReturn)
     stack.push(x)
 
+    vmReturn = true
     return syms
 
 template Do*():untyped =
@@ -241,6 +242,18 @@ template New*():untyped =
     require(opNew)
 
     stack.push(copyValue(x))
+
+template As*():untyped =
+    require(opAs)
+
+    if (let aWith = popAttr("binary"); aWith != VNULL):
+        stack.push(newString(fmt"{x.i:b}"))
+    elif (let aWith = popAttr("hex"); aWith != VNULL):
+        stack.push(newString(fmt"{x.i:x}"))
+    elif (let aWith = popAttr("octal"); aWith != VNULL):
+        stack.push(newString(fmt"{x.i:o}"))
+    else:
+        stack.push(x)
 
 template To*(needsRequire:bool = true):untyped =
     when needsRequire:
