@@ -1,0 +1,18 @@
+quibble: function [seq][
+	if? 0=size seq -> "{}"
+	else [
+		if? 1=size seq -> "{" ++ seq\0 ++ "}"
+		else -> "{" ++ (join.with:", " slice seq 0 (size seq)-1) ++ " and " ++ (last seq) ++ "}"
+	]
+]
+
+sentences: [
+	[] 
+	["ABC"] 
+	["ABC" "DEF"] 
+	["ABC" "DEF" "G" "H"]
+]
+
+loop sentences 'sentence [
+	print quibble sentence
+]

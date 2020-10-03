@@ -1,0 +1,6 @@
+palindrome?: $[seq] -> seq = reverse seq
+ 
+loop ["abba" "boom" "radar" "civic" "great"] 'wrd [
+	print [wrd ": palindrome?" palindrome? wrd]
+]
+ 

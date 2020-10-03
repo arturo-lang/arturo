@@ -1,0 +1,16 @@
+isPrime?: function [n][
+    if n=2 -> return true
+    if n=3 -> return true
+    if or? n=<1 0=n%2 -> return false
+ 
+    high: to :integer sqrt n
+    loop high..2 .step: 3 'i [
+    	if 0=n%i -> return false
+    ]
+
+    return true
+]
+ 
+loop 1..20 'i [
+    print ["isPrime?" i "=" isPrime? i ]
+]

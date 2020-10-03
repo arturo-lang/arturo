@@ -1,0 +1,6 @@
+divisors: $[n][ select 1..(n/2)+1 'i -> 0 = n % i ]
+perfect?: $[n][ n = sum divisors n ]
+ 
+loop 2..1000 'i [
+	if perfect? i -> print i 
+]

@@ -1,0 +1,3 @@
+print as.binary 5
+print as.binary 50
+print as.binary 9000

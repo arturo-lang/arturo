@@ -1,0 +1,11 @@
+isOpen: map 1..101 'x -> false
+ 
+loop 1..100 'pass ->
+	loop (range.step:pass pass 100) 'door [
+		set isOpen door not? isOpen \ door
+	]
+
+loop 1..100 'x ->
+	if isOpen \ x [
+		print ["Door" x "is open."]
+	]
