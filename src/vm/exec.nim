@@ -48,6 +48,7 @@ import utils
 var
     vmPanic* = false
     vmError* = ""
+    vmReturn* = false
 
 #=======================================
 # Helpers
@@ -175,137 +176,90 @@ template execBlock(
     let subSyms = doExec(evaled, depth+1, addr syms)
 
     #-----------------------------
-    # update symbols
+    # handle result
     #-----------------------------
-    when not isFuncBlock:
+
+    when dictionary:
+        # it's specified as a dictionary,
+        # so let's handle it this way
+
+        var res: ValueDict = initOrderedTable[string,Value]()
+
         for k, v in pairs(subSyms):
-            # if we are explicitly .import-ing, 
-            # set symbol no matter what
-            when execInParent:
-                syms[k] = v
+            if not previous.hasKey(k):
+                # it wasn't in the initial symbols, add it
+                res[k] = v
             else:
-                # update parent only if symbol already existed
-                if previous.hasKey(k):
-                    syms[k] = v
+                # it already was in the symbols
+                # let's see if the value was the same
+                if (subSyms[k]) != (previous[k]):
+                    # the value was not the same,
+                    # so we add it a dictionary key
+                    res[k] = v
 
-        when useArgs:
-            # go through the arguments
-            for arg in args:
-                # if the symbol already existed restore it
-                # otherwise, remove it
-                if saved.hasKey(arg.s):
-                    syms[arg.s] = saved[arg.s]
-                else:
-                    syms.del(arg.s)
+        #-----------------------------
+        # return
+        #-----------------------------
+
+        res
+
     else:
-        when isPureFunc:
-            # nothing will be touched,
-            # so let's restore them all
-            syms = previous
+        # it's not a dictionary,
+        # it's either a normal block or a function block
 
-        else:
-            # if the symbol already existed (e.g. nested functions)
-            # restore it as we normally would
+        #-----------------------------
+        # update symbols
+        #-----------------------------
+        when not isFuncBlock:
             for k, v in pairs(subSyms):
-                if saved.hasKey(k):
-                    syms[k] = saved[k]
+                # if we are explicitly .import-ing, 
+                # set symbol no matter what
+                when execInParent:
+                    syms[k] = v
+                else:
+                    # update parent only if symbol already existed
+                    if previous.hasKey(k):
+                        syms[k] = v
 
-            # if there are exportable variables
-            # do set them in parent
-            if exports!=VNULL:
-                for k in exports.a:
-                    if subSyms.hasKey(k.s):
-                        syms[k.s] = subSyms[k.s]
+            when useArgs:
+                # go through the arguments
+                for arg in args:
+                    # if the symbol already existed restore it
+                    # otherwise, remove it
+                    if saved.hasKey(arg.s):
+                        syms[arg.s] = saved[arg.s]
+                    else:
+                        syms.del(arg.s)
+        else:
+            when isPureFunc:
+                # nothing will be touched,
+                # so let's restore them all
+                syms = previous
 
-    #-----------------------------
-    # return
-    #-----------------------------
-    subSyms
+            else:
+                # if the symbol already existed (e.g. nested functions)
+                # restore it as we normally would
+                for k, v in pairs(subSyms):
+                    if saved.hasKey(k):
+                        syms[k] = saved[k]
 
-    # #when dictionary:
-    #     #echo "Executing execBlock as dictionary"
-    #     #blk.dump()
+                # if there are exportable variables
+                # do set them in parent
+                if exports!=VNULL:
+                    for k in exports.a:
+                        if subSyms.hasKey(k.s):
+                            syms[k.s] = subSyms[k.s]
 
-    # when useArgs:
-    #     #echo "# useArgs"
-    #     var prev = initOrderedTable[string,Value]()
-    #     for child in args:
-    #         let symIndx = child.s
-    #         if syms.hasKey(symIndx): 
-    #             prev[symIndx] = syms[symIndx]
-    #         syms[symIndx] = stack.pop()
-    #         if syms[symIndx].kind==Function:
-    #             Funcs[symIndx] = syms[symIndx].params.a.len 
-    # else:
-    #     discard
-    #     #echo "# not useArgs"
-
-    # when not usePreeval:
-    #     #echo "# not usePreeval"
-    #     let evaled = doEval(blk)
-    # else:
-    #     let evaled = evaluated
-    # #for k,v in pairs(syms): echo "SYMS before exec:: " & k & " => "; v.print()
-    # var subSyms = doExec(evaled, depth+1, addr syms)
-    # #for k,v in pairs(syms): echo "SYMS after exec:: " & k & " => "; v.print()
-    # #for k,v in pairs(subSyms): echo "SUBSYMS after exec:: " & k & " => "; v.print()
-
-    # when dictionary:
-    #     var res: ValueDict = initOrderedTable[string,Value]()
-
-    #     for k, v in pairs(subSyms):
-    #         #echo "\tchecking: " & k
-    #         if not syms.hasKey(k):
-    #             #echo "it wasn't in syms, add it"
-    #             res[k] = v
-    #         else:
-    #             #echo "it was in syms - let's see if the value was the same"
-    #             if (subSyms[k]) != (syms[k]):
-    #                 #echo "not it wasn't"
-    #                 res[k] = v
-
-    #     res
-    # else:
-    #     when isFuncBlock:
-    #         if exports!=VNULL:
-    #             for k in exports.a:
-    #                 if subSyms.hasKey(k.s):
-    #                     syms[k.s] = subSyms[k.s]
-    #         else:
-    #             for k,v in pairs(prev):
-    #                 syms[k] = v
-    #     else:
-    #         #echo "IS NOT A DICTIONARY"
-    #         when execInParent:
-    #             for k, v in pairs(subSyms):
-    #                 syms[k] = v
-    #         else:
-    #             #echo "not execInParent"
-    #             for k, v in pairs(subSyms):
-    #                 #echo "-- checking " & k 
-    #                 if syms.hasKey(k):
-    #                     #echo "-- syms hasKey YES"
-    #                     syms[k] = v
-    #                 else:
-    #                     #echo "-- syms hasKey NO"
-    #                     discard
-
-    #         when useArgs:
-
-    #             #echo "## useArgs"
-    #             for child in args:
-    #                 let symIndx = child.s
-    #                 #echo "-- symIndx: " & symIndx
-    #                 if prev.hasKey(symIndx):
-    #                     #echo "-- prev hasKey YES"
-    #                     if CSP<2: # or (CSP>=2 and topCall()!=top2Call()):
-    #                         syms[symIndx] = prev[symIndx]
-
-    #                 else:
-    #                     #echo "-- prev hasKey NO"
-    #                     syms.del(symIndx)
-
-    #     subsyms 
+        #-----------------------------
+        # return
+        #-----------------------------
+        if vmReturn:
+            when not isFuncBlock:
+                return
+            else:
+                vmReturn = false
+                
+        subSyms
 
 #=======================================
 # Methods
@@ -759,6 +713,16 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opGlobalize: Core.Globalize()
 
             of opRelative: Path.Relative()
+
+            of opAverage: Numbers.Average()
+            of opMedian: Numbers.Median()
+
+            of opAs: Core.As()
+
+            of opGcd: Numbers.Gcd()
+            of opPrime: Numbers.Prime()
+
+            of opPermutate: Collections.Permutate()
 
         i += 1
 
