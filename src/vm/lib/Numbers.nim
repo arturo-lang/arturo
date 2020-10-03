@@ -13,6 +13,57 @@
 import vm/stack, vm/value
 
 #=======================================
+# Helpers
+#=======================================
+
+proc isPrime*(n: uint32): bool =
+    case n
+        of 0, 1: return false
+        of 2, 7, 61: return true
+        else: discard
+ 
+    var
+        nm1 = n-1
+        d = nm1.int
+        s = 0
+        n = n.uint64
+ 
+    while d mod 2 == 0:
+        d = d shr 1
+        s += 1
+ 
+    for a in [2, 7, 61]:
+        var
+            x = 1.uint64
+            p = a.uint64
+            dr = d
+ 
+        while dr > 0:
+            if dr mod 2 == 1:
+                x = x * p mod n
+            p = p * p mod n
+            dr = dr shr 1
+ 
+        if x == 1 or x.uint32 == nm1:
+            continue
+ 
+        var r = 1
+        while true:
+            if r >= s: return false
+
+            x = x * x mod n
+
+            if x == 1: return false
+            if x.uint32 == nm1: break
+
+            inc(r)
+ 
+    return true
+ 
+proc isPrime*(n: int32): bool =
+    n >= 0 and n.uint32.isPrime
+
+#=======================================
 # Methods
 #=======================================
 
@@ -319,3 +370,69 @@ template Sqrt*():untyped =
 
     if x.kind==Integer: stack.push(newFloating(sqrt((float)x.i)))
     else: stack.push(newFloating(sqrt(x.f)))
+
+template Average*():untyped =
+    require(opAverage)
+
+    var res = 0.0
+
+    for num in x.a:
+        if num.kind==Integer:
+            res += (float)num.i
+        elif num.kind==Floating:
+            res += num.f
+
+    res = res / (float)(x.a.len)
+
+    if (float)(toInt(res))==res:
+        stack.push(newInteger(toInt(res)))
+    else:
+        stack.push(newFloating(res))
+
+template Median*():untyped =
+    require(opMedian)
+
+    if x.a.len==0: 
+        stack.push(VNULL)
+    else:
+        let first = x.a[(x.a.len-1) div 2]
+        let second = x.a[((x.a.len-1) div 2)+1]
+
+        if x.a.len mod 2 == 1:
+            stack.push(first) 
+        else:
+            var res = 0.0
+
+            if first.kind==Integer:
+                if second.kind==Integer:
+                    res = ((float)(first.i) + (float)(second.i))/2
+                elif second.kind==Floating:
+                    res = ((float)(first.i) + second.f)/2
+            elif first.kind==Floating:
+                if second.kind==Integer:
+                    res = (first.f + (float)(second.i))/2
+                elif second.kind==Floating:
+                    res = (first.f + second.f)/2
+
+            if (float)(toInt(res))==res:
+                stack.push(newInteger(toInt(res)))
+            else:
+                stack.push(newFloating(res))
+
+template Gcd*():untyped =
+    require(opGcd)
+
+    var current = x.a[0].i
+
+    var i = 1
+
+    while i<x.a.len:
+        current = gcd(current, x.a[i].i)
+        inc(i)
+
+    stack.push(newInteger(current))
+
+template Prime*():untyped =
+    require(opPrime)
+
+    stack.push(newBoolean(isPrime(x.i.uint32)))
