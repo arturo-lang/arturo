@@ -1,0 +1,11 @@
+catalan: function [n][
+	if? n=0 -> 1
+	else 	-> div (catalan n-1) * (4*n)-2 n+1
+]
+ 
+loop 0..15 [i][
+	print [
+		pad.right to :string i 5 
+		pad.left to :string catalan i 20
+	]
+]

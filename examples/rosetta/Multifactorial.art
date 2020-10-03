@@ -1,0 +1,13 @@
+multifact: function [n deg][
+	if? n =< deg -> n 
+	else -> n * multifact n-deg deg
+]
+ 
+loop 1..5 'i [
+	prints ["Degree" i ":"]
+	loop 1..10 'j [
+		prints [multifact j i " "]
+	]
+	print ""
+]
+ 

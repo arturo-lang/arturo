@@ -1,0 +1,24 @@
+isBalanced: function [s][
+	cnt: 0
+ 
+	loop split s [ch][
+		if? ch="]" [
+			cnt: cnt-1
+			if cnt<0 -> return false
+		]
+		else [
+			if ch="[" -> cnt: cnt+1
+		]
+    ]
+
+    cnt=0
+]
+ 
+loop 1..10 'i [
+	str: join map 0..(2*i)-1 [x][ sample ["[" "]"]]
+	
+	prints str
+
+	if? isBalanced str  -> print " OK"
+	else 				-> print " Not OK"
+]

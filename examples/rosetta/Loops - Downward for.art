@@ -1,0 +1,3 @@
+loop 10..0 'i [
+	print i
+]

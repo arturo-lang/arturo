@@ -1,0 +1,4 @@
+$> f: function [a b sep] -> a ++ sep ++ sep ++ b
+
+$> f "Rosetta" "Code" ":"
+=> Rosetta::Code

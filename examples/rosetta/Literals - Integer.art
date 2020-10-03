@@ -1,0 +1,3 @@
+num: 18966
+
+print [num "->" type num]
