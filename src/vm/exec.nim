@@ -11,10 +11,11 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver, base64
-import cgi, std/editdistance, htmlParser, httpClient, json
-import linenoise, math, md5, os, osproc, random, rdstdin
-import re, sequtils, smtp, std/sha1, strformat, strutils
-import sugar, tables, times, xmlparser, xmltree
+import extras/bignum, cgi, std/editdistance, htmlParser
+import httpClient, json, linenoise, math, md5, os, osproc
+import random, rdstdin, re, sequtils, smtp, std/sha1
+import strformat, strutils, sugar, tables, times
+import xmlparser, xmltree
 
 import nre except toSeq
 
@@ -723,6 +724,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opPrime: Numbers.Prime()
 
             of opPermutate: Collections.Permutate()
+
+            of opIsWhitespace: Strings.IsWhitespace()
+            of opIsNumeric: Strings.IsNumeric()
 
         i += 1
 

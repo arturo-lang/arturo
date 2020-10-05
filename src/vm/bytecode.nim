@@ -381,6 +381,9 @@ type
 
         opPermutate     = 0xF7
 
+        opIsWhitespace  = 0xF8
+        opIsNumeric     = 0xF9
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -1920,6 +1923,22 @@ const
                                 a       : {Array,Block},          
                                 ret     : {Array,Block},      
                                 desc    : "get all possible permutations~of the elements in given collection" ),
+
+        opIsWhitespace : OpSpec(   name    : "whitespace?",      
+                                args    : 1,   
+
+                                an      : "string",        
+                                a       : {String},          
+                                ret     : {Boolean},      
+                                desc    : "check if given string consists only of whitespace" ),
+
+        opIsNumeric : OpSpec(   name    : "numeric?",      
+                                args    : 1,   
+
+                                an      : "string",        
+                                a       : {String},          
+                                ret     : {Boolean},      
+                                desc    : "check if given string contains a valid number" ),
     ]
 
     NoTranslation*  = (@[],@[])
