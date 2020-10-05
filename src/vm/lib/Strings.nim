@@ -153,6 +153,32 @@ template Color*():untyped =
 
     stack.push(newString(pre & x.s & reset))
 
+template IsWhitespace*():untyped =
+    require(opIsWhitespace)
+
+    stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
+
+template IsNumeric*():untyped =
+    require(opIsNumeric)
+
+    var found = false
+    var dotFound = false
+    for ch in x.s:
+        if ch=='.':
+            if dotFound:
+                found = true
+                stack.push(VFALSE)
+                break
+            else:
+                dotFound = true
+        else:
+            if not ch.isDigit():
+                found = true
+                stack.push(VFALSE)
+                break
+
+    if not found:
+        stack.push(VTRUE)
 
 template Render*():untyped =
     require(opRender)
@@ -202,3 +228,4 @@ template Render*():untyped =
                     discard execBlock(doParse(match.captures[0], isFile=false))
                     $(stack.pop())
             )
+
