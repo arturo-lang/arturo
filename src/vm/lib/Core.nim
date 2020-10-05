@@ -347,7 +347,7 @@ template To*(needsRequire:bool = true):untyped =
                         except ValueError:
                             invalidConversionError(y.s)
                     of Char:
-                        if y.s.len == 0:
+                        if y.s.len == 1:
                             stack.push newChar(y.s[0])
                         else:
                             invalidConversionError(y.s)
