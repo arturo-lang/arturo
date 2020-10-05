@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import hashes, sequtils, strformat, strutils, sugar, tables, times
+import extras/bignum, hashes, sequtils, strformat
+import strutils, sugar, tables, times
 
 import utils
 
@@ -93,12 +94,19 @@ type
         Block       = 21
         Any         = 22
 
+    IntegerKind* = enum
+        NormalInteger
+        BigInteger
+
     Value* {.acyclic.} = ref object 
         case kind*: ValueKind:
             of Null:        discard 
             of Any:         discard
             of Boolean:     b*  : bool
-            of Integer:     i*  : int
+            of Integer:  
+                case iKind*: IntegerKind:
+                    of NormalInteger:   i*  : int
+                    of BigInteger:      bi* : Int    
             of Floating:    f*  : float
             of Type:        t*  : ValueKind
             of Char:        c*  : char
@@ -136,17 +144,17 @@ const
 # Constant Values
 #=======================================
 
-let I0*  = Value(kind: Integer, i: 0)
-let I1*  = Value(kind: Integer, i: 1)
-let I2*  = Value(kind: Integer, i: 2)
-let I3*  = Value(kind: Integer, i: 3)
-let I4*  = Value(kind: Integer, i: 4)
-let I5*  = Value(kind: Integer, i: 5)
-let I6*  = Value(kind: Integer, i: 6)
-let I7*  = Value(kind: Integer, i: 7)
-let I8*  = Value(kind: Integer, i: 8)
-let I9*  = Value(kind: Integer, i: 9)
-let I10* = Value(kind: Integer, i: 10)
+let I0*  = Value(kind: Integer, iKind: NormalInteger, i: 0)
+let I1*  = Value(kind: Integer, iKind: NormalInteger, i: 1)
+let I2*  = Value(kind: Integer, iKind: NormalInteger, i: 2)
+let I3*  = Value(kind: Integer, iKind: NormalInteger, i: 3)
+let I4*  = Value(kind: Integer, iKind: NormalInteger, i: 4)
+let I5*  = Value(kind: Integer, iKind: NormalInteger, i: 5)
+let I6*  = Value(kind: Integer, iKind: NormalInteger, i: 6)
+let I7*  = Value(kind: Integer, iKind: NormalInteger, i: 7)
+let I8*  = Value(kind: Integer, iKind: NormalInteger, i: 8)
+let I9*  = Value(kind: Integer, iKind: NormalInteger, i: 9)
+let I10* = Value(kind: Integer, iKind: NormalInteger, i: 10)
 
 let F0*  = Value(kind: Floating, f: 0.0)
 let F1*  = Value(kind: Floating, f: 1.0)
@@ -170,6 +178,9 @@ proc newBoolean*(b: bool): Value {.inline.} =
     if b: VTRUE
     else: VFALSE
 
+proc newInteger*(bi: Int): Value {.inline.} =
+    result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+
 proc newInteger*(i: int): Value {.inline.} =
     if i in 0..10:
         case i:
@@ -186,10 +197,14 @@ proc newInteger*(i: int): Value {.inline.} =
             of 10: result = I10
             else: discard # shouldn't reach here
     else:
-        result = Value(kind: Integer, i: i)
+        result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
 proc newInteger*(i: string): Value {.inline.} =
-    newInteger(parseInt(i))
+    try:
+        newInteger(parseInt(i))
+    except ValueError:
+        # value out of range
+        newInteger(newInt(i))
 
 proc newFloating*(f: float): Value {.inline.} =
     Value(kind: Floating, f: f)
@@ -282,7 +297,9 @@ proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
         of Null:        result = VNULL
         of Boolean:     result = newBoolean(v.b)
-        of Integer:     result = newInteger(v.i)
+        of Integer:     
+            if v.iKind == NormalInteger: result = newInteger(v.i)
+            else: result = newInteger(v.bi)
         of Floating:    result = newFloating(v.f)
         of Type:        result = newType(v.t)
         of Char:        result = newChar(v.c)
@@ -325,10 +342,26 @@ proc addChild*(parent: Value, child: Value) {.inline.} =
 proc `==`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
-            if y.kind==Integer: return x.i==y.i
-            else: return (float)(x.i)==y.f
+            if y.kind==Integer: 
+                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                    return x.i==y.i
+                elif x.iKind==NormalInteger and y.iKind==BigInteger:
+                    return x.i==y.bi
+                elif x.iKind==BigInteger and y.iKind==NormalInteger:
+                    return x.bi==y.i
+                else:
+                    return x.bi==y.bi
+            else: 
+                if x.iKind==NormalInteger:
+                    return (float)(x.i)==y.f
+                else:
+                    return (x.bi)==(int)(y.f)
         else:
-            if y.kind==Integer: return x.f==(float)(y.i)
+            if y.kind==Integer: 
+                if y.iKind==NormalInteger:
+                    return x.f==(float)(y.i)
+                elif y.iKind==BigInteger:
+                    return (int)(x.f)==y.bi        
             else: return x.f==y.f
     else:
         if x.kind != y.kind: return false
@@ -370,10 +403,26 @@ proc `==`*(x: Value, y: Value): bool =
 proc `<`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
-            if y.kind==Integer: return x.i<y.i
-            else: return (float)(x.i)<y.f
+            if y.kind==Integer: 
+                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                    return x.i<y.i
+                elif x.iKind==NormalInteger and y.iKind==BigInteger:
+                    return x.i<y.bi
+                elif x.iKind==BigInteger and y.iKind==NormalInteger:
+                    return x.bi<y.i
+                else:
+                    return x.bi<y.bi
+            else: 
+                if x.iKind==NormalInteger:
+                    return (float)(x.i)<y.f
+                else:
+                    return (x.bi)<(int)(y.f)
         else:
-            if y.kind==Integer: return x.f<(float)(y.i)
+            if y.kind==Integer: 
+                if y.iKind==NormalInteger:
+                    return x.f<(float)(y.i)
+                elif y.iKind==BigInteger:
+                    return (int)(x.f)<y.bi        
             else: return x.f<y.f
     else:
         case x.kind:
@@ -396,10 +445,26 @@ proc `<`*(x: Value, y: Value): bool =
 proc `>`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
-            if y.kind==Integer: return x.i>y.i
-            else: return (float)(x.i)>y.f
+            if y.kind==Integer: 
+                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                    return x.i>y.i
+                elif x.iKind==NormalInteger and y.iKind==BigInteger:
+                    return x.i>y.bi
+                elif x.iKind==BigInteger and y.iKind==NormalInteger:
+                    return x.bi>y.i
+                else:
+                    return x.bi>y.bi
+            else: 
+                if x.iKind==NormalInteger:
+                    return (float)(x.i)>y.f
+                else:
+                    return (x.bi)>(int)(y.f)
         else:
-            if y.kind==Integer: return x.f>(float)(y.i)
+            if y.kind==Integer: 
+                if y.iKind==NormalInteger:
+                    return x.f>(float)(y.i)
+                elif y.iKind==BigInteger:
+                    return (int)(x.f)>y.bi        
             else: return x.f>y.f
     else:
         case x.kind:
@@ -436,7 +501,9 @@ proc `$`*(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
         of Boolean      : return $(v.b)
-        of Integer      : return $(v.i)
+        of Integer      : 
+            if v.iKind==NormalInteger: return $(v.i)
+            else: return $(v.bi)
         of Floating     : return $(v.f)
         of Type         : return ":" & ($v.t).toLowerAscii()
         of Char         : return $(v.c)
@@ -529,7 +596,9 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
     case v.kind:
         of Null         : stdout.write "null"
         of Boolean      : stdout.write $(v.b)
-        of Integer      : stdout.write $(v.i)
+        of Integer      : 
+            if v.iKind==NormalInteger: stdout.write $(v.i)
+            else: stdout.write $(v.bi)
         of Floating     : stdout.write $(v.f)
         of Type         : stdout.write ":" & ($(v.t)).toLowerAscii()
         of Char         : stdout.write $(v.c)
@@ -677,7 +746,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
     case v.kind:
         of Null         : dumpPrimitive("null",v)
         of Boolean      : dumpPrimitive($(v.b), v)
-        of Integer      : dumpPrimitive($(v.i), v)
+        of Integer      : 
+            if v.iKind==NormalInteger: dumpPrimitive($(v.i), v)
+            else: dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
         of Type         : dumpPrimitive(($(v.t)).toLowerAscii(), v)
         of Char         : dumpPrimitive($(v.c), v)
@@ -753,7 +824,9 @@ proc hash*(v: Value): Hash {.inline.}=
     case v.kind:
         of Null         : result = 0
         of Boolean      : result = cast[Hash](v.b)
-        of Integer      : result = cast[Hash](v.i)
+        of Integer      : 
+            if v.iKind==NormalInteger: result = cast[Hash](v.i)
+            else: result = cast[Hash](v.bi)
         of Floating     : result = cast[Hash](v.f)
         of Type         : result = cast[Hash](ord(v.t))
         of Char         : result = cast[Hash](ord(v.c))
