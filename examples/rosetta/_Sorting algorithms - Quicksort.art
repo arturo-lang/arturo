@@ -1,0 +1,21 @@
+quickSort: function [items][
+	if? 2 > size items -> items
+	else [
+		quickSort 
+			select 
+				slice items 1 (size items)-1
+				'x [ x < items\0 ]
+		++
+		[items\0]
+		++
+		quickSort
+			select
+				slice items 1 (size items)-1
+				'x [ x >= items\0 ]
+	]
+	; if [size items] < 2 { items } { 
+	; 	[quickSort|filter [slice items 1] { & < items.0 }] + items.0 +  [quickSort|filter [slice items 1] { & >= items.0 }]
+	; }
+]
+ 
+print quickSort [3 1 2 8 5 7 9 4 6]
