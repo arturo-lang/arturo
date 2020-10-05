@@ -33,7 +33,7 @@ printf "\e[0m"
 BINARY=bin/arturo
 HINTS="" #"--hint[Conf]:off --hint[CC]:off --hint[Link]:off --hint[SuccessX]:off"
 WARNINGS="--warning[UnusedImport]:off"
-FLAGS="${HINTS} ${WARNINGS} --colors:off -d:PYTHONIC -d:release -d:danger --panics:on --gc:arc --checks:off -d:ssl"
+FLAGS="${HINTS} ${WARNINGS} --colors:off -d:PYTHONIC -d:release -d:danger --panics:on --gc:arc --checks:off --overflowChecks:on -d:ssl"
 NIM_OPTS=""
 DO_COMPRESS=true
 DO_PASSEXTRA=true
@@ -125,7 +125,7 @@ if $DO_COMPRESS ; then
     echo ""
     printf "  \e[0;90mcompression: on\e[0m"
     echo ""
-	upx -q $BINARY >/dev/null 2>&1
+	#upx -q $BINARY >/dev/null 2>&1
 fi
 
 if $DO_INSTALL ; then
