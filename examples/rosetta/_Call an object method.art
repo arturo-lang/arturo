@@ -1,16 +1,16 @@
-Person: #{
-	name ""
-	surname ""
+Person: #[
+	name: ""
+	surname: ""
  
-	init [n,s]{
+	init: $[n,s][
 		name n
 		surname s
-	}
+	]
  
-	sayHello {
+	sayHello: $[][
 		print "Hello " + name + "!"
-	}
-}
- 
-person $(new ~Person "John" "Doe")
-person.sayHello
+	]
+]
+inspect new Person
+person: Person\init "John" "Doe" ; $(new ~Person "John" "Doe")
+person\sayHello
