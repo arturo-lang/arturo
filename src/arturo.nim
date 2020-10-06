@@ -117,7 +117,7 @@ when isMainModule:
                     let evaled = parsed.doEval()
             else:
                 var presets: ValueDict = initOrderedTable[string,Value]()
-                presets["arg"] = newArray(arguments)
+                presets["arg"] = newBlock(arguments)
 
                 presets["Arturo"] = newDictionary({
                     "author"    : newString("Yanis Zafirópulos"),

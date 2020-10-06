@@ -87,12 +87,11 @@ type
         Symbol      = 14
         Date        = 15
         Binary      = 16
-        Array       = 17
-        Dictionary  = 18
-        Function    = 19
-        Inline      = 20
-        Block       = 21
-        Any         = 22
+        Dictionary  = 17
+        Function    = 18
+        Inline      = 19
+        Block       = 20
+        Any         = 21
 
     IntegerKind* = enum
         NormalInteger
@@ -123,8 +122,7 @@ type
                 e*     : ValueDict         
                 eobj*  : DateTime
             of Binary:      n*  : ByteArray
-            of Array,      
-               Inline,
+            of Inline,
                Block:       a*  : ValueArray
             of Dictionary:  d*  : ValueDict
             of Function:    
@@ -272,12 +270,6 @@ proc newDate*(dt: DateTime): Value {.inline.} =
 proc newBinary*(n: ByteArray = @[]): Value {.inline.} =
     Value(kind: Binary, n: n)
 
-proc newArray*(a: ValueArray = @[]): Value {.inline.} =
-    Value(kind: Array, a: a)
-
-proc newStringArray*(a: seq[string]): Value {.inline.} =
-    newArray(a.map(proc (x:string):Value = newString($x)))
-
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
@@ -319,7 +311,6 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Date:        result = newDate(v.eobj)
         of Binary:      result = newBinary(v.n)
 
-        of Array:       result = newArray(v.a)
         of Inline:      result = newInline(v.a)
         of Block:       result = newBlock(v.a)
 
@@ -378,8 +369,7 @@ proc `==`*(x: Value, y: Value): bool =
             of Attr,
                AttrLabel: return x.r == y.r
             of Symbol: return x.m == y.m
-            of Array,
-               Inline,
+            of Inline,
                Block:
                 if x.a.len != y.a.len: return false
 
@@ -435,8 +425,7 @@ proc `<`*(x: Value, y: Value): bool =
                Label,
                Literal: return x.s < y.s
             of Symbol: return false
-            of Array,
-               Inline,
+            of Inline,
                Block:
                 return x.a.len < y.a.len
             else:
@@ -477,8 +466,7 @@ proc `>`*(x: Value, y: Value): bool =
                Label,
                Literal: return x.s > y.s
             of Symbol: return false
-            of Array,
-               Inline,
+            of Inline,
                Block:
                 return x.a.len > y.a.len
             else:
@@ -560,8 +548,7 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Date     : return $(newDictionary(v.e))
         of Binary   : discard
-        of Array,
-           Inline,
+        of Inline,
            Block     :
             result = "["
             for i,child in v.a:
@@ -664,8 +651,7 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
                 if i mod 2==1:
                     stdout.write " "
 
-        of Array,
-           Inline,
+        of Inline,
            Block     :
             stdout.write "["
             if newLine: stdout.write "\n"
@@ -778,8 +764,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
         of Binary       : discard
 
-        of Array,
-           Inline,
+        of Inline,
            Block        :
             dumpBlockStart(v)
 
@@ -852,8 +837,7 @@ proc hash*(v: Value): Hash {.inline.}=
 
         of Binary       : discard
 
-        of Array,
-           Inline,
+        of Inline,
            Block        : 
             result = 1
             for i in v.a:

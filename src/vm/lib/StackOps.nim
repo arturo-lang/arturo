@@ -43,5 +43,5 @@ template Pop*():untyped =
             while i<x.i:
                 res.add stack.pop()
                 i+=1
-            stack.push(newArray(res))
+            stack.push(newBlock(res))
    

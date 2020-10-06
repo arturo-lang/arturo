@@ -673,8 +673,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Binary : discard
 
-            of Array,
-               Dictionary,
+            of Dictionary,
                Function: discard
 
             of Inline: 

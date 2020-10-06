@@ -29,12 +29,12 @@ template List*():untyped =
 
     if (let aSelect = popAttr("select"); aSelect != VNULL):
         if (popAttr("relative") != VNULL):
-            stack.push(newStringArray((toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
+            stack.push(newStringBlock((toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
         else:
-            stack.push(newStringArray((toSeq(walkDir(x.s)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
+            stack.push(newStringBlock((toSeq(walkDir(x.s)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
     else:
         if (popAttr("relative") != VNULL):
-            stack.push(newStringArray(toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])))
+            stack.push(newStringBlock(toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])))
         else:
-            stack.push(newStringArray(toSeq(walkDir(x.s)).map((x)=>x[1])))
+            stack.push(newStringBlock(toSeq(walkDir(x.s)).map((x)=>x[1])))
 

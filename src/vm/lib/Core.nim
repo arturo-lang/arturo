@@ -405,7 +405,6 @@ template To*(needsRequire:bool = true):untyped =
                         discard
 
             of Symbol,
-               Array,
                Dictionary,
                Function,
                Any,
