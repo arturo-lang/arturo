@@ -506,28 +506,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             of opRange: Collections.Range()
 
-            of opSum:
-                require(opSum)
-
-                var i = 0
-                var sum = 0
-                while i<x.a.len:
-                    sum += x.a[i].i
-                    i += 1
-
-                stack.push(newInteger(sum))
-
-            of opProduct:
-                require(opProduct)
-
-                var i = 0
-                var product = 1
-                while i<x.a.len:
-                    product *= x.a[i].i
-                    i += 1
-
-                stack.push(newInteger(product))
-
+            of opSum: Numbers.Sum()
+            of opProduct: Numbers.Product()
+                
             of opExit: Core.Exit()
             of opInfo: Reflection.Info()
             of opType: Reflection.Type()
