@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+import extras/bignum, math, sequtils
+
 import vm/stack, vm/value
 
 #=======================================
@@ -62,6 +64,105 @@ proc isPrime*(n: uint32): bool =
  
 proc isPrime*(n: int32): bool =
     n >= 0 and n.uint32.isPrime
+
+proc pollardG*(n: var Int, m: Int) {.inline.} =
+    discard mul(n,n,n)
+    discard add(n,n,1)
+    discard `mod`(n,n,m)
+
+proc pollardRho*(n: Int): Int =
+    var x = newInt(2)
+    var y = newInt(2)
+    var d = newInt(1)
+    var z = newInt(1)
+
+    var count = 0
+    var t = newInt(0)
+
+    while true:
+        pollardG(x,n)
+        pollardG(y,n)
+        pollardG(y,n)
+
+        discard abs(t,sub(t,x,y))
+        discard `mod`(t,t,n)
+        discard mul(z,z,t)
+
+        inc(count)
+        if count==100:
+            discard gcd(d,z,n)
+            if cmp(d,1)!=0:
+                break
+            discard set(z,1)
+            count = 0
+
+    if cmp(d,n)==0:
+        return newInt(0)
+    else:
+        return d
+
+proc primeFactors*(n: int): seq[int] =    
+    var res: seq[int] = @[]
+    var maxq = int(floor(sqrt(float(n))))
+    var d = 1
+    var q: int = (n %% 2) and 2 or 3  
+    while (q <= maxq) and ((n %% q) != 0):
+        q = 1 + d*4 - int(d /% 2)*2
+        d += 1
+    if q <= maxq:        
+        var q1: seq[int] = primeFactors(n /% q)
+        var q2: seq[int] = primeFactors(q)
+        res = concat(q2, q1, res)
+    else: 
+        res.add(n)    
+    result = res
+
+proc factors*(n: int): seq[int] =
+    var res: seq[int] = @[]
+
+    var i = 1
+    while i < n-1:
+        if n mod i == 0:
+            res.add(i)
+        i += 1
+
+    res.add(n)
+
+    result = res
+
+proc primeFactors*(num: Int): seq[Int] =
+    result = @[]
+    var n = num
+
+    if n.probablyPrime(10)!=0:
+        result.add(n)
+
+    let factor1 = pollardRho(num)
+    if factor1==0:
+        return @[]
+
+    if factor1.probablyPrime(10)==0:
+        return @[]
+
+    let factor2 = n div factor1
+    if factor2.probablyPrime(10)==0:
+        return @[factor1]
+
+    result.add(factor1)
+    result.add(factor2)
+
+proc factors*(n: Int): seq[Int] =
+    var res: seq[Int] = @[]
+
+    var i = newInt(1)
+    while i < n-1:
+        if n mod i == 0:
+            res.add(i)
+        i += 1
+
+    res.add(n)
+
+    result = res
 
 #=======================================
 # Methods
@@ -590,4 +691,24 @@ template Gcd*():untyped =
 template Prime*():untyped =
     require(opPrime)
 
-    stack.push(newBoolean(isPrime(x.i.uint32)))
+    if x.iKind==NormalInteger:
+        stack.push(newBoolean(isPrime(x.i.uint32)))
+    else:
+        stack.push(newBoolean(probablyPrime(x.bi,10)==0))
+
+template Factors*():untyped =
+    require(opPrime)
+
+    var prime = false
+    if (popAttr("prime") != VNULL): prime = true
+
+    if x.iKind==NormalInteger:
+        if prime:
+            stack.push(newBlock(primeFactors(x.i).map((x)=>newInteger(x))))
+        else:
+            stack.push(newBlock(factors(x.i).map((x)=>newInteger(x))))
+    else:
+        if prime:
+            stack.push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
+        else:
+            stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
