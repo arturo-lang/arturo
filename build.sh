@@ -105,9 +105,6 @@ printf "\e[0m"
 
 #--passC:"-O3 -flto" --passL:"-flto"
 
-# echo $FLAGS
-# echo $NIM_OPTS
-
 if $DO_PASSEXTRA ; then
     echo ""
     printf "  \e[1;90m"
