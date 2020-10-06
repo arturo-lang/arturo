@@ -19,8 +19,12 @@
       * [Run a script](#run-a-script)
       * [Interactive console (REPL)](#interactive-console--repl)
    * [Editors & IDEs](#editors--ides)
+   * [Contributing](#contributing)
+   * [Roadmap](#roadmap)
    * [License](#license)
 <!--te-->
+
+---
 
 The Language 
 ------------------------------
@@ -44,7 +48,7 @@ loop 1..10 'x [
 
 Simple, isn't it?
 
-> :information_source:   For more - working - examples, just have a look into the /examples folder
+> :+1:   For more - working - examples, just have a look into the /examples folder
 
 The Compiler
 ------------------------------
@@ -108,6 +112,26 @@ If you prefer to use some specific editors, check which one are already supporte
 - **SublimeText**: 
 https://github.com/arturo-lang/art-sublimetext-package
 
+Contributing
+------------------------------
+
+Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for detail and the process for submitting pull requests to us.
+
+
+Roadmap
+------------------------------
+
+The list of things to fix and/or add could be endless. But here is one, a bit prioritized (if you think you can help, you know the way ;-):
+
+- [X] Enrich the system library
+   - [ ] Implement HTML module
+   - [ ] Add more Server-related features
+   - [ ] Implement LaTeX generation module
+   - [ ] Add custom grammar parser functionality
+- [ ] Optimize the bytecode
+- [ ] Add support for package manager
+- [ ] Add UI support (via libui? via webview? both?)
+- [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
 
 License
 ------------------------------
