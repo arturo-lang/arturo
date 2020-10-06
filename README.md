@@ -19,8 +19,8 @@
       * [Run a script](#run-a-script)
       * [Interactive console (REPL)](#interactive-console--repl)
    * [Editors & IDEs](#editors--ides)
-   * [Contributing](#contributing)
    * [Roadmap](#roadmap)
+   * [Contributing](#contributing)
    * [License](#license)
 <!--te-->
 
@@ -112,12 +112,6 @@ If you prefer to use some specific editors, check which one are already supporte
 - **SublimeText**: 
 https://github.com/arturo-lang/art-sublimetext-package
 
-Contributing
-------------------------------
-
-Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for detail and the process for submitting pull requests to us.
-
-
 Roadmap
 ------------------------------
 
@@ -137,6 +131,11 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [ ] Add UI support (via libui? via webview? both?)
 - [ ] Explore different uses of Arturo's dialecting capabilities (SDLs)
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
+
+Contributing
+------------------------------
+
+Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for detail and the process for submitting pull requests to us.
 
 License
 ------------------------------
