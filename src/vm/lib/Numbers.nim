@@ -282,26 +282,7 @@ template Mul*():untyped =
             else:
                 syms[x.s] = newFloating((float)(syms[x.s].i)*y.f)
     else:
-        if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.i*y.bi))
-                else:
-                    try:
-                        stack.push(newInteger(x.i*y.i))
-                    except OverflowDefect:
-                        stack.push(newInteger(newInt(x.i)*y.i))
-            else:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.bi*y.bi))
-                else:
-                    stack.push(newInteger(x.bi*y.i))
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: stack.push(newFloating(x.f*y.f))
-                else: stack.push(newFloating(x.f*(float)(y.i)))
-            else:
-                stack.push(newFloating((float)(x.i)*y.f))
+        stack.push(x*y)
 
 template Div*():untyped =
     require(opDiv)
@@ -413,9 +394,14 @@ template Pow*():untyped =
                     #stack.push(newInteger(pow(x.iy.bi))
                 else:
                     try:
-                        let res = pow((float)x.i,(float)y.i)
-                        stack.push(newInteger((int)res))
-                    except OverflowDefect:
+                        echo "trying"
+                        let res = x.i^y.i
+                        if (int)(res) > 0xffffffffffffff:
+                            stack.push(newInteger(pow(x.i,(culong)(y.i))))
+                        else:
+                            stack.push(newInteger((int)res))
+                    except CatchableError as e:
+                        echo "Caught something"
                         stack.push(newInteger(pow(x.i,(culong)(y.i))))
             else:
                 if y.iKind==BigInteger:
@@ -709,9 +695,9 @@ template Product*():untyped =
     require(opProduct)
 
     var i = 0
-    var product = 1
+    var product = I1
     while i<x.a.len:
-        product *= x.a[i].i
+        product = product * x.a[i]
         i += 1
 
-    stack.push(newInteger(product))
+    stack.push(product)
