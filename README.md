@@ -22,8 +22,6 @@
    * [License](#license)
 <!--te-->
 
----
-
 The Language 
 ------------------------------
 
@@ -48,16 +46,12 @@ Simple, isn't it?
 
 > :information_source:   For more - working - examples, just have a look into the /examples folder
 
----
-
 The Compiler
 ------------------------------
 
 The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
 
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
-
----
 
 Trying it out
 ------------------------------
@@ -93,8 +87,7 @@ That's it!
 Just use the existing docker image:
 
 	docker run -it fingidor/arturo-repl
-	
----
+
 
 Using the command line
 ------------------------------
@@ -107,8 +100,6 @@ Using the command line
 
     arturo
     
----
-
 Editors & IDEs
 ------------------------------
 
@@ -117,7 +108,6 @@ If you prefer to use some specific editors, check which one are already supporte
 - **SublimeText**: 
 https://github.com/arturo-lang/art-sublimetext-package
 
----
 
 License
 ------------------------------
