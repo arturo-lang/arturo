@@ -394,7 +394,7 @@ template Pow*():untyped =
                     #stack.push(newInteger(pow(x.iy.bi))
                 else:
                     try:
-                        echo "trying"
+                        #echo "trying"
                         let res = x.i^y.i
                         if (int)(res) > 0xffffffffffffff:
                             stack.push(newInteger(pow(x.i,(culong)(y.i))))
