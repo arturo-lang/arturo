@@ -553,6 +553,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "whitespace?": addCommand(opIsWhitespace)
                     of "numeric?"   : addCommand(opIsNumeric)
 
+                    of "factors"    : addCommand(opFactors)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
