@@ -1,0 +1,5 @@
+n: 20
+while [not? all? 11..19 => 0 = n %]
+	-> 'n + 20
+
+print n
