@@ -1,0 +1,14 @@
+palindrome?: function [n] -> n = reverse n
+
+maxPalindrome: 0
+
+loop 1..999 'a [
+	loop a..999 'b [
+		prod: a*b
+		if palindrome? to :string prod [
+			if prod > maxPalindrome -> maxPalindrome: prod
+		]
+	]
+]
+
+print maxPalindrome

@@ -1,0 +1,16 @@
+lim: 500
+
+found: false
+i: 1 ;sum 1..100
+summum: 0
+until [
+	summum: summum+i
+	if lim < size factors summum [
+		print ["Found:" summum]
+		found: true
+	]
+	;print ["summum:" summum]
+	i: i+1
+	
+	
+][found]

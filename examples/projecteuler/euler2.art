@@ -1,0 +1,28 @@
+fib: function [n][
+	if? n<2 -> 1
+	else [
+		prev: 0, f: 1
+
+		repeat n [
+			tmp: prev, prev: f, f: f + tmp
+		]
+		return f
+	]
+]
+
+fibsUnder: function [limit][
+	x: 0
+	results: []
+	num: fib x
+
+	while [num < limit][
+		'results ++ num
+		x: x+1
+		num: fib x
+		print ["fib" x "=" num]
+	]
+
+	return unique @results
+]
+
+print sum select fibsUnder 4000000 => even?

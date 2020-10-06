@@ -1,0 +1,3 @@
+print sum map split to :string 2^1000 => to: integer
+
+;print [sum|map [chars|toString 2^1000] => toNumber ]
