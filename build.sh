@@ -46,7 +46,7 @@ echo ""
 if [ $# -eq 0 ]; then
     
     printf "\e[1;35m●\e[0m Setting mode:\e[1;32m full\e[0m"
-    FLAGS="c ${FLAGS} --opt:speed"
+    FLAGS="c --opt:speed ${FLAGS} "
 fi
 
 while test $# -gt 0
@@ -56,7 +56,7 @@ do
                     DO_INSTALL=true
 
                     printf "\e[1;35m●\e[0m Setting mode:\e[1;32m full\e[0m"
-                    FLAGS="c ${FLAGS} --opt:speed"
+                    FLAGS="c --opt:speed ${FLAGS}"
             ;;
         mini)       
                     printf "\e[1;35m●\e[0m setting mode:\e[1;32m mini\e[0m"
@@ -104,6 +104,9 @@ cat version/version
 printf "\e[0m"
 
 #--passC:"-O3 -flto" --passL:"-flto"
+
+# echo $FLAGS
+# echo $NIM_OPTS
 
 if $DO_PASSEXTRA ; then
     echo ""
