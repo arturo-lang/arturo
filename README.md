@@ -48,12 +48,16 @@ Simple, isn't it?
 
 > :information_source:   For more - working - examples, just have a look into the /examples folder
 
+---
+
 The Compiler
 ------------------------------
 
 The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
 
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
+
+---
 
 Trying it out
 ------------------------------
@@ -89,6 +93,8 @@ That's it!
 Just use the existing docker image:
 
 	docker run -it fingidor/arturo-repl
+	
+---
 
 Using the command line
 ------------------------------
@@ -100,6 +106,8 @@ Using the command line
 #### Interactive console / REPL
 
     arturo
+    
+---
 
 Editors & IDEs
 ------------------------------
