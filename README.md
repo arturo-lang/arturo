@@ -135,6 +135,7 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [ ] Add the option of saving intermediate bytecode
 - [ ] Add support for package manager
 - [ ] Add UI support (via libui? via webview? both?)
+- [ ] Explore different uses of Arturo's dialecting capabilities (SDLs)
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
 
 License
