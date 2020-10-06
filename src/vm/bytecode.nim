@@ -384,6 +384,8 @@ type
         opIsWhitespace  = 0xF8
         opIsNumeric     = 0xF9
 
+        opFactors       = 0xFA
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -1939,6 +1941,15 @@ const
                                 a       : {String},          
                                 ret     : {Boolean},      
                                 desc    : "check if given string contains a valid number" ),
+
+        opFactors  : OpSpec(   name    : "factors",      
+                                args    : 1,   
+
+                                an      : "number",        
+                                a       : {Integer},          
+                                ret     : {Block},      
+                                attrs   :   ".prime -> get only prime factors",
+                                desc    : "get list of factors for given integer" ),
     ]
 
     NoTranslation*  = (@[],@[])

@@ -728,6 +728,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opIsWhitespace: Strings.IsWhitespace()
             of opIsNumeric: Strings.IsNumeric()
 
+            of opFactors: Numbers.Factors()
+
         i += 1
 
     when defined(VERBOSE):
