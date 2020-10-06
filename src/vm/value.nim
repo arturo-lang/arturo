@@ -330,6 +330,31 @@ proc addChild*(parent: Value, child: Value) {.inline.} =
 # Overloads
 #=======================================
 
+proc `+`*(x: Value, y: Value): Value =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        return VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    return newInteger(x.i+y.bi)
+                else:
+                    try:
+                        return newInteger(x.i+y.i)
+                    except OverflowDefect:
+                        return newInteger(newInt(x.i)+y.i)
+            else:
+                if y.iKind==BigInteger:
+                    return newInteger(x.bi+y.bi)
+                else:
+                    return newInteger(x.bi+y.i)
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: return newFloating(x.f+y.f)
+                else: return newFloating(x.f+(float)(y.i))
+            else:
+                return newFloating((float)(x.i)+y.f)
+
 proc `==`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
