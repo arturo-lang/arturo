@@ -209,26 +209,7 @@ template Add*():untyped =
             else:
                 syms[x.s] = newFloating((float)(syms[x.s].i)+y.f)
     else:
-        if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.i+y.bi))
-                else:
-                    try:
-                        stack.push(newInteger(x.i+y.i))
-                    except OverflowDefect:
-                        stack.push(newInteger(newInt(x.i)+y.i))
-            else:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.bi+y.bi))
-                else:
-                    stack.push(newInteger(x.bi+y.i))
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: stack.push(newFloating(x.f+y.f))
-                else: stack.push(newFloating(x.f+(float)(y.i)))
-            else:
-                stack.push(newFloating((float)(x.i)+y.f))
+        stack.push(x+y)
 
 template Sub*():untyped =
     require(opSub)
@@ -712,3 +693,25 @@ template Factors*():untyped =
             stack.push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
         else:
             stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
+
+template Sum*():untyped =
+    require(opSum)
+
+    var i = 0
+    var sum = I0
+    while i<x.a.len:
+        sum = sum + x.a[i]
+        i += 1
+
+    stack.push(sum)
+
+template Product*():untyped =
+    require(opProduct)
+
+    var i = 0
+    var product = 1
+    while i<x.a.len:
+        product *= x.a[i].i
+        i += 1
+
+    stack.push(newInteger(product))
