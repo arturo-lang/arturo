@@ -290,7 +290,9 @@ template To*(needsRequire:bool = true):untyped =
                     of Boolean: stack.push newBoolean(y.i!=0)
                     of Floating: stack.push newFloating((float)y.i)
                     of Char: stack.push newChar(chr(y.i))
-                    of String: stack.push newString($(y.i))
+                    of String: 
+                        if y.iKind==NormalInteger: stack.push newString($(y.i))
+                        else: stack.push newString($(y.bi))
                     of Binary:
                         let str = $(y.i)
                         var ret: ByteArray = newSeq[byte](str.len)
