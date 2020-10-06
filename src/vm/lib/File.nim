@@ -41,8 +41,7 @@ proc generateJsonNode*(n: Value): JsonNode =
         of Symbol       : result = newJString($(n.m))
         of Date         : discard
         of Binary       : discard
-        of Array,
-           Inline,
+        of Inline,
            Block        : 
            result = newJArray()
            for v in n.a:
@@ -63,7 +62,7 @@ proc parseJsonNode*(n: JsonNode): Value =
         of JFloat   : result = newFloating(n.fnum)
         of JBool    : result = newBoolean(n.bval)
         of JNull    : result = VNULL
-        of JArray   : result = newArray(n.elems.map((x) => parseJsonNode(x)))
+        of JArray   : result = newBlock(n.elems.map((x) => parseJsonNode(x)))
         of JObject  : 
             var ret: ValueDict = initOrderedTable[string,Value]()
             for k,v in n.fields:
@@ -91,7 +90,7 @@ proc parseXMLNode*(n: XmlNode): Value =
 
             if ret.hasKey(key):
                 if ret[key].kind==String:
-                    ret[key] = newArray(@[ret[key]])
+                    ret[key] = newBlock(@[ret[key]])
                     ret[key].a.add(childContent)
                 else:
                     ret[key].a.add(childContent)
@@ -134,9 +133,9 @@ template Read*():untyped =
 
         if (popAttr("lines") != VNULL):
             if download:
-                stack.push(newStringArray(action(x.s).split('\n')))
+                stack.push(newStringBlock(action(x.s).split('\n')))
             else:
-                stack.push(newStringArray(toSeq(x.s.lines)))
+                stack.push(newStringBlock(toSeq(x.s.lines)))
         elif (popAttr("json") != VNULL):
             stack.push(parseJsonNode(parseJson(action(x.s))))
         # elif attrs.hasKey("html"):

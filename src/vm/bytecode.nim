@@ -669,8 +669,8 @@ const
 
                                 an      : "block",       
                                 a       : {Block},      
-                                ret     : {Array},      
-                                desc    : "create array from given block" ),
+                                ret     : {Block},      
+                                desc    : "create array from given block~by calculating all internal values" ),
 
         opDictionary: OpSpec(   name    : "dictionary",      
                                 args    : 1,   
@@ -678,7 +678,7 @@ const
                                 an      : "block",      
                                 a       : {Block},      
                                 ret     : {Dictionary},      
-                                desc    : "create dictionary from given block" ),
+                                desc    : "create dictionary from given block~by getting all internal symbols" ),
 
         opFunction  : OpSpec(   name    : "function",      
                                 args    : 2,   
@@ -743,7 +743,7 @@ const
                                 args    : 3,   
 
                                 an      : "collection",      
-                                a       : {Array,Dictionary,Block},      
+                                a       : {Block,Dictionary},      
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "action",          
@@ -764,43 +764,43 @@ const
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {Array,Block,Literal},              
+                                a       : {Block,Literal},              
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "action",          
                                 c       : {Block},            
-                                ret     : {Array,Block,Null},      
+                                ret     : {Block,Null},      
                                 desc    : "map collection's items by applying given action" ),
 
         opSelect    : OpSpec(   name    : "select",       
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {Array,Block,Literal},              
+                                a       : {Block,Literal},              
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "condition",       
                                 c       : {Block},            
-                                ret     : {Array,Block,Null},      
+                                ret     : {Block,Null},      
                                 desc    : "get collection's items that fulfil given condition" ),
 
         opFilter    : OpSpec(   name    : "filter",       
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {Array,Block,Literal},              
+                                a       : {Block,Literal},              
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "condition",       
                                 c       : {Block},            
-                                ret     : {Array,Block,Null},      
+                                ret     : {Block,Null},      
                                 desc    : "get collection's items by filtering those~that do not fulfil given condition" ),
 
         opSize      : OpSpec(   name    : "size",      
                                 args    : 1,   
 
                                 an      : "collection",  
-                                a       : {String,Array,Block},
+                                a       : {String,Block},
                                 ret     : {Integer},      
                                 desc    : "get size/length of given collection" ),
 
@@ -824,7 +824,7 @@ const
                                 args    : 2,   
 
                                 an      : "collection",  
-                                a       : {Array,Block,Dictionary,String,Date},  
+                                a       : {Block,Dictionary,String,Date},  
                                 bn      : "index",       
                                 b       : {Integer,String,Literal},     
                                 ret     : {Any},                
@@ -834,7 +834,7 @@ const
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {Array,Block,Dictionary,String},  
+                                a       : {Block,Dictionary,String},  
                                 bn      : "index",       
                                 b       : {Integer,String,Literal}, 
                                 cn      : "value",
@@ -878,23 +878,23 @@ const
                                 b       : {Integer},
                                 ret     : {Null},     
                                 attrs   :   ".step :integer -> use step between range values", 
-                                desc    : "get array of numbers in given range (inclusive)" ),
+                                desc    : "get list of numbers in given range (inclusive)" ),
 
         opSum       : OpSpec(   name    : "sum",          
                                 args    : 1,   
 
                                 an      : "numbers",      
-                                a       : {Array},      
+                                a       : {Block},      
                                 ret     : {Integer,Floating},   
-                                desc    : "calculate the sum of all values in given array" ),
+                                desc    : "calculate the sum of all values in given list" ),
 
         opProduct   : OpSpec(   name    : "product",      
                                 args    : 1,   
 
                                 an      : "numbers",      
-                                a       : {Array},      
+                                a       : {Block},      
                                 ret     : {Integer,Floating},   
-                                desc    : "calculate the product of all values in given array" ),
+                                desc    : "calculate the product of all values in given list" ),
 
         opExit      : OpSpec(   name    : "exit",      
                                 args    : 0,   
@@ -971,7 +971,7 @@ const
                                 args    : 1,   
 
                                 an      : "collection",      
-                                a       : {String,Array,Block},
+                                a       : {String,Block},
                                 ret     : {Any},      
                                 attrs   :   ".n :integer -> get first <n> items",           
                                 desc    : "return the first item of the given collection"),
@@ -980,7 +980,7 @@ const
                                 args    : 1,   
 
                                 an      : "collection",      
-                                a       : {String,Array,Block},
+                                a       : {String,Block},
                                 ret     : {Any},   
                                 attrs   :   ".n :integer -> get last <n> items",               
                                 desc    : "return the last item of the given collection"),
@@ -989,17 +989,17 @@ const
                                 args    : 1,   
 
                                 an      : "collection",      
-                                a       : {Array,Literal},                 
-                                ret     : {Array,Null},         
-                                desc    : "get given array without duplicates"),
+                                a       : {Block,Literal},                 
+                                ret     : {Block,Null},         
+                                desc    : "get given block without duplicates"),
 
         opSort      : OpSpec(   name    : "sort",      
                                 args    : 1,   
 
                                 an      : "collection",      
-                                a       : {Array,Literal},                  
-                                ret     : {Array,Null},         
-                                desc    : "sort given array"),
+                                a       : {Block,Literal},                  
+                                ret     : {Block,Null},         
+                                desc    : "sort given block"),
 
         opInc       : OpSpec(   name    : "inc",          
                                 args    : 1,   
@@ -1042,7 +1042,7 @@ const
 
                                 an      : "predicate",      
                                 a       : {Block},      
-                                ret     : {Dictionary},         
+                                ret     : {Null},         
                                 desc    : "initiate a case block to check for different cases"),
 
         opWhen      : OpSpec(   name    : "when?",        
@@ -1052,7 +1052,7 @@ const
                                 a       : {Block},      
                                 bn      : "action",      
                                 b       : {Block},      
-                                ret     : {Dictionary},         
+                                ret     : {Boolean},         
                                 desc    : "check if a specific condition is fulfilled~and if so, execute given action"),
 
         opCapitalize: OpSpec(   name    : "capitalize",   
@@ -1097,7 +1097,7 @@ const
                                 args    : 1,   
 
                                 an      : "collection",  
-                                a       : {Array,Block},      
+                                a       : {Block},      
                                 ret     : {Any},                
                                 desc    : "get a random element from given collection"),
 
@@ -1105,20 +1105,20 @@ const
                                 args    : 1,   
 
                                 an      : "collection",  
-                                a       : {Array,Block,Literal},      
-                                ret     : {Array,Block,Null},   
+                                a       : {Block,Literal},      
+                                ret     : {Block,Null},   
                                 desc    : "get given collection shuffled"),
 
         opSlice     : OpSpec(   name    : "slice",        
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {String,Array,Block},       
+                                a       : {String,Block},       
                                 bn      : "from",        
                                 b       : {Integer},                  
                                 cn      : "to",              
                                 c       : {Integer},          
-                                ret     : {String,Array,Block}, 
+                                ret     : {String,Block}, 
                                 desc    : "get a slice of collection between given indices"),
 
         opClear     : OpSpec(   name    : "clear",        
@@ -1131,7 +1131,7 @@ const
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {Array,Block},              
+                                a       : {Block},              
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "condition",       
@@ -1143,7 +1143,7 @@ const
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {Array,Block},              
+                                a       : {Block},              
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "condition",       
@@ -1156,8 +1156,8 @@ const
 
                                 an      : "file",        
                                 a       : {String},                      
-                                ret     : {String,Binary},                
-                                attrs   :   ".lines -> read file lines into array~" &
+                                ret     : {String,Block,Binary},                
+                                attrs   :   ".lines -> read file lines into block~" &
                                             ".json -> read json file into a valid value~" &
                                             ".binary -> read as binary", 
                                 desc    : "read file from given path", ),
@@ -1370,8 +1370,8 @@ const
                                 args    : 1,
 
                                 an      : "collection",
-                                a       : {Array,Block,String,Literal},
-                                ret     : {Array,Block,Null},
+                                a       : {Block,String,Literal},
+                                ret     : {Block,Null},
                                 attrs   :   ".words -> split string by whitespace~" &
                                             ".lines -> split string by lines~" &
                                             ".by :string -> split using given separator~" &
@@ -1478,7 +1478,7 @@ const
                                 args    : 1,   
 
                                 an      : "collection",
-                                a       : {String,Array,Block,Dictionary},
+                                a       : {String,Block,Dictionary},
                                 ret     : {Boolean},      
                                 desc    : "check if given collection is empty" ),
 
@@ -1486,7 +1486,7 @@ const
                                 args    : 3,   
 
                                 an      : "collection",
-                                a       : {String,Array,Block,Dictionary,Literal},
+                                a       : {String,Block,Dictionary,Literal},
                                 bn      : "index",
                                 b       : {Integer,String},
                                 cn      : "value",
@@ -1498,7 +1498,7 @@ const
                                 args    : 2,   
 
                                 an      : "collection",
-                                a       : {String,Array,Block,Dictionary},
+                                a       : {String,Block,Dictionary},
                                 bn      : "value",
                                 b       : {Any},
                                 ret     : {Boolean},      
@@ -1508,7 +1508,7 @@ const
                                 args    : 2,   
 
                                 an      : "collection",
-                                a       : {String,Array,Block,Dictionary},
+                                a       : {String,Block,Dictionary},
                                 bn      : "value",
                                 b       : {Any},
                                 ret     : {Integer,String,Null},      
@@ -1528,8 +1528,8 @@ const
                                 args    : 1,   
 
                                 an      : "collection",
-                                a       : {Array,Block,String,Literal},
-                                ret     : {Array,Block,String,Null},      
+                                a       : {Block,String,Literal},
+                                ret     : {Block,String,Null},      
                                 desc    : "reverse given collection" ),
 
         opExecute   : OpSpec(   name    : "execute",        
@@ -1560,8 +1560,8 @@ const
                                 args    : 1,
 
                                 an      : "collection",
-                                a       : {Array,Block,Literal},
-                                ret     : {Array,Null},
+                                a       : {Block,Literal},
+                                ret     : {Block,Null},
                                 attrs   :   ".with :string -> use given separator",
                                 desc    : "join collection of strings into string"),
 
@@ -1569,7 +1569,7 @@ const
                                 args    : 1,
 
                                 an      : "collection",
-                                a       : {Array,Block},
+                                a       : {Block},
                                 ret     : {Any,Null},
                                 desc    : "get maximum element in given collection"),
 
@@ -1577,7 +1577,7 @@ const
                                 args    : 1,
 
                                 an      : "collection",
-                                a       : {Array,Block},
+                                a       : {Block},
                                 ret     : {Any,Null},
                                 desc    : "get minimum element in given collection"),
 
@@ -1586,16 +1586,16 @@ const
 
                                 an      : "dictionary",
                                 a       : {Dictionary},
-                                ret     : {Array},
-                                desc    : "get array of keys for given dictionary"),
+                                ret     : {Block},
+                                desc    : "get list of keys for given dictionary"),
 
         opValues    : OpSpec(   name    : "values",
                                 args    : 1,
 
                                 an      : "dictionary",
                                 a       : {Dictionary},
-                                ret     : {Array},
-                                desc    : "get array of values for given dictionary"),
+                                ret     : {Block},
+                                desc    : "get list of values for given dictionary"),
 
         opGetHash   : OpSpec(   name    : "hash",
                                 args    : 1,
@@ -1701,40 +1701,40 @@ const
                                 args    : 2,
 
                                 an      : "collection",
-                                a       : {Array,Block,String,Literal},
+                                a       : {Block,String,Literal},
                                 bn      : "number",
                                 b       : {Integer},
-                                ret     : {Array,Block,String,Null},
+                                ret     : {Block,String,Null},
                                 desc    : "return first <number> of elements from given collection"),
 
         opDrop      : OpSpec(   name    : "drop",
                                 args    : 2,
 
                                 an      : "collection",
-                                a       : {Array,Block,String,Literal},
+                                a       : {Block,String,Literal},
                                 bn      : "number",
                                 b       : {Integer},
-                                ret     : {Array,Block,String,Null},
+                                ret     : {Block,String,Null},
                                 desc    : "drop first <number> of elements from given collection~and return the remaining ones"),
 
         opAppend    : OpSpec(   name    : "append",          
                                 args    : 2,   
 
                                 an      : "collection",      
-                                a       : {String,Array,Block,Literal},        
+                                a       : {String,Block,Literal},        
                                 bn      : "value",      
                                 b       : {Any},
-                                ret     : {String,Array,Block,Null},               
+                                ret     : {String,Block,Null},               
                                 desc    : "append value to given collection" ),
 
         opRemove    : OpSpec(   name    : "remove",          
                                 args    : 2,   
 
                                 an      : "collection",      
-                                a       : {String,Array,Block,Dictionary,Literal},        
+                                a       : {String,Block,Dictionary,Literal},        
                                 bn      : "value",      
                                 b       : {Any},
-                                ret     : {String,Array,Block,Dictionary,Null},   
+                                ret     : {String,Block,Dictionary,Null},   
                                 attrs   :   ".key -> remove dictionary key~" &
                                             ".once -> remove only first occurrence~" &
                                             ".index :integer -> remove specific index",            
@@ -1744,10 +1744,10 @@ const
                                 args    : 2,   
 
                                 an      : "collection",      
-                                a       : {Array,Block},  
+                                a       : {Block},  
                                 bn      : "collection",      
-                                b       : {Array,Block},        
-                                ret     : {Array,Block},               
+                                b       : {Block},        
+                                ret     : {Block},               
                                 desc    : "get combination of elements in given collections" ),
 
         opList      : OpSpec(   name    : "list",          
@@ -1755,7 +1755,7 @@ const
 
                                 an      : "path",      
                                 a       : {String},        
-                                ret     : {Array},  
+                                ret     : {Block},  
                                 attrs   :   ".select :string -> select files satisfying given pattern~" &
                                             ".relative -> get relative paths",
                                 desc    : "get files at given path" ),
@@ -1764,7 +1764,7 @@ const
                                 args    : 3,   
 
                                 an      : "collection",  
-                                a       : {Array,Block,Literal},              
+                                a       : {Block,Literal},              
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "action",          
@@ -1829,9 +1829,9 @@ const
                                 an      : "function",  
                                 a       : {String,Literal,Function}, 
                                 bn      : "params",
-                                b       : {Array,Block},                        
+                                b       : {Block},                        
                                 ret     : {Any},      
-                                desc    : "call function with given array of parameters" ),
+                                desc    : "call function with given list of parameters" ),
 
         opNew       : OpSpec(   name    : "new",          
                                 args    : 1,   
@@ -1877,7 +1877,7 @@ const
                                 args    : 1,   
     
                                 an      : "collection",
-                                a       : {Array,Block},
+                                a       : {Block},
                                 ret     : {Integer,Floating},      
                                 desc    : "get average from given collection of numbers"),
 
@@ -1885,7 +1885,7 @@ const
                                 args    : 1,   
     
                                 an      : "collection",
-                                a       : {Array,Block},
+                                a       : {Block},
                                 ret     : {Integer,Floating,Null},      
                                 desc    : "get median from given collection of numbers"),
 
@@ -1904,7 +1904,7 @@ const
                                 args    : 1,   
 
                                 an      : "numbers",        
-                                a       : {Array,Block},          
+                                a       : {Block},          
                                 ret     : {Integer},      
                                 desc    : "calculate greatest common divisor~for given collection of integers" ),
 
@@ -1920,8 +1920,8 @@ const
                                 args    : 1,   
 
                                 an      : "collection",        
-                                a       : {Array,Block},          
-                                ret     : {Array,Block},      
+                                a       : {Block},          
+                                ret     : {Block},      
                                 desc    : "get all possible permutations~of the elements in given collection" ),
 
         opIsWhitespace : OpSpec(   name    : "whitespace?",      

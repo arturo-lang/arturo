@@ -469,7 +469,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                 require(opGet)
 
                 case x.kind:
-                    of Array,Block: stack.push(x.a[y.i])
+                    of Block: stack.push(x.a[y.i])
                     of Dictionary: stack.push(x.d[y.s])
                     of String: stack.push(newChar(x.s[y.i]))
                     of Date: 
@@ -480,7 +480,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                 require(opSet)
 
                 case x.kind:
-                    of Array,Block: 
+                    of Block: 
                         x.a[y.i] = z
                     of Dictionary:
                         x.d[y.s] = z
@@ -563,7 +563,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opStack:
                 require(opStack)
 
-                stack.push(newArray(Stack[0..SP-1]))
+                stack.push(newBlock(Stack[0..SP-1]))
 
             of opCase: Core.Case()
             of opWhen: Core.When()
