@@ -1,13 +1,28 @@
-<img align="left" width="160" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/logo.png"/>
+<img align="left" width="180" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/logo.png"/>
 
 <h1>Arturo</h1>
 
-### Simple, modern and portable<br>interpreted programming language for efficient scripting
+### Simple, modern and portable<br>interpreted programming language for efficient scripting<br><br>![License](https://img.shields.io/github/license/arturo-lang/arturo?style=flat-square) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo?style=flat-square) ![Total Lines](https://img.shields.io/tokei/lines/github/arturo-lang/arturo?color=purple&style=flat-square) ![Language](https://img.shields.io/badge/language-Nim-orange.svg?style=flat-square)   [![Build Status](https://img.shields.io/travis/com/arturo-lang/arturo/master?style=flat-square)](https://travis-ci.com/arturo-lang/arturo)
 
 ---
 
+<!--ts-->
+   * [The Language](#the-language)
+   * [The Compiler](#the-compiler)
+   * [Trying it out](#trying-it-out)
+      * [Online](#online)
+      * [Manually](#manually)
+        * [Prerequisites](#prerequisites)
+        * [Build & Install Arturo](#build--install-arturo)
+      * [Docker](#docker)
+   * [Using the command line](#using-the-command-line)
+      * [Run a script](#run-a-script)
+      * [Interactive console (REPL)](#interactive-console--repl)
+   * [Editors & IDEs](#editors--ides)
+   * [License](#license)
+<!--te-->
 
-![License](https://img.shields.io/github/license/arturo-lang/arturo?style=flat-square) ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arturo-lang/arturo?style=flat-square) ![Total Lines](https://img.shields.io/tokei/lines/github/arturo-lang/arturo?color=purple&style=flat-square) ![Language](https://img.shields.io/badge/language-Nim-orange.svg?style=flat-square)   [![Build Status](https://img.shields.io/travis/com/arturo-lang/arturo/master?style=flat-square)](https://travis-ci.com/arturo-lang/arturo)
+---
 
 The Language 
 ------------------------------
@@ -31,7 +46,7 @@ loop 1..10 'x [
 
 Simple, isn't it?
 
-*[For more - working - examples, just have a look into the /examples folder]*
+> :information_source:   For more - working - examples, just have a look into the /examples folder
 
 The Compiler
 ------------------------------
@@ -40,43 +55,34 @@ The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-base
 
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
 
-Check it out online!
+Trying it out
 ------------------------------
 
-### [@ arturo-lang.io](http://arturo-lang.io/)
+### Online
+
+@ [arturo-lang.io](http://arturo-lang.io/)
 
 <img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
 
-How to Build & Install
-------------------------------
-
 ### Manually
 
-**Works on:**
-- Windows
-- Linux
-- Mac OS
+> :information_source:   Arturo should be able to compiler on practically everything: Windows, Linux, Mac OS. In case you encounter any issue, or your OS is not supported, drop me a line!
 
-**Prerequisites:**
+#### Prerequisites
 
-- [Nim compiler](https://nim-lang.org/)
-- A modern C compiler
+* [Nim compiler](https://nim-lang.org/)<br> 
+  if you don't have it installed, all it'll take is 2 simple commands:
 
-**Build:**
+      curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+      choosenim install devel
 
+#### Build & Install Arturo
+	
     ./build.sh install
 
 The compiler will be built and installed automatically in your `/usr/local/bin`. (So, make sure the folder is in your `$PATH` variable!)
 
 That's it!
-
-**Run script:**
-
-    arturo <script>
-
-**REPL/Interactive Console:**
-
-    arturo
 
 ### Docker
 
@@ -84,10 +90,21 @@ Just use the existing docker image:
 
 	docker run -it fingidor/arturo-repl
 
+Using the command line
+------------------------------
+
+#### Run a script
+
+    arturo <script>
+
+#### Interactive console / REPL
+
+    arturo
+
 Editors & IDEs
 ------------------------------
 
-If you prefer to use some specific editors, check which one are already supported:
+If you prefer to use some specific editors, check which one are already supported (if your preferred editor is not yet supported, just drop me a line - or help me include it):
 
 - **SublimeText**: 
 https://github.com/arturo-lang/art-sublimetext-package
