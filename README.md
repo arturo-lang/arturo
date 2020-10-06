@@ -135,7 +135,7 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 Contributing
 ------------------------------
 
-Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for detail and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for more details and the process for submitting pull requests to us.
 
 License
 ------------------------------
