@@ -333,7 +333,7 @@ template To*(needsRequire:bool = true):untyped =
                         else: invalidConversionError(y.s)
                     of Integer:
                         try:
-                            stack.push newInteger(parseInt(y.s))
+                            stack.push newInteger(y.s)
                         except ValueError:
                             invalidConversionError(y.s)
                     of Floating:
