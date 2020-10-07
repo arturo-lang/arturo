@@ -131,6 +131,7 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [ ] Add UI support (via libui? via webview? both?)
 - [ ] Explore different uses of Arturo's dialecting capabilities (SDLs)
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
+- [ ] Go full self-hosted (that's an ambitious one, I know...)
 
 Contributing
 ------------------------------
