@@ -394,14 +394,9 @@ template Pow*():untyped =
                     #stack.push(newInteger(pow(x.iy.bi))
                 else:
                     try:
-                        #echo "trying"
                         let res = x.i^y.i
-                        if (int)(res) > 0xffffffffffffff:
-                            stack.push(newInteger(pow(x.i,(culong)(y.i))))
-                        else:
-                            stack.push(newInteger((int)res))
-                    except CatchableError as e:
-                        echo "Caught something"
+                        stack.push(newInteger(res))
+                    except:
                         stack.push(newInteger(pow(x.i,(culong)(y.i))))
             else:
                 if y.iKind==BigInteger:
