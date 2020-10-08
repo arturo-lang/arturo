@@ -66,9 +66,12 @@ proc printInfo*(op: OpSpec) {.inline.} =
 
     echo fmt("|------------------------------------------------------------------")
     echo fmt("|    {fgMagenta}{align(op.name,11)}{fgWhite}  {formattedDesc}")
+    if op.alias!="":
+        echo fmt("|          {fgWhite}alias{fgWhite}  {op.alias}")
     # echo fmt("|")
     # echo fmt("|                 {formattedDesc}")
     echo fmt("|------------------------------------------------------------------")
+    
     echo fmt("|          {fgGreen}usage{fgWhite}  {fgBold}{op.name}{fgWhite} {params}")
 
     if op.attrs!="":
