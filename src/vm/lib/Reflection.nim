@@ -50,13 +50,37 @@ proc getInfo*(op: OpSpec): Value {.inline.} =
             if op.args >= 3:
                 argArray.add(newDictionary({"name": newString(op.cn), "type": newBlock(toSeq((op.c).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
 
+
     var ret: Value = newBlock(toSeq((op.ret).items).map(proc(x:ValueKind):Value = newType(x)))         
+
+    var attrArray: ValueArray = @[]
+    if op.attrs!="":
+        var parts = op.attrs.split("~")
+        for part in parts:
+            var subparts = part.split("->")
+            var descr = subparts[1].strip
+            var subsubparts = subparts[0].split()
+            var name = subsubparts[0]
+            var params: ValueArray = @[]
+            
+            for subsub in subsubparts:
+                if subsub != name:
+                    if subsub.strip!="":
+                        params.add(newType(subsub.strip.replace(":")))
+
+            attrArray.add(newDictionary({
+                    "name": newString(name.strip.replace(".")),
+                    "action": newString(descr.strip),
+                    "parameters": newBlock(params)
+                }.toOrderedTable))
+        discard
 
     result = newDictionary({
                     "name"          : newString(op.name),
-                    "description"   : newString(op.desc),
+                    "description"   : newString(op.desc.replace("~","")),
                     "alias"         : newString(op.alias),
-                    "args"          : newBlock(argArray),
+                    "arguments"     : newBlock(argArray),
+                    "attributes"    : newBlock(attrArray),
                     "return"        : ret
                 }.toOrderedTable)
 
