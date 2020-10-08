@@ -17,7 +17,7 @@ when defined(PROFILE):
     import nimprof
 
 import translator/eval, translator/parse
-import vm/env, vm/exec, vm/value
+import vm/bytecode, vm/env, vm/exec, vm/value
 
 when defined(BENCHMARK):
     import strutils
@@ -126,7 +126,8 @@ when isMainModule:
                     "build"     : newString(Build),
                     "buildDate" : newString(now().format("dd-MM-yyyy")),
                     "cpu"       : newString(hostCPU),
-                    "os"        : newString(hostOS)
+                    "os"        : newString(hostOS),
+                    "builtin"   : newBlock(getBuiltins())
                 }.toOrderedTable)
 
                 initEnv()
