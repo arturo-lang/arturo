@@ -242,7 +242,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                         of tilde            : 
                             subargStack.add(OpSpecs[opRender].args)#addCommand(opRender, inArrowBlock=true)
-                        of exclamation      : addCommand(opDo, inArrowBlock=true)
                         of at               : addCommand(opArray, inArrowBlock=true)
                         of sharp            : addCommand(opDictionary, inArrowBlock=true)
                         of dollar           : addCommand(opFunction, inArrowBlock=true) 
@@ -628,7 +627,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Symbol: 
                 case node.m:
                     of tilde            : addCommand(opRender)
-                    of exclamation      : addCommand(opDo)
                     of at               : addCommand(opArray)
                     of sharp            : addCommand(opDictionary)
                     of dollar           : addCommand(opFunction)
