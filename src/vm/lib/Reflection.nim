@@ -39,6 +39,27 @@ proc printHelp*() {.inline.} =
     for pair in sorted:
         echo fgBold & alignLeft(pair[0],15) & fgWhite & pair[1]
 
+proc getInfo*(op: OpSpec): Value {.inline.} =
+    var argArray: ValueArray = @[]
+    if op.args >= 1:
+        argArray.add(newDictionary({"name": newString(op.an), "type": newBlock(toSeq((op.a).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
+
+        if op.args >= 2:
+            argArray.add(newDictionary({"name": newString(op.bn), "type": newBlock(toSeq((op.b).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
+
+            if op.args >= 3:
+                argArray.add(newDictionary({"name": newString(op.cn), "type": newBlock(toSeq((op.c).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
+
+    var ret: Value = newBlock(toSeq((op.ret).items).map(proc(x:ValueKind):Value = newType(x)))         
+
+    result = newDictionary({
+                    "name"          : newString(op.name),
+                    "description"   : newString(op.desc),
+                    "alias"         : newString(op.alias),
+                    "args"          : newBlock(argArray),
+                    "return"        : ret
+                }.toOrderedTable)
+
 proc printInfo*(op: OpSpec) {.inline.} =
 
     proc countSubstr(s, sub: string): int =
@@ -117,7 +138,10 @@ template Info*():untyped =
     for opspec in OpSpecs:
         if opspec.name == x.s:
             found = true
-            opspec.printInfo()
+            if (popAttr("get") != VNULL):
+                stack.push(opspec.getInfo())
+            else:
+                opspec.printInfo()
             break
 
     if not found:
