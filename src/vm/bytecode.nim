@@ -390,6 +390,7 @@ type
 
     OpSpec* = object
         name*       : string
+        alias*      : string
         args*       : int
 
         a*,b*,c*    : ParamSpec
@@ -409,7 +410,8 @@ const
         # [0x5] #
         # arithmetic & logical operations
 
-        opAdd       : OpSpec(   name    : "add",          
+        opAdd       : OpSpec(   name    : "add",     
+                                alias   : "+",     
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -419,7 +421,8 @@ const
                                 ret     : {Integer,Floating,Null},               
                                 desc    : "add given values" ),
 
-        opSub       : OpSpec(   name    : "sub",          
+        opSub       : OpSpec(   name    : "sub",   
+                                alias   : "-",       
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -429,7 +432,8 @@ const
                                 ret     : {Integer,Floating,Null},      
                                 desc    : "substract given values" ),
 
-        opMul       : OpSpec(   name    : "mul",          
+        opMul       : OpSpec(   name    : "mul", 
+                                alias   : "*",         
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -439,7 +443,8 @@ const
                                 ret     : {Integer,Floating,Null},      
                                 desc    : "multiply given values" ),
 
-        opDiv       : OpSpec(   name    : "div",          
+        opDiv       : OpSpec(   name    : "div", 
+                                alias   : "/",         
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -459,7 +464,8 @@ const
                                 ret     : {Floating,Null},                       
                                 desc    : "divide given values" ),
 
-        opMod       : OpSpec(   name    : "mod",          
+        opMod       : OpSpec(   name    : "mod",  
+                                alias   : "%",        
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -469,7 +475,8 @@ const
                                 ret     : {Integer,Null},                        
                                 desc    : "calculate the modulo between given values" ),
 
-        opPow       : OpSpec(   name    : "pow",          
+        opPow       : OpSpec(   name    : "pow",   
+                                alias   : "^",      
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -604,7 +611,8 @@ const
 
         # comparison operations
 
-        opEq        : OpSpec(   name    : "eq?",          
+        opEq        : OpSpec(   name    : "equal?",   
+                                alias   : "=",
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -614,7 +622,8 @@ const
                                 ret     : {Boolean},      
                                 desc    : "check if valueA = valueB (equality)" ),
 
-        opNe        : OpSpec(   name    : "ne?",          
+        opNe        : OpSpec(   name    : "notEqual?",   
+                                alias   : "<>",       
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -624,7 +633,8 @@ const
                                 ret     : {Boolean},      
                                 desc    : "check if valueA <> valueB (inequality)" ),
 
-        opGt        : OpSpec(   name    : "gt?",          
+        opGt        : OpSpec(   name    : "greater?", 
+                                alias   : ">",         
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -634,7 +644,8 @@ const
                                 ret     : {Boolean},      
                                 desc    : "check if valueA > valueB (greater than)" ),
 
-        opGe        : OpSpec(   name    : "ge?",          
+        opGe        : OpSpec(   name    : "greaterOrEqual?", 
+                                alias   : ">=",         
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -644,7 +655,8 @@ const
                                 ret     : {Boolean},      
                                 desc    : "check if valueA >= valueB (greater than or equal)" ),
 
-        opLt        : OpSpec(   name    : "lt?",          
+        opLt        : OpSpec(   name    : "less?",
+                                alias   : "<",          
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -654,7 +666,8 @@ const
                                 ret     : {Boolean},      
                                 desc    : "check if valueA < valueB (less than)" ),
 
-        opLe        : OpSpec(   name    : "le?",          
+        opLe        : OpSpec(   name    : "lessOrEqual?", 
+                                alias   : "=<",         
                                 args    : 2,   
 
                                 an      : "valueA",      
@@ -666,7 +679,8 @@ const
 
         # structures
 
-        opArray     : OpSpec(   name    : "array",        
+        opArray     : OpSpec(   name    : "array", 
+                                alias   : "@",       
                                 args    : 1,   
 
                                 an      : "block",       
@@ -674,7 +688,8 @@ const
                                 ret     : {Block},      
                                 desc    : "create array from given block~by calculating all internal values" ),
 
-        opDictionary: OpSpec(   name    : "dictionary",      
+        opDictionary: OpSpec(   name    : "dictionary",
+                                alias   : "#",      
                                 args    : 1,   
 
                                 an      : "block",      
@@ -682,7 +697,8 @@ const
                                 ret     : {Dictionary},      
                                 desc    : "create dictionary from given block~by getting all internal symbols" ),
 
-        opFunction  : OpSpec(   name    : "function",      
+        opFunction  : OpSpec(   name    : "function",
+                                alias   : "$",      
                                 args    : 2,   
 
                                 an      : "arguments",   
@@ -871,7 +887,8 @@ const
                                 ret     : {Null},      
                                 desc    : "check if given number is odd" ),
 
-        opRange     : OpSpec(   name    : "range",        
+        opRange     : OpSpec(   name    : "range", 
+                                alias   : "..",       
                                 args    : 2,   
 
                                 an      : "from",        
@@ -1153,7 +1170,8 @@ const
                                 ret     : {Boolean},      
                                 desc    : "check if any of collection's item satisfy given condition"),
 
-        opRead      : OpSpec(   name    : "read",      
+        opRead      : OpSpec(   name    : "read",    
+                                alias   : "<<",  
                                 args    : 1,   
 
                                 an      : "file",        
@@ -1164,7 +1182,8 @@ const
                                             ".binary -> read as binary", 
                                 desc    : "read file from given path", ),
 
-        opWrite     : OpSpec(   name    : "write",        
+        opWrite     : OpSpec(   name    : "write",  
+                                alias   : ">>",      
                                 args    : 2,   
 
                                 an      : "file",        
@@ -1656,6 +1675,7 @@ const
                                 desc    : "check if given attribute exists"),
 
         opRender    : OpSpec(   name    : "render",
+                                alias   : "~",
                                 args    : 1,
 
                                 an      : "template",
@@ -1719,7 +1739,8 @@ const
                                 ret     : {Block,String,Null},
                                 desc    : "drop first <number> of elements from given collection~and return the remaining ones"),
 
-        opAppend    : OpSpec(   name    : "append",          
+        opAppend    : OpSpec(   name    : "append",  
+                                alias   : "++",        
                                 args    : 2,   
 
                                 an      : "collection",      
@@ -1729,7 +1750,8 @@ const
                                 ret     : {String,Block,Null},               
                                 desc    : "append value to given collection" ),
 
-        opRemove    : OpSpec(   name    : "remove",          
+        opRemove    : OpSpec(   name    : "remove",
+                                alias   : "--",          
                                 args    : 2,   
 
                                 an      : "collection",      
@@ -1957,6 +1979,13 @@ const
 #=======================================
 # Helpers
 #=======================================
+
+proc getBuiltins*(): ValueArray {.inline.}=
+    result = @[]
+
+    for spec in OpSpecs:
+        if spec.name!="":
+            result.add(newLiteral(spec.name))
 
 proc hash*(x: OpCode): Hash {.inline.}=
     cast[Hash](ord(x))
