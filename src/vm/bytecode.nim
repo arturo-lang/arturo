@@ -926,8 +926,9 @@ const
                                 args    : 1,   
 
                                 an      : "symbol",      
-                                a       : {Literal},      
-                                ret     : {Null},      
+                                a       : {String,Literal},      
+                                ret     : {Dictionary,Null},      
+                                attrs   :   ".get -> return info as a dictionary",
                                 desc    : "print info for given symbol" ),
 
         opType      : OpSpec(   name    : "type",      
