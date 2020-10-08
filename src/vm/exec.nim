@@ -20,19 +20,21 @@ import xmlparser, xmltree
 import nre except toSeq
 
 import lib/[
+    Arithmetic,
+    Binary,
     Collections, 
     Comparison, 
+    Conversion,
     Core, 
     Crypto,
     Dates,
-    File,
+    Files,
     Logic, 
     Net,
     Numbers,
     Path,
     Reflection,
     Shell,
-    StackOps,
     Strings
 ]
 
@@ -379,23 +381,23 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             # [0x5] #
             # arithmetic & logical operations
 
-            of opAdd        : Numbers.Add()
-            of opSub        : Numbers.Sub()
-            of opMul        : Numbers.Mul()
-            of opDiv        : Numbers.Div()
-            of opFDiv       : Numbers.FDiv()
-            of opMod        : Numbers.Mod()
-            of opPow        : Numbers.Pow()                
+            of opAdd        : Arithmetic.Add()
+            of opSub        : Arithmetic.Sub()
+            of opMul        : Arithmetic.Mul()
+            of opDiv        : Arithmetic.Div()
+            of opFDiv       : Arithmetic.FDiv()
+            of opMod        : Arithmetic.Mod()
+            of opPow        : Arithmetic.Pow()                
 
-            of opNeg        : Numbers.Neg()
+            of opNeg        : Arithmetic.Neg()
 
             of opNot        : Logic.Not()
             of opAnd        : Logic.And()
             of opOr         : Logic.Or()
             of opXor        : Logic.Xor()
 
-            of opShl        : Numbers.Shl()
-            of opShr        : Numbers.Shr()
+            of opShl        : Arithmetic.Shl()
+            of opShr        : Arithmetic.Shr()
 
             of opAttr       : 
                 i += 1
@@ -412,7 +414,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             # # [0x6] #
             # # stack operations
 
-            of opPop        : StackOps.Pop()
+            of opPop        : Core.Pop()
             of opDup        : stack.push(sTop())
             of opSwap       : swap(Stack[SP-1], Stack[SP-2])
             of opNop        : discard
@@ -422,7 +424,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opJmp        : discard # UNIMPLEMENTED
             of opJmpIf      : discard # UNIMPLEMENTED
         
-            of opPush       : StackOps.Push()
+            of opPush       : Core.Push()
 
             # # comparison operations
 
@@ -486,7 +488,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                         x.d[y.s] = z
                     else: discard
 
-            of opTo: Core.To()
+            of opTo: Conversion.To()
             
             of opEven:
                 require(opEven)
@@ -514,10 +516,10 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opType: Reflection.Type()
             of opIs: Reflection.Is()
 
-            of opBNot: Numbers.BinaryNot()
-            of opBAnd: Numbers.BinaryAnd()
-            of opBOr: Numbers.BinaryOr()
-            of opBXor: Numbers.BinaryXor()
+            of opBNot: Binary.Not()
+            of opBAnd: Binary.And()
+            of opBOr: Binary.Or()
+            of opBXor: Binary.Xor()
 
             of opFirst: Collections.First()
             of opLast: Collections.Last()
@@ -525,8 +527,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opUnique: Collections.Unique()
             of opSort: Collections.Sort()
 
-            of opInc: Numbers.Inc()
-            of opDec: Numbers.Dec()
+            of opInc: Arithmetic.Inc()
+            of opDec: Arithmetic.Dec()
 
             of opIsSet:
                 require(opIsSet)
@@ -565,8 +567,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opAll: Collections.IsAll()
             of opAny: Collections.IsAny()
 
-            of opRead: File.Read()
-            of opWrite: File.Write()
+            of opRead: Files.Read()
+            of opWrite: Files.Write()
 
             of opAbs: Numbers.Abs()
             of opAcos: Numbers.Acos()
@@ -599,7 +601,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opSuffix: Strings.Suffix()
             of opHasSuffix: Strings.HasSuffix()
 
-            of opExists: File.Exists()
+            of opExists: Files.Exists()
 
             of opTry: Core.Try()
             of opTryE: Core.TryE()
@@ -699,7 +701,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opAverage: Numbers.Average()
             of opMedian: Numbers.Median()
 
-            of opAs: Core.As()
+            of opAs: Conversion.As()
 
             of opGcd: Numbers.Gcd()
             of opPrime: Numbers.Prime()
