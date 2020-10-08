@@ -1,0 +1,18 @@
+score: 0
+alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
+
+names: 
+	sort 
+		map 
+			split.by:"," 
+				read relative "euler22.txt" 
+		'x -> remove x "\""
+
+indx: 1
+loop names 'name [
+	loop split name 'ch ->
+		score: score + indx * 1 + index alphabet ch
+		
+	indx: indx + 1
+]
+print ["Total score:" score]
