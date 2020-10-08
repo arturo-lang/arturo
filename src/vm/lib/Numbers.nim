@@ -344,7 +344,7 @@ template Prime*():untyped =
         stack.push(newBoolean(probablyPrime(x.bi,10)==0))
 
 template Factors*():untyped =
-    require(opPrime)
+    require(opFactors)
 
     var prime = false
     if (popAttr("prime") != VNULL): prime = true
