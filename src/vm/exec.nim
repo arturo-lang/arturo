@@ -396,8 +396,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opOr         : Logic.Or()
             of opXor        : Logic.Xor()
 
-            of opShl        : Arithmetic.Shl()
-            of opShr        : Arithmetic.Shr()
+            of opShl        : Binary.Shl()
+            of opShr        : Binary.Shr()
 
             of opAttr       : 
                 i += 1
