@@ -23,10 +23,5 @@ loop 0..(size canBeWrittenAsSum)-1 'i [
 		summum: summum + i
 	]
 ]
-; cannotBeWrittenAsSum: select 2..upperLimit 'z [not? canBeWrittenAsSum \ z]
 
-<<<<<<< .merge_file_Jia5zY
-print ["Sum:" sum cannotBeWrittenAsSum] 
-=======
 print ["Sum:" summum]
->>>>>>> .merge_file_aZ1vzv
