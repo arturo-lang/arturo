@@ -1,22 +1,15 @@
 upperLimit: 28123
 
 abundant?: $[x]-> (sum factors x)>2*x
-
-prints ["- calculating abundant numbers up to" upperLimit]
 abundants: select 2..upperLimit 'x -> abundant? x
-print ["=> found" size abundants]
-
-print "- constructing index"
 canBeWrittenAsSum: map 1..upperLimit 'x -> false 
 
-print "- calculating all sums"
 loop 0..(size abundants)-1 'a [
 	loop a..(size abundants)-1 'b [
 		set canBeWrittenAsSum a+b true
 	]
 ]
 
-print "- summing"
 summum: 0
 loop 0..(size canBeWrittenAsSum)-1 'i [
 	if not? canBeWrittenAsSum \ i [
