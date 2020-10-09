@@ -62,20 +62,20 @@ template panic(error: string): untyped =
     vmError = error
     return
 
-template pushByIndex(idx: byte):untyped =
+template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
-template storeByIndex(idx: byte):untyped =
+template storeByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
     syms[symIndx] = stack.pop()
 
-template loadByIndex(idx: byte):untyped =
+template loadByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
     let item = syms.getOrDefault(symIndx)
     if item.isNil: panic "symbol not found: " & symIndx
     stack.push(syms[symIndx])
 
-template callByIndex(idx: byte):untyped =
+template callByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
     let fun = syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
@@ -341,9 +341,10 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                opPush3, opPush4, opPush5,
                opPush6, opPush7, opPush8,
                opPush9, opPush10, opPush11, 
-               opPush12, opPush13, opPush14     :   pushByIndex((byte)(op)-(byte)(opPush0))
+               opPush12, opPush13               :   pushByIndex((int)(op)-(int)(opPush0))
 
-            of opPushX                          :   i += 1; pushByIndex((byte)(it[i]))
+            of opPushX                          :   i += 1; pushByIndex((int)(it[i]))
+            of opPushY                          :   i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x2] #
             # store variable (from <- stack)
@@ -352,9 +353,10 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                opStore3, opStore4, opStore5,
                opStore6, opStore7, opStore8, 
                opStore9, opStore10, opStore11, 
-               opStore12, opStore13, opStore14  :   storeByIndex((byte)(op)-(byte)(opStore0))
+               opStore12, opStore13             :   storeByIndex((int)(op)-(int)(opStore0))
 
-            of opStoreX                         :   i += 1; storeByIndex((byte)(it[i]))                
+            of opStoreX                         :   i += 1; storeByIndex((int)(it[i]))                
+            of opStoreY                         :   i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x3] #
             # load variable (to -> stack)
@@ -363,9 +365,10 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                opLoad3, opLoad4, opLoad5,
                opLoad6, opLoad7, opLoad8, 
                opLoad9, opLoad10, opLoad11, 
-               opLoad12, opLoad13, opLoad14     :   loadByIndex((byte)(op)-(byte)(opLoad0))
+               opLoad12, opLoad13               :   loadByIndex((int)(op)-(int)(opLoad0))
 
-            of opLoadX                          :   i += 1; loadByIndex((byte)(it[i]))
+            of opLoadX                          :   i += 1; loadByIndex((int)(it[i]))
+            of opLoadY                          :   i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x4] #
             # user function calls
@@ -374,9 +377,10 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                opCall3, opCall4, opCall5,
                opCall6, opCall7, opCall8, 
                opCall9, opCall10, opCall11, 
-               opCall12, opCall13, opCall14     :   callByIndex((byte)(op)-(byte)(opCall0))                
+               opCall12, opCall13               :   callByIndex((int)(op)-(int)(opCall0))                
 
-            of opCallX                          :   i += 1; callByIndex((byte)(it[i]))
+            of opCallX                          :   i += 1; callByIndex((int)(it[i]))
+            of opCallY                          :   i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x5] #
             # arithmetic & logical operations
