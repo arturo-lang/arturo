@@ -1,20 +1,41 @@
 upperLimit: 28123
 
 abundant?: $[x]-> (sum factors x)>2*x
+print "filtering..."
 abundants: select 2..upperLimit 'x -> abundant? x
-canBeWrittenAsSum: map 1..upperLimit 'x -> false 
+print "constructing..."
+canBeWrittenAsSum: map 1..upperLimit*2 'x -> false 
 
-loop 0..(size abundants)-1 'a [
-	loop a..(size abundants)-1 'b [
+print "calculating..."
+loop abundants 'a [
+	loop abundants 'b [
 		set canBeWrittenAsSum a+b true
 	]
 ]
 
+
+print "summing..."
 summum: 0
-loop 0..(size canBeWrittenAsSum)-1 'i [
+i: 0
+while [i<size canBeWrittenAsSum][
 	if not? canBeWrittenAsSum \ i [
 		summum: summum + i
 	]
+	i: i+1
 ]
+; loop 0..(size abundants)-1 'a [
+; 	print [a "/" size abundants]
+; 	loop a..(size abundants)-1 'b [
+
+; 		set canBeWrittenAsSum (abundants \ a)+(abundants \ b) true
+; 	]
+; ]
+
+
+; loop 0..(size canBeWrittenAsSum)-1 'i [
+; 	if not? canBeWrittenAsSum \ i [
+; 		summum: summum + i
+; 	]
+; ]
 
 print ["Sum:" summum]
