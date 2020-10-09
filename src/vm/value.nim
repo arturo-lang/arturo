@@ -23,7 +23,8 @@ type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string,Value]
 
-    ByteArray*  = seq[byte]
+    Byte = byte
+    ByteArray*  = seq[Byte]
 
     SymbolKind* = enum
         thickarrowleft  # <=

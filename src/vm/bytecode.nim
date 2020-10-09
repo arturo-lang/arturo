@@ -62,9 +62,9 @@ type
         opPush11        = 0x1B
         opPush12        = 0x1C
         opPush13        = 0x1D
-        opPush14        = 0x1E
 
-        opPushX         = 0x1F
+        opPushX         = 0x1E
+        opPushY         = 0x1F
 
         # [0x2] #
         # store variable (from <- stack)
@@ -82,9 +82,9 @@ type
         opStore11       = 0x2B
         opStore12       = 0x2C
         opStore13       = 0x2D
-        opStore14       = 0x2E
 
-        opStoreX        = 0x2F 
+        opStoreX        = 0x2E
+        opStoreY        = 0x2F 
 
         # [0x3] #
         # load variable (to -> stack)
@@ -102,9 +102,9 @@ type
         opLoad11        = 0x3B
         opLoad12        = 0x3C
         opLoad13        = 0x3D
-        opLoad14        = 0x3E
 
-        opLoadX         = 0x3F
+        opLoadX         = 0x3E 
+        opLoadY         = 0x3F
 
         # [0x4] #
         # user function calls
@@ -122,9 +122,9 @@ type
         opCall11        = 0x4B
         opCall12        = 0x4C
         opCall13        = 0x4D
-        opCall14        = 0x4E
 
-        opCallX         = 0x4F
+        opCallX         = 0x4E
+        opCallY         = 0x4F
 
         # [0x5] #
         # arithmetic & logical operations 
