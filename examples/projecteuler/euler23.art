@@ -16,7 +16,13 @@ loop 0..(size abundants)-1 'a [
 	]
 ]
 
-print "- filtering list"
-cannotBeWrittenAsSum: select 2..upperLimit 'z [not? canBeWrittenAsSum \ z]
+print "- summing"
+summum: 0
+loop 0..(size canBeWrittenAsSum)-1 'i [
+	if not? canBeWrittenAsSum \ i [
+		summum: summum + i
+	]
+]
+; cannotBeWrittenAsSum: select 2..upperLimit 'z [not? canBeWrittenAsSum \ z]
 
-print ["Sum:" sum cannotBeWrittenAsSum]
+print ["Sum:" summum]
