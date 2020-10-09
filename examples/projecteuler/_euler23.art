@@ -19,4 +19,4 @@ loop 0..(size abundants)-1 'a [
 print "- filtering list"
 cannotBeWrittenAsSum: select 2..upperLimit 'z [not? canBeWrittenAsSum \ z]
 
-print ["Sum:" sum cannotBeWrittenAsSum]
+print ["Sum:" sum cannotBeWrittenAsSum] 
