@@ -53,11 +53,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             consts.add(v)
             indx = consts.len-1
 
-        if indx <= 14:
-            addToCommand((byte)(((byte)(op)-0xF) + (byte)(indx)))
+        if indx <= 13:
+            addToCommand((byte)(((byte)(op)-0xE) + (byte)(indx)))
         else:
-            addToCommand((byte)indx)
-            addToCommand((byte)op)
+            if indx>255:
+                addToCommand((byte)indx)
+                addToCommand((byte)indx shr 8)
+                addToCommand((byte)(op)+1)
+            else:
+                addToCommand((byte)indx)
+                addToCommand((byte)op)
 
     proc addAttr(consts: var seq[Value], v: Value) =
         var indx = consts.find(v)

@@ -18,7 +18,7 @@ import vm/value
 # Constants
 #=======================================
 
-const StackSize* = 200
+const StackSize* = 100000
 const AttrsSize* = 10
 
 #=======================================
