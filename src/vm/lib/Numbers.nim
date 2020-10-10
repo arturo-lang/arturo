@@ -18,17 +18,19 @@ import vm/stack, vm/value
 # Helpers
 #=======================================
 
-proc isPrime*(n: uint32): bool =
-    case n
-        of 0, 1: return false
-        of 2, 7, 61: return true
-        else: discard
+proc isPrime*(n: uint64): bool =
+    if n in {0,1}: return false
+    if n in {2,7,61}: return true
+
+    # case n
+    #     of 0, 1: return false
+    #     of 2, 7, 61: return true
+    #     else: discard
  
     var
         nm1 = n-1
         d = nm1.int
         s = 0
-        n = n.uint64
  
     while d mod 2 == 0:
         d = d shr 1
@@ -46,7 +48,7 @@ proc isPrime*(n: uint32): bool =
             p = p * p mod n
             dr = dr shr 1
  
-        if x == 1 or x.uint32 == nm1:
+        if x == 1 or x.uint64 == nm1:
             continue
  
         var r = 1
@@ -56,14 +58,14 @@ proc isPrime*(n: uint32): bool =
             x = x * x mod n
 
             if x == 1: return false
-            if x.uint32 == nm1: break
+            if x.uint64 == nm1: break
 
             inc(r)
  
     return true
  
-proc isPrime*(n: int32): bool =
-    n >= 0 and n.uint32.isPrime
+proc isPrime*(n: int): bool =
+    n >= 0 and n.uint64.isPrime
 
 proc pollardG*(n: var Int, m: Int) {.inline.} =
     discard mul(n,n,n)
@@ -339,7 +341,7 @@ template Prime*():untyped =
     require(opPrime)
 
     if x.iKind==NormalInteger:
-        stack.push(newBoolean(isPrime(x.i.uint32)))
+        stack.push(newBoolean(isPrime(x.i)))
     else:
         stack.push(newBoolean(probablyPrime(x.bi,10)==0))
 
