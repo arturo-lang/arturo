@@ -1,0 +1,13 @@
+;fact:$[x]->product 1..x
+
+factorials: [1] ++ map 1..9 'a [product 1..a]
+
+found: []
+loop 10..3000000 'x [
+	if x = sum map split to :string x 'c [get factorials to :integer c] [
+		print ["found:" x]
+		'found ++ x
+	]
+]
+
+print ["Sum:" sum found]
