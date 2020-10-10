@@ -1,0 +1,2 @@
+permutations: sort map permutate map 0..9 'digit [to :string digit] 'part [join part]
+print permutations\999999
