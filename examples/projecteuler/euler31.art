@@ -1,0 +1,14 @@
+coinCombinations: function [amount coins][
+	ways: map 0..amount+1 [x]-> 0
+	ways\0: 1
+
+	loop coins 'coin [
+		loop coin..amount 'j ->
+			set ways j (get ways j) + get ways j-coin
+	]
+
+	ways \ amount
+]
+ 
+; 200p = 2 pounds
+print coinCombinations 200 [1 2 5 10 20 50 100 200]
