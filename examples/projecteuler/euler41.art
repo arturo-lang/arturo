@@ -1,0 +1,15 @@
+pandigital?: function[x][
+	parts: map split to :string x 'z [to :integer z]
+	(1..size parts) = sort unique parts
+]
+
+largest: 7654323
+
+until [
+	largest: largest - 2
+	while [not? prime? largest][
+		largest: largest - 2
+	]
+][ pandigital? largest]
+
+print ["Largest pandigital prime:" largest]
