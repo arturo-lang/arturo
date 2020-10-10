@@ -1,0 +1,28 @@
+truncatable?: function[x][
+	tmp: x
+	while [tmp >= 10][
+		tmp: tmp / 10
+		if not? prime? tmp -> return false
+	]
+
+	while [x > 10][
+		x: x % 10 ^ (size to :string x) - 1
+		if not? prime? x -> return false
+	]
+
+	return true
+]
+
+num: 11
+found: []
+until [
+	if prime? num [
+		if truncatable? num [
+			print ["found:" num]
+			'found ++ num
+		]
+	]
+	num: num + 2
+][11 = size found]
+
+print ["Sum:" sum found]
