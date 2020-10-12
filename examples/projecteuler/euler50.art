@@ -1,0 +1,18 @@
+primesBelow: function [x][ [2] ++ select range.step: 2 3 x => prime? ]
+
+s: 0
+counter: neg 1
+i: 0
+primes: primesBelow 10000
+
+until [
+	s: 0
+	counter: counter + 1
+	i: counter
+	while [1000000 > s + primes \ i][
+		s: s + primes \ i
+		i: i + 1
+	]
+][prime? s]
+
+print ["Largest prime < 1000000 sum of consecutive primes:" s]
