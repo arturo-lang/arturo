@@ -243,19 +243,19 @@ template Loop*(): untyped =
         #     stack.push(item)
         #     discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
 
-template For*(): untyped =
-    require(opFor)
-    var indx = 0
-    var args = y.a
-    let preevaled = doEval(z)
+# templatee For*(): untyped =
+#     require(opFor)
+#     var indx = 0
+#     var args = y.a
+#     let preevaled = doEval(z)
 
-    while indx+args.len<x.a.len:
-        for item in x.a[indx..indx+x.a.len].reversed:
-            stack.push(item)
+#     while indx+args.len<x.a.len:
+#         for item in x.a[indx..indx+x.a.len].reversed:
+#             stack.push(item)
 
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+#         discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
 
-        indx += args.len
+#         indx += args.len
 
 template Map*(): untyped =
     require(opMap)

@@ -90,7 +90,7 @@ template Case*():untyped =
     stack.push(x)
     stack.push(newBoolean(false))
 
-template When*():untyped =
+template IsWhen*():untyped =
     require(opWhen)
 
     let z = pop()
