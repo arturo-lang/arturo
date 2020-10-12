@@ -386,6 +386,8 @@ type
 
         opFactors       = 0xFA
 
+        opMatch         = 0xFB
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -1978,6 +1980,16 @@ const
                                 ret     : {Block},      
                                 attrs   :   ".prime -> get only prime factors",
                                 desc    : "get list of factors for given integer" ),
+
+        opMatch     : OpSpec(   name    : "match",      
+                                args    : 2,   
+
+                                an      : "string",        
+                                a       : {String}, 
+                                bn      : "regex",        
+                                b       : {String},          
+                                ret     : {Block},      
+                                desc    : "get matches within string~using given regular expression" ),
     ]
 
     NoTranslation*  = (@[],@[])
