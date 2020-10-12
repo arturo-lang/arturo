@@ -68,7 +68,7 @@ Trying it out
 
 ### Online
 
-@ [arturo-lang.io](http://arturo-lang.io/)
+☞ [arturo-lang.io](http://arturo-lang.io/)
 
 <img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
 
