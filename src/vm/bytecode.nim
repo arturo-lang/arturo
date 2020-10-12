@@ -1378,6 +1378,7 @@ const
                                 cn      : "replacement",
                                 c       : {String},
                                 ret     : {String,Null}, #SHOULD add .once
+                                attrs   :   ".regex -> match against a regular expression",
                                 desc    : "look for substring in given string~and replace them given replacement"),
 
         opStrip     : OpSpec(   name    : "strip",
@@ -1397,6 +1398,7 @@ const
                                 attrs   :   ".words -> split string by whitespace~" &
                                             ".lines -> split string by lines~" &
                                             ".by :string -> split using given separator~" &
+                                            ".regex :string -> match against a regular expression~" &
                                             ".at :integer -> split collection at given position~" &
                                             ".every :integer -> split collection every number of elements",
                                 desc    : "split collection to components"),
@@ -1419,6 +1421,7 @@ const
                                 bn      : "start",
                                 b       : {String},
                                 ret     : {Boolean},
+                                attrs   :   ".regex -> match against a regular expression", 
                                 desc    : "check if string starts with given prefix"),
 
         opSuffix    : OpSpec(   name    : "suffix",
@@ -1439,6 +1442,7 @@ const
                                 bn      : "ending",
                                 b       : {String},
                                 ret     : {Boolean},
+                                attrs   :   ".regex -> match against a regular expression", 
                                 desc    : "check if string ends with given suffix"),
 
         opExists    : OpSpec(   name    : "exists?",

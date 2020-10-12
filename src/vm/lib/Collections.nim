@@ -670,6 +670,8 @@ template Split*(): untyped =
                 syms[x.s] = newStringBlock(syms[x.s].s.splitLines())
             elif (let aBy = popAttr("by"); aBy != VNULL):
                 syms[x.s] = newStringBlock(syms[x.s].s.split(aBy.s))
+            elif (let aRegex = popAttr("regex"); aRegex != VNULL):
+                syms[x.s] = newStringBlock(syms[x.s].s.split(re(aRegex.s)))
             elif (let aAt = popAttr("at"); aAt != VNULL):
                 syms[x.s] = newStringBlock(@[syms[x.s].s[0..aAt.i-1], syms[x.s].s[aAt.i..^1]])
             elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -706,6 +708,8 @@ template Split*(): untyped =
             stack.push(newStringBlock(x.s.splitLines()))
         elif (let aBy = popAttr("by"); aBy != VNULL):
             stack.push(newStringBlock(x.s.split(aBy.s)))
+        elif (let aRegex = popAttr("regex"); aRegex != VNULL):
+            stack.push(newStringBlock(x.s.split(re(aRegex.s))))
         elif (let aAt = popAttr("at"); aAt != VNULL):
             stack.push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
         elif (let aEvery = popAttr("every"); aEvery != VNULL):

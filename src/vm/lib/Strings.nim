@@ -78,8 +78,12 @@ template Pad*():untyped =
 template Replace*():untyped =
     require(opReplace)
 
-    if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
-    else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
+    if (popAttr("regex") != VNULL):
+        if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
+        else: syms[x.s].s = syms[x.s].s.replace(re.re(y.s), z.s)
+    else:
+        if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
+        else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
 
 template Strip*():untyped =
     require(opStrip)
@@ -96,7 +100,10 @@ template Prefix*():untyped =
 template HasPrefix*():untyped =
     require(opHasPrefix)
 
-    stack.push(newBoolean(x.s.startsWith(y.s)))
+    if (popAttr("regex") != VNULL):
+        stack.push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+    else:
+        stack.push(newBoolean(x.s.startsWith(y.s)))
 
 template Suffix*():untyped =
     require(opSuffix)
@@ -107,7 +114,10 @@ template Suffix*():untyped =
 template HasSuffix*():untyped =
     require(opHasSuffix)
 
-    stack.push(newBoolean(x.s.endsWith(y.s)))
+    if (popAttr("regex") != VNULL):
+        stack.push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+    else:
+        stack.push(newBoolean(x.s.endsWith(y.s)))
 
 template Levenshtein*():untyped =
     require(opLevenshtein)
