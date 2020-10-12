@@ -1,0 +1,5 @@
+roman: read relative "euler89.txt"
+pattern: "DCCCC|LXXXX|VIIII|CCCC|XXXX|IIII"
+replacement: "kk"
+
+print (size roman) - size replace roman .regex pattern replacement
