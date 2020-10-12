@@ -1,3 +1,11 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Arturo
+;; Programming Language + Bytecode VM compiler
+;; (c) 2019-2020 Yanis Zafirópulos
+;;
+;; @file: system/update.art
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 print color.green "- Checking Arturo repository..."
 execute "git clone https://github.com/arturo-lang/arturo.git"
 print [

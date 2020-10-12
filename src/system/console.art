@@ -3,7 +3,7 @@
 ;; Programming Language + Bytecode VM compiler
 ;; (c) 2019-2020 Yanis Zafirópulos
 ;;
-;; @file: tools/console.art
+;; @file: system/console.art
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; templates
