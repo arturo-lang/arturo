@@ -83,7 +83,6 @@ tocTemplate:
 
 ---
 
-
 loop functionsByModule [module,functions][
 	moduleMd: ""
 	toc: "## Functions\n\n<!--ts-->\n"
@@ -119,7 +118,7 @@ loop functionsByModule [module,functions][
 			fattrs:"#### Attributes\n\n"
 
 			pipe: to :string to :char 124
-
+			
 			fattrs: fattrs ++ pipe ++ "Attribute" ++ pipe ++ "Type" ++ pipe ++ "Description" ++ pipe ++ "\n"
 			fattrs: fattrs ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "\n"
 
@@ -127,10 +126,7 @@ loop functionsByModule [module,functions][
 				params: join.with:" " map attrb\parameters 'param ["<i>:" ++ (to :string param) ++ "</i>"]
 				fattrs: fattrs ++ pipe ++ attrb\name ++ pipe ++ params ++ pipe ++ attrb\action ++ pipe ++ "\n"
 			]
-			
 		]
-
-		;"<ins>" ++ (arg\name) ++ "</ins> *" ++ join map (arg \ "type") 'z [":" ++ to :string z] ++ "*"
 
 		moduleMd: moduleMd ++ "\n\n" ++ render funcTemplate
 	]
