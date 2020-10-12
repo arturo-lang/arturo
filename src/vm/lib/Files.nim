@@ -165,7 +165,7 @@ template Write*():untyped =
             writeFile(x.s, y.s)
 
 
-template Exists*():untyped =
+template IsExists*():untyped =
     require(opExists)
 
     if (popAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))

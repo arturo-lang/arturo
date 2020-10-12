@@ -389,16 +389,16 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opSub        : Arithmetic.Sub()
             of opMul        : Arithmetic.Mul()
             of opDiv        : Arithmetic.Div()
-            of opFDiv       : Arithmetic.FDiv()
+            of opFDiv       : Arithmetic.Fdiv()
             of opMod        : Arithmetic.Mod()
             of opPow        : Arithmetic.Pow()                
 
             of opNeg        : Arithmetic.Neg()
 
-            of opNot        : Logic.Not()
-            of opAnd        : Logic.And()
-            of opOr         : Logic.Or()
-            of opXor        : Logic.Xor()
+            of opNot        : Logic.IsNot()
+            of opAnd        : Logic.IsAnd()
+            of opOr         : Logic.IsOr()
+            of opXor        : Logic.IsXor()
 
             of opShl        : Binary.Shl()
             of opShr        : Binary.Shr()
@@ -432,12 +432,12 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             # # comparison operations
 
-            of opEq         : Comparison.Eq()
-            of opNe         : Comparison.Ne()
-            of opGt         : Comparison.Gt()
-            of opGe         : Comparison.Ge()
-            of opLt         : Comparison.Lt()
-            of opLe         : Comparison.Le()
+            of opEq         : Comparison.IsEqual()
+            of opNe         : Comparison.IsNotEqual()
+            of opGt         : Comparison.IsGreater()
+            of opGe         : Comparison.IsGreaterOrEqual()
+            of opLt         : Comparison.IsLess()
+            of opLe         : Comparison.IsLessOrEqual()
 
             # # structures
 
@@ -553,7 +553,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                 stack.push(newBlock(Stack[0..SP-1]))
 
             of opCase: Core.Case()
-            of opWhen: Core.When()
+            of opWhen: Core.IsWhen()
 
             of opCapitalize: Strings.Capitalize()
 
@@ -605,7 +605,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opSuffix: Strings.Suffix()
             of opHasSuffix: Strings.HasSuffix()
 
-            of opExists: Files.Exists()
+            of opExists: Files.IsExists()
 
             of opTry: Core.Try()
             of opTryE: Core.TryE()
@@ -708,7 +708,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opAs: Conversion.As()
 
             of opGcd: Numbers.Gcd()
-            of opPrime: Numbers.Prime()
+            of opPrime: Numbers.IsPrime()
 
             of opPermutate: Collections.Permutate()
 

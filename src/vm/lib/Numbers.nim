@@ -337,7 +337,7 @@ template Gcd*():untyped =
 
     stack.push(newInteger(current))
 
-template Prime*():untyped =
+template IsPrime*():untyped =
     require(opPrime)
 
     if x.iKind==NormalInteger:

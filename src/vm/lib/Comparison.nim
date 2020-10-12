@@ -16,27 +16,27 @@ import vm/stack, vm/value
 # Methods
 #=======================================
 
-template Eq*():untyped =
+template IsEqual*():untyped =
     require(opEq)
     stack.push(newBoolean(x == y))
 
-template Ne*():untyped =
+template IsNotEqual*():untyped =
     require(opNe)
     stack.push(newBoolean(x != y))
 
-template Gt*():untyped =
+template IsGreater*():untyped =
     require(opGt)
     stack.push(newBoolean(x > y))
 
-template Ge*():untyped =
+template IsGreaterOrEqual*():untyped =
     require(opGe)
     stack.push(newBoolean(x >= y))
 
-template Lt*():untyped =
+template IsLess*():untyped =
     require(opLt)
     stack.push(newBoolean(x < y))
 
-template Le*():untyped =
+template IsLessOrEqual*():untyped =
     require(opGe)
     stack.push(newBoolean(x <= y))
             

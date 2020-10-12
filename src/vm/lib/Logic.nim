@@ -16,18 +16,18 @@ import vm/stack, vm/value
 # Methods
 #=======================================
 
-template Not*():untyped =
+template IsNot*():untyped =
     require(opNot)
     stack.push(newBoolean(not x.b))
 
-template And*():untyped = 
+template IsAnd*():untyped = 
     require(opAnd)
     stack.push(newBoolean(x.b and y.b))
 
-template Or*():untyped =
+template IsOr*():untyped =
     require(opOr)
     stack.push(newBoolean(x.b or y.b))
 
-template Xor*():untyped =
+template IsXor*():untyped =
     require(opXor)
     stack.push(newBoolean(x.b xor y.b))

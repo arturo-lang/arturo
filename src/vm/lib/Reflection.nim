@@ -77,7 +77,7 @@ proc getInfo*(op: OpSpec): Value {.inline.} =
 
     result = newDictionary({
                     "name"          : newString(op.name),
-                    "description"   : newString(op.desc.replace("~","")),
+                    "description"   : newString(op.desc.replace("~"," ")),
                     "alias"         : newString(op.alias),
                     "arguments"     : newBlock(argArray),
                     "attributes"    : newBlock(attrArray),

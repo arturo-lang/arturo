@@ -161,7 +161,7 @@ template Div*():untyped =
             else:
                 stack.push(newFloating((float)(x.i)/y.f))
 
-template FDiv*():untyped = 
+template Fdiv*():untyped = 
     require(opFDiv)
 
     if x.kind==Literal:
