@@ -57,6 +57,11 @@ The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-base
 
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
 
+Documentation
+------------------------------
+
+For more information about the language and for access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
+
 Trying it out
 ------------------------------
 
