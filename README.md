@@ -49,7 +49,7 @@ loop 1..10 'x [
 
 Simple, isn't it?
 
-> :+1:   For more - working - examples, just have a look into the /examples folder
+> 💡  For more - working - examples, just have a look into the /examples folder
 
 The Compiler
 ------------------------------
@@ -68,13 +68,13 @@ Trying it out
 
 ### Online
 
-☞ [arturo-lang.io](http://arturo-lang.io/)
+► [arturo-lang.io](http://arturo-lang.io/)
 
 <img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
 
 ### Manually
 
-> :information_source:   Arturo should be able to compiler on practically everything: Windows, Linux, Mac OS. In case you encounter any issue, or your OS is not supported, drop me a line!
+> 💡  Arturo should be able to compiler on practically everything: Windows, Linux, Mac OS. In case you encounter any issue, or your OS is not supported, drop me a line!
 
 #### Prerequisites
 
