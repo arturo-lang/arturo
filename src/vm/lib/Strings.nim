@@ -239,3 +239,7 @@ template Render*():untyped =
                     $(stack.pop())
             )
 
+template Match*():untyped =
+    require(opMatch)
+
+    stack.push(newStringBlock(x.s.findAll(re.re(y.s))))

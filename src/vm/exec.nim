@@ -717,6 +717,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             of opFactors: Numbers.Factors()
 
+            of opMatch: Strings.Match()
+
         i += 1
 
     when defined(VERBOSE):
