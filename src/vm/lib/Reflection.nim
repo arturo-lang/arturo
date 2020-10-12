@@ -37,7 +37,7 @@ proc printHelp*() {.inline.} =
     let sorted = toSeq(tbl.pairs).sorted
 
     for pair in sorted:
-        echo fgBold & alignLeft(pair[0],15) & fgWhite & pair[1]
+        echo fgBold & alignLeft(pair[0],20) & fgWhite & pair[1]
 
 proc getInfo*(op: OpSpec): Value {.inline.} =
     var argArray: ValueArray = @[]
