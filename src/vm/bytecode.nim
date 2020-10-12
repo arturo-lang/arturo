@@ -1523,7 +1523,8 @@ const
                                 a       : {String,Block,Dictionary},
                                 bn      : "value",
                                 b       : {Any},
-                                ret     : {Boolean},      
+                                ret     : {Boolean},    
+                                attrs   :   ".regex -> match against a regular expression", 
                                 desc    : "check if value exists in given collection" ),
 
         opIndex     : OpSpec(   name    : "index",        

@@ -8,6 +8,8 @@
 
 import strutils, tables
 
+import nre except toSeq
+
 #=======================================
 # Libraries
 #=======================================
@@ -104,7 +106,7 @@ proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
 # Constructors
 #=======================================
 
-template makeArray*():untyped = 
+template makeArray*(): untyped = 
     require(opArray)
 
     let stop = SP
@@ -116,12 +118,12 @@ template makeArray*():untyped =
 
     stack.push(newBlock(arr))
 
-template makeDict*():untyped = 
+template makeDict*(): untyped = 
     require(opDictionary)
     let dict = execBlock(x,dictionary=true)
     stack.push(newDictionary(dict))
 
-template makeFunc*():untyped = 
+template makeFunc*(): untyped = 
     require(opFunction)
 
     var exports = VNULL
@@ -136,7 +138,7 @@ template makeFunc*():untyped =
 # Methods
 #=======================================
 
-template IsAll*():untyped =
+template IsAll*(): untyped =
     require(opAll)
 
     var args: ValueArray
@@ -159,7 +161,7 @@ template IsAll*():untyped =
     if all:
         stack.push(newBoolean(true))
 
-template IsAny*():untyped =
+template IsAny*(): untyped =
     require(opAny)
 
     var args: ValueArray
@@ -182,7 +184,7 @@ template IsAny*():untyped =
     if not one:
         stack.push(newBoolean(false))
 
-template First*():untyped = 
+template First*(): untyped = 
     require(opFirst)
 
     if (let aN = popAttr("n"); aN != VNULL):
@@ -193,7 +195,7 @@ template First*():untyped =
         else: stack.push(x.a[0])
 
 
-template Last*():untyped =
+template Last*(): untyped =
     require(opLast)
 
     if (let aN = getAttr("n"); aN != VNULL):
@@ -204,7 +206,7 @@ template Last*():untyped =
         else: stack.push(x.a[x.a.len-1])
 
 
-template Loop*():untyped =
+template Loop*(): untyped =
     require(opLoop)
 
     var args: ValueArray
@@ -241,7 +243,7 @@ template Loop*():untyped =
         #     stack.push(item)
         #     discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
 
-template For*():untyped =
+template For*(): untyped =
     require(opFor)
     var indx = 0
     var args = y.a
@@ -255,7 +257,7 @@ template For*():untyped =
 
         indx += args.len
 
-template Map*():untyped =
+template Map*(): untyped =
     require(opMap)
 
     var args: ValueArray
@@ -280,7 +282,7 @@ template Map*():untyped =
         
         stack.push(newBlock(res))
 
-template Select*():untyped =
+template Select*(): untyped =
     require(opSelect)
 
     var args: ValueArray
@@ -309,7 +311,7 @@ template Select*():untyped =
 
         stack.push(newBlock(res))
 
-template Filter*():untyped =
+template Filter*(): untyped =
     require(opFilter)
 
     var args: ValueArray
@@ -338,7 +340,7 @@ template Filter*():untyped =
 
         stack.push(newBlock(res))
 
-template Range*():untyped =
+template Range*(): untyped =
     require(opRange)
 
     var res = newBlock()
@@ -361,12 +363,12 @@ template Range*():untyped =
     stack.push(res)
 
 
-template Sample*():untyped =
+template Sample*(): untyped =
     require(opSample)
 
     stack.push(sample(x.a))
 
-template Shuffle*():untyped =
+template Shuffle*(): untyped =
     require(opShuffle)
 
     if x.kind==Literal:
@@ -374,7 +376,7 @@ template Shuffle*():untyped =
     else:
         stack.push(newBlock(x.a.dup(shuffle)))
 
-template Slice*():untyped =
+template Slice*(): untyped =
     require(opSlice)
 
     if x.kind==String:
@@ -382,19 +384,19 @@ template Slice*():untyped =
     else:
         stack.push(newBlock(x.a[y.i..z.i]))
 
-template Sort*():untyped =
+template Sort*(): untyped =
     require(opSort)
 
     if x.kind==Block: stack.push(newBlock(x.a.sorted()))
     else: syms[x.s].a.sort()
 
-template Unique*():untyped = 
+template Unique*(): untyped = 
     require(opUnique)
 
     if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
     else: syms[x.s].a = syms[x.s].a.deduplicate()
 
-template Empty*():untyped =
+template Empty*(): untyped =
     require(opEmpty)
 
     case syms[x.s].kind:
@@ -403,7 +405,7 @@ template Empty*():untyped =
         of Dictionary: syms[x.s].d = initOrderedTable[string,Value]()
         else: discard
 
-template IsEmpty*():untyped =
+template IsEmpty*(): untyped =
     require(opIsEmpty)    
 
     case x.kind:
@@ -412,7 +414,7 @@ template IsEmpty*():untyped =
         of Dictionary: stack.push(newBoolean(x.d.len==0))
         else: discard
 
-template In*():untyped =
+template In*(): untyped =
     require(opIn)
 
     if x.kind==Literal:
@@ -438,12 +440,15 @@ template In*():untyped =
                 stack.push(newDictionary(copied))
             else: discard
 
-template IsIn*():untyped =
+template IsIn*(): untyped =
     require(opIsIn)
 
     case x.kind:
         of String:
-            stack.push(newBoolean(y.s in x.s))
+            if (popAttr("regex") != VNULL):
+                stack.push(newBoolean(nre.contains(x.s, re(y.s))))
+            else:
+                stack.push(newBoolean(y.s in x.s))
         of Block:
            stack.push(newBoolean(y in x.a))
         of Dictionary: 
@@ -452,7 +457,7 @@ template IsIn*():untyped =
         else:
             discard
 
-template Index*():untyped =
+template Index*(): untyped =
     require(opIndex)
 
     case x.kind:
@@ -476,12 +481,12 @@ template Index*():untyped =
                 stack.push(VNULL)
         else: discard
 
-template HasKey*():untyped =
+template HasKey*(): untyped =
     require(opHasKey)
 
     stack.push(newBoolean(x.d.hasKey(y.s)))
 
-template Reverse*():untyped =
+template Reverse*(): untyped =
     proc reverse(s: var string) =
         for i in 0 .. s.high div 2:
             swap(s[i], s[s.high - i])
@@ -502,7 +507,7 @@ template Reverse*():untyped =
         if x.kind==Block: stack.push(newBlock(x.a.reversed))
         elif x.kind==String: stack.push(newString(x.s.reversed))
 
-template Join*():untyped =
+template Join*(): untyped =
     require(opJoin)
 
     var sep = ""
@@ -515,7 +520,7 @@ template Join*():untyped =
         if x.kind==Block: stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
 
 
-template Max*():untyped =
+template Max*(): untyped =
     require(opMax)
 
     if x.a.len==0: stack.push(VNULL)
@@ -529,7 +534,7 @@ template Max*():untyped =
 
         stack.push(maxElement)
 
-template Min*():untyped =
+template Min*(): untyped =
     require(opMin)
 
     if x.a.len==0: stack.push(VNULL)
@@ -543,21 +548,21 @@ template Min*():untyped =
             
         stack.push(minElement)
 
-template Keys*():untyped =
+template Keys*(): untyped =
     require(opKeys)
 
     let s = toSeq(x.d.keys)
 
     stack.push(newStringBlock(s))
 
-template Values*():untyped = 
+template Values*(): untyped = 
     require(opValues)
 
     let s = toSeq(x.d.values)
 
     stack.push(newBlock(s))
 
-template Take*():untyped =
+template Take*(): untyped =
     require(opTake)
 
     if x.kind==Literal:
@@ -571,7 +576,7 @@ template Take*():untyped =
         elif x.kind==Block:
             stack.push(newBlock(x.a[0..y.i-1]))
 
-template Drop*():untyped =
+template Drop*(): untyped =
     require(opDrop)
 
     if x.kind==Literal:
@@ -585,7 +590,7 @@ template Drop*():untyped =
         elif x.kind==Block:
             stack.push(newBlock(x.a[y.i..^1]))
 
-template Append*():untyped =
+template Append*(): untyped =
     require(opAppend)
 
     if x.kind==Literal:
@@ -611,7 +616,7 @@ template Append*():untyped =
                 
             stack.push(ret)
 
-template Remove*():untyped =
+template Remove*(): untyped =
     require(opRemove)
 
     if x.kind==Literal:
@@ -654,7 +659,7 @@ template Remove*():untyped =
                 stack.push(newDictionary(x.d.removeAll(y, key)))
 
 
-template Split*():untyped =
+template Split*(): untyped =
     require(opSplit)
 
     if x.kind==Literal:
@@ -735,12 +740,12 @@ template Split*():untyped =
         else: stack.push(x)
 
 
-template Combine*():untyped =
+template Combine*(): untyped =
     require(opCombine)
 
     stack.push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
 
-template Fold*():untyped =
+template Fold*(): untyped =
     require(opFold)
 
     var val: Value
@@ -764,7 +769,7 @@ template Fold*():untyped =
 
     stack.push(val)
 
-template Permutate*():untyped =
+template Permutate*(): untyped =
     require(opPermutate)
 
     var ret: ValueArray = @[]
