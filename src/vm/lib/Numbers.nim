@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import extras/bignum, math, sequtils
+import extras/bignum, math, sequtils, sugar
 
 import vm/stack, vm/value
 
@@ -103,21 +103,8 @@ proc pollardRho*(n: Int): Int =
     else:
         return d
 
-proc primeFactors*(n: int): seq[int] =    
-    var res: seq[int] = @[]
-    var maxq = int(floor(sqrt(float(n))))
-    var d = 1
-    var q: int = (n %% 2) and 2 or 3  
-    while (q <= maxq) and ((n %% q) != 0):
-        q = 1 + d*4 - int(d /% 2)*2
-        d += 1
-    if q <= maxq:        
-        var q1: seq[int] = primeFactors(n /% q)
-        var q2: seq[int] = primeFactors(q)
-        res = concat(q2, q1, res)
-    else: 
-        res.add(n)    
-    result = res
+proc getStep(n: int64) : int64 {.inline.} =
+   result = 1 + n*4 - int64(n /% 2)*2
 
 proc factors*(n: int): seq[int] =
     var res: seq[int] = @[]
@@ -131,6 +118,23 @@ proc factors*(n: int): seq[int] =
     res.add(n)
 
     result = res
+
+proc primeFactors*(n: int): seq[int] =   
+    factors(n).filter((x)=>isPrime(x)) 
+    # var res: seq[int64] = @[]
+    # var maxq = int64(floor(sqrt(float(n))))
+    # var d = 1
+    # var q: int64 = (n %% 2) and 2 or 3    # either 2 or 3, alternating
+    # while (q <= maxq) and ((n %% q) != 0):
+    #     q = getStep(d)
+    #     d += 1
+    # if q <= maxq:        
+    #     var q1: seq[int64] = primeFactors(n /% q)
+    #     var q2: seq[int64] = primeFactors(q)
+    #     res = concat(q2, q1, res)
+    # else: 
+    #     res.add(n)    
+    # result = res
 
 proc primeFactors*(num: Int): seq[Int] =
     result = @[]
