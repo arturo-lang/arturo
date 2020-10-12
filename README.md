@@ -9,6 +9,7 @@
 <!--ts-->
    * [The Language](#the-language)
    * [The Compiler](#the-compiler)
+   * [Documentation](#documentation)
    * [Trying it out](#trying-it-out)
       * [Online](#online)
       * [Manually](#manually)
