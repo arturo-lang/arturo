@@ -1,0 +1,3 @@
+pentagonal: $[x]->(x*(3*x)-1)/2
+
+print map 1..10000 => pentagonal
