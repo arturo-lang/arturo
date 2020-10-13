@@ -1801,9 +1801,10 @@ const
                                 b       : {Literal,Block},            
                                 cn      : "action",          
                                 c       : {Block},            
-                                ret     : {Any,Null},
-                                attrs   :   ".first :any -> use given first value",
-                                desc    : "fold collection's items by applying given action" ),
+                                ret     : {Block,Null},   
+                                attrs   :   ".seed :any -> use specific seed value~" &
+                                            ".right -> perform right folding",   
+                                desc    : "fold collection's items by applying given action~and an initial seed value" ),
 
         opSqrt      : OpSpec(   name    : "sqrt",          
                                 args    : 1,   
@@ -1990,6 +1991,7 @@ const
                                 b       : {String},          
                                 ret     : {Block},      
                                 desc    : "get matches within string~using given regular expression" ),
+
     ]
 
     NoTranslation*  = (@[],@[])

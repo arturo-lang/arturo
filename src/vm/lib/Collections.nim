@@ -757,26 +757,91 @@ template Combine*(): untyped =
 template Fold*(): untyped =
     require(opFold)
 
-    var val: Value
-
-    if (let aFirst = popAttr("first"); aFirst != VNULL):
-        val = aFirst
-    else:
-        if x.a[0].kind == Integer:
-            val = I0
-        elif x.a[0].kind == String:
-            val = newString("")
-
-    let args = y.a
+    var args = y.a
     let preevaled = doEval(z)
 
-    for item in x.a:
-        stack.push(item)
-        stack.push(val)
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-        val = stack.pop()
+    var seed = I0
+    if x.kind==Literal:
+        if syms[x.s].a[0].kind == String:
+            seed = newString("")
+    else:
+        if x.a[0].kind == String:
+            seed = newString("")
 
-    stack.push(val)
+    if (let aSeed = popAttr("seed"); aSeed != VNULL):
+        seed = aSeed
+
+    let doRightFold = (popAttr("right")!=VNULL)
+
+    if (x.kind==Literal and syms[x.s].a.len==0):
+        discard
+    elif (x.kind!=Literal and x.a.len==0):
+        stack.push(x)
+    else:
+        if (doRightFold):
+            # right fold
+
+            if x.kind == Literal:
+                var res: Value = seed
+                for i in countdown(syms[x.s].a.len-1,0):
+                    let a = syms[x.s].a[i]
+                    let b = res
+
+                    stack.push(b)
+                    stack.push(a)
+
+                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                    res = stack.pop()
+
+                syms[x.s] = res
+
+            else:
+                var res: Value = seed
+                for i in countdown(x.a.len-1,0):
+                    let a = x.a[i]
+                    let b = res
+
+                    stack.push(b)
+                    stack.push(a)
+
+                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                    res = stack.pop()
+
+                stack.push(res)
+        else:
+            # left fold
+
+            if x.kind == Literal:
+                var res: Value = seed
+                for i in x.a:
+                    let a = res
+                    let b = i
+
+                    stack.push(b)
+                    stack.push(a)
+
+                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                    res = stack.pop()
+
+                syms[x.s] = res
+
+            else:
+                var res: Value = seed
+                for i in x.a:
+                    let a = res
+                    let b = i
+
+                    stack.push(b)
+                    stack.push(a)
+
+                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                    res = stack.pop()
+
+                stack.push(res)
 
 template Permutate*(): untyped =
     require(opPermutate)
@@ -788,3 +853,4 @@ template Permutate*(): untyped =
     )
 
     stack.push(newBlock(ret))
+        
