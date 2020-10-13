@@ -38,9 +38,14 @@ proc removeFirst*(arr: ValueArray, what: Value): ValueArray =
 
 proc removeAll*(arr: ValueArray, what: Value): ValueArray =
     result = @[]
-    for v in arr:
-        if v!=what:
-            result.add(v)
+    if what.kind==Block:
+        for v in arr:
+            if not (v in what.a):
+                result.add(v)
+    else:
+        for v in arr:
+            if v!=what:
+                result.add(v)
 
 proc removeByIndex*(arr: ValueArray, index: int): ValueArray =
     result = @[]
