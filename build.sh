@@ -125,7 +125,7 @@ if $DO_COMPRESS ; then
     echo ""
     printf "  \e[0;90mcompression: on\e[0m"
     echo ""
-	#upx -q $BINARY >/dev/null 2>&1
+	upx -q $BINARY >/dev/null 2>&1
 fi
 
 if $DO_INSTALL ; then
@@ -135,6 +135,12 @@ if $DO_INSTALL ; then
     printf "  \e[0;90m@ /usr/local/bin\e[0m"
     echo ""
     sudo cp $BINARY /usr/local/bin
+
+    echo ""
+    printf "\e[1;35m●\e[0m Setting up library\e[0m"
+    echo ""
+    sudo mkdir -p /usr/local/lib/arturo
+    sudo chown -R $USER /usr/local/lib/arturo
 fi
 
 echo ""
