@@ -20,3 +20,8 @@ template Relative*():untyped =
     require(opRelative)
 
     stack.push(newString(joinPath(env.currentPath(),x.s)))
+
+template Module*():untyped =
+    require(opModule)
+
+    stack.push(newString("/usr/local/lib/arturo/" & x.s & ".art"))

@@ -609,6 +609,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "match"      : addCommand(opMatch)
 
+                    of "module"     : addCommand(opModule)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
