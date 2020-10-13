@@ -1,21 +1,17 @@
 quickSort: function [items][
-	if? 2 > size items -> items
+	print ["items:" items "size:" size items]
+	if? 2 > size items 
+		[items]
 	else [
-		quickSort 
-			select 
-				slice items 1 (size items)-1
-				'x [ x < items\0 ]
-		++
-		[items\0]
-		++
-		quickSort
-			select
-				slice items 1 (size items)-1
-				'x [ x >= items\0 ]
+		pivot: items\0
+		middle: @[pivot]
+		before: select slice items 1 (size items)-1 'x -> x<pivot
+		after:  select slice items 1 (size items)-1 'x -> x>=pivot
+		print ["before:" before]
+		print ["after:" after]
+
+		return quickSort before ++ middle ++ after
 	]
-	; if [size items] < 2 { items } { 
-	; 	[quickSort|filter [slice items 1] { & < items.0 }] + items.0 +  [quickSort|filter [slice items 1] { & >= items.0 }]
-	; }
 ]
  
 print quickSort [3 1 2 8 5 7 9 4 6]
