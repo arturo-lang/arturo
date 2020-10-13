@@ -719,6 +719,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             of opMatch: Strings.Match()
 
+            of opModule: Path.Module()
+
         i += 1
 
     when defined(VERBOSE):

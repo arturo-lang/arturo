@@ -388,6 +388,8 @@ type
 
         opMatch         = 0xFB
 
+        opModule        = 0xFC
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -1991,6 +1993,14 @@ const
                                 b       : {String},          
                                 ret     : {Block},      
                                 desc    : "get matches within string~using given regular expression" ),
+
+        opModule    : OpSpec(   name    : "module",      
+                                args    : 1,   
+
+                                an      : "name",        
+                                a       : {String,Literal},           
+                                ret     : {String,Null},      
+                                desc    : "get module path for given name" ),
 
     ]
 
