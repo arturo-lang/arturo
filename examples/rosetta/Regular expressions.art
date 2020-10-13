@@ -1,0 +1,7 @@
+s: "This is a string"
+ 
+if in? s .regex "string$" -> print "yes, it ends with 'string'"
+ 
+replace 's .regex "[as]" "x"
+
+print s
