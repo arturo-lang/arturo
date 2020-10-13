@@ -44,6 +44,26 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     # Helper Functions
     #------------------------
 
+    proc debugCurrentCommand() =
+        var i = 0
+
+        while i < currentCommand.len:
+            stdout.write fmt("{i}: ")
+            var instr = (OpCode)(currentCommand[i])
+
+            stdout.write ($instr).replace("op").toLowerAscii()
+
+            case instr:
+                of opPushX, opStoreX, opLoadX, opCallX, opAttr :
+                    i += 1
+                    let indx = currentCommand[i]
+                    stdout.write fmt("\t#{indx}\n")
+                else:
+                    discard
+
+            stdout.write "\n"
+            i += 1
+
     template addToCommand(b: byte):untyped =
         currentCommand.add(b)
 
@@ -150,10 +170,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     discard argStack.pop()
                     argStack[^1] -= 1
 
-                if argStack.len==0:
-                    if inBlock: (for b in currentCommand: it.add(b))
-                    else: (for b in currentCommand.reversed: it.add(b))
-                    currentCommand = @[]
+                # Check for a trailing pipe
+                if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
+                    if argStack.len==0:
+                        # The command is finished
+                        
+                        if inBlock: (for b in currentCommand: it.add(b))
+                        else: (for b in currentCommand.reversed: it.add(b))
+                        currentCommand = @[]
             else:
                 if subargStack.len != 0: subargStack[^1] -= 1
 
@@ -161,8 +185,32 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     discard subargStack.pop()
                     subargStack[^1] -= 1
 
-                if subargStack.len==0:
-                    ended = true
+                # Check for a trailing pipe
+                if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
+                    if subargStack.len==0:
+                        # The subcommand is finished
+                        
+                        ended = true
+
+            ## Process trailing pipe            
+            if (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
+                
+                if (i+2<childrenCount and n.a[i+2].kind == Word):
+                    if argStack.len != 0: argStack[^1] -= 1
+                    var found = false
+                    for indx,spec in OpSpecs:
+                        if spec.name == n.a[i+2].s:
+                            found = true
+                            if (((currentCommand[0])>=(byte)(opStore0)) and ((currentCommand[0])<=(byte)(opStoreY))):
+                                currentCommand.insert((byte)indx, 1)
+                            else:
+                                currentCommand.insert((byte)indx)
+                            argStack.add(OpSpecs[indx].args-1)
+                            break
+                    i += 2
+                else:
+                    echo "found trailing pipe without adjunct command. exiting"
+                    quit()
 
     template addCommand(op: OpCode, inArrowBlock: bool = false): untyped =
         when static OpSpecs[op].args!=0:
