@@ -21,6 +21,7 @@
       * [Interactive console (REPL)](#interactive-console--repl)
    * [Editors & IDEs](#editors--ides)
    * [Roadmap](#roadmap)
+   * [Community](#community)
    * [Contributing](#contributing)
    * [License](#license)
 <!--te-->
@@ -139,10 +140,21 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
 - [ ] Go full self-hosted (that's an ambitious one, I know...)
 
+Community
+------------------------------
+
+In case you want to ask a question, suggest an idea, or practically anything related to Arturo - feel free! Everything and everyone is welcome.
+
+For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
+
+Also, I've set up a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo - not that I'm really familiar using it, I admit.
+
 Contributing
 ------------------------------
 
-Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for more details and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for more details and the process for submitting pull requests.
+
+**In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
 
 License
 ------------------------------
