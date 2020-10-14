@@ -58,8 +58,8 @@ template IsLower*():untyped =
 template Capitalize*():untyped =
     require(opCapitalize)
 
-    if x.kind==String: stack.push(newString(x.s.capitalizeAscii()))
-    else: syms[x.s].s = syms[x.s].s.capitalizeAscii()
+    if x.kind==String: stack.push(newString(x.s.capitalize()))
+    else: syms[x.s].s = syms[x.s].s.capitalize()
 
 template Pad*():untyped =
     require(opPad)
