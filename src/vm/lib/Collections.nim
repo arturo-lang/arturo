@@ -600,7 +600,15 @@ template Append*(): untyped =
 
     if x.kind==Literal:
         if syms[x.s].kind==String:
-            syms[x.s].s &= y.s
+            if y.kind==String:
+                syms[x.s].s &= y.s
+            elif y.kind==Char:
+                syms[x.s].s &= $(y.c)
+        elif syms[x.s].kind==Char:
+            if y.kind==String:
+                syms[x.s] = newString($(syms[x.s].c) & y.s)
+            elif y.kind==Char:
+                syms[x.s] = newString($(syms[x.s].c) & $(y.c))
         else:
             if y.kind==Block:
                 for item in y.a:
@@ -609,7 +617,15 @@ template Append*(): untyped =
                 syms[x.s].a.add(y)
     else:
         if x.kind==String:
-            stack.push(newString(x.s & y.s))
+            if y.kind==String:
+                stack.push(newString(x.s & y.s))
+            elif y.kind==Char:
+                stack.push(newString(x.s & $(y.c)))  
+        elif x.kind==Char:
+            if y.kind==String:
+                stack.push(newString($(x.c) & y.s))
+            elif y.kind==Char:
+                stack.push(newString($(x.c) & $(y.c)))          
         else:
             var ret = newBlock(x.a)
 
