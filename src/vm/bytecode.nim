@@ -390,6 +390,8 @@ type
 
         opModule        = 0xFC
 
+        opWebview       = 0xFD
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2001,6 +2003,17 @@ const
                                 a       : {String,Literal},           
                                 ret     : {String,Null},      
                                 desc    : "get module path for given name" ),
+
+        opWebview  : OpSpec(    name    : "webview",      
+                                args    : 1,   
+
+                                an      : "url",        
+                                a       : {String,Literal},           
+                                ret     : {String,Null},   
+                                attrs   :   ".title :string -> set window title~" &
+                                            ".width :integer -> set window width~" &
+                                            ".height :integer -> set window height",   
+                                desc    : "show webview window with given url" ),
 
     ]
 
