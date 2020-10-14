@@ -53,6 +53,7 @@ const
     Semicolon                   = ';'
     Dot                         = '.'
     Tick                        = '\''
+    BackTick                    = '`'
 
     Backslash                   = '\\'
     Dash                        = '-'
@@ -65,7 +66,7 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
-    Symbols                     = {'`','~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '{', '}'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '{', '}'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
     PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
@@ -118,15 +119,16 @@ template skip(p: var Parser) =
     
     p.bufpos = pos
 
-template parseString(p: var Parser) =
+template parseString(p: var Parser, stopper: char = Quote) =
     var pos = p.bufpos + 1
     var inCode = false
+
     while true:
         case p.buf[pos]:
             of EOF: 
                 p.status = unterminatedStringError
                 break
-            of Quote:
+            of stopper:
                 inc(pos)
                 break
             of '|':
@@ -244,7 +246,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     var isSymbol = true
     case p.buf[pos]:
         of '~'  : p.symbol = tilde
-        of '`'  : p.symbol = backtick
         of '!'  : p.symbol = exclamation
         of '@'  : p.symbol = at
         of '#'  : p.symbol = sharp
@@ -257,9 +258,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '|'  : p.symbol = pipe
         of '{'  : p.symbol = leftcurly
         of '}'  : p.symbol = rightcurly
-        # of '≠'  : p.symbol = lessgreater
-        # of '≤'  : p.symbol = equalless
-        # of '≥'  : p.symbol = greaterequal
         of '/'  : 
             if p.buf[pos+1]=='/': inc(pos); p.symbol = doubleslash
             else: p.symbol = slash
@@ -353,6 +351,11 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 if p.status != allOK: return nil
 
                 addChild(topBlock, newString(p.value))
+            of BackTick:
+                parseString(p, stopper=BackTick)
+                if p.status != allOK: return nil
+
+                addChild(topBlock, newChar(p.value))
             of Colon:
                 parseLiteral(p)
                 if p.value == Empty: 
