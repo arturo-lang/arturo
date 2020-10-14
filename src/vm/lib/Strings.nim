@@ -20,8 +20,8 @@ import utils
 template Upper*():untyped =
     require(opUpper)
 
-    if x.kind==String: stack.push(newString(x.s.toUpperAscii()))
-    else: syms[x.s].s = syms[x.s].s.toUpperAscii()
+    if x.kind==String: stack.push(newString(x.s.toUpper()))
+    else: syms[x.s].s = syms[x.s].s.toUpper()
 
 template IsUpper*():untyped =
     require(opIsUpper)
@@ -65,14 +65,14 @@ template Pad*():untyped =
     require(opPad)
 
     if (popAttr("right") != VNULL):
-        if x.kind==String: stack.push(newString(alignLeft(x.s, y.i)))
-        else: syms[x.s].s = alignLeft(syms[x.s].s, y.i)
+        if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
+        else: syms[x.s].s = unicode.alignLeft(syms[x.s].s, y.i)
     elif (popAttr("center") != VNULL):
         if x.kind==String: stack.push(newString(center(x.s, y.i)))
         else: syms[x.s].s = center(syms[x.s].s, y.i)
     else:
-        if x.kind==String: stack.push(newString(align(x.s, y.i)))
-        else: syms[x.s].s = align(syms[x.s].s, y.i)
+        if x.kind==String: stack.push(newString(unicode.align(x.s, y.i)))
+        else: syms[x.s].s = unicode.align(syms[x.s].s, y.i)
 
 
 template Replace*():untyped =
