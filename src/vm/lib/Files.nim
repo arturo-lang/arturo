@@ -10,11 +10,13 @@
 # Libraries
 #=======================================
 
-import httpClient, json, re, sequtils
+import json, sequtils
 import strformat, strtabs, sugar
 import tables, unicode, xmltree
 
 import vm/stack, vm/value
+
+import utils
 
 #=======================================
 # Helpers
@@ -100,9 +102,6 @@ proc parseXMLNode*(n: XmlNode): Value =
             #else:
             #    ret[key] = newString(child.text)
         result = newDictionary(ret)
-
-proc isUrl*(s: string): bool {.inline.} =
-    return s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
 
 #=======================================
 # Methods
