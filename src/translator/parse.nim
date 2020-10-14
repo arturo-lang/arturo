@@ -257,6 +257,9 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '|'  : p.symbol = pipe
         of '{'  : p.symbol = leftcurly
         of '}'  : p.symbol = rightcurly
+        # of '≠'  : p.symbol = lessgreater
+        # of '≤'  : p.symbol = equalless
+        # of '≥'  : p.symbol = greaterequal
         of '/'  : 
             if p.buf[pos+1]=='/': inc(pos); p.symbol = doubleslash
             else: p.symbol = slash
