@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import lexbase, streams, strformat, strutils
+import lexbase, streams, strformat, strutils, unicode
 
 import vm/value
 
@@ -203,6 +203,24 @@ template parseMultilineString(p: var Parser) =
             of LF:
                 pos = lexbase.handleLF(p, pos)
                 add(p.value, LF)
+            else:
+                add(p.value, p.buf[pos])
+                inc(pos)
+
+    p.bufpos = pos
+
+template parseFullLineString(p: var Parser) =
+    var pos = p.bufpos + 2
+    while true:
+        case p.buf[pos]:
+            of EOF: 
+                break
+            of CR:
+                pos = lexbase.handleCR(p, pos)
+                break
+            of LF:
+                pos = lexbase.handleLF(p, pos)
+                break
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -424,6 +442,13 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of RParen:
                 inc(p.bufpos)
                 break
+            of chr(194):
+                if p.buf[p.bufpos+1]==chr(171): # got «
+                    parseFullLineString(p)
+                    if p.status != allOK: return nil
+                    addChild(topBlock, newString(unicode.strip(p.value)))
+                else:
+                    inc(p.bufpos)
             else:
                 inc(p.bufpos)
 
