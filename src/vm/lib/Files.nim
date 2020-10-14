@@ -11,7 +11,8 @@
 #=======================================
 
 import httpClient, json, re, sequtils
-import strformat, strtabs, sugar, tables, xmltree
+import strformat, strtabs, sugar
+import tables, unicode, xmltree
 
 import vm/stack, vm/value
 
