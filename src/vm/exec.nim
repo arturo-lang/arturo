@@ -15,7 +15,7 @@ import extras/bignum, cgi, std/editdistance, htmlParser
 import httpClient, json, linenoise, math, md5, os, osproc
 import random, rdstdin, re, sequtils, smtp, std/sha1
 import strformat, strutils, sugar, tables, times
-import xmlparser, xmltree
+import unicode, xmlparser, xmltree
 
 import nre except toSeq
 
@@ -279,7 +279,7 @@ proc initVM*() =
 
 proc showVMErrors*() =
     if vmPanic:
-        let errMsg = vmError.split(";").map((x)=>x.strip()).join(fmt("\n         {fgRed}|{fgWhite} "))
+        let errMsg = vmError.split(";").map((x)=>strutils.strip(x)).join(fmt("\n         {fgRed}|{fgWhite} "))
         echo fmt("{fgRed}>> Error |{fgWhite} {errMsg}")
         emptyStack()
         vmPanic = false
