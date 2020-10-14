@@ -67,7 +67,7 @@ template Pad*():untyped =
     if (popAttr("right") != VNULL):
         if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
         else: syms[x.s].s = unicode.alignLeft(syms[x.s].s, y.i)
-    elif (popAttr("center") != VNULL):
+    elif (popAttr("center") != VNULL): # PENDING unicode support
         if x.kind==String: stack.push(newString(center(x.s, y.i)))
         else: syms[x.s].s = center(syms[x.s].s, y.i)
     else:
@@ -76,7 +76,7 @@ template Pad*():untyped =
 
 
 template Replace*():untyped =
-    require(opReplace)
+    require(opReplace) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
         if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
@@ -92,13 +92,13 @@ template Strip*():untyped =
     else: syms[x.s].s = strutils.strip(syms[x.s].s) 
 
 template Prefix*():untyped =
-    require(opPrefix)
+    require(opPrefix) # PENDING unicode support
 
     if x.kind==String: stack.push(newString(y.s & x.s))
     else: syms[x.s] = newString(y.s & syms[x.s].s)
 
 template HasPrefix*():untyped =
-    require(opHasPrefix)
+    require(opHasPrefix) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
         stack.push(newBoolean(re.startsWith(x.s, re.re(y.s))))
@@ -106,13 +106,13 @@ template HasPrefix*():untyped =
         stack.push(newBoolean(x.s.startsWith(y.s)))
 
 template Suffix*():untyped =
-    require(opSuffix)
+    require(opSuffix) # PENDING unicode support
 
     if x.kind==String: stack.push(newString(x.s & y.s))
     else: syms[x.s] = newString(syms[x.s].s & y.s)
 
 template HasSuffix*():untyped =
-    require(opHasSuffix)
+    require(opHasSuffix) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
         stack.push(newBoolean(re.endsWith(x.s, re.re(y.s))))
@@ -120,7 +120,7 @@ template HasSuffix*():untyped =
         stack.push(newBoolean(x.s.endsWith(y.s)))
 
 template Levenshtein*():untyped =
-    require(opLevenshtein)
+    require(opLevenshtein) # PENDING unicode support
 
     stack.push(newInteger(editDistance(x.s,y.s)))
 
@@ -164,12 +164,12 @@ template Color*():untyped =
     stack.push(newString(pre & x.s & reset))
 
 template IsWhitespace*():untyped =
-    require(opIsWhitespace)
+    require(opIsWhitespace) # PENDING unicode support
 
     stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
 
 template IsNumeric*():untyped =
-    require(opIsNumeric)
+    require(opIsNumeric) # PENDING unicode support
 
     var found = false
     var dotFound = false
@@ -191,7 +191,7 @@ template IsNumeric*():untyped =
         stack.push(VTRUE)
 
 template Render*():untyped =
-    require(opRender)
+    require(opRender) # PENDING unicode support
 
     if (let aWith = popAttr("with"); aWith != VNULL):
         if x.kind==String:
@@ -240,6 +240,6 @@ template Render*():untyped =
             )
 
 template Match*():untyped =
-    require(opMatch)
+    require(opMatch) # PENDING unicode support
 
     stack.push(newStringBlock(x.s.findAll(re.re(y.s))))
