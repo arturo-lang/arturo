@@ -11,7 +11,7 @@
 #=======================================
 
 import extras/bignum, hashes, sequtils, strformat
-import strutils, sugar, tables, times
+import strutils, sugar, tables, times, unicode
 
 import utils
 
@@ -39,7 +39,6 @@ type
         lessgreater     # <>
 
         tilde           # ~
-        backtick        # `
         exclamation     # !
         at              # @
         sharp           # #
@@ -109,7 +108,7 @@ type
                     of BigInteger:      bi* : Int    
             of Floating:    f*  : float
             of Type:        t*  : ValueKind
-            of Char:        c*  : char
+            of Char:        c*  : Rune
             of String,
                Word,
                Literal,
@@ -217,14 +216,20 @@ proc newType*(t: ValueKind): Value {.inline.} =
 proc newType*(t: string): Value {.inline.} =
     newType(parseEnum[ValueKind](t.capitalizeAscii()))
 
-proc newChar*(c: char): Value {.inline.} =
+proc newChar*(c: Rune): Value {.inline.} =
     Value(kind: Char, c: c)
+
+proc newChar*(c: char): Value {.inline.} =
+    Value(kind: Char, c: ($c).runeAt(0))
+
+proc newChar*(c: string): Value {.inline.} =
+    Value(kind: Char, c: c.runeAt(0))
 
 proc newString*(s: string, strip: bool = false): Value {.inline.} =
     if not strip:
         Value(kind: String, s: s)
     else:
-        Value(kind: String, s: s.strip().split("\n").map((x)=>x.strip).join("\n"))
+        Value(kind: String, s: unicode.strip(s).split("\n").map((x)=>unicode.strip(x)).join("\n"))
 
 proc newWord*(w: string): Value {.inline.} =
     Value(kind: Word, s: w)
@@ -478,7 +483,7 @@ proc `<`*(x: Value, y: Value): bool =
             of Null: return false
             of Boolean: return false
             of Type: return false
-            of Char: return x.c < y.c
+            of Char: return $(x.c) < $(y.c)
             of String,
                Word,
                Label,
@@ -519,7 +524,7 @@ proc `>`*(x: Value, y: Value): bool =
             of Null: return false
             of Boolean: return false
             of Type: return false
-            of Char: return x.c > y.c
+            of Char: return $(x.c) > $(y.c)
             of String,
                Word,
                Label,
@@ -577,7 +582,6 @@ proc `$`*(v: Value): string {.inline.} =
                 of lessgreater      : return "<>"
 
                 of tilde            : return "~"
-                of backtick         : return "`"
                 of exclamation      : return "!"
                 of at               : return "@"
                 of sharp            : return "#"
@@ -673,7 +677,6 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
                 of lessgreater      : stdout.write "<>"
 
                 of tilde            : stdout.write "~"
-                of backtick         : stdout.write "`"
                 of exclamation      : stdout.write "!"
                 of at               : stdout.write "@"
                 of sharp            : stdout.write "#"
@@ -735,7 +738,7 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
                 for key,value in v.d:
                     for i in 0..level: stdout.write "\t"
 
-                    if newLine: stdout.write alignLeft(key & ": ", maxLen)
+                    if newLine: stdout.write unicode.alignLeft(key & ": ", maxLen)
                     else: stdout.write key & ": "
 
                     printOne(value, level+1, key == keys[keys.len-1], newLine)
@@ -845,7 +848,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
                 for key,value in v.d:
                     for i in 0..level: stdout.write "\t"
 
-                    stdout.write alignLeft(key & " ", maxLen) & ":"
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
                     dump(value, level+1, false)
 
