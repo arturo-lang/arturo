@@ -88,8 +88,8 @@ template Replace*():untyped =
 template Strip*():untyped =
     require(opStrip)
 
-    if x.kind==String: stack.push(newString(x.s.strip()))
-    else: syms[x.s].s = syms[x.s].s.strip() 
+    if x.kind==String: stack.push(newString(strutils.strip(x.s)))
+    else: syms[x.s].s = strutils.strip(syms[x.s].s) 
 
 template Prefix*():untyped =
     require(opPrefix)
