@@ -5,16 +5,20 @@ bubbleSort: function [items][
         changed: false
         i: 0
         repeat (size items)-1 [
-            if (items \ i) > (items \ i+1) [
+            if (items \ i) > (items \ i + 1) [
                 tmp: items \ i
-                set items i get items i+1
-                set items i+1 tmp
+                set items i get items i + 1
+                set items i + 1 tmp
                 changed: true
             ]
-            i: i+1
+            i: i + 1
         ]
     ]
     items
 ]
  
 print bubbleSort [3 1 2 8 5 7 9 4 6]
+
+print "this is it"
+
+1..10 | print
