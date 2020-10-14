@@ -15,6 +15,8 @@ import strformat, strutils
 import translator/parse
 import vm/stack, vm/value
 
+import utils
+
 #=======================================
 # Methods
 #=======================================
@@ -44,6 +46,13 @@ template Do*():untyped =
                 showVMErrors()
             else:
                 discard execBlock(doParse(x.s))
+        elif x.s.isUrl():
+            let content = newHttpClient().getContent(x.s)
+            if execInParent:
+                discard execBlock(doParse(content, isFile=false), execInParent=true)
+                showVMErrors()
+            else:
+                discard execBlock(doParse(content, isFile=false))
         else:
             if execInParent:
                 discard execBlock(doParse(x.s, isFile=false), execInParent=true)
