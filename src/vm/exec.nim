@@ -11,11 +11,11 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver, base64
-import extras/bignum, cgi, std/editdistance, htmlParser
-import httpClient, json, linenoise, math, md5, os, osproc
-import random, rdstdin, re, sequtils, smtp, std/sha1
-import strformat, strutils, sugar, tables, times
-import unicode, xmlparser, xmltree
+import extras/bignum, extras/webview, cgi, std/editdistance
+import htmlParser, httpClient, json, linenoise, math, md5
+import os, osproc, random, rdstdin, re, sequtils, smtp
+import std/sha1, strformat, strutils, sugar, tables
+import times, unicode, xmlparser, xmltree
 
 import nre except toSeq
 
@@ -35,7 +35,8 @@ import lib/[
     Path,
     Reflection,
     Shell,
-    Strings
+    Strings,
+    Ui
 ]
 
 #import extras/webview
@@ -720,6 +721,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opMatch: Strings.Match()
 
             of opModule: Path.Module()
+
+            of opWebview: Ui.Webview()
 
         i += 1
 

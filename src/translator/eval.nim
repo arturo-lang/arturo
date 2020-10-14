@@ -611,6 +611,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "module"     : addCommand(opModule)
 
+                    of "webview"    : addCommand(opWebview)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
