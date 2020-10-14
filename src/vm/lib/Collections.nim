@@ -670,7 +670,7 @@ template Split*(): untyped =
     if x.kind==Literal:
         if syms[x.s].kind==String:
             if (popAttr("words") != VNULL):
-                syms[x.s] = newStringBlock(syms[x.s].s.splitWhitespace())
+                syms[x.s] = newStringBlock(strutils.splitWhitespace(syms[x.s].s))
             elif (popAttr("lines") != VNULL):
                 syms[x.s] = newStringBlock(syms[x.s].s.splitLines())
             elif (let aBy = popAttr("by"); aBy != VNULL):
@@ -708,7 +708,7 @@ template Split*(): untyped =
 
     elif x.kind==String:
         if (popAttr("words") != VNULL):
-            stack.push(newStringBlock(x.s.splitWhitespace()))
+            stack.push(newStringBlock(strutils.splitWhitespace(x.s)))
         elif (popAttr("lines") != VNULL):
             stack.push(newStringBlock(x.s.splitLines()))
         elif (let aBy = popAttr("by"); aBy != VNULL):
