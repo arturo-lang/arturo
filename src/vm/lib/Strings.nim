@@ -27,8 +27,8 @@ template IsUpper*():untyped =
     require(opIsUpper)
 
     var broken = false
-    for c in x.s:
-        if not c.isUpperAscii():
+    for c in runes(x.s):
+        if not c.isUpper():
             stack.push(VFALSE)
             broken = true
             break
@@ -39,15 +39,15 @@ template IsUpper*():untyped =
 template Lower*():untyped =
     require(opLower)
 
-    if x.kind==String: stack.push(newString(x.s.toLowerAscii()))
-    else: syms[x.s].s = syms[x.s].s.toLowerAscii()
+    if x.kind==String: stack.push(newString(x.s.toLower()))
+    else: syms[x.s].s = syms[x.s].s.toLower()
 
 template IsLower*():untyped =
     require(opIsLower)
 
     var broken = false
-    for c in x.s:
-        if not c.isLowerAscii():
+    for c in runes(x.s):
+        if not c.isLower():
             stack.push(VFALSE)
             broken = true
             break
