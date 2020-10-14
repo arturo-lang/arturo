@@ -132,8 +132,8 @@ template To*(needsRequire:bool = true):untyped =
                         except ValueError:
                             invalidConversionError(y.s)
                     of Char:
-                        if y.s.len == 1:
-                            stack.push newChar(y.s[0])
+                        if y.s.runeLen() == 1:
+                            stack.push newChar(y.s)
                         else:
                             invalidConversionError(y.s)
                     of Word:
