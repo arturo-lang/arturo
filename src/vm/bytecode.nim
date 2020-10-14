@@ -1754,7 +1754,7 @@ const
                                 args    : 2,   
 
                                 an      : "collection",      
-                                a       : {String,Block,Literal},        
+                                a       : {String,Char,Block,Literal},        
                                 bn      : "value",      
                                 b       : {Any},
                                 ret     : {String,Block,Null},               
