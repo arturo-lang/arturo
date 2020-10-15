@@ -131,7 +131,8 @@ template execBlock(
         execInParent    : bool = false, 
         isFuncBlock     : bool = false, 
         exports         : Value = VNULL, 
-        isPureFunc      : bool = false
+        isPureFunc      : bool = false,
+        isIsolated      : bool = false
 ): untyped =
 
     #-----------------------------
@@ -177,8 +178,11 @@ template execBlock(
     # execute it
     #-----------------------------
 
-    let subSyms = doExec(evaled, depth+1, addr syms)
-
+    when isIsolated:
+        let subSyms = doExec(evaled, depth+1, nil)
+    else:
+        let subSyms = doExec(evaled, depth+1, addr syms)
+    
     #-----------------------------
     # handle result
     #-----------------------------
