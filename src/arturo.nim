@@ -54,13 +54,21 @@ Usage:
   arturo [options] <path>
 
 Options:
-  -e --evaluate       Evaluate given code
-  -c --console        Show repl / interactive console
+  -e --evaluate             Evaluate given code
+  -c --console              Show repl / interactive console
 
-  -u --update         Update to latest version
+  -u --update               Update to latest version
 
-  -h --help           Show this help screen
-  -v --version        Show current version
+  -m --module           
+        list                List all available modules
+        remote              List all available remote modules
+        info <name>         Get info about given module
+        install <name>      Install remote module by name
+        uninstall <name>    Uninstall module by name
+        update              Update all local modules
+
+  -h --help                 Show this help screen
+  -v --version              Show current version
 """
     
 #=======================================
@@ -73,8 +81,9 @@ when isMainModule:
 
     var action: CmdAction = evalCode
     var filename: string = ""
-    var runConsole = static readFile("src/system/console.art")
-    var runUpdate = static readFile("src/system/update.art")
+    var runConsole  = static readFile("src/system/console.art")
+    var runUpdate   = static readFile("src/system/update.art")
+    var runModule   = static readFile("src/system/module.art")
     var code: string = ""
     var arguments: ValueArray = @[]
 
@@ -98,6 +107,9 @@ when isMainModule:
                     of "u","update":
                         action = evalCode
                         code = runUpdate
+                    of "m", "module":
+                        action = evalCode
+                        code = runModule
                     of "h","help":
                         action = showHelp
                     of "v","version":
