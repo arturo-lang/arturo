@@ -689,8 +689,8 @@ const
                                 alias   : "@",       
                                 args    : 1,   
 
-                                an      : "block",       
-                                a       : {Block},      
+                                an      : "source",       
+                                a       : {Block,String},      
                                 ret     : {Block},      
                                 desc    : "create array from given block~by calculating all internal values" ),
 
@@ -698,10 +698,10 @@ const
                                 alias   : "#",      
                                 args    : 1,   
 
-                                an      : "block",      
-                                a       : {Block},      
+                                an      : "source",      
+                                a       : {Block,String},      
                                 ret     : {Dictionary},      
-                                desc    : "create dictionary from given block~by getting all internal symbols" ),
+                                desc    : "create dictionary from given block or file~by getting all internal symbols" ),
 
         opFunction  : OpSpec(   name    : "function",
                                 alias   : "$",      

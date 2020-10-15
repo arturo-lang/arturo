@@ -14,7 +14,10 @@ import nre except toSeq
 # Libraries
 #=======================================
 
+import translator/parse
 import vm/stack, vm/value
+
+import utils
 
 #=======================================
 # Helpers
@@ -116,7 +119,16 @@ template makeArray*(): untyped =
 
     let stop = SP
 
-    discard execBlock(x)
+    if x.kind==Block:
+        discard execBlock(x)
+    elif x.kind==String:
+        if fileExists(x.s):
+            discard execBlock(doParse(x.s), isIsolated=true)
+        elif isUrl(x.s):
+            let content = newHttpClient().getContent(x.s)
+            discard execBlock(doParse(content, isFile=false), isIsolated=true)
+        else:
+            echo "file does not exist"
 
     let arr: ValueArray = sTopsFrom(stop)
     SP = stop
@@ -125,7 +137,20 @@ template makeArray*(): untyped =
 
 template makeDict*(): untyped = 
     require(opDictionary)
-    let dict = execBlock(x,dictionary=true)
+
+    var dict: ValueDict
+
+    if x.kind==Block:
+        dict = execBlock(x,dictionary=true)
+    elif x.kind==String:
+        if fileExists(x.s):
+            dict = execBlock(doParse(x.s), dictionary=true, isIsolated=true)
+        elif isUrl(x.s):
+            let content = newHttpClient().getContent(x.s)
+            dict = execBlock(doParse(content, isFile=false), dictionary=true, isIsolated=true)
+        else:
+            echo "file does not exist"
+
     stack.push(newDictionary(dict))
 
 template makeFunc*(): untyped = 
