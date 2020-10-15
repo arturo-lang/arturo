@@ -11,11 +11,11 @@
 LongHeader: 
 ---
 |color.green.bold "Arturo"|  
-|Arturo\copyright| |Arturo\author|
+|sys\copyright| |sys\author|
 
-version : |Arturo\version| 
-build   : |Arturo\build| (|Arturo\buildDate|) 
-system  : |Arturo\cpu|/|Arturo\os|
+version : |sys\version| 
+build   : |sys\build| (|sys\buildDate|) 
+system  : |sys\cpu|/|sys\os|
 ---
 
 Subheader: 
