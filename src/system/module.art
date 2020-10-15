@@ -1,0 +1,131 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Arturo
+;; Programming Language + Bytecode VM compiler
+;; (c) 2019-2020 Yanis Zafirópulos
+;;
+;; @file: system/module.art
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Helpers
+
+printInfo: function [name,remote][
+	print color.cyan ~"> Info for |name|: "
+	src: remote \ name
+	target: (replace src "github.com" "raw.githubusercontent.com") ++ "/main/info.art"
+
+	print #target
+]
+
+installModule: function [name,remote][
+	if? attr? "update"
+		-> prints color.cyan ~"> Updating: |name|... "
+	else
+		-> prints color.cyan ~"> Installing: |name|... "
+	src: remote \ name
+	target: (replace src "github.com" "raw.githubusercontent.com") ++ "/main/main.art"
+	write ~"/usr/local/lib/arturo/|name|.art" read target
+	print "[ DONE ]"
+]
+
+uninstallModule: function [name][
+	prints color.cyan ~"> Uninstalling: |name|... "
+	execute ~"sudo rm /usr/local/lib/arturo/|name|.art"
+	print "[ DONE ]"
+]
+
+;; Main
+
+print color.green "- Launching Arturo module manager..."
+
+if 0=size arg [
+	print [color.red.bold "\nError:" "Not enough arguments."]
+	exit
+]
+
+case [arg\0=]
+	when? ["list"]		[ 
+		print "- Fetching list...\n"
+		locals: map list.relative "/usr/local/lib/arturo" 'x [replace x ".art" ""]
+
+		print color.cyan "> Available local modules:"
+		if? 0=size locals [
+			print "   ! No modules found"
+		]
+		else [
+			loop sort locals [name]
+				-> print ["  ▪︎" name]
+		]
+	]
+	when? ["remote"]	[ 
+		print "- Fetching remote list...\n"
+		remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+
+		print color.cyan "> Available remote modules:"
+		loop sort keys remotes [name]
+			-> print ["  ▪︎" name]
+	]
+	when? ["info"]		[
+		if 2<>size arg [
+			print [color.red.bold "Error:" "Not enough arguments for 'install'."]
+			exit
+		]
+		print "- Fetching remote list...\n"
+		remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+
+		if not? in? keys remotes arg\1 [
+			print [color.red.bold "Error:" "Remote module not found."]
+			exit
+		]
+
+		printInfo arg\1 remotes
+	]
+	when? ["install"]	[ 
+		if 2<>size arg [
+			print [color.red.bold "Error:" "Not enough arguments for 'install'."]
+			exit
+		]
+		print "- Fetching remote list...\n"
+		remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+
+		if not? in? keys remotes arg\1 [
+			print [color.red.bold "Error:" "Remote module not found."]
+			exit
+		]
+		installModule arg\1 remotes
+	]
+	when? ["uninstall"]	[ 
+		if 2<>size arg [
+			print [color.red.bold "Error:" "Not enough arguments for 'uninstall'."]
+			exit
+		]
+		print "- Fetching list...\n"
+		locals: map list.relative "/usr/local/lib/arturo" 'x [replace x ".art" ""]
+
+		if not? in? locals arg\1 [
+			print [color.red.bold "Error:" "Local module not found."]
+			exit
+		]
+
+		uninstallModule arg\1
+	]
+	when? ["update"]	[ 
+		print "- Fetching list...\n"
+		locals: map list.relative "/usr/local/lib/arturo" 'x [replace x ".art" ""]
+
+		if? 0=size locals [
+			print [color.red.bold "Error:" "No modules found to update."]
+			exit
+		]
+		else [
+			print "- Fetching remote list...\n"
+			remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+			loop sort locals [name]
+				-> installModule .update name remotes
+		]
+	]
+	else [
+		print [color.red.bold "Error:" "Command not recognized."]
+		exit
+	]
+
+print ""
