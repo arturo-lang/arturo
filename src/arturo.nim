@@ -11,13 +11,13 @@
 #=======================================
 
 import os, parseopt, segFaults
-import strformat, strutils, tables, times
+import strformat, strutils
 
 when defined(PROFILE):
     import nimprof
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/env, vm/exec, vm/value
+import vm/env, vm/exec, vm/value
 
 when defined(BENCHMARK):
     import strutils
@@ -116,25 +116,17 @@ when isMainModule:
                     let parsed = doParse(move code, isFile = action==execFile)
                     let evaled = parsed.doEval()
             else:
-                var presets: ValueDict = initOrderedTable[string,Value]()
-                presets["arg"] = newBlock(arguments)
-
-                presets["Arturo"] = newDictionary({
-                    "author"    : newString("Yanis Zafirópulos"),
-                    "copyright" : newString("(c) 2019-2020"),
-                    "version"   : newString(Version),
-                    "build"     : newString(Build),
-                    "buildDate" : newString(now().format("dd-MM-yyyy")),
-                    "cpu"       : newString(hostCPU),
-                    "os"        : newString(hostOS),
-                    "builtin"   : newBlock(getBuiltins())
-                }.toOrderedTable)
-
-                initEnv()
+                initEnv(
+                    arguments = arguments, 
+                    version = Version,
+                    build = Build
+                )
                 if action==execFile:
                     env.addPath(code)
                 else:
                     env.addPath(getCurrentDir())
+
+                var presets = getEnvDictionary()
 
                 let parsed = doParse(move code, isFile = action==execFile)
                 let evaled = parsed.doEval()
