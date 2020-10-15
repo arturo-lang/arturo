@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes
+import algorithm, hashes
 
 import vm/value
 import utils
@@ -2029,6 +2029,8 @@ proc getBuiltins*(): ValueArray {.inline.}=
     for spec in OpSpecs:
         if spec.name!="":
             result.add(newLiteral(spec.name))
+
+    result.sort()
 
 proc hash*(x: OpCode): Hash {.inline.}=
     cast[Hash](ord(x))
