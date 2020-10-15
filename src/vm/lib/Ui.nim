@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import vm/stack, vm/value
+import vm/env, vm/stack, vm/value
 import utils
 
 #=======================================
@@ -33,12 +33,19 @@ template Webview*():untyped =
     if (let aHeight = popAttr("height"); aHeight != VNULL):
         height = aHeight.i
 
+    var targetUrl = x.s
+
+    if not isUrl(x.s):
+        targetUrl = joinPath(TmpDir,"artview.html")
+        writeFile(targetUrl, x.s)
+
     let wv = newWebView(title=title, 
-                           url=x.s, 
-                         width=width, 
-                        height=height, 
-                     resizable=true, 
-                         debug=false,
-                            cb=nil)
+                          url=targetUrl, 
+                        width=width, 
+                       height=height, 
+                    resizable=true, 
+                        debug=false,
+                           cb=nil)
 
     wv.run()
+    wv.exit()
