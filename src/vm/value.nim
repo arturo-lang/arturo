@@ -609,7 +609,7 @@ proc `$`*(v: Value): string {.inline.} =
                 of ellipsis         : return ".."
                 of colon            : return ":"
 
-        of Date     : return $(newDictionary(v.e))
+        of Date     : return $(v.eobj)
         of Binary   : discard
         of Inline,
            Block     :
@@ -705,7 +705,7 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
                 of colon            : stdout.write ":"
 
         of Date:
-            printOne(newDictionary(v.e), level, false, newLine)
+            stdout.write $(v.eobj)
 
         of Binary: 
             for i, bt in v.n:
@@ -822,7 +822,22 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
         of Symbol       : dumpSymbol(v)
 
-        of Date         : dump(newDictionary(v.e))
+        of Date         : 
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.e.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.e:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false)
+
+            dumpBlockEnd()
 
         of Binary       : discard
 
