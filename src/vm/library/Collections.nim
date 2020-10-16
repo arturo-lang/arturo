@@ -222,7 +222,7 @@ template First*(): untyped =
         if x.kind==String: stack.push(newString(x.s[0..aN.i-1]))
         else: stack.push(newBlock(x.a[0..aN.i-1]))
     else:
-        if x.kind==String: stack.push(newChar(x.s[0]))
+        if x.kind==String: stack.push(newChar(x.s.runeAt(0)))
         else: stack.push(x.a[0])
 
 
@@ -233,7 +233,7 @@ template Last*(): untyped =
         if x.kind==String: stack.push(newString(x.s[x.s.len-aN.i..^1]))
         else: stack.push(newBlock(x.a[x.a.len-aN.i..^1]))
     else:
-        if x.kind==String: stack.push(newChar(x.s[x.s.len-1]))
+        if x.kind==String: stack.push(newChar(x.s.lastRune()))
         else: stack.push(x.a[x.a.len-1])
 
 
