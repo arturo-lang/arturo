@@ -6,7 +6,7 @@
 # @file: library/Collections.nim
 ######################################################
 
-import strutils, tables
+import algorithm, strutils, tables
 
 import nre except toSeq
 
@@ -418,23 +418,35 @@ template Slice*(): untyped =
 template Sort*(): untyped =
     require(opSort)
 
+    var sortOrdering = SortOrder.Ascending
+
+    if (popAttr("descending")!=VNULL):
+        sortOrdering = SortOrder.Descending
+
     if x.kind==Block: 
         if (let aAs = popAttr("as"); aAs != VNULL):
-            stack.push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL)))
+            stack.push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
         else:
             if (popAttr("sensitive")!=VNULL):
-                stack.push(newBlock(x.a.sorted()))
+                stack.push(newBlock(x.a.unisorted("en", sensitive=true, order = sortOrdering)))
             else:
-                stack.push(newBlock(x.a.unisorted("en")))
+                if x.a[0].kind==String:
+                    stack.push(newBlock(x.a.unisorted("en", order = sortOrdering)))
+                else:
+                    stack.push(newBlock(x.a.sorted(order = sortOrdering)))
+
                 
     else: 
         if (let aAs = popAttr("as"); aAs != VNULL):
-            syms[x.s].a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL)
+            syms[x.s].a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
         else:
             if (popAttr("sensitive")!=VNULL):
-                syms[x.s].a.sort()
+                syms[x.s].a.unisort("en", sensitive=true, order = sortOrdering)
             else:
-                syms[x.s].a.unisort("en")
+                if syms[x.s].a[0].kind==String:
+                    syms[x.s].a.unisort("en", order = sortOrdering)
+                else:
+                    syms[x.s].a.sort(order = sortOrdering)
 
 template Unique*(): untyped = 
     require(opUnique)
