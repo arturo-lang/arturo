@@ -19,7 +19,7 @@ import times, unicode, unidecode, xmlparser, xmltree
 
 import nre except toSeq
 
-import lib/[
+import library/[
     Arithmetic,
     Binary,
     Collections, 
