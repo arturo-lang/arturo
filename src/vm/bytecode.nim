@@ -1024,7 +1024,9 @@ const
 
                                 an      : "collection",      
                                 a       : {Block,Literal},                  
-                                ret     : {Block,Null},         
+                                ret     : {Block,Null}, 
+                                attrs   :   ".as :literal -> localized by ISO 639-1 language code~" &                       
+                                            ".sensitive -> case-sensitive sort",
                                 desc    : "sort given block"),
 
         opInc       : OpSpec(   name    : "inc",          
