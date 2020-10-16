@@ -233,7 +233,8 @@ template Last*(): untyped =
         if x.kind==String: stack.push(newString(x.s[x.s.len-aN.i..^1]))
         else: stack.push(newBlock(x.a[x.a.len-aN.i..^1]))
     else:
-        if x.kind==String: stack.push(newChar(x.s.lastRune()))
+        if x.kind==String: 
+            stack.push(newChar(toRunes(x.s)[^1]))
         else: stack.push(x.a[x.a.len-1])
 
 
@@ -421,7 +422,7 @@ template Get*(): untyped =
     case x.kind:
         of Block: stack.push(x.a[y.i])
         of Dictionary: stack.push(x.d[y.s])
-        of String: stack.push(newChar(x.s.runeAt(y.i)))
+        of String: stack.push(newChar(x.s.runeAtPos(y.i)))
         of Date: 
             stack.push(x.e[y.s])
         else: discard
