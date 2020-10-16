@@ -70,6 +70,12 @@ template attrTop*(): Value =
 template emptyAttrs*() =
     AP = 0
 
+proc printAttrs*() =
+    var tmp = AP
+    while tmp>0:
+        echo "attr: " & Attrs[tmp-1].r & " => " & $(Attrs[tmp-2])
+        tmp -= 2
+
 proc getAttr*(attr: string): Value =
     var tmp = AP
     while tmp>0:
@@ -80,14 +86,20 @@ proc getAttr*(attr: string): Value =
     return VNULL
 
 proc popAttr*(attr: string): Value =
+    #echo "trying to popAttr: " & attr
     var tmp = AP
     while tmp>0:
         if Attrs[tmp-1].r == attr: 
+            #echo "- found it"
             result = Attrs[tmp-2]
             delete(Attrs,tmp-2,tmp-1)
             AP -= 2
+            #printAttrs()
             return
         tmp -= 2
+
+    #echo "- not found"
+    #printAttrs()
 
     return VNULL
 

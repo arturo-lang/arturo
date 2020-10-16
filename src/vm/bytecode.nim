@@ -1026,8 +1026,9 @@ const
                                 a       : {Block,Literal},                  
                                 ret     : {Block,Null}, 
                                 attrs   :   ".as :literal -> localized by ISO 639-1 language code~" &                       
-                                            ".sensitive -> case-sensitive sort",
-                                desc    : "sort given block"),
+                                            ".sensitive -> case-sensitive sort~" &
+                                            ".descending -> sort descending",
+                                desc    : "sort given block in ascending order"),
 
         opInc       : OpSpec(   name    : "inc",          
                                 args    : 1,   
