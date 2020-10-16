@@ -418,8 +418,23 @@ template Slice*(): untyped =
 template Sort*(): untyped =
     require(opSort)
 
-    if x.kind==Block: stack.push(newBlock(x.a.sorted()))
-    else: syms[x.s].a.sort()
+    if x.kind==Block: 
+        if (let aAs = popAttr("as"); aAs != VNULL):
+            stack.push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL)))
+        else:
+            if (popAttr("sensitive")!=VNULL):
+                stack.push(newBlock(x.a.sorted()))
+            else:
+                stack.push(newBlock(x.a.unisorted("en")))
+                
+    else: 
+        if (let aAs = popAttr("as"); aAs != VNULL):
+            syms[x.s].a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL)
+        else:
+            if (popAttr("sensitive")!=VNULL):
+                syms[x.s].a.sort()
+            else:
+                syms[x.s].a.unisort("en")
 
 template Unique*(): untyped = 
     require(opUnique)

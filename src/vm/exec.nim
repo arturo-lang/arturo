@@ -42,9 +42,10 @@ import library/[
 import translator/eval, translator/parse
 import vm/bytecode, vm/stack, vm/value
 
-import helpers/json as jsonHelper
-import helpers/url  as urlHelper
-import helpers/xml  as xmlHelper
+import helpers/json     as jsonHelper
+import helpers/unisort  as unisortHelper
+import helpers/url      as urlHelper
+import helpers/xml      as xmlHelper
 
 import utils    
 
