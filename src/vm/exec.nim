@@ -15,7 +15,7 @@ import extras/bignum, extras/webview, cgi, std/editdistance
 import htmlParser, httpClient, json, linenoise, math, md5
 import os, osproc, random, rdstdin, re, sequtils, smtp
 import std/sha1, strformat, strutils, sugar, tables
-import times, unicode, xmlparser, xmltree
+import times, unicode, unidecode, xmlparser, xmltree
 
 import nre except toSeq
 
