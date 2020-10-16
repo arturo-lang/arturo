@@ -15,6 +15,7 @@ import strformat, strutils
 import translator/parse
 import vm/stack, vm/value
 
+import helpers/url
 import utils
 
 #=======================================
