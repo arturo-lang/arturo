@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import re, strutils, times
+import strutils, times
 
 #=======================================
 # Constants
@@ -42,7 +42,3 @@ template benchmark*(benchmarkName: string, code: untyped) =
         let elapsed = epochTime() - t0
         let elapsedStr = elapsed.formatFloat(format = ffDecimal, precision = 3)
         echo "[benchmark] time: ", elapsedStr, "s"
-
-proc isUrl*(s: string): bool {.inline.} =
-    return s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
-

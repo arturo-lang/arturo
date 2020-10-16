@@ -39,9 +39,12 @@ import library/[
     Ui
 ]
 
-#import extras/webview
 import translator/eval, translator/parse
 import vm/bytecode, vm/stack, vm/value
+
+import helpers/json as jsonHelper
+import helpers/url  as urlHelper
+import helpers/xml  as xmlHelper
 
 import utils    
 
