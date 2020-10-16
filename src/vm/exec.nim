@@ -480,26 +480,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opUpper: Strings.Upper()
             of opLower: Strings.Lower()
 
-            of opGet: 
-                require(opGet)
-
-                case x.kind:
-                    of Block: stack.push(x.a[y.i])
-                    of Dictionary: stack.push(x.d[y.s])
-                    of String: stack.push(newChar(x.s[y.i]))
-                    of Date: 
-                        stack.push(x.e[y.s])
-                    else: discard
-                    
-            of opSet: 
-                require(opSet)
-
-                case x.kind:
-                    of Block: 
-                        x.a[y.i] = z
-                    of Dictionary:
-                        x.d[y.s] = z
-                    else: discard
+            of opGet: Collections.Get()  
+            of opSet: Collections.Set()
 
             of opTo: Conversion.To()
             
