@@ -415,6 +415,27 @@ template Slice*(): untyped =
     else:
         stack.push(newBlock(x.a[y.i..z.i]))
 
+template Get*(): untyped =
+    require(opGet)
+
+    case x.kind:
+        of Block: stack.push(x.a[y.i])
+        of Dictionary: stack.push(x.d[y.s])
+        of String: stack.push(newChar(x.s.runeAt(y.i)))
+        of Date: 
+            stack.push(x.e[y.s])
+        else: discard
+
+template Set*(): untyped =
+    require(opSet)
+
+    case x.kind:
+        of Block: 
+            x.a[y.i] = z
+        of Dictionary:
+            x.d[y.s] = z
+        else: discard
+
 template Sort*(): untyped =
     require(opSort)
 
