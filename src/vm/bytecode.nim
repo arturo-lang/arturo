@@ -1934,7 +1934,8 @@ const
                                 ret     : {Any},      
                                 attrs   :   ".binary -> format integer as binary~" &
                                             ".hex -> format integer as hexadecimal~" &
-                                            ".octal -> format integer as octal", 
+                                            ".octal -> format integer as octal~" & 
+                                            ".ascii -> transliterate string to ASCII",
                                 desc    : "format given value as given type (attribute)"),
 
         opGcd       : OpSpec(   name    : "gcd",      

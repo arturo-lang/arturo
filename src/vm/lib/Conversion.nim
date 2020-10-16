@@ -29,12 +29,14 @@ template invalidConversionError(origin: string):untyped =
 template As*():untyped =
     require(opAs)
 
-    if (let aWith = popAttr("binary"); aWith != VNULL):
+    if (popAttr("binary") != VNULL):
         stack.push(newString(fmt"{x.i:b}"))
-    elif (let aWith = popAttr("hex"); aWith != VNULL):
+    elif (popAttr("hex") != VNULL):
         stack.push(newString(fmt"{x.i:x}"))
-    elif (let aWith = popAttr("octal"); aWith != VNULL):
+    elif (popAttr("octal") != VNULL):
         stack.push(newString(fmt"{x.i:o}"))
+    elif (popAttr("ascii") != VNULL):
+        stack.push(newString(unidecode(x.s)))
     else:
         stack.push(x)
 
