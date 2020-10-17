@@ -42,6 +42,7 @@ import library/[
 import translator/eval, translator/parse
 import vm/bytecode, vm/stack, vm/value
 
+import helpers/arrays   as arraysHelper    
 import helpers/json     as jsonHelper
 import helpers/unisort  as unisortHelper
 import helpers/url      as urlHelper
@@ -713,6 +714,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opModule: Path.Module()
 
             of opWebview: Ui.Webview()
+
+            of opFlatten: Collections.Flatten()
 
         i += 1
 

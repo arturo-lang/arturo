@@ -613,6 +613,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "webview"    : addCommand(opWebview)
 
+                    of "flatten"    : addCommand(opFlatten)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:

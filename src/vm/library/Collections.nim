@@ -412,7 +412,7 @@ template Slice*(): untyped =
     require(opSlice)
 
     if x.kind==String:
-        stack.push(newString(x.s[y.i..z.i]))
+        stack.push(newString(x.s.runeSubStr(y.i,z.i-y.i+1)))
     else:
         stack.push(newBlock(x.a[y.i..z.i]))
 
@@ -945,3 +945,7 @@ template Permutate*(): untyped =
 
     stack.push(newBlock(ret))
         
+template Flatten*(): untyped =
+    require(opFlatten)
+
+    stack.push(x.flattened())
