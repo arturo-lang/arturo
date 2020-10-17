@@ -392,6 +392,8 @@ type
 
         opWebview       = 0xFD
 
+        opFlatten       = 0XFE
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2008,7 +2010,7 @@ const
                                 ret     : {String,Null},      
                                 desc    : "get module path for given name" ),
 
-        opWebview  : OpSpec(    name    : "webview",      
+        opWebview   : OpSpec(   name    : "webview",      
                                 args    : 1,   
 
                                 an      : "url",        
@@ -2018,6 +2020,14 @@ const
                                             ".width :integer -> set window width~" &
                                             ".height :integer -> set window height",   
                                 desc    : "show webview window with given url" ),
+
+        opFlatten   : OpSpec(   name    : "flatten",      
+                                args    : 1,   
+
+                                an      : "collection",  
+                                a       : {Block},      
+                                ret     : {Block},   
+                                desc    : "flatten given collection~by eliminating nested blocks"),
 
     ]
 
