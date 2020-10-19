@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import extras/markdown
+when not defined(MINI):
+    import extras/markdown
 
 import vm/stack, vm/value
 
@@ -18,5 +19,11 @@ import vm/stack, vm/value
 # Methods
 #=======================================
 
-proc parseMarkdownInput*(input: string): Value =
-    return newString(markdown(input))
+when not defined(MINI):
+    proc parseMarkdownInput*(input: string): Value =
+        return newString(markdown(input))
+
+else:
+    proc parseMarkdownInput*(input: string): Value =
+        echo "- feature not supported in MINI builds"
+        return VNULL
