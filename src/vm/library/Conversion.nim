@@ -36,7 +36,7 @@ template As*():untyped =
     elif (popAttr("octal") != VNULL):
         stack.push(newString(fmt"{x.i:o}"))
     elif (popAttr("ascii") != VNULL):
-        stack.push(newString(unidecode(x.s)))
+        stack.push(convertToAscii(x.s))
     else:
         stack.push(x)
 
