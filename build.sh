@@ -33,7 +33,7 @@ printf "\e[0m"
 BINARY=bin/arturo
 HINTS="" #"--hint[Conf]:off --hint[CC]:off --hint[Link]:off --hint[SuccessX]:off"
 WARNINGS="--warning[UnusedImport]:off"
-FLAGS="${HINTS} ${WARNINGS} --colors:off -d:PYTHONIC -d:release -d:danger --panics:off --gc:arc --checks:off --overflowChecks:on -d:ssl --threads:on"
+FLAGS="${HINTS} ${WARNINGS} --colors:off -d:PYTHONIC -d:release -d:danger --panics:off --gc:orc --checks:off --overflowChecks:on -d:ssl --threads:on"
 NIM_OPTS=""
 DO_COMPRESS=true
 DO_PASSEXTRA=true
