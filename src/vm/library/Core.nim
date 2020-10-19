@@ -41,25 +41,33 @@ template Do*():untyped =
         else:
             discard execBlock(x)
     else:
-        if fileExists(x.s):
-            if execInParent:
-                discard execBlock(doParse(x.s), execInParent=true)
-                showVMErrors()
-            else:
-                discard execBlock(doParse(x.s))
-        elif x.s.isUrl():
-            let content = newHttpClient().getContent(x.s)
-            if execInParent:
-                discard execBlock(doParse(content, isFile=false), execInParent=true)
-                showVMErrors()
-            else:
-                discard execBlock(doParse(content, isFile=false))
+        let (src,srcType) = getSource(x.s)
+
+        if execInParent:
+            discard execBlock(doParse(src, isFile=false), execInParent=true)
+            showVMErrors()
         else:
-            if execInParent:
-                discard execBlock(doParse(x.s, isFile=false), execInParent=true)
-                showVMErrors()
-            else:
-                discard execBlock(doParse(x.s, isFile=false))
+            discard execBlock(doParse(x.s))
+
+        # if fileExists(x.s):
+        #     if execInParent:
+        #         discard execBlock(doParse(x.s), execInParent=true)
+        #         showVMErrors()
+        #     else:
+        #         discard execBlock(doParse(x.s))
+        # elif x.s.isUrl():
+        #     let content = newHttpClient().getContent(x.s)
+        #     if execInParent:
+        #         discard execBlock(doParse(content, isFile=false), execInParent=true)
+        #         showVMErrors()
+        #     else:
+        #         discard execBlock(doParse(content, isFile=false))
+        # else:
+        #     if execInParent:
+        #         discard execBlock(doParse(x.s, isFile=false), execInParent=true)
+        #         showVMErrors()
+        #     else:
+        #         discard execBlock(doParse(x.s, isFile=false))
 
 
 template If*():untyped =
