@@ -143,6 +143,8 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 Community
 ------------------------------
 
+[![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
+
 In case you want to ask a question, suggest an idea, or practically anything related to Arturo - feel free! Everything and everyone is welcome.
 
 For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
