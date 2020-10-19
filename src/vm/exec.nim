@@ -11,15 +11,19 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver
-import base64, extras/bignum, extras/webview, cgi
-import std/editdistance, htmlParser, httpClient
-import json, linenoise, math, md5, os, osproc, random
-import rdstdin, re, sequtils, smtp, std/sha1
-import streams, strformat, strutils, sugar, tables
-import threadpool, times, unicode, unidecode
+import base64, cgi, std/editdistance, htmlParser
+import httpClient, json, linenoise, math, md5, os
+import osproc, random, rdstdin, re, sequtils, smtp
+import std/sha1, streams, strformat, strutils, sugar
+import tables, threadpool, times, unicode, unidecode
 import xmlparser, xmltree
 
 import nre except toSeq
+
+import extras/[
+    bignum,
+    webview
+]
 
 import library/[
     Arithmetic,
@@ -49,6 +53,7 @@ import helpers/csv          as csvHelper
 import helpers/datasource   as datasourceHelper
 import helpers/html         as htmlHelper
 import helpers/json         as jsonHelper
+import helpers/markdown     as markdownHelper
 import helpers/unisort      as unisortHelper
 import helpers/url          as urlHelper
 import helpers/xml          as xmlHelper
