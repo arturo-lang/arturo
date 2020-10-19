@@ -43,11 +43,8 @@ template Read*():untyped =
             stack.push(parseJsonNode(parseJson(src)))
         elif (popAttr("csv") != VNULL):
             stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
-        # elif attrs.hasKey("html"):
-        #     echo "parsing as html"
-        #     # let ret = parseHtml(action(x.s))
-        #     # echo repr ret
-        #     #stack.push(parseXmlNode())
+        elif (popAttr("html") != VNULL):
+            stack.push(parseHtmlInput(src))
         # elif attrs.hasKey("xml"):
         #     stack.push(parseXmlNode(parseXml(action(x.s))))
         else:
