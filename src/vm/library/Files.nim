@@ -24,9 +24,6 @@ import utils
 
 template Read*():untyped =
     require(opRead)
-
-    var action: proc(path:string):string
-    var download = false
     
     if (popAttr("binary") != VNULL):
         var f: File
@@ -38,21 +35,14 @@ template Read*():untyped =
 
         stack.push(newBinary(b))
     else:
-        if x.s.isUrl():
-            action = proc (path:string):string =
-                newHttpClient().getContent(path)
-            download = true
-        else:
-            action = proc (path:string):string =
-                readFile(path)
+        let (src,srcType) = getSource(x.s)
 
         if (popAttr("lines") != VNULL):
-            if download:
-                stack.push(newStringBlock(action(x.s).split('\n')))
-            else:
-                stack.push(newStringBlock(toSeq(x.s.lines)))
+            stack.push(newStringBlock(src.splitLines()))
         elif (popAttr("json") != VNULL):
-            stack.push(parseJsonNode(parseJson(action(x.s))))
+            stack.push(parseJsonNode(parseJson(src)))
+        elif (popAttr("csv") != VNULL):
+            stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
         # elif attrs.hasKey("html"):
         #     echo "parsing as html"
         #     # let ret = parseHtml(action(x.s))
@@ -61,7 +51,7 @@ template Read*():untyped =
         # elif attrs.hasKey("xml"):
         #     stack.push(parseXmlNode(parseXml(action(x.s))))
         else:
-            stack.push(newString(action(x.s)))
+            stack.push(newString(src))
 
 
 template Write*():untyped =
