@@ -1193,6 +1193,7 @@ const
                                             ".json -> read json file into a valid value~" &
                                             ".csv -> read CSV file into a block of rows~" &
                                             ".withHeaders -> read CSV headers~"&
+                                            ".html -> read html file into node dictionary~" &
                                             ".binary -> read as binary", 
                                 desc    : "read file from given path", ),
 
