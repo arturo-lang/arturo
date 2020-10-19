@@ -59,6 +59,15 @@ do
                     FLAGS="c --opt:speed ${FLAGS}"
             ;;
         mini)       
+                    #------------------------------------------
+                    # MINI features
+                    #------------------------------------------
+                    # --opt:size flag (less speed, less size)
+                    #
+                    # w/o 'webview
+                    # w/o .ascii for 'as
+                    # w/o .html & .markdown for 'read
+
                     printf "\e[1;35m●\e[0m setting mode:\e[1;32m mini\e[0m"
                     FLAGS="c ${FLAGS} --opt:size -d:MINI"
             ;;
