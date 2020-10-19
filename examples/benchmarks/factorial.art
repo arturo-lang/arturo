@@ -1,0 +1,7 @@
+factorial: $[n][
+	if? n>0 [n * factorial n-1]
+	else [1]
+] 
+
+loop 0..1000 'x ->
+	print factorial x
