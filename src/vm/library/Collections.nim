@@ -88,9 +88,9 @@ proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
         emit(s)
         return
  
-    var rc : proc(np: int)
+    var rc {.cursor} : proc(np: int)
     rc = proc(np: int) = 
- 
+
         if np == 1: 
             emit(s)
             return
