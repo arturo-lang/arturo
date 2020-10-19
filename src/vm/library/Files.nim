@@ -35,7 +35,7 @@ template Read*():untyped =
 
         stack.push(newBinary(b))
     else:
-        let (src,srcType) = getSource(x.s)
+        let (src, _) = getSource(x.s)
 
         if (popAttr("lines") != VNULL):
             stack.push(newStringBlock(src.splitLines()))
