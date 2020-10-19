@@ -1191,6 +1191,8 @@ const
                                 ret     : {String,Block,Binary},                
                                 attrs   :   ".lines -> read file lines into block~" &
                                             ".json -> read json file into a valid value~" &
+                                            ".csv -> read CSV file into a block of rows~" &
+                                            ".withHeaders -> read CSV headers~"&
                                             ".binary -> read as binary", 
                                 desc    : "read file from given path", ),
 
