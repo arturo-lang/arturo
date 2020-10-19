@@ -10,11 +10,12 @@
 # Libraries
 #=======================================
 
-import algorithm, asyncdispatch, asynchttpserver, base64
-import extras/bignum, extras/webview, cgi, std/editdistance
-import htmlParser, httpClient, json, linenoise, math, md5
-import os, osproc, random, rdstdin, re, sequtils, smtp
-import std/sha1, strformat, strutils, sugar, tables
+import algorithm, asyncdispatch, asynchttpserver
+import base64, extras/bignum, extras/webview, cgi
+import std/editdistance, htmlParser, httpClient
+import json, linenoise, math, md5, os, osproc, random
+import rdstdin, re, sequtils, smtp, std/sha1
+import streams, strformat, strutils, sugar, tables
 import times, unicode, unidecode, xmlparser, xmltree
 
 import nre except toSeq
@@ -42,11 +43,13 @@ import library/[
 import translator/eval, translator/parse
 import vm/bytecode, vm/stack, vm/value
 
-import helpers/arrays   as arraysHelper    
-import helpers/json     as jsonHelper
-import helpers/unisort  as unisortHelper
-import helpers/url      as urlHelper
-import helpers/xml      as xmlHelper
+import helpers/arrays       as arraysHelper   
+import helpers/csv          as csvHelper
+import helpers/datasource   as datasourceHelper
+import helpers/json         as jsonHelper
+import helpers/unisort      as unisortHelper
+import helpers/url          as urlHelper
+import helpers/xml          as xmlHelper
 
 import utils    
 
