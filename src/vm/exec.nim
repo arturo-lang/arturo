@@ -21,8 +21,7 @@ import xmlparser, xmltree
 import nre except toSeq
 
 import extras/[
-    bignum,
-    webview
+    bignum
 ]
 
 import library/[
@@ -56,6 +55,7 @@ import helpers/json         as jsonHelper
 import helpers/markdown     as markdownHelper
 import helpers/unisort      as unisortHelper
 import helpers/url          as urlHelper
+import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import utils    
