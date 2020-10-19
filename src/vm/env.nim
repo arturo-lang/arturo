@@ -19,7 +19,7 @@ import vm/bytecode, vm/value
 #=======================================
 
 var 
-    PathStack*  : seq[string]
+    PathStack*  {.threadvar.}: seq[string]
     HomeDir*    : string
     TmpDir*     : string
 
