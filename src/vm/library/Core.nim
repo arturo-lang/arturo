@@ -41,7 +41,7 @@ template Do*():untyped =
         else:
             discard execBlock(x)
     else:
-        let (src,srcType) = getSource(x.s)
+        let (src, _) = getSource(x.s)
 
         if execInParent:
             discard execBlock(doParse(src, isFile=false), execInParent=true)
