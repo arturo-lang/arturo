@@ -9,15 +9,15 @@
 #=======================================
 # Libraries
 #=======================================
-{.push hints:off.}
+
 import algorithm, asyncdispatch, asynchttpserver
 import base64, extras/bignum, extras/webview, cgi
 import std/editdistance, htmlParser, httpClient
 import json, linenoise, math, md5, os, osproc, random
 import rdstdin, re, sequtils, smtp, std/sha1
 import streams, strformat, strutils, sugar, tables
-import times, unicode, unidecode, xmlparser, xmltree
-{.pop.}
+import threadpool, times, unicode, unidecode
+import xmlparser, xmltree
 
 import nre except toSeq
 
@@ -47,6 +47,7 @@ import vm/bytecode, vm/stack, vm/value
 import helpers/arrays       as arraysHelper   
 import helpers/csv          as csvHelper
 import helpers/datasource   as datasourceHelper
+import helpers/html         as htmlHelper
 import helpers/json         as jsonHelper
 import helpers/unisort      as unisortHelper
 import helpers/url          as urlHelper
@@ -299,6 +300,7 @@ proc showVMErrors*() =
         vmPanic = false
 
 proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): ValueDict = 
+
     when defined(VERBOSE):
         if depth==0:
             showDebugHeader("VM")
