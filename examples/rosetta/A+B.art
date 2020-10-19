@@ -1,0 +1,4 @@
+while [true][
+	x: map split.words input "give me 2 numbers:" 'x -> to :integer x
+	print add x\0 x\1
+]
