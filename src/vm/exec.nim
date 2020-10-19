@@ -14,8 +14,8 @@ import algorithm, asyncdispatch, asynchttpserver
 import base64, cgi, std/editdistance, htmlParser
 import httpClient, json, linenoise, math, md5, os
 import osproc, random, rdstdin, re, sequtils, smtp
-import std/sha1, streams, strformat, strutils, sugar
-import tables, threadpool, times, unicode, unidecode
+import std/sha1, streams, strformat, strutils
+import sugar, tables, threadpool, times, unicode
 import xmlparser, xmltree
 
 import nre except toSeq
@@ -53,6 +53,7 @@ import helpers/datasource   as datasourceHelper
 import helpers/html         as htmlHelper
 import helpers/json         as jsonHelper
 import helpers/markdown     as markdownHelper
+import helpers/strings      as stringsHelper
 import helpers/unisort      as unisortHelper
 import helpers/url          as urlHelper
 import helpers/webview      as webviewHelper
