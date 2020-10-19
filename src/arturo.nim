@@ -80,7 +80,6 @@ when isMainModule:
     var token = initOptParser()
 
     var action: CmdAction = evalCode
-    var filename: string = ""
     var runConsole  = static readFile("src/system/console.art")
     var runUpdate   = static readFile("src/system/update.art")
     var runModule   = static readFile("src/system/module.art")
