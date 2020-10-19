@@ -1193,8 +1193,8 @@ const
                                             ".json -> read json file into a valid value~" &
                                             ".csv -> read CSV file into a block of rows~" &
                                             ".withHeaders -> read CSV headers~"&
-                                            ".html -> read html file into node dictionary~" &
-                                            ".markdown -> read markdown and convert to html~" &
+                                            ".html* -> read html file into node dictionary~" &
+                                            ".markdown* -> read markdown and convert to html~" &
                                             ".binary -> read as binary", 
                                 desc    : "read file from given path", ),
 
@@ -1944,7 +1944,7 @@ const
                                 attrs   :   ".binary -> format integer as binary~" &
                                             ".hex -> format integer as hexadecimal~" &
                                             ".octal -> format integer as octal~" & 
-                                            ".ascii -> transliterate string to ASCII",
+                                            ".ascii* -> transliterate string to ASCII",
                                 desc    : "format given value as given type (attribute)"),
 
         opGcd       : OpSpec(   name    : "gcd",      
@@ -2014,7 +2014,7 @@ const
                                 ret     : {String,Null},      
                                 desc    : "get module path for given name" ),
 
-        opWebview   : OpSpec(   name    : "webview",      
+        opWebview   : OpSpec(   name    : "webview*",      
                                 args    : 1,   
 
                                 an      : "url",        
