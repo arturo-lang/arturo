@@ -82,10 +82,10 @@ from htmlgen import nil, p, br, em, strong, a, img, code, del, blockquote,
 #from markdownpkg/entities import htmlEntityToUtf8
 
 type
-  MarkdownError* = object of Exception ## The error object for markdown parsing and rendering.
-                                       ## Usually, you should not see MarkdownError raising in your application
-                                       ## unless it's documented. Otherwise, please report it as an issue.
-                                       ##
+  MarkdownError* = object of CatchableError ## The error object for markdown parsing and rendering.
+                                            ## Usually, you should not see MarkdownError raising in your application
+                                            ## unless it's documented. Otherwise, please report it as an issue.
+                                            ##
   Parser* = ref object of RootObj
 
   MarkdownConfig* = ref object ## Options for configuring parsing or rendering behavior.
@@ -738,7 +738,7 @@ method parse*(this: UlParser, doc: string, start: int): ParseResult =
     listItems.add Li(
       doc: listItemDoc.strip(chars={'\n'}),
       verbatim: listItemDoc,
-      marker: marker
+      marker: move marker
     )
 
     pos += itemSize
@@ -754,8 +754,9 @@ method parse*(this: UlParser, doc: string, start: int): ParseResult =
 
   return ParseResult(token: ulToken, pos: pos)
 
-proc parseUnorderedList(doc: string, start: int): ParseResult {.locks: "unknown".} =
-  UlParser().parse(doc, start)
+# DECLARED_BUT_NOT_USED
+# proc parseUnorderedList(doc: string, start: int): ParseResult {.locks: "unknown".} =
+#   UlParser().parse(doc, start)
 
 method parse*(this: OlParser, doc: string, start: int): ParseResult =
   var pos = start
@@ -777,7 +778,7 @@ method parse*(this: OlParser, doc: string, start: int): ParseResult =
     listItems.add Li(
       doc: listItemDoc.strip(chars={'\n'}),
       verbatim: listItemDoc,
-      marker: marker
+      marker: move marker
     )
 
     pos += itemSize
@@ -1106,7 +1107,7 @@ method parse*(this: HtmlTableParser, doc: string, start: int): ParseResult {.loc
   for index, elem in heads:
     var thToken = THeadCell(
       doc: elem.strip,
-      align: aligns[index],
+      align: move aligns[index],
     )
     theadRowToken.appendChild(thToken)
   theadToken.appendChild(theadRowToken)
@@ -1133,7 +1134,7 @@ method parse*(this: HtmlTableParser, doc: string, start: int): ParseResult {.loc
           rowColumns[index]
       var tdToken = TBodyCell(
         doc: doc.replace(re"\\\|", "|").strip,
-        align: aligns[index],
+        align: move aligns[index],
       )
       tableRowToken.appendChild(tdToken)
     tbodyRows.add(tableRowToken)
@@ -1300,7 +1301,7 @@ method parse*(this: BlockquoteParser, doc: string, start: int): ParseResult =
     pos += size
     # extract content with blockquote mark
     var blockChunk = matches[0].consumeBlockquoteMarker
-    chunks.add(Chunk(kind: BlockChunk, doc: blockChunk, pos: pos))
+    chunks.add(Chunk(kind: BlockChunk, doc: move blockChunk, pos: pos))
     document &= blockChunk
 
     # blank line in non-lazy content always breaks the blockquote.
@@ -1321,7 +1322,7 @@ method parse*(this: BlockquoteParser, doc: string, start: int): ParseResult =
       lazyChunk &= line
       pos += line.len
       document &= line
-    chunks.add(Chunk(kind: LazyChunk, doc: lazyChunk, pos: pos))
+    chunks.add(Chunk(kind: LazyChunk, doc: move lazyChunk, pos: pos))
 
   if not found:
     return ParseResult(token: nil, pos: -1)
@@ -1518,7 +1519,7 @@ proc parseContainerBlock(state: State, token: Token): ParseResult =
     pos = chunk.pos
     if chunk.kind == BlockChunk:
       token.doc = chunk.doc
-      var t = Token(doc: chunk.doc)
+      var t = Token(doc: move chunk.doc)
       parseBlock(state, t)
       var p = t.children.head
       if p != nil and p.value of Paragraph and token.tipToken of Paragraph:
@@ -1599,7 +1600,7 @@ method parse*(this: AutoLinkParser, doc: string, start: int): ParseResult {.lock
   if size != -1:
     var url = emailMatches[0]
     let token = AutoLink(
-      text: url,
+      text: move url,
       url: fmt"mailto:{url}"
     )
     return ParseResult(token: token, pos: start+size)
@@ -1948,7 +1949,7 @@ proc parseCollapsedReferenceLink(doc: string, start: int, label: Slice[int]): Pa
   var text = doc[label.a+1 ..< label.b]
   var link = Link(
     doc: doc[start ..< label.b+1],
-    text: text,
+    text: move text,
     refId: text.toLower.replace(re"\s+", " ")
   )
   return ParseResult(token: link, pos: label.b + 3)
