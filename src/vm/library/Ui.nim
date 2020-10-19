@@ -39,13 +39,9 @@ template Webview*():untyped =
         targetUrl = joinPath(TmpDir,"artview.html")
         writeFile(targetUrl, x.s)
 
-    let wv = newWebView(title=title, 
-                          url=targetUrl, 
-                        width=width, 
-                       height=height, 
-                    resizable=true, 
-                        debug=false,
-                           cb=nil)
-
-    wv.run()
-    wv.exit()
+    showWebview(title=title, 
+                  url=targetUrl, 
+                width=width, 
+               height=height, 
+            resizable=true, 
+                debug=false)
