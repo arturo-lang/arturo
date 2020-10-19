@@ -44,25 +44,26 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     # Helper Functions
     #------------------------
 
-    proc debugCurrentCommand() =
-        var i = 0
+    when defined(VERBOSE):
+        proc debugCurrentCommand() =
+            var i = 0
 
-        while i < currentCommand.len:
-            stdout.write fmt("{i}: ")
-            var instr = (OpCode)(currentCommand[i])
+            while i < currentCommand.len:
+                stdout.write fmt("{i}: ")
+                var instr = (OpCode)(currentCommand[i])
 
-            stdout.write ($instr).replace("op").toLowerAscii()
+                stdout.write ($instr).replace("op").toLowerAscii()
 
-            case instr:
-                of opPushX, opStoreX, opLoadX, opCallX, opAttr :
-                    i += 1
-                    let indx = currentCommand[i]
-                    stdout.write fmt("\t#{indx}\n")
-                else:
-                    discard
+                case instr:
+                    of opPushX, opStoreX, opLoadX, opCallX, opAttr :
+                        i += 1
+                        let indx = currentCommand[i]
+                        stdout.write fmt("\t#{indx}\n")
+                    else:
+                        discard
 
-            stdout.write "\n"
-            i += 1
+                stdout.write "\n"
+                i += 1
 
     template addToCommand(b: byte):untyped =
         currentCommand.add(b)
