@@ -45,6 +45,8 @@ template Read*():untyped =
             stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
         elif (popAttr("html") != VNULL):
             stack.push(parseHtmlInput(src))
+        elif (popAttr("markdown") != VNULL):
+            stack.push(parseMarkdownInput(src))
         # elif attrs.hasKey("xml"):
         #     stack.push(parseXmlNode(parseXml(action(x.s))))
         else:

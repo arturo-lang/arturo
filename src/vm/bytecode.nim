@@ -1194,6 +1194,7 @@ const
                                             ".csv -> read CSV file into a block of rows~" &
                                             ".withHeaders -> read CSV headers~"&
                                             ".html -> read html file into node dictionary~" &
+                                            ".markdown -> read markdown and convert to html~" &
                                             ".binary -> read as binary", 
                                 desc    : "read file from given path", ),
 
