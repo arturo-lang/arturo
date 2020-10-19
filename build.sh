@@ -60,7 +60,7 @@ do
             ;;
         mini)       
                     printf "\e[1;35m●\e[0m setting mode:\e[1;32m mini\e[0m"
-                    FLAGS="c ${FLAGS} --opt:size"
+                    FLAGS="c ${FLAGS} --opt:size -d:MINI"
             ;;
         verbose) 	
                     printf "\e[1;35m●\e[0m setting mode:\e[1;32m verbose\e[0m"
