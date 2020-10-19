@@ -9,7 +9,7 @@
 #=======================================
 # Libraries
 #=======================================
-
+{.push hints:off.}
 import algorithm, asyncdispatch, asynchttpserver
 import base64, extras/bignum, extras/webview, cgi
 import std/editdistance, htmlParser, httpClient
@@ -17,6 +17,7 @@ import json, linenoise, math, md5, os, osproc, random
 import rdstdin, re, sequtils, smtp, std/sha1
 import streams, strformat, strutils, sugar, tables
 import times, unicode, unidecode, xmlparser, xmltree
+{.pop.}
 
 import nre except toSeq
 
