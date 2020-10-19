@@ -1,0 +1,2 @@
+loop 1..40 'i ->
+	print ["number in base 10:" pad to :string i 2 "number in octal:" pad as.octal i 2]
