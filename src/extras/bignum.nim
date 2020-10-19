@@ -11,7 +11,7 @@
 
 
 type 
-  INNER_C_UNION_5532179898798000430* {.importc: "no_name", header: "<gmp.h>".} = object  {.union.}
+  INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
     mp_lc* {.importc: "_mp_lc".}: pointer
   
   # should check limb sizes / import them directly?
@@ -1488,7 +1488,8 @@ when isMainModule:
 type Int* = ref mpz_t
   ## An Int represents a signed multi-precision integer.
 
-const LLP64_ULONG_MAX = 0xFFFFFFFF
+# DECLARED_BUT_NOT_USED
+# const LLP64_ULONG_MAX = 0xFFFFFFFF
 
 proc isLLP64: bool {.compileTime.} =
   # LLP64 programming model
@@ -1496,13 +1497,15 @@ proc isLLP64: bool {.compileTime.} =
 
 {.push hints: off.}
 
-proc fitsLLP64Long(x: int): bool =
-  # Returns whether `x` fits in a LLP64 signed long int.
-  return x >= low(clong) and x <= high(clong)
+# DECLARED_BUT_NOT_USED
 
-proc fitsLLP64ULong(x: int): bool =
-  # Returns whether `x` fits in a LLP64 unsigned long int.
-  return x >= 0 and x <= LLP64_ULONG_MAX
+# proc fitsLLP64Long(x: int): bool =
+#   # Returns whether `x` fits in a LLP64 signed long int.
+#   return x >= low(clong) and x <= high(clong)
+
+# proc fitsLLP64ULong(x: int): bool =
+#   # Returns whether `x` fits in a LLP64 unsigned long int.
+#   return x >= 0 and x <= LLP64_ULONG_MAX
 
 {.pop.}
 

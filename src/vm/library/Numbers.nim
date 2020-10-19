@@ -120,9 +120,6 @@ proc pollardRho*(n: Int): Int =
     else:
         return d
 
-proc getStep(n: int64) : int64 {.inline.} =
-   result = 1 + n*4 - int64(n /% 2)*2
-
 proc factors*(n: int): seq[int] =
     var res: seq[int] = @[]
 
