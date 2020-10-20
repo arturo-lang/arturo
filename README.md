@@ -75,7 +75,7 @@ Trying it out
 
 ### Manually
 
-> 💡  Arturo should be able to compiler on practically everything: Windows, Linux, Mac OS. In case you encounter any issue, or your OS is not supported, drop me a line!
+> 💡  Arturo should compile practically everywhere: Windows, Linux, Mac OS. If you encounter any issue, or your OS is not supported, drop me a line!
 
 #### Prerequisites
 
