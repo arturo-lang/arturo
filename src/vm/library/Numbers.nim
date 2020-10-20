@@ -347,7 +347,7 @@ template IsPrime*():untyped =
     if x.iKind==NormalInteger:
         stack.push(newBoolean(isPrime(x.i.uint64)))
     else:
-        stack.push(newBoolean(probablyPrime(x.bi,10)==0))
+        stack.push(newBoolean(probablyPrime(x.bi,25)>0))
 
 template Factors*():untyped =
     require(opFactors)
