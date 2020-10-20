@@ -323,7 +323,7 @@ type
 
         opGetHash       = 0xD5
 
-        opLevenshtein   = 0xD6
+        opAlias         = 0xD6
 
         opMail          = 0xD7
         opDownload      = 0xD8
@@ -392,7 +392,13 @@ type
 
         opWebview       = 0xFD
 
-        opFlatten       = 0XFE
+        opFlatten       = 0xFE
+
+        opExtra         = 0xFF
+
+        ######3
+
+        opLevenshtein   = 0x100
 
     ParamSpec* = set[ValueKind]
 
@@ -1648,15 +1654,7 @@ const
                                 attrs   :   ".sha -> use SHA1",
                                 desc    : "get (MD5) hash for given value"),
 
-        opLevenshtein: OpSpec(  name    : "levenshtein",
-                                args    : 2,
-
-                                an      : "stringA",
-                                a       : {String},
-                                bn      : "stringB",
-                                b       : {String},
-                                ret     : {Integer},
-                                desc    : "get the Levenshtein edit distance~between given strings"),
+        opAlias     : OpSpec(),
 
         opMail      : OpSpec(   name    : "mail",
                                 args    : 3,
@@ -2032,6 +2030,18 @@ const
                                 a       : {Block},      
                                 ret     : {Block},   
                                 desc    : "flatten given collection~by eliminating nested blocks"),
+
+        opExtra     : OpSpec(),
+
+        opLevenshtein: OpSpec(  name    : "levenshtein",
+                                args    : 2,
+
+                                an      : "stringA",
+                                a       : {String},
+                                bn      : "stringB",
+                                b       : {String},
+                                ret     : {Integer},
+                                desc    : "get the Levenshtein edit distance~between given strings"),
 
     ]
 
