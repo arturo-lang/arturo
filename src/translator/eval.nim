@@ -228,6 +228,23 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addTerminalValue(true):
                     discard
 
+    template addExtraCommand(op: OpCode, inArrowBlock: bool = false): untyped =
+        when static OpSpecs[op].args!=0:
+            when not inArrowBlock:
+                addToCommand((byte)((int)(op)-(int)(opExtra)))
+                addToCommand((byte)opExtra)
+                argStack.add(static OpSpecs[op].args)
+            else:
+                subargStack.add(static OpSpecs[op].args)
+        else:
+            when not inArrowBlock:
+                addTerminalValue(false):
+                    addToCommand((byte)((int)(op)-(int)(opExtra)))
+                    addToCommand((byte)opExtra)
+            else:
+                addTerminalValue(true):
+                    discard
+
     template addPartial(op: OpCode): untyped =
         ret.add(newSymbol(ampersand))
         swap(ret[^1],ret[^2])
@@ -544,8 +561,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "hash"       : addCommand(opGetHash)
 
-                    of "levenshtein": addCommand(opLevenshtein)
-
                     of "mail"       : addCommand(opMail)
                     of "download"   : addCommand(opDownload)
 
@@ -615,6 +630,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "webview"    : addCommand(opWebview)
 
                     of "flatten"    : addCommand(opFlatten)
+
+                    of "levenshtein": addExtraCommand(opLevenshtein)
 
                     else:
                         if Funcs.hasKey(node.s):
@@ -805,10 +822,14 @@ proc dump*(evaled: Translation) =
         stdout.write ($instr).replace("op").toLowerAscii()
 
         case instr:
-            of opPushX, opStoreX, opLoadX, opCallX, opAttr :
+            of opPushX, opStoreX, opLoadX, opCallX, opAttr:
                 i += 1
                 let indx = it[i]
                 stdout.write fmt("\t#{indx}\n")
+            of opExtra:
+                i += 1
+                let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
+                stdout.write fmt("\t%{extra}\n")
             else:
                 discard
 

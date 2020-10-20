@@ -644,7 +644,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             of opGetHash: Crypto.GetHash()
 
-            of opLevenshtein: Strings.Levenshtein()
+            of opAlias: discard
 
             of opMail: Net.Mail()
             of opDownload: Net.Download()
@@ -728,6 +728,16 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opWebview: Ui.Webview()
 
             of opFlatten: Collections.Flatten()
+
+            of opExtra:
+                i += 1
+                let extra = (OpCode)((int)(it[i])+(int)(opExtra))
+
+                case extra:
+                    of opLevenshtein: Strings.Levenshtein()
+                    else: discard
+
+            else: discard
 
         i += 1
 
