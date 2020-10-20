@@ -49,87 +49,88 @@ template Download*():untyped =
 
 
 template Serve*():untyped =
-    require(opServe)
+    when not defined(VERBOSE):
+        require(opServe)
 
-    let routes = x
+        let routes = x
 
-    var port = 18966
-    var verbose = (popAttr("verbose") != VNULL)
-    if (let aPort = popAttr("port"); aPort != VNULL):
-        port = aPort.i
+        var port = 18966
+        var verbose = (popAttr("verbose") != VNULL)
+        if (let aPort = popAttr("port"); aPort != VNULL):
+            port = aPort.i
 
-    var server = newAsyncHttpServer()
+        var server = newAsyncHttpServer()
 
-    proc handler(req: Request) {.async,gcsafe.} =
-        if verbose:
-            stdout.write fgMagenta & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & fgWhite & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
-            if req.url.query!="":
-                stdout.write "?" & req.url.query
+        proc handler(req: Request) {.async,gcsafe.} =
+            if verbose:
+                stdout.write fgMagenta & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & fgWhite & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
+                if req.url.query!="":
+                    stdout.write "?" & req.url.query
 
-            stdout.write "\n"
-            stdout.flushFile()
+                stdout.write "\n"
+                stdout.flushFile()
 
-        # echo "body: " & req.body
+            # echo "body: " & req.body
 
-        # echo "========"
-        # for k,v in pairs(req.headers):
-        #     echo k & " => " & v
-        # echo "========"
+            # echo "========"
+            # for k,v in pairs(req.headers):
+            #     echo k & " => " & v
+            # echo "========"
 
-        var status = 200
-        var headers = newHttpHeaders()
+            var status = 200
+            var headers = newHttpHeaders()
 
-        var body: string
+            var body: string
 
-        var routeFound = ""
-        for k in routes.d.keys:
-            let route = req.url.path.match(nre.re(k & "$"))
+            var routeFound = ""
+            for k in routes.d.keys:
+                let route = req.url.path.match(nre.re(k & "$"))
 
-            if not route.isNone:
+                if not route.isNone:
 
-                var args: ValueArray = @[]
+                    var args: ValueArray = @[]
 
-                let captures = route.get.captures.toTable
+                    let captures = route.get.captures.toTable
 
-                for group,capture in captures:
-                    args.add(newString(group))
+                    for group,capture in captures:
+                        args.add(newString(group))
 
-                if req.reqMethod==HttpPost:
-                    for d in decodeData(req.body):
-                        args.add(newString(d[0]))
+                    if req.reqMethod==HttpPost:
+                        for d in decodeData(req.body):
+                            args.add(newString(d[0]))
 
-                    for d in (toSeq(decodeData(req.body))).reversed:
-                        stack.push(newString(d[1]))
+                        for d in (toSeq(decodeData(req.body))).reversed:
+                            stack.push(newString(d[1]))
 
-                for capture in (toSeq(pairs(captures))).reversed:
-                    stack.push(newString(capture[1]))
+                    for capture in (toSeq(pairs(captures))).reversed:
+                        stack.push(newString(capture[1]))
 
-                try:
-                    discard execBlock(routes.d[k], execInParent=true, useArgs=true, args=args)
-                except:
-                    let e = getCurrentException()
-                    echo "Something went wrong." & e.msg
-                body = stack.pop().s
-                routeFound = k
-                break
+                    try:
+                        discard execBlock(routes.d[k], execInParent=true, useArgs=true, args=args)
+                    except:
+                        let e = getCurrentException()
+                        echo "Something went wrong." & e.msg
+                    body = stack.pop().s
+                    routeFound = k
+                    break
 
-        if routeFound=="":
-            let subpath = joinPath(env.currentPath(),req.url.path)
-            if fileExists(subpath):
-                body = readFile(subpath)
-            else:
-                status = 404
-                body = "page not found!"
+            if routeFound=="":
+                let subpath = joinPath(env.currentPath(),req.url.path)
+                if fileExists(subpath):
+                    body = readFile(subpath)
+                else:
+                    status = 404
+                    body = "page not found!"
 
-        if verbose:
-            echo fgGreen & ">> [" & $(status) & "] " & routeFound & fgWhite
+            if verbose:
+                echo fgGreen & ">> [" & $(status) & "] " & routeFound & fgWhite
 
-        await req.respond(status.HttpCode, body, headers)
+            await req.respond(status.HttpCode, body, headers)
 
-    try:
-        echo ":: Starting server on port " & $(port) & "...\n"
-        waitFor server.serve(port = port.Port, callback = handler, address = "")
-    except:
-        let e = getCurrentException()
-        echo "Something went wrong." & e.msg
-        server.close()
+        try:
+            echo ":: Starting server on port " & $(port) & "...\n"
+            waitFor server.serve(port = port.Port, callback = handler, address = "")
+        except:
+            let e = getCurrentException()
+            echo "Something went wrong." & e.msg
+            server.close()
