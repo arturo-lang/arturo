@@ -10,8 +10,6 @@
 # Libraries
 #=======================================
 
-import extras/bignum, math, sequtils
-
 import vm/stack, vm/value
 
 #=======================================
