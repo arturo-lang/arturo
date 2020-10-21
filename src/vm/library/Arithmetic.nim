@@ -21,58 +21,44 @@ import vm/stack, vm/value
 template Add*():untyped =
     require(opAdd)
 
-    if x.kind==Literal:
-        syms[x.s] += y
-    else:
-        stack.push(x+y)
+    if x.kind==Literal  : syms[x.s] += y
+    else                : stack.push(x+y)
 
 template Sub*():untyped =
     require(opSub)
 
-    if x.kind==Literal:
-        syms[x.s] -= y
-    else:
-        stack.push(x-y)
+    if x.kind==Literal  : syms[x.s] -= y
+    else                : stack.push(x-y)
 
 template Mul*():untyped =
     require(opMul)
 
-    if x.kind==Literal:
-        syms[x.s] *= y
-    else:
-        stack.push(x*y)
+    if x.kind==Literal  : syms[x.s] *= y
+    else                : stack.push(x*y)
 
 template Div*():untyped =
     require(opDiv)
 
-    if x.kind==Literal:
-        syms[x.s] /= y
-    else:
-        stack.push(x/y)
+    if x.kind==Literal  : syms[x.s] /= y
+    else                : stack.push(x/y)
 
 template Fdiv*():untyped = 
     require(opFDiv)
 
-    if x.kind==Literal:
-        syms[x.s] //= y
-    else:
-        stack.push(x//y)
+    if x.kind==Literal  : syms[x.s] //= y
+    else                : stack.push(x//y)
 
 template Mod*():untyped = 
     require(opMod)
 
-    if x.kind==Literal:
-        syms[x.s] %= y
-    else:
-        stack.push(x%y)
+    if x.kind==Literal  : syms[x.s] %= y
+    else                : stack.push(x%y)
 
 template Pow*():untyped =
     require(opPow)
 
-    if x.kind==Literal:
-        syms[x.s] ^= y
-    else:
-        stack.push(x^y)
+    if x.kind==Literal  : syms[x.s] ^= y
+    else                : stack.push(x^y)
 
 template Neg*():untyped =
     require(opNeg)
