@@ -551,20 +551,20 @@ const
                                 args    : 2,   
 
                                 an      : "value",            
-                                a       : {Integer},                  
+                                a       : {Integer,Literal},                  
                                 bn      : "bits",            
                                 b       : {Integer},
-                                ret     : {Integer},                        
+                                ret     : {Integer,Null},                        
                                 desc    : "shift-left first value bits by second value" ),
 
         opShr       : OpSpec(   name    : "shr",          
                                 args    : 2,   
 
                                 an      : "value",            
-                                a       : {Integer},                  
+                                a       : {Integer,Literal},                  
                                 bn      : "bits",            
                                 b       : {Integer},
-                                ret     : {Integer},                        
+                                ret     : {Integer,Null},                        
                                 desc    : "shift-right first value bits by second value" ),
 
         opAttr      : OpSpec(),
@@ -967,38 +967,38 @@ const
                                 args    : 1,   
 
                                 an      : "value",      
-                                a       : {Integer},      
-                                ret     : {Integer},      
+                                a       : {Integer,Literal},      
+                                ret     : {Integer,Null},      
                                 desc    : "calculate the binary complement of the given value" ),
 
         opBAnd      : OpSpec(   name    : "and",          
                                 args    : 2,   
 
                                 an      : "valueA",      
-                                a       : {Integer},      
+                                a       : {Integer,Literal},      
                                 bn      : "valueB",      
                                 b       : {Integer},
-                                ret     : {Integer},      
+                                ret     : {Integer,Null},      
                                 desc    : "calculate the binary AND for the given values" ),
 
         opBOr       : OpSpec(   name    : "or",      
                                 args    : 2,   
 
                                 an      : "valueA",      
-                                a       : {Integer},      
+                                a       : {Integer,Literal},      
                                 bn      : "valueB",      
                                 b       : {Integer},
-                                ret     : {Integer},      
+                                ret     : {Integer,Null},      
                                 desc    : "calculate the binary OR for the given values" ),
 
         opBXor      : OpSpec(   name    : "xor",          
                                 args    : 2,   
 
                                 an      : "valueA",      
-                                a       : {Integer},      
+                                a       : {Integer,Literal},      
                                 bn      : "valueB",      
                                 b       : {Integer},
-                                ret     : {Integer},      
+                                ret     : {Integer,Null},      
                                 desc    : "calculate the binary XOR for the given values" ),
 
         opFirst     : OpSpec(   name    : "first",        
