@@ -485,15 +485,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opSelect     : Collections.Select()
             of opFilter     : Collections.Filter()
 
-            of opSize:
-                require(opSize)
-
-                if x.kind==String:
-                    stack.push(newInteger(x.s.len))
-                elif x.kind==Dictionary:
-                    stack.push(newInteger(x.d.len))
-                else:
-                    stack.push(newInteger(x.a.len))
+            of opSize: Collections.Size()
 
             of opUpper: Strings.Upper()
             of opLower: Strings.Lower()
@@ -503,21 +495,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             of opTo: Conversion.To()
             
-            of opEven:
-                require(opEven)
-
-                if x.i mod 2 == 0:
-                    stack.push(newBoolean(true))
-                else:
-                    stack.push(newBoolean(false))
-
-            of opOdd:
-                require(opOdd)
-
-                if x.i mod 2 == 1:
-                    stack.push(newBoolean(true))
-                else:
-                    stack.push(newBoolean(false))
+            of opEven: Numbers.IsEven()
+            of opOdd: Numbers.IsOdd()
 
             of opRange: Collections.Range()
 
@@ -543,23 +522,10 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opInc: Arithmetic.Inc()
             of opDec: Arithmetic.Dec()
 
-            of opIsSet:
-                require(opIsSet)
-
-                stack.push(newBoolean(syms.hasKey(x.s)))
-
-            of opSymbols:
-                require(opSymbols)
-                var symbols: ValueDict = initOrderedTable[string,Value]()
-                for k,v in pairs(syms):
-                    if k[0]!=toUpperAscii(k[0]):
-                        symbols[k] = v
-                stack.push(newDictionary(symbols))
-
-            of opStack:
-                require(opStack)
-
-                stack.push(newBlock(Stack[0..SP-1]))
+            of opIsSet: Reflection.IsSet()
+                
+            of opSymbols: Reflection.Symbols()
+            of opStack: Reflection.GetStack()
 
             of opCase: Core.Case()
             of opWhen: Core.IsWhen()
@@ -686,20 +652,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             of opPause: Core.Pause()
 
-            of opCall: 
-                require(opCall)
-
-                var fun: Value
-
-                if x.kind==Literal or x.kind==String:
-                    fun = syms[x.s]
-                else:
-                    fun = x
-
-                for v in y.a.reversed:
-                    stack.push(v)
-
-                discard execBlock(fun.main, useArgs=true, args=fun.params.a)
+            of opCall: Core.Call()
 
             of opNew: Core.New()
 
