@@ -394,15 +394,9 @@ template Product*():untyped =
 template IsEven*():untyped =
     require(opEven)
 
-    if x.i mod 2 == 0:
-        stack.push(newBoolean(true))
-    else:
-        stack.push(newBoolean(false))
+    stack.push(x % I2 == I0)
 
 template IsOdd*():untyped =
     require(opOdd)
 
-    if x.i mod 2 == 1:
-        stack.push(newBoolean(true))
-    else:
-        stack.push(newBoolean(false))
+    stack.push(x % I2 == I1)
