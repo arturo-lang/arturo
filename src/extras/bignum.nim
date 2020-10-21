@@ -1992,9 +1992,9 @@ proc `not`*(z, x: Int): Int =
   result = z
   mpz_com(z[], x[])
 
-# proc `not`*(x: Int): Int =
-#   ## Returns the one's complement of `x`.
-#   newInt() not x
+proc `not`*(x: Int): Int =
+  ## Returns the one's complement of `x`.
+  newInt().`not` x
 
 proc odd*(z: Int): bool =
   ## Returns whether `z` is odd.
