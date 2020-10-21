@@ -75,8 +75,9 @@ proc getInfo*(op: OpSpec): Value {.inline.} =
                 }.toOrderedTable))
         discard
 
+    let clearName = op.name.replace("*","")
     result = newDictionary({
-                    "name"          : newString(op.name),
+                    "name"          : newString(clearName),
                     "description"   : newString(op.desc.replace("~"," ")),
                     "alias"         : newString(op.alias),
                     "arguments"     : newBlock(argArray),
