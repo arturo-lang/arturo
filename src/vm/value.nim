@@ -447,18 +447,10 @@ proc `*`*(x: Value, y: Value): Value =
                 if y.iKind==BigInteger:
                     return newInteger(x.i*y.bi)
                 else:
-                    let res = x.i * y.i
-
-                    if res>0xffffffffffffff:
+                    try:
+                        return newInteger(x.i*y.i)
+                    except OverflowDefect:
                         return newInteger(newInt(x.i)*y.i)
-                    else:
-                        return newInteger(res)
-                    # try:
-                    #     echo "multiplying " & $(x.i) & " and " & $(y.i)
-                    #     return newInteger(x.i*y.i)
-                    # except OverflowDefect:
-                    #     echo "OVERFLOW"
-                    #     return newInteger(newInt(x.i)*y.i)
             else:
                 if y.iKind==BigInteger:
                     return newInteger(x.bi*y.bi)
@@ -607,9 +599,8 @@ proc `^`*(x: Value, y: Value): Value =
                     #stack.push(newInteger(pow(x.iy.bi))
                 else:
                     try:
-                        let res = x.i^y.i
-                        return newInteger(res)
-                    except:
+                        return newInteger(x.i^y.i)
+                    except OverflowDefect:
                         return newInteger(pow(x.i,(culong)(y.i)))
             else:
                 if y.iKind==BigInteger:
