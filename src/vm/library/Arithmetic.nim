@@ -70,26 +70,7 @@ template Sub*():untyped =
             else:
                 syms[x.s] = newFloating((float)(syms[x.s].i)-y.f)
     else:
-        if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.i-y.bi))
-                else:
-                    try:
-                        stack.push(newInteger(x.i-y.i))
-                    except OverflowDefect:
-                        stack.push(newInteger(newInt(x.i)-y.i))
-            else:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.bi-y.bi))
-                else:
-                    stack.push(newInteger(x.bi-y.i))
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: stack.push(newFloating(x.f-y.f))
-                else: stack.push(newFloating(x.f-(float)(y.i)))
-            else:
-                stack.push(newFloating((float)(x.i)-y.f))
+        stack.push(x-y)
 
 template Mul*():untyped =
     require(opMul)
@@ -143,23 +124,7 @@ template Div*():untyped =
             else:
                 syms[x.s] = newFloating((float)(syms[x.s].i)/y.f)
     else:
-        if x.kind==Integer and y.kind==Integer:
-            if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.i div y.bi))
-                else:
-                   stack.push(newInteger(x.i div y.i))
-            else:
-                if y.iKind==BigInteger:
-                    stack.push(newInteger(x.bi div y.bi))
-                else:
-                    stack.push(newInteger(x.bi div y.i))
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: stack.push(newFloating(x.f/y.f))
-                else: stack.push(newFloating(x.f/(float)(y.i)))
-            else:
-                stack.push(newFloating((float)(x.i)/y.f))
+        stack.push(x/y)
 
 template Fdiv*():untyped = 
     require(opFDiv)
@@ -174,14 +139,7 @@ template Fdiv*():untyped =
             else:
                 syms[x.s] = newFloating((float)(x.i)/y.f)
     else:
-        if x.kind==Integer and y.kind==Integer:
-            stack.push(newFloating(x.i / y.i))
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: stack.push(newFloating(x.f / y.f))
-                else: stack.push(newFloating(x.f/(float)(y.i)))
-            else:
-                stack.push(newFloating((float)(x.i)/y.f))
+        stack.push(x//y)
 
 template Mod*():untyped = 
     require(opMod)
@@ -194,16 +152,7 @@ template Mod*():untyped =
             if y.iKind==NormalInteger: syms[x.s] = newInteger(syms[x.s].bi mod y.i)
             else: syms[x.s] = newInteger(syms[x.s].bi mod y.bi)
     else:
-        if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                stack.push(newInteger(x.i mod y.bi))
-            else:
-                stack.push(newInteger(x.i mod y.i))
-        else:
-            if y.iKind==BigInteger:
-                stack.push(newInteger(x.bi mod y.bi))
-            else:
-                stack.push(newInteger(x.bi mod y.i))
+        stack.push(x%y)
 
 template Pow*():untyped =
     require(opPow)
@@ -219,31 +168,7 @@ template Pow*():untyped =
             else:
                 syms[x.s] = newFloating(pow((float)(syms[x.s].i),y.f))
     else:
-        if x.kind==Integer and y.kind==Integer:
-            
-
-            if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    echo "ERROR"
-                    #stack.push(newInteger(pow(x.iy.bi))
-                else:
-                    try:
-                        let res = x.i^y.i
-                        stack.push(newInteger(res))
-                    except:
-                        stack.push(newInteger(pow(x.i,(culong)(y.i))))
-            else:
-                if y.iKind==BigInteger:
-                    echo "ERROR"
-                    #stack.push(newInteger(x.bi div y.bi))
-                else:
-                    stack.push(newInteger(pow(x.bi,(culong)(y.i))))
-        else:
-            if x.kind==Floating:
-                if y.kind==Floating: stack.push(newFloating(pow(x.f,y.f)))
-                else: stack.push(newFloating(pow(x.f,(float)(y.i))))
-            else:
-                stack.push(newFloating(pow((float)(x.i),y.f)))
+        stack.push(x^y)
 
 template Neg*():untyped =
     require(opNeg)
