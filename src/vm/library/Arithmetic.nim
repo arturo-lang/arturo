@@ -63,18 +63,17 @@ template Pow*():untyped =
 template Neg*():untyped =
     require(opNeg)
 
-    if x.kind==Literal  : syms[x.s] -= 1
-    else                : stack.push(x * (-1))
+    if x.kind==Literal  : syms[x.s] *= I1M
+    else                : stack.push(x * I1M)
 
 template Inc*():untyped =
     require(opInc)
 
-    if x.kind==Literal  : syms[x.s] += 1
-    else                : stack.push(x+1)
+    if x.kind==Literal  : syms[x.s] += I1
+    else                : stack.push(x+I1)
 
 template Dec*():untyped =
     require(opDec)
 
-    if x.kind==Literal  : syms[x.s] -= 1
-    else                : stack.push(x-1)
-    
+    if x.kind==Literal  : syms[x.s] -= I1
+    else                : stack.push(x-I1)
