@@ -63,18 +63,8 @@ template Pow*():untyped =
 template Neg*():untyped =
     require(opNeg)
 
-    if x.kind==Literal:
-        if syms[x.s].kind==Integer: 
-            if syms[x.s].iKind==NormalInteger: syms[x.s].i *= -1
-            else: syms[x.s].bi *= -1
-        else: syms[x.s] = newFloating(syms[x.s].f * (-1))
-    else:
-        if x.kind==Integer: 
-            if x.iKind==NormalInteger:
-                stack.push(newInteger(x.i * (-1)))
-            elif x.iKind==BigInteger:
-                stack.push(newInteger(newInt(x.i) * (-1)))
-        else: stack.push(newFloating(x.f * (-1)))
+    if x.kind==Literal  : syms[x.s] -= 1
+    else                : stack.push(x * (-1))
 
 template Inc*():untyped =
     require(opInc)
