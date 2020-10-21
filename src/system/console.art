@@ -42,7 +42,7 @@ while [true] [
 	
 	do.import input "$> " 
 	StackSize: size stack
-	
+
 	if StackSize > 0 	-> Got: pop 1 
 	if Got <> null 		-> print color.gray ~"=> |Got|"
 
