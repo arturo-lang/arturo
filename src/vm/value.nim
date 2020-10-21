@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import extras/bignum, hashes, sequtils, strformat
+import extras/bignum, hashes, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
 import utils
@@ -361,6 +361,31 @@ proc `+`*(x: Value, y: Value): Value =
             else:
                 return newFloating((float)(x.i)+y.f)
 
+proc `-`*(x: Value, y: Value): Value = 
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        return VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    return newInteger(x.i-y.bi)
+                else:
+                    try:
+                        return newInteger(x.i-y.i)
+                    except OverflowDefect:
+                        return newInteger(newInt(x.i)-y.i)
+            else:
+                if y.iKind==BigInteger:
+                    return newInteger(x.bi-y.bi)
+                else:
+                    return newInteger(x.bi-y.i)
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: return newFloating(x.f-y.f)
+                else: return newFloating(x.f-(float)(y.i))
+            else:
+                return newFloating((float)(x.i)-y.f)
+
 proc `*`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         return VNULL
@@ -393,6 +418,85 @@ proc `*`*(x: Value, y: Value): Value =
                 else: return newFloating(x.f*(float)(y.i))
             else:
                 return newFloating((float)(x.i)*y.f)
+
+proc `/`*(x: Value, y: Value): Value =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        return VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    return newInteger(x.i div y.bi)
+                else:
+                    return newInteger(x.i div y.i)
+            else:
+                if y.iKind==BigInteger:
+                    return newInteger(x.bi div y.bi)
+                else:
+                    return newInteger(x.bi div y.i)
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: return newFloating(x.f/y.f)
+                else: return newFloating(x.f/(float)(y.i))
+            else:
+                return newFloating((float)(x.i)/y.f)
+
+proc `//`*(x: Value, y: Value): Value =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        return VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            return newFloating(x.i / y.i)
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: return newFloating(x.f / y.f)
+                else: return newFloating(x.f/(float)(y.i))
+            else:
+                return newFloating((float)(x.i)/y.f)
+
+proc `%`*(x: Value, y: Value): Value =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                return newInteger(x.i mod y.bi)
+            else:
+                return newInteger(x.i mod y.i)
+        else:
+            if y.iKind==BigInteger:
+                return newInteger(x.bi mod y.bi)
+            else:
+                return newInteger(x.bi mod y.i)
+proc `^`*(x: Value, y: Value): Value =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        return VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    echo "ERROR"
+                    return VNULL
+                    #stack.push(newInteger(pow(x.iy.bi))
+                else:
+                    try:
+                        let res = x.i^y.i
+                        return newInteger(res)
+                    except:
+                        return newInteger(pow(x.i,(culong)(y.i)))
+            else:
+                if y.iKind==BigInteger:
+                    echo "ERROR"
+                    return VNULL
+                    #stack.push(newInteger(x.bi div y.bi))
+                else:
+                    return newInteger(pow(x.bi,(culong)(y.i)))
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: return newFloating(pow(x.f,y.f))
+                else: return newFloating(pow(x.f,(float)(y.i)))
+            else:
+                return newFloating(pow((float)(x.i),y.f))
 
 proc `==`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
