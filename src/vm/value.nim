@@ -361,6 +361,31 @@ proc `+`*(x: Value, y: Value): Value =
             else:
                 return newFloating((float)(x.i)+y.f)
 
+proc `+=`*(x: var Value, y: Value) =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        x = VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    x = newInteger(x.i+y.bi)
+                else:
+                    try:
+                        x.i += y.i
+                    except OverflowDefect:
+                        x = newInteger(newInt(x.i)+y.i)
+            else:
+                if y.iKind==BigInteger:
+                    x.bi += y.bi
+                else:
+                    x.bi += y.i
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: x.f += y.f
+                else: x.f += (float)(y.i)
+            else:
+                x = newFloating((float)(x.i)+y.f)
+
 proc `-`*(x: Value, y: Value): Value = 
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         return VNULL
@@ -385,6 +410,31 @@ proc `-`*(x: Value, y: Value): Value =
                 else: return newFloating(x.f-(float)(y.i))
             else:
                 return newFloating((float)(x.i)-y.f)
+
+proc `-=`*(x: var Value, y: Value) =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        x = VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    x = newInteger(x.i-y.bi)
+                else:
+                    try:
+                        x.i -= y.i
+                    except OverflowDefect:
+                        x = newInteger(newInt(x.i)-y.i)
+            else:
+                if y.iKind==BigInteger:
+                    x.bi -= y.bi
+                else:
+                    x.bi -= y.i
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: x.f -= y.f
+                else: x.f -= (float)(y.i)
+            else:
+                x = newFloating((float)(x.i)-y.f)
 
 proc `*`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
@@ -419,6 +469,31 @@ proc `*`*(x: Value, y: Value): Value =
             else:
                 return newFloating((float)(x.i)*y.f)
 
+proc `*=`*(x: var Value, y: Value) =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        x = VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    x = newInteger(x.i*y.bi)
+                else:
+                    try:
+                        x.i *= y.i
+                    except OverflowDefect:
+                        x = newInteger(newInt(x.i)*y.i)
+            else:
+                if y.iKind==BigInteger:
+                    x.bi *= y.bi
+                else:
+                    x.bi *= y.i
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: x.f *= y.f
+                else: x.f *= (float)(y.i)
+            else:
+                x = newFloating((float)(x.i)*y.f)
+
 proc `/`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         return VNULL
@@ -441,6 +516,31 @@ proc `/`*(x: Value, y: Value): Value =
             else:
                 return newFloating((float)(x.i)/y.f)
 
+proc `/=`*(x: var Value, y: Value) =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        x = VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            if x.iKind==NormalInteger:
+                if y.iKind==BigInteger:
+                    x = newInteger(x.i div y.bi)
+                else:
+                    try:
+                        x = newInteger(x.i div y.i)
+                    except OverflowDefect:
+                        x = newInteger(newInt(x.i) div y.i)
+            else:
+                if y.iKind==BigInteger:
+                    x = newInteger(x.bi div y.bi)
+                else:
+                    x = newInteger(x.bi div y.i)
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: x.f /= y.f
+                else: x.f /= (float)(y.i)
+            else:
+                x = newFloating((float)(x.i)/y.f)
+
 proc `//`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         return VNULL
@@ -453,6 +553,19 @@ proc `//`*(x: Value, y: Value): Value =
                 else: return newFloating(x.f/(float)(y.i))
             else:
                 return newFloating((float)(x.i)/y.f)
+
+proc `//=`*(x: var Value, y: Value) =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        x = VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            x = newFloating(x.i / y.i)
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: x.f /= y.f
+                else: x.f /= (float)(y.i)
+            else:
+                x = newFloating((float)(x.i)/y.f)
 
 proc `%`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
@@ -468,6 +581,18 @@ proc `%`*(x: Value, y: Value): Value =
                 return newInteger(x.bi mod y.bi)
             else:
                 return newInteger(x.bi mod y.i)
+
+proc `%=`*(x: var Value, y: Value) =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        x = VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==NormalInteger: x.i = x.i mod y.i
+            else: x = newInteger(x.i mod y.bi)
+        else:
+            if y.iKind==NormalInteger: x = newInteger(x.bi mod y.i)
+            else: x = newInteger(x.bi mod y.bi)
+
 proc `^`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
         return VNULL
@@ -497,6 +622,20 @@ proc `^`*(x: Value, y: Value): Value =
                 else: return newFloating(pow(x.f,(float)(y.i)))
             else:
                 return newFloating(pow((float)(x.i),y.f))
+
+proc `^=`*(x: var Value, y: Value) =
+    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+        x = VNULL
+    else:
+        if x.kind==Integer and y.kind==Integer:
+            let res = pow((float)x.i,(float)y.i)
+            x = newInteger((int)res)
+        else:
+            if x.kind==Floating:
+                if y.kind==Floating: x = newFloating(pow(x.f,y.f))
+                else: x = newFloating(pow(x.f,(float)(y.i)))
+            else:
+                x = newFloating(pow((float)(x.i),y.f))
 
 proc `==`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
