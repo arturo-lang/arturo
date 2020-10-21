@@ -69,26 +69,8 @@ template Neg*():untyped =
 template Inc*():untyped =
     require(opInc)
 
-    if x.kind==Literal:
-        if syms[x.s].kind == Integer: 
-            if syms[x.s].iKind==NormalInteger: 
-                try:
-                    syms[x.s].i += 1
-                except OverflowDefect:
-                    syms[x.s] = newInteger(newInt(syms[x.s].i)+1)
-            else: 
-                syms[x.s].bi += 1
-        elif syms[x.s].kind == Floating: syms[x.s].f += 1.0
-    elif x.kind==Integer:
-        if x.iKind==NormalInteger: 
-            try:
-                stack.push(newInteger(x.i+1))
-            except OverflowDefect:
-                stack.push(newInteger(newInt(x.i)+1))
-        else: 
-            stack.push(newInteger(x.bi+1))
-    elif x.kind==Floating:
-        stack.push(newFloating(x.f+1.0))
+    if x.kind==Literal  : syms[x.s] += 1
+    else                : stack.push(x+1)
 
 template Dec*():untyped =
     require(opDec)
