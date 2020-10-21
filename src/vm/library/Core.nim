@@ -54,27 +54,6 @@ template Do*():untyped =
             if not isNil(parsed):
                 discard execBlock(parsed)
 
-        # if fileExists(x.s):
-        #     if execInParent:
-        #         discard execBlock(doParse(x.s), execInParent=true)
-        #         showVMErrors()
-        #     else:
-        #         discard execBlock(doParse(x.s))
-        # elif x.s.isUrl():
-        #     let content = newHttpClient().getContent(x.s)
-        #     if execInParent:
-        #         discard execBlock(doParse(content, isFile=false), execInParent=true)
-        #         showVMErrors()
-        #     else:
-        #         discard execBlock(doParse(content, isFile=false))
-        # else:
-        #     if execInParent:
-        #         discard execBlock(doParse(x.s, isFile=false), execInParent=true)
-        #         showVMErrors()
-        #     else:
-        #         discard execBlock(doParse(x.s, isFile=false))
-
-
 template If*():untyped =
     require(opIf)
     if x.b: discard execBlock(y)
