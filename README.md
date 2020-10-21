@@ -83,7 +83,7 @@ Trying it out
   if you don't have it installed, all it'll take is 2 simple commands:
 
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-      choosenim install devel
+      choosenim stable
 
 #### Build & Install Arturo
 	
