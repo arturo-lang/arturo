@@ -182,7 +182,10 @@ template Random*():untyped =
 template Abs*():untyped = 
     require(opAbs)
 
-    stack.push(newInteger(abs(x.i)))
+    if x.kind==NormalInteger: 
+        stack.push(newInteger(abs(x.i)))
+    else:
+        stack.push(newInteger(abs(x.bi)))
 
 template Acos*():untyped = 
     require(opAcos)
