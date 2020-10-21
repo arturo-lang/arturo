@@ -639,6 +639,183 @@ proc `^=`*(x: var Value, y: Value) =
             else:
                 x = newFloating(pow((float)(x.i),y.f))
 
+proc `&&`*(x: Value, y: Value): Value =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                return newInteger(x.i and y.bi)
+            else:
+                return newInteger(x.i and y.i)
+        else:
+            if y.iKind==BigInteger:
+                return newInteger(x.bi and y.bi)
+            else:
+                return newInteger(x.bi and y.i)
+
+proc `&&=`*(x: var Value, y: Value) =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        x = VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                x = newInteger(x.i and y.bi)
+            else:
+                x = newInteger(x.i and y.i)
+        else:
+            if y.iKind==BigInteger:
+                x = newInteger(x.bi and y.bi)
+            else:
+                x = newInteger(x.bi and y.i)
+
+proc `||`*(x: Value, y: Value): Value =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                return newInteger(x.i or y.bi)
+            else:
+                return newInteger(x.i or y.i)
+        else:
+            if y.iKind==BigInteger:
+                return newInteger(x.bi or y.bi)
+            else:
+                return newInteger(x.bi or y.i)
+
+proc `||=`*(x: var Value, y: Value) =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        x = VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                x = newInteger(x.i or y.bi)
+            else:
+                x = newInteger(x.i or y.i)
+        else:
+            if y.iKind==BigInteger:
+                x = newInteger(x.bi or y.bi)
+            else:
+                x = newInteger(x.bi or y.i)
+
+proc `^^`*(x: Value, y: Value): Value =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                return newInteger(x.i xor y.bi)
+            else:
+                return newInteger(x.i xor y.i)
+        else:
+            if y.iKind==BigInteger:
+                return newInteger(x.bi xor y.bi)
+            else:
+                return newInteger(x.bi xor y.i)
+
+proc `^^=`*(x: var Value, y: Value) =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        x = VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                x = newInteger(x.i xor y.bi)
+            else:
+                x = newInteger(x.i xor y.i)
+        else:
+            if y.iKind==BigInteger:
+                x = newInteger(x.bi xor y.bi)
+            else:
+                x = newInteger(x.bi xor y.i)
+
+proc `>>`*(x: Value, y: Value): Value =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                # not valid
+                return VNULL
+            else:
+                return newInteger(x.i shr y.i)
+        else:
+            if y.iKind==BigInteger:
+                # not valid
+                return VNULL
+            else:
+                return newInteger(x.bi shr (culong)(y.i))
+
+proc `>>=`*(x: var Value, y: Value) =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        x = VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                # not valid
+                x = VNULL
+            else:
+                x = newInteger(x.i shr y.i)
+        else:
+            if y.iKind==BigInteger:
+                # not valid
+                x = VNULL
+            else:
+                x = newInteger(x.bi shr (culong)(y.i))
+
+proc `<<`*(x: Value, y: Value): Value =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                # not valid
+                return VNULL
+            else:
+                # not valid
+                return newInteger(x.i shl y.i)
+        else:
+            if y.iKind==BigInteger:
+                # not valid
+                return VNULL
+            else:
+                return newInteger(x.bi shl (culong)(y.i))
+
+proc `<<=`*(x: var Value, y: Value) =
+    if not (x.kind==Integer) or not (y.kind==Integer):
+        x = VNULL
+    else:
+        if x.iKind==NormalInteger:
+            if y.iKind==BigInteger:
+                # not valid
+                x = VNULL
+            else:
+                x = newInteger(x.i shl y.i)
+        else:
+            if y.iKind==BigInteger:
+                # not valid
+                x = VNULL
+            else:
+                x = newInteger(x.bi shl (culong)(y.i))
+
+proc `!!`*(x: Value): Value =
+    if not (x.kind==Integer):
+        return VNULL
+    else:
+        if x.iKind==NormalInteger:
+            return newInteger(not x.i)
+        else:
+            return newInteger(not x.bi)
+
+proc `!!=`*(x: var Value) =
+    if not (x.kind==Integer):
+        x = VNULL
+    else:
+        if x.iKind==NormalInteger:
+            x = newInteger(not x.i)
+        else:
+            x = newInteger(not x.bi)
+
 proc `==`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
