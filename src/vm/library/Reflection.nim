@@ -116,8 +116,8 @@ proc printInfo*(op: OpSpec) {.inline.} =
     # echo fmt("|")
     # echo fmt("|                 {formattedDesc}")
     echo fmt("|------------------------------------------------------------------")
-    
-    echo fmt("|          {fgGreen}usage{fgWhite}  {fgBold}{op.name}{fgWhite} {params}")
+    let clearName = op.name.replace("*","")
+    echo fmt("|          {fgGreen}usage{fgWhite}  {fgBold}{clearName}{fgWhite} {params}")
 
     if op.attrs!="":
         echo "|"
@@ -160,7 +160,7 @@ template Info*():untyped =
     var found = false
 
     for opspec in OpSpecs:
-        if opspec.name == x.s:
+        if opspec.name.replace("*","") == x.s:
             found = true
             if (popAttr("get") != VNULL):
                 stack.push(opspec.getInfo())
@@ -198,3 +198,21 @@ template GetAttrs*():untyped =
     require(opGetAttrs)
 
     stack.push(getAttrsDict())
+
+template IsSet*():untyped =
+    require(opIsSet)
+
+    stack.push(newBoolean(syms.hasKey(x.s)))
+
+template Symbols*():untyped =
+    require(opSymbols)
+    var symbols: ValueDict = initOrderedTable[string,Value]()
+    for k,v in pairs(syms):
+        if k[0]!=toUpperAscii(k[0]):
+            symbols[k] = v
+    stack.push(newDictionary(symbols))
+
+template GetStack*():untyped =
+    require(opStack)
+
+    stack.push(newBlock(Stack[0..SP-1]))

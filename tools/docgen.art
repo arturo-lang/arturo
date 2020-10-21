@@ -6,38 +6,39 @@
 ;; @file: tools/docgen.art
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-functionsByModule: #[]
+functionsByLib: #[]
 
-getFunctionsByModule: function[][
-	modules: sort list relative "../src/vm/lib"
-
-	loop modules 'module [
-		funcsInModule: sort map unique select map 
-			match read module "template [A-Za-z]+"
-			'x [ strip replace x "template " ""]
-			'y [ (to :string y\0) = upper to :string y\0 ]
-			'z [
-				result: z
-				if? suffix? z "E" [ result: replace z .regex "E$" "?" ]
-				else [ 
-					if? or? prefix? z "Has" prefix? z "Is" [
-						stripped: suffix replace replace z "Has" "" "Is" "" "?"
-						if? stripped="?" [ result: "is?" ]
-						else [ result: stripped ]
+getFunctionsByLib: function[][
+	libs: sort list relative "../src/vm/library"
+	loop libs 'lib [
+		if lib<>"src/vm/library/.DS_Store" [
+			funcsInLib: sort map unique select map 
+				match read lib "template [A-Za-z]+"
+				'x [ strip replace x "template " ""]
+				'y [ (to :string y\0) = upper to :string y\0 ]
+				'z [
+					result: z
+					if? suffix? z "E" [ result: replace z .regex "E$" "?" ]
+					else [ 
+						if? or? prefix? z "Has" prefix? z "Is" [
+							stripped: suffix replace replace z "Has" "" "Is" "" "?"
+							if? stripped="?" [ result: "is?" ]
+							else [ result: stripped ]
+						]
+						else [
+							if? prefix? z "Get" [result: replace z "Get" ""]
+							else [result: z]
+						]
 					]
-					else [
-						if? prefix? z "Get" [result: replace z "Get" ""]
-						else [result: z]
-					]
+					(lower to :string result\0) ++ slice result 1 (size result)-1
 				]
-				(lower to :string result\0) ++ slice result 1 (size result)-1
-			]
 
-
-		set functionsByModule replace replace module "src/vm/lib/" "" ".nim" "" funcsInModule
+			inspect funcsInLib
+			set functionsByLib replace replace lib "src/vm/library/" "" ".nim" "" funcsInLib
+		]
 	]
 ]
-getFunctionsByModule
+getFunctionsByLib
 
 funcTemplate: ---
 ## |fname|
@@ -83,57 +84,63 @@ tocTemplate:
 
 ---
 
-loop functionsByModule [module,functions][
-	moduleMd: ""
-	toc: "## Functions\n\n<!--ts-->\n"
-	loop functions 'func [
-		print ["got:" func]
-		funcLink: func
+; inspect functionsByLib
 
-		if in? funcLink "?" [
-			funcLink: replace funcLink "?" ""
+loop functionsByLib [lib,functions][
+	if lib<>"sys" [
+		libMd: ""
+		toc: "## Functions\n\n<!--ts-->\n"
+		loop functions 'func [
+			print func
+			if null<>info.get func [
+				funcLink: func
 
-			if in? functions funcLink [
-				funcLink: funcLink ++ "-1"
+				if in? funcLink "?" [
+					funcLink: replace funcLink "?" ""
+
+					if in? functions funcLink [
+						funcLink: funcLink ++ "-1"
+					]
+				]
+				toc: toc ++ ~"   * [|func|](#|funcLink|)\n"
+				funcInfo: info.get func
+
+				fname: funcInfo\name
+				fdescription: capitalize funcInfo\description
+				falias: ""
+				if ""<>funcInfo\alias [ falias: "*(alias: " ++ (funcInfo\alias) ++ ")*" ]
+				fret: join.with:"  \n" map funcInfo \ "return" 'x ["- *:" ++ (to :string x) ++ "*"]
+				fusagepre: new []
+				loop funcInfo\arguments 'arg [
+					aname: arg\name
+					atype: join .with:" " map arg \ "type" 'z ["<i>:" ++ (to :string z) ++ "</i>"]
+					'fusagepre ++ ("<ins>" ++ aname ++ "</ins> " ++ atype)
+				]
+				tabbing: "\n" ++ join map 1..(size fname)+1 'x [" "]
+				fusage: join .with:tabbing fusagepre
+				fattrs: ""
+				if 0<size funcInfo\attributes [
+					fattrs:"#### Attributes\n\n"
+
+					pipe: to :string to :char 124
+					
+					fattrs: fattrs ++ pipe ++ "Attribute" ++ pipe ++ "Type" ++ pipe ++ "Description" ++ pipe ++ "\n"
+					fattrs: fattrs ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "\n"
+
+					loop funcInfo\attributes 'attrb [
+						params: join.with:" " map attrb\parameters 'param ["<i>:" ++ (to :string param) ++ "</i>"]
+						fattrs: fattrs ++ pipe ++ attrb\name ++ pipe ++ params ++ pipe ++ attrb\action ++ pipe ++ "\n"
+					]
+				]
+
+				libMd: libMd ++ "\n\n" ++ render funcTemplate
 			]
 		]
-		toc: toc ++ ~"   * [|func|](#|funcLink|)\n"
-		funcInfo: info.get func
-
-		fname: funcInfo\name
-		fdescription: capitalize funcInfo\description
-		falias: ""
-		if ""<>funcInfo\alias [ falias: "*(alias: " ++ (funcInfo\alias) ++ ")*" ]
-		fret: join.with:"  \n" map funcInfo \ "return" 'x ["- *:" ++ (to :string x) ++ "*"]
-		fusagepre: new []
-		loop funcInfo\arguments 'arg [
-			aname: arg\name
-			atype: join .with:" " map arg \ "type" 'z ["<i>:" ++ (to :string z) ++ "</i>"]
-			'fusagepre ++ ("<ins>" ++ aname ++ "</ins> " ++ atype)
-		]
-		tabbing: "\n" ++ join map 1..(size fname)+1 'x [" "]
-		fusage: join .with:tabbing fusagepre
-		fattrs: ""
-		if 0<size funcInfo\attributes [
-			fattrs:"#### Attributes\n\n"
-
-			pipe: to :string to :char 124
-			
-			fattrs: fattrs ++ pipe ++ "Attribute" ++ pipe ++ "Type" ++ pipe ++ "Description" ++ pipe ++ "\n"
-			fattrs: fattrs ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "\n"
-
-			loop funcInfo\attributes 'attrb [
-				params: join.with:" " map attrb\parameters 'param ["<i>:" ++ (to :string param) ++ "</i>"]
-				fattrs: fattrs ++ pipe ++ attrb\name ++ pipe ++ params ++ pipe ++ attrb\action ++ pipe ++ "\n"
-			]
-		]
-
-		moduleMd: moduleMd ++ "\n\n" ++ render funcTemplate
+		toc: toc ++ "\n<!--te-->\n\n---\n"
+		write relative ~"../../arturo.wiki/Library-‣-|lib|.md" toc++libMd
 	]
-	toc: toc ++ "\n<!--te-->\n\n---\n"
-	write relative ~"../../arturo.wiki/Library-‣-|module|.md" toc++moduleMd
 ]
 
-loop functionsByModule [module,functions][
-	print "- #### [" ++ module ++  "](Library-‣-" ++ module ++ ")"
+loop functionsByLib [lib,functions][
+	print "- #### [" ++ lib ++  "](Library-‣-" ++ lib ++ ")"
 ]
