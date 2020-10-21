@@ -949,3 +949,14 @@ template Flatten*(): untyped =
     require(opFlatten)
 
     stack.push(x.flattened())
+
+template Size*(): untyped =
+    require(opSize)
+
+    if x.kind==String:
+        stack.push(newInteger(x.s.len))
+    elif x.kind==Dictionary:
+        stack.push(newInteger(x.d.len))
+    else:
+        stack.push(newInteger(x.a.len))
+        
