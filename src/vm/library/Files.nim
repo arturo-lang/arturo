@@ -22,6 +22,12 @@ import utils
 # Methods
 #=======================================
 
+template IsExists*():untyped =
+    require(opExists)
+
+    if (popAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))
+    else: stack.push(newBoolean(fileExists(x.s)))
+
 template Read*():untyped =
     require(opRead)
     
@@ -67,12 +73,4 @@ template Write*():untyped =
             writeFile(x.s, json.pretty(generateJsonNode(y), indent=4))
         else:
             writeFile(x.s, y.s)
-
-
-template IsExists*():untyped =
-    require(opExists)
-
-    if (popAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))
-    else: stack.push(newBoolean(fileExists(x.s)))
-
     

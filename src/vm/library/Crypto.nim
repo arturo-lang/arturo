@@ -45,4 +45,3 @@ template GetHash*():untyped =
             syms[x.s] = newString(($(toMD5(syms[x.s].s))).toLowerAscii())
         else:
             stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
-
