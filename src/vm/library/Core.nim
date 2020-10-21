@@ -277,3 +277,18 @@ template Pop*():untyped =
                 res.add stack.pop()
                 i+=1
             stack.push(newBlock(res))
+
+template Call*():untyped =
+    require(opCall)
+
+    var fun: Value
+
+    if x.kind==Literal or x.kind==String:
+        fun = syms[x.s]
+    else:
+        fun = x
+
+    for v in y.a.reversed:
+        stack.push(v)
+
+    discard execBlock(fun.main, useArgs=true, args=fun.params.a)
