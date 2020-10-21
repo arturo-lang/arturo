@@ -22,26 +22,7 @@ template Add*():untyped =
     require(opAdd)
 
     if x.kind==Literal:
-        if syms[x.s].kind==Integer and y.kind==Integer:
-            if syms[x.s].iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    syms[x.s] = newInteger(syms[x.s].i+y.bi)
-                else:
-                    try:
-                        syms[x.s].i += y.i
-                    except OverflowDefect:
-                        syms[x.s] = newInteger(newInt(syms[x.s].i)+y.i)
-            else:
-                if y.iKind==BigInteger:
-                    syms[x.s].bi += y.bi
-                else:
-                    syms[x.s].bi += y.i
-        else:
-            if syms[x.s].kind==Floating:
-                if y.kind==Floating: syms[x.s].f += y.f
-                else: syms[x.s].f += (float)(y.i)
-            else:
-                syms[x.s] = newFloating((float)(syms[x.s].i)+y.f)
+        syms[x.s] += y
     else:
         stack.push(x+y)
 
@@ -49,26 +30,7 @@ template Sub*():untyped =
     require(opSub)
 
     if x.kind==Literal:
-        if syms[x.s].kind==Integer and y.kind==Integer:
-            if syms[x.s].iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    syms[x.s] = newInteger(syms[x.s].i-y.bi)
-                else:
-                    try:
-                        syms[x.s].i -= y.i
-                    except OverflowDefect:
-                        syms[x.s] = newInteger(newInt(syms[x.s].i)-y.i)
-            else:
-                if y.iKind==BigInteger:
-                    syms[x.s].bi -= y.bi
-                else:
-                    syms[x.s].bi -= y.i
-        else:
-            if syms[x.s].kind==Floating:
-                if y.kind==Floating: syms[x.s].f -= y.f
-                else: syms[x.s].f -= (float)(y.i)
-            else:
-                syms[x.s] = newFloating((float)(syms[x.s].i)-y.f)
+        syms[x.s] -= y
     else:
         stack.push(x-y)
 
@@ -76,26 +38,7 @@ template Mul*():untyped =
     require(opMul)
 
     if x.kind==Literal:
-        if syms[x.s].kind==Integer and y.kind==Integer:
-            if syms[x.s].iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    syms[x.s] = newInteger(syms[x.s].i*y.bi)
-                else:
-                    try:
-                        syms[x.s].i *= y.i
-                    except OverflowDefect:
-                        syms[x.s] = newInteger(newInt(syms[x.s].i)*y.i)
-            else:
-                if y.iKind==BigInteger:
-                    syms[x.s].bi *= y.bi
-                else:
-                    syms[x.s].bi *= y.i
-        else:
-            if syms[x.s].kind==Floating:
-                if y.kind==Floating: syms[x.s].f *= y.f
-                else: syms[x.s].f *= (float)(y.i)
-            else:
-                syms[x.s] = newFloating((float)(syms[x.s].i)*y.f)
+        syms[x.s] *= y
     else:
         stack.push(x*y)
 
@@ -103,26 +46,7 @@ template Div*():untyped =
     require(opDiv)
 
     if x.kind==Literal:
-        if syms[x.s].kind==Integer and y.kind==Integer:
-            if syms[x.s].iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    syms[x.s] = newInteger(syms[x.s].i div y.bi)
-                else:
-                    try:
-                        syms[x.s] = newInteger(x.i div y.i)
-                    except OverflowDefect:
-                        syms[x.s] = newInteger(newInt(syms[x.s].i) div y.i)
-            else:
-                if y.iKind==BigInteger:
-                    syms[x.s] = newInteger(syms[x.s].bi div y.bi)
-                else:
-                    syms[x.s] = newInteger(syms[x.s].bi div y.i)
-        else:
-            if syms[x.s].kind==Floating:
-                if y.kind==Floating: syms[x.s].f /= y.f
-                else: syms[x.s].f /= (float)(y.i)
-            else:
-                syms[x.s] = newFloating((float)(syms[x.s].i)/y.f)
+        syms[x.s] /= y
     else:
         stack.push(x/y)
 
@@ -130,14 +54,7 @@ template Fdiv*():untyped =
     require(opFDiv)
 
     if x.kind==Literal:
-        if syms[x.s].kind==Integer and y.kind==Integer:
-            syms[x.s] = newFloating(syms[x.s].i / y.i)
-        else:
-            if syms[x.s].kind==Floating:
-                if y.kind==Floating: syms[x.s].f /= y.f
-                else: syms[x.s].f /= (float)(y.i)
-            else:
-                syms[x.s] = newFloating((float)(x.i)/y.f)
+        syms[x.s] //= y
     else:
         stack.push(x//y)
 
@@ -145,12 +62,7 @@ template Mod*():untyped =
     require(opMod)
 
     if x.kind==Literal:
-        if syms[x.s].iKind==NormalInteger:
-            if y.iKind==NormalInteger: syms[x.s].i = syms[x.s].i mod y.i
-            else: syms[x.s] = newInteger(syms[x.s].i mod y.bi)
-        else:
-            if y.iKind==NormalInteger: syms[x.s] = newInteger(syms[x.s].bi mod y.i)
-            else: syms[x.s] = newInteger(syms[x.s].bi mod y.bi)
+        syms[x.s] %= y
     else:
         stack.push(x%y)
 
@@ -158,15 +70,7 @@ template Pow*():untyped =
     require(opPow)
 
     if x.kind==Literal:
-        if syms[x.s].kind==Integer and y.kind==Integer:
-            let res = pow((float)syms[x.s].i,(float)y.i)
-            syms[x.s] = newInteger((int)res)
-        else:
-            if syms[x.s].kind==Floating:
-                if y.kind==Floating: syms[x.s] = newFloating(pow(syms[x.s].f,y.f))
-                else: syms[x.s] = newFloating(pow(syms[x.s].f,(float)(y.i)))
-            else:
-                syms[x.s] = newFloating(pow((float)(syms[x.s].i),y.f))
+        syms[x.s] ^= y
     else:
         stack.push(x^y)
 
