@@ -20,24 +20,36 @@ import vm/stack, vm/value
 
 template Not*():untyped =
     require(opBNot)
-    stack.push(newInteger(not x.i))
+    
+    if x.kind==Literal : !!= syms[x.s] 
+    else               : stack.push(!! x)
 
 template And*():untyped = 
     require(opBAnd)
-    stack.push(newInteger(x.i and y.i))
+
+    if x.kind==Literal : syms[x.s] &&= y
+    else               : stack.push(x && y)
 
 template Or*():untyped =
-    require(opBOr)
-    stack.push(newInteger(x.i or y.i))
+    require (opBOr)
+
+    if x.kind==Literal : syms[x.s] ||= y
+    else               : stack.push(x || y)
 
 template Xor*():untyped =
     require(opBXor)
-    stack.push(newInteger(x.i xor y.i))
+    
+    if x.kind==Literal : syms[x.s] ^^= y
+    else               : stack.push(x ^^ y)
 
 template Shl*():untyped =
     require(opShl)
-    stack.push(newInteger(x.i shl y.i))
+    
+    if x.kind==Literal : syms[x.s] <<= y
+    else               : stack.push(x << y)
 
 template Shr*():untyped =
     require(opShr)
-    stack.push(newInteger(x.i shr y.i))
+    
+    if x.kind==Literal : syms[x.s] >>= y
+    else               : stack.push(x >> y)
