@@ -154,6 +154,8 @@ let I8*  = Value(kind: Integer, iKind: NormalInteger, i: 8)
 let I9*  = Value(kind: Integer, iKind: NormalInteger, i: 9)
 let I10* = Value(kind: Integer, iKind: NormalInteger, i: 10)
 
+let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
+
 let F0*  = Value(kind: Floating, f: 0.0)
 let F1*  = Value(kind: Floating, f: 1.0)
 
