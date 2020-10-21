@@ -334,15 +334,24 @@ template Median*():untyped =
 template Gcd*():untyped =
     require(opGcd)
 
-    var current = x.a[0].i
+    var current = x.a[0]
 
     var i = 1
 
     while i<x.a.len:
-        current = gcd(current, x.a[i].i)
+        if current.iKind==NormalInteger:
+            if x.a[i].iKind==BigInteger:
+                current = newInteger(gcd(current.i, x.a[i].bi))
+            else:
+                current = newInteger(gcd(current.i, x.a[i].i))
+        else:
+            if x.a[i].iKind==BigInteger:
+                current = newInteger(gcd(current.bi, x.a[i].bi))
+            else:
+                current = newInteger(gcd(current.bi, x.a[i].i))
         inc(i)
 
-    stack.push(newInteger(current))
+    stack.push(current)
 
 template IsPrime*():untyped =
     require(opPrime)
