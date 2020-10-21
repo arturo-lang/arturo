@@ -44,10 +44,15 @@ template Do*():untyped =
         let (src, _) = getSource(x.s)
 
         if execInParent:
-            discard execBlock(doParse(src, isFile=false), execInParent=true)
-            showVMErrors()
+            let parsed = doParse(src, isFile=false)
+
+            if not isNil(parsed):
+                discard execBlock(parsed, execInParent=true)
+                showVMErrors()
         else:
-            discard execBlock(doParse(x.s))
+            let parsed = doParse(src)
+            if not isNil(parsed):
+                discard execBlock(parsed)
 
         # if fileExists(x.s):
         #     if execInParent:
