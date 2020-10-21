@@ -182,7 +182,7 @@ template Random*():untyped =
 template Abs*():untyped = 
     require(opAbs)
 
-    if x.kind==NormalInteger: 
+    if x.iKind==NormalInteger: 
         stack.push(newInteger(abs(x.i)))
     else:
         stack.push(newInteger(abs(x.bi)))
@@ -394,9 +394,9 @@ template Product*():untyped =
 template IsEven*():untyped =
     require(opEven)
 
-    stack.push(x % I2 == I0)
+    stack.push(newBoolean(x % I2 == I0))
 
 template IsOdd*():untyped =
     require(opOdd)
 
-    stack.push(x % I2 == I1)
+    stack.push(newBoolean(x % I2 == I1))
