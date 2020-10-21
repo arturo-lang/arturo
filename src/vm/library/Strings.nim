@@ -17,112 +17,11 @@ import utils
 # Methods
 #=======================================
 
-template Upper*():untyped =
-    require(opUpper)
-
-    if x.kind==String: stack.push(newString(x.s.toUpper()))
-    else: syms[x.s].s = syms[x.s].s.toUpper()
-
-template IsUpper*():untyped =
-    require(opIsUpper)
-
-    var broken = false
-    for c in runes(x.s):
-        if not c.isUpper():
-            stack.push(VFALSE)
-            broken = true
-            break
-
-    if not broken:
-        stack.push(VTRUE)
-
-template Lower*():untyped =
-    require(opLower)
-
-    if x.kind==String: stack.push(newString(x.s.toLower()))
-    else: syms[x.s].s = syms[x.s].s.toLower()
-
-template IsLower*():untyped =
-    require(opIsLower)
-
-    var broken = false
-    for c in runes(x.s):
-        if not c.isLower():
-            stack.push(VFALSE)
-            broken = true
-            break
-
-    if not broken:
-        stack.push(VTRUE)
-
 template Capitalize*():untyped =
     require(opCapitalize)
 
     if x.kind==String: stack.push(newString(x.s.capitalize()))
     else: syms[x.s].s = syms[x.s].s.capitalize()
-
-template Pad*():untyped =
-    require(opPad)
-
-    if (popAttr("right") != VNULL):
-        if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
-        else: syms[x.s].s = unicode.alignLeft(syms[x.s].s, y.i)
-    elif (popAttr("center") != VNULL): # PENDING unicode support
-        if x.kind==String: stack.push(newString(center(x.s, y.i)))
-        else: syms[x.s].s = center(syms[x.s].s, y.i)
-    else:
-        if x.kind==String: stack.push(newString(unicode.align(x.s, y.i)))
-        else: syms[x.s].s = unicode.align(syms[x.s].s, y.i)
-
-
-template Replace*():untyped =
-    require(opReplace) # PENDING unicode support
-
-    if (popAttr("regex") != VNULL):
-        if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
-        else: syms[x.s].s = syms[x.s].s.replace(re.re(y.s), z.s)
-    else:
-        if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
-        else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
-
-template Strip*():untyped =
-    require(opStrip)
-
-    if x.kind==String: stack.push(newString(strutils.strip(x.s)))
-    else: syms[x.s].s = strutils.strip(syms[x.s].s) 
-
-template Prefix*():untyped =
-    require(opPrefix) # PENDING unicode support
-
-    if x.kind==String: stack.push(newString(y.s & x.s))
-    else: syms[x.s] = newString(y.s & syms[x.s].s)
-
-template HasPrefix*():untyped =
-    require(opHasPrefix) # PENDING unicode support
-
-    if (popAttr("regex") != VNULL):
-        stack.push(newBoolean(re.startsWith(x.s, re.re(y.s))))
-    else:
-        stack.push(newBoolean(x.s.startsWith(y.s)))
-
-template Suffix*():untyped =
-    require(opSuffix) # PENDING unicode support
-
-    if x.kind==String: stack.push(newString(x.s & y.s))
-    else: syms[x.s] = newString(syms[x.s].s & y.s)
-
-template HasSuffix*():untyped =
-    require(opHasSuffix) # PENDING unicode support
-
-    if (popAttr("regex") != VNULL):
-        stack.push(newBoolean(re.endsWith(x.s, re.re(y.s))))
-    else:
-        stack.push(newBoolean(x.s.endsWith(y.s)))
-
-template Levenshtein*():untyped =
-    require(opLevenshtein) # PENDING unicode support
-
-    stack.push(newInteger(editDistance(x.s,y.s)))
 
 template Color*():untyped =
     require(opColor)
@@ -163,10 +62,34 @@ template Color*():untyped =
 
     stack.push(newString(pre & x.s & reset))
 
-template IsWhitespace*():untyped =
-    require(opIsWhitespace) # PENDING unicode support
+template HasPrefix*():untyped =
+    require(opHasPrefix) # PENDING unicode support
 
-    stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
+    if (popAttr("regex") != VNULL):
+        stack.push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+    else:
+        stack.push(newBoolean(x.s.startsWith(y.s)))
+
+template HasSuffix*():untyped =
+    require(opHasSuffix) # PENDING unicode support
+
+    if (popAttr("regex") != VNULL):
+        stack.push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+    else:
+        stack.push(newBoolean(x.s.endsWith(y.s)))
+
+template IsLower*():untyped =
+    require(opIsLower)
+
+    var broken = false
+    for c in runes(x.s):
+        if not c.isLower():
+            stack.push(VFALSE)
+            broken = true
+            break
+
+    if not broken:
+        stack.push(VTRUE)
 
 template IsNumeric*():untyped =
     require(opIsNumeric) # PENDING unicode support
@@ -189,6 +112,60 @@ template IsNumeric*():untyped =
 
     if not found:
         stack.push(VTRUE)
+
+template IsUpper*():untyped =
+    require(opIsUpper)
+
+    var broken = false
+    for c in runes(x.s):
+        if not c.isUpper():
+            stack.push(VFALSE)
+            broken = true
+            break
+
+    if not broken:
+        stack.push(VTRUE)
+
+template IsWhitespace*():untyped =
+    require(opIsWhitespace) # PENDING unicode support
+
+    stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
+
+template Levenshtein*():untyped =
+    require(opLevenshtein) # PENDING unicode support
+
+    stack.push(newInteger(editDistance(x.s,y.s)))
+
+template Lower*():untyped =
+    require(opLower)
+
+    if x.kind==String: stack.push(newString(x.s.toLower()))
+    else: syms[x.s].s = syms[x.s].s.toLower()
+
+template Match*():untyped =
+    require(opMatch) # PENDING unicode support
+
+    stack.push(newStringBlock(x.s.findAll(re.re(y.s))))
+    
+template Pad*():untyped =
+    require(opPad)
+
+    if (popAttr("right") != VNULL):
+        if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
+        else: syms[x.s].s = unicode.alignLeft(syms[x.s].s, y.i)
+    elif (popAttr("center") != VNULL): # PENDING unicode support
+        if x.kind==String: stack.push(newString(center(x.s, y.i)))
+        else: syms[x.s].s = center(syms[x.s].s, y.i)
+    else:
+        if x.kind==String: stack.push(newString(unicode.align(x.s, y.i)))
+        else: syms[x.s].s = unicode.align(syms[x.s].s, y.i)
+
+
+template Prefix*():untyped =
+    require(opPrefix) # PENDING unicode support
+
+    if x.kind==String: stack.push(newString(y.s & x.s))
+    else: syms[x.s] = newString(y.s & syms[x.s].s)
 
 template Render*():untyped =
     require(opRender) # PENDING unicode support
@@ -239,7 +216,30 @@ template Render*():untyped =
                     $(stack.pop())
             )
 
-template Match*():untyped =
-    require(opMatch) # PENDING unicode support
+template Replace*():untyped =
+    require(opReplace) # PENDING unicode support
 
-    stack.push(newStringBlock(x.s.findAll(re.re(y.s))))
+    if (popAttr("regex") != VNULL):
+        if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
+        else: syms[x.s].s = syms[x.s].s.replace(re.re(y.s), z.s)
+    else:
+        if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
+        else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
+
+template Strip*():untyped =
+    require(opStrip)
+
+    if x.kind==String: stack.push(newString(strutils.strip(x.s)))
+    else: syms[x.s].s = strutils.strip(syms[x.s].s) 
+
+template Suffix*():untyped =
+    require(opSuffix) # PENDING unicode support
+
+    if x.kind==String: stack.push(newString(x.s & y.s))
+    else: syms[x.s] = newString(syms[x.s].s & y.s)
+
+template Upper*():untyped =
+    require(opUpper)
+
+    if x.kind==String: stack.push(newString(x.s.toUpper()))
+    else: syms[x.s].s = syms[x.s].s.toUpper()

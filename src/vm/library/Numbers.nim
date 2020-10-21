@@ -174,11 +174,6 @@ proc factors*(n: Int): seq[Int] =
 # Methods
 #=======================================
 
-template Random*():untyped =
-    require(opRandom)
-
-    stack.push(newInteger(rand(x.i..y.i)))
-
 template Abs*():untyped = 
     require(opAbs)
 
@@ -217,6 +212,24 @@ template Atanh*():untyped =
 
     stack.push(newFloating(arctanh(x.f)))
 
+template Average*():untyped =
+    require(opAverage)
+
+    var res = 0.0
+
+    for num in x.a:
+        if num.kind==Integer:
+            res += (float)num.i
+        elif num.kind==Floating:
+            res += num.f
+
+    res = res / (float)(x.a.len)
+
+    if (float)(toInt(res))==res:
+        stack.push(newInteger(toInt(res)))
+    else:
+        stack.push(newFloating(res))
+
 template Cos*():untyped = 
     require(opAcos)
 
@@ -247,59 +260,62 @@ template Ctanh*():untyped =
 
     stack.push(newFloating(coth(x.f)))
 
-template Sec*():untyped = 
-    require(opSec)
+template Factors*():untyped =
+    require(opFactors)
 
-    stack.push(newFloating(sec(x.f)))
+    var prime = false
+    if (popAttr("prime") != VNULL): prime = true
 
-template Sech*():untyped = 
-    require(opSech)
-
-    stack.push(newFloating(sech(x.f)))
-
-template Sin*():untyped = 
-    require(opSin)
-
-    stack.push(newFloating(sin(x.f)))
-
-template Sinh*():untyped = 
-    require(opSinh)
-
-    stack.push(newFloating(sinh(x.f)))
-
-template Tan*():untyped = 
-    require(opTan)
-
-    stack.push(newFloating(tan(x.f)))
-
-template Tanh*():untyped = 
-    require(opTanh)
-
-    stack.push(newFloating(tanh(x.f)))
-
-template Sqrt*():untyped =
-    require(opSqrt)
-
-    if x.kind==Integer: stack.push(newFloating(sqrt((float)x.i)))
-    else: stack.push(newFloating(sqrt(x.f)))
-
-template Average*():untyped =
-    require(opAverage)
-
-    var res = 0.0
-
-    for num in x.a:
-        if num.kind==Integer:
-            res += (float)num.i
-        elif num.kind==Floating:
-            res += num.f
-
-    res = res / (float)(x.a.len)
-
-    if (float)(toInt(res))==res:
-        stack.push(newInteger(toInt(res)))
+    if x.iKind==NormalInteger:
+        if prime:
+            stack.push(newBlock(primeFactors(x.i).map((x)=>newInteger(x))))
+        else:
+            stack.push(newBlock(factors(x.i).map((x)=>newInteger(x))))
     else:
-        stack.push(newFloating(res))
+        if prime:
+            stack.push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
+        else:
+            stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
+
+template Gcd*():untyped =
+    require(opGcd)
+
+    var current = x.a[0]
+
+    var i = 1
+
+    while i<x.a.len:
+        if current.iKind==NormalInteger:
+            if x.a[i].iKind==BigInteger:
+                current = newInteger(gcd(current.i, x.a[i].bi))
+            else:
+                current = newInteger(gcd(current.i, x.a[i].i))
+        else:
+            if x.a[i].iKind==BigInteger:
+                current = newInteger(gcd(current.bi, x.a[i].bi))
+            else:
+                current = newInteger(gcd(current.bi, x.a[i].i))
+        inc(i)
+
+    stack.push(current)
+
+template IsEven*():untyped =
+    require(opEven)
+
+    stack.push(newBoolean(x % I2 == I0))
+
+template IsOdd*():untyped =
+    require(opOdd)
+
+    stack.push(newBoolean(x % I2 == I1))
+    
+template IsPrime*():untyped =
+    require(opPrime)
+
+    if x.iKind==NormalInteger:
+        stack.push(newBoolean(isPrime(x.i.uint64)))
+    else:
+        stack.push(newBoolean(probablyPrime(x.bi,25)>0))
 
 template Median*():untyped =
     require(opMedian)
@@ -331,52 +347,47 @@ template Median*():untyped =
             else:
                 stack.push(newFloating(res))
 
-template Gcd*():untyped =
-    require(opGcd)
+template Product*():untyped =
+    require(opProduct)
 
-    var current = x.a[0]
-
-    var i = 1
-
+    var i = 0
+    var product = I1
     while i<x.a.len:
-        if current.iKind==NormalInteger:
-            if x.a[i].iKind==BigInteger:
-                current = newInteger(gcd(current.i, x.a[i].bi))
-            else:
-                current = newInteger(gcd(current.i, x.a[i].i))
-        else:
-            if x.a[i].iKind==BigInteger:
-                current = newInteger(gcd(current.bi, x.a[i].bi))
-            else:
-                current = newInteger(gcd(current.bi, x.a[i].i))
-        inc(i)
+        product = product * x.a[i]
+        i += 1
 
-    stack.push(current)
+    stack.push(product)
 
-template IsPrime*():untyped =
-    require(opPrime)
+template Random*():untyped =
+    require(opRandom)
 
-    if x.iKind==NormalInteger:
-        stack.push(newBoolean(isPrime(x.i.uint64)))
-    else:
-        stack.push(newBoolean(probablyPrime(x.bi,25)>0))
+    stack.push(newInteger(rand(x.i..y.i)))
 
-template Factors*():untyped =
-    require(opFactors)
+template Sec*():untyped = 
+    require(opSec)
 
-    var prime = false
-    if (popAttr("prime") != VNULL): prime = true
+    stack.push(newFloating(sec(x.f)))
 
-    if x.iKind==NormalInteger:
-        if prime:
-            stack.push(newBlock(primeFactors(x.i).map((x)=>newInteger(x))))
-        else:
-            stack.push(newBlock(factors(x.i).map((x)=>newInteger(x))))
-    else:
-        if prime:
-            stack.push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
-        else:
-            stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
+template Sech*():untyped = 
+    require(opSech)
+
+    stack.push(newFloating(sech(x.f)))
+
+template Sin*():untyped = 
+    require(opSin)
+
+    stack.push(newFloating(sin(x.f)))
+
+template Sinh*():untyped = 
+    require(opSinh)
+
+    stack.push(newFloating(sinh(x.f)))
+
+template Sqrt*():untyped =
+    require(opSqrt)
+
+    if x.kind==Integer: stack.push(newFloating(sqrt((float)x.i)))
+    else: stack.push(newFloating(sqrt(x.f)))
 
 template Sum*():untyped =
     require(opSum)
@@ -389,23 +400,12 @@ template Sum*():untyped =
 
     stack.push(sum)
 
-template Product*():untyped =
-    require(opProduct)
+template Tan*():untyped = 
+    require(opTan)
 
-    var i = 0
-    var product = I1
-    while i<x.a.len:
-        product = product * x.a[i]
-        i += 1
+    stack.push(newFloating(tan(x.f)))
 
-    stack.push(product)
+template Tanh*():untyped = 
+    require(opTanh)
 
-template IsEven*():untyped =
-    require(opEven)
-
-    stack.push(newBoolean(x % I2 == I0))
-
-template IsOdd*():untyped =
-    require(opOdd)
-
-    stack.push(newBoolean(x % I2 == I1))
+    stack.push(newFloating(tanh(x.f)))

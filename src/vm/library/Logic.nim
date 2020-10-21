@@ -16,13 +16,13 @@ import vm/stack, vm/value
 # Methods
 #=======================================
 
-template IsNot*():untyped =
-    require(opNot)
-    stack.push(newBoolean(not x.b))
-
 template IsAnd*():untyped = 
     require(opAnd)
     stack.push(newBoolean(x.b and y.b))
+
+template IsNot*():untyped =
+    require(opNot)
+    stack.push(newBoolean(not x.b))
 
 template IsOr*():untyped =
     require(opOr)

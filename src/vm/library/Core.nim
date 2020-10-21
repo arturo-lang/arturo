@@ -22,12 +22,30 @@ import utils
 # Methods
 #=======================================
 
-template Return*():untyped = 
-    require(opReturn)
-    stack.push(x)
+template Call*():untyped =
+    require(opCall)
 
-    vmReturn = true
-    return syms
+    var fun: Value
+
+    if x.kind==Literal or x.kind==String:
+        fun = syms[x.s]
+    else:
+        fun = x
+
+    for v in y.a.reversed:
+        stack.push(v)
+
+    discard execBlock(fun.main, useArgs=true, args=fun.params.a)
+    
+template Case*():untyped =
+    require(opCase)
+
+    stack.push(x)
+    stack.push(newBoolean(false))
+
+template Clear*():untyped = 
+    require(opClear)
+    clearScreen()
 
 template Do*():untyped =
     require(opDo)
@@ -54,6 +72,27 @@ template Do*():untyped =
             if not isNil(parsed):
                 discard execBlock(parsed)
 
+template Else*():untyped =
+    require(opElse)
+
+    let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
+    if not y.b: discard execBlock(x)
+
+template Exit*():untyped =
+    require(opExit)
+
+    if (let aWith = popAttr("with"); aWith != VNULL):
+        quit(aWith.i)
+    else:
+        quit()
+
+
+template Globalize*():untyped =
+    require(opGlobalize)
+
+    for k,v in pairs(syms):
+        withSyms[][k] = v
+
 template If*():untyped =
     require(opIf)
     if x.b: discard execBlock(y)
@@ -63,34 +102,10 @@ template IfE*():untyped =
     if x.b: discard execBlock(y)
     stack.push(x)
 
-template Try*():untyped =
-    require(opTry)
+template Input*():untyped =
+    require(opInput)
 
-    try:
-        discard execBlock(x)
-    except:
-        discard
-
-template TryE*():untyped = 
-    require(opTryE)
-
-    try:
-        discard execBlock(x)
-        stack.push(VTRUE)
-    except:
-        stack.push(VFALSE)
-
-template Else*():untyped =
-    require(opElse)
-
-    let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-    if not y.b: discard execBlock(x)
-
-template Case*():untyped =
-    require(opCase)
-
-    stack.push(x)
-    stack.push(newBoolean(false))
+    stack.push(newString(readLineFromStdin(x.s)))
 
 template IsWhen*():untyped =
     require(opWhen)
@@ -116,14 +131,42 @@ template IsWhen*():untyped =
     else:
         push(z)
 
-template Exit*():untyped =
-    require(opExit)
+template Let*():untyped =
+    require(opLet)
 
-    if (let aWith = popAttr("with"); aWith != VNULL):
-        quit(aWith.i)
+    syms[x.s] = y
+
+template New*():untyped =
+    require(opNew)
+
+    stack.push(copyValue(x))
+
+template Pause*():untyped = 
+    require(opPause)
+
+    sleep(x.i)
+
+template Pop*():untyped =
+    require(opPop)
+
+    let doDiscard = (popAttr("discard") != VNULL)
+
+    if x.i==1:
+        if doDiscard: discard stack.pop()
+        else: discard
     else:
-        quit()
-
+        if doDiscard: 
+            var i = 0
+            while i<x.i:
+                discard stack.pop()
+                i+=1
+        else:
+            var res: ValueArray = @[]
+            var i = 0
+            while i<x.i:
+                res.add stack.pop()
+                i+=1
+            stack.push(newBlock(res))
 
 template Print*():untyped =
     require(opPrint)
@@ -166,10 +209,10 @@ template Prints*():untyped =
     else:
         x.print(newLine = false)
 
-template Input*():untyped =
-    require(opInput)
-
-    stack.push(newString(readLineFromStdin(x.s)))
+template Push*():untyped =
+    discard
+    # we do not need to do anything, just leave the value there
+    # as it's already been pushed
 
 template Repeat*():untyped =
     require(opRepeat)
@@ -181,17 +224,29 @@ template Repeat*():untyped =
         discard execBlock(VNULL, usePreeval=true, evaluated=preevaled)
         i += 1
 
-template While*():untyped =
-    require(opWhile)
+template Return*():untyped = 
+    require(opReturn)
+    stack.push(x)
 
-    let preevaledX = doEval(x)
-    let preevaledY = doEval(y)
+    vmReturn = true
+    return syms
 
-    discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
+template Try*():untyped =
+    require(opTry)
 
-    while stack.pop().b:
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
+    try:
+        discard execBlock(x)
+    except:
+        discard
+
+template TryE*():untyped = 
+    require(opTryE)
+
+    try:
+        discard execBlock(x)
+        stack.push(VTRUE)
+    except:
+        stack.push(VFALSE)
 
 template Until*():untyped =
     require(opUntil)
@@ -205,74 +260,19 @@ template Until*():untyped =
         if stack.pop().b:
             break
 
-template Globalize*():untyped =
-    require(opGlobalize)
-
-    for k,v in pairs(syms):
-        withSyms[][k] = v
-
-template Clear*():untyped = 
-    require(opClear)
-    clearScreen()
-
-template Let*():untyped =
-    require(opLet)
-
-    syms[x.s] = y
-
 template Var*():untyped =
     require(opVar)
 
     stack.push(syms[x.s])
 
-template Pause*():untyped = 
-    require(opPause)
+template While*():untyped =
+    require(opWhile)
 
-    sleep(x.i)
+    let preevaledX = doEval(x)
+    let preevaledY = doEval(y)
 
-template New*():untyped =
-    require(opNew)
+    discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
 
-    stack.push(copyValue(x))
-
-template Push*():untyped =
-    discard
-    # we do not need to do anything, just leave the value there
-    # as it's already been pushed
-
-template Pop*():untyped =
-    require(opPop)
-
-    let doDiscard = (popAttr("discard") != VNULL)
-
-    if x.i==1:
-        if doDiscard: discard stack.pop()
-        else: discard
-    else:
-        if doDiscard: 
-            var i = 0
-            while i<x.i:
-                discard stack.pop()
-                i+=1
-        else:
-            var res: ValueArray = @[]
-            var i = 0
-            while i<x.i:
-                res.add stack.pop()
-                i+=1
-            stack.push(newBlock(res))
-
-template Call*():untyped =
-    require(opCall)
-
-    var fun: Value
-
-    if x.kind==Literal or x.kind==String:
-        fun = syms[x.s]
-    else:
-        fun = x
-
-    for v in y.a.reversed:
-        stack.push(v)
-
-    discard execBlock(fun.main, useArgs=true, args=fun.params.a)
+    while stack.pop().b:
+        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
+        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)

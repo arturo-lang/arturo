@@ -17,21 +17,6 @@ import utils
 # Methods
 #=======================================
 
-template Mail*():untyped =
-    require(opMail)
-
-    let recipient = x.s
-    let message = y.d
-    let config = z.d
-
-    var mesg = createMessage(message["title"].s,
-                        message["content"].s,
-                        @[recipient])
-    let smtpConn = newSmtp(useSsl = true, debug=true)
-    smtpConn.connect(config["server"].s, Port 465)
-    smtpConn.auth(config["username"].s, config["password"].s)
-    smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
-
 template Download*():untyped =
     require(opDownload)
 
@@ -47,6 +32,20 @@ template Download*():untyped =
     var client = newHttpClient()
     client.downloadFile(path,target)
 
+template Mail*():untyped =
+    require(opMail)
+
+    let recipient = x.s
+    let message = y.d
+    let config = z.d
+
+    var mesg = createMessage(message["title"].s,
+                        message["content"].s,
+                        @[recipient])
+    let smtpConn = newSmtp(useSsl = true, debug=true)
+    smtpConn.connect(config["server"].s, Port 465)
+    smtpConn.auth(config["username"].s, config["password"].s)
+    smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
 template Serve*():untyped =
     when not defined(VERBOSE):

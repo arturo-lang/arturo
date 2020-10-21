@@ -20,10 +20,6 @@ template IsEqual*():untyped =
     require(opEq)
     stack.push(newBoolean(x == y))
 
-template IsNotEqual*():untyped =
-    require(opNe)
-    stack.push(newBoolean(x != y))
-
 template IsGreater*():untyped =
     require(opGt)
     stack.push(newBoolean(x > y))
@@ -39,4 +35,8 @@ template IsLess*():untyped =
 template IsLessOrEqual*():untyped =
     require(opGe)
     stack.push(newBoolean(x <= y))
+            
+template IsNotEqual*():untyped =
+    require(opNe)
+    stack.push(newBoolean(x != y))
             

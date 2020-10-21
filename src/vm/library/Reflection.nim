@@ -144,17 +144,38 @@ proc printInfo*(op: OpSpec) {.inline.} =
 # Methods
 #=======================================
 
-template Inspect*():untyped =
-    require(opInspect)
-    x.dump(0, false)
+template Benchmark*():untyped =
+    require(opBenchmark)
 
-template Is*():untyped =
-    require(opIs)
-    stack.push(newBoolean(x.t == y.kind))
+    benchmark "":
+        discard execBlock(x)
 
-template Type*():untyped = 
-    require(opType)
-    stack.push(newType(x.kind))
+template GetAttr*():untyped =
+    require(opGetAttr)
+
+    stack.push(popAttr(x.s))
+
+template GetAttrs*():untyped =
+    require(opGetAttrs)
+
+    stack.push(getAttrsDict())
+
+template GetStack*():untyped =
+    require(opStack)
+
+    stack.push(newBlock(Stack[0..SP-1]))
+    
+template HasAttr*():untyped =
+    require(opHasAttr)
+
+    if getAttr(x.s) != VNULL:
+        stack.push(VTRUE)
+    else:
+        stack.push(VFALSE)
+
+template Help*():untyped =
+    require(opHelp)
+    printHelp()
 
 template Info*():untyped =
     require(opInfo)
@@ -172,33 +193,13 @@ template Info*():untyped =
     if not found:
         echo "no information found for given symbol"
 
-template Help*():untyped =
-    require(opHelp)
-    printHelp()
+template Inspect*():untyped =
+    require(opInspect)
+    x.dump(0, false)
 
-template Benchmark*():untyped =
-    require(opBenchmark)
-
-    benchmark "":
-        discard execBlock(x)
-
-template GetAttr*():untyped =
-    require(opGetAttr)
-
-    stack.push(popAttr(x.s))
-
-template HasAttr*():untyped =
-    require(opHasAttr)
-
-    if getAttr(x.s) != VNULL:
-        stack.push(VTRUE)
-    else:
-        stack.push(VFALSE)
-
-template GetAttrs*():untyped =
-    require(opGetAttrs)
-
-    stack.push(getAttrsDict())
+template Is*():untyped =
+    require(opIs)
+    stack.push(newBoolean(x.t == y.kind))
 
 template IsSet*():untyped =
     require(opIsSet)
@@ -213,7 +214,6 @@ template Symbols*():untyped =
             symbols[k] = v
     stack.push(newDictionary(symbols))
 
-template GetStack*():untyped =
-    require(opStack)
-
-    stack.push(newBlock(Stack[0..SP-1]))
+template Type*():untyped = 
+    require(opType)
+    stack.push(newType(x.kind))
