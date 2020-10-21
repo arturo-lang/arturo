@@ -488,7 +488,12 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opSize:
                 require(opSize)
 
-                stack.push(newInteger(x.a.len))
+                if x.kind==String:
+                    stack.push(newInteger(x.s.len))
+                elif x.kind==Dictionary:
+                    stack.push(newInteger(x.d.len))
+                else:
+                    stack.push(newInteger(x.a.len))
 
             of opUpper: Strings.Upper()
             of opLower: Strings.Lower()
