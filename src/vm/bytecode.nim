@@ -832,7 +832,7 @@ const
                                 args    : 1,   
 
                                 an      : "collection",  
-                                a       : {String,Block},
+                                a       : {String,Block,Dictionary},
                                 ret     : {Integer},      
                                 desc    : "get size/length of given collection" ),
 
