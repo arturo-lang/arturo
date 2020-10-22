@@ -304,10 +304,26 @@ template IsEven*():untyped =
 
     stack.push(newBoolean(x % I2 == I0))
 
+template IsNegative*():untyped =
+    require(opNegative)
+
+    if x.kind==Integer and x.iKind==BigInteger:
+        stack.push(newBoolean(negative(x.bi)))
+    else:
+        stack.push(newBoolean(x < I0))
+
 template IsOdd*():untyped =
     require(opOdd)
 
     stack.push(newBoolean(x % I2 == I1))
+
+template IsPositive*():untyped =
+    require(opPositive)
+
+    if x.kind==Integer and x.iKind==BigInteger:
+        stack.push(newBoolean(positive(x.bi)))
+    else:
+        stack.push(newBoolean(x > I0))
     
 template IsPrime*():untyped =
     require(opPrime)
@@ -316,6 +332,14 @@ template IsPrime*():untyped =
         stack.push(newBoolean(isPrime(x.i.uint64)))
     else:
         stack.push(newBoolean(probablyPrime(x.bi,25)>0))
+
+template IsZero*():untyped =
+    require(opZero)
+
+    if x.kind==Integer and x.iKind==BigInteger:
+        stack.push(newBoolean(isZero(x.bi)))
+    else:
+        stack.push(newBoolean(x == I0))
 
 template Median*():untyped =
     require(opMedian)
