@@ -8,7 +8,6 @@
 
 <!--ts-->
    * [The Language](#the-language)
-   * [The Compiler](#the-compiler)
    * [Documentation](#documentation)
       * [At a glance](#at-a-glance)
    * [Trying it out](#trying-it-out)
@@ -22,9 +21,11 @@
       * [Interactive console (REPL)](#interactive-console--repl)
    * [Editors & IDEs](#editors--ides)
    * [Roadmap](#roadmap)
-   * [Community](#community)
    * [Contributing](#contributing)
       * [Project structure](#project-structure)
+      * [The Compiler](#the-compiler)
+      * [General schema](#general-schema)
+   * [Community](#community)
    * [License](#license)
 <!--te-->
 
@@ -53,13 +54,6 @@ loop 1..10 'x [
 Simple, isn't it?
 
 > 💡  For more - working - examples, just have a look into the /examples folder
-
-The Compiler
-------------------------------
-
-The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
-
-The main goals are: performance, energy-efficiency and portability. (With that exact order)
 
 Documentation
 ------------------------------
@@ -148,17 +142,6 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
 - [ ] Go full self-hosted (that's an ambitious one, I know...)
 
-Community
-------------------------------
-
-[![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
-
-In case you want to ask a question, suggest an idea, or practically anything related to Arturo - feel free! Everything and everyone is welcome.
-
-For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
-
-For questions, quick ideas and discussing generally about the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
-
 Contributing
 ------------------------------
 
@@ -190,6 +173,54 @@ To get an initial idea of the project, here's a brief guide to where is what:
 | `tests/` | Different unit tests |
 | `tools/` | Various tools, documentation generation, etc |
 | `version/` | Main version & build numbers |
+
+### The Compiler
+
+The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
+
+The main goals are: performance, energy-efficiency and portability. (With that exact order)
+
+### General schema
+<pre>
+            INPUT
+
+              ●
+              ║  
+              ║  
+┏━━━━━━━━━━━━━╩━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  
+┃   ┌───────────────────┐               ┌────────────────┐   ┃  
+┃   │Translator         │               │                │   ┃  
+┃   │                   │               │                │   ┃  
+┃   │                   │               │    Library     │   ┃  
+┃   │                   │               │                │   ┃  
+┃   │                   │               │                │   ┃  
+┃   │   .─────────.     │               └──────▲──┼──────┘   ┃  
+┃   │  (   Parse   )    │                      │  │          ┃  
+┃   │   `────┼────'     │                      │  │          ┃  
+┃   │        │          │               ┌──────┼──▼──────┐   ┃  
+┃   │        │          │               │VM              │   ┃  
+┃   │   .────▼────.     │   Bytecode    │   .─────────.  │   ┃  
+┃   │  (   Eval    )────┼───────────────┼─▶(   Exec    ) │   ┃  
+┃   │   `─────────'     │               │   `─────────'  │   ┃  
+┃   │                   │               │                │   ┃  
+┃   └───────────────────┘               └────────╦───────┘   ┃  
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╬━━━━━━━━━━━┛  
+                                                 ║  
+                                                 ●  
+  
+                                               OUTPUT  
+</pre>
+
+Community
+------------------------------
+
+[![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
+
+In case you want to ask a question, suggest an idea, or practically anything related to Arturo - feel free! Everything and everyone is welcome.
+
+For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
+
+For questions, quick ideas and discussing generally about the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
 
 License
 ------------------------------
