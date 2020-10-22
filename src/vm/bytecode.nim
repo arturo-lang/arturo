@@ -12,8 +12,8 @@
 
 import algorithm, hashes
 
-import vm/value
-import utils
+import ./value
+import ../utils
 
 #=======================================
 # Types

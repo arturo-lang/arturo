@@ -13,7 +13,7 @@
 import parsecsv, sequtils, streams
 import sugar, tables, unicode
 
-import vm/stack, vm/value
+import ../vm/stack, ../vm/value
 
 #=======================================
 # Methods

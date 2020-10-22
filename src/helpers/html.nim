@@ -16,7 +16,7 @@ when not defined(MINI):
 import sequtils, strtabs
 import sugar, tables, xmltree, unicode
 
-import vm/stack, vm/value
+import ../vm/stack, ../vm/value
 
 #=======================================
 # Methods

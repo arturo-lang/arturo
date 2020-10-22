@@ -11,9 +11,9 @@
 #=======================================
 
 when not defined(MINI):
-    import extras/markdown
+    import ../extras/markdown
 
-import vm/stack, vm/value
+import ../vm/stack, ../vm/value
 
 #=======================================
 # Methods

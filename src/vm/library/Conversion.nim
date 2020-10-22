@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import vm/stack, vm/value
+import ../stack, ../value
 
 #=======================================
 # Helpers
