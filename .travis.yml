@@ -3,10 +3,7 @@ sudo: required
 services:
   - docker
 before_install:
-  - docker pull yglukhov/nim-base
+  - docker pull fingidor/arturo-nim-docker:0.1
 script:
-  # - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get update
-  # - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get install libgtk-3-dev
-  # - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base apt-get install libwebkit2gtk-4.0
-  - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base nim --version
-  - docker run -v "$(pwd):/project" -w /project yglukhov/nim-base nimble build -Y
+  - docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nim --version
+  - docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nimble build -Y "-d:MINI"

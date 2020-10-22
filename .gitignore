@@ -1,1 +1,7 @@
-bin/arturo
+/arturo*
+/bin/arturo*
+/experiments
+/.cache
+.gitattributes
+test
+test.nim
