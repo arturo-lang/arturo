@@ -406,6 +406,10 @@ type
         opBNor          = 0x105
         opBXnor         = 0x106
 
+        opNegative      = 0x107
+        opPositive      = 0x108
+        opZero          = 0x109
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -896,7 +900,7 @@ const
 
                                 an      : "number",      
                                 a       : {Integer},      
-                                ret     : {Null},      
+                                ret     : {Boolean},      
                                 desc    : "check if given number is even" ),
 
         opOdd       : OpSpec(   name    : "odd?",      
@@ -904,7 +908,7 @@ const
 
                                 an      : "number",      
                                 a       : {Integer},      
-                                ret     : {Null},      
+                                ret     : {Boolean},      
                                 desc    : "check if given number is odd" ),
 
         opRange     : OpSpec(   name    : "range", 
@@ -915,7 +919,7 @@ const
                                 a       : {Integer},      
                                 bn      : "to",          
                                 b       : {Integer},
-                                ret     : {Null},     
+                                ret     : {Block},     
                                 attrs   :   ".step :integer -> use step between range values", 
                                 desc    : "get list of numbers in given range (inclusive)" ),
 
@@ -2108,6 +2112,30 @@ const
                                 b       : {Integer},
                                 ret     : {Integer,Null},      
                                 desc    : "calculate the binary XNOR for the given values" ),
+
+        opNegative  : OpSpec(   name    : "negative?",        
+                                args    : 1,   
+
+                                an      : "number",      
+                                a       : {Integer,Floating},      
+                                ret     : {Boolean},      
+                                desc    : "check if given number is negative" ),
+
+        opPositive  : OpSpec(   name    : "positive?",        
+                                args    : 1,   
+
+                                an      : "number",      
+                                a       : {Integer,Floating},      
+                                ret     : {Boolean},      
+                                desc    : "check if given number is positive" ),
+
+        opZero      : OpSpec(   name    : "zero?",        
+                                args    : 1,   
+
+                                an      : "number",      
+                                a       : {Integer,Floating},      
+                                ret     : {Boolean},      
+                                desc    : "check if given number is zero" ),
 
     ]
 
