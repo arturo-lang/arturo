@@ -22,6 +22,18 @@ template And*():untyped =
     if x.kind==Literal : syms[x.s] &&= y
     else               : stack.push(x && y)
 
+template Nand*():untyped =
+    require(opBNand)
+
+    if x.kind==Literal : syms[x.s] &&= y; !!= syms[x.s]
+    else               : stack.push(!! (x && y))
+
+template Nor*():untyped =
+    require(opBNor)
+
+    if x.kind==Literal : syms[x.s] ||= y; !!= syms[x.s]
+    else               : stack.push(!! (x || y))
+
 template Not*():untyped =
     require(opBNot)
     
@@ -45,6 +57,12 @@ template Shr*():untyped =
     
     if x.kind==Literal : syms[x.s] >>= y
     else               : stack.push(x >> y)
+
+template Xnor*():untyped =
+    require(opBXnor)
+
+    if x.kind==Literal : syms[x.s] ^^= y; !!= syms[x.s]
+    else               : stack.push(!! (x ^^ y))
     
 template Xor*():untyped =
     require(opBXor)
