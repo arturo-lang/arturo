@@ -181,35 +181,8 @@ The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-base
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
 
 #### General schema
-<pre>
-              INPUT
 
-                ●
-                ║  
-                ║  
-  ┏━━━━━━━━━━━━━╬━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓  
-  ┃   ┌─────────╩─────────┐   ┌───────┐   ┌────────────────┐   ┃  
-  ┃   │Translator         │   │ Stack │   │                │   ┃  
-  ┃   │                   │   └───────┘   │                │   ┃  
-  ┃   │                   │               │    Library     │   ┃  
-  ┃   │                   │               │                │   ┃  
-  ┃   │                   │               │                │   ┃  
-  ┃   │   .─────────.     │               └──────▲──┼──────┘   ┃  
-  ┃   │  (   Parse   )    │                      │  │          ┃  
-  ┃   │   `────┼────'     │                      │  │          ┃  
-  ┃   │        │          │               ┌──────┼──▼──────┐   ┃  
-  ┃   │        │          │               │VM              │   ┃  
-  ┃   │   .────▼────.     │   Bytecode    │   .─────────.  │   ┃  
-  ┃   │  (   Eval    )────┼───────────────┼─▶(   Exec    ) │   ┃  
-  ┃   │   `─────────'     │               │   `─────────'  │   ┃  
-  ┃   │                   │               │                │   ┃  
-  ┃   └───────────────────┘               └────────╦───────┘   ┃  
-  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╬━━━━━━━━━━━┛  
-                                                   ║  
-                                                   ●  
-    
-                                                 OUTPUT 
-</pre>
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/schema.png"/>
 
 Community
 ------------------------------
