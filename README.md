@@ -81,7 +81,7 @@ Trying it out
 
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
       choosenim stable
-* Dependencies for Linux
+* Dependencies (for Linux):
    - gtk+-3.0 *(\* needed only for "complete" builds)*
    - webkit2gtk-4.0 *(\* needed only for "complete" builds)*
    - libgmp-dev
