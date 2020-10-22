@@ -11,3 +11,7 @@ binDir        = "bin"
 # Dependencies
 
 requires "nim >= 1.4.0"
+
+task buildJS, "build with js backend":
+  switch("d", "WEB")
+  selfExec "js src/arturo.nim"
