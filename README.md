@@ -24,6 +24,7 @@
    * [Roadmap](#roadmap)
    * [Community](#community)
    * [Contributing](#contributing)
+      * [Project structure](#project-structure)
    * [License](#license)
 <!--te-->
 
@@ -164,6 +165,31 @@ Contributing
 Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for more details and the process for submitting pull requests.
 
 **In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
+
+### Project structure
+
+To get an initial idea of the project, here's a brief guide to where is what:
+
+| Location | Description |
+|---|---|
+| `bin/` | The destination of the final binary after compilation |
+| `examples/` | A list of working examples in Arturo |
+| `src/` | The main source folder |
+| `src/extras/` | 3rd party open-source code used by Arturo |
+| `src/helpers/` | Useful helper methods grouped by category and used mostly by library functions |
+| `src/system/` | Components of the Arturo binary, written in Arturo (the REPL, the packager, etc) |
+| `src/translator/` | The 2 main translators: parse.nim (to perform the initial lexing and parsing to a block of words and values) and eval.nim (to convert a block of words to bytecode for our VM) |
+| `src/vm/` | The Virtual Machine |
+| `src/vm/library/` | The Arturo standard library functions, grouped by category |
+| `src/vm/bytecode.nim` | A list of all the VM bytecodes along with their description |
+| `src/vm/env.nim` | VM Environment handling (paths, etc) |
+| `src/vm/exec.nim` | The most important VM module, where the main loop is triggered |
+| `src/vm/stack.nim` | Manipulation code for the different stacks used by the VM |
+| `src/vm/value.nim` | The main Value object for our Virtual Machine along with numerous overloads, from initialization methods to printing and basic arithmetic |
+| `src/arturo.nim` | The main entry; where all the magic begins |
+| `tests/` | Different unit tests |
+| `tools/` | Various tools, documentation generation, etc |
+| `version/` | Main version & build numbers |
 
 License
 ------------------------------
