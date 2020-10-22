@@ -82,6 +82,12 @@ Trying it out
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
       choosenim stable
 
+### Dependencies
+
+- gtk+-3.0
+- webkit2gtk-4.0
+- libgmp-dev
+
 #### Build & Install Arturo
 	
     ./build.sh install
