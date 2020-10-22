@@ -696,9 +696,15 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opNand: Logic.IsNand()
                     of opNor: Logic.IsNor()
                     of opXnor: Logic.IsXnor()
+
                     of opBNand: Binary.Nand()
                     of opBNor: Binary.Nor()
                     of opBXnor: Binary.Xnor()
+
+                    of opNegative: Numbers.IsNegative()
+                    of opPositive: Numbers.IsPositive()
+                    of opZero: Numbers.IsZero()
+
                     else: discard
 
             else: discard
