@@ -13,7 +13,7 @@
 when not defined(MINI):
     import unidecode
 
-import vm/stack, vm/value
+import ../vm/stack, ../vm/value
 
 #=======================================
 # Methods

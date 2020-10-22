@@ -82,11 +82,17 @@ Trying it out
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
       choosenim stable
 
-#### Build & Install Arturo
-	
-    ./build.sh install
+### Dependencies
 
-The compiler will be built and installed automatically in your `/usr/local/bin`. (So, make sure the folder is in your `$PATH` variable!)
+- gtk+-3.0
+- webkit2gtk-4.0
+- libgmp-dev
+
+#### Build & Install Arturo
+
+    nimble install -Y
+
+The compiler will be built and installed automatically in your `$HOME/.nimble/bin`. (So, make sure the folder is in your `$PATH` variable!)
 
 That's it!
 

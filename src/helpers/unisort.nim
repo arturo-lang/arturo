@@ -12,7 +12,7 @@
 
 import algorithm, tables, unicode
 
-import vm/value
+import ../vm/value
 
 #=======================================
 # Constants
