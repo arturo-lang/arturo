@@ -64,6 +64,8 @@ Documentation
 
 For more information about the language and for access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
 
+<a href="https://github.com/arturo-lang/arturo/wiki"><img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/reference_screenshot.png"/></a>
+
 Trying it out
 ------------------------------
 
