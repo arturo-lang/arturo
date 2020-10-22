@@ -12,5 +12,24 @@ switch("gc", "orc")
 switch("opt", "speed")
 switch("overflowChecks", "on")
 switch("panics", "off")
-switch("passC", "-O3")
 switch("threads", "on")
+
+when not defined DEBUG:
+  switch("passC", "-O3")
+
+when defined MINI:
+  switch("opt", "size")
+elif defined VERBOSE:
+  switch("opt", "speed")
+elif defined BENCHMARK:
+  switch("opt", "speed")
+elif defined DEBUG:
+  switch("linedir", "on")
+  switch("debugger", "on")
+  switch("debuginfo", "on")
+elif defined PROFILE:
+  switch("debuginfo", "on")
+  switch("profiler", "on")
+  switch("stackTrace", "on")
+else:
+  switch("opt", "speed")
