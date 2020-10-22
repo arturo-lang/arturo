@@ -633,6 +633,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "levenshtein": addExtraCommand(opLevenshtein)
 
+                    of "nand?"      : addExtraCommand(opNand)
+                    of "nor?"       : addExtraCommand(opNor)
+                    of "xnor?"      : addExtraCommand(opXnor)
+
+                    of "nand"       : addExtraCommand(opBNand)
+                    of "nor"        : addExtraCommand(opBNor)
+                    of "xnor"       : addExtraCommand(opBXnor)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
