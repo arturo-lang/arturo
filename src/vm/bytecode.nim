@@ -396,9 +396,15 @@ type
 
         opExtra         = 0xFF
 
-        ######3
+        ######
 
         opLevenshtein   = 0x100
+        opNand          = 0x101
+        opNor           = 0x102
+        opXnor          = 0x103
+        opBNand         = 0x104
+        opBNor          = 0x105
+        opBXnor         = 0x106
 
     ParamSpec* = set[ValueKind]
 
@@ -2042,6 +2048,66 @@ const
                                 b       : {String},
                                 ret     : {Integer},
                                 desc    : "get the Levenshtein edit distance~between given strings"),
+
+        opNand      : OpSpec(   name    : "nand?",         
+                                args    : 2,   
+
+                                an      : "valueA",      
+                                a       : {Boolean},                  
+                                bn      : "valueB",      
+                                b       : {Boolean},
+                                ret     : {Boolean},                        
+                                desc    : "return the logical NAND for the given values" ),
+
+        opNor       : OpSpec(   name    : "nor?",         
+                                args    : 2,   
+
+                                an      : "valueA",      
+                                a       : {Boolean},                  
+                                bn      : "valueB",      
+                                b       : {Boolean},
+                                ret     : {Boolean},                        
+                                desc    : "return the logical NOR for the given values" ),
+
+        opXnor      : OpSpec(   name    : "xnor?",         
+                                args    : 2,   
+
+                                an      : "valueA",      
+                                a       : {Boolean},                  
+                                bn      : "valueB",      
+                                b       : {Boolean},
+                                ret     : {Boolean},                        
+                                desc    : "return the logical XNOR for the given values" ),
+
+        opBNand     : OpSpec(   name    : "nand",          
+                                args    : 2,   
+
+                                an      : "valueA",      
+                                a       : {Integer,Literal},      
+                                bn      : "valueB",      
+                                b       : {Integer},
+                                ret     : {Integer,Null},      
+                                desc    : "calculate the binary NAND for the given values" ),
+
+        opBNor      : OpSpec(   name    : "nor",          
+                                args    : 2,   
+
+                                an      : "valueA",      
+                                a       : {Integer,Literal},      
+                                bn      : "valueB",      
+                                b       : {Integer},
+                                ret     : {Integer,Null},      
+                                desc    : "calculate the binary NOR for the given values" ),
+
+        opBXnor     : OpSpec(   name    : "xnor",          
+                                args    : 2,   
+
+                                an      : "valueA",      
+                                a       : {Integer,Literal},      
+                                bn      : "valueB",      
+                                b       : {Integer},
+                                ret     : {Integer,Null},      
+                                desc    : "calculate the binary XNOR for the given values" ),
 
     ]
 
