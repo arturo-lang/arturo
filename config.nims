@@ -31,5 +31,7 @@ elif defined PROFILE:
   switch("debuginfo", "on")
   switch("profiler", "on")
   switch("stackTrace", "on")
+elif defined WEB:
+  discard
 else:
   switch("opt", "speed")
