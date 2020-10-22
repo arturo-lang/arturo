@@ -24,7 +24,7 @@
    * [Contributing](#contributing)
       * [Project structure](#project-structure)
       * [The Compiler](#the-compiler)
-      * [General schema](#general-schema)
+        * [General schema](#general-schema)
    * [Community](#community)
    * [License](#license)
 <!--te-->
@@ -180,7 +180,7 @@ The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-base
 
 The main goals are: performance, energy-efficiency and portability. (With that exact order)
 
-### General schema
+#### General schema
 <pre>
 
                                 INPUT
@@ -215,13 +215,13 @@ The main goals are: performance, energy-efficiency and portability. (With that e
 Community
 ------------------------------
 
-[![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
-
 In case you want to ask a question, suggest an idea, or practically anything related to Arturo - feel free! Everything and everyone is welcome.
 
 For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
 
 For questions, quick ideas and discussing generally about the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
+
+[![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
 
 License
 ------------------------------
