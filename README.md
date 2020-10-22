@@ -110,11 +110,11 @@ Just use the existing docker image:
 Using the command line
 ------------------------------
 
-#### Run a script
+### Run a script
 
     arturo <script>
 
-#### Interactive console / REPL
+### Interactive console / REPL
 
     arturo
     
