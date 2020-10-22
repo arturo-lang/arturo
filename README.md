@@ -10,12 +10,13 @@
    * [The Language](#the-language)
    * [The Compiler](#the-compiler)
    * [Documentation](#documentation)
+      * [At a glance](#at-a-glance)
    * [Trying it out](#trying-it-out)
-      * [Online](#online)
       * [Manually](#manually)
         * [Prerequisites](#prerequisites)
         * [Build & Install Arturo](#build--install-arturo)
       * [Docker](#docker)
+      * [Online](#online)
    * [Using the command line](#using-the-command-line)
       * [Run a script](#run-a-script)
       * [Interactive console (REPL)](#interactive-console--repl)
@@ -64,16 +65,15 @@ Documentation
 
 For more information about the language and for access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
 
-<a href="https://github.com/arturo-lang/arturo/wiki"><img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/reference_screenshot.png"/></a>
+### At a glance
+
+|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
+|-------------------------|-------------------|-------------------|-------------------------|
+|    **[Getting Started](https://github.com/arturo-lang/arturo/wiki/Getting-Started)**   | **[Language Reference](https://github.com/arturo-lang/arturo/wiki/Language)**   |    **[Command Line](https://github.com/arturo-lang/arturo/wiki/Command-Line)**   |    **[Library Reference](https://github.com/arturo-lang/arturo/wiki/Library)**    |
+
 
 Trying it out
 ------------------------------
-
-### Online
-
-► [arturo-lang.io](http://arturo-lang.io/)
-
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
 
 ### Manually
 
@@ -100,7 +100,12 @@ That's it!
 Just use the existing docker image:
 
 	docker run -it fingidor/arturo-repl
+	
+### Online
 
+► [arturo-lang.io](http://arturo-lang.io/)
+
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
 
 Using the command line
 ------------------------------
