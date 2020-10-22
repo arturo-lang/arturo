@@ -10,10 +10,10 @@
 # Libraries
 #=======================================
 
-import extras/bignum, hashes, math, sequtils, strformat
+import ../extras/bignum, hashes, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
-import utils
+import ../utils
 
 #=======================================
 # Types

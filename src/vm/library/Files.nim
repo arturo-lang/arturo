@@ -14,9 +14,9 @@ import sequtils
 import strformat, strtabs, sugar
 import tables, unicode
 
-import vm/stack, vm/value
+import ../stack, ../value
 
-import utils
+import ../../utils
 
 #=======================================
 # Methods

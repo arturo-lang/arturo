@@ -12,8 +12,8 @@
 
 import algorithm, re, sequtils, strformat, strutils, tables
 
-import vm/bytecode, vm/stack, vm/value
-import utils
+import ../bytecode, ../stack, ../value
+import ../../utils
 
 #=======================================
 # Helpers
