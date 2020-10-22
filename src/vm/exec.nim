@@ -20,7 +20,7 @@ import xmlparser, xmltree
 
 import nre except toSeq
 
-import extras/[
+import ../extras/[
     bignum
 ]
 
@@ -44,22 +44,22 @@ import library/[
     Ui
 ]
 
-import translator/eval, translator/parse
-import vm/bytecode, vm/stack, vm/value
+import ../translator/eval, ../translator/parse
+import ./bytecode, ./stack, ./value
 
-import helpers/arrays       as arraysHelper   
-import helpers/csv          as csvHelper
-import helpers/datasource   as datasourceHelper
-import helpers/html         as htmlHelper
-import helpers/json         as jsonHelper
-import helpers/markdown     as markdownHelper
-import helpers/strings      as stringsHelper
-import helpers/unisort      as unisortHelper
-import helpers/url          as urlHelper
-import helpers/webview      as webviewHelper
-import helpers/xml          as xmlHelper
+import ../helpers/arrays       as arraysHelper   
+import ../helpers/csv          as csvHelper
+import ../helpers/datasource   as datasourceHelper
+import ../helpers/html         as htmlHelper
+import ../helpers/json         as jsonHelper
+import ../helpers/markdown     as markdownHelper
+import ../helpers/strings      as stringsHelper
+import ../helpers/unisort      as unisortHelper
+import ../helpers/url          as urlHelper
+import ../helpers/webview      as webviewHelper
+import ../helpers/xml          as xmlHelper
 
-import utils    
+import ../utils    
 
 #=======================================
 # Globals

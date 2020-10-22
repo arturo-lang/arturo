@@ -11,9 +11,9 @@
 #=======================================
 
 when not defined(MINI):
-    import extras/webview
+    import ../extras/webview
 
-import vm/stack, vm/value
+import ../vm/stack, ../vm/value
 
 #=======================================
 # Methods

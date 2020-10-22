@@ -12,7 +12,7 @@
 
 import sequtils, tables
 
-import vm/value
+import ./value
 
 #=======================================
 # Constants
