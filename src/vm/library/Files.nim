@@ -10,13 +10,9 @@
 # Libraries
 #=======================================
 
-import sequtils
-import strformat, strtabs, sugar
-import tables, unicode
+import strtabs, tables
 
 import ../stack, ../value
-
-import ../../utils
 
 #=======================================
 # Methods

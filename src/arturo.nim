@@ -10,8 +10,7 @@
 # Libraries
 #=======================================
 
-import os, parseopt, segFaults
-import strformat, strutils
+import os, parseopt, segFaults, strutils
 
 when defined(PROFILE):
     import nimprof

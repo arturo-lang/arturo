@@ -13,7 +13,7 @@
 import std/json, sequtils, sugar
 import tables, unicode
 
-import ../vm/stack, ../vm/value
+import ../vm/value
 
 #=======================================
 # Methods

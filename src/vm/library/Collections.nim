@@ -18,7 +18,6 @@ import ../../translator/parse
 import ../stack, ../value
 
 import ../../helpers/url
-import ../../utils
 
 #=======================================
 # Helpers

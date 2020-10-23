@@ -10,9 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sugar
-
-import ../vm/stack, ../vm/value
+import ../vm/value
 
 #=======================================
 # Methods
