@@ -74,7 +74,7 @@ getFunctionsByLib: function[][
 getFunctionsByLib
 
 funcTemplate: ---
-## |fname|
+## |fname||falias|
 
 #### Description
 
@@ -139,7 +139,7 @@ loop functionsByLib [lib,functions][
 				fname: funcInfo\name
 				fdescription: capitalize funcInfo\description
 				falias: ""
-				if ""<>funcInfo\alias [ falias: "*(alias: " ++ (funcInfo\alias) ++ ")*" ]
+				if ""<>funcInfo\alias [ falias: "\n\n**Alias:** `" ++ (funcInfo\alias) ++ "`" ]
 				fret: join.with:"  \n" map funcInfo \ "return" 'x ["- *:" ++ (to :string x) ++ "*"]
 				fusagepre: new []
 				loop funcInfo\arguments 'arg [
