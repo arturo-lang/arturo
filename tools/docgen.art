@@ -168,7 +168,7 @@ loop functionsByLib [lib,functions][
 				fexams: select examples 'x [ and? x\0=func x\1<>"" ]
 
 				if not? empty? fexams [
-					fexam: render ---
+					fexam: "\n\n" ++ render ---
 					#### Examples
 
 					```red
