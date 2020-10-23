@@ -114,6 +114,23 @@ proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
 #=======================================
 
 template makeArray*(): untyped = 
+    # EXAMPLE:
+    # none: @[]               ; none: []
+    # a: @[1 2 3]             ; a: [1 2 3]
+    #
+    # b: 5
+    # c: @[b b+1 b+2]         ; c: [5 6 7]
+    #
+    # d: @[
+    # ____3+1
+    # ____print "we are in the block"
+    # ____123
+    # ____print "yep"
+    # ]
+    # ; we are in the block
+    # ; yep
+    # ; => [4 123]
+
     require(opArray)
 
     let stop = SP
@@ -135,6 +152,24 @@ template makeArray*(): untyped =
     stack.push(newBlock(arr))
 
 template makeDict*(): untyped = 
+    # EXAMPLE:
+    # none: #[]               ; none: []
+    # a: #[
+    # ____name: "John"
+    # ____age: 34
+    # ]             
+    # ; a: [name: "John", age: 34]
+    #
+    # d: #[
+    # ____name: "John"
+    # ____print "we are in the block"
+    # ____age: 34
+    # ____print "yep"
+    # ]
+    # ; we are in the block
+    # ; yep
+    # ; => [name: "John", age: 34]
+
     require(opDictionary)
 
     var dict: ValueDict
@@ -153,6 +188,38 @@ template makeDict*(): untyped =
     stack.push(newDictionary(dict))
 
 template makeFunc*(): untyped = 
+    # EXAMPLE:
+    # f: function [x][ x + 2 ]
+    # print f 10                ; 12
+    #
+    # f: $[x][x+2]
+    # print f 10                ; 12
+    #
+    # multiply: function [x,y][
+    # ____x * y
+    # ]
+    # print multiply 3 5        ; 15
+    #
+    # publicF: function .export['x] [z][
+    # ____print ["z =>" z]
+    # ____x: 5
+    # ]
+    #
+    # publicF 10
+    # ; z => 10
+    #
+    # print x
+    # ; 5
+    #
+    # pureF: function.pure [sth][
+    # ____print ["sth =>" sth]
+    # ____print ["is x set?" set? 'x]
+    # ]
+    #
+    # pureF 23
+    # ; sth => 23
+    # ; is x set? false
+
     require(opFunction)
 
     var exports = VNULL
@@ -168,6 +235,22 @@ template makeFunc*(): untyped =
 #=======================================
 
 template Append*(): untyped =
+    # EXAMPLE:
+    # append "hell" "o"         ; => "hello"
+    # append [1 2 3] 4          ; => [1 2 3 4]
+    # append [1 2 3] [4 5]      ; => [1 2 3 4 5]
+    #
+    # print "hell" ++ "o!"      ; hello!             
+    # print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
+    #
+    # a: "hell"
+    # append 'a "o"
+    # print a                   ; hello
+    #
+    # b: [1 2 3]
+    # 'b ++ 4
+    # print b                   ; [1 2 3 4]
+
     require(opAppend)
 
     if x.kind==Literal:
@@ -210,11 +293,22 @@ template Append*(): untyped =
             stack.push(ret)
 
 template Combine*(): untyped =
+    # EXAMPLE:
+    # combine ["one" "two" "three"] [1 2 3]
+    # ; => [[1 "one"] [2 "two"] [3 "three"]]
+
     require(opCombine)
 
     stack.push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
 
 template Drop*(): untyped =
+    # EXAMPLE:
+    # str: drop "some text" 5
+    # print str                     ; text
+    #
+    # arr: 1..10
+    # drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
+
     require(opDrop)
 
     if x.kind==Literal:
@@ -229,6 +323,13 @@ template Drop*(): untyped =
             stack.push(newBlock(x.a[y.i..^1]))
 
 template Empty*(): untyped =
+    # EXAMPLE:
+    # a: [1 2 3]
+    # empty 'a              ; a: []
+    #
+    # str: "some text"
+    # empty 'str            ; str: ""
+
     require(opEmpty)
 
     case syms[x.s].kind:
@@ -238,6 +339,17 @@ template Empty*(): untyped =
         else: discard
 
 template Filter*(): untyped =
+    # EXAMPLE:
+    # print filter 1..10 [x][
+    # ____even? x
+    # ]
+    # ; 1 3 5 7 9
+    #
+    # arr: 1..10
+    # filter 'arr 'x -> even? x
+    # print arr
+    # ; 1 3 5 7 9
+
     require(opFilter)
 
     var args: ValueArray
@@ -267,6 +379,12 @@ template Filter*(): untyped =
         stack.push(newBlock(res))
 
 template First*(): untyped = 
+    # EXAMPLE:
+    # print first "this is some text"       ; t
+    # print first ["one" "two" "three"]     ; one
+    #
+    # print first.n:2 ["one" "two" "three"] ; one two
+
     require(opFirst)
 
     if (let aN = popAttr("n"); aN != VNULL):
@@ -530,6 +648,12 @@ template Keys*(): untyped =
     stack.push(newStringBlock(s))
 
 template Last*(): untyped =
+    # EXAMPLE:
+    # print last "this is some text"       ; t
+    # print last ["one" "two" "three"]     ; three
+    #
+    # print last.n:2 ["one" "two" "three"] ; two three
+
     require(opLast)
 
     if (let aN = getAttr("n"); aN != VNULL):
@@ -542,6 +666,39 @@ template Last*(): untyped =
 
 
 template Loop*(): untyped =
+    # EXAMPLE:
+    # loop [1 2 3] 'x [
+    # ____print x
+    # ]
+    # ; 1
+    # ; 2
+    # ; 3
+    #
+    # loop 1..3 [x][
+    # ____print ["x =>" x]
+    # ]
+    # ; x => 1
+    # ; x => 2
+    # ; x => 3
+    #
+    # loop [A a B b C c] [x y][
+    # ____print [x "=>" y]
+    # ]
+    # ; A => a
+    # ; B => b
+    # ; C => c
+    #
+    # user: #[
+    # ____name: "John"
+    # ____surname: "Doe"
+    # ]
+    #
+    # loop user [k v][
+    # ____print [k "=>" v]
+    # ]
+    # ; name => John
+    # ; surname => Doe
+
     require(opLoop)
 
     var args: ValueArray
@@ -593,6 +750,17 @@ template Loop*(): untyped =
 #         indx += args.len
 
 template Map*(): untyped =
+    # EXAMPLE:
+    # print map 1..5 [x][
+    # ____2*x
+    # ]
+    # ; 2 4 6 8 10
+    #
+    # arr: 1..5
+    # map 'arr 'x -> 2*x
+    # print arr
+    # ; 2 4 6 8 10
+
     require(opMap)
 
     var args: ValueArray
@@ -618,6 +786,9 @@ template Map*(): untyped =
         stack.push(newBlock(res))
 
 template Max*(): untyped =
+    # EXAMPLE:
+    # print max [4 2 8 5 1 9]       ; 9
+
     require(opMax)
 
     if x.a.len==0: stack.push(VNULL)
@@ -632,6 +803,9 @@ template Max*(): untyped =
         stack.push(maxElement)
 
 template Min*(): untyped =
+    # EXAMPLE:
+    # print min [4 2 8 5 1 9]       ; 1
+
     require(opMin)
 
     if x.a.len==0: stack.push(VNULL)
@@ -646,6 +820,10 @@ template Min*(): untyped =
         stack.push(minElement)
 
 template Permutate*(): untyped =
+    # EXAMPLE:
+    # permutate [A B C]
+    # ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
+
     require(opPermutate)
 
     var ret: ValueArray = @[]
@@ -657,6 +835,10 @@ template Permutate*(): untyped =
     stack.push(newBlock(ret))
         
 template Range*(): untyped =
+    # EXAMPLE:
+    # print range 1 4       ; 1 2 3 4
+    # 1..10                 ; [1 2 3 4 5 6 7 8 9 10]
+
     require(opRange)
 
     var res = newBlock()
@@ -680,6 +862,19 @@ template Range*(): untyped =
 
 
 template Remove*(): untyped =
+    # EXAMPLE:
+    # remove "hello" "l"        ; => "heo"
+    # print "hello" -- "l"      ; heo
+    #
+    # str: "mystring"
+    # remove 'str "str"         
+    # print str                 ; mying
+    #
+    # print remove.once "hello" "l"
+    # ; helo
+    #
+    # remove [1 2 3 4] 4        ; => [1 2 3]
+
     require(opRemove)
 
     if x.kind==Literal:
@@ -723,6 +918,14 @@ template Remove*(): untyped =
 
 
 template Reverse*(): untyped =
+    # EXAMPLE:
+    # print reverse [1 2 3 4]           ; 4 3 2 1
+    # print reverse "Hello World"       ; dlroW olleH
+    #
+    # str: "my string"
+    # reverse 'str
+    # print str                         ; gnirts ym
+
     proc reverse(s: var string) =
         for i in 0 .. s.high div 2:
             swap(s[i], s[s.high - i])
@@ -744,11 +947,27 @@ template Reverse*(): untyped =
         elif x.kind==String: stack.push(newString(x.s.reversed))
 
 template Sample*(): untyped =
+    # EXAMPLE:
+    # sample [1 2 3]        ; (return a random number from 1 to 3)
+    # print sample ["apple" "appricot" "banana"]
+    # ; apple
+
     require(opSample)
 
     stack.push(sample(x.a))
 
 template Select*(): untyped =
+    # EXAMPLE:
+    # print select 1..10 [x][
+    # ____even? x
+    # ]
+    # ; 2 4 6 8 10
+    #
+    # arr: 1..10
+    # select 'arr 'x -> even? x
+    # print arr
+    # ; 2 4 6 8 10
+
     require(opSelect)
 
     var args: ValueArray
@@ -778,6 +997,17 @@ template Select*(): untyped =
         stack.push(newBlock(res))
 
 template Set*(): untyped =
+    # EXAMPLE:
+    # myDict: #[ 
+    # ____name: "John"
+    # ____age: 34
+    # ]
+    #
+    # set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
+    #
+    # arr: [1 2 3 4]
+    # set arr 0 "one"                   ; => ["one" 2 3 4]
+
     require(opSet)
 
     case x.kind:
@@ -788,6 +1018,13 @@ template Set*(): untyped =
         else: discard
 
 template Shuffle*(): untyped =
+    # EXAMPLE:
+    # shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]
+    #
+    # arr: [2 5 9]
+    # shuffle 'arr
+    # print arr                     ; 5 9 2
+
     require(opShuffle)
 
     if x.kind==Literal:
@@ -796,16 +1033,25 @@ template Shuffle*(): untyped =
         stack.push(newBlock(x.a.dup(shuffle)))
 
 template Size*(): untyped =
+    # EXAMPLE:
+    # str: "some text"      
+    # print size str                ; 9
+    #
+    # print size "你好!"              ; 3
     require(opSize)
 
     if x.kind==String:
-        stack.push(newInteger(x.s.len))
+        stack.push(newInteger(runeLen(x.s)))
     elif x.kind==Dictionary:
         stack.push(newInteger(x.d.len))
     else:
         stack.push(newInteger(x.a.len))
         
 template Slice*(): untyped =
+    # EXAMPLE:
+    # slice "Hello" 0 3             ; => "Hell"
+    # print slice 1..10 3 4         ; 4 5
+
     require(opSlice)
 
     if x.kind==String:
@@ -814,6 +1060,16 @@ template Slice*(): untyped =
         stack.push(newBlock(x.a[y.i..z.i]))
 
 template Sort*(): untyped =
+    # EXAMPLE:
+    # a: [3 1 6]
+    # print sort a                  ; 1 3 6
+    #
+    # print sort.descending a       ; 6 3 1
+    #
+    # b: ["one" "two" "three"]
+    # sort 'b
+    # print b                       ; one three two
+
     require(opSort)
 
     var sortOrdering = SortOrder.Ascending
@@ -847,6 +1103,20 @@ template Sort*(): untyped =
                     syms[x.s].a.sort(order = sortOrdering)
 
 template Split*(): untyped =
+    # EXAMPLE:
+    # split "hello"                 ; => [`h` `e` `l` `l` `o`]
+    # split.words "hello world"     ; => ["hello" "world"]
+    #
+    # split.every: 2 "helloworld"
+    # ; => ["he" "ll" "ow" "or" "ld"]
+    #
+    # split.at: 4 "helloworld"
+    # ; => ["hell" "oworld"]
+    #
+    # arr: 1..9
+    # split.at:3 'arr
+    # ; => [ [1 2 3 4] [5 6 7 8 9] ]
+
     require(opSplit)
 
     if x.kind==Literal:
@@ -932,6 +1202,13 @@ template Split*(): untyped =
 
 
 template Take*(): untyped =
+    # EXAMPLE:
+    # str: take "some text" 5
+    # print str                     ; some
+    #
+    # arr: 1..10
+    # take 'arr 3                   ; arr: [1 2 3]
+
     require(opTake)
 
     if x.kind==Literal:
@@ -946,6 +1223,14 @@ template Take*(): untyped =
             stack.push(newBlock(x.a[0..y.i-1]))
 
 template Unique*(): untyped = 
+    # EXAMPLE:
+    # arr: [1 2 4 1 3 2]
+    # print unique arr              ; 1 2 4 3
+    #
+    # arr: [1 2 4 1 3 2]
+    # unique 'arr
+    # print arr                     ; 1 2 4 3
+
     require(opUnique)
 
     if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
