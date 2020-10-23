@@ -26,7 +26,7 @@ parseExamples: function[l,i][
 				indx: indx+1
 				while [in? (lines \ indx) "#"][
 					exampleLine: strip lines \ indx
-					exampleLine: strip slice exampleLine 1 (size exampleLine)-1
+					exampleLine: replace strip slice exampleLine 1 (size exampleLine)-1 "_" " "
 					example: example ++ exampleLine
 					indx: indx+1
 				]
