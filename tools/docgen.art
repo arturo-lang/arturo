@@ -89,7 +89,7 @@ tocTemplate:
 loop functionsByLib [lib,functions][
 	if lib<>"sys" [
 		libMd: ""
-		toc: "## Functions\n\n<!--ts-->\n"
+		toc: "## Functions\n\n---\n\n<!--ts-->\n"
 		loop functions 'func [
 			print func
 			if null<>info.get func [
