@@ -17,6 +17,21 @@ import vm/env, vm/stack, vm/value
 #=======================================
 
 template Webview*():untyped =
+    # EXAMPLE:
+    # webview "Hello world!"
+    # ; (opens a webview windows with "Hello world!")
+    #
+    # webview .width:  200 
+    #         .height: 300
+    #         .title:  "My webview app"
+    # ---
+    # ____<h1>This is my webpage</h1>
+    # ____<p>
+    # ________This is some content
+    # ____</p>
+    # ---
+    # ; (opens a webview with given attributes)
+
     require(opWebview)
 
     var title = "Arturo"
