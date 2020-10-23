@@ -17,12 +17,22 @@ import vm/stack, vm/value
 #=======================================
 
 template Capitalize*():untyped =
+    # EXAMPLE:
+    # print capitalize "hello World"  ____; "Hello World"
+    #
+    # str: "hello World"
+    # capitalize 'str                 ____; str: "Hello World"
+
     require(opCapitalize)
 
     if x.kind==String: stack.push(newString(x.s.capitalize()))
     else: syms[x.s].s = syms[x.s].s.capitalize()
 
 template Color*():untyped =
+    # EXAMPLE:
+    # print color.green "Hello!"            ____; Hello! (in green)
+    # print color.red.bold "Some text"      ____; Some text (in red/bold)
+
     require(opColor)
 
     var pre: string = "\e[0;"
@@ -62,6 +72,10 @@ template Color*():untyped =
     stack.push(newString(pre & x.s & reset))
 
 template HasPrefix*():untyped =
+    # EXAMPLE:
+    # prefix? "hello" "he"      ____; => true
+    # prefix? "boom" "he"       ____; => false
+
     require(opHasPrefix) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
@@ -70,6 +84,10 @@ template HasPrefix*():untyped =
         stack.push(newBoolean(x.s.startsWith(y.s)))
 
 template HasSuffix*():untyped =
+    # EXAMPLE:
+    # suffix? "hello" "lo"      ____; => true
+    # suffix? "boom" "lo"       ____; => false
+
     require(opHasSuffix) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
@@ -78,6 +96,12 @@ template HasSuffix*():untyped =
         stack.push(newBoolean(x.s.endsWith(y.s)))
 
 template IsLower*():untyped =
+    # EXAMPLE:
+    # lower? "ñ"           ____; => true
+    # lower? "X"           ____; => false
+    # lower? "Hello World" ____; => false
+    # lower? "hello"       ____; => true
+
     require(opIsLower)
 
     var broken = false
@@ -91,6 +115,12 @@ template IsLower*():untyped =
         stack.push(VTRUE)
 
 template IsNumeric*():untyped =
+    # EXAMPLE:
+    # numeric? "hello"       ____; => false
+    # numeric? "3.14"        ____; => true
+    # numeric? "18966"       ____; => true
+    # numeric? "123xxy"      ____; => false
+
     require(opIsNumeric) # PENDING unicode support
 
     var found = false
@@ -113,6 +143,12 @@ template IsNumeric*():untyped =
         stack.push(VTRUE)
 
 template IsUpper*():untyped =
+    # EXAMPLE:
+    # upper? "Ñ"           ____; => true
+    # upper? "x"           ____; => false
+    # upper? "Hello World" ____; => false
+    # upper? "HELLO"       ____; => true
+
     require(opIsUpper)
 
     var broken = false
@@ -126,27 +162,55 @@ template IsUpper*():untyped =
         stack.push(VTRUE)
 
 template IsWhitespace*():untyped =
+    # EXAMPLE:
+    # whitespace? "hello"       ____; => false
+    # whitespace? " "           ____; => true
+    # whitespace? "\n \n"       ____; => true
+
     require(opIsWhitespace) # PENDING unicode support
 
     stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
 
 template Levenshtein*():untyped =
+    # EXAMPLE:
+    # print levenshtein "for" "fur"     ____; 1
+    # print levenshtein "one" "one"     ____; 0
+
     require(opLevenshtein) # PENDING unicode support
 
     stack.push(newInteger(editDistance(x.s,y.s)))
 
 template Lower*():untyped =
+    # EXAMPLE:
+    # print lower "hello World, 你好!"  ____; "hello world, 你好!"
+    #
+    # str: "hello World, 你好!"
+    # lower 'str                       ____; str: "hello world, 你好!"
+
     require(opLower)
 
     if x.kind==String: stack.push(newString(x.s.toLower()))
     else: syms[x.s].s = syms[x.s].s.toLower()
 
 template Match*():untyped =
+    # EXAMPLE:
+    # print match "hello" "hello"         ____; => ["hello"]
+    # match "x: 123, y: 456" "[0-9]+"     ____; => [123 456]
+    # match "this is a string" "[0-9]+"   ____; => []
+
     require(opMatch) # PENDING unicode support
 
     stack.push(newStringBlock(x.s.findAll(re.re(y.s))))
     
 template Pad*():untyped =
+    # EXAMPLE:
+    # pad "good" 10             ____; => "      good"
+    # pad.right "good" 10       ____; => "good      "
+    # pad.center "good" 10      ____; => "   good   "
+    #
+    # a: "hello"
+    # pad 'a 10        ____; a: "     hello"
+
     require(opPad)
 
     if (popAttr("right") != VNULL):
@@ -161,12 +225,33 @@ template Pad*():untyped =
 
 
 template Prefix*():untyped =
+    # EXAMPLE:
+    # prefix "ello" "h"              ____; => "hello"
+    #
+    # str: "ello"
+    # prefix 'str                    ____; str: "hello"
+
     require(opPrefix) # PENDING unicode support
 
     if x.kind==String: stack.push(newString(y.s & x.s))
     else: syms[x.s] = newString(y.s & syms[x.s].s)
 
 template Render*():untyped =
+    # EXAMPLE:
+    # x: 2
+    # greeting: "hello"
+    # print ~"|greeting|, your number is |x|"   ____; hello, your number is 2
+    #
+    # data: #[
+    # ____name: "John"
+    # ____age: 34
+    #]
+    #
+    # print render.with: data 
+    # ____"Hello, your name is |name| and you are |age| years old"
+    #
+    # ; Hello, your name is John and you are 34 years old
+
     require(opRender) # PENDING unicode support
 
     if (let aWith = popAttr("with"); aWith != VNULL):
@@ -216,6 +301,12 @@ template Render*():untyped =
             )
 
 template Replace*():untyped =
+    # EXAMPLE:
+    # replace "hello" "l" "x"       ____; => "hexxo"
+    #
+    # str: "hello"
+    # replace 'str "l" "x"          ____; str: "hexxo"
+
     require(opReplace) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
@@ -226,18 +317,36 @@ template Replace*():untyped =
         else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
 
 template Strip*():untyped =
+    # EXAMPLE:
+    # strip "  this is a string "    ____; => "this is a string"
+    #
+    # str: "  some string  "
+    # strip 'str                     ____; str: "some string"
+
     require(opStrip)
 
     if x.kind==String: stack.push(newString(strutils.strip(x.s)))
     else: syms[x.s].s = strutils.strip(syms[x.s].s) 
 
 template Suffix*():untyped =
+    # EXAMPLE:
+    # suffix "hell" "o"              ____; => "hello"
+    #
+    # str: "hell"
+    # suffix 'str                    ____; str: "hello"
+
     require(opSuffix) # PENDING unicode support
 
     if x.kind==String: stack.push(newString(x.s & y.s))
     else: syms[x.s] = newString(syms[x.s].s & y.s)
 
 template Upper*():untyped =
+    # EXAMPLE:
+    # print upper "hello World, 你好!"   ____; "HELLO WORLD, 你好!"
+    #
+    # str: "hello World, 你好!"
+    # upper 'str                       ____; str: "HELLO WORLD, 你好!"
+
     require(opUpper)
 
     if x.kind==String: stack.push(newString(x.s.toUpper()))
