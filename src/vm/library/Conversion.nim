@@ -27,6 +27,14 @@ template invalidConversionError(origin: string):untyped =
 #=======================================
 
 template As*():untyped =
+    # EXAMPLE:
+    # print as.binary 123           ; 1111011
+    # print as.octal 123            ; 173
+    # print as.hex 123              ; 7b
+    #
+    # print as.ascii "thís ìß ñot à tést"
+    # ; this iss not a test
+
     require(opAs)
 
     if (popAttr("binary") != VNULL):
@@ -41,6 +49,26 @@ template As*():untyped =
         stack.push(x)
 
 template To*(needsRequire:bool = true):untyped =
+    # EXAMPLE:
+    # to :string 2020               ; "2020"
+    # to :integer "2020"            ; 2020
+    # 
+    # to :integer `A`               ; 65
+    # to :char 65                   ; `A`
+    #
+    # to :integer 4.3               ; 4
+    # to :floating 4                ; 4.0
+    #
+    # to :boolean 0                 ; false
+    # to :boolean 1                 ; true
+    # to :boolean "true"            ; true
+    # 
+    # to :literal "symbol"          ; 'symbol
+    # to :string 'symbol            ; "symbol"
+    # to :string :word              ; "word"
+    #
+    # to :block "one two three"     ; [one two three]
+
     when needsRequire:
         require(opTo)
 
