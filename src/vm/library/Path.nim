@@ -17,11 +17,22 @@ import vm/env, vm/stack, vm/value
 #=======================================
 
 template Module*():untyped =
+	# EXAMPLE:
+	# print module 'html 		; /usr/local/lib/arturo/html.art
+	#
+	# do.import module 'html	; (imports given module)
+
     require(opModule)
 
     stack.push(newString("/usr/local/lib/arturo/" & x.s & ".art"))
 
 template Relative*():untyped =
+	# EXAMPLE:
+	# ; we are in folder: /Users/admin/Desktop
+	#
+	# print relative "test.txt"
+	# ; /Users/admin/Desktop/test.txt
+	
     require(opRelative)
 
     stack.push(newString(joinPath(env.currentPath(),x.s)))
