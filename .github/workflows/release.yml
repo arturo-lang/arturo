@@ -1,0 +1,61 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  app-name: arturo
+  nim-version: 1.4.0
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [linux]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jiro4989/setup-nim-action@v1
+        with:
+          nim-version: ${{ env.nim-version }}
+      - name: Install dependencies
+        run: |
+          # see. https://github.com/actions/virtual-environments/issues/675
+          sudo sed -i 's/azure\.//' /etc/apt/sources.list
+
+          sudo apt update -y
+          sudo apt install -y gtk+-3.0 webkit2gtk-4.0 libgmp-dev
+      - name: Build
+        run: |
+          nimble build -Y
+
+      - name: Create artifact
+        run: |
+          install -m 0755 ./bin/${{ env.app-name }} .
+          tar czf ${{ env.app-name }}_${{ matrix.os }}.tar.gz ${{ env.app-name }} README.md LICENSE
+
+      - name: Create Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ${{ env.app-name }}_${{ matrix.os }}.tar.gz
+          asset_name: ${{ env.app-name }}_${{ matrix.os }}.tar.gz
+          asset_content_type: application/gzip
