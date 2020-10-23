@@ -15,23 +15,23 @@ switch("panics", "off")
 switch("threads", "on")
 
 when not defined DEBUG:
-  switch("passC", "-O3")
+    switch("passC", "-O3")
 
 when defined MINI:
-  switch("opt", "size")
+    switch("opt", "size")
 elif defined VERBOSE:
-  switch("opt", "speed")
+    switch("opt", "speed")
 elif defined BENCHMARK:
-  switch("opt", "speed")
+    switch("opt", "speed")
 elif defined DEBUG:
-  switch("linedir", "on")
-  switch("debugger", "on")
-  switch("debuginfo", "on")
+    switch("linedir", "on")
+    switch("debugger", "on")
+    switch("debuginfo", "on")
 elif defined PROFILE:
-  switch("debuginfo", "on")
-  switch("profiler", "on")
-  switch("stackTrace", "on")
+    switch("debuginfo", "on")
+    switch("profiler", "on")
+    switch("stackTrace", "on")
 elif defined WEB:
-  discard
+    discard
 else:
-  switch("opt", "speed")
+    switch("opt", "speed")
