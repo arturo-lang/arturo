@@ -18,6 +18,15 @@ import utils
 #=======================================
 
 template Download*():untyped =
+    # EXAMPLE:
+    # download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
+    # ; (downloads file as "logo.png")
+    #
+    # download.as:"arturoLogo.png"
+    # ____________"https://github.com/arturo-lang/arturo/raw/master/logo.png"
+    #
+    # ; (downloads file with a different name)
+
     require(opDownload)
 
     let path = x.s
@@ -33,6 +42,18 @@ template Download*():untyped =
     client.downloadFile(path,target)
 
 template Mail*():untyped =
+    # EXAMPLE:
+    # mail "recipient@somemail.com"
+    #______#[
+    #______     title: "Hello from Arturo"
+    #______     content: "Arturo rocks!"
+    #______ ]
+    #______#[
+    #___________server: "mymailserver.com"
+    #___________username: "myusername"
+    #___________password: "mypass123"
+    #______ ]
+
     require(opMail)
 
     let recipient = x.s
@@ -48,6 +69,14 @@ template Mail*():untyped =
     smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
 template Serve*():untyped =
+    # EXAMPLE:
+    # serve .port:18966 [
+    # ____"/":                          [ "This is the homepage" ]
+    # ____"/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
+    # ]
+    #
+    # (run the app and go to localhost:18966 - that was it!)
+
     when not defined(VERBOSE):
         require(opServe)
 
