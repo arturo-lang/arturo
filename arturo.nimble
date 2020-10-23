@@ -1,3 +1,11 @@
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2020 Arturo Contributors
+#
+# @file: arturo.nimble
+######################################################
+
 # Package
 
 version       = "0.9.4"

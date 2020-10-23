@@ -1,3 +1,11 @@
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2020 Arturo Contributors
+#
+# @file: config.nims
+######################################################
+
 #switch("warning[UnusedImport]", "off")
 switch("checks", "off")
 switch("cincludes", "extras")
