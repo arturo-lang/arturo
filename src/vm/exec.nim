@@ -471,7 +471,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opInspect    : Reflection.Inspect() 
 
             of opIf         : Core.If()
-            of opIfE        : Core.IfE()
+            of opIfE        : Core.IsIf()
             of opElse       : Core.Else()
 
             of opLoop       : Collections.Loop()
