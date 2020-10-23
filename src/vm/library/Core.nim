@@ -10,8 +10,8 @@
 # Libraries
 #=======================================
 
-import ../../translator/parse
-import ../stack, ../value
+import translator/parse
+import vm/stack, vm/value
 
 #=======================================
 # Methods
