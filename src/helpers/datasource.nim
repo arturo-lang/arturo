@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import httpClient, os, re
+import httpClient, os
 
 import ./url
 

@@ -13,8 +13,6 @@
 when not defined(MINI):
     import ../extras/webview
 
-import ../vm/stack, ../vm/value
-
 #=======================================
 # Methods
 #=======================================

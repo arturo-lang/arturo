@@ -13,10 +13,9 @@
 when not defined(MINI):
     import htmlparser
 
-import sequtils, strtabs
-import sugar, tables, xmltree, unicode
+import strtabs, tables, xmltree
 
-import ../vm/stack, ../vm/value
+import ../vm/value
 
 #=======================================
 # Methods

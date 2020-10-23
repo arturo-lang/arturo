@@ -10,10 +10,9 @@
 # Libraries
 #=======================================
 
-import parsecsv, sequtils, streams
-import sugar, tables, unicode
+import parsecsv, streams, tables
 
-import ../vm/stack, ../vm/value
+import ../vm/value
 
 #=======================================
 # Methods

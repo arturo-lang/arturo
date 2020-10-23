@@ -13,7 +13,7 @@
 when not defined(MINI):
     import ../extras/markdown
 
-import ../vm/stack, ../vm/value
+import ../vm/value
 
 #=======================================
 # Methods
