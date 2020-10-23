@@ -12,8 +12,7 @@
 
 when not defined(MINI):
     import htmlparser
-
-import strtabs, tables, xmltree
+    import strtabs, tables, xmltree
 
 import vm/value
 
