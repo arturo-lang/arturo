@@ -10,8 +10,8 @@
 # Libraries
 #=======================================
 
-import ../env, ../stack, ../value
-import ../../utils
+import vm/env, vm/stack, vm/value
+import utils
 
 #=======================================
 # Methods

@@ -12,7 +12,7 @@
 
 import parsecsv, streams, tables
 
-import ../vm/value
+import vm/value
 
 #=======================================
 # Methods

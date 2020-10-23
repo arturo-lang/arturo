@@ -10,16 +10,15 @@
 # Libraries
 #=======================================
 
-import os, parseopt, segFaults, strutils
-
 when defined(PROFILE):
     import nimprof
+
+import os, parseopt, segFaults, strutils
 
 import translator/eval, translator/parse
 import vm/env, vm/exec, vm/value
 
 when defined(BENCHMARK):
-    import strutils
     import utils
 
 #=======================================

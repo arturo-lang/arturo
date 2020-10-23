@@ -12,8 +12,9 @@
 
 import algorithm, strformat, strutils, tables
 
-import ../vm/bytecode, ../vm/value
-import ../utils
+import vm/bytecode, vm/value
+
+import utils
 
 #=======================================
 # Globals
