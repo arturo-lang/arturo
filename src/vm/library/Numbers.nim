@@ -176,6 +176,10 @@ proc factors*(n: Int): seq[Int] =
 #=======================================
 
 template Abs*():untyped = 
+    # EXAMPLE:
+    # print abs 6       ; 6
+    # print abs 6-7     ; 1
+
     require(opAbs)
 
     if x.iKind==NormalInteger: 
@@ -214,6 +218,10 @@ template Atanh*():untyped =
     stack.push(newFloating(arctanh(x.f)))
 
 template Average*():untyped =
+    # EXAMPLE:
+    # print average [2 4 5 6 7 2 3]
+    # ; 4.142857142857143
+
     require(opAverage)
 
     var res = 0.0
@@ -262,6 +270,10 @@ template Ctanh*():untyped =
     stack.push(newFloating(coth(x.f)))
 
 template Factors*():untyped =
+    # EXAMPLE:
+    # factors 16          ; => [1 2 4 8 16]
+    # factors.prime 16    ; => [2]
+
     require(opFactors)
 
     var prime = false
@@ -279,6 +291,9 @@ template Factors*():untyped =
             stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
 template Gcd*():untyped =
+    # EXAMPLE:
+    # print gcd [48 60 120]         ; 12
+
     require(opGcd)
 
     var current = x.a[0]
@@ -301,11 +316,21 @@ template Gcd*():untyped =
     stack.push(current)
 
 template IsEven*():untyped =
+    # EXAMPLE:
+    # even? 4           ; => true
+    # even? 3           ; => false
+    #
+    # print select 1..10 => even?       ; 2 4 6 8 10
+
     require(opEven)
 
     stack.push(newBoolean(x % I2 == I0))
 
 template IsNegative*():untyped =
+    # EXAMPLE:
+    # negative? 5       ; => false
+    # negative? 6-7     ; => true   
+
     require(opNegative)
 
     if x.kind==Integer and x.iKind==BigInteger:
@@ -314,11 +339,21 @@ template IsNegative*():untyped =
         stack.push(newBoolean(x < I0))
 
 template IsOdd*():untyped =
+    # EXAMPLE:
+    # odd? 4            ; => false
+    # odd? 3            ; => true
+    #
+    # print select 1..10 => odd?       ; 1 3 5 7 9
+
     require(opOdd)
 
     stack.push(newBoolean(x % I2 == I1))
 
 template IsPositive*():untyped =
+    # EXAMPLE:
+    # positive? 5       ; => true
+    # positive? 6-7     ; => false
+
     require(opPositive)
 
     if x.kind==Integer and x.iKind==BigInteger:
@@ -327,6 +362,18 @@ template IsPositive*():untyped =
         stack.push(newBoolean(x > I0))
     
 template IsPrime*():untyped =
+    # EXAMPLE:
+    # prime? 2          ; => true
+    # prime? 6          ; => false
+    # prime? 11         ; => true
+    #
+    # ; let's check the 14th Mersenne:
+    # ; 53113799281676709868958820655246862732959311772703192319944413
+    # ; 82004035598608522427391625022652292856688893294862465010153465
+    # ; 79337652707239409519978766587351943831270835393219031728127
+    #
+    # prime? (2^607)-1  ; => true
+
     require(opPrime)
 
     if x.iKind==NormalInteger:
@@ -335,6 +382,10 @@ template IsPrime*():untyped =
         stack.push(newBoolean(probablyPrime(x.bi,25)>0))
 
 template IsZero*():untyped =
+    # EXAMPLE:
+    # zero? 5-5         ; => true
+    # zero? 4           ; => false
+
     require(opZero)
 
     if x.kind==Integer and x.iKind==BigInteger:
@@ -343,6 +394,13 @@ template IsZero*():untyped =
         stack.push(newBoolean(x == I0))
 
 template Median*():untyped =
+    # EXAMPLE:
+    # print median [2 4 5 6 7 2 3]
+    # ; 6
+    #
+    # print median [1 5 2 3 4 7 9 8]
+    # ; 3.5
+
     require(opMedian)
 
     if x.a.len==0: 
@@ -373,6 +431,12 @@ template Median*():untyped =
                 stack.push(newFloating(res))
 
 template Product*():untyped =
+    # EXAMPLE:
+    # print product [3 4]       ; 12
+    # print product [1 2 4 6]   ; 48
+    #
+    # print product 1..10       ; 3628800
+
     require(opProduct)
 
     var i = 0
@@ -384,6 +448,9 @@ template Product*():untyped =
     stack.push(product)
 
 template Random*():untyped =
+    # EXAMPLE:
+    # rnd: random 0 60          ; rnd: (a random number between 0 and 60)
+    
     require(opRandom)
 
     stack.push(newInteger(rand(x.i..y.i)))
@@ -415,6 +482,12 @@ template Sqrt*():untyped =
     else: stack.push(newFloating(sqrt(x.f)))
 
 template Sum*():untyped =
+    # EXAMPLE:
+    # print sum [3 4]           ; 7
+    # print sum [1 2 4 6]       ; 13
+    #
+    # print sum 1..10           ; 55
+
     require(opSum)
 
     var i = 0
