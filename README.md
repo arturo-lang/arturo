@@ -11,6 +11,7 @@
    * [Documentation](#documentation)
       * [At a glance](#at-a-glance)
    * [Trying it out](#trying-it-out)
+      * [Homebrew](#homebrew)
       * [Manually](#manually)
         * [Prerequisites](#prerequisites)
         * [Build & Install Arturo](#build--install-arturo)
@@ -69,6 +70,14 @@ For more information about the language and for access to the official Reference
 
 Trying it out
 ------------------------------
+
+### Homebrew
+
+On OSX, you can easily install it using [Homebrew](https://brew.sh/) as well:
+
+```bash
+brew install arturo
+```
 
 ### Manually
 
