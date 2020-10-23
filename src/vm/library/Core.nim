@@ -76,7 +76,7 @@ template Do*():untyped =
     #
     # print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
     # ; 233168
-    
+
     require(opDo)
 
     var execInParent = (popAttr("import") != VNULL)
@@ -148,7 +148,7 @@ template If*():untyped =
     require(opIf)
     if x.b: discard execBlock(y)
 
-template IfE*():untyped =
+template IsIf*():untyped =
     # EXAMPLE:
     # x: 2
     #
