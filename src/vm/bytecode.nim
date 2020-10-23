@@ -797,7 +797,7 @@ const
 
                                 an      : "code",      
                                 a       : {String,Block},      
-                                ret     : {Null},
+                                ret     : {Any,Null},
                                 attrs   :   ".import -> execute at root level",   
                                 desc    : "evaluate and execute given code" ),
 
@@ -891,7 +891,7 @@ const
                                 a       : {Type},      
                                 bn      : "value",       
                                 b       : {Any},      
-                                ret     : {Null},      
+                                ret     : {Any},      
                                 desc    : "convert value to given type" ),
 
         opEven      : OpSpec(   name    : "even?",        
@@ -1052,7 +1052,7 @@ const
 
                                 an      : "value",      
                                 a       : {Integer,Floating,Literal},
-                                ret     : {Null},      
+                                ret     : {Integer,Floating,Null},      
                                 desc    : "increase first argument by 1"),
 
         opDec       : OpSpec(   name    : "dec",          
@@ -1060,7 +1060,7 @@ const
 
                                 an      : "value",      
                                 a       : {Integer,Floating,Literal},
-                                ret     : {Null},      
+                                ret     : {Integer,Floating,Null},      
                                 desc    : "decrease first argument by 1"),
 
         opIsSet     : OpSpec(   name    : "set?",      
@@ -1547,7 +1547,7 @@ const
                                 b       : {Integer,String},
                                 cn      : "value",
                                 c       : {Any},
-                                ret     : {Null},      
+                                ret     : {String,Block,Dictionary},      
                                 desc    : "insert value in collection at given index" ),
 
         opIsIn      : OpSpec(   name    : "in?",        
@@ -1708,7 +1708,7 @@ const
 
                                 an      : "template",
                                 a       : {String},
-                                ret     : {Null},
+                                ret     : {String},
                                 attrs   :   ".with :dictionary -> use given dictionary",
                                 desc    : "render template with |string| interpolation"),
 
