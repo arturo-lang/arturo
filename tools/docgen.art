@@ -7,6 +7,35 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 functionsByLib: #[]
+examples: []
+
+parseExamples: function[l,i][
+	print ["parsing examples for library:" l "function:" i]
+	if ""=strip i -> return ""
+
+	lines: read.lines l
+	example: []
+
+	indx: 0
+	while [indx<size lines] [
+		line: lines \ indx
+		if in? line ~"template |i|" [
+			indx: indx+1
+			if in? (lines \ indx) "# EXAMPLE:" [
+				print "found example!!!"
+				indx: indx+1
+				while [in? (lines \ indx) "#"][
+					exampleLine: strip lines \ indx
+					exampleLine: strip slice exampleLine 1 (size exampleLine)-1
+					example: example ++ exampleLine
+					indx: indx+1
+				]
+			]
+		]
+		indx: indx+1
+	]
+	join.with:"\n" example
+]
 
 getFunctionsByLib: function[][
 	libs: sort list relative "../src/vm/library"
@@ -17,6 +46,7 @@ getFunctionsByLib: function[][
 				'x [ strip replace x "template " ""]
 				'y [ (to :string y\0) = upper to :string y\0 ]
 				'z [
+					initial: z
 					result: z
 					if? suffix? z "E" [ result: replace z .regex "E$" "?" ]
 					else [ 
@@ -30,10 +60,13 @@ getFunctionsByLib: function[][
 							else [result: z]
 						]
 					]
-					(lower to :string result\0) ++ slice result 1 (size result)-1
+					final: (lower to :string result\0) ++ slice result 1 (size result)-1
+					append 'examples @[@[final parseExamples lib initial]]
+					
+					final
 				]
 
-			inspect funcsInLib
+			;inspect funcsInLib
 			set functionsByLib replace replace lib "src/vm/library/" "" ".nim" "" funcsInLib
 		]
 	]
@@ -51,14 +84,11 @@ funcTemplate: ---
 
 <pre>
 <b>|fname|</b> |fusage|
-</pre>
-
-|fattrs|
+</pre>|fattrs|
 
 #### Returns
 
-|fret|
-
+|fret||fexam|
 ---
 
 tocTemplate: 
@@ -84,14 +114,15 @@ tocTemplate:
 
 ---
 
-; inspect functionsByLib
+inspect examples
 
 loop functionsByLib [lib,functions][
 	if lib<>"sys" [
 		libMd: ""
-		toc: "## Functions\n\n---\n\n<!--ts-->\n"
+		toc: "### Functions\n\n---\n\n<!--ts-->\n"
 		loop functions 'func [
 			print func
+			;exampl: get examples to :string func
 			if null<>info.get func [
 				funcLink: func
 
@@ -120,7 +151,7 @@ loop functionsByLib [lib,functions][
 				fusage: join .with:tabbing fusagepre
 				fattrs: ""
 				if 0<size funcInfo\attributes [
-					fattrs:"#### Attributes\n\n"
+					fattrs:"\n\n#### Attributes\n\n"
 
 					pipe: to :string to :char 124
 					
@@ -132,12 +163,44 @@ loop functionsByLib [lib,functions][
 						fattrs: fattrs ++ pipe ++ attrb\name ++ pipe ++ params ++ pipe ++ attrb\action ++ pipe ++ "\n"
 					]
 				]
+				fexam: new ""
+
+				fexams: select examples 'x [ and? x\0=func x\1<>"" ]
+
+				if not? empty? fexams [
+					fexam: render ---
+					#### Examples
+
+					```red
+					|fexams\0\1|
+					```
+
+					---
+				]
+				
+				; loop examples 'exam [
+				; 	;print [exam\0 "->" exam\1]
+					
+				; 	if (exam\0)=to :string func [
+				; 		print "FOUND!!!!"
+				; 		fexam: exam\1
+				; 	]
+				; ]
+				; 	if k=to :string func [
+				; 		print [k "=>" v]
+				; 		if v<>"" [
+				; 			print ["found!!:" v]
+				; 			fexam: v
+				; 		]
+				; 	]
+				; ]
+				;print ["examples for:" func "->" examples \ to :string func]
 
 				libMd: libMd ++ "\n\n" ++ render funcTemplate
 			]
 		]
-		toc: toc ++ "\n<!--te-->\n\n---\n"
-		write relative ~"../../arturo.wiki/Library-‣-|lib|.md" toc++libMd
+		toc: toc ++ "\n<!--te-->\n\n---"
+		write relative ~"../../arturo.wiki/Library-‣-|lib|.md" toc++libMd++"\n"
 	]
 ]
 
