@@ -21,7 +21,8 @@ template Now*():untyped =
     # print now           ; 2020-10-23T14:16:13+02:00
     #
     # time: now
-    # inspect now
+    # inspect time
+    #
     # ; [ :date
     # ;       hour        : 14 :integer
     # ;       minute      : 16 :integer
