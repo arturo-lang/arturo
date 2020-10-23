@@ -19,12 +19,30 @@ import vm/stack, vm/value
 #=======================================
 
 template IsExists*():untyped =
+    # EXAMPLE:
+    # if exists? "somefile.txt" [ 
+    # ____print "file exists!" 
+    # ]
+
     require(opExists)
 
     if (popAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))
     else: stack.push(newBoolean(fileExists(x.s)))
 
 template Read*():untyped =
+    # EXAMPLE:
+    # ; reading a simple local file
+    # str: read "somefile.txt"
+    #
+    # ; also works with remote urls
+    # page: read "http://www.somewebsite.com/page.html"
+    #
+    # ; we can also "read" JSON data as an object
+    # data: read.json "mydata.json"
+    #
+    # ; or even convert Markdown to HTML on-the-fly
+    # html: read.markdown "## Hello" ____; "<h2>Hello</h2>"
+
     require(opRead)
     
     if (popAttr("binary") != VNULL):
@@ -56,6 +74,13 @@ template Read*():untyped =
 
 
 template Write*():untyped =
+    # EXAMPLE:
+    # ; write some string data to given file path
+    # write "somefile.txt" "Hello world!"
+    #
+    # ; we can also write any type of data as JSON
+    # write.json "data.json" myData
+
     require(opWrite)
 
     if (popAttr("binary") != VNULL):
