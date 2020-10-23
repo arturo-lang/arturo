@@ -75,7 +75,7 @@ template Serve*():untyped =
     # ____"/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
     # ]
     #
-    # (run the app and go to localhost:18966 - that was it!)
+    # ; (run the app and go to localhost:18966 - that was it!)
 
     when not defined(VERBOSE):
         require(opServe)
