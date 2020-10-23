@@ -146,27 +146,84 @@ proc printInfo*(op: OpSpec) {.inline.} =
 #=======================================
 
 template Benchmark*():untyped =
+    # EXAMPLE:
+    # benchmark [ 
+    # ____; some process that takes some time
+    # ____loop 1..10000 => prime? 
+    # ]
+    #
+    # ; [benchmark] time: 0.065s
+
     require(opBenchmark)
 
     benchmark "":
         discard execBlock(x)
 
 template GetAttr*():untyped =
+    # EXAMPLE:
+    # multiply: function [x][
+    # ____if? attr? "with" [ 
+    # ________x * attr "with"
+    # ____] 
+    # ____else [ 
+    # ________2*x 
+    # ____]
+    # ]
+    #
+    # print multiply 5
+    # ; 10
+    #
+    # print multiply.with: 6 5
+    # ; 60
+
     require(opGetAttr)
 
     stack.push(popAttr(x.s))
 
 template GetAttrs*():untyped =
+    # EXAMPLE:
+    # greet: function [x][
+    # ____print ["Hello" x "!"]
+    # ____print attrs
+    # ]
+    #
+    # greet.later "John"
+    #
+    # ; Hello John!
+    # ; [
+    # ;____later:    true
+    # ; ]
+
     require(opGetAttrs)
 
     stack.push(getAttrsDict())
 
 template GetStack*():untyped =
+    # EXAMPLE:
+    # 10 15           ; push something to the stack
+    # print stack
+    #
+    # ; [ 10 ]
+
     require(opStack)
 
     stack.push(newBlock(Stack[0..SP-1]))
     
 template HasAttr*():untyped =
+    # EXAMPLE:
+    # greet: function [x][
+    # ____if? not? attr? 'later [
+    # ________print ["Hello" x "!"]
+    # ____]
+    # ____else [
+    # ________print [x "I'm afraid I'll greet you later!"]
+    # ____]
+    # ]
+    #
+    # greet.later "John"
+    #
+    # ; John I'm afraid I'll greet you later!
+
     require(opHasAttr)
 
     if getAttr(x.s) != VNULL:
@@ -175,10 +232,50 @@ template HasAttr*():untyped =
         stack.push(VFALSE)
 
 template Help*():untyped =
+    # EXAMPLE:
+    # help
+    #
+    # ; abs      (value)   get the absolute value for given integer
+    # ; acos     (angle)   calculate the inverse cosine of given angle
+    # ; acosh    (angle)   calculate the inverse hyperbolic cosine of given angle
+    # ; ...
+
     require(opHelp)
     printHelp()
 
 template Info*():untyped =
+    # EXAMPLE:
+    # info 'print
+    #
+    # ; |------------------------------------------------------------------
+    # ;           print  print given value to screen with newline
+    # ; |------------------------------------------------------------------
+    # ; |          usage  print value  :any 
+    # ; |
+    # ; |        returns  :null
+    # ; |------------------------------------------------------------------
+    #
+    # print info.get 'print
+    #
+    # ;_[
+    # ;____name:           print
+    # ;____description:    print given value to screen with newline
+    # ;____alias:          
+    # ;____arguments:      [
+    # ;________[
+    # ;____________name:           value
+    # ;____________type:           [
+    # ;________________:any
+    # ;____________]
+    # ;________]
+    # ;____]
+    # ;____attributes:     [
+    # ;____]
+    # ;____return:         [
+    # ;________:null
+    # ;____]
+    # ; ]
+    
     require(opInfo)
     var found = false
 
@@ -195,19 +292,46 @@ template Info*():untyped =
         echo "no information found for given symbol"
 
 template Inspect*():untyped =
+    # EXAMPLE:
+    # inspect 3                 ; 3 :integer
+    #
+    # a: "some text"
+    # inspect a                 ; some text :string
+
     require(opInspect)
     x.dump(0, false)
 
 template Is*():untyped =
+    # EXAMPLE:
+    # is? :string "hello"       ; => true
+    # is? :block [1 2 3]        ; => true
+    # is? :integer "boom"       ; => false
+
     require(opIs)
     stack.push(newBoolean(x.t == y.kind))
 
 template IsSet*():untyped =
+    # EXAMPLE:
+    # boom: 12
+    # print set? 'boom          ; true
+    #
+    # print set? 'zoom          ; false
     require(opIsSet)
 
     stack.push(newBoolean(syms.hasKey(x.s)))
 
 template Symbols*():untyped =
+    # EXAMPLE:
+    # a: 2
+    # b: "hello"
+    #
+    # print symbols
+    #
+    # ; [
+    # ;____a: 2
+    # ;____b: "hello"
+    # ;_]
+
     require(opSymbols)
     var symbols: ValueDict = initOrderedTable[string,Value]()
     for k,v in pairs(syms):
@@ -216,5 +340,9 @@ template Symbols*():untyped =
     stack.push(newDictionary(symbols))
 
 template Type*():untyped = 
+    # EXAMPLE
+    # print type 18966          ; :integer
+    # print type "hello world"  ; :string
+
     require(opType)
     stack.push(newType(x.kind))
