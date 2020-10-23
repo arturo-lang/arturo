@@ -18,6 +18,15 @@ import vm/stack, vm/value
 #=======================================
 
 template Call*():untyped =
+    # EXAMPLE:
+    # multiply: function [x y][
+    # ____x * y
+    # ]
+    #
+    # call 'multiply [3 5]          ; => 15
+    #
+    # call $[x][x+2] [5]            ; 7
+
     require(opCall)
 
     var fun: Value
@@ -33,16 +42,41 @@ template Call*():untyped =
     discard execBlock(fun.main, useArgs=true, args=fun.params.a)
     
 template Case*():untyped =
+    # EXAMPLE:
+    # a: 2
+    # case [a]
+    # ____when? [<2] -> print "a is less than 2"
+    # ____when? [=2] -> print "a is 2"
+    # ____else       -> print "a is greater than 2"
+
     require(opCase)
 
     stack.push(x)
     stack.push(newBoolean(false))
 
 template Clear*():untyped = 
+    # EXAMPLE:
+    # clear             ; (clears the screen)
     require(opClear)
     clearScreen()
 
 template Do*():untyped =
+    # EXAMPLE:
+    # do "print 123"                ; 123
+    #
+    # do [
+    # ____x: 3
+    # ____print ["x =>" x]          ; x => 3
+    # ]
+    #
+    # do.import [
+    # ____x: 3
+    # ]
+    # print ["x =>" x]              ; x => 3
+    #
+    # print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
+    # ; 233168
+    
     require(opDo)
 
     var execInParent = (popAttr("import") != VNULL)
@@ -68,12 +102,28 @@ template Do*():untyped =
                 discard execBlock(parsed)
 
 template Else*():untyped =
+    # EXAMPLE:
+    # x: 2
+    # z: 3
+    #
+    # if? x>z [
+    # ____print "x was greater than z"
+    # ]
+    # else [
+    # ____print "nope, x was not greater than z"
+    # ]
+
     require(opElse)
 
     let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
     if not y.b: discard execBlock(x)
 
 template Exit*():untyped =
+    # EXAMPLE:
+    # exit              ; (terminates the program)
+    #
+    # exit.with: 3      ; (terminates the program with code 3)
+
     require(opExit)
 
     if (let aWith = popAttr("with"); aWith != VNULL):
@@ -89,20 +139,58 @@ template Globalize*():untyped =
         withSyms[][k] = v
 
 template If*():untyped =
+    # EXAMPLE:
+    # x: 2
+    #
+    # if x=2 -> print "yes, that's right!"
+    # ; yes, that's right!
+
     require(opIf)
     if x.b: discard execBlock(y)
 
 template IfE*():untyped =
+    # EXAMPLE:
+    # x: 2
+    #
+    # result: if? x=2 -> print "yes, that's right!"
+    # ; yes, that's right!
+    #
+    # print result
+    # ; true
+    #
+    # z: 3
+    #
+    # if? x>z [
+    # ____print "x was greater than z"
+    # ]
+    # else [
+    # ____print "nope, x was not greater than z"
+    # ]
+
     require(opIfE)
     if x.b: discard execBlock(y)
     stack.push(x)
 
 template Input*():untyped =
+    # EXAMPLE:
+    # name: input "What is your name? "
+    # ; (user enters his name: Bob)
+    #
+    # print ["Hello" name "!"]
+    # ; Hello Bob!
+
     require(opInput)
 
     stack.push(newString(readLineFromStdin(x.s)))
 
 template IsWhen*():untyped =
+    # EXAMPLE:
+    # a: 2
+    # case [a]
+    # ____when? [<2] -> print "a is less than 2"
+    # ____when? [=2] -> print "a is 2"
+    # ____else       -> print "a is greater than 2"
+
     require(opWhen)
 
     let z = pop()
@@ -127,6 +215,10 @@ template IsWhen*():untyped =
         push(z)
 
 template Let*():untyped =
+    # EXAMPLE:
+    # let 'x 10         ; x: 10
+    # print x           ; 10
+
     require(opLet)
 
     syms[x.s] = y
@@ -164,6 +256,9 @@ template Pop*():untyped =
             stack.push(newBlock(res))
 
 template Print*():untyped =
+    # EXAMPLE:
+    # print "Hello world!"          ; Hello world!
+
     require(opPrint)
 
     if x.kind==Block:
@@ -185,6 +280,13 @@ template Print*():untyped =
         x.print()
 
 template Prints*():untyped =
+    # EXAMPLE:
+    # prints "Hello "
+    # prints "world"
+    # print "!"             
+    #
+    # ; Hello world!
+
     require(opPrints)
 
     if x.kind==Block:
@@ -210,6 +312,15 @@ template Push*():untyped =
     # as it's already been pushed
 
 template Repeat*():untyped =
+    # EXAMPLE:
+    # repeat 3 [
+    # ____print "hi there"
+    # ]
+    #
+    # ; hi there
+    # ; hi there
+    # ; hi there
+
     require(opRepeat)
 
     let preevaled = doEval(y)
@@ -220,6 +331,17 @@ template Repeat*():untyped =
         i += 1
 
 template Return*():untyped = 
+    # EXAMPLE:
+    # f: function [x][ 
+    # ____loop 1..x 'y [ 
+    # ________if y=5 [ return y*2 ] 
+    # ____] 
+    # ____return x*2
+    # ]
+    #
+    # print f 3         ; 6
+    # print f 6         ; 10
+
     require(opReturn)
     stack.push(x)
 
@@ -227,6 +349,14 @@ template Return*():untyped =
     return syms
 
 template Try*():untyped =
+    # EXAMPLE:
+    # try [
+    # ____; let's try something dangerous
+    # ____print 10 / 0
+    # ]
+    #
+    # ; we catch the exception but do nothing with it
+
     require(opTry)
 
     try:
@@ -235,6 +365,17 @@ template Try*():untyped =
         discard
 
 template TryE*():untyped = 
+    # EXAMPLE:
+    # try? [
+    # ____; let's try something dangerous
+    # ____print 10 / 0
+    # ]
+    # else [
+    # ____print "something went terribly wrong..."
+    # ]
+    #
+    # ; something went terribly wrong...
+
     require(opTryE)
 
     try:
@@ -244,6 +385,23 @@ template TryE*():untyped =
         stack.push(VFALSE)
 
 template Until*():untyped =
+    # EXAMPLE:
+    # i: 0 
+    # until [
+    # ____print ["i =>" i] 
+    # ____i: i + 1
+    # ][i = 10]
+    #
+    # ; i => 0 
+    # ; i => 1 
+    # ; i => 2 
+    # ; i => 3 
+    # ; i => 4 
+    # ; i => 5 
+    # ; i => 6 
+    # ; i => 7 
+    # ; i => 8 
+    # ; i => 9 
     require(opUntil)
 
     let preevaledX = doEval(x)
@@ -261,6 +419,24 @@ template Var*():untyped =
     stack.push(syms[x.s])
 
 template While*():untyped =
+    # EXAMPLE:
+    # i: 0 
+    # while [i<10][
+    # ____print ["i =>" i] 
+    # ____i: i + 1
+    # ]
+    #
+    # ; i => 0 
+    # ; i => 1 
+    # ; i => 2 
+    # ; i => 3 
+    # ; i => 4 
+    # ; i => 5 
+    # ; i => 6 
+    # ; i => 7 
+    # ; i => 8 
+    # ; i => 9 
+
     require(opWhile)
 
     let preevaledX = doEval(x)
