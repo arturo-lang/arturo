@@ -13,6 +13,7 @@ switch("opt", "speed")
 switch("overflowChecks", "on")
 switch("panics", "off")
 switch("threads", "on")
+switch("path","src")
 
 when not defined DEBUG:
     switch("passC", "-O3")

@@ -11,18 +11,27 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver
-import base64, cgi, std/editdistance, htmlParser
-import httpClient, json, linenoise, math, md5, os
-import osproc, random, rdstdin, re, sequtils, smtp
-import std/sha1, streams, strformat, strutils
-import sugar, tables, threadpool, times, unicode
-import xmlparser, xmltree
+import base64, cgi, std/editdistance, httpClient
+import json, linenoise, math, md5, os, osproc
+import random, rdstdin, re, sequtils, smtp
+import std/sha1, strformat, strutils, sugar
+import tables, times, unicode, xmltree
 
 import nre except toSeq
 
-import ../extras/[
-    bignum
-]
+import extras/bignum
+
+import helpers/arrays       as arraysHelper   
+import helpers/csv          as csvHelper
+import helpers/datasource   as datasourceHelper
+import helpers/html         as htmlHelper
+import helpers/json         as jsonHelper
+import helpers/markdown     as markdownHelper
+import helpers/strings      as stringsHelper
+import helpers/unisort      as unisortHelper
+import helpers/url          as urlHelper
+import helpers/webview      as webviewHelper
+import helpers/xml          as xmlHelper
 
 import library/[
     Arithmetic,
@@ -44,22 +53,10 @@ import library/[
     Ui
 ]
 
-import ../translator/eval, ../translator/parse
-import ./bytecode, ./stack, ./value
+import translator/eval, translator/parse
+import vm/bytecode, vm/stack, vm/value
 
-import ../helpers/arrays       as arraysHelper   
-import ../helpers/csv          as csvHelper
-import ../helpers/datasource   as datasourceHelper
-import ../helpers/html         as htmlHelper
-import ../helpers/json         as jsonHelper
-import ../helpers/markdown     as markdownHelper
-import ../helpers/strings      as stringsHelper
-import ../helpers/unisort      as unisortHelper
-import ../helpers/url          as urlHelper
-import ../helpers/webview      as webviewHelper
-import ../helpers/xml          as xmlHelper
-
-import ../utils    
+import utils    
 
 #=======================================
 # Globals

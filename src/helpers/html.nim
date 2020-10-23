@@ -15,7 +15,7 @@ when not defined(MINI):
 
 import strtabs, tables, xmltree
 
-import ../vm/value
+import vm/value
 
 #=======================================
 # Methods

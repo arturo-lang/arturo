@@ -12,7 +12,7 @@
 
 import algorithm, hashes
 
-import ./value
+import vm/value
 
 #=======================================
 # Types

@@ -10,9 +10,10 @@
 # Libraries
 #=======================================
 
-import ../../extras/bignum, bitops, math, sequtils, sugar
+import bitops, math, sequtils, sugar
 
-import ../stack, ../value
+import extras/bignum
+import vm/stack, vm/value
 
 #=======================================
 # Helpers

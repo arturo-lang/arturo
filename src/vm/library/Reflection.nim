@@ -10,10 +10,11 @@
 # Libraries
 #=======================================
 
-import algorithm, re, sequtils, strformat, strutils, tables
+import algorithm, re, sequtils
+import strformat, strutils, tables
 
-import ../bytecode, ../stack, ../value
-import ../../utils
+import vm/bytecode, vm/stack, vm/value
+import utils
 
 #=======================================
 # Helpers
