@@ -13,7 +13,7 @@
 import sequtils, strtabs
 import tables, xmltree
 
-import ../vm/value
+import vm/value
 
 #=======================================
 # Methods

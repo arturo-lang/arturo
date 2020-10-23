@@ -11,7 +11,7 @@
 #=======================================
 
 when not defined(MINI):
-    import ../extras/webview
+    import extras/webview
 
 #=======================================
 # Methods

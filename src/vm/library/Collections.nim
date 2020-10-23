@@ -14,10 +14,9 @@ import nre except toSeq
 # Libraries
 #=======================================
 
-import ../../translator/parse
-import ../stack, ../value
-
-import ../../helpers/url
+import translator/parse
+import vm/stack, vm/value
+import helpers/url
 
 #=======================================
 # Helpers
