@@ -17,6 +17,10 @@ import vm/stack, vm/value
 #=======================================
 
 template Encode*():untyped =
+    # EXAMPLE:
+    # print encode "Numquam fugiens respexeris"
+    # ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
+
     require(opEncode)
 
     if x.kind==Literal:
@@ -25,6 +29,10 @@ template Encode*():untyped =
         stack.push(newString(x.s.encode()))
 
 template Decode*():untyped =
+    # EXAMPLE:
+    # print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
+    # ; Numquam fugiens respexeris
+
     require(opDecode)
 
     if x.kind==Literal:
@@ -33,6 +41,13 @@ template Decode*():untyped =
         stack.push(newString(x.s.decode()))
 
 template GetHash*():untyped =
+    # EXAMPLE:
+    # print hash "Hello world"
+    # ; 3e25960a79dbc69b674cd4ec67a72c62
+    #
+    # print hash.sha "Hello world"
+    # ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
+    
     require(opGetHash)
 
     if (popAttr("sha") != VNULL):
