@@ -151,7 +151,7 @@ template makeArray*(): untyped =
 
     stack.push(newBlock(arr))
 
-template makeDict*(): untyped = 
+template makeDictionary*(): untyped = 
     # EXAMPLE:
     # none: #[]               ; none: []
     # a: #[
@@ -187,7 +187,7 @@ template makeDict*(): untyped =
 
     stack.push(newDictionary(dict))
 
-template makeFunc*(): untyped = 
+template makeFunction*(): untyped = 
     # EXAMPLE:
     # f: function [x][ x + 2 ]
     # print f 10                ; 12
@@ -396,11 +396,36 @@ template First*(): untyped =
 
 
 template Flatten*(): untyped =
+    # EXAMPLE:
+    # arr: [[1 2 3] [4 5 6]]
+    # print flatten arr
+    # ; 1 2 3 4 5 6
+    # 
+    # arr: [[1 2 3] [4 5 6]]
+    # flatten 'arr
+    # ; arr: [1 2 3 4 5 6]
+
     require(opFlatten)
 
-    stack.push(x.flattened())
+    if x.kind==Literal:
+        syms[x.s] = syms[x.s].flattened()
+    else:
+        stack.push(x.flattened())
 
 template Fold*(): untyped =
+    # EXAMPLE:
+    # fold 1..10 [x,y]-> x + y
+    # ; => 55 (1+2+3+4..) 
+    #
+    # fold 1..10 .seed:1 [x,y][ x * y ]
+    # ; => 3628800 (10!) 
+    #
+    # fold 1..3 [x y]-> x - y
+    # ; => -6
+    #
+    # fold.right 1..3 [x y]-> x - y
+    # ; => 2
+
     require(opFold)
 
     var args = y.a
@@ -490,6 +515,31 @@ template Fold*(): untyped =
                 stack.push(res)
 
 template Get*(): untyped =
+    # EXAMPLE:
+    # user: #[
+    # ____name: "John"
+    # ____surname: "Doe"
+    # ]
+    #
+    # print user\name               ; John
+    #
+    # print get user 'surname       ; Doe
+    # print user \ 'username        ; Doe
+    #
+    # arr: ["zero" "one" "two"]
+    #
+    # print arr\1                   ; one
+    #
+    # print get arr 2               ; two
+    # print arr \ 2                 ; two
+    #
+    # str: "Hello world!"
+    #
+    # print str\0                   ; H
+    #
+    # print get str 1               ; e
+    # print str \ 1                 ; e
+
     require(opGet)
 
     case x.kind:
@@ -501,11 +551,37 @@ template Get*(): untyped =
         else: discard
 
 template HasKey*(): untyped =
+    # EXAMPLE:
+    # user: #[
+    # ____name: "John"
+    # ____surname: "Doe"
+    # ]
+    #
+    # key? user 'age            ; => false
+    # if key? user 'name [
+    # ____print ["Hello" user\name]
+    # ]
+    # ; Hello John
+
     require(opHasKey)
 
     stack.push(newBoolean(x.d.hasKey(y.s)))
 
 template In*(): untyped =
+    # EXAMPLE:
+    # in [1 2 3 4] 0 "zero"
+    # ; => ["zero" 1 2 3 4]
+    #
+    # print in "heo" 2 "ll"
+    # ; hello
+    #
+    # dict: #[
+    # ____name: John
+    # ]
+    #
+    # in 'dict 'name "Jane"
+    # ; dict: [name: "Jane"]
+ 
     require(opIn)
 
     if x.kind==Literal:
@@ -532,6 +608,15 @@ template In*(): untyped =
             else: discard
 
 template Index*(): untyped =
+    # EXAMPLE:
+    # ind: index "hello" "e"
+    # print ind                 ; 1
+    #
+    # print index [1 2 3] 3     ; 2
+    #
+    # type index "hello" "x"
+    # ; :null
+
     require(opIndex)
 
     case x.kind:
@@ -602,6 +687,13 @@ template IsAny*(): untyped =
         stack.push(newBoolean(false))
 
 template IsEmpty*(): untyped =
+    # EXAMPLE:
+    # empty? ""             ; => true
+    # empty? []             ; => true
+    # empty? #[]            ; => true
+    #
+    # empty [1 "two" 3]     ; => false
+
     require(opIsEmpty)    
 
     case x.kind:
@@ -611,6 +703,24 @@ template IsEmpty*(): untyped =
         else: discard
 
 template IsIn*(): untyped =
+    # EXAMPLE:
+    # arr: [1 2 3 4]
+    #
+    # in? arr 5             ; => false
+    # in? arr 2             ; => true
+    #
+    # user: #[
+    # ____name: "John"
+    # ____surname: "Doe"
+    # ]
+    #
+    # in? dict "John"       ; => true
+    # in? dict "Paul"       ; => false
+    #
+    # in? keys dict "name"  ; => true
+    #
+    # in? "hello" "x"       ; => false
+
     require(opIsIn)
 
     case x.kind:
@@ -628,6 +738,17 @@ template IsIn*(): untyped =
             discard
 
 template Join*(): untyped =
+    # EXAMPLE:
+    # arr: ["one" "two" "three"]
+    # print join arr
+    # ; onetwothree
+    #
+    # print join.with:"," arr
+    # ; one,two,three
+    #
+    # join 'arr
+    # ; arr: "onetwothree"
+
     require(opJoin)
 
     var sep = ""
@@ -641,6 +762,15 @@ template Join*(): untyped =
 
 
 template Keys*(): untyped =
+    # EXAMPLE:
+    # user: #[
+    # ____name: "John"
+    # ____surname: "Doe"
+    # ]
+    #
+    # keys user
+    # => ["name" "surname"]
+
     require(opKeys)
 
     let s = toSeq(x.d.keys)
@@ -1237,6 +1367,15 @@ template Unique*(): untyped =
     else: syms[x.s].a = syms[x.s].a.deduplicate()
 
 template Values*(): untyped = 
+    # EXAMPLE:
+    # user: #[
+    # ____name: "John"
+    # ____surname: "Doe"
+    # ]
+    #
+    # values user
+    # => ["John" "Doe"]
+
     require(opValues)
 
     let s = toSeq(x.d.values)
