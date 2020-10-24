@@ -181,7 +181,7 @@ type
         opInspect       = 0x71
 
         opIf            = 0x72
-        opIfE           = 0x73
+        opIsIf          = 0x73
         opElse          = 0x74
 
         opLoop          = 0x75
@@ -762,7 +762,7 @@ const
                                 ret     : {Null},      
                                 desc    : "perform action, if given condition is true" ),
 
-        opIfE       : OpSpec(   name    : "if?",          
+        opIsIf      : OpSpec(   name    : "if?",          
                                 args    : 2,   
 
                                 an      : "condition",      
