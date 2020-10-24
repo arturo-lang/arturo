@@ -419,7 +419,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "inspect"    : addCommand(opInspect)
 
                     of "if"         : addCommand(opIf)
-                    of "if?"        : addCommand(opIfE)
+                    of "if?"        : addCommand(opIsIf)
                     of "else"       : addCommand(opElse)
 
                     of "loop"       : addCommand(opLoop)
