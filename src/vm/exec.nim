@@ -461,8 +461,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             # # structures
 
             of opArray      : Collections.makeArray()
-            of opDictionary : Collections.makeDict()
-            of opFunction   : Collections.makeFunc()
+            of opDictionary : Collections.makeDictionary()
+            of opFunction   : Collections.makeFunction()
 
             # [0x7] #
             # system calls (144 slots)
@@ -471,7 +471,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opInspect    : Reflection.Inspect() 
 
             of opIf         : Core.If()
-            of opIfE        : Core.IsIf()
+            of opIsIf       : Core.IsIf()
             of opElse       : Core.Else()
 
             of opLoop       : Collections.Loop()
