@@ -167,7 +167,7 @@ template IsIf*():untyped =
     # ____print "nope, x was not greater than z"
     # ]
 
-    require(opIfE)
+    require(opIsIf)
     if x.b: discard execBlock(y)
     stack.push(x)
 
