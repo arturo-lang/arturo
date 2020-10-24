@@ -290,8 +290,7 @@ proc initVM*() =
     newSeq(Stack, StackSize)
     SP = 0
 
-    newSeq(Attrs, AttrsSize)
-    AP = 0
+    emptyAttrs()
 
     randomize()
 
@@ -429,8 +428,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                 let attr = cnst[indx]
                 let val = stack.pop()
 
-                stack.pushAttr(val)
-                stack.pushAttr(attr)
+                stack.pushAttr(attr.r, val)
+                # stack.pushAttr(val)
+                # stack.pushAttr(attr)
 
             of opReturn     : Core.Return()
 
