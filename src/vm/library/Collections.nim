@@ -110,127 +110,6 @@ proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
     rc(s.len)
 
 #=======================================
-# Constructors
-#=======================================
-
-template makeArray*(): untyped = 
-    # EXAMPLE:
-    # none: @[]               ; none: []
-    # a: @[1 2 3]             ; a: [1 2 3]
-    #
-    # b: 5
-    # c: @[b b+1 b+2]         ; c: [5 6 7]
-    #
-    # d: @[
-    # ____3+1
-    # ____print "we are in the block"
-    # ____123
-    # ____print "yep"
-    # ]
-    # ; we are in the block
-    # ; yep
-    # ; => [4 123]
-
-    require(opArray)
-
-    let stop = SP
-
-    if x.kind==Block:
-        discard execBlock(x)
-    elif x.kind==String:
-        if fileExists(x.s):
-            discard execBlock(doParse(x.s), isIsolated=true)
-        elif isUrl(x.s):
-            let content = newHttpClient().getContent(x.s)
-            discard execBlock(doParse(content, isFile=false), isIsolated=true)
-        else:
-            echo "file does not exist"
-
-    let arr: ValueArray = sTopsFrom(stop)
-    SP = stop
-
-    stack.push(newBlock(arr))
-
-template makeDictionary*(): untyped = 
-    # EXAMPLE:
-    # none: #[]               ; none: []
-    # a: #[
-    # ____name: "John"
-    # ____age: 34
-    # ]             
-    # ; a: [name: "John", age: 34]
-    #
-    # d: #[
-    # ____name: "John"
-    # ____print "we are in the block"
-    # ____age: 34
-    # ____print "yep"
-    # ]
-    # ; we are in the block
-    # ; yep
-    # ; => [name: "John", age: 34]
-
-    require(opDictionary)
-
-    var dict: ValueDict
-
-    if x.kind==Block:
-        dict = execBlock(x,dictionary=true)
-    elif x.kind==String:
-        if fileExists(x.s):
-            dict = execBlock(doParse(x.s), dictionary=true, isIsolated=true)
-        elif isUrl(x.s):
-            let content = newHttpClient().getContent(x.s)
-            dict = execBlock(doParse(content, isFile=false), dictionary=true, isIsolated=true)
-        else:
-            echo "file does not exist"
-
-    stack.push(newDictionary(dict))
-
-template makeFunction*(): untyped = 
-    # EXAMPLE:
-    # f: function [x][ x + 2 ]
-    # print f 10                ; 12
-    #
-    # f: $[x][x+2]
-    # print f 10                ; 12
-    #
-    # multiply: function [x,y][
-    # ____x * y
-    # ]
-    # print multiply 3 5        ; 15
-    #
-    # publicF: function .export['x] [z][
-    # ____print ["z =>" z]
-    # ____x: 5
-    # ]
-    #
-    # publicF 10
-    # ; z => 10
-    #
-    # print x
-    # ; 5
-    #
-    # pureF: function.pure [sth][
-    # ____print ["sth =>" sth]
-    # ____print ["is x set?" set? 'x]
-    # ]
-    #
-    # pureF 23
-    # ; sth => 23
-    # ; is x set? false
-
-    require(opFunction)
-
-    var exports = VNULL
-    if (let aExport = popAttr("export"); aExport != VNULL):
-        exports = aExport
-
-    let isPure = popAttr("pure")!=VNULL
-
-    stack.push(newFunction(x,y,exports,isPure))
-
-#=======================================
 # Methods
 #=======================================
 
@@ -513,6 +392,20 @@ template Fold*(): untyped =
                     res = stack.pop()
 
                 stack.push(res)
+
+# templatee For*(): untyped =
+#     require(opFor)
+#     var indx = 0
+#     var args = y.a
+#     let preevaled = doEval(z)
+
+#     while indx+args.len<x.a.len:
+#         for item in x.a[indx..indx+x.a.len].reversed:
+#             stack.push(item)
+
+#         discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+#         indx += args.len
 
 template Get*(): untyped =
     # EXAMPLE:
@@ -865,19 +758,122 @@ template Loop*(): untyped =
         #     stack.push(item)
         #     discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
 
-# templatee For*(): untyped =
-#     require(opFor)
-#     var indx = 0
-#     var args = y.a
-#     let preevaled = doEval(z)
+template MakeArray*(): untyped = 
+    # EXAMPLE:
+    # none: @[]               ; none: []
+    # a: @[1 2 3]             ; a: [1 2 3]
+    #
+    # b: 5
+    # c: @[b b+1 b+2]         ; c: [5 6 7]
+    #
+    # d: @[
+    # ____3+1
+    # ____print "we are in the block"
+    # ____123
+    # ____print "yep"
+    # ]
+    # ; we are in the block
+    # ; yep
+    # ; => [4 123]
 
-#     while indx+args.len<x.a.len:
-#         for item in x.a[indx..indx+x.a.len].reversed:
-#             stack.push(item)
+    require(opArray)
 
-#         discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+    let stop = SP
 
-#         indx += args.len
+    if x.kind==Block:
+        discard execBlock(x)
+    elif x.kind==String:
+        if fileExists(x.s):
+            discard execBlock(doParse(x.s), isIsolated=true)
+        elif isUrl(x.s):
+            let content = newHttpClient().getContent(x.s)
+            discard execBlock(doParse(content, isFile=false), isIsolated=true)
+        else:
+            echo "file does not exist"
+
+    let arr: ValueArray = sTopsFrom(stop)
+    SP = stop
+
+    stack.push(newBlock(arr))
+
+template MakeDictionary*(): untyped = 
+    # EXAMPLE:
+    # none: #[]               ; none: []
+    # a: #[
+    # ____name: "John"
+    # ____age: 34
+    # ]             
+    # ; a: [name: "John", age: 34]
+    #
+    # d: #[
+    # ____name: "John"
+    # ____print "we are in the block"
+    # ____age: 34
+    # ____print "yep"
+    # ]
+    # ; we are in the block
+    # ; yep
+    # ; => [name: "John", age: 34]
+
+    require(opDictionary)
+
+    var dict: ValueDict
+
+    if x.kind==Block:
+        dict = execBlock(x,dictionary=true)
+    elif x.kind==String:
+        if fileExists(x.s):
+            dict = execBlock(doParse(x.s), dictionary=true, isIsolated=true)
+        elif isUrl(x.s):
+            let content = newHttpClient().getContent(x.s)
+            dict = execBlock(doParse(content, isFile=false), dictionary=true, isIsolated=true)
+        else:
+            echo "file does not exist"
+
+    stack.push(newDictionary(dict))
+
+template MakeFunction*(): untyped = 
+    # EXAMPLE:
+    # f: function [x][ x + 2 ]
+    # print f 10                ; 12
+    #
+    # f: $[x][x+2]
+    # print f 10                ; 12
+    #
+    # multiply: function [x,y][
+    # ____x * y
+    # ]
+    # print multiply 3 5        ; 15
+    #
+    # publicF: function .export['x] [z][
+    # ____print ["z =>" z]
+    # ____x: 5
+    # ]
+    #
+    # publicF 10
+    # ; z => 10
+    #
+    # print x
+    # ; 5
+    #
+    # pureF: function.pure [sth][
+    # ____print ["sth =>" sth]
+    # ____print ["is x set?" set? 'x]
+    # ]
+    #
+    # pureF 23
+    # ; sth => 23
+    # ; is x set? false
+
+    require(opFunction)
+
+    var exports = VNULL
+    if (let aExport = popAttr("export"); aExport != VNULL):
+        exports = aExport
+
+    let isPure = popAttr("pure")!=VNULL
+
+    stack.push(newFunction(x,y,exports,isPure))
 
 template Map*(): untyped =
     # EXAMPLE:
