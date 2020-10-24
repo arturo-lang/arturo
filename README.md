@@ -9,7 +9,6 @@
 <!--ts-->
    * [The Language](#the-language)
    * [Documentation](#documentation)
-      * [At a glance](#at-a-glance)
    * [Trying it out](#trying-it-out)
       * [Homebrew](#homebrew)
       * [Manually](#manually)
@@ -57,8 +56,6 @@ Documentation
 ------------------------------
 
 For more information about the language and for access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
-
-### At a glance
 
 |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
 |-------------------------|-------------------|-------------------|-------------------------|
