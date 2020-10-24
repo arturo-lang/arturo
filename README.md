@@ -17,9 +17,6 @@
         * [Build & Install Arturo](#build--install-arturo)
       * [Docker](#docker)
       * [Online](#online)
-   * [Using the command line](#using-the-command-line)
-      * [Run a script](#run-a-script)
-      * [Interactive console (REPL)](#interactive-console--repl)
    * [Editors & IDEs](#editors--ides)
    * [Roadmap](#roadmap)
    * [Contributing](#contributing)
@@ -120,17 +117,6 @@ Just use the existing docker image:
 ► [arturo-lang.io](http://arturo-lang.io/)
 
 <img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
-
-Using the command line
-------------------------------
-
-### Run a script
-
-    arturo <script>
-
-### Interactive console / REPL
-
-    arturo
     
 Editors & IDEs
 ------------------------------
