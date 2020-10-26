@@ -97,7 +97,7 @@ template Do*():untyped =
                 discard execBlock(parsed, execInParent=true)
                 showVMErrors()
         else:
-            let parsed = doParse(src)
+            let parsed = doParse(src, isFile=false)
             if not isNil(parsed):
                 discard execBlock(parsed)
 
