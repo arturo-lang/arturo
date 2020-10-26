@@ -31,7 +31,7 @@
 The Language 
 ------------------------------
 
-Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl and Lisp.
+Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl, and Lisp.
 
 The language has been designed following some very simple and straightforward principles:
 
@@ -55,7 +55,7 @@ Simple, isn't it?
 Documentation
 ------------------------------
 
-For more information about the language and for access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
+For more information about the language and access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
 
 |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
 |-------------------------|-------------------|-------------------|-------------------------|
@@ -118,7 +118,7 @@ Just use the existing docker image:
 Editors & IDEs
 ------------------------------
 
-If you prefer to use some specific editors, check which one are already supported (if your preferred editor is not yet supported, just drop me a line - or help me include it):
+If you prefer to use some specific editors, check which one is already supported (if your preferred editor is not yet supported, just drop me a line - or help me include it):
 
 - **SublimeText**: 
 https://github.com/arturo-lang/art-sublimetext-package
