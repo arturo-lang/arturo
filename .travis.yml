@@ -1,4 +1,11 @@
 language: nim
+os:
+  - linux
+  - osx
+
+compiler:
+  - gcc
+  - clang
 sudo: required
 services:
   - docker
