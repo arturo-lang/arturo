@@ -9,7 +9,9 @@ sudo: required
 services:
   - docker
 before_install:
-  - docker pull fingidor/arturo-nim-docker:0.1
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull fingidor/arturo-nim-docker:0.1 ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then git clone https://github.com/arturo-lang/arturo.git ; fi
 script:
-  - docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nim --version
-  - docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nimble build -Y "-d:MINI"
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nim --version ; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nimble build -Y "-d:MINI" ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cd arturo && nimble build -Y -d:MINI ; fi
