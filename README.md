@@ -75,7 +75,7 @@ brew install arturo
 
 ### Manually
 
-> 💡  Arturo should compile practically everywhere: Windows, Linux, Mac OS. If you encounter any issue, or your OS is not supported, drop me a line!
+> 💡  Arturo should compile practically everywhere: Windows, Linux, Mac OS. If you encounter an issue, or your OS is not supported, drop me a line!
 
 #### Prerequisites
 
@@ -138,7 +138,7 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [ ] Optimize and refine the bytecode
 - [ ] Improve VM performance
 - [ ] Add the option of saving intermediate bytecode
-- [ ] Add support for package manager
+- [X] Add support for a package manager
 - [ ] Add UI support (via libui? via webview? both?)
 - [ ] Explore different uses of Arturo's dialecting capabilities (SDLs)
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
@@ -180,7 +180,7 @@ To get an initial idea of the project, here's a brief guide to where is what:
 
 The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
 
-The main goals are: performance, energy-efficiency and portability. (With that exact order)
+The main goals are: performance, energy-efficiency, and portability. (With that exact order)
 
 #### General schema
 
@@ -193,7 +193,7 @@ In case you want to ask a question, suggest an idea, or practically anything rel
 
 For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
 
-For questions, quick ideas and discussing generally about the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
+For questions, quick ideas, and discussing generally the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
 
 [![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
 
