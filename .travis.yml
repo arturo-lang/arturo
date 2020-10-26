@@ -2,7 +2,6 @@ language: nim
 os:
   - linux
   - osx
-
 compiler:
   - gcc
   - clang
