@@ -12,10 +12,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull fingidor/arturo-nim-docker:0.1 ; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then git clone https://github.com/arturo-lang/arturo.git ; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y ; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then choosenim stable ; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export PATH="~/.nimble/bin:$PATH" ; fi
 script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nim --version ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker run -v "$(pwd):/project" -w /project fingidor/arturo-nim-docker:0.1 nimble build -Y "-d:MINI" ; fi
-  - if [ 
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cd arturo && nimble build -Y -d:MINI ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then  export PATH="~/.nimble/bin:$PATH" && cd arturo && nimble build -Y -d:MINI ; fi
