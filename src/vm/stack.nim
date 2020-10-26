@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, tables
+import tables
 
 import vm/value
 
