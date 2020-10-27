@@ -790,6 +790,7 @@ const
                                 cn      : "action",          
                                 c       : {Block},            
                                 ret     : {Null},      
+                                attrs   :   ".with :literal -> use given index",   
                                 desc    : "loop through collection~using given iterator and block" ),
 
         opDo        : OpSpec(   name    : "do",      
