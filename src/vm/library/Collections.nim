@@ -739,24 +739,12 @@ template Loop*(): untyped =
     else:
         var indx = 0
         while indx+args.len<=x.a.len:
-            #echo "looping: " & $(indx)
             for item in x.a[indx..indx+args.len-1].reversed:
-                #echo "pushing:"
-                #item.dump()
                 stack.push(item)
 
             discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
 
             indx += args.len
-
-            # echo "loop end: " & $(indx)
-            # echo "args.len: " & $(args.len)
-            # echo "x.a.len: " & $(x.a.len)
-            # echo "indx+args.len: " & $(indx+args.len)
-
-        # for item in x.a:
-        #     stack.push(item)
-        #     discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
 
 template MakeArray*(): untyped = 
     # EXAMPLE:
