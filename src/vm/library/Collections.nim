@@ -726,8 +726,19 @@ template Loop*(): untyped =
 
     var args: ValueArray
 
+    var withIndex = false
+    let aWith = popAttr("with")
+
+    if aWith != VNULL:
+        withIndex = true
+
     if y.kind==Literal: args = @[y]
     else: args = y.a
+
+    var allArgs = args
+
+    if withIndex:
+        allArgs = concat(@[aWith], args)
 
     let preevaled = doEval(z)
 
@@ -738,12 +749,17 @@ template Loop*(): untyped =
             discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
     else:
         var indx = 0
+        var run = 0
         while indx+args.len<=x.a.len:
             for item in x.a[indx..indx+args.len-1].reversed:
                 stack.push(item)
 
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+            if withIndex:
+                stack.push(newInteger(run))
 
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=allArgs)
+
+            run += 1
             indx += args.len
 
 template MakeArray*(): untyped = 
