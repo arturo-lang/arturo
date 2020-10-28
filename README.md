@@ -131,13 +131,13 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [X] Add support for big number handling (via GMP)
 - [ ] Enrich the system library
    - [ ] Add built-in support for Databases (Sqlite, etc)
-   - [ ] Implement HTML module
+   - [X] Implement HTML module *(almost)*
    - [ ] Add more Server-related features
    - [ ] Implement LaTeX generation module
    - [ ] Add custom grammar parser functionality
 - [ ] Optimize and refine the bytecode
 - [ ] Improve VM performance
-- [ ] Add the option of saving intermediate bytecode
+- [X] Add the option of saving intermediate bytecode
 - [X] Add support for a package manager
 - [ ] Add UI support (via libui? via webview? both?)
 - [ ] Explore different uses of Arturo's dialecting capabilities (SDLs)
