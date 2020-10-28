@@ -326,7 +326,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     p.bufpos = pos+1
                     parseMultilineString(p)
                     if p.status != allOK: return nil
-                    addChild(topBlock, newString(p.value,strip=true))
+                    addChild(topBlock, newString(p.value))
                 else:
                     p.symbol = doubleminus
             else: p.symbol = minus
@@ -478,7 +478,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 parseCurlyString(p)
                 if p.status != allOK: return nil
 
-                addChild(topBlock, newString(p.value))
+                addChild(topBlock, newString(p.value,strip=true))
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
