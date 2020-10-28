@@ -24,6 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          export PATH=/home/runner/.nimble/bin:$PATH
           
       - name: Verify dependecies
         run: |
