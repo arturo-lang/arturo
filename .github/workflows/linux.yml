@@ -23,4 +23,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ls
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          
+      - name: Verify dependecies
+        run: |
+          nim --version
+          
+      - name: Build Arturo
+        run: |
+          nimble build -Y "-d:MINI"
