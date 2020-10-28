@@ -721,6 +721,13 @@ template Loop*(): untyped =
     # ]
     # ; name => John
     # ; surname => Doe
+    # 
+    # loop.with:'i ["zero" "one" "two"] 'x [
+    # ____print ["item at:" i "=>" x]
+    # ]
+    # ; 0 => zero
+    # ; 1 => one
+    # ; 2 => two
 
     require(opLoop)
 
