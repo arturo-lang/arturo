@@ -8,15 +8,14 @@
 
 ;; templates
 
-LongHeader: 
----
-|color.green.bold "Arturo"|  
-|sys\copyright| |sys\author|
+LongHeader: {
+	|color.green.bold "Arturo"|  
+	|sys\copyright| |sys\author|
 
-version : |sys\version| 
-build   : |sys\build| (|sys\buildDate|) 
-system  : |sys\cpu|/|sys\os|
----
+	version : |sys\version| 
+	build   : |sys\build| (|sys\buildDate|) 
+	system  : |sys\cpu|/|sys\os|
+}
 
 Subheader: 
 ---
