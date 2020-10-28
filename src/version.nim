@@ -1,0 +1,23 @@
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2020 Yanis Zafirópulos
+#
+# @file: version.nim
+######################################################
+
+#=======================================
+# Libraries
+#=======================================
+
+import strutils
+
+#=======================================
+# Constants
+#=======================================
+
+const 
+    Version* = static readFile("version/version").strip()
+    Build* = static readFile("version/build").strip()
+
+    VersionTxt* = "arturo v/" & Version
