@@ -17,17 +17,10 @@ import os, parseopt, segFaults, strutils
 
 import translator/eval, translator/parse
 import vm/bytecode, vm/env, vm/exec, vm/value
+import version
 
 when defined(BENCHMARK):
     import utils
-
-#=======================================
-# Constants
-#=======================================
-
-const 
-    Version = static readFile("version/version").strip()
-    Build = static readFile("version/build").strip()
 
 #=======================================
 # Types
@@ -45,8 +38,6 @@ type
 #=======================================
 # Globals
 #=======================================
-
-let versionTxt = "arturo v/" & Version
 
 let helpTxt = """
 
@@ -181,4 +172,4 @@ when isMainModule:
         of showHelp:
             echo helpTxt
         of showVersion:
-            echo versionTxt
+            echo VersionTxt
