@@ -702,6 +702,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opPositive: Numbers.IsPositive()
                     of opZero: Numbers.IsZero()
 
+                    of opPanic: Core.Panic()
+
                     else: discard
 
             else: discard

@@ -126,10 +126,7 @@ template Exit*():untyped =
 
     require(opExit)
 
-    if (let aWith = popAttr("with"); aWith != VNULL):
-        quit(aWith.i)
-    else:
-        quit()
+    quit()
 
 
 template Globalize*():untyped =
@@ -227,6 +224,19 @@ template New*():untyped =
     require(opNew)
 
     stack.push(copyValue(x))
+
+template Panic*():untyped =
+    require(opPanic)
+
+    vmPanic = true
+    vmError = x.s
+
+    showVMErrors()
+
+    if (let aCode = popAttr("code"); aCode != VNULL):
+        quit(aCode.i)
+    else:
+        quit()    
 
 template Pause*():untyped = 
     require(opPause)
