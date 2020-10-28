@@ -27,7 +27,7 @@ jobs:
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           export PATH=/home/runner/.nimble/bin:$PATH
-          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> ~/.bashrc
+          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
           
       - name: Verify dependecies
         shell: bash -l {0}
