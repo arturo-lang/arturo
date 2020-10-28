@@ -65,9 +65,6 @@ type
         doublebackslash #
         pipe            # |     
 
-        leftcurly       # {
-        rightcurly      # }   
-
         ellipsis        # ..
         colon           # :
 
@@ -1018,8 +1015,6 @@ proc `$`*(v: Value): string {.inline.} =
                 of backslash        : return "\\"
                 of doublebackslash  : return "\\\\"
                 of pipe             : return "|"
-                of leftcurly        : return "{"
-                of rightcurly       : return "}"
 
                 of ellipsis         : return ".."
                 of colon            : return ":"
@@ -1113,8 +1108,6 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
                 of backslash        : stdout.write "\\"
                 of doublebackslash  : stdout.write "\\\\"
                 of pipe             : stdout.write "|"
-                of leftcurly        : stdout.write "{"
-                of rightcurly       : stdout.write "}"
 
                 of ellipsis         : stdout.write ".."
                 of colon            : stdout.write ":"

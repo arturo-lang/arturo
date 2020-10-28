@@ -47,6 +47,8 @@ const
     RBracket                    = ']'
     LParen                      = '('
     RParen                      = ')'
+    LCurly                      = '{'
+    RCurly                      = '}'
 
     Quote                       = '"'
     Colon                       = ':'
@@ -66,7 +68,7 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
-    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '{', '}'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
     PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
@@ -209,6 +211,38 @@ template parseMultilineString(p: var Parser) =
 
     p.bufpos = pos
 
+template parseCurlyString(p: var Parser) =
+    var pos = p.bufpos + 1
+    var curliesExpected = 1
+    while true:
+        case p.buf[pos]:
+            of EOF: 
+                p.status = unterminatedStringError
+                break
+            of LCurly:
+                curliesExpected += 1
+                add(p.value, p.buf[pos])
+                inc(pos)
+            of RCurly:
+                if curliesExpected==1:
+                    inc(pos)
+                    break
+                else:
+                    curliesExpected -= 1
+                    add(p.value, p.buf[pos])
+                inc(pos)
+            of CR:
+                pos = lexbase.handleCR(p, pos)
+                add(p.value, CR)
+            of LF:
+                pos = lexbase.handleLF(p, pos)
+                add(p.value, LF)
+            else:
+                add(p.value, p.buf[pos])
+                inc(pos)
+
+    p.bufpos = pos
+
 template parseFullLineString(p: var Parser) =
     var pos = p.bufpos + 2
     while true:
@@ -274,8 +308,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '*'  : p.symbol = asterisk
         of '_'  : p.symbol = underscore
         of '|'  : p.symbol = pipe
-        of '{'  : p.symbol = leftcurly
-        of '}'  : p.symbol = rightcurly
         of '/'  : 
             if p.buf[pos+1]=='/': inc(pos); p.symbol = doubleslash
             else: p.symbol = slash
@@ -442,6 +474,13 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of RParen:
                 inc(p.bufpos)
                 break
+            of LCurly:
+                parseCurlyString(p)
+                if p.status != allOK: return nil
+
+                addChild(topBlock, newString(p.value))
+            of RCurly:
+                inc(p.bufpos)
             of chr(194):
                 if p.buf[p.bufpos+1]==chr(171): # got «
                     parseFullLineString(p)
