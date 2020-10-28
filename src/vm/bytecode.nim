@@ -409,6 +409,8 @@ type
         opPositive      = 0x108
         opZero          = 0x109
 
+        opPanic         = 0x10A
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -943,7 +945,6 @@ const
                                 args    : 0,   
       
                                 ret     : {Null},    
-                                attrs   :   ".with :integer -> return given exit code",  
                                 desc    : "exit program" ),
 
         opInfo      : OpSpec(   name    : "info",      
@@ -2136,6 +2137,15 @@ const
                                 a       : {Integer,Floating},      
                                 ret     : {Boolean},      
                                 desc    : "check if given number is zero" ),
+
+        opPanic     : OpSpec(   name    : "panic",      
+                                args    : 1,   
+      
+                                an      : "message",
+                                a       : {String},
+                                ret     : {Null},    
+                                attrs   :   ".code :integer -> return given exit code",  
+                                desc    : "exit program with error message" ),
 
     ]
 

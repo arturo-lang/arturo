@@ -646,6 +646,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "positive?"  : addExtraCommand(opPositive)
                     of "zero?"      : addExtraCommand(opZero)
 
+                    of "panic"      : addExtraCommand(opPanic)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
