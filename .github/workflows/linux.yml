@@ -1,0 +1,28 @@
+name: Linux
+on: [push, pull_request]
+
+jobs:
+  build
+  cancel:
+    name: "Cancel previous runs"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: styfle/cancel-workflow-action@0.3.1
+        with:
+          workflow_id: 1447568
+          access_token: ${{ github.token }}
+
+  linux-build:
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM: linux64
+      OPAMYES: 1
+    steps:
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          ls
