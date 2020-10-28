@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   cancel:
-    name: "Cancel previous runs"
+    name: "Cleanup"
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -12,6 +12,7 @@ jobs:
           workflow_id: 1447568
           access_token: ${{ github.token }}
   build:
+    name: "Build"
     runs-on: ubuntu-latest
     env:
       PLATFORM: linux64
@@ -25,6 +26,7 @@ jobs:
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           export PATH=/home/runner/.nimble/bin:$PATH
+          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> ~/.bashrc
           
       - name: Verify dependecies
         run: |
