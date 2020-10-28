@@ -16,7 +16,7 @@ when defined(PROFILE):
 import os, parseopt, segFaults, strutils
 
 import translator/eval, translator/parse
-import vm/env, vm/exec, vm/value
+import vm/bytecode, vm/env, vm/exec, vm/value
 
 when defined(BENCHMARK):
     import utils
@@ -37,6 +37,8 @@ type
     CmdAction = enum
         execFile
         evalCode
+        readBcode
+        writeBcode
         showHelp
         showVersion
 
@@ -54,6 +56,9 @@ Usage:
 Options:
   -e --evaluate             Evaluate given code
   -c --console              Show repl / interactive console
+
+  -o --output               Compile script and write bytecode
+  -i --input                Execute script from bytecode
 
   -u --update               Update to latest version
 
@@ -75,6 +80,30 @@ Options:
 
 when isMainModule:
 
+    #=======================================
+    # Helpers
+    #=======================================
+
+    template bootup*(run: bool, perform: untyped):untyped =
+        initEnv(
+            arguments = arguments, 
+            version = Version,
+            build = Build
+        )
+        if action==execFile:
+            env.addPath(code)
+        else:
+            env.addPath(getCurrentDir())
+
+        var presets = getEnvDictionary()
+
+        perform
+
+        if run:
+            initVM()
+            discard doExec(evaled, withSyms=addr presets)
+            showVMErrors()
+
     var token = initOptParser()
 
     var action: CmdAction = evalCode
@@ -89,7 +118,9 @@ when isMainModule:
         case token.kind:
             of cmdArgument: 
                 if code=="":
-                    action = execFile
+                    if action==evalCode:
+                        action = execFile
+                    
                     code = token.key
                 else:
                     arguments.add(newString(token.key))
@@ -100,6 +131,12 @@ when isMainModule:
                         code = runConsole
                     of "e","evaluate":
                         action = evalCode
+                        code = token.val
+                    of "o","output":
+                        action = writeBcode
+                        code = token.val
+                    of "i","input":
+                        action = readBcode
                         code = token.val
                     of "u","update":
                         action = evalCode
@@ -125,24 +162,22 @@ when isMainModule:
                     let parsed = doParse(move code, isFile = action==execFile)
                     let evaled = parsed.doEval()
             else:
-                initEnv(
-                    arguments = arguments, 
-                    version = Version,
-                    build = Build
-                )
-                if action==execFile:
-                    env.addPath(code)
-                else:
-                    env.addPath(getCurrentDir())
-
-                var presets = getEnvDictionary()
-
-                let parsed = doParse(move code, isFile = action==execFile)
+                bootup(run=true):
+                    let parsed = doParse(move code, isFile = action==execFile)
+                    let evaled = parsed.doEval()
+                
+        of writeBcode:
+            bootup(run=false):
+                let filename = code
+                let parsed = doParse(move code, isFile = true)
                 let evaled = parsed.doEval()
-                initVM()
-                discard doExec(evaled, withSyms=addr presets)
 
-                showVMErrors()
+                discard writeBytecode(evaled, filename & ".bcode")
+
+        of readBcode:
+            bootup(run=true):
+                let evaled = readBytecode(code)
+
         of showHelp:
             echo helpTxt
         of showVersion:
