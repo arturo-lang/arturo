@@ -34,7 +34,7 @@ jobs:
         shell: msys2 {0}
         run: |
           pacman --noconfirm -S p7zip
-          pacman -S mingw-w64-x86_64-gcc
+          pacman --noconfirm -S mingw-w64-x86_64-gcc
           mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
