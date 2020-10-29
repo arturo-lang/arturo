@@ -26,12 +26,15 @@ jobs:
           submodules: recursive
 
       - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: 'git base-devel'
 
       - name: Install dependencies
         shell: msys2 {0}
         run: |
-          pacman -Syuu --noconfirm
-          pacman install --noconfirm p7zip
+          pacman --noconfirm -S --needed
+          pacman install --noconfirm -S p7zip
           mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
