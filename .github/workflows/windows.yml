@@ -43,7 +43,7 @@ jobs:
           7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
-          echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
+#echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
           ls -la nim/nim-1.4.0
