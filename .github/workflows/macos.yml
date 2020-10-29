@@ -6,7 +6,10 @@ jobs:
     name: "Cleanup"
     runs-on: ubuntu-latest
     steps:
-      - uses: technote-space/auto-cancel-redundant-job@v1
+      - uses: styfle/cancel-workflow-action@0.3.1
+        with:
+          access_token: ${{ github.token }}
+          workflow_id: ${{ env.WORKFLOW_ID }}
 
   nimble-mini:
     name: "Nimble (mini)"
