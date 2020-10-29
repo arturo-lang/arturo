@@ -50,14 +50,14 @@ jobs:
           ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
 
-          mkdir gmp_build
-          curl -L https://cs.nyu.edu/~exact/core/gmp/gmp-4.1.tar.gz -o gmp_build/gmp.tar.gz
-          cd gmp_build
-          tar xzvf gmp.tar.gz
-          cd gmp-4.1
-          ./configure --prefix="${{ github.workspace }}/bin"
-          make
-          make install
+          # mkdir gmp_build
+          # curl -L https://cs.nyu.edu/~exact/core/gmp/gmp-4.1.tar.gz -o gmp_build/gmp.tar.gz
+          # cd gmp_build
+          # tar xzvf gmp.tar.gz
+          # cd gmp-4.1
+          # ./configure --prefix="${{ github.workspace }}/bin"
+          # make
+          # make install
           
       - name: Verify dependecies
         shell: bash -l {0}
