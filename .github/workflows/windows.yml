@@ -41,7 +41,7 @@ jobs:
           echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
           ls -la nim/nim-1.4.0
           ls -la nim/nim-1.4.0/bin
-          echo $GITHUB_PATH
+          echo "$GITHUB_PATH"
           
       - name: Verify dependecies
         shell: bash -l {0}
