@@ -29,6 +29,7 @@ jobs:
         shell: bash -l {0}
         run: |
           mkdir dist
+          mkdir nim
           curl -L https://nim-lang.org/download/mingw64.7z -o dist/mingw64.7z
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           7z x dist/mingw64.7z -odist
