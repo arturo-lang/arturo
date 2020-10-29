@@ -104,28 +104,32 @@ jobs:
         run: |
           ./build.sh
 
+      - name: Archive binary
+        run: tar -cvf binary.tar bin
+
       - name: Upload binary artifact
         uses: actions/upload-artifact@v2
         with:
           name: binary
-          path: bin/arturo
+          path: binary.tar
 
   unit-tests:
     name: "Unit tests"
     needs: build-full
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@main
-        with:
-          submodules: recursive
-
       - name: Download binary artifact
         uses: actions/download-artifact@v2
         with:
           name: binary
 
+      - name: Unarchive binary
+        run: |
+          tar -xvf binary.tar
+
       - name: Run unit tests
         shell: bash -l {0}
         run: |
           sudo chmod +x arturo
-          ./arturo tests/runAll.art   
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          bin/arturo tests/runAll.art   

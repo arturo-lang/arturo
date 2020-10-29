@@ -121,10 +121,6 @@ jobs:
     needs: build-full
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
-        with:
-          submodules: recursive
-
       - name: Download binary artifact
         uses: actions/download-artifact@v2
         with:
