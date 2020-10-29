@@ -30,7 +30,7 @@ jobs:
           update: true
           install: 'git base-devel'
 
-      - name: Install dependencies
+      - name: Install dependencies + Build Arturo
         shell: msys2 {0}
         run: |
           pacman --noconfirm -S p7zip
@@ -51,15 +51,8 @@ jobs:
           ls -la nim/nim-1.4.0
           ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
-
-      - name: Verify dependencies
-        shell: msys2 {0}
-        run: |
           
           echo "Running nim"
           nim --version
 
-      - name: Build Arturo
-        shell: msys2 {0}
-        run: |
           nimble build -Y "-d:MINI"
