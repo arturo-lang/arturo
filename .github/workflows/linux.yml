@@ -10,8 +10,8 @@ jobs:
         with:
           access_token: ${{ github.token }}
           workflow_id: linux
-  build-mini:
-    name: "Build (mini)"
+  nimble-mini:
+    name: "Nimble (mini)"
     runs-on: ubuntu-latest
     env:
       PLATFORM: linux64
@@ -38,8 +38,8 @@ jobs:
         run: |
           nimble build -Y "-d:MINI"
 
-  build-full:
-    name: "Build (full)"
+  nimble-full:
+    name: "Nimble (full)"
     runs-on: ubuntu-latest
     env:
       PLATFORM: linux64
@@ -67,3 +67,60 @@ jobs:
         shell: bash -l {0}
         run: |
           nimble build -Y
+  build-mini:
+    name: "Build.sh (mini)"
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM: linux64
+      OPAMYES: 1
+    steps:
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        shell: bash -l {0}
+        run: |
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          export PATH=/home/runner/.nimble/bin:$PATH
+          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
+          
+      - name: Verify dependecies
+        shell: bash -l {0}
+        run: |
+          nim --version
+          
+      - name: Build Arturo
+        shell: bash -l {0}
+        run: |
+          ./build.sh mini"
+
+  build-full:
+    name: "Build.sh (full)"
+    runs-on: ubuntu-latest
+    env:
+      PLATFORM: linux64
+      OPAMYES: 1
+    steps:
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        shell: bash -l {0}
+        run: |
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          export PATH=/home/runner/.nimble/bin:$PATH
+          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
+          sudo apt-fast update
+          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
+          
+      - name: Verify dependecies
+        shell: bash -l {0}
+        run: |
+          nim --version
+          
+      - name: Build Arturo
+        shell: bash -l {0}
+        run: |
+          ./build.sh
