@@ -45,6 +45,8 @@ jobs:
           7z x dist/nim.zip -onim
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          export PATH="${{ github.workspace }}/bin":$PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
           echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
           ls -la nim/nim-1.4.0
           ls -la nim/nim-1.4.0/bin 
