@@ -43,7 +43,8 @@ jobs:
           ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
           choco install msys2
-          
+          echo "C:\tools\msys64" >> $GITHUB_PATH
+
       - name: Install GMP
         shell: msys2 {0}
         run: |
