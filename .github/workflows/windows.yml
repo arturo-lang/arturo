@@ -35,9 +35,10 @@ jobs:
           7z x dist/dlls.zip -obin
           echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/bin"" >> $GITHUB_PATH
-          curl -L https://github.com/dom96/choosenim/releases/download/v0.7.4/choosenim-0.7.4_windows_amd64.zip dist/choosenim.zip
-          7z x dist/choosenim.zip -obin
-          bin/runme.bat
+          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip dist/nim.zip
+          7z x dist/nim.zip -onim
+          echo "${{ github.workspace }}/nim"" >> $GITHUB_PATH
+          nim/finish.exe
           
       - name: Verify dependecies
         shell: bash -l {0}
