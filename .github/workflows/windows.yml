@@ -50,9 +50,6 @@ jobs:
           ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
 
-      - name: Install GMP
-        shell: msys2 {0}
-        run: |
           mkdir gmp_build
           curl -L https://cs.nyu.edu/~exact/core/gmp/gmp-4.1.tar.gz -o gmp_build/gmp.tar.gz
           cd gmp_build
