@@ -12,7 +12,7 @@
 
 import algorithm, asyncdispatch, asynchttpserver
 import base64, cgi, std/editdistance, httpClient
-import json, linenoise, math, md5, os, osproc
+import json, math, md5, os, osproc
 import random, rdstdin, re, sequtils, smtp
 import std/sha1, strformat, strutils, sugar
 import tables, times, unicode, xmltree
