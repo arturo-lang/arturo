@@ -40,9 +40,10 @@ jobs:
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
           ls -la nim/nim-1.4.0
-          ls -la nim/nim-1.4.0/bin
+          ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
           choco install msys2
+          
       - name: Install GMP
         shell: msys2 {0}
         run: |
