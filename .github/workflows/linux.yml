@@ -39,7 +39,7 @@ jobs:
         run: |
           nimble build -Y "-d:MINI"
 
-  build-mini:
+  build-full:
     name: "Build (full)"
     runs-on: ubuntu-latest
     env:
