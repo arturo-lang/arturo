@@ -39,7 +39,7 @@ jobs:
       - name: Install Nim
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: |
@@ -70,7 +70,7 @@ jobs:
       - name: Install dependencies
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
           
       - name: Verify dependecies
         run: |
@@ -95,7 +95,7 @@ jobs:
       - name: Install Nim
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: |
