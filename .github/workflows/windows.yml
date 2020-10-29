@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: |
-          pacman -Syu --noconfirm
+          pacman -Syuu --noconfirm
           pacman install --noconfirm p7zip
           mkdir dist
           mkdir nim
