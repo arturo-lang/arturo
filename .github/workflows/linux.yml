@@ -22,30 +22,31 @@ jobs:
           workflow_id: ${{ env.WORKFLOW_ID }}
 
   build-with-nimble:
-    runs-on: ubuntu-16.04
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         flag:
           - ''
           - '-d:MINI'
+        os:
+          - ubuntu-16.04
+          - macos-latest
     steps:
       - uses: actions/checkout@main
         with:
           submodules: recursive
 
-      - name: Install dependencies
+      - name: Install Nim
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
-          sudo apt-fast update
-          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
-        if: matrix.flag == ''
 
       - name: Install dependencies
         run: |
-          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
-          
+          sudo apt-fast update
+          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
+        if: matrix.os == 'ubuntu-16.04' && matrix.flag == ''
+
       - name: Verify dependecies
         run: |
           nim --version
@@ -54,9 +55,13 @@ jobs:
         run: |
           nimble build -Y ${{ matrix.flag }}
 
-  build-mini:
-    name: "Build.sh (mini)"
-    runs-on: ubuntu-16.04
+  build-mini-with-shell:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-16.04
+          - macos-latest
     steps:
       - uses: actions/checkout@main
         with:
@@ -76,19 +81,27 @@ jobs:
           ./build.sh mini
 
   unit-tests:
-    name: "Unit tests"
-    runs-on: ubuntu-16.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-16.04
+          - macos-latest
     steps:
       - uses: actions/checkout@main
         with:
           submodules: recursive
 
-      - name: Install dependencies
+      - name: Install Nim
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           echo "/home/runner/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
           sudo apt-fast update
           sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
+        if: matrix.os == 'ubuntu-16.04'
           
       - name: Verify dependecies
         run: |
