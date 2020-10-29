@@ -136,5 +136,5 @@ jobs:
       - name: Run unit tests
         shell: bash -l {0}
         run: |
-          ls -la
-          bin/arturo tests/runAll.art  
+          sudo chmod +x arturo
+          ./arturo tests/runAll.art   
