@@ -28,11 +28,13 @@ jobs:
       - name: Verify dependecies
         shell: bash -l {0}
         run: |
+          export PATH=/home/runner/.nimble/bin:$PATH
           nim --version
           
       - name: Build Arturo
         shell: bash -l {0}
         run: |
+          export PATH=/home/runner/.nimble/bin:$PATH
           nimble build -Y "-d:MINI"
 
   nimble-full:
@@ -53,12 +55,15 @@ jobs:
       - name: Verify dependecies
         shell: bash -l {0}
         run: |
+          export PATH=/home/runner/.nimble/bin:$PATH
           nim --version
           
       - name: Build Arturo
         shell: bash -l {0}
         run: |
+          export PATH=/home/runner/.nimble/bin:$PATH
           nimble build -Y
+
   build-mini:
     name: "Build.sh (mini)"
     runs-on: macos-latest
@@ -102,11 +107,13 @@ jobs:
       - name: Verify dependecies
         shell: bash -l {0}
         run: |
+          export PATH=/home/runner/.nimble/bin:$PATH
           nim --version
           
       - name: Build Arturo
         shell: bash -l {0}
         run: |
+          export PATH=/home/runner/.nimble/bin:$PATH
           ./build.sh
 
       - name: Upload binary artifact
@@ -133,4 +140,4 @@ jobs:
         shell: bash -l {0}
         run: |
           sudo chmod +x arturo
-          ./arturo tests/runAll.art  
+          ./arturo tests/runAll.art   
