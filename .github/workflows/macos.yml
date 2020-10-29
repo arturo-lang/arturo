@@ -111,7 +111,7 @@ jobs:
       - name: Build Arturo
         shell: bash -l {0}
         run: |
-          sudo ./build.sh install
+          ./build.sh install
 
       - name: Run unit tests
         shell: bash -l {0}
