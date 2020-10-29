@@ -117,6 +117,7 @@ jobs:
 
   unit-tests:
     name: "Unit tests"
+    needs: build-full
     runs-on: macos-latest
     steps:
       - name: Download binary artifact

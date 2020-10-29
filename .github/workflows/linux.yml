@@ -121,6 +121,7 @@ jobs:
 
   unit-tests:
     name: "Unit tests"
+    needs: build-full
     runs-on: ubuntu-latest
     steps:
       - name: Download binary artifact
