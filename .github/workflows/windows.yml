@@ -52,9 +52,6 @@ jobs:
           ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
 
-          set PATH=%PATH%;"${{ github.workspace }}/nim/nim-1.4.0/bin"
-          set PATH=%PATH%;"${{ github.workspace }}/bin"
-
       - name: Verify dependencies
         shell: msys2 {0}
         run: |
@@ -66,4 +63,3 @@ jobs:
         shell: msys2 {0}
         run: |
           nimble build -Y "-d:MINI"
-          
