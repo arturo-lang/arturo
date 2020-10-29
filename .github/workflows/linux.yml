@@ -10,6 +10,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
           workflow_id: linux
+
   nimble-mini:
     name: "Nimble (mini)"
     runs-on: ubuntu-latest
@@ -113,11 +114,14 @@ jobs:
         run: |
           ./build.sh
 
+      - name: Archive binary
+        run: tar -cvf binary.tar bin
+
       - name: Upload binary artifact
         uses: actions/upload-artifact@v2
         with:
           name: binary
-          path: bin/arturo
+          path: binary.tar
 
   unit-tests:
     name: "Unit tests"
@@ -132,6 +136,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: binary
+
+      - name: Unarchive binary
+        run: |
+          tar -xvf binary.tar
+          ls -la
+          ls -la binary
 
       - name: Install dependencies
         shell: bash -l {0}

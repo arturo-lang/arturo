@@ -10,6 +10,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
           workflow_id: macos
+          
   nimble-mini:
     name: "Nimble (mini)"
     runs-on: macos-latest
