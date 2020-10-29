@@ -93,7 +93,7 @@ jobs:
       - name: Build Arturo
         shell: bash -l {0}
         run: |
-          ./build.sh mini"
+          ./build.sh mini
 
   build-full:
     name: "Build.sh (full)"
