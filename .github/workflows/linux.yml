@@ -9,6 +9,7 @@ jobs:
       - uses: styfle/cancel-workflow-action@0.3.1
         with:
           access_token: ${{ github.token }}
+          workflow_id: linux
   build-mini:
     name: "Build (mini)"
     runs-on: ubuntu-latest
