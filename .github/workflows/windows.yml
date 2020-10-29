@@ -32,12 +32,12 @@ jobs:
         run: |
           mkdir dist
           mkdir nim
-          curl -L https://nim-lang.org/download/mingw64.7z -o dist/mingw64.7z
+          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
-          7z x dist/mingw64.7z -odist
-          7z x dist/dlls.zip -obin
-          7z x dist/nim.zip -onim
+          unzip dist/mingw64.zip -odist
+          unzip dist/dlls.zip -obin
+          unzip dist/nim.zip -onim
           echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
