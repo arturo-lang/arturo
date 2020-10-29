@@ -1499,13 +1499,13 @@ proc isLLP64: bool {.compileTime.} =
 
 # DECLARED_BUT_NOT_USED
 
-# proc fitsLLP64Long(x: int): bool =
-#   # Returns whether `x` fits in a LLP64 signed long int.
-#   return x >= low(clong) and x <= high(clong)
+proc fitsLLP64Long(x: int): bool =
+  # Returns whether `x` fits in a LLP64 signed long int.
+  return x >= low(clong) and x <= high(clong)
 
-# proc fitsLLP64ULong(x: int): bool =
-#   # Returns whether `x` fits in a LLP64 unsigned long int.
-#   return x >= 0 and x <= LLP64_ULONG_MAX
+proc fitsLLP64ULong(x: int): bool =
+  # Returns whether `x` fits in a LLP64 unsigned long int.
+  return x >= 0 and x <= LLP64_ULONG_MAX
 
 {.pop.}
 
