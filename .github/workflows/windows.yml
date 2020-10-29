@@ -40,7 +40,7 @@ jobs:
           echo "${{ github.workspace }}/bin"" >> $GITHUB_PATH
           echo "${{ github.workspace }}/nim"" >> $GITHUB_PATH
           ls -la
-          ./nimmain/finish
+          ./nim/finish
           
       - name: Verify dependecies
         shell: bash -l {0}
