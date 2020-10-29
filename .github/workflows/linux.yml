@@ -1,5 +1,19 @@
 name: Linux / MacOS
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '*.gif'
+      - '*.png'
+      - '*.yml'
+      - '*.md'
+      - 'LICENSE'
+  pull_request:
+    paths-ignore:
+      - '*.gif'
+      - '*.png'
+      - '*.yml'
+      - '*.md'
+      - 'LICENSE'
 
 defaults:
   run:
