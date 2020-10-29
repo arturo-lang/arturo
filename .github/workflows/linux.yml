@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   cancel:
     name: "Cleanup"
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
       - name: "Get workflow id"
         run: |
@@ -119,7 +119,5 @@ jobs:
       - name: Run unit tests
         shell: bash -l {0}
         run: |
-          pwd
-          ls -la
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tests/runAll.art
