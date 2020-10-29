@@ -49,8 +49,6 @@ jobs:
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           export PATH=/home/runner/.nimble/bin:$PATH
           echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
-          sudo apt-fast update
-          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
           
       - name: Verify dependecies
         shell: bash -l {0}
@@ -100,8 +98,6 @@ jobs:
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           export PATH=/home/runner/.nimble/bin:$PATH
           echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
-          sudo apt-fast update
-          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
           
       - name: Verify dependecies
         shell: bash -l {0}
@@ -112,3 +108,23 @@ jobs:
         shell: bash -l {0}
         run: |
           ./build.sh
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: binary
+          path: bin/arturo
+
+  unit-tests:
+    name: "Unit tests"
+    runs-on: macos-latest
+    steps:
+      - name: Download binary artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: binary
+
+      - name: Run unit tests
+        shell: bash -l {0}
+        run: |
+          ./arturo tests/runAll.art  
