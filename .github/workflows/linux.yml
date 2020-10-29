@@ -13,9 +13,6 @@ jobs:
   nimble-mini:
     name: "Nimble (mini)"
     runs-on: ubuntu-latest
-    env:
-      PLATFORM: linux64
-      OPAMYES: 1
     steps:
       - uses: actions/checkout@main
         with:
@@ -41,9 +38,6 @@ jobs:
   nimble-full:
     name: "Nimble (full)"
     runs-on: ubuntu-latest
-    env:
-      PLATFORM: linux64
-      OPAMYES: 1
     steps:
       - uses: actions/checkout@main
         with:
@@ -70,9 +64,6 @@ jobs:
   build-mini:
     name: "Build.sh (mini)"
     runs-on: ubuntu-latest
-    env:
-      PLATFORM: linux64
-      OPAMYES: 1
     steps:
       - uses: actions/checkout@main
         with:
@@ -98,9 +89,6 @@ jobs:
   build-full:
     name: "Build.sh (full)"
     runs-on: ubuntu-latest
-    env:
-      PLATFORM: linux64
-      OPAMYES: 1
     steps:
       - uses: actions/checkout@main
         with:
