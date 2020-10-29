@@ -123,48 +123,56 @@ else
     printf "  \e[1;90m"
 	$NIM $FLAGS $NIM_OPTS --cincludes:extras --nimcache:.cache --embedsrc:on --path:src -o:$BINARY src/arturo.nim
 fi
-printf "\e[0m"
-echo ""
 
-# ultracompress final binary
+if [ $? -eq 0 ]
+then
+    printf "\e[0m"
+    echo ""
 
-if $DO_COMPRESS ; then
+    # ultracompress final binary
+
+    if $DO_COMPRESS ; then
+        echo ""
+    	printf "\e[1;35m●\e[0m Optimizing binary\e[0m"
+        echo ""
+        printf "  \e[0;90mcompression: on\e[0m"
+        echo ""
+    	upx -q $BINARY >/dev/null 2>&1
+    fi
+
+    if $DO_INSTALL ; then
+        echo ""
+        printf "\e[1;35m●\e[0m Installing\e[0m"
+        echo ""
+        printf "  \e[0;90m@ /usr/local/bin\e[0m"
+        echo ""
+        sudo cp $BINARY /usr/local/bin
+
+        echo ""
+        printf "\e[1;35m●\e[0m Setting up library\e[0m"
+        echo ""
+        sudo mkdir -p /usr/local/lib/arturo
+        sudo chown -R $USER /usr/local/lib/arturo
+    fi
+
     echo ""
-	printf "\e[1;35m●\e[0m Optimizing binary\e[0m"
+    printf "\e[1;35m●\e[0m Done!\e[0m"
     echo ""
-    printf "  \e[0;90mcompression: on\e[0m"
     echo ""
-	upx -q $BINARY >/dev/null 2>&1
+    printf "\e[0;90m"
+    echo ":---------------------------------------------------------"
+    echo ": Just run 'arturo' (or ./arturo, in case you didn't"
+    echo ": install the binary globally) and enjoy."
+    echo ": "
+    echo ": Rock on! :)"
+    echo ":---------------------------------------------------------"
+    printf "\e[0m"
+    echo ""
+    exit 0
+else
+    echo "The script failed" >&2
+    exit 1
 fi
-
-if $DO_INSTALL ; then
-    echo ""
-    printf "\e[1;35m●\e[0m Installing\e[0m"
-    echo ""
-    printf "  \e[0;90m@ /usr/local/bin\e[0m"
-    echo ""
-    sudo cp $BINARY /usr/local/bin
-
-    echo ""
-    printf "\e[1;35m●\e[0m Setting up library\e[0m"
-    echo ""
-    sudo mkdir -p /usr/local/lib/arturo
-    sudo chown -R $USER /usr/local/lib/arturo
-fi
-
-echo ""
-printf "\e[1;35m●\e[0m Done!\e[0m"
-echo ""
-echo ""
-printf "\e[0;90m"
-echo ":---------------------------------------------------------"
-echo ": Just run 'arturo' (or ./arturo, in case you didn't"
-echo ": install the binary globally) and enjoy."
-echo ": "
-echo ": Rock on! :)"
-echo ":---------------------------------------------------------"
-printf "\e[0m"
-echo ""
 
 #################################################
 # that's all folks...
