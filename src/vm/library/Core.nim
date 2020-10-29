@@ -58,7 +58,9 @@ template Clear*():untyped =
     # EXAMPLE:
     # clear             ; (clears the screen)
     require(opClear)
-    #clearScreen()
+
+    when not defined(windows):
+        clearScreen()
 
 template Do*():untyped =
     # EXAMPLE:

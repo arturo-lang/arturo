@@ -16,8 +16,10 @@ import json, math, md5, os, osproc
 import random, rdstdin, re, sequtils, smtp
 import std/sha1, strformat, strutils, sugar
 import tables, times, unicode, xmltree
-
 import nre except toSeq
+
+when not defined(windows):
+    import linenoise
 
 import extras/bignum
 
