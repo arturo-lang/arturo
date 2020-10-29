@@ -1489,7 +1489,7 @@ type Int* = ref mpz_t
   ## An Int represents a signed multi-precision integer.
 
 # DECLARED_BUT_NOT_USED
-# const LLP64_ULONG_MAX = 0xFFFFFFFF
+const LLP64_ULONG_MAX = 0xFFFFFFFF
 
 proc isLLP64: bool {.compileTime.} =
   # LLP64 programming model
