@@ -35,12 +35,12 @@ jobs:
           curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
           7z x dist/mingw64.7z -odist
           7z x dist/dlls.zip -obin
-          7z x dist/nim.zip -onimmain
+          7z x dist/nim.zip -onim
           echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/bin"" >> $GITHUB_PATH
-          echo "${{ github.workspace }}/nimmain"" >> $GITHUB_PATH
+          echo "${{ github.workspace }}/nim"" >> $GITHUB_PATH
           ls -la
-          nimmain/finish.exe
+          ./nimmain/finish
           
       - name: Verify dependecies
         shell: bash -l {0}
