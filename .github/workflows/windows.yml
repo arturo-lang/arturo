@@ -26,7 +26,7 @@ jobs:
           submodules: recursive
 
       - name: Install dependencies
-        shell: msys2 {0}
+        shell: bash -l {0}
         run: |
           mkdir dist
           mkdir nim
@@ -42,6 +42,10 @@ jobs:
           ls -la nim/nim-1.4.0
           ls -la nim/nim-1.4.0/bin
           echo "$GITHUB_PATH"
+          choco install msys2
+      - name: Install GMP
+        shell: msys2 {0}
+        run: |
           pacman -Syu
           pacman -S mingw-w64-x86_64-gmp make
           
