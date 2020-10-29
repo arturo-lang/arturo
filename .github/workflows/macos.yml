@@ -23,7 +23,7 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "::add-path::/home/runner/.nimble/bin"
+          echo "/Users/runner/.nimble/bin" >> $GITHUB_PATH
           
       - name: Verify dependecies
         shell: bash -l {0}
@@ -47,7 +47,7 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "::add-path::/home/runner/.nimble/bin"
+          echo "/Users/runner/.nimble/bin" >> $GITHUB_PATH
           
       - name: Verify dependecies
         shell: bash -l {0}
@@ -71,7 +71,7 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "::add-path::/home/runner/.nimble/bin"
+          echo "/Users/runner/.nimble/bin" >> $GITHUB_PATH
           
       - name: Verify dependecies
         shell: bash -l {0}
@@ -95,7 +95,7 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "::add-path::/home/runner/.nimble/bin"
+          echo "/Users/runner/.nimble/bin" >> $GITHUB_PATH
           
       - name: Verify dependecies
         shell: bash -l {0}
