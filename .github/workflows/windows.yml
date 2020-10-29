@@ -30,6 +30,8 @@ jobs:
       - name: Install dependencies
         shell: msys2 {0}
         run: |
+          pacman -Syu
+          pacman install p7zip
           mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
