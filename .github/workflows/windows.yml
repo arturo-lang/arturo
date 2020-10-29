@@ -38,13 +38,17 @@ jobs:
           7z x dist/nim.zip -onim
           echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/bin"" >> $GITHUB_PATH
-          echo "${{ github.workspace }}/nim/nim-1.4.0/bin"" >> $GITHUB_PATH
+          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
           ls -la nim/nim-1.4.0
-          ./nim/nim-1.4.0/finish.exe
+          ls -la nim/nim-1.4.0/bin
+          echo $GITHUB_PATH
           
       - name: Verify dependecies
         shell: bash -l {0}
         run: |
+          echo "Running finish"
+          ./nim/nim-1.4.0/finish.exe
+          echo "Running nim"
           nim --version
           
       - name: Build Arturo
