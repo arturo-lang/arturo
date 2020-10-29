@@ -50,17 +50,11 @@ jobs:
           ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
           
-      - name: Verify dependecies
-        shell: msys2 {0}
-        run: |
           echo "Running finish"
           ./nim/nim-1.4.0/finish.exe
           echo "Running nim"
           nim --version
           
-      - name: Build Arturo
-        shell: msys2 {0}
-        run: |
           nimble build -Y "-d:MINI"
 
   # nimble-full:
