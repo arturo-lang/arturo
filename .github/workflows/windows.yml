@@ -42,6 +42,8 @@ jobs:
           ls -la nim/nim-1.4.0
           ls -la nim/nim-1.4.0/bin
           echo "$GITHUB_PATH"
+          pacman -Syu
+          pacman -S mingw-w64-x86_64-gmp make
           
       - name: Verify dependecies
         shell: bash -l {0}
