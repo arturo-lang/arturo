@@ -48,8 +48,14 @@ jobs:
       - name: Install GMP
         shell: msys2 {0}
         run: |
-          pacman -Syu
-          pacman -S mingw-w64-x86_64-gmp make
+          mkdir gmp_build
+          curl -L https://cs.nyu.edu/~exact/core/gmp/gmp-4.1.tar.gz -o gmp_build/gmp.tar.gz
+          cd gmp_build
+          tar xzvf gmp.tar.gz
+          cd gmp-4.1
+          ./configure --prefix="${{ github.workspace }}/bin"
+          make
+          make install
           
       - name: Verify dependecies
         shell: bash -l {0}
