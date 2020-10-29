@@ -5,11 +5,9 @@ jobs:
   cancel:
     name: "Cleanup"
     runs-on: ubuntu-latest
-    timeout-minutes: 3
     steps:
       - uses: styfle/cancel-workflow-action@0.3.1
         with:
-          workflow_id: 1447568
           access_token: ${{ github.token }}
   build-mini:
     name: "Build (mini)"
@@ -56,6 +54,8 @@ jobs:
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           export PATH=/home/runner/.nimble/bin:$PATH
           echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
+          sudo apt-fast update
+          sudo apt-fast install -yq libgtk-3-dev
           
       - name: Verify dependecies
         shell: bash -l {0}
