@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   cancel:
     name: "Cleanup"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
       - name: "Get workflow id"
         run: |
@@ -19,7 +19,7 @@ jobs:
 
   nimble-mini:
     name: "Nimble (mini)"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@main
         with:
@@ -43,7 +43,7 @@ jobs:
 
   nimble-full:
     name: "Nimble (full)"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@main
         with:
@@ -68,7 +68,7 @@ jobs:
           nimble build -Y
   build-mini:
     name: "Build.sh (mini)"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@main
         with:
@@ -92,7 +92,7 @@ jobs:
 
   unit-tests:
     name: "Unit tests"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@main
         with:
