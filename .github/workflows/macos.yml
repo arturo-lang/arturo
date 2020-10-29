@@ -22,19 +22,16 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          export PATH=/home/runner/.nimble/bin:$PATH
-          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
+          echo "::add-path::/home/runner/.nimble/bin"
           
       - name: Verify dependecies
         shell: bash -l {0}
         run: |
-          export PATH=/home/runner/.nimble/bin:$PATH
           nim --version
           
       - name: Build Arturo
         shell: bash -l {0}
         run: |
-          export PATH=/home/runner/.nimble/bin:$PATH
           nimble build -Y "-d:MINI"
 
   nimble-full:
@@ -49,19 +46,16 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          export PATH=/home/runner/.nimble/bin:$PATH
-          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
+          echo "::add-path::/home/runner/.nimble/bin"
           
       - name: Verify dependecies
         shell: bash -l {0}
         run: |
-          export PATH=/home/runner/.nimble/bin:$PATH
           nim --version
           
       - name: Build Arturo
         shell: bash -l {0}
         run: |
-          export PATH=/home/runner/.nimble/bin:$PATH
           nimble build -Y
 
   build-mini:
@@ -76,8 +70,7 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          export PATH=/home/runner/.nimble/bin:$PATH
-          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
+          echo "::add-path::/home/runner/.nimble/bin"
           
       - name: Verify dependecies
         shell: bash -l {0}
@@ -101,19 +94,16 @@ jobs:
         shell: bash -l {0}
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          export PATH=/home/runner/.nimble/bin:$PATH
-          echo "export PATH=/home/runner/.nimble/bin:$PATH" >> "$HOME/.bash_profile"
+          echo "::add-path::/home/runner/.nimble/bin"
           
       - name: Verify dependecies
         shell: bash -l {0}
         run: |
-          export PATH=/home/runner/.nimble/bin:$PATH
           nim --version
           
       - name: Build Arturo
         shell: bash -l {0}
         run: |
-          export PATH=/home/runner/.nimble/bin:$PATH
           ./build.sh
 
       - name: Upload binary artifact
