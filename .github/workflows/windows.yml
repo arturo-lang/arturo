@@ -1,0 +1,128 @@
+name: Windows
+on: [push, pull_request]
+
+jobs:
+  cancel:
+    name: "Cleanup"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Get workflow id"
+        run: |
+          WORKFLOW_ID=$(curl "Authorization: token ${{ github.token }}" https://api.github.com/repos/${{ github.repository }}/actions/workflows/windows.yml | jq '.id')
+          echo "Workflow id: ${WORKFLOW_ID}"
+          echo "::set-env name=WORKFLOW_ID::${WORKFLOW_ID}"
+
+      - uses: styfle/cancel-workflow-action@0.3.1
+        with:
+          access_token: ${{ github.token }}
+          workflow_id: ${{ env.WORKFLOW_ID }}
+
+  nimble-mini:
+    name: "Nimble (mini)"
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        shell: bash -l {0}
+        run: |
+                    mkdir dist
+          curl -L https://nim-lang.org/download/mingw64.7z -o dist/mingw64.7z
+          curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
+          7z x dist/mingw64.7z -odist
+          7z x dist/dlls.zip -obin
+          echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
+          echo "${{ github.workspace }}/bin"" >> $GITHUB_PATH
+          curl -L https://github.com/dom96/choosenim/releases/download/v0.7.4/choosenim-0.7.4_windows_amd64.zip dist/choosenim.zip
+          7z x dist/choosenim.zip -obin
+          bin/runme.bat
+          
+      - name: Verify dependecies
+        shell: bash -l {0}
+        run: |
+          nim --version
+          
+      - name: Build Arturo
+        shell: bash -l {0}
+        run: |
+          nimble build -Y "-d:MINI"
+
+  # nimble-full:
+  #   name: "Nimble (full)"
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@main
+  #       with:
+  #         submodules: recursive
+
+  #     - name: Install dependencies
+  #       shell: bash -l {0}
+  #       run: |
+  #         wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+  #         echo "/Users/runner/.nimble/bin" >> $GITHUB_PATH
+          
+  #     - name: Verify dependecies
+  #       shell: bash -l {0}
+  #       run: |
+  #         nim --version
+          
+  #     - name: Build Arturo
+  #       shell: bash -l {0}
+  #       run: |
+  #         nimble build -Y
+
+  # build-mini:
+  #   name: "Build.sh (mini)"
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@main
+  #       with:
+  #         submodules: recursive
+
+  #     - name: Install dependencies
+  #       shell: bash -l {0}
+  #       run: |
+  #         wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+  #         echo "/Users/runner/.nimble/bin" >> $GITHUB_PATH
+          
+  #     - name: Verify dependecies
+  #       shell: bash -l {0}
+  #       run: |
+  #         nim --version
+          
+  #     - name: Build Arturo
+  #       shell: bash -l {0}
+  #       run: |
+  #         ./build.sh mini
+
+  # unit-tests:
+  #   name: "Unit tests"
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: actions/checkout@main
+  #       with:
+  #         submodules: recursive
+
+  #     - name: Install dependencies
+  #       shell: bash -l {0}
+  #       run: |
+  #         wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+  #         echo "/Users/runner/.nimble/bin" >> $GITHUB_PATH
+          
+  #     - name: Verify dependecies
+  #       shell: bash -l {0}
+  #       run: |
+  #         nim --version
+          
+  #     - name: Build Arturo
+  #       shell: bash -l {0}
+  #       run: |
+  #         ./build.sh install
+
+  #     - name: Run unit tests
+  #       shell: bash -l {0}
+  #       run: |
+  #         echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+  #         arturo tests/runAll.art   
