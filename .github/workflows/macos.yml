@@ -120,6 +120,10 @@ jobs:
     needs: build-full
     runs-on: macos-latest
     steps:
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
+
       - name: Download binary artifact
         uses: actions/download-artifact@v2
         with:
@@ -128,4 +132,5 @@ jobs:
       - name: Run unit tests
         shell: bash -l {0}
         run: |
-          ./arturo tests/runAll.art  
+          ls -la
+          bin/arturo tests/runAll.art  
