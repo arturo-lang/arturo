@@ -1,4 +1,4 @@
-name: macOS
+name: MacOS
 on: [push, pull_request]
 
 jobs:
@@ -116,7 +116,5 @@ jobs:
       - name: Run unit tests
         shell: bash -l {0}
         run: |
-          pwd
-          ls -la
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tests/runAll.art   
