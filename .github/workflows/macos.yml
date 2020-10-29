@@ -4,13 +4,10 @@ on: [push, pull_request]
 jobs:
   cancel:
     name: "Cleanup"
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
-      - uses: styfle/cancel-workflow-action@0.3.1
-        with:
-          access_token: ${{ github.token }}
-          workflow_id: macos
-          
+      - uses: technote-space/auto-cancel-redundant-job@v1
+
   nimble-mini:
     name: "Nimble (mini)"
     runs-on: macos-latest
