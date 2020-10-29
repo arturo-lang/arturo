@@ -39,8 +39,8 @@ jobs:
           echo "${{ github.workspace }}/dist/mingw64/bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/bin"" >> $GITHUB_PATH
           echo "${{ github.workspace }}/nim"" >> $GITHUB_PATH
-          ls -la
-          ./nim/finish
+          ls -la nim
+          .\nim\finish.exe
           
       - name: Verify dependecies
         shell: bash -l {0}
