@@ -149,7 +149,8 @@ template execBlock(
         isFuncBlock     : bool = false, 
         exports         : Value = VNULL, 
         isPureFunc      : bool = false,
-        isIsolated      : bool = false
+        isIsolated      : bool = false,
+        inject          : ptr ValueDict = nil
 ): untyped =
 
     #-----------------------------
@@ -183,6 +184,13 @@ template execBlock(
             # properly set arity, if argument is a function
             if syms[symIndx].kind==Function:
                 Funcs[symIndx] = syms[symIndx].params.a.len 
+
+    #-----------------------------
+    # pre-process injections
+    #-----------------------------
+    if inject!=nil:
+        for k,v in pairs(inject[]):
+            syms[k] = v
 
     #-----------------------------
     # evaluate block
