@@ -317,6 +317,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         of at               : addCommand(opArray, inArrowBlock=true)
                         of sharp            : addCommand(opDictionary, inArrowBlock=true)
                         of dollar           : addCommand(opFunction, inArrowBlock=true) 
+                        of dotslash         : addCommand(opRelative, inArrowBlock=true)
                         of doublearrowright : addCommand(opWrite, inArrowBlock=true)   
                         of doublearrowleft  : addCommand(opRead, inArrowBlock=true) 
 
@@ -726,6 +727,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of at               : addCommand(opArray)
                     of sharp            : addCommand(opDictionary)
                     of dollar           : addCommand(opFunction)
+                    of dotslash         : addCommand(opRelative)
                     of doublearrowright : addCommand(opWrite)   
                     of doublearrowleft  : addCommand(opRead) 
                     of arrowright       : 
