@@ -199,6 +199,9 @@ template execBlock(
 
             syms[k] = v
 
+            if syms[k].kind==Function:
+                Funcs[k] = syms[k].params.a.len
+
     #-----------------------------
     # evaluate block
     #-----------------------------
@@ -307,6 +310,9 @@ template execBlock(
                 vmReturn = false
                 
         subSyms
+
+template execInternal*(path: string): untyped =
+    execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
 
 #=======================================
 # Methods
