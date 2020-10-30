@@ -413,6 +413,8 @@ type
 
         opDb            = 0x10B
 
+        opNative        = 0x10C
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2160,6 +2162,16 @@ const
                                 ret     : {Null},    
                                 attrs   :   ".sqlite -> support for SQLite databases",  
                                 desc    : "opens a new database connection" ),
+
+        opNative    : OpSpec(   name    : "native",      
+                                args    : 2,   
+      
+                                an      : "name",
+                                a       : {String},
+                                bn      : "arguments",
+                                b       : {Block},
+                                ret     : {Null},     
+                                desc    : "execute native function with given arguments" ),
 
     ]
 
