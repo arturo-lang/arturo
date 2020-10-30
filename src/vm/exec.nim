@@ -11,8 +11,8 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver
-import base64, cgi, std/editdistance, httpClient
-import json, math, md5, os, osproc
+import base64, cgi, db_sqlite, std/editdistance
+import httpClient, json, math, md5, os, osproc
 import random, rdstdin, re, sequtils, smtp
 import std/sha1, strformat, strutils, sugar
 import tables, times, unicode, xmltree
@@ -58,7 +58,7 @@ import library/[
 ]
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/stack, vm/value
+import vm/bytecode, vm/globals, vm/stack, vm/value
 
 import utils    
 
@@ -737,6 +737,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opPanic: Core.Panic()
 
                     of opDb: Database.Db()
+
+                    of opNative: Core.Native()
 
                     else: discard
 
