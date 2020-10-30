@@ -20,18 +20,10 @@ template Db*():untyped =
     require(opDb)
 
     if (popAttr("sqlite") != VNULL):
-        echo "opening new db (sqlite): " & x.s
         let dbObj = openSqliteDb(x.s)
-        echo "successfully opened: " & x.s
 
-        var injectable = {
-            "boom": newString("allakhu akbhar")
-        }.toOrderedTable
+        var internal = execInternal("db")
 
-        discard execBlock(y, willInject=true, inject=addr injectable)
+        discard execBlock(y, willInject=true, inject=addr internal)
 
-        echo "closing db (sqlite): " & x.s
         closeSqliteDb(dbObj)
-        echo "successfully closed: " & x.s
-
-
