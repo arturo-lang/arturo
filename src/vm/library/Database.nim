@@ -20,10 +20,10 @@ template Db*():untyped =
     require(opDb)
 
     if (popAttr("sqlite") != VNULL):
-        let dbObj = openSqliteDb(x.s)
+        MainDb = openSqliteDb(x.s)
 
         var internal = execInternal("db")
 
         discard execBlock(y, willInject=true, inject=addr internal)
 
-        closeSqliteDb(dbObj)
+        closeSqliteDb(MainDb)
