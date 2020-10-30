@@ -58,7 +58,7 @@ type
 
         lessthan        # <
         greaterthan     # >
-        
+       
         slash           # /
         doubleslash     # //
         backslash       #
@@ -66,6 +66,7 @@ type
         pipe            # |     
 
         ellipsis        # ..
+        dotslash        # ./
         colon           # :
 
     ValueKind* = enum
@@ -1017,6 +1018,7 @@ proc `$`*(v: Value): string {.inline.} =
                 of pipe             : return "|"
 
                 of ellipsis         : return ".."
+                of dotslash         : return "./"
                 of colon            : return ":"
 
         of Date     : return $(v.eobj)
@@ -1110,6 +1112,7 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
                 of pipe             : stdout.write "|"
 
                 of ellipsis         : stdout.write ".."
+                of dotslash         : stdout.write "./"
                 of colon            : stdout.write ":"
 
         of Date:
