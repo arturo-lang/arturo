@@ -222,6 +222,14 @@ template Let*():untyped =
 
     syms[x.s] = y
 
+template Native*():untyped =
+    require(opNative)
+
+    case x.s:
+        of "createSqliteTable":     createSqliteTable(y.a[0], y.a[1])
+        of "insertIntoSqliteTable": insertIntoSqliteTable(y.a[0], y.a[1])
+        else: echo "unrecognized native"
+
 template New*():untyped =
     require(opNew)
 
