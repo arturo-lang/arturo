@@ -150,6 +150,7 @@ template execBlock(
         exports         : Value = VNULL, 
         isPureFunc      : bool = false,
         isIsolated      : bool = false,
+        hasInjectable   : bool = false,
         inject          : ptr ValueDict = nil
 ): untyped =
 
@@ -188,7 +189,7 @@ template execBlock(
     #-----------------------------
     # pre-process injections
     #-----------------------------
-    if inject!=nil:
+    when hasInjectable:
         for k,v in pairs(inject[]):
             syms[k] = v
 
