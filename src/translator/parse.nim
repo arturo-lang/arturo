@@ -449,6 +449,10 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     inc(p.bufpos)
                     inc(p.bufpos)
                     addChild(topBlock, newSymbol(ellipsis))
+                elif p.buf[p.bufpos+1] == '/':
+                    inc(p.bufpos)
+                    inc(p.bufpos)
+                    addChild(topBlock, newSymbol(dotslash))
                 else:
                     parseLiteral(p)
                     if p.buf[p.bufpos] == Colon:
