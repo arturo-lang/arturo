@@ -43,6 +43,7 @@ import library/[
     Conversion,
     Core, 
     Crypto,
+    Database,
     Dates,
     Files,
     Logic, 
@@ -705,6 +706,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opZero: Numbers.IsZero()
 
                     of opPanic: Core.Panic()
+
+                    of opDb: Database.Db()
 
                     else: discard
 
