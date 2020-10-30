@@ -225,9 +225,11 @@ template Let*():untyped =
 template Native*():untyped =
     require(opNative)
 
+    echo "Executing native: " & x.s & " with " 
+    y.a[0].dump()
+
     case x.s:
-        of "createSqliteTable":     createSqliteTable(y.a[0], y.a[1])
-        of "insertIntoSqliteTable": insertIntoSqliteTable(y.a[0], y.a[1])
+        of "execSqlite":     execSqlite(y.a[0].s)
         else: echo "unrecognized native"
 
 template New*():untyped =
