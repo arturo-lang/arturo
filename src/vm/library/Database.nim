@@ -16,14 +16,45 @@ import vm/stack, vm/value
 # Methods
 #=======================================
 
-template Db*():untyped =
-    require(opDb)
+template DbClose*():untyped =
+    require(opDbClose)
 
-    if (popAttr("sqlite") != VNULL):
-        MainDb = openSqliteDb(x.s)
+    if x.dbKind == SqliteDatabase:
+        closeSqliteDb(x.sqlitedb)
+    elif x.dbKind == MysqlDatabase:
+        closeMysqlDb(x.mysqldb)
 
-        var internal = execInternal("db")
+template DbExec*():untyped =
+    require(opDbExec)
 
-        discard execBlock(y, willInject=true, inject=addr internal)
+    if x.dbKind == SqliteDatabase:
+        execSqliteDb(x.sqlitedb, y.s)
+    elif x.dbKind == MysqlDatabase:
+        execMysqlDb(x.mysqldb, y.s)
 
-        closeSqliteDb(MainDb)
+template DbOpen*():untyped =
+    require(opDbOpen)
+
+    var dbKind = SqliteDatabase
+
+    if (popAttr("mysql") != VNULL):
+        dbKind = MysqlDatabase
+
+    let dbName = x.s
+
+    if dbKind == SqliteDatabase:
+        stack.push(newDatabase(openSqliteDb(dbName)))
+    elif dbKind == MysqlDatabase:
+        stack.push(newDatabase(openMysqlDb(dbName)))
+
+# template Db*():untyped =
+#     require(opDb)
+
+#     if (popAttr("sqlite") != VNULL):
+#         MainDb = openSqliteDb(x.s)
+
+#         var internal = execInternal("db")
+
+#         discard execBlock(y, willInject=true, inject=addr internal)
+
+#         closeSqliteDb(MainDb)

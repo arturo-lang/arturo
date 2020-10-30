@@ -411,9 +411,11 @@ type
 
         opPanic         = 0x10A
 
-        opDb            = 0x10B
+        opDbOpen        = 0x10B
+        opDbExec        = 0x10C
+        opDbClose       = 0x10D
 
-        opNative        = 0x10C
+        opNative        = 0x10E
 
     ParamSpec* = set[ValueKind]
 
@@ -2152,16 +2154,33 @@ const
                                 attrs   :   ".code :integer -> return given exit code",  
                                 desc    : "exit program with error message" ),
 
-        opDb        : OpSpec(   name    : "db",      
-                                args    : 2,   
+        opDbOpen    : OpSpec(   name    : "dbOpen",      
+                                args    : 1,   
       
                                 an      : "name",
                                 a       : {String},
-                                bn      : "environment",
-                                b       : {Block},
+                                ret     : {Database},    
+                                attrs   :   ".sqlite -> support for SQLite databases~" &
+                                            ".mysql -> support for MySQL databases",  
+                                desc    : "opens a new database connection and returns database" ),
+
+        opDbExec    : OpSpec(   name    : "dbExec",      
+                                args    : 2,   
+      
+                                an      : "database",
+                                a       : {Database},
+                                bn      : "command",
+                                b       : {String},
                                 ret     : {Null},    
-                                attrs   :   ".sqlite -> support for SQLite databases",  
-                                desc    : "opens a new database connection" ),
+                                desc    : "execute command in given database" ),
+
+        opDbClose   : OpSpec(   name    : "dbClose",      
+                                args    : 1,   
+      
+                                an      : "database",
+                                a       : {Database},
+                                ret     : {Null},    
+                                desc    : "close given database" ),
 
         opNative    : OpSpec(   name    : "native",      
                                 args    : 2,   

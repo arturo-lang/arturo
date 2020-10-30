@@ -649,7 +649,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "panic"      : addExtraCommand(opPanic)
 
-                    of "db"         : addExtraCommand(opDb)
+                    of "dbOpen"     : addExtraCommand(opDbOpen)
+                    of "dbExec"     : addExtraCommand(opDbExec)
+                    of "dbClose"    : addExtraCommand(opDbClose)
 
                     of "native"     : addExtraCommand(opNative)
 
@@ -783,6 +785,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Block:
                 addTerminalValue(false):
                     addConst(consts, node, opPushX)
+
+            of Database: discard
 
             of Any: discard
 

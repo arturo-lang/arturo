@@ -222,6 +222,7 @@ template To*(needsRequire:bool = true):untyped =
             of Symbol,
                Dictionary,
                Function,
+               Database,
                Any,
                Inline,
                Label,

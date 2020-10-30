@@ -13,6 +13,9 @@
 import hashes, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
+import db_mysql as mysql
+import db_sqlite as sqlite
+
 import extras/bignum
 
 import utils
@@ -91,11 +94,16 @@ type
         Function    = 18
         Inline      = 19
         Block       = 20
-        Any         = 21
+        Database    = 21
+        Any         = 22
 
     IntegerKind* = enum
         NormalInteger
         BigInteger
+
+    DatabaseKind* = enum
+        SqliteDatabase
+        MysqlDatabase
 
     Value* {.acyclic.} = ref object 
         case kind*: ValueKind:
@@ -130,6 +138,11 @@ type
                 main*   : Value
                 exports*: Value
                 pure*   : bool
+            of Database:
+                case dbKind*: DatabaseKind:
+                    of SqliteDatabase: sqlitedb*: sqlite.DbConn
+                    of MysqlDatabase: mysqldb*: mysql.DbConn
+
 
 #=======================================
 # Constants
@@ -284,6 +297,12 @@ proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
 proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool = false): Value {.inline.} =
     Value(kind: Function, params: params, main: main, exports: exports, pure: pure)
 
+proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
+    Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
+
+proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
+    Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
+
 proc newInline*(a: ValueArray = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)
 
@@ -325,6 +344,10 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Dictionary:  result = newDictionary(v.d)
 
         of Function:    result = newFunction(v.params, v.main)
+
+        of Database:    
+            if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
+            elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
         else: discard
 
 #=======================================
@@ -1048,6 +1071,10 @@ proc `$`*(v: Value): string {.inline.} =
             result &= $(v.params)
             result &= $(v.main)
             result &= "]"
+
+        of Database:
+            if v.dbKind==SqliteDatabase: result = fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
+            elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
             
         of ANY: discard
 
@@ -1170,6 +1197,11 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
 
             for i in 0..level-1: stdout.write "\t"
             stdout.write "]"
+
+        of Database     :
+            if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
+            elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+
         of ANY: discard
 
     if (not isLast) and newLine:
@@ -1288,6 +1320,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
             stdout.write "\n"
 
             dumpBlockEnd()
+
+        of Database     :
+            if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
+            elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+
         of ANY          : discard
 
     if not isLast:
@@ -1341,4 +1378,8 @@ proc hash*(v: Value): Hash {.inline.}=
             result = cast[Hash](unsafeAddr v)
             # result = hash(v.params) !& hash(v.main)
             # result = !$ result
+        of Database:
+            if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
+            elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
+
         of ANY          : result = 0
