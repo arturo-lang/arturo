@@ -648,6 +648,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "panic"      : addExtraCommand(opPanic)
 
+                    of "db"         : addExtraCommand(opDb)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:

@@ -411,6 +411,8 @@ type
 
         opPanic         = 0x10A
 
+        opDb            = 0x10B
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2146,6 +2148,17 @@ const
                                 ret     : {Null},    
                                 attrs   :   ".code :integer -> return given exit code",  
                                 desc    : "exit program with error message" ),
+
+        opDb        : OpSpec(   name    : "db",      
+                                args    : 2,   
+      
+                                an      : "name",
+                                a       : {String},
+                                bn      : "environment",
+                                b       : {Block},
+                                ret     : {Null},    
+                                attrs   :   ".sqlite -> support for SQLite databases",  
+                                desc    : "opens a new database connection" ),
 
     ]
 
