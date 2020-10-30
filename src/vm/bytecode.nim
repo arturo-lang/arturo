@@ -2167,7 +2167,7 @@ const
                                 args    : 2,   
       
                                 an      : "name",
-                                a       : {String},
+                                a       : {String,Literal},
                                 bn      : "arguments",
                                 b       : {Block},
                                 ret     : {Null},     
