@@ -19,6 +19,13 @@ import vm/stack, vm/value
 template Db*():untyped =
     require(opDb)
 
-    echo "opening new db"
+    if (popAttr("sqlite") != VNULL):
+        echo "opening new db (sqlite): " & x.s
+        let dbObj = openSqliteDb(x.s)
+        echo "successfully opened: " & x.s
+
+        echo "closing db (sqlite): " & x.s
+        closeSqliteDb(dbObj)
+        echo "successfully closed: " & x.s
 
 
