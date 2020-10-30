@@ -1,0 +1,3 @@
+create: function [x][
+    print ["we are in internal create, with var:" x]
+]
