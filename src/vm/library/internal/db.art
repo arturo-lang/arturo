@@ -2,7 +2,7 @@ createTable: function [table,contents][
 	fields: []
 
 	loop #contents [k,v][
-		if k<>"sys" -> 
+		if is? :string v ->
 			'fields ++ ~"|k| |v|"
 	]
 	fields: join.with: ", " fields
@@ -13,8 +13,9 @@ createTable: function [table,contents][
 ]
 
 insertInto: function [table,contents][
-	tableKeys: 		join.with:", " select keys #contents 'x -> x<>"sys"
-	tableValues:	join.with:", " map (drop values #contents 1) 'x -> ~"\"|x|\""
+	details: #contents
+	tableKeys: 		join.with:", " select keys details 'x -> is? :string details \ x 
+	tableValues:	join.with:", " map (select values details 'x -> is? :string x) 'x -> ~"\"|x|\""
 
 	query: ~"INSERT INTO |table| (|tableKeys|) VALUES (|tableValues|)"
 

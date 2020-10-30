@@ -52,6 +52,7 @@ proc generateJsonNode*(n: Value): JsonNode =
                 result.add(k, generateJsonNode(v))
 
         of Function,
+           Database,
            Any          : discard
 
 proc parseJsonNode*(n: JsonNode): Value =
