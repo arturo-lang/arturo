@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import db_sqlite
+import db_mysql as mysql
+import db_sqlite as sqlite
 
 # #=======================================
 # # Types
@@ -28,8 +29,25 @@ import db_sqlite
 # Methods
 #=======================================
 
-proc openSqliteDb(name: string): DbConn =
-    open(name, "", "", "")
+#-----------------------
+# MySQL
+#-----------------------
 
-proc closeSqliteDb(dbObj: DbConn) =
-    dbObj.close()
+proc openMysqlDb*(name: string, 
+                  server: string = "localhost", 
+                  username: string = "", 
+                  password: string = ""): mysql.DbConn =
+    mysql.open(server, username, password, name)
+
+proc closeSqliteDb*(dbObj: mysql.DbConn) =
+    mysql.close(dbObj)
+
+#-----------------------
+# SQLite
+#-----------------------
+
+proc openSqliteDb*(name: string): sqlite.DbConn =
+    sqlite.open(name, "", "", "")
+
+proc closeSqliteDb*(dbObj: sqlite.DbConn) =
+    sqlite.close(dbObj)
