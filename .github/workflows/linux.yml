@@ -1,6 +1,8 @@
 name: Linux / MacOS
 on:
   push:
+    branches-ignore:
+      - 'drkameleon-devel'
     paths-ignore:
       - '*.gif'
       - '*.png'
