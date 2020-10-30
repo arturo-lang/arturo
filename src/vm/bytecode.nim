@@ -1922,7 +1922,8 @@ const
                                 desc    : "make all symbols within current context global"),
 
 
-        opRelative  : OpSpec(   name    : "relative",        
+        opRelative  : OpSpec(   name    : "relative",   
+                                alias   : "./",     
                                 args    : 1,   
     
                                 an      : "path",
