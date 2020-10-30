@@ -150,7 +150,7 @@ template execBlock(
         exports         : Value = VNULL, 
         isPureFunc      : bool = false,
         isIsolated      : bool = false,
-        hasInjectable   : bool = false,
+        willInject      : bool = false,
         inject          : ptr ValueDict = nil
 ): untyped =
 
@@ -189,8 +189,14 @@ template execBlock(
     #-----------------------------
     # pre-process injections
     #-----------------------------
-    when hasInjectable:
+    when willInject:
+        when not useArgs:
+            var saved = initOrderedTable[string,Value]()
+
         for k,v in pairs(inject[]):
+            if syms.hasKey(k):
+                saved[k] = syms[k]
+
             syms[k] = v
 
     #-----------------------------
@@ -203,12 +209,11 @@ template execBlock(
     #-----------------------------
     # execute it
     #-----------------------------
-
     when isIsolated:
         let subSyms = doExec(evaled, depth+1, nil)
     else:
         let subSyms = doExec(evaled, depth+1, addr syms)
-    
+
     #-----------------------------
     # handle result
     #-----------------------------
@@ -245,6 +250,7 @@ template execBlock(
         # update symbols
         #-----------------------------
         when not isFuncBlock:
+
             for k, v in pairs(subSyms):
                 # if we are explicitly .import-ing, 
                 # set symbol no matter what
@@ -264,6 +270,13 @@ template execBlock(
                         syms[arg.s] = saved[arg.s]
                     else:
                         syms.del(arg.s)
+
+            when willInject:
+                for k,v in pairs(inject[]):
+                    if saved.hasKey(k):
+                        syms[k] = saved[k]
+                    else:
+                        syms.del(k)
         else:
             when isPureFunc:
                 # nothing will be touched,
