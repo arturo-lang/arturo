@@ -1,3 +1,9 @@
-create: function [x][
-    print ["we are in internal create, with var:" x]
+create: function [name,contents][
+	if attr? 'table [
+		native 'createSqliteTable @[name, #contents]
+	]
+]
+
+insert: function [name,contents][
+	native 'insertIntoSqliteTable @[attr 'into, #contents]
 ]
