@@ -120,6 +120,11 @@ jobs:
         if: matrix.os == 'ubuntu-16.04'
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" 
           brew install mysql
+
+      - name: Install MySQL
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" 
+          brew install mysql
         if: matrix.os == 'macos-latest'
           
       - name: Verify dependecies
