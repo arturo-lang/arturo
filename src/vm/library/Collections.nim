@@ -794,11 +794,10 @@ template MakeArray*(): untyped =
     if x.kind==Block:
         discard execBlock(x)
     elif x.kind==String:
-        if fileExists(x.s):
-            discard execBlock(doParse(x.s), isIsolated=true)
-        elif isUrl(x.s):
-            let content = newHttpClient().getContent(x.s)
-            discard execBlock(doParse(content, isFile=false), isIsolated=true)
+        let (src, tp) = getSource(x.s)
+
+        if tp!=TextData:
+            discard execBlock(doParse(x.s, isFile=false), isIsolated=true)
         else:
             echo "file does not exist"
 
@@ -833,11 +832,10 @@ template MakeDictionary*(): untyped =
     if x.kind==Block:
         dict = execBlock(x,dictionary=true)
     elif x.kind==String:
-        if fileExists(x.s):
-            dict = execBlock(doParse(x.s), dictionary=true, isIsolated=true)
-        elif isUrl(x.s):
-            let content = newHttpClient().getContent(x.s)
-            dict = execBlock(doParse(content, isFile=false), dictionary=true, isIsolated=true)
+        let (src, tp) = getSource(x.s)
+
+        if tp!=TextData:
+            dict = execBlock(doParse(src, isFile=false), dictionary=true, isIsolated=true)
         else:
             echo "file does not exist"
 
