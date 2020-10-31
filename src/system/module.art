@@ -6,14 +6,25 @@
 ;; @file: system/module.art
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Globals
+
+REMOTE: « https://github.com/arturo-lang/art-modules/releases/download/v0.0.1/list.art
+LOCAL:  « /usr/local/lib/arturo/|name|.art
+
 ;; Helpers
+
+getFileUrl: function [initial,path][
+	release: read.json (replace initial "github.com" "api.github.com/repos") ++ "/releases/latest"
+	release: get release "tag_name"
+
+	return ~"|initial|/releases/download/|release|/|path|"
+]
 
 printInfo: function [name,remote][
 	print color.cyan ~"> Info for |name|: "
 	src: remote \ name
-	target: (replace src "github.com" "raw.githubusercontent.com") ++ "/main/info.art"
 
-	print #target
+	print # getFileUrl src "info.art"
 ]
 
 installModule: function [name,remote][
@@ -22,14 +33,13 @@ installModule: function [name,remote][
 	else
 		-> prints color.cyan ~"> Installing: |name|... "
 	src: remote \ name
-	target: (replace src "github.com" "raw.githubusercontent.com") ++ "/main/main.art"
-	write ~"/usr/local/lib/arturo/|name|.art" read target
+	write ~LOCAL read getFileUrl src "main.art"
 	print "[ DONE ]"
 ]
 
 uninstallModule: function [name][
 	prints color.cyan ~"> Uninstalling: |name|... "
-	execute ~"sudo rm /usr/local/lib/arturo/|name|.art"
+	execute "sudo rm " ++ ~LOCAL
 	print "[ DONE ]"
 ]
 
@@ -58,7 +68,7 @@ case [arg\0=]
 	]
 	when? ["remote"]	[ 
 		print "- Fetching remote list...\n"
-		remotes: #"http://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+		remotes: #REMOTE
 
 		print color.cyan "> Available remote modules:"
 		loop sort keys remotes [name]
@@ -70,7 +80,7 @@ case [arg\0=]
 			exit
 		]
 		print "- Fetching remote list...\n"
-		remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+		remotes: #REMOTE
 
 		if not? in? keys remotes arg\1 [
 			print [color.red.bold "Error:" "Remote module not found."]
@@ -85,7 +95,7 @@ case [arg\0=]
 			exit
 		]
 		print "- Fetching remote list...\n"
-		remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+		remotes: #REMOTE
 
 		if not? in? keys remotes arg\1 [
 			print [color.red.bold "Error:" "Remote module not found."]
@@ -118,7 +128,7 @@ case [arg\0=]
 		]
 		else [
 			print "- Fetching remote list...\n"
-			remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+			remotes: #REMOTE
 			loop sort locals [name]
 				-> installModule .update name remotes
 		]
