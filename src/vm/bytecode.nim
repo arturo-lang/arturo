@@ -411,9 +411,9 @@ type
 
         opPanic         = 0x10A
 
-        opDbOpen        = 0x10B
-        opDbExec        = 0x10C
-        opDbClose       = 0x10D
+        opOpen          = 0x10B
+        opQuery         = 0x10C
+        opClose         = 0x10D
 
         opNative        = 0x10E
 
@@ -2154,7 +2154,7 @@ const
                                 attrs   :   ".code :integer -> return given exit code",  
                                 desc    : "exit program with error message" ),
 
-        opDbOpen    : OpSpec(   name    : "dbOpen",      
+        opOpen      : OpSpec(   name    : "open",      
                                 args    : 1,   
       
                                 an      : "name",
@@ -2164,7 +2164,7 @@ const
                                             ".mysql -> support for MySQL databases",  
                                 desc    : "opens a new database connection and returns database" ),
 
-        opDbExec    : OpSpec(   name    : "dbExec",      
+        opQuery     : OpSpec(   name    : "query",      
                                 args    : 2,   
       
                                 an      : "database",
@@ -2174,7 +2174,7 @@ const
                                 ret     : {Null},    
                                 desc    : "execute command in given database" ),
 
-        opDbClose   : OpSpec(   name    : "dbClose",      
+        opClose     : OpSpec(   name    : "close",      
                                 args    : 1,   
       
                                 an      : "database",

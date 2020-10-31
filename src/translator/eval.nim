@@ -649,9 +649,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "panic"      : addExtraCommand(opPanic)
 
-                    of "dbOpen"     : addExtraCommand(opDbOpen)
-                    of "dbExec"     : addExtraCommand(opDbExec)
-                    of "dbClose"    : addExtraCommand(opDbClose)
+                    of "open"       : addExtraCommand(opOpen)
+                    of "query"      : addExtraCommand(opQuery)
+                    of "close"      : addExtraCommand(opClose)
 
                     of "native"     : addExtraCommand(opNative)
 
