@@ -13,7 +13,7 @@
 when defined(PROFILE):
     import nimprof
 
-import os, parseopt, segFaults, strutils
+import os, parseopt, segFaults
 
 import translator/eval, translator/parse
 import vm/bytecode, vm/env, vm/exec, vm/value
