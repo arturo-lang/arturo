@@ -16,7 +16,6 @@ import nre except toSeq
 
 import translator/parse
 import vm/stack, vm/value
-import helpers/url
 
 #=======================================
 # Helpers
