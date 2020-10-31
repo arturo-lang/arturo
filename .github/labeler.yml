@@ -1,0 +1,16 @@
+installer:
+  - build.sh
+
+repl:
+  - src/system/console.art
+
+library:
+  - src/vm/library/*
+
+vm:
+  - src/vm/bytecode.nim
+  - src/vm/env.nim
+  - src/vm/exec.nim
+  - src/vm/globals.nim
+  - src/vm/stack.nim
+  - src/vm/value.nim
