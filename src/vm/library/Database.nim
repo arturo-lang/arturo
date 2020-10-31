@@ -16,24 +16,24 @@ import vm/stack, vm/value
 # Methods
 #=======================================
 
-template DbClose*():untyped =
-    require(opDbClose)
+template Close*():untyped =
+    require(opClose)
 
     if x.dbKind == SqliteDatabase:
         closeSqliteDb(x.sqlitedb)
     elif x.dbKind == MysqlDatabase:
         closeMysqlDb(x.mysqldb)
 
-template DbExec*():untyped =
-    require(opDbExec)
+template Query*():untyped =
+    require(opQuery)
 
     if x.dbKind == SqliteDatabase:
         execSqliteDb(x.sqlitedb, y.s)
     elif x.dbKind == MysqlDatabase:
         execMysqlDb(x.mysqldb, y.s)
 
-template DbOpen*():untyped =
-    require(opDbOpen)
+template Open*():untyped =
+    require(opOpen)
 
     var dbKind = SqliteDatabase
 

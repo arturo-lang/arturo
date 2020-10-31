@@ -736,9 +736,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
                     of opPanic: Core.Panic()
 
-                    of opDbOpen: Database.DbOpen()
-                    of opDbExec: Database.DbExec()
-                    of opDbClose: Database.DbClose()
+                    of opOpen: Database.Open()
+                    of opQuery: Database.Query()
+                    of opClose: Database.Close()
 
                     of opNative: Core.Native()
 
