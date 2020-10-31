@@ -58,7 +58,7 @@ import library/[
 ]
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/globals, vm/stack, vm/value
+import vm/bytecode, vm/stack, vm/value
 
 import utils    
 
