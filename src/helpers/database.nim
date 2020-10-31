@@ -10,13 +10,8 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, strutils
-import sugar, tables
-
 import db_mysql as mysql
 import db_sqlite as sqlite
-
-import vm/globals, vm/value
 
 #=======================================
 # Methods
