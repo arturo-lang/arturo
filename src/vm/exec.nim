@@ -15,7 +15,7 @@ import base64, cgi, db_sqlite, std/editdistance
 import httpClient, json, math, md5, os, osproc
 import random, rdstdin, re, sequtils, smtp
 import std/sha1, strformat, strutils, sugar
-import tables, times, unicode, xmltree
+import tables, times, unicode, uri, xmltree
 import nre except toSeq
 
 when not defined(windows):
@@ -30,6 +30,7 @@ import helpers/datasource   as datasourceHelper
 import helpers/html         as htmlHelper
 import helpers/json         as jsonHelper
 import helpers/markdown     as markdownHelper
+import helpers/path         as pathHelper
 import helpers/strings      as stringsHelper
 import helpers/unisort      as unisortHelper
 import helpers/url          as urlHelper
@@ -741,6 +742,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opClose: Database.Close()
 
                     of opNative: Core.Native()
+
+                    of opExtract: Path.Extract()
 
                     else: discard
 
