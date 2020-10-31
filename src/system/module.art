@@ -58,7 +58,7 @@ case [arg\0=]
 	]
 	when? ["remote"]	[ 
 		print "- Fetching remote list...\n"
-		remotes: #"https://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
+		remotes: #"http://raw.githubusercontent.com/arturo-lang/art-modules/main/list.art"
 
 		print color.cyan "> Available remote modules:"
 		loop sort keys remotes [name]
