@@ -655,6 +655,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "native"     : addExtraCommand(opNative)
 
+                    of "extract"    : addExtraCommand(opExtract)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:

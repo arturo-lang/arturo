@@ -10,11 +10,53 @@
 # Libraries
 #=======================================
 
+import helpers/path, helpers/url
+
 import vm/env, vm/stack, vm/value
 
 #=======================================
 # Methods
 #=======================================
+
+template Extract*():untyped =
+    require(opExtract)
+
+    if isUrl(x.s):
+        let details = parseUrlComponents(x.s)
+
+        if (popAttr("scheme") != VNULL):
+            stack.push(details["scheme"])
+        elif (popAttr("host") != VNULL):
+            stack.push(details["host"])
+        elif (popAttr("port") != VNULL):
+            stack.push(details["port"])
+        elif (popAttr("user") != VNULL):
+            stack.push(details["user"])
+        elif (popAttr("password") != VNULL):
+            stack.push(details["password"])
+        elif (popAttr("path") != VNULL):
+            stack.push(details["path"])
+        elif (popAttr("query") != VNULL):
+            stack.push(details["query"])
+        elif (popAttr("anchor") != VNULL):
+            stack.push(details["anchor"])
+        else:
+            stack.push(newDictionary(details))
+
+        discard
+    else:
+        let details = parsePathComponents(x.s)
+
+        if (popAttr("directory") != VNULL):
+            stack.push(details["directory"])
+        elif (popAttr("basename") != VNULL):
+            stack.push(details["basename"])
+        elif (popAttr("filename") != VNULL):
+            stack.push(details["filename"])
+        elif (popAttr("extension") != VNULL):
+            stack.push(details["extension"])
+        else:
+            stack.push(newDictionary(details))
 
 template Module*():untyped =
     # EXAMPLE:

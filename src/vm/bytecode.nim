@@ -417,6 +417,8 @@ type
 
         opNative        = 0x10E
 
+        opExtract       = 0x10F
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2191,6 +2193,26 @@ const
                                 b       : {Block},
                                 ret     : {Null},     
                                 desc    : "execute native function with given arguments" ),
+
+        opExtract   : OpSpec(   name    : "extract",      
+                                args    : 1,   
+      
+                                an      : "path",
+                                a       : {String},
+                                ret     : {String,Dictionary},
+                                attrs   :   ".directory -> get path directory~" &
+                                            ".basename -> get path basename (filename+ext)~" &
+                                            ".filename -> get path filename~" &
+                                            ".extension -> get path extension~" &
+                                            ".scheme -> get scheme field from URL~" &
+                                            ".host -> get host field from URL~" &
+                                            ".port -> get port field from URL~" &
+                                            ".user -> get user field from URL~" &
+                                            ".password -> get password field from URL~" &
+                                            ".path -> get path field from URL~" &
+                                            ".query -> get query field from URL~" &
+                                            ".anchor -> get anchor field from URL",
+                                desc    : "extract components from path" ),
 
     ]
 
