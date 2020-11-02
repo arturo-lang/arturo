@@ -30,6 +30,7 @@ import helpers/datasource   as datasourceHelper
 import helpers/html         as htmlHelper
 import helpers/json         as jsonHelper
 import helpers/markdown     as markdownHelper
+import helpers/math         as mathHelper
 import helpers/path         as pathHelper
 import helpers/strings      as stringsHelper
 import helpers/unisort      as unisortHelper
