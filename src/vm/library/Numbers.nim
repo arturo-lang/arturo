@@ -224,20 +224,14 @@ template Average*():untyped =
 
     require(opAverage)
 
-    var res = 0.0
+    var res = F0.copyValue
 
     for num in x.a:
-        if num.kind==Integer:
-            res += (float)num.i
-        elif num.kind==Floating:
-            res += num.f
+        res += num
 
-    res = res / (float)(x.a.len)
+    res //= newFloating(x.a.len)
 
-    if (float)(toInt(res))==res:
-        stack.push(newInteger(toInt(res)))
-    else:
-        stack.push(newFloating(res))
+    stack.push(res)
 
 template Cos*():untyped = 
     require(opAcos)
@@ -412,23 +406,7 @@ template Median*():untyped =
         if x.a.len mod 2 == 1:
             stack.push(first) 
         else:
-            var res = 0.0
-
-            if first.kind==Integer:
-                if second.kind==Integer:
-                    res = ((float)(first.i) + (float)(second.i))/2
-                elif second.kind==Floating:
-                    res = ((float)(first.i) + second.f)/2
-            elif first.kind==Floating:
-                if second.kind==Integer:
-                    res = (first.f + (float)(second.i))/2
-                elif second.kind==Floating:
-                    res = (first.f + second.f)/2
-
-            if (float)(toInt(res))==res:
-                stack.push(newInteger(toInt(res)))
-            else:
-                stack.push(newFloating(res))
+            stack.push((first + second)//I2)
 
 template Product*():untyped =
     # EXAMPLE:
@@ -440,9 +418,9 @@ template Product*():untyped =
     require(opProduct)
 
     var i = 0
-    var product = I1
+    var product = I1.copyValue
     while i<x.a.len:
-        product = product * x.a[i]
+        product *= x.a[i]
         i += 1
 
     stack.push(product)
@@ -491,9 +469,9 @@ template Sum*():untyped =
     require(opSum)
 
     var i = 0
-    var sum = I0
+    var sum = I0.copyValue
     while i<x.a.len:
-        sum = sum + x.a[i]
+        sum += x.a[i]
         i += 1
 
     stack.push(sum)
