@@ -222,6 +222,9 @@ proc newInteger*(i: string): Value {.inline.} =
 proc newFloating*(f: float): Value {.inline.} =
     Value(kind: Floating, f: f)
 
+proc newFloating*(f: int): Value {.inline.} =
+    Value(kind: Floating, f: (float)(f))
+
 proc newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
