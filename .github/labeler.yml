@@ -1,8 +1,24 @@
 installer:
+  - arturo.nimble
   - build.sh
+
+3rd-party:
+  - src/extras/*
+
+helpers:
+  - src/helpers/*
+
+evaluator:
+  - src/translator/eval.nim
+
+parser:
+  - src/translator/parse.nim
 
 repl:
   - src/system/console.art
+
+package-manager:
+  - src/system/module.art
 
 library:
   - src/vm/library/*
@@ -14,3 +30,6 @@ vm:
   - src/vm/globals.nim
   - src/vm/stack.nim
   - src/vm/value.nim
+
+unit-test:
+  - tests/*
