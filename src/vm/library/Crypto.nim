@@ -48,7 +48,7 @@ template Digest*():untyped =
     # print digest.sha "Hello world"
     # ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
 
-    require(opGetHash)
+    require(opDigest)
 
     if (popAttr("sha") != VNULL):
         if x.kind==Literal:
