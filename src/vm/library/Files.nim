@@ -72,6 +72,11 @@ template Read*():untyped =
         else:
             stack.push(newString(src))
 
+template Unzip*():untyped = 
+    require(opUnzip)
+
+    miniz.unzip(y.s, x.s)
+
 
 template Write*():untyped =
     # EXAMPLE:
@@ -95,3 +100,9 @@ template Write*():untyped =
         else:
             writeFile(x.s, y.s)
     
+template Zip*():untyped = 
+    require(opZip)
+
+    let files: seq[string] = y.a.map((z)=>z.s)
+
+    miniz.zip(files, x.s)
