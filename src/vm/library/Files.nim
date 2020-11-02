@@ -63,6 +63,8 @@ template Read*():untyped =
             stack.push(parseJsonNode(parseJson(src)))
         elif (popAttr("csv") != VNULL):
             stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
+        elif (popAttr("toml") != VNULL):
+            stack.push(parseTomlString(src))
         elif (popAttr("html") != VNULL):
             stack.push(parseHtmlInput(src))
         elif (popAttr("markdown") != VNULL):
