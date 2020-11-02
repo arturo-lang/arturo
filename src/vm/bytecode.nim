@@ -320,7 +320,7 @@ type
         opKeys          = 0xD3
         opValues        = 0xD4
 
-        opGetHash       = 0xD5
+        opDigest        = 0xD5
 
         opAlias         = 0xD6
 
@@ -1664,14 +1664,14 @@ const
                                 ret     : {Block},
                                 desc    : "get list of values for given dictionary"),
 
-        opGetHash   : OpSpec(   name    : "hash",
+        opDigest    : OpSpec(   name    : "digest",
                                 args    : 1,
 
                                 an      : "value",
                                 a       : {String,Literal},
                                 ret     : {String},
                                 attrs   :   ".sha -> use SHA1",
-                                desc    : "get (MD5) hash for given value"),
+                                desc    : "get digest for given value (default: MD5)"),
 
         opAlias     : OpSpec(),
 
