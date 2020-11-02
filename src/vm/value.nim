@@ -212,6 +212,9 @@ proc newInteger*(i: int): Value {.inline.} =
     else:
         result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
+proc newInteger*(i: int64): Value {.inline.} =
+    newInteger((int)(i))
+
 proc newInteger*(i: string): Value {.inline.} =
     try:
         newInteger(parseInt(i))
