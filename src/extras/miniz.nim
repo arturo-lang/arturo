@@ -1,3 +1,6 @@
+# Original Nim port
+# Copyright (c) 2017 Fabio Cevasco 
+
 {.compile: "libminiz.c".}
 
 import strutils
