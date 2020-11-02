@@ -73,6 +73,8 @@ template Read*():untyped =
             stack.push(newString(src))
 
 template Unzip*():untyped = 
+    # EXAMPLE:
+    # unzip "folder" "archive.zip"
     require(opUnzip)
 
     miniz.unzip(y.s, x.s)
@@ -101,6 +103,9 @@ template Write*():untyped =
             writeFile(x.s, y.s)
     
 template Zip*():untyped = 
+    # EXAMPLE:
+    # zip "dest.zip" ["file1.txt" "img.png"]
+
     require(opZip)
 
     let files: seq[string] = y.a.map((z)=>z.s)
