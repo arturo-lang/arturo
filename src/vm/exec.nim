@@ -493,9 +493,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             # # structures
 
-            of opArray      : Collections.MakeArray()
-            of opDictionary : Collections.MakeDictionary()
-            of opFunction   : Collections.MakeFunction()
+            of opArray      : Core.MakeArray()
+            of opDictionary : Core.MakeDictionary()
+            of opFunction   : Core.MakeFunction()
 
             # [0x7] #
             # system calls (144 slots)
