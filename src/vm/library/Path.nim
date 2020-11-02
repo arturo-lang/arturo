@@ -42,8 +42,6 @@ template Extract*():untyped =
             stack.push(details["anchor"])
         else:
             stack.push(newDictionary(details))
-
-        discard
     else:
         let details = parsePathComponents(x.s)
 
