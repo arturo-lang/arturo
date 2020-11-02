@@ -10,8 +10,7 @@
 # Libraries
 #=======================================
 
-import std/json, sequtils, sugar
-import tables, unicode
+import sequtils, sugar, tables
 
 import extras/parsetoml
 
