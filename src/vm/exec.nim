@@ -21,7 +21,7 @@ import nre except toSeq
 when not defined(windows):
     import linenoise
 
-import extras/bignum, extras/miniz
+import extras/bignum, extras/miniz, extras/parsetoml
 
 import helpers/arrays       as arraysHelper   
 import helpers/csv          as csvHelper
@@ -33,6 +33,7 @@ import helpers/markdown     as markdownHelper
 import helpers/math         as mathHelper
 import helpers/path         as pathHelper
 import helpers/strings      as stringsHelper
+import helpers/toml         as tomlHelper
 import helpers/unisort      as unisortHelper
 import helpers/url          as urlHelper
 import helpers/webview      as webviewHelper
