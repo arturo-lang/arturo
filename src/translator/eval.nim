@@ -561,7 +561,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "keys"       : addCommand(opKeys)
                     of "values"     : addCommand(opValues)
 
-                    of "hash"       : addCommand(opGetHash)
+                    of "digest"     : addCommand(opDigest)
 
                     of "mail"       : addCommand(opMail)
                     of "download"   : addCommand(opDownload)
