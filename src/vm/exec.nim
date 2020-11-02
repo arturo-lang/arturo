@@ -21,7 +21,7 @@ import nre except toSeq
 when not defined(windows):
     import linenoise
 
-import extras/bignum
+import extras/bignum, extras/miniz
 
 import helpers/arrays       as arraysHelper   
 import helpers/csv          as csvHelper
