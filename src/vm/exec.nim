@@ -643,7 +643,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opKeys: Collections.Keys()
             of opValues: Collections.Values()
 
-            of opGetHash: Crypto.Digest()
+            of opDigest: Crypto.Digest()
 
             of opAlias: discard
 
