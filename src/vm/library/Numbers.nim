@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import bitops, math, sequtils, sugar
+import math, sequtils, sugar
 
 import extras/bignum
 import vm/stack, vm/value
