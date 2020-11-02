@@ -13,7 +13,7 @@
 import bitops, std/math, sequtils, sugar
 
 import extras/bignum
-import vm/stack, vm/value
+import vm/value
 
 #=======================================
 # Methods
