@@ -101,7 +101,7 @@ type
     stream*: streams.Stream
     curTableRef*: TomlTableRef
 
-  TomlError* = object of Exception
+  TomlError* = object of Defect
     location*: ParserState
 
   NumberBase = enum
@@ -238,7 +238,7 @@ proc parseInt(state: var ParserState,
 
     try:
       result = result * baseNum - charToInt(nextChar, base)
-    except OverflowError:
+    except OverflowDefect:
       raise(newTomlError(state,
                          "integer numbers wider than 64 bits not allowed"))
 
@@ -247,7 +247,7 @@ proc parseInt(state: var ParserState,
   if not negative:
     try:
       result = -result
-    except OverflowError:
+    except OverflowDefect:
       raise(newTomlError(state,
                          "integer numbers wider than 64 bits not allowed"))
 
@@ -515,7 +515,7 @@ proc parseStrictNum(state: var ParserState,
     try:
       result = result * 10 + charToInt(nextChar, base10)
       parsedChars += 1
-    except OverflowError:
+    except OverflowDefect:
       raise(newTomlError(state,
                          "integer numbers wider than 64 bits not allowed"))
 
@@ -715,7 +715,7 @@ proc parseDateOrTime(state: var ParserState, digits: int, yearOrHour: int): Toml
           yoh *= 10
           yoh += ord(nextChar) - ord('0')
           d += 1
-        except OverflowError:
+        except OverflowDefect:
           raise newTomlError(state, "number larger than 64 bits wide")
         continue
       of strutils.Whitespace:
@@ -820,7 +820,7 @@ proc parseNumOrDate(state: var ParserState): TomlValueRef =
                 curSum *= 10
                 curSum += ord('0') - ord(nextChar)
                 digits += 1
-              except OverflowError:
+              except OverflowDefect:
                 raise newTomlError(state, "number larger than 64 bits wide")
               wasUnderscore = false
               continue
@@ -1870,7 +1870,7 @@ proc delete*(obj: TomlValueRef, key: string) =
   ## Deletes ``obj[key]``.
   assert(obj.kind == TomlValueKind.Table)
   if not obj.tableVal.hasKey(key):
-    raise newException(IndexError, "key not in object")
+    raise newException(IndexDefect, "key not in object")
   obj.tableVal.del(key)
 
 proc copy*(p: TomlValueRef): TomlValueRef =
