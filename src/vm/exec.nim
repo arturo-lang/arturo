@@ -745,6 +745,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
                     of opExtract: Path.Extract()
 
+                    of opZip: Files.Zip()
+                    of opUnzip: Files.Unzip()
+
                     else: discard
 
             else: discard

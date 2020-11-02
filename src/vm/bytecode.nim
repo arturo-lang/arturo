@@ -419,6 +419,9 @@ type
 
         opExtract       = 0x10F
 
+        opZip           = 0x110
+        opUnzip         = 0x111
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2213,6 +2216,26 @@ const
                                             ".query -> get query field from URL~" &
                                             ".anchor -> get anchor field from URL",
                                 desc    : "extract components from path" ),
+
+        opZip       : OpSpec(   name    : "zip",      
+                                args    : 2,   
+      
+                                an      : "destination",
+                                a       : {String},
+                                bn      : "files",
+                                b       : {Block},
+                                ret     : {Null},
+                                desc    : "zip given files to file at destination" ),
+
+        opUnzip     : OpSpec(   name    : "unzip",      
+                                args    : 2,   
+      
+                                an      : "destination",
+                                a       : {String},
+                                bn      : "original",
+                                b       : {String},
+                                ret     : {Null},
+                                desc    : "unzip given archive to destination" ),
 
     ]
 

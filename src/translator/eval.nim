@@ -657,6 +657,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "extract"    : addExtraCommand(opExtract)
 
+                    of "zip"        : addExtraCommand(opZip)
+                    of "unzip"      : addExtraCommand(opUnzip)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
