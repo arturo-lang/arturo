@@ -1945,7 +1945,7 @@ const
     
                                 an      : "collection",
                                 a       : {Block},
-                                ret     : {Integer,Floating},      
+                                ret     : {Floating},      
                                 desc    : "get average from given collection of numbers"),
 
         opMedian    : OpSpec(   name    : "median",        
