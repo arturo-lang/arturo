@@ -40,7 +40,8 @@ parseExamples: function[l,i][
 getFunctionsByLib: function[][
 	libs: sort list relative "../src/vm/library"
 	loop libs 'lib [
-		if lib<>"src/vm/library/.DS_Store" [
+
+		if and? lib<>"src/vm/library/.DS_Store" not? in? lib "internal" [
 			funcsInLib: sort map unique select map 
 				match read lib "template [A-Za-z]+"
 				'x [ strip replace x "template " ""]
@@ -74,7 +75,8 @@ getFunctionsByLib: function[][
 ]
 getFunctionsByLib
 
-funcTemplate: ---
+
+funcTemplate: {
 ## |fname||falias|
 
 #### Description
@@ -90,10 +92,10 @@ funcTemplate: ---
 #### Returns
 
 |fret||fexam|
----
+}
 
 tocTemplate: 
----
+{
 
 <!--ts-->
    * [The Language](#the-language)
@@ -113,7 +115,7 @@ tocTemplate:
    * [License](#license)
 <!--te-->
 
----
+}
 
 inspect examples
 
@@ -171,14 +173,14 @@ loop functionsByLib [lib,functions][
 				print ["got" fexams]
 
 				if not? empty? fexams [
-					fexam: "\n\n" ++ render ---
+					fexam: "\n\n" ++ render {
 					#### Examples
 
 					```red
 					|fexams\0\1|
 					```
 
-					---
+					}
 				]
 				
 				; loop examples 'exam [
