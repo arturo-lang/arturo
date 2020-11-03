@@ -126,7 +126,7 @@ loop functionsByLib [lib,functions][
 		loop functions 'func [
 			print func
 			;exampl: get examples to :string func
-			if null<>info.get func [
+			if null<>info func [
 				funcLink: func
 
 				if in? funcLink "?" [
@@ -137,7 +137,7 @@ loop functionsByLib [lib,functions][
 					]
 				]
 				toc: toc ++ ~"   * [|func|](#|funcLink|)\n"
-				funcInfo: info.get func
+				funcInfo: info func
 
 				fname: funcInfo\name
 				fdescription: capitalize funcInfo\description
