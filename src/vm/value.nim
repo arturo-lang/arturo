@@ -1338,6 +1338,95 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
     if not isLast:
         stdout.write "\n"
 
+proc codify*(v: Value): string {.inline.} =
+    case v.kind:
+        of Null         : result = "null"
+        of Boolean      : 
+            if v.b: result = "true"
+            else: result = "false"
+        of Integer      :
+            if v.iKind==NormalInteger: result = $(v.i)
+            else: result = $(v.bi)
+        of Floating     : result = $(v.f)
+        of Type         : result = ":" & ($(v.t)).toLowerAscii()
+        of Char         : result = "`" & $(v.c) & "`"
+        of String       : result = "\"" & v.s & "\""
+        of Word         : result = v.s
+        of Literal      : result = "'" & v.s
+        of Label        : result = v.s & ":"
+        of Attr         : result = "." & v.r
+        of AttrLabel    : result = "." & v.r & ":"
+        of Symbol       : 
+            case v.m:
+                of thickarrowleft   : result = "<="
+                of thickarrowright  : result = "=>"
+                of arrowleft        : result = "<-"
+                of arrowright       : result = "->"
+                of doublearrowleft  : result = "<<"
+                of doublearrowright : result = ">>"
+
+                of equalless        : result = "=<"
+                of greaterequal     : result = ">="
+                of lessgreater      : result = "<>"
+
+                of tilde            : result = "~"
+                of exclamation      : result = "!"
+                of at               : result = "@"
+                of sharp            : result = "#"
+                of dollar           : result = "$"
+                of percent          : result = "%"
+                of caret            : result = "^"
+                of ampersand        : result = "&"
+                of asterisk         : result = "*"
+                of minus            : result = "-"
+                of doubleminus      : result = "--"
+                of underscore       : result = "_"
+                of equal            : result = "="
+                of plus             : result = "+"
+                of doubleplus       : result = "++"
+                of lessthan         : result = "<"
+                of greaterthan      : result = ">"
+                of slash            : result = "/"
+                of doubleslash      : result = "//"
+                of backslash        : result = "\\"
+                of doublebackslash  : result = "\\\\"
+                of pipe             : result = "|"
+
+                of ellipsis         : result = ".."
+                of dotslash         : result = "./"
+                of colon            : result = ":"
+
+        of Inline, Block:
+            if v.kind==Inline: result = "("
+            else: result = "["
+            
+            var parts: seq[string] = @[]
+            for i,child in v.a:
+                parts.add(codify(child))
+
+            result &= parts.join(" ")
+
+            if v.kind==Inline: result &= ")"
+            else: result &= "]"
+
+        of Dictionary:
+            result = "#["
+
+            for k,v in pairs(v.d):
+                result &= k & ": "
+                result &= codify(v) & " "
+
+            result &= "]"
+
+        of Function:
+            result = "function ["
+            result &= codify(v.params)
+            result &= "]["
+            result &= codify(v.main)
+            result &= "]"
+        else:
+            result = ""
+
 proc hash*(v: Value): Hash {.inline.}=
     case v.kind:
         of Null         : result = 0
