@@ -154,7 +154,12 @@ when isMainModule:
                     let evaled = parsed.doEval()
             else:
                 bootup(run=true):
-                    let parsed = doParse(move code, isFile = action==execFile)
+                    when defined(PYTHONIC):
+                        code = readFile(code)
+                        let parsed = doParse(move code, isFile = false)
+                    else:
+                        let parsed = doParse(move code, isFile = action==execFile)
+                        
                     let evaled = parsed.doEval()
                 
         of writeBcode:
