@@ -893,6 +893,8 @@ proc `==`*(x: Value, y: Value): bool =
                 return true
             of Function:
                 return x.params == y.params and x.main == y.main and x.exports == y.exports and x.pure == y.pure
+            of Date:
+                return x.eobj == y.eobj
             else:
                 return false
 
