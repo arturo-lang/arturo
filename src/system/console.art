@@ -6,40 +6,61 @@
 ;; @file: system/console.art
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; templates
+;; helpers & templates
 
 LongHeader: {
 	|color.green.bold "Arturo"|  
 	|sys\copyright| |sys\author|
-
-	version : |sys\version| 
-	build   : |sys\build| (|sys\buildDate|) 
-	system  : |sys\cpu|/|sys\os|
 }
 
-Subheader: 
----
-# Type <help 'function> for info about a specific built-in function
-# Type <help []> to get a list of all available functions
+Details: {
+	# v/|sys\version| b/|sys\build| @ |sys\buildDate| 
+	# arch: |sys\cpu|/|sys\os|
+}
 
-# Launching interactive console; Rock on.
----
+BR: "\n"
+
+orange: $[x][
+	color.rgb:208 x
+]
+
+orangeBold: $[x][
+	color.bold.rgb:208 x
+]
 
 ;; print header
 
-print "" 
-print ~LongHeader 
-print ""
-print color.rgb:208 Subheader
-print ""
+clear
+
+print join @[
+	~LongHeader BR BR
+	color.gray ~Details BR BR
+	orange "# Type " 
+	orangeBold "help 'function"
+	orange " for info about a specific built-in function" BR
+	orange "# Type " 
+	orangeBold "help []"
+	orange " to get a list of all available functions" BR
+	orange "# For multi-line input, just add a blank space at the end of a line" BR BR
+	orange "# Launching interactive console - rock on! 🤘" BR
+]
 
 ;; start the REPL
 
 while [true] [
 	push null
 	Got: null
+
+	indent: ""
 	
-	do.import input "$> " 
+	inp: input "$> " 
+	while [suffix? inp " "][
+		if suffix? strip inp "[" [
+			indent: indent ++ "\t"
+		]
+		inp: inp ++ input ".. " ++ indent
+	]
+	do.import inp
 	StackSize: size stack
 
 	if StackSize > 0 	-> Got: pop 1 
