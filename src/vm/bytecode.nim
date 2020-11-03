@@ -966,7 +966,6 @@ const
                                 an      : "symbol",      
                                 a       : {String,Literal},      
                                 ret     : {Dictionary,Null},      
-                                attrs   :   ".get -> return info as a dictionary",
                                 desc    : "print info for given symbol" ),
 
         opType      : OpSpec(   name    : "type",      
@@ -1532,10 +1531,12 @@ const
                                 desc    : "check if given string is lowercase" ),
 
         opHelp      : OpSpec(   name    : "help",        
-                                args    : 0,   
+                                args    : 1,   
 
+                                an      : "function",
+                                a       : {Literal,Block},
                                 ret     : {Null},      
-                                desc    : "print complete list of built-in functions" ),
+                                desc    : "print help for given function or ~a complete list of built-in functions" ),
 
         opEmpty     : OpSpec(   name    : "empty",        
                                 args    : 1,   

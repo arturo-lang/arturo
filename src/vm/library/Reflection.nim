@@ -231,31 +231,9 @@ template HasAttr*():untyped =
     else:
         stack.push(VFALSE)
 
-template Help*():untyped =
-    # EXAMPLE:
-    # help
-    #
-    # ; abs      (value)   get the absolute value for given integer
-    # ; acos     (angle)   calculate the inverse cosine of given angle
-    # ; acosh    (angle)   calculate the inverse hyperbolic cosine of given angle
-    # ; ...
-
-    require(opHelp)
-    printHelp()
-
 template Info*():untyped =
     # EXAMPLE:
-    # info 'print
-    #
-    # ; |------------------------------------------------------------------
-    # ;           print  print given value to screen with newline
-    # ; |------------------------------------------------------------------
-    # ; |          usage  print value  :any 
-    # ; |
-    # ; |        returns  :null
-    # ; |------------------------------------------------------------------
-    #
-    # print info.get 'print
+    # print info 'print
     #
     # ;_[
     # ;____name:           print
@@ -275,21 +253,49 @@ template Info*():untyped =
     # ;________:null
     # ;____]
     # ; ]
-    
+
     require(opInfo)
-    var found = false
 
     for opspec in OpSpecs:
         if opspec.name.replace("*","") == x.s:
-            found = true
-            if (popAttr("get") != VNULL):
-                stack.push(opspec.getInfo())
-            else:
-                opspec.printInfo()
+            stack.push(opspec.getInfo())
             break
 
-    if not found:
-        echo "no information found for given symbol"
+template Help*():untyped =
+    # EXAMPLE:
+    # help
+    #
+    # ; abs      (value)   get the absolute value for given integer
+    # ; acos     (angle)   calculate the inverse cosine of given angle
+    # ; acosh    (angle)   calculate the inverse hyperbolic cosine of given angle
+    # ; ...
+    #
+    # help 'print
+    # ; |------------------------------------------------------------------
+    # ;           print  print given value to screen with newline
+    # ; |------------------------------------------------------------------
+    # ; |          usage  print value  :any 
+    # ; |
+    # ; |        returns  :null
+    # ; |------------------------------------------------------------------
+    #
+    
+    require(opHelp)
+
+    if x.kind==Literal:
+
+        var found = false
+        for opspec in OpSpecs:
+            if opspec.name.replace("*","") == x.s:
+                found = true
+                opspec.printInfo()
+                break
+
+            if not found:
+                echo "no information found for given symbol"
+
+    else:
+        printHelp()
 
 template Inspect*():untyped =
     # EXAMPLE:
