@@ -10,7 +10,7 @@
 switch("checks", "off")
 switch("cincludes", "extras")
 switch("colors", "off")
-switch("d", "PYTHONIC")
+#switch("d", "PYTHONIC")
 switch("d", "danger")
 switch("d", "release")
 switch("d", "ssl")
