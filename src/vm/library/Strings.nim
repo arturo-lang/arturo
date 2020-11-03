@@ -38,34 +38,33 @@ template Color*():untyped =
     var pre: string = "\e[0;"
     let reset = "\e[0m"
 
-    if (let aRgb = popAttr("rgb"); aRgb != VNULL):
-        pre = "\e[38;5;" & $(aRgb.i)
-    else:
-        if (popAttr("bold") != VNULL):
-            pre = "\e[1"
-        elif (popAttr("underline") != VNULL):
-            pre = "\e[4"
+    if (popAttr("bold") != VNULL):
+        pre = "\e[1"
+    elif (popAttr("underline") != VNULL):
+        pre = "\e[4"
 
-        if (popAttr("black") != VNULL):
-            pre &= ";30"
-        elif (popAttr("red") != VNULL):
-            pre &= ";31"
-        elif (popAttr("green") != VNULL):
-            pre &= ";32"
-        elif (popAttr("yellow") != VNULL):
-            pre &= ";33"
-        elif (popAttr("blue") != VNULL):
-            pre &= ";34"
-        elif (popAttr("magenta") != VNULL):
-            pre &= ";35"
-        elif (popAttr("cyan") != VNULL):
-            pre &= ";36"
-        elif (popAttr("white") != VNULL):
-            pre &= ";37"
-        elif (popAttr("gray") != VNULL):
-            pre &= ";90"
-        else:
-            pre &= ""
+    if (let aRgb = popAttr("rgb"); aRgb != VNULL):
+        pre &= ";38;5;" & $(aRgb.i)
+    if (popAttr("black") != VNULL):
+        pre &= ";30"
+    elif (popAttr("red") != VNULL):
+        pre &= ";31"
+    elif (popAttr("green") != VNULL):
+        pre &= ";32"
+    elif (popAttr("yellow") != VNULL):
+        pre &= ";33"
+    elif (popAttr("blue") != VNULL):
+        pre &= ";34"
+    elif (popAttr("magenta") != VNULL):
+        pre &= ";35"
+    elif (popAttr("cyan") != VNULL):
+        pre &= ";36"
+    elif (popAttr("white") != VNULL):
+        pre &= ";37"
+    elif (popAttr("gray") != VNULL):
+        pre &= ";90"
+    else:
+        pre &= ""
 
     pre &= "m"
 
