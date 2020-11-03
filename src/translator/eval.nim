@@ -660,6 +660,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "zip"        : addExtraCommand(opZip)
                     of "unzip"      : addExtraCommand(opUnzip)
 
+                    of "hash"       : addExtraCommand(opGetHash)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:

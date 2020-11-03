@@ -422,6 +422,8 @@ type
         opZip           = 0x110
         opUnzip         = 0x111
 
+        opGetHash       = 0x112
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2236,6 +2238,15 @@ const
                                 b       : {String},
                                 ret     : {Null},
                                 desc    : "unzip given archive to destination" ),
+
+        opGetHash   : OpSpec(   name    : "hash",      
+                                args    : 1,   
+      
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Integer},
+                                attrs   :   ".string -> get as a string",
+                                desc    : "get hash for given value" ),
 
     ]
 

@@ -60,3 +60,12 @@ template Digest*():untyped =
             syms[x.s] = newString(($(toMD5(syms[x.s].s))).toLowerAscii())
         else:
             stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
+
+template GetHash*():untyped =
+
+    require(opGetHash)
+
+    if (popAttr("string") != VNULL):
+        stack.push(newString($(hash(x))))
+    else:
+        stack.push(newInteger(hash(x)))
