@@ -156,7 +156,6 @@ template execBlock(
         willInject      : bool = false,
         inject          : ptr ValueDict = nil
 ): untyped =
-
     #-----------------------------
     # store previous symbols
     #-----------------------------
@@ -749,6 +748,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
                     of opZip: Files.Zip()
                     of opUnzip: Files.Unzip()
+
+                    of opGetHash: Crypto.GetHash()
 
                     else: discard
 
