@@ -19,8 +19,8 @@ LongHeader: {
 
 Subheader: 
 ---
-# Type <info 'function> for info about a specific built-in function
-# Type <help> to get a list of all available functions
+# Type <help 'function> for info about a specific built-in function
+# Type <help []> to get a list of all available functions
 
 # Launching interactive console; Rock on.
 ---
