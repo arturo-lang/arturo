@@ -501,6 +501,46 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
 # Methods
 #=======================================
 
+when defined(PYTHONIC):
+    proc doProcessPythonic(s: string): string =
+        var level = 0
+        var lines = s.split("\n")
+        var i = 0
+        while i<lines.len:
+            var line = lines[i]
+            #echo "processing line: |" & line & "|"
+            if line.startsWith("    "):
+                #echo "-- it's indented"
+                let thisLevel = (line.len-strutils.strip(line, leading=true).len) div 4
+                #echo "-- this level: " & $(thisLevel)
+                if thisLevel>level:
+                    #echo "-- adding start block to previous"
+                    lines[i-1] &= "["
+                    level = thisLevel
+                elif level>thisLevel:
+                    #echo "-- adding end block to this"
+                    lines[i] = "]" & lines[i]
+                    level = thisLevel
+            else:
+                while level>0:
+                    lines[i-1] &= "]"
+                    level -= 1
+
+            i+= 1
+
+        var last = ""
+        while level>0:
+            last &= "]"
+            level -= 1
+
+        lines.add(last)
+
+        #echo "======"
+        #echo lines.join("\n")
+        #echo "======"
+        
+        lines.join("\n")
+
 proc doParse*(input: string, isFile: bool = true): Value =
     var p: Parser
 
@@ -510,7 +550,11 @@ proc doParse*(input: string, isFile: bool = true): Value =
         var stream = newFileStream(input)
         lexbase.open(p, stream)
     else:
-        var stream = newStringStream(input)
+        when defined(PYTHONIC):
+            var stream = newStringStream(doProcessPythonic(input))
+        else:
+            var stream = newStringStream(input)
+
         lexbase.open(p, stream)
 
     # initialize
