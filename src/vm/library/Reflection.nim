@@ -291,8 +291,8 @@ template Help*():untyped =
                 opspec.printInfo()
                 break
 
-            if not found:
-                echo "no information found for given symbol"
+        if not found:
+            echo "no information found for given symbol"
 
     else:
         printHelp()
