@@ -801,7 +801,7 @@ const
                                 args    : 3,   
 
                                 an      : "collection",      
-                                a       : {Block,Dictionary},      
+                                a       : {Block,Dictionary,Integer},      
                                 bn      : "params",      
                                 b       : {Literal,Block},            
                                 cn      : "action",          
@@ -1128,12 +1128,12 @@ const
         opRepeat    : OpSpec(   name    : "repeat",       
                                 args    : 2,   
 
-                                an      : "times",      
-                                a       : {Integer},      
-                                bn      : "action",      
-                                b       : {Block},      
-                                ret     : {Null},      
-                                desc    : "repeat action the given number of times"),
+                                an      : "value",      
+                                a       : {Literal,Any},      
+                                bn      : "times",      
+                                b       : {Integer},      
+                                ret     : {String,Block},      
+                                desc    : "repeat value the given number of times~and return new one"),
 
         opWhile     : OpSpec(   name    : "while",        
                                 args    : 2,   
