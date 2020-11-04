@@ -21,7 +21,7 @@ import vm/value
 proc parsePathComponents*(s: string): OrderedTable[string,Value] {.inline.} =
     var (dir, name, ext) = splitFile(s)
 
-    let details = {
+    result = {
         "directory": newString(dir),
         "basename": newString(name & "." & ext),
         "filename": newString(name),
@@ -32,7 +32,7 @@ proc parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
     var res = initUri()
     parseUri(s, res)
 
-    let details = {
+    result = {
         "scheme":   newString(res.scheme),
         "host":     newString(res.hostname),
         "port":     newString(res.port),
