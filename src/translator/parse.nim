@@ -526,7 +526,7 @@ when defined(PYTHONIC):
                     lines[i-1] &= "]"
                     level -= 1
 
-            i+= 1
+            i += 1
 
         var last = ""
         while level>0:
