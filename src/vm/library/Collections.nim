@@ -752,10 +752,16 @@ template Loop*(): untyped =
             stack.push(newString(k))
             discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
     else:
+        var arr: seq[Value]
+        if x.kind==Integer:
+            arr = (toSeq(1..x.i)).map((x)=> newInteger(x))
+        else:
+            arr = x.a
+
         var indx = 0
         var run = 0
-        while indx+args.len<=x.a.len:
-            for item in x.a[indx..indx+args.len-1].reversed:
+        while indx+args.len<=arr.len:
+            for item in arr[indx..indx+args.len-1].reversed:
                 stack.push(item)
 
             if withIndex:
@@ -933,6 +939,36 @@ template Remove*(): untyped =
             else:
                 stack.push(newDictionary(x.d.removeAll(y, key)))
 
+template Repeat*():untyped =
+    # EXAMPLE:
+    # print repeat "hello" 3
+    # ; hellohellohello
+    #
+    # repeat [1 2 3] 3
+    # ; => [1 2 3 1 2 3 1 2 3]
+    #
+    # repeat 5 3
+    # ; => [5 5 5]
+    #
+    # repeat [[1 2 3]] 3
+    # ; => [[1 2 3] [1 2 3] [1 2 3]]
+
+    require(opRepeat)
+
+    if x.kind==Literal:
+        if syms[x.s].kind==String:
+            syms[x.s] = newString(syms[x.s].s.repeat(y.i))
+        elif syms[x.s].kind==Block:
+            syms[x.s] = newBlock(syms[x.s].a.cycle(y.i))
+        else:
+            syms[x.s] = newBlock(syms[x.s].repeat(y.i))
+    else:
+        if x.kind==String:
+            stack.push(newString(x.s.repeat(y.i)))
+        elif x.kind==Block:
+            stack.push(newBlock(x.a.cycle(y.i)))
+        else:
+            stack.push(newBlock(x.repeat(y.i)))
 
 template Reverse*(): untyped =
     # EXAMPLE:
