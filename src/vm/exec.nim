@@ -116,20 +116,20 @@ template require(op: OpCode): untyped =
         panic "cannot perform '" & (static OpSpecs[op].name) & "'; not enough parameters: " & $(static OpSpecs[op].args) & " required"
 
     when (static OpSpecs[op].args)>=1:
-        when (static OpSpecs[op].a) != {ANY}:
+        when not (ANY in static OpSpecs[op].a):
             if not (Stack[SP-1].kind in (static OpSpecs[op].a)):
                 let acceptStr = toSeq((OpSpecs[op].a).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
                 panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " ...; incorrect argument type for 1st parameter; accepts " & acceptStr
 
         when (static OpSpecs[op].args)>=2:
-            when (static OpSpecs[op].b) != {ANY}:
+            when not (ANY in static OpSpecs[op].b):
                 if not (Stack[SP-2].kind in (static OpSpecs[op].b)):
                     let acceptStr = toSeq((OpSpecs[op].b).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
                     panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
                     break
 
             when (static OpSpecs[op].args)>=3:
-                when (static OpSpecs[op].c) != {ANY}:
+                when not (ANY in static OpSpecs[op].c):
                     if not (Stack[SP-3].kind in (static OpSpecs[op].c)):
                         let acceptStr = toSeq((OpSpecs[op].c).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
                         panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
@@ -563,7 +563,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
             of opCapitalize: Strings.Capitalize()
 
-            of opRepeat: Core.Repeat()
+            of opRepeat: Collections.Repeat()
             of opWhile: Core.While()
 
             of opRandom: Numbers.Random()
