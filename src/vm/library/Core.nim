@@ -450,25 +450,6 @@ template Push*():untyped =
     # we do not need to do anything, just leave the value there
     # as it's already been pushed
 
-template Repeat*():untyped =
-    # EXAMPLE:
-    # repeat 3 [
-    # ____print "hi there"
-    # ]
-    #
-    # ; hi there
-    # ; hi there
-    # ; hi there
-
-    require(opRepeat)
-
-    let preevaled = doEval(y)
-
-    var i = 0
-    while i<x.i:
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled)
-        i += 1
-
 template Return*():untyped = 
     # EXAMPLE:
     # f: function [x][ 
