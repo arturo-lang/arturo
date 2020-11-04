@@ -641,14 +641,20 @@ template Join*(): untyped =
 
     require(opJoin)
 
-    var sep = ""
-    if (let aWith = popAttr("with"); aWith != VNULL):
-        sep = aWith.s
-
-    if x.kind==Literal:
-        if x.kind==Block: syms[x.s] = newString(syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
+    if (popAttr("path") != VNULL):
+        if x.kind==Literal:
+            syms[x.s] = newString(joinPath(syms[x.s].a.map(proc (v:Value):string = v.s)))
+        else:
+            stack.push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
     else:
-        if x.kind==Block: stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
+        var sep = ""
+        if (let aWith = popAttr("with"); aWith != VNULL):
+            sep = aWith.s
+
+        if x.kind==Literal:
+            syms[x.s] = newString(syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
+        else:
+            stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
 
 
 template Keys*(): untyped =
