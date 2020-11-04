@@ -1637,7 +1637,8 @@ const
                                 an      : "collection",
                                 a       : {Block,Literal},
                                 ret     : {Block,Null},
-                                attrs   :   ".with :string -> use given separator",
+                                attrs   :   ".with :string -> use given separator~" &
+                                            ".path -> join as path components",
                                 desc    : "join collection of strings into string"),
 
         opMax       : OpSpec(   name    : "max",
