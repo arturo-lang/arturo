@@ -424,6 +424,8 @@ type
 
         opGetHash       = 0x112
 
+        opExtend        = 0x113
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2248,6 +2250,16 @@ const
                                 ret     : {Integer},
                                 attrs   :   ".string -> get as a string",
                                 desc    : "get hash for given value" ),
+
+        opExtend    : OpSpec(   name    : "extend",      
+                                args    : 2,   
+      
+                                an      : "parent",
+                                a       : {Dictionary},
+                                bn      : "additional",
+                                b       : {Dictionary},
+                                ret     : {Dictionary},
+                                desc    : "get new dictionary by merging given ones" ),
 
     ]
 

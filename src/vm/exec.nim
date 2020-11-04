@@ -751,6 +751,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
                     of opGetHash: Crypto.GetHash()
 
+                    of opExtend: Collections.Extend()
+
                     else: discard
 
             else: discard

@@ -662,6 +662,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "hash"       : addExtraCommand(opGetHash)
 
+                    of "extend"     : addExtraCommand(opExtend)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
