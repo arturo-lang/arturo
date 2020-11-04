@@ -459,8 +459,6 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                 let val = stack.pop()
 
                 stack.pushAttr(attr.r, val)
-                # stack.pushAttr(val)
-                # stack.pushAttr(attr)
 
             of opReturn     : Core.Return()
 
