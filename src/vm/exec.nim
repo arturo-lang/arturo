@@ -105,10 +105,6 @@ template callByIndex(idx: int):untyped =
     else:
         discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports, isPureFunc=false)
 
-# template callFromStack():untyped =
-#     let fun = stack.pop()
-#     discard execBlock(fun.main, useArgs=true, args=fun.args.a)
-
 ####
 
 template require(op: OpCode): untyped =
