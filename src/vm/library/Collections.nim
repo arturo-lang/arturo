@@ -215,6 +215,19 @@ template Empty*(): untyped =
         of Dictionary: syms[x.s].d = initOrderedTable[string,Value]()
         else: discard
 
+template Extend*(): untyped =
+    require(opExtend)
+
+    if x.kind==Literal:
+        for k,v in pairs(y.d):
+            syms[x.s].d[k] = v
+    else:
+        var res = copyValue(x)
+        for k,v in y.d:
+            res.d[k] = v
+
+        stack.push(res)
+
 template Filter*(): untyped =
     # EXAMPLE:
     # print filter 1..10 [x][
