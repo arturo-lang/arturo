@@ -754,7 +754,7 @@ template Loop*(): untyped =
     else:
         var arr: seq[Value]
         if x.kind==Integer:
-            arr = (toSeq(1..x.i)).map((x)=> newInteger(x))
+            arr = (toSeq(1..x.i)).map((x) => newInteger(x))
         else:
             arr = x.a
 
