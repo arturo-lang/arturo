@@ -788,9 +788,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                                     argblock.add(arg)
                                     subblock.add(arg)
 
-                        # is it a block?
+                        # is it an inline block?
                         # e.g. map 1..10 => (2+_)
-                        elif subnode.kind==Inline or subnode.kind==Block:
+                        elif subnode.kind==Inline:
                             # replace underscore symbols, sequentially
                             # with arguments
                             var idx = 0
