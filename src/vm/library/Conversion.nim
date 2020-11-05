@@ -172,10 +172,10 @@ template To*(needsRequire:bool = true):untyped =
                         stack.push newLiteral(y.s)
                     of Label:
                         stack.push newLabel(y.s)
-                    of Attr:
-                        stack.push newAttr(y.s)
-                    of AttrLabel:
-                        stack.push newAttrLabel(y.s)
+                    of Attribute:
+                        stack.push newAttribute(y.s)
+                    of AttributeLabel:
+                        stack.push newAttributeLabel(y.s)
                     of Symbol:
                         try:
                             stack.push newSymbol(y.s)
@@ -226,8 +226,8 @@ template To*(needsRequire:bool = true):untyped =
                Any,
                Inline,
                Label,
-               Attr,
-               AttrLabel,
+               Attribute,
+               AttributeLabel,
                Path,
                PathLabel,
                Date,
