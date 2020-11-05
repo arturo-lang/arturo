@@ -22,5 +22,4 @@ print map 1..10 => (5)
 
 print map 1..10 => (_+2)
 print map 5..10 => (_-2)
-
-; print map 1..10 => (6-_)
+print map 1..10 => (2-_)
