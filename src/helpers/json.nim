@@ -31,8 +31,8 @@ proc generateJsonNode*(n: Value): JsonNode =
            Word,
            Literal,
            Label        : result = newJString(n.s)
-        of Attr,
-           AttrLabel    : result = newJString(n.r)
+        of Attribute,
+           AttributeLabel: result = newJString(n.r)
         of Path,
            PathLabel    : 
            result = newJArray()
