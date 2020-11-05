@@ -17,6 +17,20 @@ import vm/stack, vm/value
 # Methods
 #=======================================
 
+template Break*():untyped = 
+    require(opBreak)
+
+    vmBreak = true
+    vmBreakthru = false
+    return syms
+
+template Breakthru*():untyped = 
+    require(opBreakthru)
+    
+    vmBreak = true
+    vmBreakthru = true
+    return syms
+
 template Call*():untyped =
     # EXAMPLE:
     # multiply: function [x y][

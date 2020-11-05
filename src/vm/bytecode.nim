@@ -452,6 +452,9 @@ type
         opIsBlock       = 0x12A
         opIsDatabase    = 0x12B 
 
+        opBreak         = 0x12C
+        opBreakthru     = 0x12D
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2479,6 +2482,18 @@ const
                                 a       : {Any},
                                 ret     : {Boolean},
                                 desc    : "checks if given value is of type :database"),
+
+        opBreak     : OpSpec(   name    : "break",
+                                args    : 0,
+
+                                ret     : {Null},
+                                desc    : "break out of current block or loop"),
+
+        opBreakthru : OpSpec(   name    : "breakthru",
+                                args    : 0,
+
+                                ret     : {Null},
+                                desc    : "break out of all blocks or loops"),
     ]
 
     NoTranslation*  = (@[],@[])

@@ -688,7 +688,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "function?"  : addExtraCommand(opIsFunction)
                     of "inline?"    : addExtraCommand(opIsInline)
                     of "block?"     : addExtraCommand(opIsBlock)
-                    of "database?"  : addExtraCommand(opIsDatabase)       
+                    of "database?"  : addExtraCommand(opIsDatabase) 
+
+                    of "break"      : addExtraCommand(opBreak)   
+                    of "breakthru"  : addExtraCommand(opBreakthru)   
 
                     else:
                         if Funcs.hasKey(node.s):

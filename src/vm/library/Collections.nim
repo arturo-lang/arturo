@@ -756,7 +756,8 @@ template Loop*(): untyped =
         for k,v in pairs(x.d):
             stack.push(v)
             stack.push(newString(k))
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args, isBreakable=true)
+            checkForBreak()
     else:
         var arr: seq[Value]
         if x.kind==Integer:
@@ -773,8 +774,8 @@ template Loop*(): untyped =
             if withIndex:
                 stack.push(newInteger(run))
 
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=allArgs)
-
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=allArgs, isBreakable=true)
+            checkForBreak()
             run += 1
             indx += args.len
 
