@@ -426,6 +426,9 @@ type
 
         opExtend        = 0x113
 
+        opIsTrue        = 0x114
+        opIsFalse       = 0x115
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2261,7 +2264,22 @@ const
                                 b       : {Dictionary},
                                 ret     : {Dictionary},
                                 desc    : "get new dictionary by merging given ones" ),
+        
+        opIsTrue    : OpSpec(   name    : "true?",
+                                args    : 1,
 
+                                an      : "value",
+                                a       : {Boolean},
+                                ret     : {Boolean},
+                                desc    : "returns true if given value is true~otherwise, it returns false"),
+
+        opIsFalse   : OpSpec(   name    : "false?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Boolean},
+                                ret     : {Boolean},
+                                desc    : "returns true if given value is false~otherwise, it returns false"),
     ]
 
     NoTranslation*  = (@[],@[])
