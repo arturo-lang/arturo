@@ -429,6 +429,29 @@ type
         opIsTrue        = 0x114
         opIsFalse       = 0x115
 
+        opIsNull        = 0x116
+        opIsBoolean     = 0x117
+        opIsInteger     = 0x118
+        opIsFloating    = 0x119
+        opIsType        = 0x11A
+        opIsChar        = 0x11B
+        opIsString      = 0x11C
+        opIsWord        = 0x11D
+        opIsLiteral     = 0x11E
+        opIsLabel       = 0x11F
+        opIsAttribute        = 0x120
+        opIsAttributeLabel   = 0x121
+        opIsPath        = 0x122
+        opIsPathLabel   = 0x123
+        opIsSymbol      = 0x124
+        opIsDate        = 0x125
+        opIsBinary      = 0x126
+        opIsDictionary  = 0x127
+        opIsFunction    = 0x128
+        opIsInline      = 0x129
+        opIsBlock       = 0x12A
+        opIsDatabase    = 0x12B 
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -1708,18 +1731,18 @@ const
                                 attrs   :   ".as :string -> set target file",
                                 desc    : "download file from url to disk"),
 
-        opGetAttr   : OpSpec(   name    : "attr",
+        opGetAttr   : OpSpec(   name    : "attribute",
                                 args    : 1,
 
-                                an      : "attribute",
+                                an      : "key",
                                 a       : {String},
                                 ret     : {Any,Null},
                                 desc    : "get given attribute, if it exists"),
 
-        opHasAttr   : OpSpec(   name    : "attr?",
+        opHasAttr   : OpSpec(   name    : "attribute?",
                                 args    : 1,
 
-                                an      : "attribute",
+                                an      : "key",
                                 a       : {String},
                                 ret     : {Boolean},
                                 desc    : "check if given attribute exists"),
@@ -2280,6 +2303,182 @@ const
                                 a       : {Boolean},
                                 ret     : {Boolean},
                                 desc    : "returns true if given value is false~otherwise, it returns false"),
+
+        opIsNull    : OpSpec(   name    : "null?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :null"),
+
+        opIsBoolean : OpSpec(   name    : "boolean?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :boolean"),
+
+        opIsInteger : OpSpec(   name    : "integer?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :integer"),
+
+        opIsFloating: OpSpec(   name    : "floating?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :floating"),
+
+        opIsType    : OpSpec(   name    : "type?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :type"),
+
+        opIsChar    : OpSpec(   name    : "char?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :char"),
+
+        opIsString  : OpSpec(   name    : "string?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :string"),
+
+        opIsWord    : OpSpec(   name    : "word?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :word"),
+
+        opIsLiteral : OpSpec(   name    : "literal?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :literal"),
+
+        opIsLabel   : OpSpec(   name    : "label?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :label"),
+
+        opIsAttribute: OpSpec(  name    : "attribute?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :attr"),
+
+        opIsAttributeLabel: OpSpec(  name    : "attributeLabel?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :attrlabel"),
+
+        opIsPath    : OpSpec(   name    : "path?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :path"),
+
+        opIsPathLabel: OpSpec(  name    : "pathLabel?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :pathlabel"),
+
+        opIsSymbol  : OpSpec(   name    : "symbol?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :symbol"),
+
+        opIsDate    : OpSpec(   name    : "date?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :date"),
+
+        opIsBinary  : OpSpec(   name    : "binary?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :binary"),
+
+        opIsDictionary: OpSpec( name    : "dictionary?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :dictionary"),
+
+        opIsFunction: OpSpec(   name    : "function?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :function"),
+
+        opIsInline  : OpSpec(   name    : "inline?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :inline"),
+
+        opIsBlock   : OpSpec(   name    : "block?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :block"),
+
+        opIsDatabase: OpSpec(   name    : "database?",
+                                args    : 1,
+
+                                an      : "value",
+                                a       : {Any},
+                                ret     : {Boolean},
+                                desc    : "checks if given value is of type :database"),
     ]
 
     NoTranslation*  = (@[],@[])
