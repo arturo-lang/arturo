@@ -457,9 +457,9 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     parseLiteral(p)
                     if p.buf[p.bufpos] == Colon:
                         inc(p.bufpos)
-                        addChild(topBlock, newAttrLabel(p.value))
+                        addChild(topBlock, newAttributeLabel(p.value))
                     else:
-                        addChild(topBlock, newAttr(p.value))
+                        addChild(topBlock, newAttribute(p.value))
             of LBracket:
                 inc(p.bufpos)
                 var subblock = parseBlock(p,level+1)
