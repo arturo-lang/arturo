@@ -753,29 +753,65 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addConst(consts, newBlock(subblock), opPushX)
 
                     of thickarrowright  : 
-                        var subargStack: seq[int] = @[]
-                        var ended = false
-                        var ret: seq[Value] = @[]
+                        # get next node
+                        let subnode = n.a[i+1]
 
-                        var subblock = processNextCommand()
+                        # we'll want to create the two blocks, 
+                        # for functions like loop, map, select, filter
+                        # so let's get them ready
+                        var argblock: seq[Value] = @[]
+                        var subblock: seq[Value] = @[subnode]
 
+                        # is it a word?
+                        # e.g. map ["one" "two"] => upper
+                        if subnode.kind==Word:
+
+                            var nofArgs = -1
+
+                            var found = false
+                            for indx,spec in OpSpecs:
+                                if spec.name == subnode.s:
+                                    found = true
+                                    nofArgs = OpSpecs[indx].args
+                                    break
+
+                            if not found:
+                                if Funcs.hasKey(subnode.s):
+                                    if Funcs[subnode.s]!=0:
+                                        nofArgs = Funcs[subnode.s]
+                                        found = true
+
+                            # then let's just push its argument
+                            # to the end
+                            if found:
+                                
+                                for i in 0..(nofArgs-1):
+                                    let arg = newWord("arg_" & $(i))
+                                    argblock.add(arg)
+                                    subblock.add(arg)
+
+                        # is it an inline block?
+                        # e.g. map 1..10 => (2+_)
+                        elif subnode.kind==Inline:
+
+                            # replace underscore symbols, sequentially
+                            # with arguments
+                            var idx = 0
+                            while idx<subnode.a.len:
+                                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==underscore:
+                                    let arg = newWord("arg_" & $(idx))
+                                    argblock.add(arg)
+                                    subnode.a[idx] = arg
+                                idx += 1
+                            subblock = @[subnode]
+
+                        # add the blocks
                         addTerminalValue(false):
-                            addConst(consts, newBlock(@[newWord("_arg")]), opPushX)
-
-                        var idx = 0
-                        var ampFound = false
-                        while idx < subblock.len:
-                            if subblock[idx].kind==Symbol and subblock[idx].m==ampersand:
-                                subblock[idx] = newWord("_arg")
-                                ampFound = true
-                                break
-                            idx += 1
-
-                        if not ampFound:
-                            subblock.add(newWord("_arg"))
-
+                            addConst(consts, newBlock(argblock), opPushX)
                         addTerminalValue(false):
                             addConst(consts, newBlock(subblock), opPushX)
+
+                        i += 1
                     else:
                         addTerminalValue(false):
                             addConst(consts, node, opPushX)
