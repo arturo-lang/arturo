@@ -667,6 +667,29 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "true?"      : addExtraCommand(opIsTrue)
                     of "false?"     : addExtraCommand(opIsFalse)
 
+                    of "null?"      : addExtraCommand(opIsNull)
+                    of "boolean?"   : addExtraCommand(opIsBoolean)
+                    of "integer?"   : addExtraCommand(opIsInteger)
+                    of "floating?"  : addExtraCommand(opIsFloating)
+                    of "type?"      : addExtraCommand(opIsType)
+                    of "char?"      : addExtraCommand(opIsChar)
+                    of "string?"    : addExtraCommand(opIsString)
+                    of "word?"      : addExtraCommand(opIsWord)
+                    of "literal?"   : addExtraCommand(opIsLiteral)
+                    of "label?"     : addExtraCommand(opIsLabel)
+                    of "attribute?"      : addExtraCommand(opIsAttribute)
+                    of "attributeLabel?" : addExtraCommand(opIsAttributeLabel)
+                    of "path?"      : addExtraCommand(opIsPath)
+                    of "pathLabel?" : addExtraCommand(opIsPathLabel)
+                    of "symbol?"    : addExtraCommand(opIsSymbol)
+                    of "date?"      : addExtraCommand(opIsDate)
+                    of "binary?"    : addExtraCommand(opIsBinary)
+                    of "dictionary?": addExtraCommand(opIsDictionary)
+                    of "function?"  : addExtraCommand(opIsFunction)
+                    of "inline?"    : addExtraCommand(opIsInline)
+                    of "block?"     : addExtraCommand(opIsBlock)
+                    of "database?"  : addExtraCommand(opIsDatabase)       
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
@@ -692,11 +715,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addConst(consts, node, opStoreX)
                 argStack.add(1)
 
-            of Attr:
+            of Attribute:
                 addAttr(consts, node)
                 addToCommand((byte)opBPushT)
 
-            of AttrLabel:
+            of AttributeLabel:
                 addAttr(consts, node)
                 argStack[argStack.len-1] += 1
 
