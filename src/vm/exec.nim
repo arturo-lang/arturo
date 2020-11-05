@@ -747,6 +747,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
                     of opExtend: Collections.Extend()
 
+                    of opIsTrue: Logic.IsTrue()
+                    of opIsFalse: Logic.IsFalse()
+
                     else: discard
 
             else: discard

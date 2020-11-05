@@ -30,6 +30,10 @@ template IsAnd*():untyped =
     require(opAnd)
     stack.push(newBoolean(x.b and y.b))
 
+template IsFalse*():untyped =
+    require(opIsFalse)
+    stack.push(newBoolean(not x.b))
+
 template IsNand*():untyped =
     # EXAMPLE:
     # x: 2
@@ -89,6 +93,10 @@ template IsOr*():untyped =
 
     require(opOr)
     stack.push(newBoolean(x.b or y.b))
+
+template IsTrue*():untyped =
+    require(opIsTrue)
+    stack.push(x)
 
 template IsXnor*():untyped =
     # EXAMPLE:
