@@ -765,6 +765,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         # is it a word?
                         # e.g. map ["one" "two"] => upper
                         if subnode.kind==Word:
+
                             var nofArgs = -1
 
                             var found = false
@@ -783,6 +784,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             # then let's just push its argument
                             # to the end
                             if found:
+                                
                                 for i in 0..(nofArgs-1):
                                     let arg = newWord("arg_" & $(i))
                                     argblock.add(arg)
@@ -791,6 +793,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         # is it an inline block?
                         # e.g. map 1..10 => (2+_)
                         elif subnode.kind==Inline:
+
                             # replace underscore symbols, sequentially
                             # with arguments
                             var idx = 0
