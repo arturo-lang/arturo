@@ -795,7 +795,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             # with arguments
                             var idx = 0
                             while idx<subnode.a.len:
-                                subnode.a[idx].dump()
                                 if subnode.a[idx].kind==Symbol and subnode.a[idx].m==underscore:
                                     let arg = newWord("arg_" & $(idx))
                                     argblock.add(arg)
