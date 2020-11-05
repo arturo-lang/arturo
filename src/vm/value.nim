@@ -73,29 +73,29 @@ type
         colon           # :
 
     ValueKind* = enum
-        Null        = 0
-        Boolean     = 1
-        Integer     = 2
-        Floating    = 3
-        Type        = 4
-        Char        = 5
-        String      = 6
-        Word        = 7
-        Literal     = 8
-        Label       = 9
-        Attr        = 10
-        AttrLabel   = 11
-        Path        = 12
-        PathLabel   = 13
-        Symbol      = 14
-        Date        = 15
-        Binary      = 16
-        Dictionary  = 17
-        Function    = 18
-        Inline      = 19
-        Block       = 20
-        Database    = 21
-        Any         = 22
+        Null            = 0
+        Boolean         = 1
+        Integer         = 2
+        Floating        = 3
+        Type            = 4
+        Char            = 5
+        String          = 6
+        Word            = 7
+        Literal         = 8
+        Label           = 9
+        Attribute       = 10
+        AttributeLabel  = 11
+        Path            = 12
+        PathLabel       = 13
+        Symbol          = 14
+        Date            = 15
+        Binary          = 16
+        Dictionary      = 17
+        Function        = 18
+        Inline          = 19
+        Block           = 20
+        Database        = 21
+        Any             = 22
 
     IntegerKind* = enum
         NormalInteger
@@ -121,8 +121,8 @@ type
                Word,
                Literal,
                Label:       s*  : string
-            of Attr,
-               AttrLabel:   r*  : string
+            of Attribute,
+               AttributeLabel:   r*  : string
             of Path,
                PathLabel:   p*  : ValueArray
             of Symbol:      m*  : SymbolKind
@@ -261,11 +261,11 @@ proc newLiteral*(l: string): Value {.inline.} =
 proc newLabel*(l: string): Value {.inline.} =
     Value(kind: Label, s: l)
 
-proc newAttr*(a: string): Value {.inline.} =
-    Value(kind: Attr, r: a)
+proc newAttribute*(a: string): Value {.inline.} =
+    Value(kind: Attribute, r: a)
 
-proc newAttrLabel*(a: string): Value {.inline.} =
-    Value(kind: AttrLabel, r: a)
+proc newAttributeLabel*(a: string): Value {.inline.} =
+    Value(kind: AttributeLabel, r: a)
 
 proc newPath*(p: ValueArray): Value {.inline.} =
     Value(kind: Path, p: p)
@@ -334,8 +334,8 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Literal:     result = newLiteral(v.s)
         of Label:       result = newLabel(v.s)
 
-        of Attr:        result = newAttr(v.r)
-        of AttrLabel:   result = newAttrLabel(v.r)
+        of Attribute:        result = newAttribute(v.r)
+        of AttributeLabel:   result = newAttributeLabel(v.r)
 
         of Path:        result = newPath(v.p)
         of PathLabel:   result = newPathLabel(v.p)
@@ -872,8 +872,8 @@ proc `==`*(x: Value, y: Value): bool =
                Word,
                Label,
                Literal: return x.s == y.s
-            of Attr,
-               AttrLabel: return x.r == y.r
+            of Attribute,
+               AttributeLabel: return x.r == y.r
             of Symbol: return x.m == y.m
             of Inline,
                Block:
@@ -1007,8 +1007,8 @@ proc `$`*(v: Value): string {.inline.} =
            Word, 
            Literal,
            Label        : return v.s
-        of Attr,
-           AttrLabel    : return v.r
+        of Attribute,
+           AttributeLabel    : return v.r
         of Path,
            PathLabel    :
             result = v.p.map((x) => $(x)).join("\\")
@@ -1103,8 +1103,8 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
            Word,
            Literal,
            Label        : stdout.write v.s
-        of Attr,
-           AttrLabel    : stdout.write v.r
+        of Attribute,
+           AttributeLabel    : stdout.write v.r
         of Path,
            PathLabel    : 
             for child in v.p:
@@ -1257,8 +1257,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
            Literal,
            Label        : dumpIdentifier(v)
 
-        of Attr,
-           AttrLabel    : dumpAttribute(v)
+        of Attribute,
+           AttributeLabel    : dumpAttribute(v)
 
         of Path,
            PathLabel    :
@@ -1354,8 +1354,8 @@ proc codify*(v: Value): string {.inline.} =
         of Word         : result = v.s
         of Literal      : result = "'" & v.s
         of Label        : result = v.s & ":"
-        of Attr         : result = "." & v.r
-        of AttrLabel    : result = "." & v.r & ":"
+        of Attribute         : result = "." & v.r
+        of AttributeLabel    : result = "." & v.r & ":"
         of Symbol       : 
             case v.m:
                 of thickarrowleft   : result = "<="
@@ -1443,8 +1443,8 @@ proc hash*(v: Value): Hash {.inline.}=
            Literal,
            Label        : result = hash(v.s)
 
-        of Attr,
-           AttrLabel    : result = hash(v.r)
+        of Attribute,
+           AttributeLabel    : result = hash(v.r)
 
         of Path,
            PathLabel    : 
