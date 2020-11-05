@@ -73,6 +73,8 @@ var
     vmPanic* = false
     vmError* = ""
     vmReturn* = false
+    vmBreak* = false
+    vmBreakthru* = false
 
 #=======================================
 # Helpers
@@ -146,12 +148,15 @@ template execBlock(
         evaluated       : Translation = NoTranslation, 
         execInParent    : bool = false, 
         isFuncBlock     : bool = false, 
+        isBreakable     : bool = false,
         exports         : Value = VNULL, 
         isPureFunc      : bool = false,
         isIsolated      : bool = false,
         willInject      : bool = false,
         inject          : ptr ValueDict = nil
 ): untyped =
+    vmBreakthru = false
+
     #-----------------------------
     # store previous symbols
     #-----------------------------
@@ -299,6 +304,13 @@ template execBlock(
                             syms[k.s] = subSyms[k.s]
 
         #-----------------------------
+        # break
+        #-----------------------------
+        if vmBreak:
+            when not isBreakable:
+                return
+
+        #-----------------------------
         # return
         #-----------------------------
         if vmReturn:
@@ -311,6 +323,13 @@ template execBlock(
 
 template execInternal*(path: string): untyped =
     execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
+
+template checkForBreak*(): untyped =
+    if vmBreak:
+        if not vmBreakthru:
+            vmBreak = false
+
+        break
 
 #=======================================
 # Methods
@@ -772,6 +791,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opIsInline: Reflection.IsInline()
                     of opIsBlock: Reflection.IsBlock()
                     of opIsDatabase: Reflection.IsDatabase() 
+
+                    of opBreak: Core.Break()
+                    of opBreakthru: Core.Breakthru()
 
                     else: discard
 
