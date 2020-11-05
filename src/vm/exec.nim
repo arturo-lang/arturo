@@ -750,6 +750,29 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opIsTrue: Logic.IsTrue()
                     of opIsFalse: Logic.IsFalse()
 
+                    of opIsNull: Reflection.IsNull()
+                    of opIsBoolean: Reflection.IsBoolean()
+                    of opIsInteger: Reflection.IsInteger()
+                    of opIsFloating: Reflection.IsFloating()
+                    of opIsType: Reflection.IsType()
+                    of opIsChar: Reflection.IsChar()
+                    of opIsString: Reflection.IsString()
+                    of opIsWord: Reflection.IsWord()
+                    of opIsLiteral: Reflection.IsLiteral()
+                    of opIsLabel: Reflection.IsLabel()
+                    of opIsAttribute: Reflection.IsAttribute()
+                    of opIsAttributeLabel: Reflection.IsAttributeLabel()
+                    of opIsPath: Reflection.IsPath()
+                    of opIsPathLabel: Reflection.IsPathLabel()
+                    of opIsSymbol: Reflection.IsSymbol()
+                    of opIsDate: Reflection.IsDate()
+                    of opIsBinary: Reflection.IsBinary()
+                    of opIsDictionary: Reflection.IsDictionary()
+                    of opIsFunction: Reflection.IsFunction()
+                    of opIsInline: Reflection.IsInline()
+                    of opIsBlock: Reflection.IsBlock()
+                    of opIsDatabase: Reflection.IsDatabase() 
+
                     else: discard
 
             else: discard

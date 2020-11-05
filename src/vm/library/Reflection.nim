@@ -316,6 +316,94 @@ template Is*():untyped =
     require(opIs)
     stack.push(newBoolean(x.t == y.kind))
 
+template IsAttribute*():untyped = 
+    require(opIsAttribute)
+    stack.push(newBoolean(x.kind==Attribute))
+
+template IsAttributeLabel*():untyped = 
+    require(opIsAttributeLabel)
+    stack.push(newBoolean(x.kind==AttributeLabel))
+
+template IsBinary*():untyped = 
+    require(opIsBinary)
+    stack.push(newBoolean(x.kind==Binary))
+
+template IsBlock*():untyped = 
+    require(opIsBlock)
+    stack.push(newBoolean(x.kind==Block))
+
+template IsBoolean*():untyped = 
+    require(opIsBoolean)
+    stack.push(newBoolean(x.kind==Boolean))
+
+template IsChar*():untyped = 
+    require(opIsChar)
+    stack.push(newBoolean(x.kind==Char))
+
+template IsDatabase*():untyped = 
+    require(opIsDatabase)
+    stack.push(newBoolean(x.kind==Database))
+
+template IsDate*():untyped = 
+    require(opIsDate)
+    stack.push(newBoolean(x.kind==Date))
+
+template IsDictionary*():untyped = 
+    require(opIsDictionary)
+    stack.push(newBoolean(x.kind==Dictionary))
+
+template IsInline*():untyped = 
+    require(opIsInline)
+    stack.push(newBoolean(x.kind==Inline))
+
+template IsInteger*():untyped = 
+    require(opIsInteger)
+    stack.push(newBoolean(x.kind==Integer))
+
+template IsFloating*():untyped = 
+    require(opIsFloating)
+    stack.push(newBoolean(x.kind==Floating))
+
+template IsFunction*():untyped = 
+    require(opIsFunction)
+    stack.push(newBoolean(x.kind==Function))
+
+template IsLabel*():untyped = 
+    require(opIsLabel)
+    stack.push(newBoolean(x.kind==Label))
+
+template IsLiteral*():untyped = 
+    require(opIsLiteral)
+    stack.push(newBoolean(x.kind==Literal))
+
+template IsNull*():untyped = 
+    require(opIsNull)
+    stack.push(newBoolean(x.kind==Null))
+
+template IsPath*():untyped = 
+    require(opIsPath)
+    stack.push(newBoolean(x.kind==Path))
+
+template IsPathLabel*():untyped = 
+    require(opIsPathLabel)
+    stack.push(newBoolean(x.kind==PathLabel))
+
+template IsString*():untyped = 
+    require(opIsString)
+    stack.push(newBoolean(x.kind==String))
+
+template IsSymbol*():untyped = 
+    require(opIsSymbol)
+    stack.push(newBoolean(x.kind==Symbol))
+
+template IsType*():untyped = 
+    require(opIsType)
+    stack.push(newBoolean(x.kind==Type))
+
+template IsWord*():untyped = 
+    require(opIsWord)
+    stack.push(newBoolean(x.kind==Word))
+
 template IsSet*():untyped =
     # EXAMPLE:
     # boom: 12
@@ -352,3 +440,4 @@ template Type*():untyped =
 
     require(opType)
     stack.push(newType(x.kind))
+
