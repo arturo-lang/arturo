@@ -28,5 +28,5 @@ print render {
 	*********************
 }
 
-if success < size tests -> panic.code: 1 "testing failed"
-else 					-> exit
+if? success < size tests -> panic.code: 1 "testing failed"
+else 					 -> exit
