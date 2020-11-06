@@ -74,7 +74,7 @@ var
     vmError* = ""
     vmReturn* = false
     vmBreak* = false
-    vmBreakthru* = false
+    vmContinue* = false
 
 #=======================================
 # Helpers
@@ -155,8 +155,7 @@ template execBlock(
         willInject      : bool = false,
         inject          : ptr ValueDict = nil
 ): untyped =
-    vmBreakthru = false
-
+    
     #-----------------------------
     # store previous symbols
     #-----------------------------
@@ -215,6 +214,7 @@ template execBlock(
     #-----------------------------
     # execute it
     #-----------------------------
+
     when isIsolated:
         let subSyms = doExec(evaled, depth+1, nil)
     else:
@@ -304,12 +304,12 @@ template execBlock(
                             syms[k.s] = subSyms[k.s]
 
         #-----------------------------
-        # break
+        # break / continue
         #-----------------------------
-        if vmBreak:
+        if vmBreak or vmContinue:
             when not isBreakable:
                 return
-
+                
         #-----------------------------
         # return
         #-----------------------------
@@ -326,10 +326,11 @@ template execInternal*(path: string): untyped =
 
 template checkForBreak*(): untyped =
     if vmBreak:
-        if not vmBreakthru:
-            vmBreak = false
-
+        vmBreak = false
         break
+
+    if vmContinue:
+        vmContinue = false
 
 #=======================================
 # Methods
@@ -371,6 +372,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
     oldSyms = syms
 
     while true:
+        if vmBreak:
+            break
+
         op = (OpCode)(it[i])
 
         when defined(VERBOSE):
@@ -793,7 +797,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opIsDatabase: Reflection.IsDatabase() 
 
                     of opBreak: Core.Break()
-                    of opBreakthru: Core.Breakthru()
+                    of opContinue: Core.Continue()
 
                     else: discard
 
