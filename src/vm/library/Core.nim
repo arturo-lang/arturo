@@ -21,14 +21,6 @@ template Break*():untyped =
     require(opBreak)
 
     vmBreak = true
-    vmBreakthru = false
-    return syms
-
-template Breakthru*():untyped = 
-    require(opBreakthru)
-    
-    vmBreak = true
-    vmBreakthru = true
     return syms
 
 template Call*():untyped =
@@ -75,6 +67,12 @@ template Clear*():untyped =
 
     when not defined(windows):
         clearScreen()
+
+template Continue*():untyped = 
+    require(opContinue)
+    
+    vmContinue = true
+    return syms
 
 template Do*():untyped =
     # EXAMPLE:
