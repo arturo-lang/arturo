@@ -691,7 +691,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "database?"  : addExtraCommand(opIsDatabase) 
 
                     of "break"      : addExtraCommand(opBreak)   
-                    of "breakthru"  : addExtraCommand(opBreakthru)   
+                    of "continue"   : addExtraCommand(opContinue)   
 
                     else:
                         if Funcs.hasKey(node.s):
