@@ -775,6 +775,7 @@ template Loop*(): untyped =
                 stack.push(newInteger(run))
 
             discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=allArgs, isBreakable=true)
+
             checkForBreak()
             run += 1
             indx += args.len
