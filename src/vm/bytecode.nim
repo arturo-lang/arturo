@@ -453,7 +453,7 @@ type
         opIsDatabase    = 0x12B 
 
         opBreak         = 0x12C
-        opBreakthru     = 0x12D
+        opContinue      = 0x12D
 
     ParamSpec* = set[ValueKind]
 
@@ -2489,11 +2489,11 @@ const
                                 ret     : {Null},
                                 desc    : "break out of current block or loop"),
 
-        opBreakthru : OpSpec(   name    : "breakthru",
+        opContinue  : OpSpec(   name    : "continue",
                                 args    : 0,
 
                                 ret     : {Null},
-                                desc    : "break out of all blocks or loops"),
+                                desc    : "immediately continue with next iteration"),
     ]
 
     NoTranslation*  = (@[],@[])
