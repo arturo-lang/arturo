@@ -10,8 +10,12 @@
 # Libraries
 #=======================================
 
+import sequtils, sqlite3
+
 import db_mysql as mysql
 import db_sqlite as sqlite
+
+import vm/value
 
 #=======================================
 # Methods
@@ -40,11 +44,24 @@ proc closeMysqlDb*(dbObj: mysql.DbConn) =
 proc openSqliteDb*(name: string): sqlite.DbConn =
     sqlite.open(name, "", "", "")
 
-proc execSqliteDb*(db: sqlite.DbConn, command: string) =
-    echo "execSqliteDb"
-    echo repr db
-    echo "command: " & command
-    db.exec(sql(command))
+proc execSqliteDb*(db: sqlite.DbConn, command: string): ValueArray =
+    result = @[]
+
+    for row in db.rows(sql(command)):
+        result.add(newStringBlock(row))
+
+proc execManySqliteDb*(db: sqlite.DbConn, commands: seq[string]): ValueArray =
+    result = @[]
+
+    db.exec(sql"BEGIN")
+
+    for command in commands:
+        result = concat(result, execSqliteDb(db, command))
+
+    db.exec(sql"COMMIT")
+
+proc getLastIdSqliteDb*(db: sqlite.DbConn): int64 = 
+    last_insert_rowid(db)
 
 proc closeSqliteDb*(db: sqlite.DbConn) =
     sqlite.close(db)

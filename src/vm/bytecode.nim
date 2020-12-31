@@ -2209,10 +2209,11 @@ const
       
                                 an      : "database",
                                 a       : {Database},
-                                bn      : "command",
-                                b       : {String},
-                                ret     : {Null},    
-                                desc    : "execute command in given database" ),
+                                bn      : "commands",
+                                b       : {String,Block},
+                                ret     : {Null,Block},    
+                                attrs   :   ".id -> return last insert ID",
+                                desc    : "execute command or block of commands~in given database and get returned rows" ),
 
         opClose     : OpSpec(   name    : "close",      
                                 args    : 1,   
