@@ -28,7 +28,16 @@ template Query*():untyped =
     require(opQuery)
 
     if x.dbKind == SqliteDatabase:
-        execSqliteDb(x.sqlitedb, y.s)
+        if y.kind == String:
+            if (let got = execSqliteDb(x.sqlitedb, y.s); got.len != 0):
+                stack.push(newBlock(got))
+        else:
+            if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = v.s)); got.len != 0):
+                stack.push(newBlock(got))
+            
+        if (popAttr("id") != VNULL):
+            stack.push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
+
     elif x.dbKind == MysqlDatabase:
         execMysqlDb(x.mysqldb, y.s)
 
