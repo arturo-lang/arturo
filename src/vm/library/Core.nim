@@ -295,6 +295,7 @@ template MakeDictionary*(): untyped =
     var dict: ValueDict
 
     if x.kind==Block:
+        #dict = execDictionary(x)
         dict = execBlock(x,dictionary=true)
     elif x.kind==String:
         let (src, tp) = getSource(x.s)
