@@ -893,6 +893,11 @@ proc `==`*(x: Value, y: Value): bool =
                 return true
             of Function:
                 return x.params == y.params and x.main == y.main and x.exports == y.exports and x.pure == y.pure
+            of Database:
+                if x.dbKind != y.dbKind: return false
+
+                if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
+                elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
             of Date:
                 return x.eobj == y.eobj
             else:
