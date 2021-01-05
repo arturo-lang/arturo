@@ -1742,7 +1742,7 @@ const
                                 ret     : {Any,Null},
                                 desc    : "get given attribute, if it exists"),
 
-        opHasAttr   : OpSpec(   name    : "attribute?",
+        opHasAttr   : OpSpec(   name    : "hasAttribute?",
                                 args    : 1,
 
                                 an      : "key",

@@ -566,8 +566,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "mail"       : addCommand(opMail)
                     of "download"   : addCommand(opDownload)
 
-                    of "attr"       : addCommand(opGetAttr)
-                    of "attr?"      : addCommand(opHasAttr)
+                    of "attribute"          : addCommand(opGetAttr)
+                    of "hasAttribute?"      : addCommand(opHasAttr)
 
                     of "render"     : addCommand(opRender)
 
