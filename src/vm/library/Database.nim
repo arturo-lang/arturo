@@ -29,11 +29,11 @@ template Query*():untyped =
 
     if x.dbKind == SqliteDatabase:
         if y.kind == String:
-            if (let got = execSqliteDb(x.sqlitedb, y.s); got.len != 0):
-                stack.push(newBlock(got))
+            if (let got = execSqliteDb(x.sqlitedb, y.s); got[0]==ValidQueryResult):
+                stack.push(newBlock(got[1]))
         else:
-            if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = v.s)); got.len != 0):
-                stack.push(newBlock(got))
+            if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = v.s)); got[0]==ValidQueryResult):
+                stack.push(newBlock(got[1]))
             
         if (popAttr("id") != VNULL):
             stack.push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
