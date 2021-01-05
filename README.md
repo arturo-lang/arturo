@@ -120,10 +120,10 @@ Editors & IDEs
 
 If you prefer to use some specific editors, check which one is already supported (if your preferred editor is not yet supported, just drop me a line - or help me include it):
 
-- **Visual Studio Code**:
+- **Visual Studio Code**:   
 https://github.com/arturo-lang/art-vscode-package
 
-- **SublimeText**: 
+- **SublimeText**:    
 https://github.com/arturo-lang/art-sublimetext-package
 
 Roadmap
