@@ -499,10 +499,8 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     inc(p.bufpos)
                     inc(p.bufpos)
                 else:
-                    echo ord(p.buf[p.bufpos+1])
                     inc(p.bufpos)
             else:
-                echo ord(p.buf[p.bufpos])
                 inc(p.bufpos)
 
     return topBlock
