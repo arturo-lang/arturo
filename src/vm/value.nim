@@ -72,6 +72,8 @@ type
         dotslash        # ./
         colon           # :
 
+        slashedzero     # ø
+
     ValueKind* = enum
         Null            = 0
         Boolean         = 1
@@ -1057,6 +1059,8 @@ proc `$`*(v: Value): string {.inline.} =
                 of dotslash         : return "./"
                 of colon            : return ":"
 
+                of slashedzero      : return "ø"
+
         of Date     : return $(v.eobj)
         of Binary   : discard
         of Inline,
@@ -1154,6 +1158,8 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
                 of ellipsis         : stdout.write ".."
                 of dotslash         : stdout.write "./"
                 of colon            : stdout.write ":"
+
+                of slashedzero      : stdout.write "ø"
 
         of Date:
             stdout.write $(v.eobj)
@@ -1400,6 +1406,8 @@ proc codify*(v: Value): string {.inline.} =
                 of ellipsis         : result = ".."
                 of dotslash         : result = "./"
                 of colon            : result = ":"
+
+                of slashedzero      : result = "ø"
 
         of Inline, Block:
             if v.kind==Inline: result = "("

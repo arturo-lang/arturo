@@ -772,6 +772,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of dotslash         : addCommand(opRelative)
                     of doublearrowright : addCommand(opWrite)   
                     of doublearrowleft  : addCommand(opRead) 
+                    of slashedzero      :
+                        addTerminalValue(false):
+                            addToCommand((byte)opNPush)
                     of arrowright       : 
                         var subargStack: seq[int] = @[]
                         var ended = false

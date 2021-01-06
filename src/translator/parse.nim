@@ -492,7 +492,17 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     addChild(topBlock, newString(unicode.strip(p.value)))
                 else:
                     inc(p.bufpos)
+
+            of chr(195):
+                if p.buf[p.bufpos+1]==chr(184):
+                    addChild(topBlock, newSymbol(slashedzero))
+                    inc(p.bufpos)
+                    inc(p.bufpos)
+                else:
+                    echo ord(p.buf[p.bufpos+1])
+                    inc(p.bufpos)
             else:
+                echo ord(p.buf[p.bufpos])
                 inc(p.bufpos)
 
     return topBlock
