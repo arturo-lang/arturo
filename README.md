@@ -133,8 +133,8 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 
 - [X] Add support for big number handling (via GMP)
 - [ ] Enrich the system library
-   - [ ] Add built-in support for Databases (Sqlite, etc)
-   - [X] Implement HTML module *(almost)*
+   - [X] Add built-in support for Databases (Sqlite, etc)
+   - [X] Implement HTML module
    - [ ] Add more Server-related features
    - [ ] Implement LaTeX generation module
    - [ ] Add custom grammar parser functionality
