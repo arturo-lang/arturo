@@ -37,39 +37,39 @@ jobs:
           access_token: ${{ github.token }}
           workflow_id: ${{ env.WORKFLOW_ID }}
 
-  build-with-nimble:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-16.04
-          - macos-latest
-        flag:
-          - ''
-          - '-d:MINI'
-    steps:
-      - uses: actions/checkout@main
-        with:
-          submodules: recursive
+  # build-with-nimble:
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os:
+  #         - ubuntu-16.04
+  #         - macos-latest
+  #       flag:
+  #         - ''
+  #         - '-d:MINI'
+  #   steps:
+  #     - uses: actions/checkout@main
+  #       with:
+  #         submodules: recursive
 
-      - name: Install Nim
-        run: |
-          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+  #     - name: Install Nim
+  #       run: |
+  #         wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+  #         echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
-      - name: Install dependencies
-        run: |
-          sudo apt-fast update
-          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
-        if: matrix.os == 'ubuntu-16.04' && matrix.flag == ''
+  #     - name: Install dependencies
+  #       run: |
+  #         sudo apt-fast update
+  #         sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
+  #       if: matrix.os == 'ubuntu-16.04' && matrix.flag == ''
 
-      - name: Verify dependecies
-        run: |
-          nim --version
+  #     - name: Verify dependecies
+  #       run: |
+  #         nim --version
           
-      - name: Build Arturo
-        run: |
-          nimble build -Y ${{ matrix.flag }}
+  #     - name: Build Arturo
+  #       run: |
+  #         nimble build -Y ${{ matrix.flag }}
 
   build-mini-with-shell:
     runs-on: ${{ matrix.os }}
