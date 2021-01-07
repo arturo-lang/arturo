@@ -74,10 +74,9 @@ template Webview*():untyped =
 
             var args: ValueArray = @[binding.params.a[0]]
             stack.push(param)
-            # echo "calling function!"
             discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
             let got = stack.pop().s
-            # echo " - got: " & $(got)
+            #echo " - got: " & $(got)
 
             discard wv.eval(got)
         )
