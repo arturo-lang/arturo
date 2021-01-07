@@ -10,6 +10,9 @@
 # Libraries
 #=======================================
 
+import tables
+
+import extras/webview
 import vm/env, vm/stack, vm/value
 
 #=======================================
@@ -53,9 +56,48 @@ template Webview*():untyped =
         targetUrl = joinPath(TmpDir,"artview.html")
         writeFile(targetUrl, x.s)
 
-    showWebview(title=title, 
-                  url=targetUrl, 
-                width=width, 
-               height=height, 
-            resizable=true, 
-                debug=false)
+    let wv = newWebview(title=title, 
+                              url=targetUrl, 
+                            width=width, 
+                           height=height, 
+                        resizable=true, 
+                            debug=true,
+                               cb=nil)
+
+    for key,binding in y.d:
+        let meth = key
+
+        wv.bindMethod("webview", meth, proc (param: Value): string =
+            # echo "calling method: " & meth
+            # echo " - with argument: " & $(param)
+            # echo " - for parameter: " & $(binding.params.a[0])
+
+            var args: ValueArray = @[binding.params.a[0]]
+            stack.push(param)
+            # echo "calling function!"
+            discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
+            let got = stack.pop().s
+            # echo " - got: " & $(got)
+
+            discard wv.eval(got)
+        )
+
+    # proc wvCallback (param: seq[string]): string =
+    #     echo "wvCallback :: " & param
+    #     echo "executing something..."
+    #     discard wv.eval("console.log('execd in JS');")
+    #     echo "returning value..."
+    #     return "returned value"
+
+    # wv.bindProc("webview","run",wvCallback)
+
+    wv.run()
+    wv.exit()
+
+    # showWebview(title=title, 
+    #               url=targetUrl, 
+    #             width=width, 
+    #            height=height, 
+    #         resizable=true, 
+    #             debug=false,
+    #          bindings=y.d)
