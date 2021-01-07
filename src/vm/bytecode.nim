@@ -2071,15 +2071,17 @@ const
                                 desc    : "get module path for given name" ),
 
         opWebview   : OpSpec(   name    : "webview*",      
-                                args    : 1,   
+                                args    : 2,   
 
-                                an      : "url",        
-                                a       : {String,Literal},           
-                                ret     : {String,Null},   
+                                an      : "content",        
+                                a       : {String,Literal}, 
+                                bn      : "callbacks",
+                                b       : {Dictionary},          
+                                ret     : {String,Null},  
                                 attrs   :   ".title :string -> set window title~" &
                                             ".width :integer -> set window width~" &
                                             ".height :integer -> set window height",   
-                                desc    : "show webview window with given url" ),
+                                desc    : "show webview window with given url or html~and dictionary of callback functions" ),
 
         opFlatten   : OpSpec(   name    : "flatten",      
                                 args    : 1,   

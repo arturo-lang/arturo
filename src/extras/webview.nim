@@ -67,14 +67,14 @@ proc webview*(title: cstring; url: cstring; w: cint; h: cint; resizable: cint): 
 
 type
     # ExternalProc[P, R] = proc(param: P, ret: var R): int
-    CallHook = proc(params: string): string # json -> proc -> json
+    CallHook* = proc(params: string): string # json -> proc -> json
     MethodInfo* = object
         scope*: string
         name*: string
         args*: string # json string
 
 # for bindProc
-var eps = newTable[Webview, TableRef[string, TableRef[string, CallHook]]]()
+var eps* = newTable[Webview, TableRef[string, TableRef[string, CallHook]]]()
 
 # easy callbacks
 var cbs = newTable[Webview, ExternalInvokeCb]()
@@ -193,7 +193,7 @@ proc open*(title="WebView", url="", width=640, height=480, resizable=true):int {
     webview(title.cstring, url.cstring, width.cint, height.cint, (if resizable: 1 else: 0).cint)
 
 const
-    jsTemplate = """
+    jsTemplate* = """
 if (typeof $2 === 'undefined') {
 	$2 = {};
 }
@@ -205,7 +205,7 @@ $2.$1 = function(arg) {
   );
 };
 """
-    jsTemplateOnlyArg = """
+    jsTemplateOnlyArg* = """
 if (typeof $2 === 'undefined') {
 	$2 = {};
 }
@@ -217,7 +217,7 @@ $2.$1 = function(arg) {
   );
 };
 """
-    jsTemplateNoArg = """
+    jsTemplateNoArg* = """
 if (typeof $2 === 'undefined') {
 	$2 = {};
 }
@@ -237,7 +237,7 @@ proc bindProc*[P, R](w: Webview, scope, name: string, p: (proc(param: P): R)) =
             retVal: R
         try:
             let jnode = parseJson(hookParam)
-            echo jnode
+            echo $(jnode)
             paramVal = jnode.to(P)
         except:
             return "parse args failed: " & getCurrentExceptionMsg()
