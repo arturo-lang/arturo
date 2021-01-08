@@ -1889,7 +1889,8 @@ const
                                 a       : {Dictionary},        
                                 ret     : {Null},  
                                 attrs   :   ".port :integer -> use given port~" &
-                                            ".verbose -> print info log",
+                                            ".verbose -> print info log~" &
+                                            ".chrome -> open in Chrome window as an app",
                                 desc    : "start web server using given routes" ),
 
         opLet       : OpSpec(   name    : "let",          
