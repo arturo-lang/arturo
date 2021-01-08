@@ -10,6 +10,7 @@
 # Libraries
 #=======================================
 
+import extras/webview
 import vm/env, vm/stack, vm/value
 import utils
 
@@ -86,6 +87,9 @@ template Serve*():untyped =
         var verbose = (popAttr("verbose") != VNULL)
         if (let aPort = popAttr("port"); aPort != VNULL):
             port = aPort.i
+
+        if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+            openChromeWindow(port)
 
         var server = newAsyncHttpServer()
 
