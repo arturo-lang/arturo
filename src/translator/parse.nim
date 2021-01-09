@@ -117,6 +117,8 @@ template skip(p: var Parser) =
             # if p.buf[pos] == Tab:
             #     echo "next one is tab!"
         of '#':
+            # echo "found sharp @ " & $(pos)
+            # echo "char @+1: " & $(p.buf[pos+1])
             if p.buf[pos+1]=='!':
                 inc(pos)
                 while true:
@@ -131,6 +133,8 @@ template skip(p: var Parser) =
                             break
                         else:
                             inc(pos)
+            else:
+                break
         else:
             break
     
