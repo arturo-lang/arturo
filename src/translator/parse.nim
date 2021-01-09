@@ -214,6 +214,12 @@ template parseMultilineString(p: var Parser) =
 template parseCurlyString(p: var Parser) =
     var pos = p.bufpos + 1
     var curliesExpected = 1
+    if p.buf[pos]=='!':
+        inc(pos)
+        while p.buf[pos] in Letters:
+            inc(pos)
+
+    inc(pos)
     while true:
         case p.buf[pos]:
             of EOF: 
