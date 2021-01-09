@@ -94,30 +94,45 @@ template skip(p: var Parser) =
   var pos = p.bufpos
   while true:
     case p.buf[pos]
-    of Semicolon:
-        inc(pos)
-        while true:
-            case p.buf[pos]:
-                of EOF:
-                    break
-                of CR:
-                    pos = lexbase.handleCR(p, pos)
-                    break
-                of LF:
-                    pos = lexbase.handleLF(p, pos)
-                    break
-                else:
-                    inc(pos)
-    of Whitespace:
-        inc(pos)
-    of CR:
-        pos = lexbase.handleCR(p, pos)
-    of LF:
-        pos = lexbase.handleLF(p, pos)
-        # if p.buf[pos] == Tab:
-        #     echo "next one is tab!"
-    else:
-        break
+        of Semicolon:
+            inc(pos)
+            while true:
+                case p.buf[pos]:
+                    of EOF:
+                        break
+                    of CR:
+                        pos = lexbase.handleCR(p, pos)
+                        break
+                    of LF:
+                        pos = lexbase.handleLF(p, pos)
+                        break
+                    else:
+                        inc(pos)
+        of Whitespace:
+            inc(pos)
+        of CR:
+            pos = lexbase.handleCR(p, pos)
+        of LF:
+            pos = lexbase.handleLF(p, pos)
+            # if p.buf[pos] == Tab:
+            #     echo "next one is tab!"
+        of '#':
+            if p.buf[pos+1]=='!':
+                inc(pos)
+                while true:
+                    case p.buf[pos]:
+                        of EOF:
+                            break
+                        of CR:
+                            pos = lexbase.handleCR(p, pos)
+                            break
+                        of LF:
+                            pos = lexbase.handleLF(p, pos)
+                            break
+                        else:
+                            inc(pos)
+        else:
+            break
     
     p.bufpos = pos
 
