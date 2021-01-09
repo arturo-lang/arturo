@@ -54,7 +54,7 @@ proc getEnvDictionary*(): ValueDict =
 
     result["sys"] = newDictionary({
         "author"    : newString("Yanis Zafirópulos"),
-        "copyright" : newString("(c) 2019-2020"),
+        "copyright" : newString("(c) 2019-2021"),
         "version"   : newString(Version),
         "build"     : newInteger(parseInt(Build)),
         "buildDate" : newDate(now()),
