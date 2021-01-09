@@ -160,7 +160,8 @@ template Serve*():untyped =
             await req.respond(status.HttpCode, body, headers)
 
         try:
-            echo ":: Starting server on port " & $(port) & "...\n"
+            if verbose:
+                echo ":: Starting server on port " & $(port) & "...\n"
             waitFor server.serve(port = port.Port, callback = handler, address = "")
         except:
             let e = getCurrentException()
