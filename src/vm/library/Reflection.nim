@@ -13,7 +13,7 @@
 import algorithm, re, sequtils
 import strformat, strutils, tables
 
-import vm/bytecode, vm/stack, vm/value
+import vm/bytecode, vm/env, vm/stack, vm/value
 import utils
 
 #=======================================
@@ -231,36 +231,6 @@ template HasAttr*():untyped =
     else:
         stack.push(VFALSE)
 
-template Info*():untyped =
-    # EXAMPLE:
-    # print info 'print
-    #
-    # ;_[
-    # ;____name:           print
-    # ;____description:    print given value to screen with newline
-    # ;____alias:          
-    # ;____arguments:      [
-    # ;________[
-    # ;____________name:           value
-    # ;____________type:           [
-    # ;________________:any
-    # ;____________]
-    # ;________]
-    # ;____]
-    # ;____attributes:     [
-    # ;____]
-    # ;____return:         [
-    # ;________:null
-    # ;____]
-    # ; ]
-
-    require(opInfo)
-
-    for opspec in OpSpecs:
-        if opspec.name.replace("*","") == x.s:
-            stack.push(opspec.getInfo())
-            break
-
 template Help*():untyped =
     # EXAMPLE:
     # help
@@ -296,6 +266,36 @@ template Help*():untyped =
 
     else:
         printHelp()
+
+template Info*():untyped =
+    # EXAMPLE:
+    # print info 'print
+    #
+    # ;_[
+    # ;____name:           print
+    # ;____description:    print given value to screen with newline
+    # ;____alias:          
+    # ;____arguments:      [
+    # ;________[
+    # ;____________name:           value
+    # ;____________type:           [
+    # ;________________:any
+    # ;____________]
+    # ;________]
+    # ;____]
+    # ;____attributes:     [
+    # ;____]
+    # ;____return:         [
+    # ;________:null
+    # ;____]
+    # ; ]
+
+    require(opInfo)
+
+    for opspec in OpSpecs:
+        if opspec.name.replace("*","") == x.s:
+            stack.push(opspec.getInfo())
+            break
 
 template Inspect*():untyped =
     # EXAMPLE:
@@ -387,6 +387,10 @@ template IsPath*():untyped =
 template IsPathLabel*():untyped = 
     require(opIsPathLabel)
     stack.push(newBoolean(x.kind==PathLabel))
+
+template IsStandalone*():untyped =
+    require(opIsStandalone)
+    stack.push(newBoolean(PathStack.len == 1))
 
 template IsString*():untyped = 
     require(opIsString)

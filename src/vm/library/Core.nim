@@ -11,7 +11,7 @@
 #=======================================
 
 import translator/parse
-import vm/stack, vm/value
+import vm/env, vm/stack, vm/value
 
 #=======================================
 # Methods
@@ -102,7 +102,10 @@ template Do*():untyped =
         else:
             discard execBlock(x)
     else:
-        let (src, _) = getSource(x.s)
+        let (src, tp) = getSource(x.s)
+
+        if tp==FileData:
+            addPath(x.s)
 
         if execInParent:
             let parsed = doParse(src, isFile=false)
@@ -114,6 +117,9 @@ template Do*():untyped =
             let parsed = doParse(src, isFile=false)
             if not isNil(parsed):
                 discard execBlock(parsed)
+
+        if tp==FileData:
+            discard popPath()
 
 template Else*():untyped =
     # EXAMPLE:

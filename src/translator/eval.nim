@@ -693,6 +693,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "break"      : addExtraCommand(opBreak)   
                     of "continue"   : addExtraCommand(opContinue)   
 
+                    of "standalone?": addExtraCommand(opIsStandalone)
+
                     else:
                         if Funcs.hasKey(node.s):
                             if Funcs[node.s]!=0:
