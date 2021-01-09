@@ -238,7 +238,6 @@ template parseCurlyString(p: var Parser) =
         while p.buf[pos] in Letters:
             inc(pos)
 
-    inc(pos)
     while true:
         case p.buf[pos]:
             of EOF: 
