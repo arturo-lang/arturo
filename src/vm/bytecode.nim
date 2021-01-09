@@ -455,6 +455,8 @@ type
         opBreak         = 0x12C
         opContinue      = 0x12D
 
+        opIsStandalone  = 0x12E
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2498,6 +2500,12 @@ const
 
                                 ret     : {Null},
                                 desc    : "immediately continue with next iteration"),
+
+        opIsStandalone  : OpSpec(   name    : "standalone?",
+                                args    : 0,
+
+                                ret     : {Boolean},
+                                desc    : "check if current script runs from command-line"),
     ]
 
     NoTranslation*  = (@[],@[])

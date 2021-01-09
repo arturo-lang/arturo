@@ -34,12 +34,18 @@ var
 # Methods
 #=======================================
 
-proc currentPath*():string =
+proc entryPath*(): string =
+    PathStack[0]
+
+proc currentPath*(): string =
     PathStack[^1]
 
 proc addPath*(newPath: string) =
     var (dir, _, _) = splitFile(newPath)
     PathStack.add(dir)
+
+proc popPath*(): string =
+    PathStack.pop()
 
 proc getEnvDictionary*(): ValueDict =
     result = initOrderedTable[string,Value]()

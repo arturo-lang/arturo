@@ -839,6 +839,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opBreak: Core.Break()
                     of opContinue: Core.Continue()
 
+                    of opIsStandalone: Reflection.IsStandalone()
+
                     else: discard
 
             else: discard
