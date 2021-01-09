@@ -100,7 +100,11 @@ template Write*():untyped =
         f.close()
     else:
         if (popAttr("json") != VNULL):
-            writeFile(x.s, json.pretty(generateJsonNode(y), indent=4))
+            let rez = json.pretty(generateJsonNode(y), indent=4)
+            if x.kind==String:
+                writeFile(x.s, rez)
+            else:
+                stack.push(newString(rez))
         else:
             writeFile(x.s, y.s)
     

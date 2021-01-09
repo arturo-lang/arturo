@@ -1263,7 +1263,7 @@ const
                                 args    : 2,   
 
                                 an      : "file",        
-                                a       : {String},                   
+                                a       : {String,Null},                   
                                 bn      : "content",     
                                 b       : {Any},      
                                 ret     : {Null},      
