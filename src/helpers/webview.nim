@@ -21,33 +21,33 @@ when not defined(MINI):
 # Methods
 #=======================================
 
-proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
-    var args = " --app=http://localhost:" & port.intToStr & "/ --disable-http-cache"
-    for flag in flags:
-        args &= " " & flag.strip
-
-    var chromePath: string
-
-    when hostOS == "macosx":
-        chromePath = r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-        if fileExists(absolutePath(chromePath)):
-            chromePath = chromePath.replace(" ", r"\ ")
-    elif hostOS == "windows":
-        chromePath = r"\Program Files (x86)\Google\Chrome\Application\chrome.exe"
-    elif hostOS == "linux":
-        const chromeNames = ["google-chrome", "chromium-browser", "chromium"]
-        for name in chromeNames:
-            if execCmd("which " & name) == 0:
-                chromePath = name
-                break
-        result = findChromeLinux()
-
-    let command = chromePath & args
-    if execCmd(command) != 0:
-        echo "could not open a Chrome window"
-
-
 when not defined(MINI):
+
+    proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
+        var args = " --app=http://localhost:" & port.intToStr & "/ --disable-http-cache"
+        for flag in flags:
+            args &= " " & flag.strip
+
+        var chromePath: string
+
+        when hostOS == "macosx":
+            chromePath = r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+            if fileExists(absolutePath(chromePath)):
+                chromePath = chromePath.replace(" ", r"\ ")
+        elif hostOS == "windows":
+            chromePath = r"\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+        elif hostOS == "linux":
+            const chromeNames = ["google-chrome", "chromium-browser", "chromium"]
+            for name in chromeNames:
+                if execCmd("which " & name) == 0:
+                    chromePath = name
+                    break
+            result = findChromeLinux()
+
+        let command = chromePath & args
+        if execCmd(command) != 0:
+            echo "could not open a Chrome window"
+            
     proc bindMethod*(w: Webview, scope, name: string, p: (proc(param: Value): string)) =
         proc hook(hookParam: string): string =
             var 
