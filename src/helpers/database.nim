@@ -12,7 +12,7 @@
 
 import sequtils, sqlite3, strutils
 
-import db_mysql as mysql
+#import db_mysql as mysql
 import db_sqlite as sqlite
 
 import vm/value
@@ -36,17 +36,17 @@ type
 # MySQL
 #-----------------------
 
-proc openMysqlDb*(name: string, 
-                  server: string = "localhost", 
-                  username: string = "", 
-                  password: string = ""): mysql.DbConn =
-    mysql.open(server, username, password, name)
+# proc openMysqlDb*(name: string, 
+#                   server: string = "localhost", 
+#                   username: string = "", 
+#                   password: string = ""): mysql.DbConn =
+#     mysql.open(server, username, password, name)
 
-proc execMysqlDb*(db: mysql.DbConn, command: string) =
-    db.exec(sql(command))
+# proc execMysqlDb*(db: mysql.DbConn, command: string) =
+#     db.exec(sql(command))
 
-proc closeMysqlDb*(dbObj: mysql.DbConn) =
-    mysql.close(dbObj)
+# proc closeMysqlDb*(dbObj: mysql.DbConn) =
+#     mysql.close(dbObj)
 
 #-----------------------
 # SQLite

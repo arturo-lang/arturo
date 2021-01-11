@@ -21,8 +21,8 @@ template Close*():untyped =
 
     if x.dbKind == SqliteDatabase:
         closeSqliteDb(x.sqlitedb)
-    elif x.dbKind == MysqlDatabase:
-        closeMysqlDb(x.mysqldb)
+    # elif x.dbKind == MysqlDatabase:
+    #     closeMysqlDb(x.mysqldb)
 
 template Query*():untyped =
     require(opQuery)
@@ -38,8 +38,8 @@ template Query*():untyped =
         if (popAttr("id") != VNULL):
             stack.push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
 
-    elif x.dbKind == MysqlDatabase:
-        execMysqlDb(x.mysqldb, y.s)
+    # elif x.dbKind == MysqlDatabase:
+    #     execMysqlDb(x.mysqldb, y.s)
 
 template Open*():untyped =
     require(opOpen)
@@ -53,8 +53,8 @@ template Open*():untyped =
 
     if dbKind == SqliteDatabase:
         stack.push(newDatabase(openSqliteDb(dbName)))
-    elif dbKind == MysqlDatabase:
-        stack.push(newDatabase(openMysqlDb(dbName)))
+    # elif dbKind == MysqlDatabase:
+    #     stack.push(newDatabase(openMysqlDb(dbName)))
 
 # template Db*():untyped =
 #     require(opDb)
