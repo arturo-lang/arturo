@@ -13,8 +13,8 @@
 import hashes, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
-import db_mysql as mysql
 import db_sqlite as sqlite
+#import db_mysql as mysql
 
 import extras/bignum
 
@@ -143,7 +143,8 @@ type
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase: sqlitedb*: sqlite.DbConn
-                    of MysqlDatabase: mysqldb*: mysql.DbConn
+                    of MysqlDatabase: discard
+                    #of MysqlDatabase: mysqldb*: mysql.DbConn
 
 
 #=======================================
@@ -308,8 +309,8 @@ proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool
 proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
     Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
 
-proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
-    Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
+# proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
+#     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
 proc newInline*(a: ValueArray = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)
@@ -355,7 +356,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Database:    
             if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
-            elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
+            #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
         else: discard
 
 #=======================================
@@ -899,7 +900,7 @@ proc `==`*(x: Value, y: Value): bool =
                 if x.dbKind != y.dbKind: return false
 
                 if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
-                elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
+                #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
             of Date:
                 return x.eobj == y.eobj
             else:
@@ -1091,7 +1092,7 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Database:
             if v.dbKind==SqliteDatabase: result = fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
-            elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+            #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
             
         of ANY: discard
 
@@ -1219,7 +1220,7 @@ proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
 
         of Database     :
             if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
-            elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+            #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of ANY: discard
 
@@ -1342,7 +1343,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
         of Database     :
             if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
-            elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+            #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of ANY          : discard
 
@@ -1490,6 +1491,6 @@ proc hash*(v: Value): Hash {.inline.}=
             # result = !$ result
         of Database:
             if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
-            elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
+            #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
         of ANY          : result = 0
