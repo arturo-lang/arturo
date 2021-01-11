@@ -429,13 +429,19 @@ template Print*():untyped =
             res.add(stack.pop())
 
         for r in res.reversed:
-            r.print(newLine = false)
+            stdout.write($(r))
             stdout.write(" ")
+            # r.print(newLine = false)
+            # stdout.write(" ")
 
         stdout.write("\n")
         stdout.flushFile()
     else:
-        x.print()
+        echo $(x)
+        # stdout.write($(x))
+        # stdout.write("\n")
+        # stdout.wr
+        # x.print()
 
 template Prints*():untyped =
     # EXAMPLE:
@@ -457,12 +463,15 @@ template Prints*():untyped =
             res.add(stack.pop())
 
         for r in res.reversed:
-            r.print(newLine = false)
+            stdout.write($(r))
+            #r.print(newLine = false)
             stdout.write(" ")
 
         stdout.flushFile()
     else:
-        x.print(newLine = false)
+        stdout.write($(x))
+        stdout.flushFile()
+        #x.print(newLine = false)
 
 template Push*():untyped =
     discard
