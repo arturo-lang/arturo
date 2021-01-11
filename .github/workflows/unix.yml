@@ -1,4 +1,4 @@
-name: Linux / MacOS
+name: "*nix"
 on:
   push:
     branches-ignore:
