@@ -40,7 +40,6 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
             if execCmd("which " & name) == 0:
                 chromePath = name
                 break
-        result = findChromeLinux()
 
     let command = chromePath & args
     if execCmd(command) != 0:
