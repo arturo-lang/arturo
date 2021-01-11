@@ -70,48 +70,7 @@ when not defined(MINI):
         w.dispatch(proc() = discard w.eval(jsTemplate%[name, scope]))
 
 when not defined(MINI):
-
-    # proc showWebview*(title="WebView", url="", 
-    #                   width=640, height=480, 
-    #                   resizable=true, debug=false, bindings:ValueDict) =
-
-    #     let wv = newWebview(title=title, 
-    #                           url=url, 
-    #                         width=width, 
-    #                        height=height, 
-    #                     resizable=true, 
-    #                         debug=true,
-    #                            cb=nil)
-
-    #     for key,binding in bindings:
-    #         let meth = key
-
-    #         wv.bindMethod("webview", meth, proc (param: Value): string =
-    #             echo "calling method: " & meth
-    #             echo " - with argument: " & $(param)
-    #             echo " - for parameter: " & $(binding.params.a[0])
-
-    #             var args: ValueArray = @[binding.params.a[0]]
-
-    #             echo "calling function!"
-    #             discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
-    #             let got = stack.pop().s
-    #             echo " - got: " & $(got)
-
-    #             discard wv.eval(got)
-    #         )
-
-    #     # proc wvCallback (param: seq[string]): string =
-    #     #     echo "wvCallback :: " & param
-    #     #     echo "executing something..."
-    #     #     discard wv.eval("console.log('execd in JS');")
-    #     #     echo "returning value..."
-    #     #     return "returned value"
-
-    #     # wv.bindProc("webview","run",wvCallback)
-
-    #     wv.run()
-    #     wv.exit()
+    ## Something
 
 else:
     proc showWebview*(title="WebView", url="", 
@@ -119,3 +78,45 @@ else:
                       resizable=true, debug=false) =
 
         echo "- feature not supported in MINI builds"
+
+# proc showWebview*(title="WebView", url="", 
+#                   width=640, height=480, 
+#                   resizable=true, debug=false, bindings:ValueDict) =
+
+#     let wv = newWebview(title=title, 
+#                           url=url, 
+#                         width=width, 
+#                        height=height, 
+#                     resizable=true, 
+#                         debug=true,
+#                            cb=nil)
+
+#     for key,binding in bindings:
+#         let meth = key
+
+#         wv.bindMethod("webview", meth, proc (param: Value): string =
+#             echo "calling method: " & meth
+#             echo " - with argument: " & $(param)
+#             echo " - for parameter: " & $(binding.params.a[0])
+
+#             var args: ValueArray = @[binding.params.a[0]]
+
+#             echo "calling function!"
+#             discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
+#             let got = stack.pop().s
+#             echo " - got: " & $(got)
+
+#             discard wv.eval(got)
+#         )
+
+#     # proc wvCallback (param: seq[string]): string =
+#     #     echo "wvCallback :: " & param
+#     #     echo "executing something..."
+#     #     discard wv.eval("console.log('execd in JS');")
+#     #     echo "returning value..."
+#     #     return "returned value"
+
+#     # wv.bindProc("webview","run",wvCallback)
+
+#     wv.run()
+#     wv.exit()
