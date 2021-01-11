@@ -1066,23 +1066,19 @@ proc `$`*(v: Value): string {.inline.} =
         of Binary   : discard
         of Inline,
            Block     :
-            result = "["
-            for i,child in v.a:
-                result &= $(child) & " "
+            # result = "["
+            # for i,child in v.a:
+            #     result &= $(child) & " "
+            # result &= "]"
 
-            result &= "]"
+            result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
-            result = "["
-            let keys = toSeq(v.d.keys)
+            var items: seq[string] = @[]
+            for key,value in v.d:
+                items.add(key  & ":" & $(value))
 
-            if keys.len > 0:
-
-                for key,value in v.d:
-                    result &= key & ": "
-                    result &= $(value)
-
-            result &= "]"
+            result = "[" & items.join(" ") & "]"
 
         of Function     : 
             result = "["
