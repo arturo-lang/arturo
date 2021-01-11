@@ -66,39 +66,41 @@ template Webview*():untyped =
                             debug=true,
                                cb=nil)
 
-    for key,binding in y.d:
-        let meth = key
+    when not defined(MINI):
 
-        wv.bindMethod("webview", meth, proc (param: Value): string =
-            # echo "calling method: " & meth
-            # echo " - with argument: " & $(param)
-            # echo " - for parameter: " & $(binding.params.a[0])
+        for key,binding in y.d:
+            let meth = key
 
-            var args: ValueArray = @[binding.params.a[0]]
-            stack.push(param)
-            discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
-            let got = stack.pop().s
-            #echo " - got: " & $(got)
+            wv.bindMethod("webview", meth, proc (param: Value): string =
+                # echo "calling method: " & meth
+                # echo " - with argument: " & $(param)
+                # echo " - for parameter: " & $(binding.params.a[0])
 
-            discard wv.eval(got)
-        )
+                var args: ValueArray = @[binding.params.a[0]]
+                stack.push(param)
+                discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
+                let got = stack.pop().s
+                #echo " - got: " & $(got)
 
-    # proc wvCallback (param: seq[string]): string =
-    #     echo "wvCallback :: " & param
-    #     echo "executing something..."
-    #     discard wv.eval("console.log('execd in JS');")
-    #     echo "returning value..."
-    #     return "returned value"
+                discard wv.eval(got)
+            )
 
-    # wv.bindProc("webview","run",wvCallback)
+        # proc wvCallback (param: seq[string]): string =
+        #     echo "wvCallback :: " & param
+        #     echo "executing something..."
+        #     discard wv.eval("console.log('execd in JS');")
+        #     echo "returning value..."
+        #     return "returned value"
 
-    wv.run()
-    wv.exit()
+        # wv.bindProc("webview","run",wvCallback)
 
-    # # showWebview(title=title, 
-    # #               url=targetUrl, 
-    # #             width=width, 
-    # #            height=height, 
-    # #         resizable=true, 
-    # #             debug=false,
-    # #          bindings=y.d)
+        wv.run()
+        wv.exit()
+
+        # # showWebview(title=title, 
+        # #               url=targetUrl, 
+        # #             width=width, 
+        # #            height=height, 
+        # #         resizable=true, 
+        # #             debug=false,
+        # #          bindings=y.d)

@@ -45,8 +45,9 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
     if execCmd(command) != 0:
         echo "could not open a Chrome window"
 
-proc bindMethod*(w: Webview, scope, name: string, p: (proc(param: Value): string)) =
-    when not defined(MINI):
+when not defined(MINI):
+    proc bindMethod*(w: Webview, scope, name: string, p: (proc(param: Value): string)) =
+
         proc hook(hookParam: string): string =
             var 
                 paramVal: Value
@@ -67,8 +68,6 @@ proc bindMethod*(w: Webview, scope, name: string, p: (proc(param: Value): string
         # TODO eval jscode
         #echo jsTemplate%[name, scope]
         w.dispatch(proc() = discard w.eval(jsTemplate%[name, scope]))
-    else:
-        echo "- feature not supported in MINI builds"
 
 when not defined(MINI):
 
