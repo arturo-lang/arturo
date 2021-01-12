@@ -474,9 +474,9 @@ template Prints*():untyped =
         #x.print(newLine = false)
 
 template Push*():untyped =
-    discard
-    # we do not need to do anything, just leave the value there
-    # as it's already been pushed
+    require(opPush, true)
+
+    stack.push(sTop())
 
 template Return*():untyped = 
     # EXAMPLE:
