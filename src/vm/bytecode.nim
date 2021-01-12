@@ -677,7 +677,7 @@ const
                                 an      : "value",
                                 a       : {Any},
                                 ret     : {Null},    
-                                desc    : "push given value to stack" ),
+                                desc    : "push given value to stack twice" ),
 
 
         # comparison operations

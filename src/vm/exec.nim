@@ -109,7 +109,7 @@ template callByIndex(idx: int):untyped =
 
 ####
 
-template require(op: OpCode): untyped =
+template require(op: OpCode, nopop: bool = false): untyped =
     if SP<(static OpSpecs[op].args):
         panic "cannot perform '" & (static OpSpecs[op].name) & "'; not enough parameters: " & $(static OpSpecs[op].args) & " required"
 
@@ -132,12 +132,13 @@ template require(op: OpCode): untyped =
                         let acceptStr = toSeq((OpSpecs[op].c).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
                         panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
 
-    when (static OpSpecs[op].args)>=1:
-        var x {.inject.} = stack.pop()
-    when (static OpSpecs[op].args)>=2:
-        var y {.inject.} = stack.pop()
-    when (static OpSpecs[op].args)>=3:
-        var z {.inject.} = stack.pop()
+    when not nopop:
+        when (static OpSpecs[op].args)>=1:
+            var x {.inject.} = stack.pop()
+        when (static OpSpecs[op].args)>=2:
+            var y {.inject.} = stack.pop()
+        when (static OpSpecs[op].args)>=3:
+            var z {.inject.} = stack.pop()
 
 template execDictionary(
     blk             : Value
