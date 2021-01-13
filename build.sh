@@ -131,14 +131,14 @@ then
 
     # ultracompress final binary
 
-    # if $DO_COMPRESS ; then
-    #     echo ""
-    # 	printf "\e[1;35m●\e[0m Optimizing binary\e[0m"
-    #     echo ""
-    #     printf "  \e[0;90mcompression: on\e[0m"
-    #     echo ""
-    # 	upx -q $BINARY >/dev/null 2>&1
-    # fi
+    if $DO_COMPRESS ; then
+        echo ""
+    	printf "\e[1;35m●\e[0m Optimizing binary\e[0m"
+        echo ""
+        printf "  \e[0;90mcompression: on\e[0m"
+        echo ""
+    	upx -q $BINARY >/dev/null 2>&1
+    fi
 
     if $DO_INSTALL ; then
         echo ""
