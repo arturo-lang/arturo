@@ -40,7 +40,7 @@ install_arturo() {
     cd $ARTURO_TMP_DIR
     git clone https://github.com/arturo-lang/arturo.git
     cd arturo
-    sudo ./build.sh install
+    ./build.sh install
 }
 
 main() {
