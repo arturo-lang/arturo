@@ -128,6 +128,13 @@ jobs:
         run: |
           ./build.sh install
 
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: arturo
+          path: bin/arturo
+        if: matrix.os == 'ubuntu-16.04'
+
       - name: Run unit tests
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
