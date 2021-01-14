@@ -18,20 +18,21 @@ on:
       - 'LICENSE'
 
 jobs:
-  cancel:
-    name: "Cleanup"
-    runs-on: ubuntu-latest
+  build:
+    name: "Build & Test :mini"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-latest
     steps:
-      - name: "Cancel actions in progress of the same workflow"
+      - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
 
-  nimble-mini:
-    name: "Nimble (mini)"
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@main
+      - name: "Checkout"
+        uses: actions/checkout@main
         with:
           submodules: recursive
 
@@ -66,3 +67,9 @@ jobs:
           nim --version
 
           nimble build -Y "-d:MINI"
+
+      - name: Upload Artifacts
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: "arturo-${{matrix.os}}"
+          path: bin/arturo
