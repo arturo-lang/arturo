@@ -21,16 +21,7 @@ defaults:
   run:
     shell: bash -l {0}
 
-jobs:
-  cancel:
-    name: "Cleanup"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Cancel actions in progress of the same workflow"
-        uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
-  
+jobs:  
   build:
     name: "Build & Test"
     runs-on: ${{ matrix.os }}
@@ -41,7 +32,13 @@ jobs:
           - ubuntu-18.04
           - ubuntu-20.04
     steps:
-      - uses: actions/checkout@main
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
         with:
           submodules: recursive
 
