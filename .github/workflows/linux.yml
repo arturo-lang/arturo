@@ -1,0 +1,75 @@
+name: "Linux"
+on:
+  push:
+    branches-ignore:
+      - 'drkameleon-devel'
+    paths-ignore:
+      - '*.gif'
+      - '*.png'
+      - '*.yml'
+      - '*.md'
+      - 'LICENSE'
+  pull_request:
+    paths-ignore:
+      - '*.gif'
+      - '*.png'
+      - '*.yml'
+      - '*.md'
+      - 'LICENSE'
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  cancel:
+    name: "Cleanup"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Cancel actions in progress of the same workflow"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+  
+  build:
+    name: "Build & Test"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-16.04
+          - ubuntu-18.04
+          - ubuntu-20.04
+    steps:
+      - uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install Nim
+        run: |
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          sudo apt-fast update
+          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
+          
+      - name: Verify dependecies
+        run: |
+          nim --version
+          
+      - name: Build Arturo
+        run: |
+          ./build.sh install
+
+      - name: Upload Artifacts
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: "arturo-${{matrix.os}}"
+          path: bin/arturo
+
+      - name: Run unit tests
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          arturo tests/runAll.art
