@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import extras/webview
+when not defined(MINI):
+    import extras/webview
+    
 import vm/env, vm/stack, vm/value
 import utils
 
