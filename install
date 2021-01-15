@@ -1,0 +1,265 @@
+#!/usr/bin/env sh
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2021 Yanis Zafirópulos
+#
+# @file: build
+######################################################
+
+################################################
+# HELPERS
+################################################
+
+RED='\033[0;31m'
+GREEN='\033[1;32m'
+BLUE='\033[0;34m'
+MAGENTA='\033[1;35m'
+CYAN='\033[1;36m'
+GRAY='\033[0;90m'
+CLEAR='\033[0m'
+
+printColorized() {
+    NC='\033[0m'
+    printf "${1}${2}${NC}"
+}
+
+print() {
+    printf "${1}"
+}
+
+showHeader() {
+    echo "======================================"
+    echo "${GREEN}"
+    echo "               _                    "
+    echo "              | |                   "
+    echo "     __ _ _ __| |_ _   _ _ __ ___   "
+    echo "    / _\` | '__| __| | | | '__/ _ \ "
+    echo "   | (_| | |  | |_| |_| | | | (_) | "
+    echo "    \__,_|_|   \__|\__,_|_|  \___/  "
+    echo "                                    "
+    echo "${CLEAR}"
+    printf "     \e[1mArturo"
+    printf " Programming Language\e[0m\n"
+    echo "      (c)2021 Yanis Zafirópulos"
+    echo ""
+
+    echo "======================================"
+    echo " ► Installer"
+    echo "======================================"
+    printf "${CLEAR}"
+}
+
+showFooter(){
+    echo ""
+    printf "${GRAY}"
+    echo " :---------------------------------------------------------"
+    echo " : Arturo has been successfully installed!"
+    echo " :"
+    echo " : To be able to run it,"
+    echo " : first make sure its in your \$PATH:"
+    echo " :"
+    echo " :    export PATH=\"$HOME/.arturo/bin:\$PATH\""
+    echo " :"
+    echo " : and add it to your ~/.profile,"
+    echo " : so that it's set automatically every time."
+    echo " :"
+    echo " : Rock on! :)"
+    echo " :---------------------------------------------------------"
+    printf "${CLEAR}"
+    echo ""
+}
+
+section(){
+    echo ""
+    printf " ${MAGENTA}●${CLEAR} ${1}"
+    echo ""
+}
+
+info(){
+    echo "   ${GRAY}${1}${CLEAR}"
+}
+
+command_exists(){
+    type "$1" &> /dev/null
+}
+
+animate_progress(){
+    pid=$! # Process Id of the previous running command
+
+    spin='-\|/'
+
+    i=0
+    printf "${CYAN}"
+    while kill -0 $pid 2>/dev/null
+    do
+        i=$(( (i+1) %4 ))
+        printf "\r ${spin:$i:1}"
+        sleep .1
+    done
+    printf "\b\b\b\b     \x1B[A\x1B[A"
+    printf "${CLEAR}"
+}
+
+################################################
+# FUNCTIONS
+################################################
+
+verifyNim(){
+    if ! command_exists nim ; 
+    then
+        curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+    fi
+    VERS=$(nim -v | grep -o "Version \d\.\d\.\d")
+    NIMV="${VERS/Version /}"
+    info "nim: $NIMV"
+}
+
+verifyDirectories() {
+    # create target dirs recursively, if not exists
+    mkdir -p "$TARGET_DIR"
+    mkdir -p "$TARGET_LIB"
+
+    info "in: $ROOT_DIR"
+
+    if [[ ":$PATH:" == *":$TARGET_DIR:"* ]]; 
+        :
+    then
+        # path was not in path
+        PATH=$TARGET_DIR:$PATH      
+    fi
+}
+
+buildArturo(){
+    info "version: $(cat version/version)"
+    info "config: $CONFIG"
+
+    echo "${GRAY}"
+    if ! $PRINT_LOG;
+    then
+        nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
+        animate_progress
+    else
+        nim c $FLAGS -o:$BINARY $MAIN
+    fi
+    echo "${CLEAR}"
+}
+
+compressBinary(){
+    if ! command_exists upx ; 
+    then
+        info "compressing binary"
+        upx -q $BINARY >/dev/null 2>&1
+    fi
+}
+
+installAll(){
+    cp $BINARY $TARGET_DIR
+}
+
+################################################
+# INITIALIZE OPTIONS
+################################################
+
+# paths and tools
+
+ROOT_DIR="$HOME/.arturo"
+TARGET_DIR="$ROOT_DIR/bin"
+TARGET_LIB="$ROOT_DIR/lib"
+
+BINARY="bin/arturo"
+MAIN="src/arturo.nim"
+
+# variables
+
+MINI_BUILD=false
+COMPRESS=true
+PRINT_LOG=false
+CONFIG=""
+
+FLAGS="\
+ --warning[UnusedImport]:off\
+ --colors:off\
+ -d:release\
+ -d:danger\
+ --panics:off\
+ --gc:orc\
+ --checks:off\
+ --overflowChecks:on\
+ -d:ssl\
+ --threads:on\
+ --passC:"-O3"\
+ --cincludes:extras\
+ --nimcache:.cache\
+ --embedsrc:on\
+ --path:src"
+
+# check switches
+
+while test $# -gt 0
+do
+    case "$1" in
+        log)
+            PRINT_LOG=true;;
+        mini)      
+            MINI_BUILD=true 
+            FLAGS="$FLAGS -d:MINI";;
+        verbose) 	
+            CONFIG="verbose $CONFIG"
+            FLAGS="$FLAGS -d:VERBOSE";;
+        benchmark) 	
+            CONFIG="benchmark $CONFIG"
+            FLAGS="$FLAGS -d:BENCHMARK";;
+        debug) 		
+            COMPRESS=false
+            CONFIG="debug $CONFIG"
+            FLAGS="$FLAGS -d:DEBUG --debugger:on --debuginfo --linedir:on";;
+        profile) 	
+            CONFIG="profile $CONFIG"
+            FLAGS="$FLAGS -d:PROFILE --profiler:on --stackTrace:on";;
+        *) ;;
+    esac
+    shift
+done
+
+if $MINI_BUILD; then 
+    CONFIG="@mini $CONFIG"
+    FLAGS="$FLAGS --opt:size"
+else 
+    CONFIG="@full $CONFIG"
+    FLAGS="$FLAGS --opt:speed" 
+fi
+
+if ! $PRINT_LOG; then
+    FLAGS="$FLAGS --hints:off"
+fi
+
+################################################
+# MAIN
+################################################
+
+showHeader
+
+section "Checking environment..."
+verifyNim
+
+section "Building..."
+buildArturo
+
+if [ $? -eq 0 ];
+then
+    section "Post-processing..."
+    compressBinary
+
+    section "Installing..."
+    verifyDirectories
+    installAll
+
+    section "Done!"
+    showFooter
+
+    exit 0
+else
+    echo "The installer failed :(" >&2
+    exit 1
+fi
