@@ -12,7 +12,8 @@
 
 import tables
 
-import extras/webview
+when not defined(MINI):
+    import extras/webview
 import vm/env, vm/stack, vm/value
 
 #=======================================
@@ -58,15 +59,15 @@ template Webview*():untyped =
 
     # discard webview(title.cstring, targetUrl.cstring, width.cint, height.cint, 1.cint)
 
-    let wv = newWebview(title=title, 
+    when not defined(MINI):
+
+        let wv = newWebview(title=title, 
                               url=targetUrl, 
                             width=width, 
                            height=height, 
                         resizable=true, 
                             debug=true,
                                cb=nil)
-
-    when not defined(MINI):
 
         for key,binding in y.d:
             let meth = key
