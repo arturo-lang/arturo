@@ -97,7 +97,8 @@ type
         Inline          = 19
         Block           = 20
         Database        = 21
-        Any             = 22
+        Custom          = 22
+        Any             = 23
 
     IntegerKind* = enum
         NormalInteger
@@ -145,6 +146,10 @@ type
                     of SqliteDatabase: sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
                     #of MysqlDatabase: mysqldb*: mysql.DbConn
+            of Custom:
+                name*       : string
+                inherits*   : Value
+                conditions* : Value
 
 
 #=======================================
@@ -1088,6 +1093,9 @@ proc `$`*(v: Value): string {.inline.} =
         of Database:
             if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
             #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+
+        of Custom:
+            result = "<custom>"
             
         of ANY: discard
 
@@ -1340,6 +1348,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
             if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
             #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
+        of Custom       : stdout.write("<custom>")
+
         of ANY          : discard
 
     if not isLast:
@@ -1487,5 +1497,8 @@ proc hash*(v: Value): Hash {.inline.}=
         of Database:
             if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
             #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
+
+        of Custom:
+            result = 0
 
         of ANY          : result = 0
