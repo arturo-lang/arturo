@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    name: "Build & Test :mini"
+    name: "Build & Test"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
