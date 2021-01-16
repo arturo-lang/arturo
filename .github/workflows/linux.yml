@@ -46,11 +46,6 @@ jobs:
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           echo "$HOME/.nimble/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: |
-          sudo apt-fast update
-          sudo apt-fast install -yq libgtk-3-dev libwebkit2gtk-4.0-dev
           
       - name: Verify dependecies
         run: |
@@ -58,7 +53,8 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./build.sh install
+          ./install mini
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
