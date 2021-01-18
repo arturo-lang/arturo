@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import tables
+import strformat, tables
 
 import vm/value
 
@@ -75,6 +75,16 @@ proc getAttrsDict*(): Value =
     emptyAttrs()
 
 # Debugging
+
+proc dumpStack*() =
+    var i = 0
+    while i < SP:
+        stdout.write fmt("{i}: ")
+        var item = Stack[i]
+
+        item.dump(0, false)
+
+        i += 1
 
 when defined(VERBOSE):
 
