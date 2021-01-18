@@ -1,0 +1,58 @@
+; integer comparisons
+
+print equal? 1 1
+print 1=1
+print equal? 1 2
+print 1=2
+
+print notEqual? 1 1
+print 1<>1
+print notEqual? 1 2
+print 1<>2
+
+print less? 1 1
+print 1<1
+print less? 1 2
+print 1<2
+
+print lessOrEqual? 1 1
+print 1=<1
+print lessOrEqual? 1 2
+print 1=<2
+
+print greater? 1 1
+print 1>1
+print greater? 2 1
+print 2>1
+
+print greaterOrEqual? 1 1
+print 1>=1
+print greaterOrEqual? 2 1
+print 2>=1
+
+; floating comparisons
+
+print 3.0>2
+print 1.123 < 1.023
+
+; floating-integer comparisons
+
+print 3.0=3
+print 3.0>2
+print 2<3.14
+
+; other types
+
+print "done"="done"
+str: "hello"
+print "hello"=str
+print "boom"<>str
+
+print "hello">"iceland"
+print "hello"="iceland"
+print "hello"<"iceland"
+
+print [1 2 3]=[1 2 3]
+print [1 2 3]=[4 5 6]
+
+print [1 2 3 4]>[1 2 3]
