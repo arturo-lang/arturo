@@ -53,7 +53,7 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./install mini
+          ./install mini log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Upload Artifacts
