@@ -75,7 +75,7 @@ template To*(needsRequire:bool = true):untyped =
     let tp = x.t
     
     if y.kind == tp:
-        stack.push x
+        stack.push y
     else:
         case y.kind:
             of Null:
