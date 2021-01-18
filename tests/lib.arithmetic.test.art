@@ -1,17 +1,42 @@
 ; basic arithmetic operations
 print add 1 2
 print 1+2
+x: new 1
+add 'x 2
+print x
+
+print 1
+print 2
+
 print sub 2 1
 print 2-1
+y: new 2
+sub 'y 1
+print y
+
 print sub 1 2
 print 1-2
+
 print mul 2 3
 print 2*3
+z: new 2
+mul 'z 3
+print z
+
 print div 7 3
 print 7/3
+w: new 7
+div 'w 3
+print w
+
 print fdiv 7 3
+
 print mod 10 3
 print 10%3
+q: new 10
+mod 'q 3
+print q
+
 print pow 2 3
 print 2^3
 
@@ -25,11 +50,11 @@ print (1+2)*3
 print neg 1
 
 print inc 3
-a: 3
+a: new 3
 inc 'a
 print a
 
 print dec 3
-b: 3
+b: new 3
 dec 'b
 print b
