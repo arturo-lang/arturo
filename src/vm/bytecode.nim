@@ -457,6 +457,8 @@ type
 
         opIsStandalone  = 0x12E
 
+        opPi            = 0x12F
+
     ParamSpec* = set[ValueKind]
 
     OpSpec* = object
@@ -2506,6 +2508,13 @@ const
 
                                 ret     : {Boolean},
                                 desc    : "check if current script runs from command-line"),
+
+        opPi        : OpSpec(   name    : "pi",      
+                                args    : 0,   
+   
+                                ret     : {Floating},      
+                                desc    : "get the Pi (π) constant"),
+
     ]
 
     NoTranslation*  = (@[],@[])

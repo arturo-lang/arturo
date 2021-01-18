@@ -153,6 +153,11 @@ template Gcd*():untyped =
 
     stack.push(current)
 
+template GetPi*():untyped =
+    require(opPi)
+
+    stack.push(newFloating(PI))
+
 template IsEven*():untyped =
     # EXAMPLE:
     # even? 4           ; => true
