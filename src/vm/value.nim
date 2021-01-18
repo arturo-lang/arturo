@@ -203,22 +203,22 @@ proc newInteger*(bi: Int): Value {.inline.} =
     result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 proc newInteger*(i: int): Value {.inline.} =
-    if i in 0..10:
-        case i:
-            of 0: result = I0
-            of 1: result = I1
-            of 2: result = I2
-            of 3: result = I3
-            of 4: result = I4
-            of 5: result = I5
-            of 6: result = I6
-            of 7: result = I7
-            of 8: result = I8
-            of 9: result = I9
-            of 10: result = I10
-            else: discard # shouldn't reach here
-    else:
-        result = Value(kind: Integer, iKind: NormalInteger, i: i)
+    # if i in 0..10:
+    #     case i:
+    #         of 0: result = I0
+    #         of 1: result = I1
+    #         of 2: result = I2
+    #         of 3: result = I3
+    #         of 4: result = I4
+    #         of 5: result = I5
+    #         of 6: result = I6
+    #         of 7: result = I7
+    #         of 8: result = I8
+    #         of 9: result = I9
+    #         of 10: result = I10
+    #         else: discard # shouldn't reach here
+    # else:
+    result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
 proc newInteger*(i: int64): Value {.inline.} =
     newInteger((int)(i))
@@ -363,6 +363,16 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
             #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
         else: discard
+
+proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
+    ## Returns the first index of `item` in `a` or -1 if not found. This requires
+    ## appropriate `items` and `==` operations to work.
+    result = 0
+    for i in items(a):
+        if item == i: return
+        if item.kind in [Word, Label] and i.kind in [Word, Label] and item.s==i.s: return
+        inc(result)
+    result = -1
 
 #=======================================
 # Methods
