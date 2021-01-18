@@ -1,0 +1,44 @@
+print and 2 3
+a: new 2
+and 'a 3
+print a ; 2
+
+print nand 2 3
+b: new 2
+nand 'b 3
+print b ; -3
+
+print nor 2 3
+c: new 2
+nor 'c 3
+print c ; -4
+
+print not 123
+d: new 123
+not 'd
+print d ; -124
+
+print or 2 3
+e: new 2
+or 'e 3
+print e ; 3
+
+print shl 2 3
+f: new 2
+shl 'f 3
+print f ; 16
+
+print shr 16 3
+g: new 16
+shr 'g 3
+print g ; 2
+
+print xnor 2 3
+h: new 2
+xnor 'h 3
+print h ; -2
+
+print xor 2 3 
+i: new 2
+xor 'i 3
+print i ; 1
