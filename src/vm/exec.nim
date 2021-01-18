@@ -845,6 +845,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
                     of opIsStandalone: Reflection.IsStandalone()
 
+                    of opPi: Numbers.GetPi()
+
                     else: discard
 
             else: discard
