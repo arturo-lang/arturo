@@ -70,7 +70,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         currentCommand.add(b)
 
     proc addConst(consts: var seq[Value], v: Value, op: OpCode) =
-        var indx = consts.find(v)
+        var indx = consts.indexOfValue(v)
         if indx == -1:
             consts.add(v)
             indx = consts.len-1
