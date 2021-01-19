@@ -1271,7 +1271,8 @@ const
                                 bn      : "content",     
                                 b       : {Any},      
                                 ret     : {Null},      
-                                attrs   :   ".json -> write value as json~" &
+                                attrs   :   ".directory -> create directory at path~" &
+                                            ".json -> write value as json~" &
                                             ".binary -> write as binary",
                                 desc    : "write content to file at given path"),
 
