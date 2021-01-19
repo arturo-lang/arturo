@@ -9,9 +9,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: reviewdog/action-setup@v1
+        with:
+          reviewdog_version: latest
+
       - name: PR Review
         uses: reviewdog/action-nimlint@v1
         with:
           github_token: ${{ secrets.github_token }}
+          level: 'info'
           reporter: github-pr-review # Change reporter.
           src: 'src/*.nim'
