@@ -1,15 +1,21 @@
+3rd-party:
+  - src/extras/*
+
+evaluator:
+  - src/translator/eval.nim
+
+helpers:
+  - src/helpers/*
+  
 installer:
   - arturo.nimble
   - build.sh
 
-3rd-party:
-  - src/extras/*
+library:
+  - src/vm/library/*
 
-helpers:
-  - src/helpers/*
-
-evaluator:
-  - src/translator/eval.nim
+package-manager:
+  - src/system/module.art
 
 parser:
   - src/translator/parse.nim
@@ -17,11 +23,8 @@ parser:
 repl:
   - src/system/console.art
 
-package-manager:
-  - src/system/module.art
-
-library:
-  - src/vm/library/*
+unit-test:
+  - tests/*
 
 vm:
   - src/vm/bytecode.nim
@@ -31,5 +34,5 @@ vm:
   - src/vm/stack.nim
   - src/vm/value.nim
 
-unit-test:
-  - tests/*
+workflows:
+  - .github/workflows/*
