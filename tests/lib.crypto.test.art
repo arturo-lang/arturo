@@ -1,0 +1,8 @@
+print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
+print encode "Numquam fugiens respexeris"
+print digest "Hello world"
+print digest.sha "Hello world"
+print hash "Hello world"
+print hash "Hello world"
+print hash "hello world"
+print hash [1 2 3]
