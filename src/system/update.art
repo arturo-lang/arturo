@@ -18,7 +18,7 @@ confirm: input "  ** Are you sure you want to install it? [y/n]: "
 
 if? "y"=strip lower confirm [
 	print color.green 	"- Installing... (Please wait)"
-	execute 			"cd arturo && ./build.sh install"
+	execute 			"cd arturo && ./install"
 
 	print color.green 	"- Cleaning up..."
 	execute 			"rm -rf arturo"
