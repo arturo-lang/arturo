@@ -587,6 +587,7 @@ template IsEmpty*(): untyped =
     require(opIsEmpty)    
 
     case x.kind:
+        of Null: stack.push(VTRUE)
         of String: stack.push(newBoolean(x.s==""))
         of Block: stack.push(newBoolean(x.a.len==0))
         of Dictionary: stack.push(newBoolean(x.d.len==0))
