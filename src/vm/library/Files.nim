@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import strtabs, tables
+import os, strtabs, tables
 
 import vm/stack, vm/value
 
@@ -92,21 +92,25 @@ template Write*():untyped =
 
     require(opWrite)
 
-    if (popAttr("binary") != VNULL):
-        var f: File
-        discard f.open(x.s, mode=fmWrite)
-        discard f.writeBytes(y.n, 0, y.n.len)
-
-        f.close()
+    if (popAttr("directory") != VNULL):
+        createDir(x.s)
+        
     else:
-        if (popAttr("json") != VNULL):
-            let rez = json.pretty(generateJsonNode(y), indent=4)
-            if x.kind==String:
-                writeFile(x.s, rez)
-            else:
-                stack.push(newString(rez))
+        if (popAttr("binary") != VNULL):
+            var f: File
+            discard f.open(x.s, mode=fmWrite)
+            discard f.writeBytes(y.n, 0, y.n.len)
+
+            f.close()
         else:
-            writeFile(x.s, y.s)
+            if (popAttr("json") != VNULL):
+                let rez = json.pretty(generateJsonNode(y), indent=4)
+                if x.kind==String:
+                    writeFile(x.s, rez)
+                else:
+                    stack.push(newString(rez))
+            else:
+                writeFile(x.s, y.s)
     
 template Zip*():untyped = 
     # EXAMPLE:
