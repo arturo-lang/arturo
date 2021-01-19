@@ -179,8 +179,11 @@ MAIN="src/arturo.nim"
 MINI_BUILD=false
 COMPRESS=true
 PRINT_LOG=false
-IS_BUILD=false
-[ "$(whoami)" = "drkameleon" ] || IS_BUILD=true
+
+if [ "$(whoami)" = "drkameleon" ]; then IS_BUILD=true
+else IS_BUILD=false
+fi
+
 CONFIG=""
 
 FLAGS="\
