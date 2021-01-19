@@ -4,12 +4,12 @@ on: [pull_request]
 
 jobs:
   nimlint:
-    name: runner / nimlint
+    name: Nim
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: nimlint-github-pr-review
+      - name: PR Review
         uses: reviewdog/action-nimlint@v1
         with:
           github_token: ${{ secrets.github_token }}
