@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: nimlint-github-pr-review
-      - uses: reviewdog/action-nimlint@v1
+        uses: reviewdog/action-nimlint@v1
         with:
           github_token: ${{ secrets.github_token }}
           reporter: github-pr-review # Change reporter.
