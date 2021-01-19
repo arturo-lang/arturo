@@ -1585,7 +1585,7 @@ const
                                 args    : 1,   
 
                                 an      : "collection",
-                                a       : {String,Block,Dictionary},
+                                a       : {String,Block,Dictionary,Null},
                                 ret     : {Boolean},      
                                 desc    : "check if given collection is empty" ),
 
