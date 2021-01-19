@@ -180,6 +180,7 @@ MINI_BUILD=false
 COMPRESS=true
 PRINT_LOG=false
 IS_BUILD=false
+[ "$(whoami)" = "drkameleon" ] || IS_BUILD=true
 CONFIG=""
 
 FLAGS="\
