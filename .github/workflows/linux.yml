@@ -4,8 +4,6 @@ on:
     branches:
       - '**'
     tags-ignore:
-      - '*.*'
-    tags-ignore:
       - '**'
   pull_request:
     paths-ignore:
