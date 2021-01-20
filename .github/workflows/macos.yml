@@ -30,6 +30,9 @@ jobs:
       matrix:
         os:
           - macos-latest
+        version:
+          - mini
+          - full
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
@@ -52,10 +55,8 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./install mini log
+          ./install ${{ matrix.version }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-
-      - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.os}}"
