@@ -55,7 +55,7 @@ template Read*():untyped =
 
         stack.push(newBinary(b))
     else:
-        let (src, _) = getSource(x.s)
+        let (src, _{.inject.}) = getSource(x.s)
 
         if (popAttr("lines") != VNULL):
             stack.push(newStringBlock(src.splitLines()))
