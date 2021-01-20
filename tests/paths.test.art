@@ -1,0 +1,65 @@
+; simple array
+a: ["one" 2 "three"]
+
+print a\0
+print a\1
+print a\2
+
+a\0: "uno"
+
+print a\0
+print a\1
+print a\2
+
+print first a
+
+; multidimensional array
+b: [[1 2 3] [4 5 6]]
+
+print b\0
+print b\0\0
+print b\1
+print b\1\0
+
+b\0: "first array"
+b\1\0: "cuatro"
+
+print b
+
+; array access with variables
+c: ["one" "two" "three"]
+indx: 2
+
+print c \ indx
+
+; dictionaries
+
+d: #[
+    name: "Joe"
+    age: 999
+    details: #[
+        city: "Someplace"
+        country: "Somewhere"
+    ]
+]
+
+print d
+print d\name
+print d\age
+print d\details
+print d\details\city
+print d\details\country
+
+doSth: function [][
+    print d
+    print d\name
+    print d\age
+    print d\details
+    print d\details\city
+    print d\details\country
+]
+
+d\name: "Jane"
+d\details\city: "Anotherplace"
+
+print d
