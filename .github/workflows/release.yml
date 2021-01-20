@@ -1,4 +1,4 @@
-name: Release
+name: "Release"
 
 on:
   push:
@@ -9,32 +9,58 @@ env:
   app-name: arturo
   nim-version: 1.4.0
 
+defaults:
+  run:
+    shell: bash -l {0}
+
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  build:
+    name: "Build & Test"
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [linux]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: jiro4989/setup-nim-action@v1
-        with:
-          nim-version: ${{ env.nim-version }}
-      - name: Install dependencies
-        run: |
-          # see. https://github.com/actions/virtual-environments/issues/675
-          sudo sed -i 's/azure\.//' /etc/apt/sources.list
+        os:
+          - ubuntu-latest
+          - macos-latest
+        version:
+          - mini
+          - full
 
-          sudo apt update -y
-          sudo apt install -y gtk+-3.0 webkit2gtk-4.0 libgmp-dev
-      - name: Build
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install Nim
         run: |
-          nimble build -Y
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        if: matrix.version == 'full' && matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libwebkit2gtk-4.0-dev
+
+      - name: Verify dependecies
+        run: |
+          nim --version
+
+      - name: Build Arturo
+        run: |
+          ./install ${{ matrix.version }} log
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}_${{ matrix.os }}.tar.gz ${{ env.app-name }} README.md LICENSE
+          tar czf ${{ env.app-name }}-${{matrix.version}}-${{matrix.os}}.tar.gz ${{ env.app-name }} README.md LICENSE
 
       - name: Create Release
         id: create-release
@@ -56,6 +82,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ${{ env.app-name }}_${{ matrix.os }}.tar.gz
-          asset_name: ${{ env.app-name }}_${{ matrix.os }}.tar.gz
+          asset_path: ${{ env.app-name }}-${{matrix.version}}-${{matrix.os}}.tar.gz
+          asset_name: ${{ env.app-name }}-${{matrix.version}}-${{matrix.os}}.tar.gz
           asset_content_type: application/gzip
