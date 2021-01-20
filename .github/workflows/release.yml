@@ -98,7 +98,8 @@ jobs:
           trim: true
 
       - uses: actions/download-artifact@v2
-        path: ./
+        with:
+          path: ./
       
       - name: Display structure of downloaded files
         run: ls -R
