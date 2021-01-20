@@ -49,6 +49,13 @@ jobs:
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install libwebkit2gtk-4.0-dev
+      - if: |
+          ${{matrix.version}} == 'full'
           
       - name: Verify dependecies
         run: |
