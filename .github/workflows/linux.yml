@@ -54,7 +54,7 @@ jobs:
         run: |
           apt-get update
           apt-get install libwebkit2gtk-4.0-dev
-      - if: |
+        if: |
           ${{matrix.version}} == 'full'
           
       - name: Verify dependecies
