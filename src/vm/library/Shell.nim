@@ -49,7 +49,7 @@ template List*():untyped =
     # ; test3.art
 
     require(opList)
-    
+
     if (let aSelect = popAttr("select"); aSelect != VNULL):
         if (popAttr("relative") != VNULL):
             stack.push(newStringBlock((toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
