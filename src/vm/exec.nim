@@ -143,44 +143,44 @@ template require(op: OpCode, nopop: bool = false): untyped =
         when (static OpSpecs[op].args)>=3:
             var z {.inject.} = stack.pop()
 
-template execDictionary(
-    blk             : Value
-): untyped = 
+# template execDictionary(
+#     blk             : Value
+# ): untyped = 
     
-    let previous = syms
-    echo "SAVING CURRENT SYMS @previous"
-    for k,v in pairs(previous):
-        echo "-- had " & k
+#     let previous = syms
+#     echo "SAVING CURRENT SYMS @previous"
+#     for k,v in pairs(previous):
+#         echo "-- had " & k
 
-    let evaled = doEval(blk)
-    let subSyms = doExec(evaled, depth+1, addr syms)
-    echo "GOT subSyms AFTER doExec"
-    for k,v in pairs(subSyms):
-        echo "-- has " & k
+#     let evaled = doEval(blk)
+#     let subSyms = doExec(evaled, depth+1, addr syms)
+#     echo "GOT subSyms AFTER doExec"
+#     for k,v in pairs(subSyms):
+#         echo "-- has " & k
 
-    # it's specified as a dictionary,
-    # so let's handle it this way
+#     # it's specified as a dictionary,
+#     # so let's handle it this way
 
-    var res: ValueDict = initOrderedTable[string,Value]()
+#     var res: ValueDict = initOrderedTable[string,Value]()
 
-    for k, v in pairs(subSyms):
-        if not previous.hasKey(k):
-            # it wasn't in the initial symbols, add it
-            res[k] = v
-        else:
-            # it already was in the symbols
-            # let's see if the value was the same
-            if (subSyms[k]) != (previous[k]):
-                echo "value " & (k) & " already existed BUT CHANGED! (!= true)"
-                # the value was not the same,
-                # so we add it a dictionary key
-                res[k] = v
+#     for k, v in pairs(subSyms):
+#         if not previous.hasKey(k):
+#             # it wasn't in the initial symbols, add it
+#             res[k] = v
+#         else:
+#             # it already was in the symbols
+#             # let's see if the value was the same
+#             if (subSyms[k]) != (previous[k]):
+#                 echo "value " & (k) & " already existed BUT CHANGED! (!= true)"
+#                 # the value was not the same,
+#                 # so we add it a dictionary key
+#                 res[k] = v
 
-    echo "RETURN dictionary"
-    for k,v in pairs(res):
-        echo "-- with " & k
+#     echo "RETURN dictionary"
+#     for k,v in pairs(res):
+#         echo "-- with " & k
 
-    res
+#     res
 
 
 template execBlock*(
