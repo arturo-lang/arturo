@@ -117,7 +117,7 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Upload Linux Release (full)
-        id: upload-release-asset
+        id: upload-release-asset2
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -128,7 +128,7 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Upload macOS Release (mini)
-        id: upload-release-asset
+        id: upload-release-asset3
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -139,7 +139,7 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Upload macOS Release (full)
-        id: upload-release-asset
+        id: upload-release-asset4
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
