@@ -70,7 +70,7 @@ jobs:
       - name: Create artifact
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${VERSION_NUM}-${{matrix.version}}-${{matrix.os}}.tar.gz ${{ env.app-name }} README.md LICENSE
+          tar czf ${{ env.app-name }}-${{VERSION_NUM}}-${{matrix.version}}-${{matrix.os}}.tar.gz ${{ env.app-name }} README.md LICENSE
 
   upload:
     name: "Upload"
