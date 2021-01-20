@@ -139,7 +139,7 @@ buildArturo(){
     info "config: $CONFIG"
 
     eecho "${GRAY}"
-    if ! $PRINT_LOG;
+    if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
     then
         nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
         animate_progress
@@ -180,8 +180,8 @@ MINI_BUILD=false
 COMPRESS=true
 PRINT_LOG=false
 
-if [ "$(whoami)" = "drkameleon" ]; then IS_BUILD=true
-else IS_BUILD=false
+if [ "$(whoami)" = "drkameleon" ]; then IS_DEV_BUILD=true
+else IS_DEV_BUILD=false
 fi
 
 CONFIG=""
@@ -210,8 +210,8 @@ do
     case "$1" in
         log)
             PRINT_LOG=true;;
-        build)
-            IS_BUILD=true;;
+        dev)
+            IS_DEV_BUILD=true;;
         mini)      
             MINI_BUILD=true 
             FLAGS="$FLAGS -d:MINI";;
@@ -241,11 +241,15 @@ else
     FLAGS="$FLAGS --opt:speed" 
 fi
 
-if ! $PRINT_LOG; then
-    FLAGS="$FLAGS --hints:off"
+if $IS_DEV_BUILD; then
+    FLAGS="$FLAGS --hint[Performance]:off"
+else
+    if ! $PRINT_LOG; then
+        FLAGS="$FLAGS --hints:off"
+    fi
 fi
 
-if $IS_BUILD; then
+if $IS_DEV_BUILD; then
     awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
     git commit -m 'build update' version/build
 fi
