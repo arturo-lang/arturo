@@ -43,10 +43,6 @@ jobs:
           path: version/version
           trim: true
 
-      - run: echo $TEXT
-        env:
-          VERSION_NUM: ${{ steps.versionNumber.outputs.text }}
-
       - name: Install Nim
         run: |
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
@@ -70,7 +66,7 @@ jobs:
       - name: Create artifact
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{VERSION_NUM}}-${{matrix.version}}-${{matrix.os}}.tar.gz ${{ env.app-name }} README.md LICENSE
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.os}}.tar.gz ${{ env.app-name }} README.md LICENSE
 
   upload:
     name: "Upload"
