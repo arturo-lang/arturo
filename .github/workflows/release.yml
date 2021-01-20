@@ -66,7 +66,13 @@ jobs:
       - name: Create artifact
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.version}}-${{matrix.os}}.tar.gz ${{ env.app-name }} README.md LICENSE
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz ${{ env.app-name }} README.md LICENSE
+
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
 
   upload:
     name: "Upload"
@@ -79,26 +85,66 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
 
-    #   - name: Create Release
-    #     id: create-release
-    #     uses: actions/create-release@v1
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #       tag_name: ${{ github.ref }}
-    #       release_name: ${{ github.ref }}
-    #       body: |
-    #         ${{ github.ref }}
-    #       draft: false
-    #       prerelease: false
+      - name: "Get version"
+        uses: pCYSl5EDgo/cat@master
+        id: versionNumber
+        with:
+          path: version/version
+          trim: true
 
-    #   - name: Upload Release Asset
-    #     id: upload-release-asset
-    #     uses: actions/upload-release-asset@v1
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #       upload_url: ${{ steps.create-release.outputs.upload_url }}
-    #       asset_path: ${{ env.app-name }}-${{matrix.version}}-${{matrix.os}}.tar.gz
-    #       asset_name: ${{ env.app-name }}-${{matrix.version}}-${{matrix.os}}.tar.gz
-    #       asset_content_type: application/gzip
+      - name: Create Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Linux Release (mini)
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-mini.tar.gz
+          asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-mini.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload Linux Release (full)
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-full.tar.gz
+          asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-full.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload macOS Release (mini)
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-mini.tar.gz
+          asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-mini.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload macOS Release (full)
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-full.tar.gz
+          asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-full.tar.gz
+          asset_content_type: application/gzip
