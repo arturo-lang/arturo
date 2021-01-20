@@ -75,11 +75,11 @@ jobs:
   upload:
     name: "Upload"
     runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [package]
     steps:
       - uses: actions/download-artifact@v2
-        if: ${{ always() }}
-        needs: [package]
-
+      
       - name: Display structure of downloaded files
         run: ls -R
 
