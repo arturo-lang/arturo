@@ -82,7 +82,7 @@ case [arg\0=]
 		print "- Fetching remote list...\n"
 		remotes: #REMOTE
 
-		if not? in? keys remotes arg\1 [
+		if not? contains? keys remotes arg\1 [
 			print [color.red.bold "Error:" "Remote module not found."]
 			exit
 		]
@@ -97,7 +97,7 @@ case [arg\0=]
 		print "- Fetching remote list...\n"
 		remotes: #REMOTE
 
-		if not? in? keys remotes arg\1 [
+		if not? contains? keys remotes arg\1 [
 			print [color.red.bold "Error:" "Remote module not found."]
 			exit
 		]
@@ -111,7 +111,7 @@ case [arg\0=]
 		print "- Fetching list...\n"
 		locals: map list.relative "/usr/local/lib/arturo" 'x [replace x ".art" ""]
 
-		if not? in? locals arg\1 [
+		if not? contains? locals arg\1 [
 			print [color.red.bold "Error:" "Local module not found."]
 			exit
 		]
