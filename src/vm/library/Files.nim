@@ -94,7 +94,6 @@ template Write*():untyped =
 
     if (popAttr("directory") != VNULL):
         createDir(x.s)
-        
     else:
         if (popAttr("binary") != VNULL):
             var f: File
