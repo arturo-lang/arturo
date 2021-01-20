@@ -265,7 +265,7 @@ template MakeArray*(): untyped =
     if x.kind==Block:
         discard execBlock(x)
     elif x.kind==String:
-        let (src, tp) = getSource(x.s)
+        let (_{.inject.}, tp) = getSource(x.s)
 
         if tp!=TextData:
             discard execBlock(doParse(x.s, isFile=false), isIsolated=true)
