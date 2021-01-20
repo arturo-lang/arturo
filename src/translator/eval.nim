@@ -542,7 +542,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "empty"      : addCommand(opEmpty)
                     of "empty?"     : addCommand(opIsEmpty)
 
-                    of "in"         : addCommand(opIn)
+                    of "insert"     : addCommand(opInsert)
                     of "in?"        : addCommand(opIsIn)
                     of "index"      : addCommand(opIndex)
                     of "key?"       : addCommand(opHasKey)
@@ -697,6 +697,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "standalone?": addExtraCommand(opIsStandalone)
 
                     of "pi"         : addExtraCommand(opPi)
+
+                    of "contains?"  : addExtraCommand(opIsContains)
 
                     else:
                         if Funcs.hasKey(node.s):
