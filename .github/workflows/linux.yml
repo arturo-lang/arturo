@@ -1,16 +1,12 @@
 name: "Linux"
 on:
   push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '*.*'
     tags-ignore:
       - '**'
-    branches-ignore:
-      - 'drkameleon-devel'
-    paths-ignore:
-      - '*.gif'
-      - '*.png'
-      - '*.yml'
-      - '*.md'
-      - 'LICENSE'
   pull_request:
     paths-ignore:
       - '*.gif'

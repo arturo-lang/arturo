@@ -80,10 +80,15 @@ jobs:
     if: ${{ always() }}
     needs: [package]
     steps:
-      - uses: actions/download-artifact@v2
-      
-      - name: Display structure of downloaded files
-        run: ls -R
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
 
       - name: "Get version"
         uses: pCYSl5EDgo/cat@master
@@ -91,6 +96,11 @@ jobs:
         with:
           path: version/version
           trim: true
+
+      - uses: actions/download-artifact@v2
+      
+      - name: Display structure of downloaded files
+        run: ls -R
 
       - name: Create Release
         id: create-release
