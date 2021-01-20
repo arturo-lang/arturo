@@ -1,6 +1,8 @@
 name: "MacOS"
 on:
   push:
+    tags-ignore:
+      - '**'
     branches-ignore:
       - 'drkameleon-devel'
     paths-ignore:
