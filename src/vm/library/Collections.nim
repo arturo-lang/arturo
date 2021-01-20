@@ -457,46 +457,6 @@ template HasKey*(): untyped =
 
     stack.push(newBoolean(x.d.hasKey(y.s)))
 
-template In*(): untyped =
-    # EXAMPLE:
-    # in [1 2 3 4] 0 "zero"
-    # ; => ["zero" 1 2 3 4]
-    #
-    # print in "heo" 2 "ll"
-    # ; hello
-    #
-    # dict: #[
-    # ____name: John
-    # ]
-    #
-    # in 'dict 'name "Jane"
-    # ; dict: [name: "Jane"]
- 
-    require(opIn)
-
-    if x.kind==Literal:
-        case syms[x.s].kind:
-            of String: syms[x.s].s.insert(z.s, y.i)
-            of Block: syms[x.s].a.insert(z, y.i)
-            of Dictionary:
-                syms[x.s].d[y.s] = z
-            else: discard
-    else:
-        case x.kind:
-            of String: 
-                var copied = x.s
-                copied.insert(z.s, y.i)
-                stack.push(newString(copied))
-            of Block: 
-                var copied = x.a
-                copied.insert(z, y.i)
-                stack.push(newBlock(copied))
-            of Dictionary:
-                var copied = x.d
-                copied[y.s] = z
-                stack.push(newDictionary(copied))
-            else: discard
-
 template Index*(): untyped =
     # EXAMPLE:
     # ind: index "hello" "e"
@@ -529,6 +489,46 @@ template Index*(): untyped =
             if not found:
                 stack.push(VNULL)
         else: discard
+
+template Insert*(): untyped =
+    # EXAMPLE:
+    # insert [1 2 3 4] 0 "zero"
+    # ; => ["zero" 1 2 3 4]
+    #
+    # print insert "heo" 2 "ll"
+    # ; hello
+    #
+    # dict: #[
+    # ____name: John
+    # ]
+    #
+    # insert 'dict 'name "Jane"
+    # ; dict: [name: "Jane"]
+ 
+    require(opInsert)
+
+    if x.kind==Literal:
+        case syms[x.s].kind:
+            of String: syms[x.s].s.insert(z.s, y.i)
+            of Block: syms[x.s].a.insert(z, y.i)
+            of Dictionary:
+                syms[x.s].d[y.s] = z
+            else: discard
+    else:
+        case x.kind:
+            of String: 
+                var copied = x.s
+                copied.insert(z.s, y.i)
+                stack.push(newString(copied))
+            of Block: 
+                var copied = x.a
+                copied.insert(z, y.i)
+                stack.push(newBlock(copied))
+            of Dictionary:
+                var copied = x.d
+                copied[y.s] = z
+                stack.push(newDictionary(copied))
+            else: discard
 
 template IsAll*(): untyped =
     require(opAll)
@@ -576,6 +576,41 @@ template IsAny*(): untyped =
     if not one:
         stack.push(newBoolean(false))
 
+template IsContains*(): untyped =
+    # EXAMPLE:
+    # arr: [1 2 3 4]
+    #
+    # contains? arr 5             ; => false
+    # contains? arr 2             ; => true
+    #
+    # user: #[
+    # ____name: "John"
+    # ____surname: "Doe"
+    # ]
+    #
+    # contains? dict "John"       ; => true
+    # contains? dict "Paul"       ; => false
+    #
+    # contains? keys dict "name"  ; => true
+    #
+    # contains? "hello" "x"       ; => false
+
+    require(opIsContains)
+
+    case x.kind:
+        of String:
+            if (popAttr("regex") != VNULL):
+                stack.push(newBoolean(nre.contains(x.s, re(y.s))))
+            else:
+                stack.push(newBoolean(y.s in x.s))
+        of Block:
+           stack.push(newBoolean(y in x.a))
+        of Dictionary: 
+            let values = toSeq(x.d.values)
+            stack.push(newBoolean(y in values))
+        else:
+            discard
+
 template IsEmpty*(): untyped =
     # EXAMPLE:
     # empty? ""             ; => true
@@ -597,34 +632,34 @@ template IsIn*(): untyped =
     # EXAMPLE:
     # arr: [1 2 3 4]
     #
-    # in? arr 5             ; => false
-    # in? arr 2             ; => true
+    # in? 5 arr             ; => false
+    # in? 2 arr             ; => true
     #
     # user: #[
     # ____name: "John"
     # ____surname: "Doe"
     # ]
     #
-    # in? dict "John"       ; => true
-    # in? dict "Paul"       ; => false
+    # in? "John" dict       ; => true
+    # in? "Paul" dict       ; => false
     #
-    # in? keys dict "name"  ; => true
+    # in? "name" keys dict  ; => true
     #
-    # in? "hello" "x"       ; => false
+    # in? "x" "hello"       ; => false
 
     require(opIsIn)
 
-    case x.kind:
+    case y.kind:
         of String:
             if (popAttr("regex") != VNULL):
-                stack.push(newBoolean(nre.contains(x.s, re(y.s))))
+                stack.push(newBoolean(nre.contains(y.s, re(x.s))))
             else:
-                stack.push(newBoolean(y.s in x.s))
+                stack.push(newBoolean(x.s in y.s))
         of Block:
-           stack.push(newBoolean(y in x.a))
+           stack.push(newBoolean(x in y.a))
         of Dictionary: 
-            let values = toSeq(x.d.values)
-            stack.push(newBoolean(y in values))
+            let values = toSeq(y.d.values)
+            stack.push(newBoolean(x in values))
         else:
             discard
 

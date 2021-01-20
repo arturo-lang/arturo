@@ -685,7 +685,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opEmpty: Collections.Empty()
             of opIsEmpty: Collections.IsEmpty()
 
-            of opIn: Collections.In()
+            of opInsert: Collections.Insert()
             of opIsIn: Collections.IsIn()
             of opIndex: Collections.Index()
             of opHasKey: Collections.HasKey()
@@ -846,6 +846,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opIsStandalone: Reflection.IsStandalone()
 
                     of opPi: Numbers.GetPi()
+
+                    of opIsContains: Collections.IsContains()
 
                     else: discard
 

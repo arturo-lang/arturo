@@ -300,7 +300,7 @@ type
         opEmpty         = 0xC6
         opIsEmpty       = 0xC7
 
-        opIn            = 0xC8 
+        opInsert        = 0xC8 
         opIsIn          = 0xC9
         opIndex         = 0xCA
         opHasKey        = 0xCB
@@ -458,6 +458,8 @@ type
         opIsStandalone  = 0x12E
 
         opPi            = 0x12F
+
+        opIsContains    = 0x130
 
     ParamSpec* = set[ValueKind]
 
@@ -1590,7 +1592,7 @@ const
                                 ret     : {Boolean},      
                                 desc    : "check if given collection is empty" ),
 
-        opIn        : OpSpec(   name    : "in",        
+        opInsert    : OpSpec(   name    : "insert",        
                                 args    : 3,   
 
                                 an      : "collection",
@@ -1605,10 +1607,10 @@ const
         opIsIn      : OpSpec(   name    : "in?",        
                                 args    : 2,   
 
-                                an      : "collection",
-                                a       : {String,Block,Dictionary},
-                                bn      : "value",
-                                b       : {Any},
+                                an      : "value",
+                                a       : {Any},
+                                bn      : "collection",
+                                b       : {String,Block,Dictionary},
                                 ret     : {Boolean},    
                                 attrs   :   ".regex -> match against a regular expression", 
                                 desc    : "check if value exists in given collection" ),
@@ -2515,6 +2517,17 @@ const
    
                                 ret     : {Floating},      
                                 desc    : "get the Pi (π) constant"),
+
+        opIsContains: OpSpec(   name    : "contains?",        
+                                args    : 2,   
+
+                                an      : "collection",
+                                a       : {String,Block,Dictionary},
+                                bn      : "value",
+                                b       : {Any},
+                                ret     : {Boolean},    
+                                attrs   :   ".regex -> match against a regular expression", 
+                                desc    : "check if collection contains given value" ),
 
     ]
 
