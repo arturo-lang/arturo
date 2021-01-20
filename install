@@ -109,6 +109,21 @@ animate_progress(){
 # FUNCTIONS
 ################################################
 
+verifyOS(){
+    case "$OSTYPE" in
+        linux*)   currentOS="linux" ;;
+        darwin*)  currentOS="macos" ;; 
+        cygwin*)  currentOS="windows" ;;
+        msys*)    currentOS="windows" ;;
+        solaris*) currentOS="solaris" ;;
+        freebsd*) currentOS="freebsd" ;;
+        bsd*)     currentOS="bsd" ;;
+        *)        currentOS="unknown" ;;
+    esac
+
+    info "os: $currentOS"
+}
+
 verifyNim(){
     if ! command_exists nim ; 
     then
@@ -261,6 +276,7 @@ fi
 showHeader
 
 section "Checking environment..."
+verifyOS
 verifyNim
 
 section "Building..."
