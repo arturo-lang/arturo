@@ -62,7 +62,7 @@ showFooter(){
     eecho " : To be able to run it,"
     eecho " : first make sure its in your \$PATH:"
     eecho " :"
-    eecho " :    export PATH=\"$HOME/.arturo/bin:\$PATH\""
+    eecho " :    export PATH=$HOME/.arturo/bin:\$PATH"
     eecho " :"
     eecho " : and add it to your ${shellRcFile},"
     eecho " : so that it's set automatically every time."
