@@ -221,8 +221,16 @@ template To*(needsRequire:bool = true):untyped =
                     else:
                         discard
 
-            of Symbol,
-               Dictionary,
+            of Symbol:
+                case tp:
+                    of String:
+                        stack.push newString($(y))
+                    of Literal:
+                        stack.push newLiteral($(y))
+                    else:
+                        showConversionError()
+
+            of Dictionary,
                Function,
                Database,
                Any,
