@@ -125,47 +125,4 @@ jobs:
         with:
           release_id: ${{ steps.create-release.outputs.id }}
           assets_path: ./assets
-
-      # - name: Upload Linux Release (mini)
-      #   id: upload-release-asset
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create-release.outputs.upload_url }}
-      #     asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-mini.tar.gz
-      #     asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-mini.tar.gz
-      #     asset_content_type: application/gzip
-
-      # - name: Upload Linux Release (full)
-      #   id: upload-release-asset2
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create-release.outputs.upload_url }}
-      #     asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-full.tar.gz
-      #     asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Linux-full.tar.gz
-      #     asset_content_type: application/gzip
-
-      # - name: Upload macOS Release (mini)
-      #   id: upload-release-asset3
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create-release.outputs.upload_url }}
-      #     asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-mini.tar.gz
-      #     asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-mini.tar.gz
-      #     asset_content_type: application/gzip
-
-      # - name: Upload macOS Release (full)
-      #   id: upload-release-asset4
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create-release.outputs.upload_url }}
-      #     asset_path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-full.tar.gz
-      #     asset_name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-macOS-full.tar.gz
-      #     asset_content_type: application/gzip
+          
