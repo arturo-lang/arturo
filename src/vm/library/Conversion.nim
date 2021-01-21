@@ -196,6 +196,8 @@ template To*(needsRequire:bool = true):untyped =
                 case tp:
                     of String: 
                         stack.push newString(y.s)
+                    of Literal:
+                        stack.push newLiteral(y.s)
                     else:
                         showConversionError()
 
