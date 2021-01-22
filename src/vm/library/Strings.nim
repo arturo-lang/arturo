@@ -279,29 +279,23 @@ template Render*():untyped =
                         $(stack.pop())
                 )
 
-        # var mr: seq[(re.Regex,string)] = @[]
-        #
-        # for k,v in pairs(attrs["with"].d):
-        #     mr.add((re.re("\\|" & k & "\\|"),$(v)))
-        # 
-        # if x.kind==String:
-        #     stack.push(newString(re.multireplace(x.s,mr)))
-        # elif x.kind==Literal:
-        #     syms[x.s].s = re.multireplace(x.s,mr)
-
     else:
         if x.kind==String:
-            stack.push(newString(x.s.replace(nre.re"\|([^\|]+)\|",
-                proc (match: RegexMatch): string =
-                    discard execBlock(doParse(match.captures[0], isFile=false))
-                    $(stack.pop())
-            )))
+            var res = newString(x.s)
+            while (contains(res.s, nre.re"\|([^\|]+)\|")):
+                res = newString(x.s.replace(nre.re"\|([^\|]+)\|",
+                    proc (match: RegexMatch): string =
+                        discard execBlock(doParse(match.captures[0], isFile=false))
+                        $(stack.pop())
+                ))
+            stack.push(res)
         elif x.kind==Literal:
-            syms[x.s].s = syms[x.s].s.replace(nre.re"\|([^\|]+)\|",
-                proc (match: RegexMatch): string =
-                    discard execBlock(doParse(match.captures[0], isFile=false))
-                    $(stack.pop())
-            )
+            while (contains(syms[x.s].s, nre.re"\|([^\|]+)\|")):
+                syms[x.s].s = syms[x.s].s.replace(nre.re"\|([^\|]+)\|",
+                    proc (match: RegexMatch): string =
+                        discard execBlock(doParse(match.captures[0], isFile=false))
+                        $(stack.pop())
+                )
 
 template Replace*():untyped =
     # EXAMPLE:
