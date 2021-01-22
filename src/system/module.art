@@ -9,7 +9,7 @@
 ;; Globals
 
 REMOTE: « https://github.com/arturo-lang/art-modules/releases/download/v0.0.2/list.art
-LOCAL:  « "~/.arturo/lib"
+LOCAL:  « ~/.arturo/lib
 
 ;; Helpers
 
