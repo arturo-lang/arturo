@@ -2008,7 +2008,8 @@ const
                                 attrs   :   ".binary -> format integer as binary~" &
                                             ".hex -> format integer as hexadecimal~" &
                                             ".octal -> format integer as octal~" & 
-                                            ".ascii* -> transliterate string to ASCII",
+                                            ".ascii* -> transliterate string to ASCII~" &
+                                            ".agnostic -> convert words in block to literals if not in context",
                                 desc    : "format given value as given type (attribute)"),
 
         opGcd       : OpSpec(   name    : "gcd",      
