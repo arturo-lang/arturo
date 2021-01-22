@@ -39,7 +39,7 @@ installModule: function [name,remote][
 
 uninstallModule: function [name][
 	prints color.cyan ~"> Uninstalling: |name|... "
-	execute "sudo rm " ++ ~"|LOCAL|/|name|.art"
+	execute "rm " ++ ~"|LOCAL|/|name|.art"
 	print "[ DONE ]"
 ]
 
