@@ -315,8 +315,8 @@ template Replace*():untyped =
     require(opReplace) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
-        if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
-        else: syms[x.s].s = syms[x.s].s.replace(re.re(y.s), z.s)
+        if x.kind==String: stack.push(newString(x.s.replace(nre.re(y.s), z.s)))
+        else: syms[x.s].s = syms[x.s].s.replace(nre.re(y.s), z.s)
     else:
         if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
         else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
