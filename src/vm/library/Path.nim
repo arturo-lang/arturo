@@ -64,7 +64,7 @@ template Module*():untyped =
 
     require(opModule)
 
-    stack.push(newString("/usr/local/lib/arturo/" & x.s & ".art"))
+    stack.push(newString(HomeDir & x.s & ".art"))
 
 template Relative*():untyped =
     # EXAMPLE:
