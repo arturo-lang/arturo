@@ -109,7 +109,7 @@ case [arg\0=]
 			exit
 		]
 		print "- Fetching list...\n"
-		locals: map list.relative "/usr/local/lib/arturo" 'x [replace x ".art" ""]
+		locals: map list.relative "~/.arturo/lib" 'x [replace x ".art" ""]
 
 		if not? contains? locals arg\1 [
 			print [color.red.bold "Error:" "Local module not found."]
@@ -120,7 +120,7 @@ case [arg\0=]
 	]
 	when? ["update"]	[ 
 		print "- Fetching list...\n"
-		locals: map list.relative "/usr/local/lib/arturo" 'x [replace x ".art" ""]
+		locals: map list.relative "~/.arturo/lib" 'x [replace x ".art" ""]
 
 		if? 0=size locals [
 			print [color.red.bold "Error:" "No modules found to update."]
