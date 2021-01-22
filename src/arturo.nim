@@ -183,6 +183,8 @@ when isMainModule:
     else:
         arguments = commandLineParams()
 
+        code = static readFile(getEnv("STANDALONE_INPUT"))
+
         bootup(run=true):
             let parsed = doParse(move code, isFile = false)
             let evaled = parsed.doEval()
