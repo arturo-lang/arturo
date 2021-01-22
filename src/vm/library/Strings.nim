@@ -12,6 +12,8 @@
 
 import vm/stack, vm/value
 
+import nre except toSeq
+
 #=======================================
 # Methods
 #=======================================
