@@ -25,7 +25,6 @@ buildPackage(){
     FLAGS="$FLAGS --forceBuild:on --opt:size -d:PORTABLE --hints:off"
     INPUT=$1
     BINARY="${INPUT/.art/}"
-    echo $BINARY
     nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
     animate_progress
 }
