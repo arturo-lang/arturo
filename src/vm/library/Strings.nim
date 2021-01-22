@@ -256,8 +256,8 @@ template Render*():untyped =
     if (let aWith = popAttr("with"); aWith != VNULL):
         if x.kind==String:
             var res = newString(x.s)
-            while (re.contains(res.s, re.re"\|([^\|]+)\|")):
-                res = newString(x.s.replace(re.re"\|([^\|]+)\|",
+            while (contains(res.s, nre.re"\|([^\|]+)\|")):
+                res = newString(x.s.replace(nre.re"\|([^\|]+)\|",
                     proc (match: RegexMatch): string =
                         var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
@@ -268,8 +268,8 @@ template Render*():untyped =
                 ))
             stack.push(res)
         elif x.kind==Literal:
-            while (re.contains(syms[x.s].s, re.re"\|([^\|]+)\|")):
-                syms[x.s].s = syms[x.s].s.replace(re.re"\|([^\|]+)\|",
+            while (contains(syms[x.s].s, nre.re"\|([^\|]+)\|")):
+                syms[x.s].s = syms[x.s].s.replace(nre.re"\|([^\|]+)\|",
                     proc (match: RegexMatch): string =
                         var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
