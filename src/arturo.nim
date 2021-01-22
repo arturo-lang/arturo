@@ -104,77 +104,85 @@ when isMainModule:
     var code: string = ""
     var arguments: ValueArray = @[]
 
-    while true:
-        token.next()
-        case token.kind:
-            of cmdArgument: 
-                if code=="":
-                    if action==evalCode:
-                        action = execFile
-                    
-                    code = token.key
-                else:
-                    arguments.add(newString(token.key))
-            of cmdShortOption, cmdLongOption:
-                case token.key:
-                    of "c","console":
-                        action = evalCode
-                        code = runConsole
-                    of "e","evaluate":
-                        action = evalCode
-                        code = token.val
-                    of "o","output":
-                        action = writeBcode
-                        code = token.val
-                    of "i","input":
-                        action = readBcode
-                        code = token.val
-                    of "u","update":
-                        action = evalCode
-                        code = runUpdate
-                    of "m", "module":
-                        action = evalCode
-                        code = runModule
-                    of "h","help":
-                        action = showHelp
-                    of "v","version":
-                        action = showVersion
-                    else:
-                        echo "error: unrecognized option (" & token.key & ")"
-            of cmdEnd: break
+    when not defined(STANDALONE):
 
-    case action:
-        of execFile, evalCode:
-            if code=="":
-                code = runConsole
-
-            when defined(BENCHMARK):
-                benchmark "doParse / doEval":
-                    let parsed = doParse(move code, isFile = action==execFile)
-                    let evaled = parsed.doEval()
-            else:
-                bootup(run=true):
-                    when defined(PYTHONIC):
-                        code = readFile(code)
-                        let parsed = doParse(move code, isFile = false)
-                    else:
-                        let parsed = doParse(move code, isFile = action==execFile)
+        while true:
+            token.next()
+            case token.kind:
+                of cmdArgument: 
+                    if code=="":
+                        if action==evalCode:
+                            action = execFile
                         
+                        code = token.key
+                    else:
+                        arguments.add(newString(token.key))
+                of cmdShortOption, cmdLongOption:
+                    case token.key:
+                        of "c","console":
+                            action = evalCode
+                            code = runConsole
+                        of "e","evaluate":
+                            action = evalCode
+                            code = token.val
+                        of "o","output":
+                            action = writeBcode
+                            code = token.val
+                        of "i","input":
+                            action = readBcode
+                            code = token.val
+                        of "u","update":
+                            action = evalCode
+                            code = runUpdate
+                        of "m", "module":
+                            action = evalCode
+                            code = runModule
+                        of "h","help":
+                            action = showHelp
+                        of "v","version":
+                            action = showVersion
+                        else:
+                            echo "error: unrecognized option (" & token.key & ")"
+                of cmdEnd: break
+
+        case action:
+            of execFile, evalCode:
+                if code=="":
+                    code = runConsole
+
+                when defined(BENCHMARK):
+                    benchmark "doParse / doEval":
+                        let parsed = doParse(move code, isFile = action==execFile)
+                        let evaled = parsed.doEval()
+                else:
+                    bootup(run=true):
+                        when defined(PYTHONIC):
+                            code = readFile(code)
+                            let parsed = doParse(move code, isFile = false)
+                        else:
+                            let parsed = doParse(move code, isFile = action==execFile)
+                            
+                        let evaled = parsed.doEval()
+                    
+            of writeBcode:
+                bootup(run=false):
+                    let filename = code
+                    let parsed = doParse(move code, isFile = true)
                     let evaled = parsed.doEval()
-                
-        of writeBcode:
-            bootup(run=false):
-                let filename = code
-                let parsed = doParse(move code, isFile = true)
-                let evaled = parsed.doEval()
 
-                discard writeBytecode(evaled, filename & ".bcode")
+                    discard writeBytecode(evaled, filename & ".bcode")
 
-        of readBcode:
-            bootup(run=true):
-                let evaled = readBytecode(code)
+            of readBcode:
+                bootup(run=true):
+                    let evaled = readBytecode(code)
 
-        of showHelp:
-            echo helpTxt
-        of showVersion:
-            echo VersionTxt
+            of showHelp:
+                echo helpTxt
+            of showVersion:
+                echo VersionTxt
+    else:
+        arguments = commandLineParams()
+
+        bootup(run=true):
+            let parsed = doParse(move code, isFile = false)
+            let evaled = parsed.doEval()
