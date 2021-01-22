@@ -12,8 +12,6 @@
 
 import vm/stack, vm/value
 
-import nre except toSeq
-
 #=======================================
 # Methods
 #=======================================
@@ -258,8 +256,8 @@ template Render*():untyped =
     if (let aWith = popAttr("with"); aWith != VNULL):
         if x.kind==String:
             var res = newString(x.s)
-            while (nre.contains(res.s, nre.re"\|([^\|]+)\|")):
-                res = newString(x.s.replace(nre.re"\|([^\|]+)\|",
+            while (re.contains(res.s, re.re"\|([^\|]+)\|")):
+                res = newString(x.s.replace(re.re"\|([^\|]+)\|",
                     proc (match: RegexMatch): string =
                         var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
@@ -270,8 +268,8 @@ template Render*():untyped =
                 ))
             stack.push(res)
         elif x.kind==Literal:
-            while (nre.contains(syms[x.s].s, nre.re"\|([^\|]+)\|")):
-                syms[x.s].s = syms[x.s].s.replace(nre.re"\|([^\|]+)\|",
+            while (re.contains(syms[x.s].s, re.re"\|([^\|]+)\|")):
+                syms[x.s].s = syms[x.s].s.replace(re.re"\|([^\|]+)\|",
                     proc (match: RegexMatch): string =
                         var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
@@ -315,8 +313,8 @@ template Replace*():untyped =
     require(opReplace) # PENDING unicode support
 
     if (popAttr("regex") != VNULL):
-        if x.kind==String: stack.push(newString(x.s.replace(nre.re(y.s), z.s)))
-        else: syms[x.s].s = syms[x.s].s.replace(nre.re(y.s), z.s)
+        if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
+        else: syms[x.s].s = syms[x.s].s.replace(re.re(y.s), z.s)
     else:
         if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
         else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
