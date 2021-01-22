@@ -28,7 +28,7 @@ printInfo: function [name,remote][
 ]
 
 installModule: function [name,remote][
-	if? attr? "update"
+	if? ø <> attribute "update"
 		-> prints color.cyan ~"> Updating: |name|... "
 	else
 		-> prints color.cyan ~"> Installing: |name|... "
