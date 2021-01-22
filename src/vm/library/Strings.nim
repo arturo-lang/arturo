@@ -283,7 +283,7 @@ template Render*():untyped =
         if x.kind==String:
             var res = newString(x.s)
             while (contains(res.s, nre.re"\|([^\|]+)\|")):
-                res = newString(x.s.replace(nre.re"\|([^\|]+)\|",
+                res = newString(res.s.replace(nre.re"\|([^\|]+)\|",
                     proc (match: RegexMatch): string =
                         discard execBlock(doParse(match.captures[0], isFile=false))
                         $(stack.pop())
