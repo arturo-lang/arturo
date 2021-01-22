@@ -13,7 +13,7 @@
 when defined(PROFILE):
     import nimprof
 
-import os, parseopt, segFaults
+import os, parseopt, segFaults, sequtils
 
 import translator/eval, translator/parse
 import vm/bytecode, vm/env, vm/exec, vm/value
@@ -104,7 +104,7 @@ when isMainModule:
     var code: string = ""
     var arguments: ValueArray = @[]
 
-    when not defined(STANDALONE):
+    when not defined(PORTABLE):
 
         while true:
             token.next()
@@ -181,9 +181,8 @@ when isMainModule:
             of showVersion:
                 echo VersionTxt
     else:
-        arguments = commandLineParams()
-
-        code = static readFile(getEnv("STANDALONE_INPUT"))
+        arguments = commandLineParams().map(proc (x:string):Value = newString(x))
+        code = static readFile(getEnv("PORTABLE_INPUT"))
 
         bootup(run=true):
             let parsed = doParse(move code, isFile = false)
