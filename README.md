@@ -93,7 +93,7 @@ brew install arturo
 
 a) via the main build script
 
-    sudo ./build.sh install
+    ./install
 
 The binary will be automatically installed in `/usr/local/bin`
 
@@ -107,7 +107,11 @@ The compiler will be built and installed automatically in your `$HOME/.nimble/bi
 
 Just use the existing docker image:
 
-	docker run -it fingidor/arturo-repl
+	docker run -it arturolang/arturo
+
+or (to run a specific local script):
+
+	docker run -it -v $(pwd):/home arturolang/arturo <yourscript.art>
 	
 ### Online
 
