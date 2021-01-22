@@ -55,7 +55,7 @@ if 0=size arg [
 case [arg\0=]
 	when? ["list"]		[ 
 		print "- Fetching list...\n"
-		locals: map list.relative "/usr/local/lib/arturo" 'x [replace x ".art" ""]
+		locals: map list.relative "~/.arturo/lib" 'x [replace x ".art" ""]
 
 		print color.cyan "> Available local modules:"
 		if? 0=size locals [
