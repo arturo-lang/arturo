@@ -45,6 +45,12 @@ template As*():untyped =
         stack.push(newString(fmt"{x.i:o}"))
     elif (popAttr("ascii") != VNULL):
         stack.push(convertToAscii(x.s))
+    elif (popAttr("agnostic") != VNULL):
+        let res = x.a.map(proc(v:Value):Value =
+            if v.kind == Word and not syms.hasKey(v.s): newLiteral(v.s)
+            else: v
+        )
+        stack.push(newBlock(res))
     else:
         stack.push(x)
 
