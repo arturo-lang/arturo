@@ -31,6 +31,8 @@ type
     Byte = byte
     ByteArray*  = seq[Byte]
 
+    BuiltinAction = proc ()
+
     SymbolKind* = enum
         thickarrowleft  # <=
         thickarrowright # =>
@@ -98,7 +100,8 @@ type
         Block           = 20
         Database        = 21
         Custom          = 22
-        Any             = 23
+        Builtin         = 23
+        Any             = 24
 
     IntegerKind* = enum
         NormalInteger
@@ -150,6 +153,9 @@ type
                 name*       : string
                 inherits*   : Value
                 conditions* : Value
+            of Builtin:
+                arity*   : int
+                action*  : BuiltinAction
 
 
 #=======================================
@@ -326,6 +332,9 @@ proc newBlock*(a: ValueArray = @[]): Value {.inline.} =
 proc newStringBlock*(a: seq[string]): Value {.inline.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
+proc newBuiltin*(n: int, a: BuiltinAction): Value {.inline.} =
+    Value(kind: Builtin, arity: n, action: a)
+
 proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
         of Null:        result = VNULL
@@ -362,6 +371,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Database:    
             if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
             #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
+
+        of Builtin:
+            result = newBuiltin(v.arity, v.action)
         else: discard
 
 proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
@@ -1106,6 +1118,9 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Custom:
             result = "<custom>"
+
+        of Builtin:
+            result = "<builtin>"
             
         of ANY: discard
 
@@ -1360,6 +1375,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
         of Custom       : stdout.write("<custom>")
 
+        of Builtin      : stdout.write("<builtin>")
+
         of ANY          : discard
 
     if not isLast:
@@ -1509,6 +1526,9 @@ proc hash*(v: Value): Hash {.inline.}=
             #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
         of Custom:
+            result = 0
+
+        of Builtin:
             result = 0
 
         of ANY          : result = 0
