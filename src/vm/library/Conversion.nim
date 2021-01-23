@@ -248,4 +248,5 @@ template To*(needsRequire:bool = true):untyped =
                PathLabel,
                Date,
                Custom,
+               Builtin,
                Binary: discard

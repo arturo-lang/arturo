@@ -712,6 +712,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addTerminalValue(false):
                                 addConst(consts, node, opLoadX)
 
+            of Builtin:
+                discard
+
             of Literal: 
                 addTerminalValue(false):
                     addConst(consts, node, opPushX)
