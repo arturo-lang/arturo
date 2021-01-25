@@ -102,7 +102,7 @@ type
         Custom          = 22
         Any             = 23
 
-    ValueKinds* = seq[ValueKind]
+    ValueSpec* = set[ValueKind]
 
     IntegerKind* = enum
         NormalInteger
@@ -155,8 +155,8 @@ type
                         fname*  : string
                         alias*  : SymbolKind
                         arity*  : int
-                        args*   : Table[string,ValueKinds]
-                        returns*: ValueKinds
+                        args*   : OrderedTable[string,ValueSpec]
+                        returns*: ValueSpec
                         action* : BuiltinAction
             of Database:
                 case dbKind*: DatabaseKind:
@@ -327,7 +327,7 @@ proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
 proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, exports: exports, pure: pure)
 
-proc newBuiltin*(name: string, al: SymbolKind, ar: int, ag: Table[string,seq[ValueKind]], ret: seq[ValueKind], act: BuiltinAction): Value {.inline.} =
+proc newBuiltin*(name: string, al: SymbolKind, ar: int, ag: OrderedTable[string,ValueSpec], ret: ValueSpec, act: BuiltinAction): Value {.inline.} =
     Value(kind: Function, fnKind: BuiltinFunction, alias: al, arity: ar, args: ag, returns: ret, action: act)
 
 proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
