@@ -100,12 +100,17 @@ type
         Block           = 20
         Database        = 21
         Custom          = 22
-        Builtin         = 23
-        Any             = 24
+        Any             = 23
+
+    ValueKinds* = seq[ValueKind]
 
     IntegerKind* = enum
         NormalInteger
         BigInteger
+
+    FunctionKind* = enum
+        UserFunction
+        BuiltinFunction
 
     DatabaseKind* = enum
         SqliteDatabase
@@ -140,23 +145,28 @@ type
                Block:       a*  : ValueArray
             of Dictionary:  d*  : ValueDict
             of Function:    
-                params* : Value         
-                main*   : Value
-                exports*: Value
-                pure*   : bool
+                case fnKind*: FunctionKind:
+                    of UserFunction:
+                        params* : Value         
+                        main*   : Value
+                        exports*: Value
+                        pure*   : bool
+                    of BuiltinFunction:
+                        fname*  : string
+                        alias*  : SymbolKind
+                        arity*  : int
+                        args*   : Table[string,ValueKinds]
+                        returns*: ValueKinds
+                        action* : BuiltinAction
             of Database:
                 case dbKind*: DatabaseKind:
                     of SqliteDatabase: sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
-                    #of MysqlDatabase: mysqldb*: mysql.DbConn
+                    #mysqldb*: mysql.DbConn
             of Custom:
                 name*       : string
                 inherits*   : Value
                 conditions* : Value
-            of Builtin:
-                arity*   : int
-                action*  : BuiltinAction
-
 
 #=======================================
 # Constants
@@ -315,7 +325,10 @@ proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
     Value(kind: Dictionary, d: d)
 
 proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool = false): Value {.inline.} =
-    Value(kind: Function, params: params, main: main, exports: exports, pure: pure)
+    Value(kind: Function, fnKind: UserFunction, params: params, main: main, exports: exports, pure: pure)
+
+proc newBuiltin*(name: string, al: SymbolKind, ar: int, ag: Table[string,seq[ValueKind]], ret: seq[ValueKind], act: BuiltinAction): Value {.inline.} =
+    Value(kind: Function, fnKind: BuiltinFunction, alias: al, arity: ar, args: ag, returns: ret, action: act)
 
 proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
     Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
@@ -331,9 +344,6 @@ proc newBlock*(a: ValueArray = @[]): Value {.inline.} =
 
 proc newStringBlock*(a: seq[string]): Value {.inline.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
-
-proc newBuiltin*(n: int, a: BuiltinAction): Value {.inline.} =
-    Value(kind: Builtin, arity: n, action: a)
 
 proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
@@ -372,8 +382,6 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
             #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
-        of Builtin:
-            result = newBuiltin(v.arity, v.action)
         else: discard
 
 proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
@@ -1118,9 +1126,6 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Custom:
             result = "<custom>"
-
-        of Builtin:
-            result = "<builtin>"
             
         of ANY: discard
 
@@ -1375,8 +1380,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
         of Custom       : stdout.write("<custom>")
 
-        of Builtin      : stdout.write("<builtin>")
-
         of ANY          : discard
 
     if not isLast:
@@ -1526,9 +1529,6 @@ proc hash*(v: Value): Hash {.inline.}=
             #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
         of Custom:
-            result = 0
-
-        of Builtin:
             result = 0
 
         of ANY          : result = 0
