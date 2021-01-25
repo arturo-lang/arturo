@@ -86,14 +86,12 @@ when isMainModule:
         else:
             env.addPath(getCurrentDir())
 
-        var presets = getEnvDictionary()
+        var presets{.inject.} = getEnvDictionary()
 
-        presets["dosth"] = newBuiltin("dosth", underscore, 1, {
-            "par": @[Integer],
-        }.toTable, @[Integer], proc ()=
+        builtin "dosth", underscore,
+                {"par": {Integer}},
+                {Integer}:
             echo "doing something with " & $(stack.pop())
-        )
-        Funcs["dosth"] = 1
 
         perform
 
