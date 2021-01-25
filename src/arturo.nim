@@ -88,10 +88,27 @@ when isMainModule:
 
         var presets{.inject.} = getEnvDictionary()
 
-        builtin "dosth", underscore,
-                {"par": {Integer}},
-                {Integer}:
-            echo "doing something with " & $(stack.pop())
+        builtin "exists?", none,
+            "check if given file exists",
+            {"file": {String}},
+            {"dir" : ({Boolean},"check for directory")},
+            {Boolean},
+            """
+            if exists? "somefile.txt" [ 
+                print "file exists!" 
+            ]
+            """:
+                require(opExists)
+
+                if (popAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))
+                else: stack.push(newBoolean(fileExists(x.s)))
+
+        # builtin "dosth", underscore,
+        #         {"par": {Integer}},
+        #         {Integer}:
+        #     """
+        #     """:
+        #     echo "doing something with " & $(stack.pop())
 
         perform
 
