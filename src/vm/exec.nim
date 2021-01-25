@@ -83,6 +83,12 @@ var
 # Helpers
 #=======================================
 
+template builtin*(n: string, al: SymbolKind, ar: untyped, re: ValueSpec, act: untyped):untyped =
+    presets[n] = newBuiltin(n, al, 1, ar.toOrderedTable, re, proc ()=
+        act
+    )
+    Funcs[n] = 1
+
 template panic(error: string): untyped =
     vmPanic = true
     vmError = error
