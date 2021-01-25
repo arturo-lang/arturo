@@ -13,10 +13,10 @@
 when defined(PROFILE):
     import nimprof
 
-import os, parseopt, segFaults, sequtils
+import os, parseopt, segFaults, sequtils, tables
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/env, vm/exec, vm/value
+import vm/bytecode, vm/env, vm/exec, vm/stack, vm/value
 import version
 
 when defined(BENCHMARK):
@@ -87,6 +87,13 @@ when isMainModule:
             env.addPath(getCurrentDir())
 
         var presets = getEnvDictionary()
+
+        presets["dosth"] = newBuiltin("dosth", underscore, 1, {
+            "par": @[Integer],
+        }.toTable, @[Integer], proc ()=
+            echo "doing something with " & $(stack.pop())
+        )
+        Funcs["dosth"] = 1
 
         perform
 
