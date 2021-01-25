@@ -1117,8 +1117,11 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Function     : 
             result = ""
-            result &= "<function>" & $(v.params)
-            result &= "(" & fmt("{cast[ByteAddress](v.main):#X}")
+            if v.fnKind==UserFunction:
+                result &= "<function>" & $(v.params)
+                result &= "(" & fmt("{cast[ByteAddress](v.main):#X}")
+            else:
+                result &= "<function>(builtin)" 
 
         of Database:
             if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
@@ -1366,9 +1369,12 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
             dumpBlockEnd()
         of Function     : 
             dumpBlockStart(v)
-            
-            dump(v.params, level+1, false)
-            dump(v.main, level+1, true)
+
+            if v.fnKind==UserFunction:
+                dump(v.params, level+1, false)
+                dump(v.main, level+1, true)
+            else:
+                stdout.write "<function>(builtin)"
 
             stdout.write "\n"
 
