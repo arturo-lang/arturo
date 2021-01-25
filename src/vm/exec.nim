@@ -83,8 +83,8 @@ var
 # Helpers
 #=======================================
 
-template builtin*(n: string, al: SymbolKind, ar: untyped, re: ValueSpec, act: untyped):untyped =
-    presets[n] = newBuiltin(n, al, 1, ar.toOrderedTable, re, proc ()=
+template builtin*(n: string, al: SymbolKind, d: string, ar: untyped, at: untyped, re: ValueSpec, ex: string, act: untyped):untyped =
+    presets[n] = newBuiltin(n, al, d, 1, ar.toOrderedTable, at.toOrderedTable, re, ex, proc ()=
         act
     )
     Funcs[n] = 1
@@ -121,7 +121,7 @@ template callByIndex(idx: int):untyped =
 
 ####
 
-template require(op: OpCode, nopop: bool = false): untyped =
+template require*(op: OpCode, nopop: bool = false): untyped =
     if SP<(static OpSpecs[op].args):
         panic "cannot perform '" & (static OpSpecs[op].name) & "'; not enough parameters: " & $(static OpSpecs[op].args) & " required"
 
