@@ -83,8 +83,8 @@ var
 # Helpers
 #=======================================
 
-template builtin*(n: string, al: SymbolKind, d: string, ar: untyped, at: untyped, re: ValueSpec, ex: string, act: untyped):untyped =
-    presets[n] = newBuiltin(n, al, d, 1, ar.toOrderedTable, at.toOrderedTable, re, ex, proc ()=
+template builtin*(n: string, alias: SymbolKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+    presets[n] = newBuiltin(n, alias, description, 1, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
         act
     )
     Funcs[n] = 1
