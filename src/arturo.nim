@@ -88,25 +88,6 @@ when isMainModule:
 
         var presets{.inject.} = getEnvDictionary()
 
-        builtin "exists?",
-            alias       = none, 
-            description = "check if given file exists",
-            args        = {
-                "file"  : {String}
-            },
-            attrs       = {
-                "dir"   : ({Boolean},"check for directory")
-            },
-            returns     = {Boolean},
-            example     = """
-                if exists? "somefile.txt" [ 
-                    print "file exists!" 
-                ]
-            """:
-                ##########################################################
-                if (popAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))
-                else: stack.push(newBoolean(fileExists(x.s)))
-
         # builtin "dosth", underscore,
         #         {"par": {Integer}},
         #         {Integer}:
