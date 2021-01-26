@@ -548,7 +548,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "key?"       : addCommand(opHasKey)
                     of "reverse"    : addCommand(opReverse)
 
-                    of "execute"    : addCommand(opExecute)
+                    # of "execute"    : addCommand(opExecute)
 
                     of "prints"     : addCommand(opPrints)
 
@@ -585,7 +585,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "combine"    : addCommand(opCombine)
 
-                    of "list"       : addCommand(opList)
+                    # of "list"       : addCommand(opList)
 
                     of "fold"       : addCommand(opFold)
                     of "sqrt"       : addCommand(opSqrt)
@@ -630,7 +630,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "module"     : addCommand(opModule)
 
-                    of "webview"    : addCommand(opWebview)
+                    # of "webview"    : addCommand(opWebview)
 
                     of "flatten"    : addCommand(opFlatten)
 
