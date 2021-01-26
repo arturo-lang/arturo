@@ -83,11 +83,47 @@ var
 # Helpers
 #=======================================
 
+template requireArgs*(name: string, spec: OrderedTable[string,ValueSpec], nopop: bool = false): untyped =
+    let skeys = toSeq(spec.keys)
+    let slen = skeys.len
+    if SP<(static slen):
+        panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static OpSpecs[op].args) & " required"
+
+    when (static slen)>=1:
+        when not (ANY in static spec[skeys[0]]):
+            if not (Stack[SP-1].kind in (static spec[skeys[0]])):
+                let acceptStr = toSeq((spec[skeys[0]]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+                panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " ...; incorrect argument type for 1st parameter; accepts " & acceptStr
+
+        when (static slen)>=2:
+            when not (ANY in static spec[skeys[1]]):
+                if not (Stack[SP-2].kind in (static spec[skeys[1]])):
+                    let acceptStr = toSeq((spec[skeys[1]]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+                    panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
+                    break
+
+            when (static slen)>=3:
+                when not (ANY in static spec[skeys[2]]):
+                    if not (Stack[SP-3].kind in (static spec[skeys[2]])):
+                        let acceptStr = toSeq((spec[skeys[2]]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+                        panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
+
+    when not nopop:
+        when (static slen)>=1:
+            var x {.inject.} = stack.pop()
+        when (static slen)>=2:
+            var y {.inject.} = stack.pop()
+        when (static slen)>=3:
+            var z {.inject.} = stack.pop()
+
 template builtin*(n: string, alias: SymbolKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    presets[n] = newBuiltin(n, alias, description, 1, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
+    let aa = args.toOrderedTable
+    let aalen = len(toSeq(aa.keys))
+    presets[n] = newBuiltin(n, alias, description, aalen, aa, attrs.toOrderedTable, returns, example, proc ()=
+        requireArgs(n, aa)
         act
     )
-    Funcs[n] = 1
+    Funcs[n] = aalen
 
 template panic(error: string): untyped =
     vmPanic = true
