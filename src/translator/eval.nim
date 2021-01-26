@@ -396,8 +396,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "or?"        : addCommand(opOr)
                     of "xor?"       : addCommand(opXor)
 
-                    of "shl"        : addCommand(opShl)
-                    of "shr"        : addCommand(opShr)
+                    # of "shl"        : addCommand(opShl)
+                    # of "shr"        : addCommand(opShr)
 
                     of "pop"        : addCommand(opPop)
                     of "dup"        : addCommand(opDup)
@@ -455,10 +455,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "type"       : addCommand(opType)
                     of "is?"        : addCommand(opIs)
 
-                    of "not"        : addCommand(opBNot)
-                    of "and"        : addCommand(opBAnd)
-                    of "or"         : addCommand(opBOr)
-                    of "xor"        : addCommand(opBXor)
+                    # of "not"        : addCommand(opBNot)
+                    # of "and"        : addCommand(opBAnd)
+                    # of "or"         : addCommand(opBOr)
+                    # of "xor"        : addCommand(opBXor)
 
                     of "first"      : addCommand(opFirst)
                     of "last"       : addCommand(opLast)
@@ -562,7 +562,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "keys"       : addCommand(opKeys)
                     of "values"     : addCommand(opValues)
 
-                    of "digest"     : addCommand(opDigest)
+                    # of "digest"     : addCommand(opDigest)
 
                     of "mail"       : addCommand(opMail)
                     of "download"   : addCommand(opDownload)
@@ -572,8 +572,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "render"     : addCommand(opRender)
 
-                    of "encode"     : addCommand(opEncode)
-                    of "decode"     : addCommand(opDecode)
+                    # of "encode"     : addCommand(opEncode)
+                    # of "decode"     : addCommand(opDecode)
 
                     of "color"      : addCommand(opColor)
 
@@ -640,9 +640,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "nor?"       : addExtraCommand(opNor)
                     of "xnor?"      : addExtraCommand(opXnor)
 
-                    of "nand"       : addExtraCommand(opBNand)
-                    of "nor"        : addExtraCommand(opBNor)
-                    of "xnor"       : addExtraCommand(opBXnor)
+                    # of "nand"       : addExtraCommand(opBNand)
+                    # of "nor"        : addExtraCommand(opBNor)
+                    # of "xnor"       : addExtraCommand(opBXnor)
 
                     of "negative?"  : addExtraCommand(opNegative)
                     of "positive?"  : addExtraCommand(opPositive)
@@ -661,7 +661,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "zip"        : addExtraCommand(opZip)
                     # of "unzip"      : addExtraCommand(opUnzip)
 
-                    of "hash"       : addExtraCommand(opGetHash)
+                    # of "hash"       : addExtraCommand(opGetHash)
 
                     of "extend"     : addExtraCommand(opExtend)
 

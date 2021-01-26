@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import json, os, random, sequtils, strformat, strutils, sugar, tables, times
+import base64, json, md5, os, random, sequtils
+import std/sha1, strformat, strutils, sugar
+import tables, times
 
 import extras/bignum, extras/miniz, extras/parsetoml
 
@@ -116,6 +118,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     syms = getEnvDictionary()
 
     include library/Binary
+    include library/Crypto
     include library/Dates
     include library/Files
 
