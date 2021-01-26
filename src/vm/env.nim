@@ -59,8 +59,7 @@ proc getEnvDictionary*(): ValueDict =
         "build"     : newInteger(parseInt(Build)),
         "buildDate" : newDate(now()),
         "cpu"       : newString(hostCPU),
-        "os"        : newString(hostOS),
-        "builtin"   : newBlock(getBuiltins())
+        "os"        : newString(hostOS)
     }.toOrderedTable)
 
     result["path"] = newDictionary({
