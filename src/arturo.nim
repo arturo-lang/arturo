@@ -16,7 +16,7 @@ when defined(PROFILE):
 import os, parseopt, segFaults, sequtils, tables
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/env, vm/exec, vm/stack, vm/value
+import vm/bytecode, vm/env, vm/exec, vm/stack, vm/value, vm/vm
 import version
 
 when defined(BENCHMARK):
@@ -75,34 +75,34 @@ when isMainModule:
     # Helpers
     #=======================================
 
-    template bootup*(run: bool, perform: untyped):untyped =
-        initEnv(
-            arguments = arguments, 
-            version = Version,
-            build = Build
-        )
-        if action==execFile:
-            env.addPath(code)
-        else:
-            env.addPath(getCurrentDir())
+    # template bootup*(run: bool, perform: untyped):untyped =
+    #     initEnv(
+    #         arguments = arguments, 
+    #         version = Version,
+    #         build = Build
+    #     )
+    #     if action==execFile:
+    #         env.addPath(code)
+    #     else:
+    #         env.addPath(getCurrentDir())
 
-        var presets{.inject.} = getEnvDictionary()
+    #     var presets{.inject.} = getEnvDictionary()
 
         
 
-        # builtin "dosth", underscore,
-        #         {"par": {Integer}},
-        #         {Integer}:
-        #     """
-        #     """:
-        #     echo "doing something with " & $(stack.pop())
+    #     # builtin "dosth", underscore,
+    #     #         {"par": {Integer}},
+    #     #         {Integer}:
+    #     #     """
+    #     #     """:
+    #     #     echo "doing something with " & $(stack.pop())
 
-        perform
+    #     perform
 
-        if run:
-            initVM()
-            discard doExec(evaled, withSyms=addr presets)
-            showVMErrors()
+    #     if run:
+    #         initVM()
+    #         discard doExec(evaled, withSyms=addr presets)
+    #         showVMErrors()
 
     var token = initOptParser()
 
@@ -160,32 +160,40 @@ when isMainModule:
                     code = runConsole
 
                 when defined(BENCHMARK):
-                    benchmark "doParse / doEval":
-                        let parsed = doParse(move code, isFile = action==execFile)
-                        let evaled = parsed.doEval()
+                    discard
+                    # benchmark "doParse / doEval":
+                    #     let parsed = doParse(move code, isFile = action==execFile)
+                    #     let evaled = parsed.doEval()
                 else:
-                    bootup(run=true):
-                        include vm/library/Files
-                        
-                        when defined(PYTHONIC):
-                            code = readFile(code)
-                            let parsed = doParse(move code, isFile = false)
-                        else:
-                            let parsed = doParse(move code, isFile = action==execFile)
+                    
+                    # bootup(run=true):
+                    #     include vm/library/Files
+                    when defined(PYTHONIC):
+                        code = readFile(code)
+                    
+                    startVM(code, code, arguments, action==execFile)
+                    # startVM
+                    #     when defined(PYTHONIC):
+                    #         code = readFile(code)
+                    #         let parsed = doParse(move code, isFile = false)
+                    #     else:
+                    #         let parsed = doParse(move code, isFile = action==execFile)
                             
-                        let evaled = parsed.doEval()
+                    #     let evaled = parsed.doEval()
                     
             of writeBcode:
-                bootup(run=false):
-                    let filename = code
-                    let parsed = doParse(move code, isFile = true)
-                    let evaled = parsed.doEval()
+                discard
+                # bootup(run=false):
+                #     let filename = code
+                #     let parsed = doParse(move code, isFile = true)
+                #     let evaled = parsed.doEval()
 
-                    discard writeBytecode(evaled, filename & ".bcode")
+                #     discard writeBytecode(evaled, filename & ".bcode")
 
             of readBcode:
-                bootup(run=true):
-                    let evaled = readBytecode(code)
+                discard
+                # bootup(run=true):
+                #     let evaled = readBytecode(code)
 
             of showHelp:
                 echo helpTxt
@@ -195,6 +203,8 @@ when isMainModule:
         arguments = commandLineParams().map(proc (x:string):Value = newString(x))
         code = static readFile(getEnv("PORTABLE_INPUT"))
 
-        bootup(run=true):
-            let parsed = doParse(move code, isFile = false)
-            let evaled = parsed.doEval()
+        discard
+
+        # bootup(run=true):
+        #     let parsed = doParse(move code, isFile = false)
+        #     let evaled = parsed.doEval()
