@@ -7,65 +7,88 @@
 ######################################################
 
 #=======================================
-# Libraries
-#=======================================
-
-import vm/stack, vm/value
-
-#=======================================
 # Methods
 #=======================================
 
-template Decode*():untyped =
-    # EXAMPLE:
-    # print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
-    # ; Numquam fugiens respexeris
-
-    require(opDecode)
-
-    if x.kind==Literal:
-        syms[x.s].s = syms[x.s].s.decode()
-    else:
-        stack.push(newString(x.s.decode()))
-
-template Encode*():untyped =
-    # EXAMPLE:
-    # print encode "Numquam fugiens respexeris"
-    # ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
-
-    require(opEncode)
-
-    if x.kind==Literal:
-        syms[x.s].s = syms[x.s].s.encode()
-    else:
-        stack.push(newString(x.s.encode()))
-
-template Digest*():untyped =
-    # EXAMPLE:
-    # print digest "Hello world"
-    # ; 3e25960a79dbc69b674cd4ec67a72c62
-    #
-    # print digest.sha "Hello world"
-    # ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
-
-    require(opDigest)
-
-    if (popAttr("sha") != VNULL):
+builtin "decode",
+    alias       = unaliased, 
+    description = "base-64 encode given value",
+    args        = {
+        "value" : {String,Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {String,Nothing},
+    example     = """
+        print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
+        ; Numquam fugiens respexeris
+    """:
+        ##########################################################
         if x.kind==Literal:
-            syms[x.s] = newString(($(secureHash(syms[x.s].s))).toLowerAscii())
+            syms[x.s].s = syms[x.s].s.decode()
         else:
-            stack.push(newString(($(secureHash(x.s))).toLowerAscii()))
-    else:
+            stack.push(newString(x.s.decode()))
+
+builtin "encode",
+    alias       = unaliased, 
+    description = "base-64 decode given value",
+    args        = {
+        "value" : {Integer,Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {String,Nothing},
+    example     = """
+        print encode "Numquam fugiens respexeris"
+        ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
+    """:
+        ##########################################################
         if x.kind==Literal:
-            syms[x.s] = newString(($(toMD5(syms[x.s].s))).toLowerAscii())
+            syms[x.s].s = syms[x.s].s.encode()
         else:
-            stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
+            stack.push(newString(x.s.encode()))
 
-template GetHash*():untyped =
+builtin "digest",
+    alias       = unaliased, 
+    description = "get digest for given value (default: MD5)",
+    args        = {
+        "value" : {String,Literal}
+    },
+    attrs       = {
+        "sha"   : ({Boolean},"use SHA1")
+    },
+    returns     = {String,Nothing},
+    example     = """
+        print digest "Hello world"
+        ; 3e25960a79dbc69b674cd4ec67a72c62
+        
+        print digest.sha "Hello world"
+        ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
+    """:
+        ##########################################################
+        if (popAttr("sha") != VNULL):
+            if x.kind==Literal:
+                syms[x.s] = newString(($(secureHash(syms[x.s].s))).toLowerAscii())
+            else:
+                stack.push(newString(($(secureHash(x.s))).toLowerAscii()))
+        else:
+            if x.kind==Literal:
+                syms[x.s] = newString(($(toMD5(syms[x.s].s))).toLowerAscii())
+            else:
+                stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
 
-    require(opGetHash)
-
-    if (popAttr("string") != VNULL):
-        stack.push(newString($(hash(x))))
-    else:
-        stack.push(newInteger(hash(x)))
+builtin "hash",
+    alias       = unaliased, 
+    description = "get hash for given value",
+    args        = {
+        "value" : {Any}
+    },
+    attrs       = {
+        "string": ({String},"get as a string")
+    },
+    returns     = {Integer},
+    example     = """
+    """:
+        ##########################################################
+        if (popAttr("string") != VNULL):
+            stack.push(newString($(hash(x))))
+        else:
+            stack.push(newInteger(hash(x)))

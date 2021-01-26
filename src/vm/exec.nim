@@ -48,7 +48,6 @@ import library/[
     Comparison, 
     Conversion,
     Core, 
-    Crypto,
     Database,
     Logic, 
     Net,
@@ -701,7 +700,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opKeys: Collections.Keys()
             of opValues: Collections.Values()
 
-            of opDigest: Crypto.Digest()
+            of opDigest: discard #Crypto.Digest()
 
             of opAlias: discard
 
@@ -713,8 +712,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opRender: Strings.Render()
 
-            of opEncode: Crypto.Encode()
-            of opDecode: Crypto.Decode()
+            of opEncode: discard #Crypto.Encode()
+            of opDecode: discard #Crypto.Decode()
 
             of opColor: Strings.Color()
 
@@ -806,7 +805,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
                     of opZip: discard #Files.Zip()
                     of opUnzip: discard #Files.Unzip()
 
-                    of opGetHash: Crypto.GetHash()
+                    of opGetHash: discard #Crypto.GetHash()
 
                     of opExtend: Collections.Extend()
 
