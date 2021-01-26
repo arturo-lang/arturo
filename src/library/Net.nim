@@ -7,165 +7,182 @@
 ######################################################
 
 #=======================================
-# Libraries
-#=======================================
-
-when not defined(MINI):
-    import extras/webview
-    
-import vm/env, vm/stack, vm/value
-import utils
-
-#=======================================
 # Methods
 #=======================================
 
-template Download*():untyped =
-    # EXAMPLE:
-    # download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
-    # ; (downloads file as "logo.png")
-    #
-    # download.as:"arturoLogo.png"
-    # ____________"https://github.com/arturo-lang/arturo/raw/master/logo.png"
-    #
-    # ; (downloads file with a different name)
+builtin "download",
+    alias       = unaliased, 
+    description = "download file from url to disk",
+    args        = {
+        "url"   : {String}
+    },
+    attrs       = {
+        "as"    : ({String},"set target file")
+    },
+    returns     = {Nothing},
+    example     = """
+        download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
+        ; (downloads file as "logo.png")
+        
+        download.as:"arturoLogo.png"
+        ____________"https://github.com/arturo-lang/arturo/raw/master/logo.png"
+        
+        ; (downloads file with a different name)
+    """:
+        ##########################################################
+        let path = x.s
 
-    require(opDownload)
+        var target: string
 
-    let path = x.s
+        if (let aAs = popAttr("as"); aAs!=VNULL):
+            target = aAs.s
+        else:
+            target = extractFilename(path)
 
-    var target: string
+        var client = newHttpClient()
+        client.downloadFile(path,target)
 
-    if (let aAs = popAttr("as"); aAs!=VNULL):
-        target = aAs.s
-    else:
-        target = extractFilename(path)
+builtin "mail",
+    alias       = unaliased, 
+    description = "send mail using given message and configuration",
+    args        = {
+        "recipient" : {String},
+        "message"   : {Dictionary},
+        "config"    : {Dictionary}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        mail "recipient@somemail.com"
+        ______#[
+        ______     title: "Hello from Arturo"
+        ______     content: "Arturo rocks!"
+        ______ ]
+        ______#[
+        ___________server: "mymailserver.com"
+        ___________username: "myusername"
+        ___________password: "mypass123"
+        ______ ]
+    """:
+        ##########################################################
+        let recipient = x.s
+        let message = y.d
+        let config = z.d
 
-    var client = newHttpClient()
-    client.downloadFile(path,target)
+        var mesg = createMessage(message["title"].s,
+                            message["content"].s,
+                            @[recipient])
+        let smtpConn = newSmtp(useSsl = true, debug=true)
+        smtpConn.connect(config["server"].s, Port 465)
+        smtpConn.auth(config["username"].s, config["password"].s)
+        smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
-template Mail*():untyped =
-    # EXAMPLE:
-    # mail "recipient@somemail.com"
-    #______#[
-    #______     title: "Hello from Arturo"
-    #______     content: "Arturo rocks!"
-    #______ ]
-    #______#[
-    #___________server: "mymailserver.com"
-    #___________username: "myusername"
-    #___________password: "mypass123"
-    #______ ]
+builtin "serve",
+    alias       = unaliased, 
+    description = "start web server using given routes",
+    args        = {
+        "routes"    : {Dictionary}
+    },
+    attrs       = {
+        "port"      : ({Integer},"use given port"),
+        "verbose"   : ({Boolean},"print info log"),
+        "chrome"    : ({Boolean},"open in Chrome windows as an app")
+    },
+    returns     = {Nothing},
+    example     = """
+        serve .port:18966 [
+        ____"/":                          [ "This is the homepage" ]
+        ____"/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
+        ]
+        
+        ; (run the app and go to localhost:18966 - that was it!)
+    """:
+        ##########################################################
+        discard
+        # when not defined(VERBOSE):
+        #     let routes = x
 
-    require(opMail)
+        #     var port = 18966
+        #     var verbose = (popAttr("verbose") != VNULL)
+        #     if (let aPort = popAttr("port"); aPort != VNULL):
+        #         port = aPort.i
 
-    let recipient = x.s
-    let message = y.d
-    let config = z.d
+        #     if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+        #         openChromeWindow(port)
 
-    var mesg = createMessage(message["title"].s,
-                        message["content"].s,
-                        @[recipient])
-    let smtpConn = newSmtp(useSsl = true, debug=true)
-    smtpConn.connect(config["server"].s, Port 465)
-    smtpConn.auth(config["username"].s, config["password"].s)
-    smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+        #     var server = newAsyncHttpServer()
 
-template Serve*():untyped =
-    # EXAMPLE:
-    # serve .port:18966 [
-    # ____"/":                          [ "This is the homepage" ]
-    # ____"/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
-    # ]
-    #
-    # ; (run the app and go to localhost:18966 - that was it!)
+        #     proc handler(req: Request) {.async,gcsafe.} =
+        #         if verbose:
+        #             stdout.write fgMagenta & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & fgWhite & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
+        #             if req.url.query!="":
+        #                 stdout.write "?" & req.url.query
 
-    when not defined(VERBOSE):
-        require(opServe)
+        #             stdout.write "\n"
+        #             stdout.flushFile()
 
-        let routes = x
+        #         # echo "body: " & req.body
 
-        var port = 18966
-        var verbose = (popAttr("verbose") != VNULL)
-        if (let aPort = popAttr("port"); aPort != VNULL):
-            port = aPort.i
+        #         # echo "========"
+        #         # for k,v in pairs(req.headers):
+        #         #     echo k & " => " & v
+        #         # echo "========"
 
-        if (let aChrome = popAttr("chrome"); aChrome != VNULL):
-            openChromeWindow(port)
+        #         var status = 200
+        #         var headers = newHttpHeaders()
 
-        var server = newAsyncHttpServer()
+        #         var body: string
 
-        proc handler(req: Request) {.async,gcsafe.} =
-            if verbose:
-                stdout.write fgMagenta & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & fgWhite & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
-                if req.url.query!="":
-                    stdout.write "?" & req.url.query
+        #         var routeFound = ""
+        #         for k in routes.d.keys:
+        #             let route = req.url.path.match(nre.re(k & "$"))
 
-                stdout.write "\n"
-                stdout.flushFile()
+        #             if not route.isNone:
 
-            # echo "body: " & req.body
+        #                 var args: ValueArray = @[]
 
-            # echo "========"
-            # for k,v in pairs(req.headers):
-            #     echo k & " => " & v
-            # echo "========"
+        #                 let captures = route.get.captures.toTable
 
-            var status = 200
-            var headers = newHttpHeaders()
+        #                 for group,capture in captures:
+        #                     args.add(newString(group))
 
-            var body: string
+        #                 if req.reqMethod==HttpPost:
+        #                     for d in decodeData(req.body):
+        #                         args.add(newString(d[0]))
 
-            var routeFound = ""
-            for k in routes.d.keys:
-                let route = req.url.path.match(nre.re(k & "$"))
+        #                     for d in (toSeq(decodeData(req.body))).reversed:
+        #                         stack.push(newString(d[1]))
 
-                if not route.isNone:
+        #                 for capture in (toSeq(pairs(captures))).reversed:
+        #                     stack.push(newString(capture[1]))
 
-                    var args: ValueArray = @[]
+        #                 try:
+        #                     discard execBlock(routes.d[k], execInParent=true, useArgs=true, args=args)
+        #                 except:
+        #                     let e = getCurrentException()
+        #                     echo "Something went wrong." & e.msg
+        #                 body = stack.pop().s
+        #                 routeFound = k
+        #                 break
 
-                    let captures = route.get.captures.toTable
+        #         if routeFound=="":
+        #             let subpath = joinPath(env.currentPath(),req.url.path)
+        #             if fileExists(subpath):
+        #                 body = readFile(subpath)
+        #             else:
+        #                 status = 404
+        #                 body = "page not found!"
 
-                    for group,capture in captures:
-                        args.add(newString(group))
+        #         if verbose:
+        #             echo fgGreen & ">> [" & $(status) & "] " & routeFound & fgWhite
 
-                    if req.reqMethod==HttpPost:
-                        for d in decodeData(req.body):
-                            args.add(newString(d[0]))
+        #         await req.respond(status.HttpCode, body, headers)
 
-                        for d in (toSeq(decodeData(req.body))).reversed:
-                            stack.push(newString(d[1]))
-
-                    for capture in (toSeq(pairs(captures))).reversed:
-                        stack.push(newString(capture[1]))
-
-                    try:
-                        discard execBlock(routes.d[k], execInParent=true, useArgs=true, args=args)
-                    except:
-                        let e = getCurrentException()
-                        echo "Something went wrong." & e.msg
-                    body = stack.pop().s
-                    routeFound = k
-                    break
-
-            if routeFound=="":
-                let subpath = joinPath(env.currentPath(),req.url.path)
-                if fileExists(subpath):
-                    body = readFile(subpath)
-                else:
-                    status = 404
-                    body = "page not found!"
-
-            if verbose:
-                echo fgGreen & ">> [" & $(status) & "] " & routeFound & fgWhite
-
-            await req.respond(status.HttpCode, body, headers)
-
-        try:
-            if verbose:
-                echo ":: Starting server on port " & $(port) & "...\n"
-            waitFor server.serve(port = port.Port, callback = handler, address = "")
-        except:
-            let e = getCurrentException()
-            echo "Something went wrong." & e.msg
-            server.close()
+        #     try:
+        #         if verbose:
+        #             echo ":: Starting server on port " & $(port) & "...\n"
+        #         waitFor server.serve(port = port.Port, callback = handler, address = "")
+        #     except:
+        #         let e = getCurrentException()
+        #         echo "Something went wrong." & e.msg
+        #         server.close()

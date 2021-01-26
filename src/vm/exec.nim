@@ -49,7 +49,6 @@ import library/[
     Conversion,
     Core, 
     Logic, 
-    Net,
     Numbers,
     Reflection,
     Shell,
@@ -258,9 +257,9 @@ template execBlock*(
     #-----------------------------
 
     when isIsolated:
-        let subSyms = doExec(evaled, depth+1)#, nil)
+        let subSyms = doExec(evaled, 1)#depth+1)#, nil)
     else:
-        let subSyms = doExec(evaled, depth+1)#, addr syms)
+        let subSyms = doExec(evaled, 1)#depth+1)#, addr syms)
 
     #-----------------------------
     # handle result
@@ -702,8 +701,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opAlias: discard
 
-            of opMail: Net.Mail()
-            of opDownload: Net.Download()
+            of opMail: discard #Net.Mail()
+            of opDownload: discard #Net.Download()
 
             of opGetAttr: Reflection.GetAttr()
             of opHasAttr: Reflection.HasAttr()
@@ -728,7 +727,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opFold: Collections.Fold()
             of opSqrt: Numbers.Sqrt()
 
-            of opServe: Net.Serve()
+            of opServe: discard #Net.Serve()
 
             of opLet: Core.Let()
             of opVar: Core.Var()

@@ -10,11 +10,21 @@
 # Libraries
 #=======================================
 
-import base64, json, md5, os, random, sequtils
+import algorithm, asyncdispatch, asynchttpserver
+import base64, cgi, db_sqlite, std/editdistance
+import httpClient, json, math, md5, os, osproc
+import random, rdstdin, re, sequtils, smtp
 import std/sha1, strformat, strutils, sugar
-import tables, times
+import tables, times, unicode, uri, xmltree
+import nre except toSeq
+
+when not defined(windows):
+    import linenoise
 
 import extras/bignum, extras/miniz, extras/parsetoml
+
+when not defined(MINI):
+    import extras/webview
 
 import helpers/arrays       as arraysHelper   
 import helpers/csv          as csvHelper
@@ -34,8 +44,9 @@ import helpers/xml          as xmlHelper
 
 import translator/eval, translator/parse
 import vm/env, vm/exec, vm/globals, vm/stack, vm/value
-
 import version
+
+import utils
 
 #=======================================
 # Types
@@ -122,6 +133,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     include library/Database
     include library/Dates
     include library/Files
+    include library/Net
     include library/Path
 
     initVM()
