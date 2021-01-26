@@ -714,7 +714,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opSuffix: Strings.Suffix()
             of opHasSuffix: Strings.HasSuffix()
 
-            of opExists: Files.IsExists()
+            of opExists: discard #Files.IsExists()
 
             of opTry: Core.Try()
             of opTryE: Core.TryE()
