@@ -88,7 +88,6 @@ template panic(error: string): untyped =
     return
 
 template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped =
-
     if SP<(static spec.len):
         panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static spec.len) & " required"
 
@@ -103,7 +102,6 @@ template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped
                 if not (Stack[SP-2].kind in (static spec[1][1])):
                     let acceptStr = toSeq((spec[1][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
                     panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
-                    break
 
             when (static spec.len)>=3:
                 when not (ANY in static spec[2][1]):
