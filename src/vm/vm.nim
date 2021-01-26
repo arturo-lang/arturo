@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import json, os, sequtils, strutils, sugar, tables, times
+import json, os, random, sequtils, strformat, strutils, sugar, tables, times
 
 import extras/bignum, extras/miniz, extras/parsetoml
 
@@ -56,7 +56,7 @@ const
     NoAttrs*     = static {"" : ({Nothing},"")}
 
 #=======================================
-# Helpers
+# Templates
 #=======================================
 
 template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped =
@@ -95,9 +95,14 @@ template builtin*(n: string, alias: SymbolKind, description: string, args: untyp
         act
     )
     Funcs[n] = static args.len
-    
+
 #=======================================
-# Main entry
+# Helpers
+#=======================================
+
+
+#=======================================
+# Methods
 #=======================================
 
 proc run*(code: var string, args: ValueArray, isFile: bool) =
