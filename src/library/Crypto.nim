@@ -82,9 +82,9 @@ builtin "hash",
         "value" : {Any}
     },
     attrs       = {
-        "string": ({String},"get as a string")
+        "string": ({Boolean},"get as a string")
     },
-    returns     = {Integer},
+    returns     = {Integer,String},
     example     = """
     """:
         ##########################################################
