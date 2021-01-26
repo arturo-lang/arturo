@@ -609,7 +609,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "globalize"  : addCommand(opGlobalize)
 
-                    of "relative"   : addCommand(opRelative)
+                    # of "relative"   : addCommand(opRelative)
 
                     of "average"    : addCommand(opAverage)
                     of "median"     : addCommand(opMedian)
@@ -628,7 +628,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "match"      : addCommand(opMatch)
 
-                    of "module"     : addCommand(opModule)
+                    # of "module"     : addCommand(opModule)
 
                     of "webview"    : addCommand(opWebview)
 
@@ -656,7 +656,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "native"     : addExtraCommand(opNative)
 
-                    of "extract"    : addExtraCommand(opExtract)
+                    # of "extract"    : addExtraCommand(opExtract)
 
                     # of "zip"        : addExtraCommand(opZip)
                     # of "unzip"      : addExtraCommand(opUnzip)

@@ -121,6 +121,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     include library/Crypto
     include library/Dates
     include library/Files
+    include library/Path
 
     initVM()
     let parsed = doParse(move code, isFile)
