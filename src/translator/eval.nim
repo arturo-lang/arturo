@@ -595,7 +595,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "let"        : addCommand(opLet)
                     of "var"        : addCommand(opVar)
 
-                    of "now"        : addCommand(opNow)
+                    #of "now"        : addCommand(opNow)
 
                     of "pause"      : addCommand(opPause)
 
