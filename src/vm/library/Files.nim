@@ -7,14 +7,6 @@
 ######################################################
 
 #=======================================
-# Libraries
-#=======================================
-
-# import os, strtabs, tables
-
-# import vm/stack, vm/value
-
-#=======================================
 # Methods
 #=======================================
 
@@ -34,8 +26,6 @@ builtin "exists?",
         ]
     """:
         ##########################################################
-        static:
-            echo "IN: " & $(instantiationInfo().filename)
         if (popAttr("dir") != VNULL): 
             stack.push(newBoolean(dirExists(x.s)))
         else: 
