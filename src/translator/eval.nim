@@ -12,7 +12,7 @@
 
 import algorithm, strformat, strutils, tables
 
-import vm/bytecode, vm/value
+import vm/bytecode, vm/globals, vm/value
 
 import utils
 
@@ -701,16 +701,34 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "contains?"  : addExtraCommand(opIsContains)
 
                     else:
-                        if Funcs.hasKey(node.s):
-                            if Funcs[node.s]!=0:
-                                addConst(consts, node, opCallX)
-                                argStack.add(Funcs[node.s])
-                            else:
-                                addTerminalValue(false):
+                        if syms.hasKey(node.s) and syms[node.s].kind==Function:
+                            if syms[node.s].fnKind==UserFunction:
+                                if Funcs[node.s]!=0:
                                     addConst(consts, node, opCallX)
+                                    argStack.add(Funcs[node.s])
+                                else:
+                                    addTerminalValue(false):
+                                        addConst(consts, node, opCallX)
+                            else:
+                                if syms[node.s].arity!=0:
+                                    addConst(consts, node, opCallX)
+                                    argStack.add(syms[node.s].arity)
+                                else:
+                                    addTerminalValue(false):
+                                        addConst(consts, node, opCallX)
                         else:
                             addTerminalValue(false):
                                 addConst(consts, node, opLoadX)
+                        # if Funcs.hasKey(node.s):
+                        #     if Funcs[node.s]!=0:
+                        #         addConst(consts, node, opCallX)
+                        #         argStack.add(Funcs[node.s])
+                        #     else:
+                        #         addTerminalValue(false):
+                        #             addConst(consts, node, opCallX)
+                        # else:
+                        #     addTerminalValue(false):
+                        #         addConst(consts, node, opLoadX)
 
             of Literal: 
                 addTerminalValue(false):
