@@ -493,8 +493,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "all?"       : addCommand(opAll)
                     of "any?"       : addCommand(opAny)
 
-                    of "read"       : addCommand(opRead)
-                    of "write"      : addCommand(opWrite)
+                    # of "read"       : addCommand(opRead)
+                    # of "write"      : addCommand(opWrite)
 
                     of "abs"        : addCommand(opAbs)
                     of "acos"       : addCommand(opAcos)
@@ -658,8 +658,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "extract"    : addExtraCommand(opExtract)
 
-                    of "zip"        : addExtraCommand(opZip)
-                    of "unzip"      : addExtraCommand(opUnzip)
+                    # of "zip"        : addExtraCommand(opZip)
+                    # of "unzip"      : addExtraCommand(opUnzip)
 
                     of "hash"       : addExtraCommand(opGetHash)
 
