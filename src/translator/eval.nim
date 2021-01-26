@@ -564,8 +564,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "digest"     : addCommand(opDigest)
 
-                    of "mail"       : addCommand(opMail)
-                    of "download"   : addCommand(opDownload)
+                    # of "mail"       : addCommand(opMail)
+                    # of "download"   : addCommand(opDownload)
 
                     of "attribute"          : addCommand(opGetAttr)
                     of "hasAttribute?"      : addCommand(opHasAttr)
@@ -590,7 +590,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "fold"       : addCommand(opFold)
                     of "sqrt"       : addCommand(opSqrt)
 
-                    of "serve"      : addCommand(opServe)
+                    # of "serve"      : addCommand(opServe)
 
                     of "let"        : addCommand(opLet)
                     of "var"        : addCommand(opVar)
