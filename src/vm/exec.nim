@@ -52,7 +52,6 @@ import library/[
     Logic, 
     Net,
     Numbers,
-    Path,
     Reflection,
     Shell,
     Strings,
@@ -749,7 +748,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opGlobalize: Core.Globalize()
 
-            of opRelative: Path.Relative()
+            of opRelative: discard #Path.Relative()
 
             of opAverage: Numbers.Average()
             of opMedian: Numbers.Median()
@@ -768,7 +767,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opMatch: Strings.Match()
 
-            of opModule: Path.Module()
+            of opModule: discard #Path.Module()
 
             of opWebview: Ui.Webview()
 
@@ -800,7 +799,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                     of opNative: Core.Native()
 
-                    of opExtract: Path.Extract()
+                    of opExtract: discard #Path.Extract()
 
                     of opZip: discard #Files.Zip()
                     of opUnzip: discard #Files.Unzip()
