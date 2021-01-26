@@ -30,8 +30,8 @@ type
     CmdAction = enum
         execFile
         evalCode
-        readBcode
-        writeBcode
+        # readBcode
+        # writeBcode
         showHelp
         showVersion
 
