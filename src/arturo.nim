@@ -104,8 +104,6 @@ when isMainModule:
                 ]
             """:
                 ##########################################################
-                require(opExists)
-
                 if (popAttr("dir") != VNULL): stack.push(newBoolean(dirExists(x.s)))
                 else: stack.push(newBoolean(fileExists(x.s)))
 
