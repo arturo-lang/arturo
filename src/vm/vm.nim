@@ -119,6 +119,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
 
     include library/Binary
     include library/Crypto
+    include library/Database
     include library/Dates
     include library/Files
     include library/Path

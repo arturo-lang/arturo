@@ -48,7 +48,6 @@ import library/[
     Comparison, 
     Conversion,
     Core, 
-    Database,
     Logic, 
     Net,
     Numbers,
@@ -793,9 +792,9 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                     of opPanic: Core.Panic()
 
-                    of opOpen: Database.Open()
-                    of opQuery: Database.Query()
-                    of opClose: Database.Close()
+                    of opOpen: discard #Database.Open()
+                    of opQuery: discard #Database.Query()
+                    of opClose: discard #Database.Close()
 
                     of opNative: Core.Native()
 
