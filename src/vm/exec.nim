@@ -89,14 +89,9 @@ template panic(error: string): untyped =
     return
 
 template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped =
-    static:
-        echo "IN requireArgs: " & $(spec)
-        echo "len: " & $(spec.len)
-
-    # let slen = static spec.len
 
     if SP<(static spec.len):
-        panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static OpSpecs[op].args) & " required"
+        panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static spec.len) & " required"
 
     when (static spec.len)>=1:
         when not (ANY in static spec[0][1]):
@@ -126,14 +121,11 @@ template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped
             var z {.inject.} = stack.pop()
 
 template builtin*(n: string, alias: SymbolKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    static:
-        echo "builtin args:" & $(args)
-        echo "builtin args' len:" & $(args.len)
-    presets[n] = newBuiltin(n, alias, description, args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
+    presets[n] = newBuiltin(n, alias, description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
         requireArgs(n, args)
         act
     )
-    Funcs[n] = aalen
+    Funcs[n] = static args.len
 
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
