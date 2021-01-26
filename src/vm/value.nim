@@ -939,7 +939,7 @@ proc `==`*(x: Value, y: Value): bool =
                 if x.fnKind==UserFunction:
                     return x.params == y.params and x.main == y.main and x.exports == y.exports and x.pure == y.pure
                 else:
-                    return x.name == y.name
+                    return x.fname == y.fname
             of Database:
                 if x.dbKind != y.dbKind: return false
 
