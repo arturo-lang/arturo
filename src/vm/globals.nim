@@ -10,11 +10,11 @@
 # Libraries
 #=======================================
 
-import db_sqlite as sqlite
+import vm/value
 
 #=======================================
 # Super-Globals
 #=======================================
 
 var
-    MainDb*: sqlite.DbConn
+    syms*{.threadvar.}: ValueDict
