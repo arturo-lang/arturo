@@ -44,7 +44,6 @@ import helpers/xml          as xmlHelper
 
 import library/[
     Arithmetic,
-    Binary,
     Collections, 
     Comparison, 
     Conversion,
@@ -62,7 +61,7 @@ import library/[
 ]
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/stack, vm/value
+import vm/bytecode, vm/globals, vm/stack, vm/value
 
 import utils    
 
@@ -262,9 +261,9 @@ template execBlock*(
     #-----------------------------
 
     when isIsolated:
-        let subSyms = doExec(evaled, depth+1, nil)
+        let subSyms = doExec(evaled, depth+1)#, nil)
     else:
-        let subSyms = doExec(evaled, depth+1, addr syms)
+        let subSyms = doExec(evaled, depth+1)#, addr syms)
 
     #-----------------------------
     # handle result
@@ -397,7 +396,7 @@ proc showVMErrors*() =
         emptyStack()
         vmPanic = false
 
-proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): ValueDict = 
+proc doExec*(input:Translation, depth: int = 0): ValueDict = 
 
     when defined(VERBOSE):
         if depth==0:
@@ -408,11 +407,6 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
     var i = 0
     var op: OpCode
-    var syms: ValueDict
-    if withSyms!=nil:
-        syms = withSyms[]
-    else:
-        syms = initOrderedTable[string,Value]()
     var oldSyms: ValueDict
 
     oldSyms = syms
@@ -517,8 +511,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opOr         : Logic.IsOr()
             of opXor        : Logic.IsXor()
 
-            of opShl        : Binary.Shl()
-            of opShr        : Binary.Shr()
+            of opShl        : discard #Binary.Shl()
+            of opShr        : discard #Binary.Shr()
 
             of opAttr       : 
                 i += 1
@@ -602,10 +596,10 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opType: Reflection.Type()
             of opIs: Reflection.Is()
 
-            of opBNot: Binary.Not()
-            of opBAnd: Binary.And()
-            of opBOr: Binary.Or()
-            of opBXor: Binary.Xor()
+            of opBNot: discard #Binary.Not()
+            of opBAnd: discard #Binary.And()
+            of opBOr: discard #Binary.Or()
+            of opBXor: discard #Binary.Xor()
 
             of opFirst: Collections.First()
             of opLast: Collections.Last()
@@ -791,9 +785,9 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                     of opNor: Logic.IsNor()
                     of opXnor: Logic.IsXnor()
 
-                    of opBNand: Binary.Nand()
-                    of opBNor: Binary.Nor()
-                    of opBXnor: Binary.Xnor()
+                    of opBNand: discard #Binary.Nand()
+                    of opBNor: discard #Binary.Nor()
+                    of opBXnor: discard #Binary.Xnor()
 
                     of opNegative: Numbers.IsNegative()
                     of opPositive: Numbers.IsPositive()
