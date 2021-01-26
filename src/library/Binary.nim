@@ -20,10 +20,10 @@ builtin "and",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print and 2 3  ____; 2
+        print and 2 3      ; 2
         
         a: 2
-        and 'a 3       ____; a: 2
+        and 'a 3           ; a: 2
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] &&= y
@@ -40,10 +40,10 @@ builtin "nand",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print nand 2 3 ____; -3
+        print nand 2 3     ; -3
         
         a: 2
-        nand 'a 3      ____; a: -3
+        nand 'a 3          ; a: -3
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] &&= y; !!= syms[x.s]
@@ -59,10 +59,10 @@ builtin "nor",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print nor 2 3  ____; -4
+        print nor 2 3      ; -4
         
         a: 2
-        nor 'a 3       ____; a: -4
+        nor 'a 3           ; a: -4
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] ||= y; !!= syms[x.s]
@@ -77,10 +77,10 @@ builtin "not",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print not 123  ____; -124
+        print not 123      ; -124
         
         a: 123
-        not 'a         ____; a: -124
+        not 'a             ; a: -124
     """:
         ##########################################################
         if x.kind==Literal : !!= syms[x.s] 
@@ -96,10 +96,10 @@ builtin "or",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print or 2 3   ____; 3
+        print or 2 3       ; 3
         
         a: 2
-        or 'a 3        ____; a: 3
+        or 'a 3            ; a: 3
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] ||= y
@@ -115,10 +115,10 @@ builtin "shl",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print shl 2 3  ____; 16
+        print shl 2 3      ; 16
         
         a: 2
-        shl 'a 3       ____; a: 16
+        shl 'a 3           ; a: 16
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] <<= y
@@ -134,10 +134,10 @@ builtin "shr",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print shr 16 3 ____; 2
+        print shr 16 3     ; 2
         
         a: 16
-        shr 'a 3       ____; a: 2
+        shr 'a 3           ; a: 2
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] >>= y
@@ -153,10 +153,10 @@ builtin "xnor",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print xnor 2 3 ____; -2
+        print xnor 2 3     ; -2
         
         a: 2
-        xnor 'a 3      ____; a: -2
+        xnor 'a 3          ; a: -2
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] ^^= y; !!= syms[x.s]
@@ -172,10 +172,10 @@ builtin "xor",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print xor 2 3  ____; 1
+        print xor 2 3      ; 1
         
         a: 2
-        xor 'a 3       ____; a: 1
+        xor 'a 3           ; a: 1
     """:
         ##########################################################
         if x.kind==Literal : syms[x.s] ^^= y
