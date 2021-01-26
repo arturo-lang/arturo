@@ -135,6 +135,8 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     include library/Files
     include library/Net
     include library/Path
+    include library/Shell
+    include library/Ui
 
     initVM()
     let parsed = doParse(move code, isFile)

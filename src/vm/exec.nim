@@ -51,9 +51,7 @@ import library/[
     Logic, 
     Numbers,
     Reflection,
-    Shell,
-    Strings,
-    Ui
+    Strings
 ]
 
 import translator/eval, translator/parse
@@ -683,7 +681,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opHasKey: Collections.HasKey()
             of opReverse: Collections.Reverse()
 
-            of opExecute: Shell.Execute()
+            of opExecute: discard #Shell.Execute()
 
             of opPrints: Core.Prints()
 
@@ -722,7 +720,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opCombine: Collections.Combine()
 
-            of opList: Shell.List()
+            of opList: discard #Shell.List()
 
             of opFold: Collections.Fold()
             of opSqrt: Numbers.Sqrt()
@@ -767,7 +765,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opModule: discard #Path.Module()
 
-            of opWebview: Ui.Webview()
+            of opWebview: discard #Ui.Webview()
 
             of opFlatten: Collections.Flatten()
 
