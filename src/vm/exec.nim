@@ -52,7 +52,6 @@ import library/[
     Crypto,
     Database,
     Dates,
-    Files,
     Logic, 
     Net,
     Numbers,
@@ -126,6 +125,8 @@ template builtin*(n: string, alias: SymbolKind, description: string, args: untyp
         act
     )
     Funcs[n] = static args.len
+
+include library/Files
 
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
