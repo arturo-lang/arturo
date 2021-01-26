@@ -88,6 +88,8 @@ when isMainModule:
 
         var presets{.inject.} = getEnvDictionary()
 
+        include vm/library/Files
+
         # builtin "dosth", underscore,
         #         {"par": {Integer}},
         #         {Integer}:
