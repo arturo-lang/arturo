@@ -117,6 +117,7 @@ template callByIndex(idx: int):untyped =
         else:
             discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports, isPureFunc=false)
     else:
+        echo "exec:builtin: " & $(symIndx)
         fun.action()
 
 ####
