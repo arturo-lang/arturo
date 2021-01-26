@@ -529,7 +529,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "suffix"     : addCommand(opSuffix)
                     of "suffix?"    : addCommand(opHasSuffix)
 
-                    of "exists?"    : addCommand(opExists)
+                    #of "exists?"    : addCommand(opExists)
 
                     of "try"        : addCommand(opTry)
                     of "try?"       : addCommand(opTryE)
