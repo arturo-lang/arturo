@@ -876,3 +876,4 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
                 v.dump(0, false)
 
     return syms
+    
