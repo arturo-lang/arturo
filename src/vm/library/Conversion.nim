@@ -239,6 +239,7 @@ template To*(needsRequire:bool = true):untyped =
             of Dictionary,
                Function,
                Database,
+               Nothing,
                Any,
                Inline,
                Label,
