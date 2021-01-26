@@ -7,119 +7,176 @@
 ######################################################
 
 #=======================================
-# Libraries
-#=======================================
-
-import vm/stack, vm/value
-
-#=======================================
 # Methods
 #=======================================
 
-template And*():untyped = 
-    # EXAMPLE:
-    # print and 2 3  ____; 2
-    #
-    # a: 2
-    # and 'a 3       ____; a: 2
+builtin "and",
+    alias       = unaliased, 
+    description = "calculate the binary AND for the given values",
+    args        = {
+        "valueA": {Integer,Literal},
+        "valueB": {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print and 2 3  ____; 2
+        
+        a: 2
+        and 'a 3       ____; a: 2
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] &&= y
+        else               : stack.push(x && y)
 
-    require(opBAnd)
 
-    if x.kind==Literal : syms[x.s] &&= y
-    else               : stack.push(x && y)
+builtin "nand",
+    alias       = unaliased, 
+    description = "calculate the binary NAND for the given values",
+    args        = {
+        "valueA": {Integer,Literal},
+        "valueB": {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print nand 2 3 ____; -3
+        
+        a: 2
+        nand 'a 3      ____; a: -3
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] &&= y; !!= syms[x.s]
+        else               : stack.push(!! (x && y))
 
-template Nand*():untyped =
-    # EXAMPLE:
-    # print nand 2 3 ____; -3
-    #
-    # a: 2
-    # nand 'a 3      ____; a: -3
+builtin "nor",
+    alias       = unaliased, 
+    description = "calculate the binary NOR for the given values",
+    args        = {
+        "valueA": {Integer,Literal},
+        "valueB": {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print nor 2 3  ____; -4
+        
+        a: 2
+        nor 'a 3       ____; a: -4
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] ||= y; !!= syms[x.s]
+        else               : stack.push(!! (x || y))
 
-    require(opBNand)
+builtin "not",
+    alias       = unaliased, 
+    description = "calculate the binary complement the given value",
+    args        = {
+        "value" : {Integer,Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print not 123  ____; -124
+        
+        a: 123
+        not 'a         ____; a: -124
+    """:
+        ##########################################################
+        if x.kind==Literal : !!= syms[x.s] 
+        else               : stack.push(!! x)
 
-    if x.kind==Literal : syms[x.s] &&= y; !!= syms[x.s]
-    else               : stack.push(!! (x && y))
+builtin "or",
+    alias       = unaliased, 
+    description = "calculate the binary OR for the given values",
+    args        = {
+        "valueA": {Integer,Literal},
+        "valueB": {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print or 2 3   ____; 3
+        
+        a: 2
+        or 'a 3        ____; a: 3
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] ||= y
+        else               : stack.push(x || y)
 
-template Nor*():untyped =
-    # EXAMPLE:
-    # print nor 2 3  ____; -4
-    #
-    # a: 2
-    # nor 'a 3       ____; a: -4
+builtin "shl",
+    alias       = unaliased, 
+    description = "shift-left first value bits by second value",
+    args        = {
+        "value" : {Integer,Literal},
+        "bits"  : {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print shl 2 3  ____; 16
+        
+        a: 2
+        shl 'a 3       ____; a: 16
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] <<= y
+        else               : stack.push(x << y)
 
-    require(opBNor)
+builtin "shr",
+    alias       = unaliased, 
+    description = "shift-right first value bits by second value",
+    args        = {
+        "value" : {Integer,Literal},
+        "bits"  : {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print shr 16 3 ____; 2
+        
+        a: 16
+        shr 'a 3       ____; a: 2
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] >>= y
+        else               : stack.push(x >> y)
 
-    if x.kind==Literal : syms[x.s] ||= y; !!= syms[x.s]
-    else               : stack.push(!! (x || y))
-
-template Not*():untyped =
-    # EXAMPLE:
-    # print not 123  ____; -124
-    #
-    # a: 123
-    # not 'a         ____; a: -124
-
-    require(opBNot)
+builtin "xnor",
+    alias       = unaliased, 
+    description = "calculate the binary XNOR for the given values",
+    args        = {
+        "valueA": {Integer,Literal},
+        "valueB": {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print xnor 2 3 ____; -2
+        
+        a: 2
+        xnor 'a 3      ____; a: -2
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] ^^= y; !!= syms[x.s]
+        else               : stack.push(!! (x ^^ y))
     
-    if x.kind==Literal : !!= syms[x.s] 
-    else               : stack.push(!! x)
-
-template Or*():untyped =
-    # EXAMPLE:
-    # print or 2 3   ____; 3
-    #
-    # a: 2
-    # or 'a 3        ____; a: 3
-
-    require (opBOr)
-
-    if x.kind==Literal : syms[x.s] ||= y
-    else               : stack.push(x || y)
-
-template Shl*():untyped =
-    # EXAMPLE:
-    # print shl 2 3  ____; 16
-    #
-    # a: 2
-    # shl 'a 3       ____; a: 16
-
-    require(opShl)
-    
-    if x.kind==Literal : syms[x.s] <<= y
-    else               : stack.push(x << y)
-
-template Shr*():untyped =
-    # EXAMPLE:
-    # print shr 16 3 ____; 2
-    #
-    # a: 16
-    # shr 'a 3       ____; a: 2
-
-    require(opShr)
-    
-    if x.kind==Literal : syms[x.s] >>= y
-    else               : stack.push(x >> y)
-
-template Xnor*():untyped =
-    # EXAMPLE:
-    # print xnor 2 3 ____; -2
-    #
-    # a: 2
-    # xnor 'a 3      ____; a: -2
-
-    require(opBXnor)
-
-    if x.kind==Literal : syms[x.s] ^^= y; !!= syms[x.s]
-    else               : stack.push(!! (x ^^ y))
-    
-template Xor*():untyped =
-    # EXAMPLE:
-    # print xor 2 3  ____; 1
-    #
-    # a: 2
-    # xor 'a 3       ____; a: 1
-
-    require(opBXor)
-    
-    if x.kind==Literal : syms[x.s] ^^= y
-    else               : stack.push(x ^^ y)
+builtin "xor",
+    alias       = unaliased, 
+    description = "calculate the binary XOR for the given values",
+    args        = {
+        "valueA": {Integer,Literal},
+        "valueB": {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,Nothing},
+    example     = """
+        print xor 2 3  ____; 1
+        
+        a: 2
+        xor 'a 3       ____; a: 1
+    """:
+        ##########################################################
+        if x.kind==Literal : syms[x.s] ^^= y
+        else               : stack.push(x ^^ y)
