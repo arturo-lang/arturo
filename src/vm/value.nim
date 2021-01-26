@@ -76,7 +76,7 @@ type
 
         slashedzero     # ø
 
-        none            # used only for builtins
+        unaliased       # used only for builtins
 
     ValueKind* = enum
         Null            = 0
@@ -1110,7 +1110,7 @@ proc `$`*(v: Value): string {.inline.} =
 
                 of slashedzero      : return "ø"
 
-                of none             : discard
+                of unaliased        : discard
 
         of Date     : return $(v.eobj)
         of Binary   : discard
@@ -1468,7 +1468,7 @@ proc codify*(v: Value): string {.inline.} =
 
                 of slashedzero      : result = "ø"
 
-                of none             : discard
+                of unaliased             : discard
 
         of Inline, Block:
             if v.kind==Inline: result = "("

@@ -19,7 +19,7 @@ import vm/stack, vm/value
 #=======================================
 
 builtin "exists?",
-    alias       = none, 
+    alias       = unaliased, 
     description = "check if given file exists",
     args        = {
         "file"  : {String}
@@ -206,7 +206,7 @@ builtin "read",
 
 
 builtin "unzip",
-    alias       = none, 
+    alias       = unaliased, 
     description = "unzip given archive to destination",
     args        = {
         "destination"   : {String},
@@ -300,7 +300,7 @@ builtin "write",
 #                 writeFile(x.s, y.s)
 
 builtin "zip",
-    alias       = none, 
+    alias       = unaliased, 
     description = "zip given files to file at destination",
     args        = {
         "destination"   : {String},
