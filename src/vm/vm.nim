@@ -31,7 +31,7 @@ import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import translator/eval, translator/parse
-import vm/env, vm/exec, vm/stack, vm/value
+import vm/env, vm/exec, vm/globals, vm/stack, vm/value
 
 import version
 
@@ -44,8 +44,6 @@ import version
 # Globals
 #=======================================
 
-var
-    scope*: ValueDict
 
 #=======================================
 # Constants
@@ -90,7 +88,7 @@ template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped
                     var z {.inject.} = stack.pop()
 
 template builtin*(n: string, alias: SymbolKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    scope[n] = newBuiltin(n, alias, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
+    syms[n] = newBuiltin(n, alias, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
         requireArgs(n, args)
         act
     )
@@ -115,13 +113,14 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     if isFile: env.addPath(code)
     else: env.addPath(getCurrentDir())
 
-    scope = getEnvDictionary()
+    syms = getEnvDictionary()
 
+    include library/Binary
     include library/Dates
     include library/Files
 
     initVM()
     let parsed = doParse(move code, isFile)
     let evaled = parsed.doEval()
-    discard doExec(evaled, withSyms=addr scope)
+    discard doExec(evaled)
     showVMErrors()
