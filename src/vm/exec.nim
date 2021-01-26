@@ -680,8 +680,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opAll: Collections.IsAll()
             of opAny: Collections.IsAny()
 
-            of opRead: Files.Read()
-            of opWrite: Files.Write()
+            of opRead: discard #Files.Read()
+            of opWrite: discard #Files.Write()
 
             of opAbs: Numbers.Abs()
             of opAcos: Numbers.Acos()
@@ -849,8 +849,8 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
 
                     of opExtract: Path.Extract()
 
-                    of opZip: Files.Zip()
-                    of opUnzip: Files.Unzip()
+                    of opZip: discard #Files.Zip()
+                    of opUnzip: discard #Files.Unzip()
 
                     of opGetHash: Crypto.GetHash()
 
