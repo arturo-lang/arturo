@@ -88,7 +88,7 @@ when isMainModule:
 
         var presets{.inject.} = getEnvDictionary()
 
-        include vm/library/Files
+        
 
         # builtin "dosth", underscore,
         #         {"par": {Integer}},
@@ -165,6 +165,8 @@ when isMainModule:
                         let evaled = parsed.doEval()
                 else:
                     bootup(run=true):
+                        include vm/library/Files
+                        
                         when defined(PYTHONIC):
                             code = readFile(code)
                             let parsed = doParse(move code, isFile = false)
