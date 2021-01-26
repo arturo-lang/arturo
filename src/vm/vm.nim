@@ -10,12 +10,7 @@
 # Libraries
 #=======================================
 
-# when defined(PROFILE):
-#     import nimprof
-
-# import os, parseopt, segFaults, sequtils, tables
-
-import json, os, sequtils, strutils, sugar, tables
+import json, os, sequtils, strutils, sugar, tables, times
 
 import extras/bignum, extras/miniz, extras/parsetoml
 
@@ -40,21 +35,10 @@ import vm/env, vm/exec, vm/stack, vm/value
 
 import version
 
-# when defined(BENCHMARK):
-#     import utils
-
 #=======================================
 # Types
 #=======================================
 
-# type
-#     CmdAction = enum
-#         execFile
-#         evalCode
-#         readBcode
-#         writeBcode
-#         showHelp
-#         showVersion
 
 #=======================================
 # Globals
@@ -63,31 +47,54 @@ import version
 var
     scope*: ValueDict
 
-# let helpTxt = """
+#=======================================
+# Constants
+#=======================================
 
-# Usage:
-#   arturo [options] <path>
+const
+    NoArgs*      = static {"" : {Nothing}}
+    NoAttrs*     = static {"" : ({Nothing},"")}
 
-# Options:
-#   -e --evaluate             Evaluate given code
-#   -c --console              Show repl / interactive console
+#=======================================
+# Helpers
+#=======================================
 
-#   -o --output               Compile script and write bytecode
-#   -i --input                Execute script from bytecode
+template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped =
+    if SP<(static spec.len):
+        panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static spec.len) & " required"
 
-#   -u --update               Update to latest version
+    when (static spec.len)>=1 and spec!=NoArgs:
+        when not (ANY in static spec[0][1]):
+            if not (Stack[SP-1].kind in (static spec[0][1])):
+                let acceptStr = toSeq((spec[0][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+                panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " ...; incorrect argument type for 1st parameter; accepts " & acceptStr
 
-#   -m --module           
-#         list                List all available modules
-#         remote              List all available remote modules
-#         info <name>         Get info about given module
-#         install <name>      Install remote module by name
-#         uninstall <name>    Uninstall module by name
-#         update              Update all local modules
+        when (static spec.len)>=2:
+            when not (ANY in static spec[1][1]):
+                if not (Stack[SP-2].kind in (static spec[1][1])):
+                    let acceptStr = toSeq((spec[1][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+                    panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
 
-#   -h --help                 Show this help screen
-#   -v --version              Show current version
-# """
+            when (static spec.len)>=3:
+                when not (ANY in static spec[2][1]):
+                    if not (Stack[SP-3].kind in (static spec[2][1])):
+                        let acceptStr = toSeq((spec[2][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+                        panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
+
+    when not nopop:
+        when (static spec.len)>=1 and spec!=NoArgs:
+            var x {.inject.} = stack.pop()
+            when (static spec.len)>=2:
+                var y {.inject.} = stack.pop()
+                when (static spec.len)>=3:
+                    var z {.inject.} = stack.pop()
+
+template builtin*(n: string, alias: SymbolKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+    scope[n] = newBuiltin(n, alias, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
+        requireArgs(n, args)
+        act
+    )
+    Funcs[n] = static args.len
     
 #=======================================
 # Main entry
@@ -105,6 +112,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
 
     scope = getEnvDictionary()
 
+    include library/Dates
     include library/Files
 
     initVM()
@@ -112,133 +120,3 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     let evaled = parsed.doEval()
     discard doExec(evaled, withSyms=addr scope)
     showVMErrors()
-
-# when isMainModule:
-
-#     #=======================================
-#     # Helpers
-#     #=======================================
-
-#     template bootup*(run: bool, perform: untyped):untyped =
-#         initEnv(
-#             arguments = arguments, 
-#             version = Version,
-#             build = Build
-#         )
-#         if action==execFile:
-#             env.addPath(code)
-#         else:
-#             env.addPath(getCurrentDir())
-
-#         var presets{.inject.} = getEnvDictionary()
-
-        
-
-#         # builtin "dosth", underscore,
-#         #         {"par": {Integer}},
-#         #         {Integer}:
-#         #     """
-#         #     """:
-#         #     echo "doing something with " & $(stack.pop())
-
-#         perform
-
-#         if run:
-#             initVM()
-#             discard doExec(evaled, withSyms=addr presets)
-#             showVMErrors()
-
-#     var token = initOptParser()
-
-#     var action: CmdAction = evalCode
-#     var runConsole  = static readFile("src/system/console.art")
-#     var runUpdate   = static readFile("src/system/update.art")
-#     var runModule   = static readFile("src/system/module.art")
-#     var code: string = ""
-#     var arguments: ValueArray = @[]
-
-#     when not defined(PORTABLE):
-
-#         while true:
-#             token.next()
-#             case token.kind:
-#                 of cmdArgument: 
-#                     if code=="":
-#                         if action==evalCode:
-#                             action = execFile
-                        
-#                         code = token.key
-#                     else:
-#                         arguments.add(newString(token.key))
-#                 of cmdShortOption, cmdLongOption:
-#                     case token.key:
-#                         of "c","console":
-#                             action = evalCode
-#                             code = runConsole
-#                         of "e","evaluate":
-#                             action = evalCode
-#                             code = token.val
-#                         of "o","output":
-#                             action = writeBcode
-#                             code = token.val
-#                         of "i","input":
-#                             action = readBcode
-#                             code = token.val
-#                         of "u","update":
-#                             action = evalCode
-#                             code = runUpdate
-#                         of "m", "module":
-#                             action = evalCode
-#                             code = runModule
-#                         of "h","help":
-#                             action = showHelp
-#                         of "v","version":
-#                             action = showVersion
-#                         else:
-#                             echo "error: unrecognized option (" & token.key & ")"
-#                 of cmdEnd: break
-
-#         case action:
-#             of execFile, evalCode:
-#                 if code=="":
-#                     code = runConsole
-
-#                 when defined(BENCHMARK):
-#                     benchmark "doParse / doEval":
-#                         let parsed = doParse(move code, isFile = action==execFile)
-#                         let evaled = parsed.doEval()
-#                 else:
-#                     bootup(run=true):
-#                         include vm/library/Files
-
-#                         when defined(PYTHONIC):
-#                             code = readFile(code)
-#                             let parsed = doParse(move code, isFile = false)
-#                         else:
-#                             let parsed = doParse(move code, isFile = action==execFile)
-                            
-#                         let evaled = parsed.doEval()
-                    
-#             of writeBcode:
-#                 bootup(run=false):
-#                     let filename = code
-#                     let parsed = doParse(move code, isFile = true)
-#                     let evaled = parsed.doEval()
-
-#                     discard writeBytecode(evaled, filename & ".bcode")
-
-#             of readBcode:
-#                 bootup(run=true):
-#                     let evaled = readBytecode(code)
-
-#             of showHelp:
-#                 echo helpTxt
-#             of showVersion:
-#                 echo VersionTxt
-#     else:
-#         arguments = commandLineParams().map(proc (x:string):Value = newString(x))
-#         code = static readFile(getEnv("PORTABLE_INPUT"))
-
-#         bootup(run=true):
-#             let parsed = doParse(move code, isFile = false)
-#             let evaled = parsed.doEval()
