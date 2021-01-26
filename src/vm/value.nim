@@ -102,7 +102,9 @@ type
         Block           = 20
         Database        = 21
         Custom          = 22
-        Any             = 23
+
+        Nothing         = 23
+        Any             = 24
 
     ValueSpec* = set[ValueKind]
 
@@ -120,8 +122,10 @@ type
 
     Value* {.acyclic.} = ref object 
         case kind*: ValueKind:
-            of Null:        discard 
-            of Any:         discard
+            of Null,
+               Nothing,
+               Any:        discard 
+
             of Boolean:     b*  : bool
             of Integer:  
                 case iKind*: IntegerKind:
@@ -1141,6 +1145,7 @@ proc `$`*(v: Value): string {.inline.} =
         of Custom:
             result = "<custom>"
             
+        of Nothing: discard
         of ANY: discard
 
 
@@ -1397,6 +1402,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
         of Custom       : stdout.write("<custom>")
 
+        of Nothing      : discard
         of ANY          : discard
 
     if not isLast:
@@ -1550,4 +1556,5 @@ proc hash*(v: Value): Hash {.inline.}=
         of Custom:
             result = 0
 
+        of Nothing      : result = 0
         of ANY          : result = 0

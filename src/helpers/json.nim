@@ -54,6 +54,7 @@ proc generateJsonNode*(n: Value): JsonNode =
         of Function,
            Database,
            Custom,
+           Nothing,
            Any          : discard
 
 proc parseJsonNode*(n: JsonNode): Value =
