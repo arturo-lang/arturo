@@ -49,7 +49,6 @@ import library/[
     Conversion,
     Core, 
     Logic, 
-    Numbers,
     Reflection,
     Strings
 ]
@@ -577,13 +576,13 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opTo: Conversion.To()
             
-            of opEven: Numbers.IsEven()
-            of opOdd: Numbers.IsOdd()
+            of opEven: discard #Numbers.IsEven()
+            of opOdd: discard #Numbers.IsOdd()
 
             of opRange: Collections.Range()
 
-            of opSum: Numbers.Sum()
-            of opProduct: Numbers.Product()
+            of opSum: discard #Numbers.Sum()
+            of opProduct: discard #Numbers.Product()
                 
             of opExit: Core.Exit()
             of opInfo: Reflection.Info()
@@ -617,7 +616,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opRepeat: Collections.Repeat()
             of opWhile: Core.While()
 
-            of opRandom: Numbers.Random()
+            of opRandom: discard #Numbers.Random()
 
             of opSample: Collections.Sample()
             of opShuffle: Collections.Shuffle()
@@ -631,25 +630,25 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opRead: discard #Files.Read()
             of opWrite: discard #Files.Write()
 
-            of opAbs: Numbers.Abs()
-            of opAcos: Numbers.Acos()
-            of opAcosh: Numbers.Acosh()
-            of opAsin: Numbers.Asin()
-            of opAsinh: Numbers.Asinh()
-            of opAtan: Numbers.Atan()
-            of opAtanh: Numbers.Atanh()
-            of opCos: Numbers.Cos()
-            of opCosh: Numbers.Cosh()
-            of opCsec: Numbers.Csec()
-            of opCsech: Numbers.Csech()
-            of opCtan: Numbers.Ctan()
-            of opCtanh: Numbers.Ctanh()
-            of opSec: Numbers.Sec()
-            of opSech: Numbers.Sech()
-            of opSin: Numbers.Sin()
-            of opSinh: Numbers.Sinh()
-            of opTan: Numbers.Tan()
-            of opTanh: Numbers.Tanh()
+            of opAbs: discard #Numbers.Abs()
+            of opAcos: discard #Numbers.Acos()
+            of opAcosh: discard #Numbers.Acosh()
+            of opAsin: discard #Numbers.Asin()
+            of opAsinh: discard #Numbers.Asinh()
+            of opAtan: discard #Numbers.Atan()
+            of opAtanh: discard #Numbers.Atanh()
+            of opCos: discard #Numbers.Cos()
+            of opCosh: discard #Numbers.Cosh()
+            of opCsec: discard #Numbers.Csec()
+            of opCsech: discard #Numbers.Csech()
+            of opCtan: discard #Numbers.Ctan()
+            of opCtanh: discard #Numbers.Ctanh()
+            of opSec: discard #Numbers.Sec()
+            of opSech: discard #Numbers.Sech()
+            of opSin: discard #Numbers.Sin()
+            of opSinh: discard #Numbers.Sinh()
+            of opTan: discard #Numbers.Tan()
+            of opTanh: discard #Numbers.Tanh()
 
             of opInput: Core.Input()
 
@@ -723,7 +722,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opList: discard #Shell.List()
 
             of opFold: Collections.Fold()
-            of opSqrt: Numbers.Sqrt()
+            of opSqrt: discard #Numbers.Sqrt()
 
             of opServe: discard #Net.Serve()
 
@@ -746,20 +745,20 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opRelative: discard #Path.Relative()
 
-            of opAverage: Numbers.Average()
-            of opMedian: Numbers.Median()
+            of opAverage: discard #Numbers.Average()
+            of opMedian: discard #Numbers.Median()
 
             of opAs: Conversion.As()
 
-            of opGcd: Numbers.Gcd()
-            of opPrime: Numbers.IsPrime()
+            of opGcd: discard #Numbers.Gcd()
+            of opPrime: discard #Numbers.IsPrime()
 
             of opPermutate: Collections.Permutate()
 
             of opIsWhitespace: Strings.IsWhitespace()
             of opIsNumeric: Strings.IsNumeric()
 
-            of opFactors: Numbers.Factors()
+            of opFactors: discard #Numbers.Factors()
 
             of opMatch: Strings.Match()
 
@@ -783,9 +782,9 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
                     of opBNor: discard #Binary.Nor()
                     of opBXnor: discard #Binary.Xnor()
 
-                    of opNegative: Numbers.IsNegative()
-                    of opPositive: Numbers.IsPositive()
-                    of opZero: Numbers.IsZero()
+                    of opNegative: discard #Numbers.IsNegative()
+                    of opPositive: discard #Numbers.IsPositive()
+                    of opZero: discard #Numbers.IsZero()
 
                     of opPanic: Core.Panic()
 
@@ -835,7 +834,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                     of opIsStandalone: Reflection.IsStandalone()
 
-                    of opPi: Numbers.GetPi()
+                    of opPi: discard #Numbers.GetPi()
 
                     of opIsContains: Collections.IsContains()
 

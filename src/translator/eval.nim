@@ -441,12 +441,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "to"         : addCommand(opTo)
 
-                    of "even?"      : addCommand(opEven)
-                    of "odd?"       : addCommand(opOdd)
+                    # of "even?"      : addCommand(opEven)
+                    # of "odd?"       : addCommand(opOdd)
 
                     of "range"      : addCommand(opRange)
-                    of "sum"        : addCommand(opSum)
-                    of "product"    : addCommand(opProduct)
+                    # of "sum"        : addCommand(opSum)
+                    # of "product"    : addCommand(opProduct)
 
                     of "exit"       : addCommand(opExit)
 
@@ -482,7 +482,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "repeat"     : addCommand(opRepeat)
                     of "while"      : addCommand(opWhile)
 
-                    of "random"     : addCommand(opRandom)
+                    # of "random"     : addCommand(opRandom)
 
                     of "sample"     : addCommand(opSample)
                     of "shuffle"    : addCommand(opShuffle)
@@ -496,25 +496,25 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "read"       : addCommand(opRead)
                     # of "write"      : addCommand(opWrite)
 
-                    of "abs"        : addCommand(opAbs)
-                    of "acos"       : addCommand(opAcos)
-                    of "acosh"      : addCommand(opAcosh)
-                    of "asin"       : addCommand(opAsin)
-                    of "asinh"      : addCommand(opAsinh)
-                    of "atan"       : addCommand(opAtan)
-                    of "atanh"      : addCommand(opAtanh)
-                    of "cos"        : addCommand(opCos)
-                    of "cosh"       : addCommand(opCosh)
-                    of "csec"       : addCommand(opCsec)
-                    of "csech"      : addCommand(opCsech)
-                    of "ctan"       : addCommand(opCtan)
-                    of "ctanh"      : addCommand(opCtanh)
-                    of "sec"        : addCommand(opSec)
-                    of "sech"       : addCommand(opSech)
-                    of "sin"        : addCommand(opSin)
-                    of "sinh"       : addCommand(opSinh)
-                    of "tan"        : addCommand(opTan)
-                    of "tanh"       : addCommand(opTanh)
+                    # of "abs"        : addCommand(opAbs)
+                    # of "acos"       : addCommand(opAcos)
+                    # of "acosh"      : addCommand(opAcosh)
+                    # of "asin"       : addCommand(opAsin)
+                    # of "asinh"      : addCommand(opAsinh)
+                    # of "atan"       : addCommand(opAtan)
+                    # of "atanh"      : addCommand(opAtanh)
+                    # of "cos"        : addCommand(opCos)
+                    # of "cosh"       : addCommand(opCosh)
+                    # of "csec"       : addCommand(opCsec)
+                    # of "csech"      : addCommand(opCsech)
+                    # of "ctan"       : addCommand(opCtan)
+                    # of "ctanh"      : addCommand(opCtanh)
+                    # of "sec"        : addCommand(opSec)
+                    # of "sech"       : addCommand(opSech)
+                    # of "sin"        : addCommand(opSin)
+                    # of "sinh"       : addCommand(opSinh)
+                    # of "tan"        : addCommand(opTan)
+                    # of "tanh"       : addCommand(opTanh)
 
                     of "input"      : addCommand(opInput)
 
@@ -588,7 +588,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "list"       : addCommand(opList)
 
                     of "fold"       : addCommand(opFold)
-                    of "sqrt"       : addCommand(opSqrt)
+                    # of "sqrt"       : addCommand(opSqrt)
 
                     # of "serve"      : addCommand(opServe)
 
@@ -611,13 +611,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "relative"   : addCommand(opRelative)
 
-                    of "average"    : addCommand(opAverage)
-                    of "median"     : addCommand(opMedian)
+                    # of "average"    : addCommand(opAverage)
+                    # of "median"     : addCommand(opMedian)
 
                     of "as"         : addCommand(opAs)
 
-                    of "gcd"        : addCommand(opGcd)
-                    of "prime?"     : addCommand(opPrime)
+                    # of "gcd"        : addCommand(opGcd)
+                    # of "prime?"     : addCommand(opPrime)
 
                     of "permutate"  : addCommand(opPermutate)
 
@@ -644,9 +644,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "nor"        : addExtraCommand(opBNor)
                     # of "xnor"       : addExtraCommand(opBXnor)
 
-                    of "negative?"  : addExtraCommand(opNegative)
-                    of "positive?"  : addExtraCommand(opPositive)
-                    of "zero?"      : addExtraCommand(opZero)
+                    # of "negative?"  : addExtraCommand(opNegative)
+                    # of "positive?"  : addExtraCommand(opPositive)
+                    # of "zero?"      : addExtraCommand(opZero)
 
                     of "panic"      : addExtraCommand(opPanic)
 
