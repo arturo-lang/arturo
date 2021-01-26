@@ -153,7 +153,7 @@ template Globalize*():untyped =
     require(opGlobalize)
 
     for k,v in pairs(syms):
-        withSyms[][k] = v
+        syms[k] = v
 
 template If*():untyped =
     # EXAMPLE:
@@ -422,7 +422,7 @@ template Print*():untyped =
     if x.kind==Block:
         let xblock = doEval(x)
         let stop = SP
-        discard doExec(xblock, depth+1, addr syms)
+        discard doExec(xblock, depth+1)
 
         var res: ValueArray = @[]
         while SP>stop:
@@ -456,7 +456,7 @@ template Prints*():untyped =
     if x.kind==Block:
         let xblock = doEval(x)
         let stop = SP
-        discard doExec(xblock, depth+1, addr syms)
+        discard doExec(xblock, depth+1)
 
         var res: ValueArray = @[]
         while SP>stop:
