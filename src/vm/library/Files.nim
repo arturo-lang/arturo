@@ -10,9 +10,9 @@
 # Libraries
 #=======================================
 
-import os, strtabs, tables
+# import os, strtabs, tables
 
-import vm/stack, vm/value
+# import vm/stack, vm/value
 
 #=======================================
 # Methods
@@ -110,34 +110,35 @@ builtin "read",
         html: read.markdown "## Hello" ____; "<h2>Hello</h2>"
     """:
         ##########################################################
-        if (popAttr("binary") != VNULL):
-            var f: File
-            discard f.open(x.s)
-            var b: seq[byte] = newSeq[byte](f.getFileSize())
-            discard f.readBytes(b, 0, f.getFileSize())
+        discard
+        # if (popAttr("binary") != VNULL):
+        #     var f: File
+        #     discard f.open(x.s)
+        #     var b: seq[byte] = newSeq[byte](f.getFileSize())
+        #     discard f.readBytes(b, 0, f.getFileSize())
 
-            f.close()
+        #     f.close()
 
-            stack.push(newBinary(b))
-        else:
-            let (src, _{.inject.}) = getSource(x.s)
+        #     stack.push(newBinary(b))
+        # else:
+        #     let (src, _{.inject.}) = getSource(x.s)
 
-            if (popAttr("lines") != VNULL):
-                stack.push(newStringBlock(src.splitLines()))
-            elif (popAttr("json") != VNULL):
-                stack.push(parseJsonNode(parseJson(src)))
-            elif (popAttr("csv") != VNULL):
-                stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
-            elif (popAttr("toml") != VNULL):
-                stack.push(parseTomlString(src))
-            elif (popAttr("html") != VNULL):
-                stack.push(parseHtmlInput(src))
-            elif (popAttr("markdown") != VNULL):
-                stack.push(parseMarkdownInput(src))
-            # elif attrs.hasKey("xml"):
-            #     stack.push(parseXmlNode(parseXml(action(x.s))))
-            else:
-                stack.push(newString(src))
+        #     if (popAttr("lines") != VNULL):
+        #         stack.push(newStringBlock(src.splitLines()))
+        #     elif (popAttr("json") != VNULL):
+        #         stack.push(parseJsonNode(parseJson(src)))
+        #     elif (popAttr("csv") != VNULL):
+        #         stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
+        #     elif (popAttr("toml") != VNULL):
+        #         stack.push(parseTomlString(src))
+        #     elif (popAttr("html") != VNULL):
+        #         stack.push(parseHtmlInput(src))
+        #     elif (popAttr("markdown") != VNULL):
+        #         stack.push(parseMarkdownInput(src))
+        #     # elif attrs.hasKey("xml"):
+        #     #     stack.push(parseXmlNode(parseXml(action(x.s))))
+        #     else:
+        #         stack.push(newString(src))
 
 # template Read*():untyped =
 #     # EXAMPLE:
@@ -212,13 +213,14 @@ builtin "unzip",
         "destination"   : {String},
         "original"      : {String}
     },
-    attrs       = {},
+    attrs       = {"":({Nothing},"")},
     returns     = {Nothing},
     example     = """
         unzip "folder" "archive.zip"
     """:
         ##########################################################
-        miniz.unzip(y.s, x.s)
+        discard
+        #miniz.unzip(y.s, x.s)
 
 # template Unzip*():untyped = 
 #     # EXAMPLE:
@@ -251,24 +253,25 @@ builtin "write",
         write.json "data.json" myData
     """:
         ##########################################################
-        if (popAttr("directory") != VNULL):
-            createDir(x.s)
-        else:
-            if (popAttr("binary") != VNULL):
-                var f: File
-                discard f.open(x.s, mode=fmWrite)
-                discard f.writeBytes(y.n, 0, y.n.len)
+        discard
+        # if (popAttr("directory") != VNULL):
+        #     createDir(x.s)
+        # else:
+        #     if (popAttr("binary") != VNULL):
+        #         var f: File
+        #         discard f.open(x.s, mode=fmWrite)
+        #         discard f.writeBytes(y.n, 0, y.n.len)
 
-                f.close()
-            else:
-                if (popAttr("json") != VNULL):
-                    let rez = json.pretty(generateJsonNode(y), indent=4)
-                    if x.kind==String:
-                        writeFile(x.s, rez)
-                    else:
-                        stack.push(newString(rez))
-                else:
-                    writeFile(x.s, y.s)
+        #         f.close()
+        #     else:
+        #         if (popAttr("json") != VNULL):
+        #             let rez = json.pretty(generateJsonNode(y), indent=4)
+        #             if x.kind==String:
+        #                 writeFile(x.s, rez)
+        #             else:
+        #                 stack.push(newString(rez))
+        #         else:
+        #             writeFile(x.s, y.s)
 
 # template Write*():untyped =
 #     # EXAMPLE:
@@ -306,14 +309,15 @@ builtin "zip",
         "destination"   : {String},
         "files"         : {Block}
     },
-    attrs       = {},
+    attrs       = {"":({Nothing},"")},
     returns     = {Nothing},
     example     = """
         zip "dest.zip" ["file1.txt" "img.png"]
     """:
         ##########################################################
-        let files: seq[string] = y.a.map((z)=>z.s)
-        miniz.zip(files, x.s)
+        discard
+        # let files: seq[string] = y.a.map((z)=>z.s)
+        # miniz.zip(files, x.s)
     
 # template Zip*():untyped = 
 #     # EXAMPLE:
