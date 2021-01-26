@@ -93,14 +93,14 @@ var
 # Main entry
 #=======================================
 
-proc startVM*(code: var string, path: string, args: ValueArray, isFile: bool) =
+proc run*(code: var string, args: ValueArray, isFile: bool) =
     initEnv(
         arguments = args, 
         version = Version,
         build = Build
     )
 
-    if isFile: env.addPath(path)
+    if isFile: env.addPath(code)
     else: env.addPath(getCurrentDir())
 
     scope = getEnvDictionary()
