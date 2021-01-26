@@ -160,6 +160,7 @@ type
                     of BuiltinFunction:
                         fname*  : string
                         alias*  : SymbolKind
+                        module* : string
                         fdesc*  : string
                         arity*  : int
                         args*   : OrderedTable[string,ValueSpec]
@@ -337,8 +338,21 @@ proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
 proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, exports: exports, pure: pure)
 
-proc newBuiltin*(name: string, al: SymbolKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
-    Value(kind: Function, fnKind: BuiltinFunction, fname: name, alias: al, fdesc: desc, arity: ar, args: ag, attrs: at, returns: ret, example: exa, action: act)
+proc newBuiltin*(name: string, al: SymbolKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
+    Value(
+        kind    : Function, 
+        fnKind  : BuiltinFunction, 
+        fname   : name, 
+        alias   : al, 
+        module  : md, 
+        fdesc   : desc, 
+        arity   : ar, 
+        args    : ag, 
+        attrs   : at, 
+        returns : ret, 
+        example : exa, 
+        action  : act
+    )
 
 proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
     Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
