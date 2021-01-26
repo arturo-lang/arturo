@@ -51,7 +51,6 @@ import library/[
     Core, 
     Crypto,
     Database,
-    Dates,
     Logic, 
     Net,
     Numbers,
@@ -82,47 +81,10 @@ var
 # Helpers
 #=======================================
 
-template panic(error: string): untyped =
+template panic*(error: string): untyped =
     vmPanic = true
     vmError = error
     return
-
-template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped =
-    if SP<(static spec.len):
-        panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static spec.len) & " required"
-
-    when (static spec.len)>=1:
-        when not (ANY in static spec[0][1]):
-            if not (Stack[SP-1].kind in (static spec[0][1])):
-                let acceptStr = toSeq((spec[0][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " ...; incorrect argument type for 1st parameter; accepts " & acceptStr
-
-        when (static spec.len)>=2:
-            when not (ANY in static spec[1][1]):
-                if not (Stack[SP-2].kind in (static spec[1][1])):
-                    let acceptStr = toSeq((spec[1][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                    panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
-
-            when (static spec.len)>=3:
-                when not (ANY in static spec[2][1]):
-                    if not (Stack[SP-3].kind in (static spec[2][1])):
-                        let acceptStr = toSeq((spec[2][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                        panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
-
-    when not nopop:
-        when (static spec.len)>=1:
-            var x {.inject.} = stack.pop()
-        when (static spec.len)>=2:
-            var y {.inject.} = stack.pop()
-        when (static spec.len)>=3:
-            var z {.inject.} = stack.pop()
-
-template builtin*(n: string, alias: SymbolKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    scope[n] = newBuiltin(n, alias, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
-        requireArgs(n, args)
-        act
-    )
-    Funcs[n] = static args.len
 
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
@@ -780,7 +742,7 @@ proc doExec*(input:Translation, depth: int = 0, withSyms: ptr ValueDict = nil): 
             of opLet: Core.Let()
             of opVar: Core.Var()
 
-            of opNow: Dates.Now()
+            of opNow: discard #Dates.Now()
 
             of opPause: Core.Pause()
 
