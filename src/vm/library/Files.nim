@@ -96,7 +96,7 @@ builtin "unzip",
         "destination"   : {String},
         "original"      : {String}
     },
-    attrs       = {"":({Nothing},"")},
+    attrs       = NoAttrs,
     returns     = {Nothing},
     example     = """
         unzip "folder" "archive.zip"
@@ -151,7 +151,7 @@ builtin "zip",
         "destination"   : {String},
         "files"         : {Block}
     },
-    attrs       = {"":({Nothing},"")},
+    attrs       = NoAttrs,
     returns     = {Nothing},
     example     = """
         zip "dest.zip" ["file1.txt" "img.png"]
