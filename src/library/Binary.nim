@@ -12,6 +12,7 @@
 
 builtin "and",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "calculate the binary AND for the given values",
     args        = {
         "valueA": {Integer,Literal},
@@ -32,6 +33,7 @@ builtin "and",
 
 builtin "nand",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "calculate the binary NAND for the given values",
     args        = {
         "valueA": {Integer,Literal},
@@ -51,6 +53,7 @@ builtin "nand",
 
 builtin "nor",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "calculate the binary NOR for the given values",
     args        = {
         "valueA": {Integer,Literal},
@@ -70,6 +73,7 @@ builtin "nor",
 
 builtin "not",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "calculate the binary complement the given value",
     args        = {
         "value" : {Integer,Literal}
@@ -88,6 +92,7 @@ builtin "not",
 
 builtin "or",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "calculate the binary OR for the given values",
     args        = {
         "valueA": {Integer,Literal},
@@ -107,6 +112,7 @@ builtin "or",
 
 builtin "shl",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "shift-left first value bits by second value",
     args        = {
         "value" : {Integer,Literal},
@@ -126,6 +132,7 @@ builtin "shl",
 
 builtin "shr",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "shift-right first value bits by second value",
     args        = {
         "value" : {Integer,Literal},
@@ -145,6 +152,7 @@ builtin "shr",
 
 builtin "xnor",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "calculate the binary XNOR for the given values",
     args        = {
         "valueA": {Integer,Literal},
@@ -164,6 +172,7 @@ builtin "xnor",
     
 builtin "xor",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "calculate the binary XOR for the given values",
     args        = {
         "valueA": {Integer,Literal},

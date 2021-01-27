@@ -100,8 +100,8 @@ template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped
                 when (static spec.len)>=3:
                     var z {.inject.} = stack.pop()
 
-template builtin*(n: string, alias: SymbolKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    syms[n] = newBuiltin(n, alias, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
+template builtin*(n: string, alias: SymbolKind, precedence: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+    syms[n] = newBuiltin(n, alias, precedence, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
         requireArgs(n, args)
         act
     )

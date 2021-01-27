@@ -17,4 +17,5 @@ import vm/value
 #=======================================
 
 var
-    syms*{.threadvar.}: ValueDict
+    syms*{.threadvar.}      : ValueDict
+    aliases*{.threadvar.}   : ValueDict

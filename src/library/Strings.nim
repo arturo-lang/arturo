@@ -12,6 +12,7 @@
 
 builtin "capitalize",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "convert given string to capitalized",
     args        = {
         "string": {String,Literal}
@@ -30,6 +31,7 @@ builtin "capitalize",
 
 builtin "color",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "get colored version of given string",
     args        = {
         "string": {String}
@@ -90,6 +92,7 @@ builtin "color",
 
 builtin "levenshtein",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "calculate Levenshtein distance between given strings",
     args        = {
         "stringA"   : {String},
@@ -105,6 +108,7 @@ builtin "levenshtein",
 
 builtin "lower",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "convert given string to lowercase",
     args        = {
         "string": {String,Literal}
@@ -123,6 +127,7 @@ builtin "lower",
 
 builtin "lower?",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if given string is lowercase",
     args        = {
         "string": {String}
@@ -148,6 +153,7 @@ builtin "lower?",
 
 builtin "match",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "get matches within string, using given regular expression",
     args        = {
         "string": {String},
@@ -165,6 +171,7 @@ builtin "match",
 
 builtin "numeric?",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if given string is numeric",
     args        = {
         "string": {String}
@@ -199,6 +206,7 @@ builtin "numeric?",
 
 builtin "pad",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if given string consists only of whitespace",
     args        = {
         "string"    : {String,Literal},
@@ -230,6 +238,7 @@ builtin "pad",
 
 builtin "prefix",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "add given prefix to string",
     args        = {
         "string": {String,Literal},
@@ -249,6 +258,7 @@ builtin "prefix",
 
 builtin "prefix?",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if string starts with given prefix",
     args        = {
         "string": {String},
@@ -270,6 +280,7 @@ builtin "prefix?",
 
 builtin "render",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "render template with |string| interpolation",
     args        = {
         "template"  : {String}
@@ -340,6 +351,7 @@ builtin "render",
 
 builtin "replace",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "add given suffix to string",
     args        = {
         "string"        : {String,Literal},
@@ -366,6 +378,7 @@ builtin "replace",
 
 builtin "strip",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "strip whitespace from given string",
     args        = {
         "string": {String,Literal}
@@ -384,6 +397,7 @@ builtin "strip",
 
 builtin "suffix",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "add given suffix to string",
     args        = {
         "string": {String,Literal},
@@ -403,6 +417,7 @@ builtin "suffix",
 
 builtin "suffix?",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if string ends with given suffix",
     args        = {
         "string": {String},
@@ -424,6 +439,7 @@ builtin "suffix?",
 
 builtin "upper",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "convert given string to uppercase",
     args        = {
         "string": {String,Literal}
@@ -442,6 +458,7 @@ builtin "upper",
 
 builtin "upper?",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if given string is uppercase",
     args        = {
         "string": {String}
@@ -467,6 +484,7 @@ builtin "upper?",
 
 builtin "whitespace?",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if given string consists only of whitespace",
     args        = {
         "string": {String}

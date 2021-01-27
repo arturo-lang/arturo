@@ -12,6 +12,7 @@
 
 builtin "extract",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "extract components from path",
     args        = {
         "path"  : {String}
@@ -71,6 +72,7 @@ builtin "extract",
 
 builtin "module",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "get path for given module name",
     args        = {
         "name"  : {String,Literal}
@@ -87,6 +89,7 @@ builtin "module",
 
 builtin "relative",
     alias       = dotslash, 
+    precedence  = PrefixPrecedence,
     description = "get relative path for given path, based on current script's location",
     args        = {
         "path"  : {String}
