@@ -16,7 +16,7 @@ builtin "all?",
     description = "check if all of collection's item satisfy given condition",
     args        = {
         "collection"    : {Block},
-        "params"        : {Literal,Block}
+        "params"        : {Literal,Block},
         "condition"     : {Block}
     },
     attrs       = NoAttrs,
@@ -50,7 +50,7 @@ builtin "any?",
     description = "check if any of collection's items satisfy given condition",
     args        = {
         "collection"    : {Block},
-        "params"        : {Literal,Block}
+        "params"        : {Literal,Block},
         "condition"     : {Block}
     },
     attrs       = NoAttrs,
@@ -195,11 +195,11 @@ builtin "contains?",
         case x.kind:
             of String:
                 if (popAttr("regex") != VNULL):
-                    stack.push(newBoolean(nre.contains(x.s, re(y.s))))
+                    stack.push(newBoolean(nre.contains(x.s, nre.re(y.s))))
                 else:
                     stack.push(newBoolean(y.s in x.s))
             of Block:
-            stack.push(newBoolean(y in x.a))
+                stack.push(newBoolean(y in x.a))
             of Dictionary: 
                 let values = toSeq(x.d.values)
                 stack.push(newBoolean(y in values))
@@ -595,11 +595,11 @@ builtin "in?",
         case y.kind:
             of String:
                 if (popAttr("regex") != VNULL):
-                    stack.push(newBoolean(nre.contains(y.s, re(x.s))))
+                    stack.push(newBoolean(nre.contains(y.s, nre.re(x.s))))
                 else:
                     stack.push(newBoolean(x.s in y.s))
             of Block:
-            stack.push(newBoolean(x in y.a))
+                stack.push(newBoolean(x in y.a))
             of Dictionary: 
                 let values = toSeq(y.d.values)
                 stack.push(newBoolean(x in values))
@@ -653,7 +653,7 @@ builtin "insert",
     description = "insert value in collection at given index",
     args        = {
         "collection"    : {String,Block,Dictionary,Literal},
-        "index"         : {Integer,String}
+        "index"         : {Integer,String},
         "value"         : {Any}
     },
     attrs       = NoAttrs,
@@ -1457,7 +1457,7 @@ builtin "split",
                 elif (let aBy = popAttr("by"); aBy != VNULL):
                     syms[x.s] = newStringBlock(syms[x.s].s.split(aBy.s))
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                    syms[x.s] = newStringBlock(syms[x.s].s.split(re(aRegex.s)))
+                    syms[x.s] = newStringBlock(syms[x.s].s.split(nre.re(aRegex.s)))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
                     syms[x.s] = newStringBlock(@[syms[x.s].s[0..aAt.i-1], syms[x.s].s[aAt.i..^1]])
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -1495,7 +1495,7 @@ builtin "split",
             elif (let aBy = popAttr("by"); aBy != VNULL):
                 stack.push(newStringBlock(x.s.split(aBy.s)))
             elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                stack.push(newStringBlock(x.s.split(re(aRegex.s))))
+                stack.push(newStringBlock(x.s.split(nre.re(aRegex.s))))
             elif (let aAt = popAttr("at"); aAt != VNULL):
                 stack.push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
             elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -1600,5 +1600,4 @@ builtin "values",
     """:
         ##########################################################
         let s = toSeq(x.d.values)
-         stack.push(newBlock(s))
-        
+        stack.push(newBlock(s))
