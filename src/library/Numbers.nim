@@ -455,6 +455,42 @@ builtin "random",
         ##########################################################
         stack.push(newInteger(rand(x.i..y.i)))
 
+builtin "range",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "get list of numbers in given range (inclusive)",
+    args        = {
+        "from"  : {Integer},
+        "to"    : {Integer}
+    },
+    attrs       = {
+        "step"  : ({Integer},"use step between range values")
+    },
+    returns     = {Block},
+    example     = """
+        print range 1 4       ; 1 2 3 4
+        1..10                 ; [1 2 3 4 5 6 7 8 9 10]
+    """:
+        ##########################################################
+        var res = newBlock()
+
+        var step = 1
+        if (let aStep = popAttr("step"); aStep != VNULL):
+            step = aStep.i
+
+        if x.i < y.i:
+            var j = x.i
+            while j <= y.i:
+                res.a.add(newInteger(j))
+                j += step
+        else:
+            var j = x.i
+            while j >= y.i:
+                res.a.add(newInteger(j))
+                j -= step
+
+        stack.push(res)
+
 builtin "sec",
     alias       = unaliased, 
     rule        = PrefixPrecedence,

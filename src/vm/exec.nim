@@ -43,7 +43,6 @@ import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import library/[
-    Conversion,
     Core, 
     Reflection
 ]
@@ -566,8 +565,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opUpper: discard #Strings.Upper()
             of opLower: discard #Strings.Lower()
 
-            of opGet: discard #Collections.Get()  
-            of opSet: discard #Collections.Set()
+            of opGet: syms["get"].action() #discard #Collections.Get()  
+            of opSet: syms["set"].action() #discard #Collections.Set()
 
             of opTo: Conversion.To()
             
