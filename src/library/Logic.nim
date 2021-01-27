@@ -12,6 +12,7 @@
 
 builtin "and?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "return the logical AND for the given values",
     args        = {
         "valueA": {Boolean},
@@ -38,6 +39,7 @@ constant "false",
 
 builtin "false?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "returns true if given value is false; otherwise, it returns false",
     args        = {
         "value" : {Boolean}
@@ -51,6 +53,7 @@ builtin "false?",
 
 builtin "nand?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "return the logical NAND for the given values",
     args        = {
         "valueA": {Boolean},
@@ -76,6 +79,7 @@ builtin "nand?",
 
 builtin "nor?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "return the logical NAND for the given values",
     args        = {
         "valueA": {Boolean},
@@ -101,6 +105,7 @@ builtin "nor?",
 
 builtin "not?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "return the logical complement of the given value",
     args        = {
         "value" : {Boolean}
@@ -120,6 +125,7 @@ builtin "not?",
 
 builtin "or?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "return the logical OR for the given values",
     args        = {
         "valueA": {Boolean},
@@ -146,6 +152,7 @@ constant "true",
 
 builtin "true?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "returns true if given value is true; otherwise, it returns false",
     args        = {
         "value" : {Boolean}
@@ -159,6 +166,7 @@ builtin "true?",
 
 builtin "xnor?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "return the logical XNOR for the given values",
     args        = {
         "valueA": {Boolean},
@@ -184,6 +192,7 @@ builtin "xnor?",
 
 builtin "xnor?",
     alias       = unaliased, 
+    precedence  = InfixPrecedence,
     description = "return the logical XNOR for the given values",
     args        = {
         "valueA": {Boolean},
