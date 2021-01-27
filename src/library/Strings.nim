@@ -279,7 +279,7 @@ builtin "prefix?",
             stack.push(newBoolean(x.s.startsWith(y.s)))
 
 builtin "render",
-    alias       = unaliased, 
+    alias       = tilde, 
     precedence  = PrefixPrecedence,
     description = "render template with |string| interpolation",
     args        = {
