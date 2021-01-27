@@ -547,7 +547,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             # [0x7] #
             # system calls (144 slots)
 
-            of opPrint      : Core.Print()
+            of opPrint      : discard #Core.Print()
             of opInspect    : Reflection.Inspect() 
 
             of opIf         : Core.If()
@@ -618,7 +618,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opShuffle: Collections.Shuffle()
             of opSlice: Collections.Slice()
 
-            of opClear: Core.Clear()
+            of opClear: discard #Core.Clear()
 
             of opAll: Collections.IsAll()
             of opAny: Collections.IsAny()
@@ -646,7 +646,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opTan: discard #Numbers.Tan()
             of opTanh: discard #Numbers.Tanh()
 
-            of opInput: Core.Input()
+            of opInput: discard #Core.Input()
 
             of opPad: discard #Strings.Pad()
             of opReplace: discard #Strings.Replace()
@@ -678,7 +678,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opExecute: discard #Shell.Execute()
 
-            of opPrints: Core.Prints()
+            of opPrints: discard #Core.Prints()
 
             of opBenchmark: Reflection.Benchmark()
 
