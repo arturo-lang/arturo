@@ -27,6 +27,7 @@ import utils
 type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string,Value]
+    SymbolDict* = OrderedTable[SymbolKind,Value]
 
     Byte = byte
     ByteArray*  = seq[Byte]

@@ -101,11 +101,14 @@ template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped
                     var z {.inject.} = stack.pop()
 
 template builtin*(n: string, alias: SymbolKind, precedence: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    syms[n] = newBuiltin(n, alias, precedence, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
+    let b = newBuiltin(n, alias, precedence, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
         requireArgs(n, args)
         act
     )
     Funcs[n] = static args.len
+    syms[n] = b
+    when alias != unaliased:
+        aliases[alias] = b
 
 template constant*(n: string, description: string, v: untyped):untyped =
     v.info = description

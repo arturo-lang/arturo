@@ -18,4 +18,4 @@ import vm/value
 
 var
     syms*{.threadvar.}      : ValueDict
-    aliases*{.threadvar.}   : ValueDict
+    aliases*{.threadvar.}   : SymbolDict
