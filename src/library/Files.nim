@@ -12,6 +12,7 @@
 
 builtin "exists?",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "check if given file exists",
     args        = {
         "file"  : {String}
@@ -33,6 +34,7 @@ builtin "exists?",
 
 builtin "read",
     alias       = doublearrowleft, 
+    precedence  = PrefixPrecedence,
     description = "read file from given path",
     args        = {
         "file"  : {String}
@@ -91,6 +93,7 @@ builtin "read",
 
 builtin "unzip",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "unzip given archive to destination",
     args        = {
         "destination"   : {String},
@@ -106,6 +109,7 @@ builtin "unzip",
 
 builtin "write",
     alias       = doublearrowright, 
+    precedence  = PrefixPrecedence,
     description = "write content to file at given path",
     args        = {
         "file"      : {String,Null},
@@ -146,6 +150,7 @@ builtin "write",
 
 builtin "zip",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "zip given files to file at destination",
     args        = {
         "destination"   : {String},

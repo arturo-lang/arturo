@@ -12,6 +12,7 @@
 
 builtin "execute",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "execute given shell command",
     args        = {
         "command"   : {String}
@@ -32,6 +33,7 @@ builtin "execute",
 
 builtin "list",
     alias       = unaliased, 
+    precedence  = PrefixPrecedence,
     description = "get files at given path",
     args        = {
         "path"  : {String}

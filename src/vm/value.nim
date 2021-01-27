@@ -120,6 +120,11 @@ type
         SqliteDatabase
         MysqlDatabase
 
+    PrecedenceKind* = enum
+        InfixPrecedence
+        PrefixPrecedence
+        PostfixPrecedence
+
     Value* {.acyclic.} = ref object 
         info*: string
         case kind*: ValueKind:
@@ -161,6 +166,7 @@ type
                     of BuiltinFunction:
                         fname*  : string
                         alias*  : SymbolKind
+                        prec*   : PrecedenceKind
                         module* : string
                         fdesc*  : string
                         arity*  : int
@@ -339,12 +345,13 @@ proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
 proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, exports: exports, pure: pure)
 
-proc newBuiltin*(name: string, al: SymbolKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
+proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
         fname   : name, 
         alias   : al, 
+        prec    : pr,
         module  : md, 
         fdesc   : desc, 
         arity   : ar, 
