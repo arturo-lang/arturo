@@ -795,9 +795,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of sharp            : addCommand(opDictionary)
                     of dollar           : addCommand(opFunction)
                     of ampersand        : addCommand(opPush)
-                    of dotslash         : addCommand(opRelative)
-                    of doublearrowright : addCommand(opWrite)   
-                    of doublearrowleft  : addCommand(opRead) 
                     of slashedzero      :
                         addTerminalValue(false):
                             addToCommand((byte)opNPush)
