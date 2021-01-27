@@ -43,7 +43,6 @@ import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import library/[
-    Arithmetic,
     Collections, 
     Comparison, 
     Conversion,
@@ -488,15 +487,15 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             # [0x5] #
             # arithmetic & logical operations
 
-            of opAdd        : Arithmetic.Add()
-            of opSub        : Arithmetic.Sub()
-            of opMul        : Arithmetic.Mul()
-            of opDiv        : Arithmetic.Div()
-            of opFDiv       : Arithmetic.Fdiv()
-            of opMod        : Arithmetic.Mod()
-            of opPow        : Arithmetic.Pow()                
+            of opAdd        : discard #Arithmetic.Add()
+            of opSub        : discard #Arithmetic.Sub()
+            of opMul        : discard #Arithmetic.Mul()
+            of opDiv        : discard #Arithmetic.Div()
+            of opFDiv       : discard #Arithmetic.Fdiv()
+            of opMod        : discard #Arithmetic.Mod()
+            of opPow        : discard #Arithmetic.Pow()                
 
-            of opNeg        : Arithmetic.Neg()
+            of opNeg        : discard #Arithmetic.Neg()
 
             of opNot        : discard #Logic.IsNot()
             of opAnd        : discard #Logic.IsAnd()
@@ -599,8 +598,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opUnique: Collections.Unique()
             of opSort: Collections.Sort()
 
-            of opInc: Arithmetic.Inc()
-            of opDec: Arithmetic.Dec()
+            of opInc: discard #Arithmetic.Inc()
+            of opDec: discard #Arithmetic.Dec()
 
             of opIsSet: Reflection.IsSet()
                 
