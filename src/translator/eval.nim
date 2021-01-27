@@ -104,62 +104,20 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 else:
                     let step = 1
 
-                case n.a[i+1].m:
-                    of plus         : 
-                        i += step; addCommand(opAdd, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])       # +
-                    of minus        : 
-                        i += step; addCommand(opSub, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])       # -   
-                    of asterisk     : 
-                        i += step; addCommand(opMul, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])       # *
-                    of slash        : 
-                        i += step; addCommand(opDiv, inArrowBlock);  
-                        when inArrowBlock: ret.add(n.a[i])      # /
-                    of doubleslash  : 
-                        i += step; addCommand(opFDiv, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])      # //
-                    of percent      : 
-                        i += step; addCommand(opMod, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])       # %
-                    of caret        : 
-                        i += step; addCommand(opPow, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])       # ^
-                    of equal        : 
-                        i += step; addCommand(opEq, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])        # =
-                    of lessgreater  : 
-                        i += step; addCommand(opNe, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])        # <>
-                    of greaterthan  : 
-                        i += step; addCommand(opGt, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])        # >
-                    of greaterequal : 
-                        i += step; addCommand(opGe, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])        # >=
-                    of lessthan     : 
-                        i += step; addCommand(opLt, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])        # <
-                    of equalless    : 
-                        i += step; addCommand(opLe, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])        # =<
-                    of ellipsis     : 
-                        i += step; addCommand(opRange, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])     # ..
-                    of backslash    : 
-                        i += step; addCommand(opGet, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])    
-                    of doubleplus   : 
-                        i += step; addCommand(opAppend, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])    # ++
-                    of doubleminus  : 
-                        i += step; addCommand(opRemove, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])    # --
-                    of colon        : 
-                        i += step; addCommand(opLet, inArrowBlock); 
-                        when inArrowBlock: ret.add(n.a[i])       # :
-                    else            : discard
+                let symalias = n.a[i+1].m
+                if aliases.hasKey(symalias):
+                    let symfunc = syms[aliases[symalias].name.s]
+
+                    if symfunc.kind==Function and aliases[symalias].precedence==InfixPrecedence:
+                        i += step;
+                        
+                        echo "found infix alias: " & $(n.a[i])
+                        if symfunc.arity!=0:
+                            addConst(consts, aliases[symalias].name, opCallX)
+                            argStack.add(symfunc.arity)
+
+                        when inArrowBlock: ret.add(n.a[i])
+                
 
             ## Run main code
             code
