@@ -373,13 +373,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(false):
                             addToCommand((byte)opNPush)
 
-                    of "true"   :
-                        addTerminalValue(false):
-                            addToCommand((byte)opBPushT)
+                    # of "true"   :
+                    #     addTerminalValue(false):
+                    #         addToCommand((byte)opBPushT)
 
-                    of "false"  :
-                        addTerminalValue(false):
-                            addToCommand((byte)opBPushF)
+                    # of "false"  :
+                    #     addTerminalValue(false):
+                    #         addToCommand((byte)opBPushF)
 
                     of "add"        : addCommand(opAdd)
                     of "sub"        : addCommand(opSub)

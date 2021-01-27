@@ -32,6 +32,10 @@ builtin "and?",
         ##########################################################
         stack.push(newBoolean(x.b and y.b))
 
+constant "false",
+    description = "the FALSE/0 boolean constant":
+        VFALSE
+
 builtin "false?",
     alias       = unaliased, 
     description = "returns true if given value is false; otherwise, it returns false",
@@ -135,6 +139,10 @@ builtin "or?",
     """:
         ##########################################################
         stack.push(newBoolean(x.b or y.b))
+
+constant "true",
+    description = "the TRUE/1 boolean constant":
+        VTRUE
 
 builtin "true?",
     alias       = unaliased, 
