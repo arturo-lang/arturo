@@ -71,7 +71,7 @@ const
 #=======================================
 
 template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped =
-    if SP<(static spec.len):
+    if SP<(static spec.len) and spec!=NoArgs:
         panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static spec.len) & " required"
 
     when (static spec.len)>=1 and spec!=NoArgs:
