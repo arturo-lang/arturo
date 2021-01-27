@@ -382,27 +382,27 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "if?"        : addCommand(opIsIf)
                     of "else"       : addCommand(opElse)
 
-                    of "loop"       : addCommand(opLoop)
+                    # of "loop"       : addCommand(opLoop)
 
                     of "do"         : addCommand(opDo)
-                    of "map"        : addCommand(opMap)
-                    of "select"     : addCommand(opSelect)
-                    of "filter"     : addCommand(opFilter)
+                    # of "map"        : addCommand(opMap)
+                    # of "select"     : addCommand(opSelect)
+                    # of "filter"     : addCommand(opFilter)
 
-                    of "size"       : addCommand(opSize)
+                    # of "size"       : addCommand(opSize)
 
                     # of "upper"      : addCommand(opUpper)
                     # of "lower"      : addCommand(opLower)
 
-                    of "get"        : addCommand(opGet)
-                    of "set"        : addCommand(opSet)
+                    # of "get"        : addCommand(opGet)
+                    # of "set"        : addCommand(opSet)
 
                     of "to"         : addCommand(opTo)
 
                     # of "even?"      : addCommand(opEven)
                     # of "odd?"       : addCommand(opOdd)
 
-                    of "range"      : addCommand(opRange)
+                    # of "range"      : addCommand(opRange)
                     # of "sum"        : addCommand(opSum)
                     # of "product"    : addCommand(opProduct)
 
@@ -418,11 +418,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "or"         : addCommand(opBOr)
                     # of "xor"        : addCommand(opBXor)
 
-                    of "first"      : addCommand(opFirst)
-                    of "last"       : addCommand(opLast)
+                    # of "first"      : addCommand(opFirst)
+                    # of "last"       : addCommand(opLast)
 
-                    of "unique"     : addCommand(opUnique)
-                    of "sort"       : addCommand(opSort)
+                    # of "unique"     : addCommand(opUnique)
+                    # of "sort"       : addCommand(opSort)
 
                     # of "inc"        : addCommand(opInc)
                     # of "dec"        : addCommand(opDec)
@@ -437,19 +437,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "capitalize" : addCommand(opCapitalize)
 
-                    of "repeat"     : addCommand(opRepeat)
+                    # of "repeat"     : addCommand(opRepeat)
                     of "while"      : addCommand(opWhile)
 
                     # of "random"     : addCommand(opRandom)
 
-                    of "sample"     : addCommand(opSample)
-                    of "shuffle"    : addCommand(opShuffle)
-                    of "slice"      : addCommand(opSlice)
+                    # of "sample"     : addCommand(opSample)
+                    # of "shuffle"    : addCommand(opShuffle)
+                    # of "slice"      : addCommand(opSlice)
 
                     # of "clear"      : addCommand(opClear)
 
-                    of "all?"       : addCommand(opAll)
-                    of "any?"       : addCommand(opAny)
+                    # of "all?"       : addCommand(opAll)
+                    # of "any?"       : addCommand(opAny)
 
                     # of "read"       : addCommand(opRead)
                     # of "write"      : addCommand(opWrite)
@@ -497,14 +497,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "help"       : addCommand(opHelp)
 
-                    of "empty"      : addCommand(opEmpty)
-                    of "empty?"     : addCommand(opIsEmpty)
+                    # of "empty"      : addCommand(opEmpty)
+                    # of "empty?"     : addCommand(opIsEmpty)
 
-                    of "insert"     : addCommand(opInsert)
-                    of "in?"        : addCommand(opIsIn)
-                    of "index"      : addCommand(opIndex)
-                    of "key?"       : addCommand(opHasKey)
-                    of "reverse"    : addCommand(opReverse)
+                    # of "insert"     : addCommand(opInsert)
+                    # of "in?"        : addCommand(opIsIn)
+                    # of "index"      : addCommand(opIndex)
+                    # of "key?"       : addCommand(opHasKey)
+                    # of "reverse"    : addCommand(opReverse)
 
                     # of "execute"    : addCommand(opExecute)
 
@@ -512,13 +512,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "benchmark"  : addCommand(opBenchmark)
 
-                    of "join"       : addCommand(opJoin)
+                    # of "join"       : addCommand(opJoin)
 
-                    of "max"        : addCommand(opMax)
-                    of "min"        : addCommand(opMin)
+                    # of "max"        : addCommand(opMax)
+                    # of "min"        : addCommand(opMin)
 
-                    of "keys"       : addCommand(opKeys)
-                    of "values"     : addCommand(opValues)
+                    # of "keys"       : addCommand(opKeys)
+                    # of "values"     : addCommand(opValues)
 
                     # of "digest"     : addCommand(opDigest)
 
@@ -535,17 +535,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "color"      : addCommand(opColor)
 
-                    of "take"       : addCommand(opTake)
-                    of "drop"       : addCommand(opDrop)
+                    # of "take"       : addCommand(opTake)
+                    # of "drop"       : addCommand(opDrop)
 
-                    of "append"     : addCommand(opAppend)
-                    of "remove"     : addCommand(opRemove)
+                    # of "append"     : addCommand(opAppend)
+                    # of "remove"     : addCommand(opRemove)
 
-                    of "combine"    : addCommand(opCombine)
+                    # of "combine"    : addCommand(opCombine)
 
                     # of "list"       : addCommand(opList)
 
-                    of "fold"       : addCommand(opFold)
+                    # of "fold"       : addCommand(opFold)
                     # of "sqrt"       : addCommand(opSqrt)
 
                     # of "serve"      : addCommand(opServe)
@@ -577,12 +577,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "gcd"        : addCommand(opGcd)
                     # of "prime?"     : addCommand(opPrime)
 
-                    of "permutate"  : addCommand(opPermutate)
+                    # of "permutate"  : addCommand(opPermutate)
 
                     # of "whitespace?": addCommand(opIsWhitespace)
                     # of "numeric?"   : addCommand(opIsNumeric)
 
-                    of "factors"    : addCommand(opFactors)
+                    # of "factors"    : addCommand(opFactors)
 
                     # of "match"      : addCommand(opMatch)
 
@@ -590,7 +590,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "webview"    : addCommand(opWebview)
 
-                    of "flatten"    : addCommand(opFlatten)
+                    # of "flatten"    : addCommand(opFlatten)
 
                     # of "levenshtein": addExtraCommand(opLevenshtein)
 
@@ -621,7 +621,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "hash"       : addExtraCommand(opGetHash)
 
-                    of "extend"     : addExtraCommand(opExtend)
+                    # of "extend"     : addExtraCommand(opExtend)
 
                     # of "true?"      : addExtraCommand(opIsTrue)
                     # of "false?"     : addExtraCommand(opIsFalse)
@@ -656,7 +656,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "pi"         : addExtraCommand(opPi)
 
-                    of "contains?"  : addExtraCommand(opIsContains)
+                    # of "contains?"  : addExtraCommand(opIsContains)
 
                     else:
                         if syms.hasKey(node.s) and syms[node.s].kind==Function:

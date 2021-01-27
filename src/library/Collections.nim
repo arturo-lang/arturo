@@ -1417,153 +1417,188 @@ builtin "sort",
                     else:
                         syms[x.s].a.sort(order = sortOrdering)
 
-template Split*(): untyped =
-    # EXAMPLE:
-    # split "hello"                 ; => [`h` `e` `l` `l` `o`]
-    # split.words "hello world"     ; => ["hello" "world"]
-    #
-    # split.every: 2 "helloworld"
-    # ; => ["he" "ll" "ow" "or" "ld"]
-    #
-    # split.at: 4 "helloworld"
-    # ; => ["hell" "oworld"]
-    #
-    # arr: 1..9
-    # split.at:3 'arr
-    # ; => [ [1 2 3 4] [5 6 7 8 9] ]
+builtin "split",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "split collection to components",
+    args        = {
+        "collection"    : {String,Block,Literal}
+    },
+    attrs       = {
+        "words"     : ({Boolean},"split string by whitespace"),
+        "lines"     : ({Boolean},"split string by lines"),
+        "by"        : ({String},"split using given separator"),
+        "regex"     : ({Boolean},"match against a regular expression"),
+        "at"        : ({Integer},"split collection at given position"),
+        "every"     : ({Integer},"split collection every <n> elements")
+    },
+    returns     = {Block,Nothing},
+    example     = """
+        split "hello"                 ; => [`h` `e` `l` `l` `o`]
+        split.words "hello world"     ; => ["hello" "world"]
+        
+        split.every: 2 "helloworld"
+        ; => ["he" "ll" "ow" "or" "ld"]
+        
+        split.at: 4 "helloworld"
+        ; => ["hell" "oworld"]
+        
+        arr: 1..9
+        split.at:3 'arr
+        ; => [ [1 2 3 4] [5 6 7 8 9] ]
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            if syms[x.s].kind==String:
+                if (popAttr("words") != VNULL):
+                    syms[x.s] = newStringBlock(strutils.splitWhitespace(syms[x.s].s))
+                elif (popAttr("lines") != VNULL):
+                    syms[x.s] = newStringBlock(syms[x.s].s.splitLines())
+                elif (let aBy = popAttr("by"); aBy != VNULL):
+                    syms[x.s] = newStringBlock(syms[x.s].s.split(aBy.s))
+                elif (let aRegex = popAttr("regex"); aRegex != VNULL):
+                    syms[x.s] = newStringBlock(syms[x.s].s.split(re(aRegex.s)))
+                elif (let aAt = popAttr("at"); aAt != VNULL):
+                    syms[x.s] = newStringBlock(@[syms[x.s].s[0..aAt.i-1], syms[x.s].s[aAt.i..^1]])
+                elif (let aEvery = popAttr("every"); aEvery != VNULL):
+                    var ret: seq[string] = @[]
+                    var length = syms[x.s].s.len
+                    var i = 0
 
-    require(opSplit)
+                    while i<length:
+                        ret.add(syms[x.s].s[i..i+aEvery.i-1])
+                        i += aEvery.i
 
-    if x.kind==Literal:
-        if syms[x.s].kind==String:
+                    syms[x.s] = newStringBlock(ret)
+                else:
+                    syms[x.s] = newStringBlock(syms[x.s].s.map(proc (x:char):string = $(x)))
+            else:
+                if (let aAt = popAttr("at"); aAt != VNULL):
+                    syms[x.s] = newBlock(@[newBlock(syms[x.s].a[0..aAt.i]), newBlock(syms[x.s].a[aAt.i..^1])])
+                elif (let aEvery = popAttr("every"); aEvery != VNULL):
+                    var ret: ValueArray = @[]
+                    var length = syms[x.s].a.len
+                    var i = 0
+
+                    while i<length:
+                        ret.add(syms[x.s].a[i..i+aEvery.i-1])
+                        i += aEvery.i
+
+                    syms[x.s] = newBlock(ret)
+                else: discard
+
+        elif x.kind==String:
             if (popAttr("words") != VNULL):
-                syms[x.s] = newStringBlock(strutils.splitWhitespace(syms[x.s].s))
+                stack.push(newStringBlock(strutils.splitWhitespace(x.s)))
             elif (popAttr("lines") != VNULL):
-                syms[x.s] = newStringBlock(syms[x.s].s.splitLines())
+                stack.push(newStringBlock(x.s.splitLines()))
             elif (let aBy = popAttr("by"); aBy != VNULL):
-                syms[x.s] = newStringBlock(syms[x.s].s.split(aBy.s))
+                stack.push(newStringBlock(x.s.split(aBy.s)))
             elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                syms[x.s] = newStringBlock(syms[x.s].s.split(re(aRegex.s)))
+                stack.push(newStringBlock(x.s.split(re(aRegex.s))))
             elif (let aAt = popAttr("at"); aAt != VNULL):
-                syms[x.s] = newStringBlock(@[syms[x.s].s[0..aAt.i-1], syms[x.s].s[aAt.i..^1]])
+                stack.push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
             elif (let aEvery = popAttr("every"); aEvery != VNULL):
                 var ret: seq[string] = @[]
-                var length = syms[x.s].s.len
+                var length = x.s.len
                 var i = 0
 
                 while i<length:
-                    ret.add(syms[x.s].s[i..i+aEvery.i-1])
+                    ret.add(x.s[i..i+aEvery.i-1])
                     i += aEvery.i
 
-                syms[x.s] = newStringBlock(ret)
+                stack.push(newStringBlock(ret))
             else:
-                syms[x.s] = newStringBlock(syms[x.s].s.map(proc (x:char):string = $(x)))
+                stack.push(newStringBlock(x.s.map(proc (x:char):string = $(x))))
         else:
             if (let aAt = popAttr("at"); aAt != VNULL):
-                syms[x.s] = newBlock(@[newBlock(syms[x.s].a[0..aAt.i]), newBlock(syms[x.s].a[aAt.i..^1])])
+                stack.push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(x.a[aAt.i..^1])]))
             elif (let aEvery = popAttr("every"); aEvery != VNULL):
                 var ret: ValueArray = @[]
-                var length = syms[x.s].a.len
+                var length = x.a.len
                 var i = 0
 
                 while i<length:
-                    ret.add(syms[x.s].a[i..i+aEvery.i-1])
+                    if i+aEvery.i > length:
+                        ret.add(newBlock(x.a[i..^1]))
+                    else:
+                        ret.add(newBlock(x.a[i..i+aEvery.i-1]))
+
                     i += aEvery.i
 
-                syms[x.s] = newBlock(ret)
-            else: discard
+                stack.push(newBlock(ret))
+            else: stack.push(x)
 
-    elif x.kind==String:
-        if (popAttr("words") != VNULL):
-            stack.push(newStringBlock(strutils.splitWhitespace(x.s)))
-        elif (popAttr("lines") != VNULL):
-            stack.push(newStringBlock(x.s.splitLines()))
-        elif (let aBy = popAttr("by"); aBy != VNULL):
-            stack.push(newStringBlock(x.s.split(aBy.s)))
-        elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-            stack.push(newStringBlock(x.s.split(re(aRegex.s))))
-        elif (let aAt = popAttr("at"); aAt != VNULL):
-            stack.push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
-        elif (let aEvery = popAttr("every"); aEvery != VNULL):
-            var ret: seq[string] = @[]
-            var length = x.s.len
-            var i = 0
 
-            while i<length:
-                ret.add(x.s[i..i+aEvery.i-1])
-                i += aEvery.i
-
-            stack.push(newStringBlock(ret))
+builtin "take",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "keep first <number> of elements from given collection and return the remaining ones",
+    args        = {
+        "collection"    : {String,Block,Literal},
+        "number"        : {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {String,Block,Nothing},
+    example     = """
+        str: take "some text" 5
+        print str                     ; some
+        
+        arr: 1..10
+        take 'arr 3                   ; arr: [1 2 3]
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            if syms[x.s].kind==String:
+                syms[x.s].s = syms[x.s].s[0..y.i-1]
+            elif syms[x.s].kind==Block:
+                syms[x.s].a = syms[x.s].a[0..y.i-1]
         else:
-            stack.push(newStringBlock(x.s.map(proc (x:char):string = $(x))))
-    else:
-        if (let aAt = popAttr("at"); aAt != VNULL):
-            stack.push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(x.a[aAt.i..^1])]))
-        elif (let aEvery = popAttr("every"); aEvery != VNULL):
-            var ret: ValueArray = @[]
-            var length = x.a.len
-            var i = 0
+            if x.kind==String:
+                stack.push(newString(x.s[0..y.i-1]))
+            elif x.kind==Block:
+                stack.push(newBlock(x.a[0..y.i-1]))
 
-            while i<length:
-                if i+aEvery.i > length:
-                    ret.add(newBlock(x.a[i..^1]))
-                else:
-                    ret.add(newBlock(x.a[i..i+aEvery.i-1]))
+builtin "unique",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "get given block without duplicates",
+    args        = {
+        "collection"    : {Block,Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {Block,Nothing},
+    example     = """
+        arr: [1 2 4 1 3 2]
+        print unique arr              ; 1 2 4 3
+        
+        arr: [1 2 4 1 3 2]
+        unique 'arr
+        print arr                     ; 1 2 4 3
+    """:
+        ##########################################################
+        if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
+        else: syms[x.s].a = syms[x.s].a.deduplicate()
 
-                i += aEvery.i
-
-            stack.push(newBlock(ret))
-        else: stack.push(x)
-
-
-template Take*(): untyped =
-    # EXAMPLE:
-    # str: take "some text" 5
-    # print str                     ; some
-    #
-    # arr: 1..10
-    # take 'arr 3                   ; arr: [1 2 3]
-
-    require(opTake)
-
-    if x.kind==Literal:
-        if syms[x.s].kind==String:
-            syms[x.s].s = syms[x.s].s[0..y.i-1]
-        elif syms[x.s].kind==Block:
-            syms[x.s].a = syms[x.s].a[0..y.i-1]
-    else:
-        if x.kind==String:
-            stack.push(newString(x.s[0..y.i-1]))
-        elif x.kind==Block:
-            stack.push(newBlock(x.a[0..y.i-1]))
-
-template Unique*(): untyped = 
-    # EXAMPLE:
-    # arr: [1 2 4 1 3 2]
-    # print unique arr              ; 1 2 4 3
-    #
-    # arr: [1 2 4 1 3 2]
-    # unique 'arr
-    # print arr                     ; 1 2 4 3
-
-    require(opUnique)
-
-    if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
-    else: syms[x.s].a = syms[x.s].a.deduplicate()
-
-template Values*(): untyped = 
-    # EXAMPLE:
-    # user: #[
-    # ____name: "John"
-    # ____surname: "Doe"
-    # ]
-    #
-    # values user
-    # => ["John" "Doe"]
-
-    require(opValues)
-
-    let s = toSeq(x.d.values)
-
-    stack.push(newBlock(s))
+builtin "values",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "get list of values for given dictionary",
+    args        = {
+        "dictionary"    : {Dictionary}
+    },
+    attrs       = NoAttrs,
+    returns     = {Block},
+    example     = """
+        user: #[
+        ____name: "John"
+        ____surname: "Doe"
+        ]
+        
+        values user
+        => ["John" "Doe"]
+    """:
+        ##########################################################
+        let s = toSeq(x.d.values)
+         stack.push(newBlock(s))
         

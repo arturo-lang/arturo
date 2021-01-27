@@ -43,7 +43,6 @@ import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import library/[
-    Collections, 
     Conversion,
     Core, 
     Reflection
@@ -554,28 +553,28 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opIsIf       : Core.IsIf()
             of opElse       : Core.Else()
 
-            of opLoop       : Collections.Loop()
+            of opLoop       : discard #Collections.Loop()
 
             of opDo         : Core.Do() 
 
-            of opMap        : Collections.Map()
-            of opSelect     : Collections.Select()
-            of opFilter     : Collections.Filter()
+            of opMap        : discard #Collections.Map()
+            of opSelect     : discard #Collections.Select()
+            of opFilter     : discard #Collections.Filter()
 
-            of opSize: Collections.Size()
+            of opSize: discard #Collections.Size()
 
             of opUpper: discard #Strings.Upper()
             of opLower: discard #Strings.Lower()
 
-            of opGet: Collections.Get()  
-            of opSet: Collections.Set()
+            of opGet: discard #Collections.Get()  
+            of opSet: discard #Collections.Set()
 
             of opTo: Conversion.To()
             
             of opEven: discard #Numbers.IsEven()
             of opOdd: discard #Numbers.IsOdd()
 
-            of opRange: Collections.Range()
+            of opRange: discard #Collections.Range()
 
             of opSum: discard #Numbers.Sum()
             of opProduct: discard #Numbers.Product()
@@ -590,11 +589,11 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opBOr: discard #Binary.Or()
             of opBXor: discard #Binary.Xor()
 
-            of opFirst: Collections.First()
-            of opLast: Collections.Last()
+            of opFirst: discard #Collections.First()
+            of opLast: discard #Collections.Last()
             
-            of opUnique: Collections.Unique()
-            of opSort: Collections.Sort()
+            of opUnique: discard #Collections.Unique()
+            of opSort: discard #Collections.Sort()
 
             of opInc: discard #Arithmetic.Inc()
             of opDec: discard #Arithmetic.Dec()
@@ -609,19 +608,19 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opCapitalize: discard #Strings.Capitalize()
 
-            of opRepeat: Collections.Repeat()
+            of opRepeat: discard #Collections.Repeat()
             of opWhile: Core.While()
 
             of opRandom: discard #Numbers.Random()
 
-            of opSample: Collections.Sample()
-            of opShuffle: Collections.Shuffle()
-            of opSlice: Collections.Slice()
+            of opSample: discard #Collections.Sample()
+            of opShuffle: discard #Collections.Shuffle()
+            of opSlice: discard #Collections.Slice()
 
             of opClear: discard #Core.Clear()
 
-            of opAll: Collections.IsAll()
-            of opAny: Collections.IsAny()
+            of opAll: discard #Collections.IsAll()
+            of opAny: discard #Collections.IsAny()
 
             of opRead: discard #Files.Read()
             of opWrite: discard #Files.Write()
@@ -651,7 +650,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opPad: discard #Strings.Pad()
             of opReplace: discard #Strings.Replace()
             of opStrip: discard #Strings.Strip()
-            of opSplit: Collections.Split()
+            of opSplit: discard #Collections.Split()
             of opPrefix: discard #Strings.Prefix()
             of opHasPrefix: discard #Strings.HasPrefix()
             of opSuffix: discard #Strings.Suffix()
@@ -667,14 +666,14 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opHelp: Reflection.Help()
 
-            of opEmpty: Collections.Empty()
-            of opIsEmpty: Collections.IsEmpty()
+            of opEmpty: discard #Collections.Empty()
+            of opIsEmpty: discard #Collections.IsEmpty()
 
-            of opInsert: Collections.Insert()
-            of opIsIn: Collections.IsIn()
-            of opIndex: Collections.Index()
-            of opHasKey: Collections.HasKey()
-            of opReverse: Collections.Reverse()
+            of opInsert: discard #Collections.Insert()
+            of opIsIn: discard #Collections.IsIn()
+            of opIndex: discard #Collections.Index()
+            of opHasKey: discard #Collections.HasKey()
+            of opReverse: discard #Collections.Reverse()
 
             of opExecute: discard #Shell.Execute()
 
@@ -682,13 +681,13 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opBenchmark: Reflection.Benchmark()
 
-            of opJoin: Collections.Join()
+            of opJoin: discard #Collections.Join()
 
-            of opMax: Collections.Max()
-            of opMin: Collections.Min()
+            of opMax: discard #Collections.Max()
+            of opMin: discard #Collections.Min()
 
-            of opKeys: Collections.Keys()
-            of opValues: Collections.Values()
+            of opKeys: discard #Collections.Keys()
+            of opValues: discard #Collections.Values()
 
             of opDigest: discard #Crypto.Digest()
 
@@ -707,17 +706,17 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opColor: discard #Strings.Color()
 
-            of opTake: Collections.Take()
-            of opDrop: Collections.Drop()
+            of opTake: discard #Collections.Take()
+            of opDrop: discard #Collections.Drop()
 
-            of opAppend: Collections.Append()
-            of opRemove: Collections.Remove()
+            of opAppend: discard #Collections.Append()
+            of opRemove: discard #Collections.Remove()
 
-            of opCombine: Collections.Combine()
+            of opCombine: discard #Collections.Combine()
 
             of opList: discard #Shell.List()
 
-            of opFold: Collections.Fold()
+            of opFold: discard #Collections.Fold()
             of opSqrt: discard #Numbers.Sqrt()
 
             of opServe: discard #Net.Serve()
@@ -749,7 +748,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opGcd: discard #Numbers.Gcd()
             of opPrime: discard #Numbers.IsPrime()
 
-            of opPermutate: Collections.Permutate()
+            of opPermutate: discard #Collections.Permutate()
 
             of opIsWhitespace: discard #Strings.IsWhitespace()
             of opIsNumeric: discard #Strings.IsNumeric()
@@ -762,7 +761,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opWebview: discard #Ui.Webview()
 
-            of opFlatten: Collections.Flatten()
+            of opFlatten: discard #Collections.Flatten()
 
             of opExtra:
                 i += 1
@@ -797,7 +796,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                     of opGetHash: discard #Crypto.GetHash()
 
-                    of opExtend: Collections.Extend()
+                    of opExtend: discard #Collections.Extend()
 
                     of opIsTrue: discard #Logic.IsTrue()
                     of opIsFalse: discard #Logic.IsFalse()
@@ -832,7 +831,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                     of opPi: discard #Numbers.GetPi()
 
-                    of opIsContains: Collections.IsContains()
+                    of opIsContains: discard #Collections.IsContains()
 
                     else: discard
 

@@ -140,6 +140,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
 
     include library/Arithmetic
     include library/Binary
+    include library/Collections
     include library/Comparison
     include library/Crypto
     include library/Database
