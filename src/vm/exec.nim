@@ -47,8 +47,7 @@ import library/[
     Comparison, 
     Conversion,
     Core, 
-    Reflection,
-    Strings
+    Reflection
 ]
 
 import translator/eval, translator/parse
@@ -566,8 +565,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opSize: Collections.Size()
 
-            of opUpper: Strings.Upper()
-            of opLower: Strings.Lower()
+            of opUpper: discard #Strings.Upper()
+            of opLower: discard #Strings.Lower()
 
             of opGet: Collections.Get()  
             of opSet: Collections.Set()
@@ -609,7 +608,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opCase: Core.Case()
             of opWhen: Core.IsWhen()
 
-            of opCapitalize: Strings.Capitalize()
+            of opCapitalize: discard #Strings.Capitalize()
 
             of opRepeat: Collections.Repeat()
             of opWhile: Core.While()
@@ -650,22 +649,22 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opInput: Core.Input()
 
-            of opPad: Strings.Pad()
-            of opReplace: Strings.Replace()
-            of opStrip: Strings.Strip()
+            of opPad: discard #Strings.Pad()
+            of opReplace: discard #Strings.Replace()
+            of opStrip: discard #Strings.Strip()
             of opSplit: Collections.Split()
-            of opPrefix: Strings.Prefix()
-            of opHasPrefix: Strings.HasPrefix()
-            of opSuffix: Strings.Suffix()
-            of opHasSuffix: Strings.HasSuffix()
+            of opPrefix: discard #Strings.Prefix()
+            of opHasPrefix: discard #Strings.HasPrefix()
+            of opSuffix: discard #Strings.Suffix()
+            of opHasSuffix: discard #Strings.HasSuffix()
 
             of opExists: discard #Files.IsExists()
 
             of opTry: Core.Try()
             of opTryE: Core.TryE()
 
-            of opIsUpper: Strings.IsUpper()
-            of opIsLower: Strings.IsLower()
+            of opIsUpper: discard #Strings.IsUpper()
+            of opIsLower: discard #Strings.IsLower()
 
             of opHelp: Reflection.Help()
 
@@ -702,12 +701,12 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opGetAttr: Reflection.GetAttr()
             of opHasAttr: Reflection.HasAttr()
 
-            of opRender: Strings.Render()
+            of opRender: discard #Strings.Render()
 
             of opEncode: discard #Crypto.Encode()
             of opDecode: discard #Crypto.Decode()
 
-            of opColor: Strings.Color()
+            of opColor: discard #Strings.Color()
 
             of opTake: Collections.Take()
             of opDrop: Collections.Drop()
@@ -753,12 +752,12 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opPermutate: Collections.Permutate()
 
-            of opIsWhitespace: Strings.IsWhitespace()
-            of opIsNumeric: Strings.IsNumeric()
+            of opIsWhitespace: discard #Strings.IsWhitespace()
+            of opIsNumeric: discard #Strings.IsNumeric()
 
             of opFactors: discard #Numbers.Factors()
 
-            of opMatch: Strings.Match()
+            of opMatch: discard #Strings.Match()
 
             of opModule: discard #Path.Module()
 
@@ -771,7 +770,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
                 let extra = (OpCode)((int)(it[i])+(int)(opExtra))
 
                 case extra:
-                    of opLevenshtein: Strings.Levenshtein()
+                    of opLevenshtein: discard #Strings.Levenshtein()
                     of opNand: discard #Logic.IsNand()
                     of opNor: discard #Logic.IsNor()
                     of opXnor: discard #Logic.IsXnor()

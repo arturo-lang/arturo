@@ -143,6 +143,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     include library/Numbers
     include library/Path
     include library/Shell
+    include library/Strings
     include library/Ui
 
     initVM()
