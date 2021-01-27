@@ -381,15 +381,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     #     addTerminalValue(false):
                     #         addToCommand((byte)opBPushF)
 
-                    of "add"        : addCommand(opAdd)
-                    of "sub"        : addCommand(opSub)
-                    of "mul"        : addCommand(opMul)
-                    of "div"        : addCommand(opDiv)
-                    of "fdiv"       : addCommand(opFDiv)
-                    of "mod"        : addCommand(opMod)
-                    of "pow"        : addCommand(opPow)
+                    # of "add"        : addCommand(opAdd)
+                    # of "sub"        : addCommand(opSub)
+                    # of "mul"        : addCommand(opMul)
+                    # of "div"        : addCommand(opDiv)
+                    # of "fdiv"       : addCommand(opFDiv)
+                    # of "mod"        : addCommand(opMod)
+                    # of "pow"        : addCommand(opPow)
 
-                    of "neg"        : addCommand(opNeg)
+                    # of "neg"        : addCommand(opNeg)
 
                     # of "not?"       : addCommand(opNot)
                     # of "and?"       : addCommand(opAnd)
@@ -466,8 +466,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "unique"     : addCommand(opUnique)
                     of "sort"       : addCommand(opSort)
 
-                    of "inc"        : addCommand(opInc)
-                    of "dec"        : addCommand(opDec)
+                    # of "inc"        : addCommand(opInc)
+                    # of "dec"        : addCommand(opDec)
 
                     of "set?"       : addCommand(opIsSet)
 

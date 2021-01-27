@@ -132,6 +132,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
 
     syms = getEnvDictionary()
 
+    include library/Arithmetic
     include library/Binary
     include library/Crypto
     include library/Database
