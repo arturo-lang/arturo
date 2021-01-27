@@ -375,7 +375,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "dictionary" : addCommand(opDictionary)
                     of "function"   : addCommand(opFunction)
 
-                    of "print"      : addCommand(opPrint)
+                    # of "print"      : addCommand(opPrint)
                     of "inspect"    : addCommand(opInspect)
 
                     of "if"         : addCommand(opIf)
@@ -446,7 +446,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "shuffle"    : addCommand(opShuffle)
                     of "slice"      : addCommand(opSlice)
 
-                    of "clear"      : addCommand(opClear)
+                    # of "clear"      : addCommand(opClear)
 
                     of "all?"       : addCommand(opAll)
                     of "any?"       : addCommand(opAny)
@@ -474,7 +474,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "tan"        : addCommand(opTan)
                     # of "tanh"       : addCommand(opTanh)
 
-                    of "input"      : addCommand(opInput)
+                    # of "input"      : addCommand(opInput)
 
                     of "return"     : addCommand(opReturn)
 
@@ -508,7 +508,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "execute"    : addCommand(opExecute)
 
-                    of "prints"     : addCommand(opPrints)
+                    # of "prints"     : addCommand(opPrints)
 
                     of "benchmark"  : addCommand(opBenchmark)
 

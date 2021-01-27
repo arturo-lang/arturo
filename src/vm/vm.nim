@@ -145,6 +145,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     include library/Database
     include library/Dates
     include library/Files
+    include library/Io
     include library/Logic
     include library/Net
     include library/Numbers

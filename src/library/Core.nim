@@ -60,14 +60,6 @@ template Case*():untyped =
     stack.push(x)
     stack.push(newBoolean(false))
 
-template Clear*():untyped = 
-    # EXAMPLE:
-    # clear             ; (clears the screen)
-    require(opClear)
-
-    when not defined(windows):
-        clearScreen()
-
 template Continue*():untyped = 
     require(opContinue)
     
