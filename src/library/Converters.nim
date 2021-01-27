@@ -10,6 +10,50 @@
 # Methods
 #=======================================
 
+builtin "array",
+    alias       = at, 
+    rule        = PrefixPrecedence,
+    description = "create array from given block, by reducing/calculating all internal values",
+    args        = {
+        "source": {String,Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Block},
+    example     = """
+        none: @[]               ; none: []
+        a: @[1 2 3]             ; a: [1 2 3]
+        
+        b: 5
+        c: @[b b+1 b+2]         ; c: [5 6 7]
+        
+        d: @[
+        ____3+1
+        ____print "we are in the block"
+        ____123
+        ____print "yep"
+        ]
+        ; we are in the block
+        ; yep
+        ; => [4 123]
+    """:
+        ##########################################################
+        let stop = SP
+
+        if x.kind==Block:
+            discard execBlock(x)
+        elif x.kind==String:
+            let (_{.inject.}, tp) = getSource(x.s)
+
+            if tp!=TextData:
+                discard execBlock(doParse(x.s, isFile=false), isIsolated=true)
+            else:
+                echo "file does not exist"
+
+        let arr: ValueArray = sTopsFrom(stop)
+        SP = stop
+
+        stack.push(newBlock(arr))
+
 builtin "as",
     alias       = unaliased, 
     rule        = PrefixPrecedence,
@@ -50,6 +94,103 @@ builtin "as",
             stack.push(newBlock(res))
         else:
             stack.push(x)
+
+builtin "dictionary",
+    alias       = sharp, 
+    rule        = PrefixPrecedence,
+    description = "create dictionary from given block or file, by getting all internal symbols",
+    args        = {
+        "source": {String,Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Dictionary},
+    example     = """
+        none: #[]               ; none: []
+        a: #[
+        ____name: "John"
+        ____age: 34
+        ]             
+        ; a: [name: "John", age: 34]
+        
+        d: #[
+        ____name: "John"
+        ____print "we are in the block"
+        ____age: 34
+        ____print "yep"
+        ]
+        ; we are in the block
+        ; yep
+        ; => [name: "John", age: 34]
+    """:
+        ##########################################################
+        var dict: ValueDict
+
+        if x.kind==Block:
+            #dict = execDictionary(x)
+            dict = execBlock(x,dictionary=true)
+        elif x.kind==String:
+            let (src, tp) = getSource(x.s)
+
+            if tp!=TextData:
+                dict = execBlock(doParse(src, isFile=false), dictionary=true, isIsolated=true)
+            else:
+                echo "file does not exist"
+
+        stack.push(newDictionary(dict))
+
+builtin "function",
+    alias       = dollar, 
+    rule        = PrefixPrecedence,
+    description = "create function with given arguments and body",
+    args        = {
+        "arguments" : {Block},
+        "body"      : {Block}
+    },
+    attrs       = {
+        "export": ({Block},"export given symbols to parent"),
+        "pure"  : ({Boolean},"denotes pure function with no access to parent")
+    },
+    returns     = {Function},
+    example     = """
+        f: function [x][ x + 2 ]
+        print f 10                ; 12
+        
+        f: $[x][x+2]
+        print f 10                ; 12
+        
+        multiply: function [x,y][
+        ____x * y
+        ]
+        print multiply 3 5        ; 15
+        
+        publicF: function .export['x] [z][
+        ____print ["z =>" z]
+        ____x: 5
+        ]
+        
+        publicF 10
+        ; z => 10
+        
+        print x
+        ; 5
+        
+        pureF: function.pure [sth][
+        ____print ["sth =>" sth]
+        ____print ["is x set?" set? 'x]
+        ]
+        
+        pureF 23
+        ; sth => 23
+        ; is x set? false
+    """:
+        ##########################################################
+        var exports = VNULL
+        if (let aExport = popAttr("export"); aExport != VNULL):
+            exports = aExport
+
+        let isPure = popAttr("pure")!=VNULL
+
+        stack.push(newFunction(x,y,exports,isPure))
 
 builtin "to",
     alias       = unaliased, 
@@ -202,7 +343,7 @@ builtin "to",
                             showConversionError()
 
                 of Literal, 
-                Word:
+                    Word:
                     case tp:
                         of String: 
                             stack.push newString(y.s)
@@ -241,16 +382,16 @@ builtin "to",
                             showConversionError()
 
                 of Dictionary,
-                Function,
-                Database,
-                Nothing,
-                Any,
-                Inline,
-                Label,
-                Attribute,
-                AttributeLabel,
-                Path,
-                PathLabel,
-                Date,
-                Custom,
-                Binary: discard
+                    Function,
+                    Database,
+                    Nothing,
+                    Any,
+                    Inline,
+                    Label,
+                    Attribute,
+                    AttributeLabel,
+                    Path,
+                    PathLabel,
+                    Date,
+                    Custom,
+                    Binary: discard

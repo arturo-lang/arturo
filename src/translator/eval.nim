@@ -371,9 +371,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "less?"              : addCommand(opLt)
                     # of "lessOrEqual?"       : addCommand(opLe)
 
-                    of "array"      : addCommand(opArray)
-                    of "dictionary" : addCommand(opDictionary)
-                    of "function"   : addCommand(opFunction)
+                    # of "array"      : addCommand(opArray)
+                    # of "dictionary" : addCommand(opDictionary)
+                    # of "function"   : addCommand(opFunction)
 
                     # of "print"      : addCommand(opPrint)
                     of "inspect"    : addCommand(opInspect)
@@ -749,9 +749,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Symbol: 
                 case node.m:
                     #of tilde            : addCommand(opRender)
-                    of at               : addCommand(opArray)
-                    of sharp            : addCommand(opDictionary)
-                    of dollar           : addCommand(opFunction)
+                    # of at               : addCommand(opArray)
+                    # of sharp            : addCommand(opDictionary)
+                    # of dollar           : addCommand(opFunction)
                     of ampersand        : addCommand(opPush)
                     of slashedzero      :
                         addTerminalValue(false):
