@@ -6,662 +6,695 @@
 # @file: library/Collections.nim
 ######################################################
 
-import algorithm, strutils, tables
-
-import nre except toSeq
-
-#=======================================
-# Libraries
-#=======================================
-
-import vm/stack, vm/value
-
-#=======================================
-# Helpers
-#=======================================
-
-proc removeFirst*(str: string, what: string): string =
-    let rng = str.find(what)
-    if rng != -1:
-        result = str[0..rng-1] & str[(rng+what.len)..^1]
-    else:
-        result = str
-
-proc removeFirst*(arr: ValueArray, what: Value): ValueArray =
-    result = @[]
-    var searching = true
-    for v in arr:
-        if searching and v==what:
-            searching = false
-        else:
-            result.add(v)
-
-proc removeAll*(arr: ValueArray, what: Value): ValueArray =
-    result = @[]
-    if what.kind==Block:
-        for v in arr:
-            if not (v in what.a):
-                result.add(v)
-    else:
-        for v in arr:
-            if v!=what:
-                result.add(v)
-
-proc removeByIndex*(arr: ValueArray, index: int): ValueArray =
-    result = @[]
-    for i,v in arr:
-        if i!=index:
-            result.add(v)
-
-proc removeFirst*(dict: ValueDict, what: Value, key: bool): ValueDict =
-    result = initOrderedTable[string,Value]()
-    var searching = true
-    for k,v in pairs(dict):
-        if key:
-            if searching and k==what.s:
-                searching = false
-            else:
-                result[k] = v
-        else:
-            if searching and v==what:
-                searching = false
-            else:
-                result[k] = v
-
-proc removeAll*(dict: ValueDict, what: Value, key: bool): ValueDict =
-    result = initOrderedTable[string,Value]()
-    for k,v in pairs(dict):
-        if key:
-            if k!=what.s:
-                result[k] = v
-        else:
-            if v!=what:
-                result[k] = v
-
-proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
-    var s = @s
-    if s.len == 0: 
-        emit(s)
-        return
- 
-    var rc {.cursor} : proc(np: int)
-    rc = proc(np: int) = 
-
-        if np == 1: 
-            emit(s)
-            return
- 
-        var 
-            np1 = np - 1
-            pp = s.len - np1
- 
-        rc(np1) # recurs prior swaps
- 
-        for i in countDown(pp, 1):
-            swap s[i], s[i-1]
-            rc(np1) # recurs swap 
- 
-        let w = s[0]
-        s[0..<pp] = s[1..pp]
-        s[pp] = w
- 
-    rc(s.len)
-
 #=======================================
 # Methods
 #=======================================
 
-template Append*(): untyped =
-    # EXAMPLE:
-    # append "hell" "o"         ; => "hello"
-    # append [1 2 3] 4          ; => [1 2 3 4]
-    # append [1 2 3] [4 5]      ; => [1 2 3 4 5]
-    #
-    # print "hell" ++ "o!"      ; hello!             
-    # print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
-    #
-    # a: "hell"
-    # append 'a "o"
-    # print a                   ; hello
-    #
-    # b: [1 2 3]
-    # 'b ++ 4
-    # print b                   ; [1 2 3 4]
+builtin "all?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "check if all of collection's item satisfy given condition",
+    args        = {
+        "collection"    : {Block},
+        "params"        : {Literal,Block}
+        "condition"     : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Boolean},
+    example     = """
+    """:
+        ##########################################################
+        var args: ValueArray
 
-    require(opAppend)
+        if y.kind==Literal: args = @[y]
+        else: args = y.a
 
-    if x.kind==Literal:
-        if syms[x.s].kind==String:
-            if y.kind==String:
-                syms[x.s].s &= y.s
-            elif y.kind==Char:
-                syms[x.s].s &= $(y.c)
-        elif syms[x.s].kind==Char:
-            if y.kind==String:
-                syms[x.s] = newString($(syms[x.s].c) & y.s)
-            elif y.kind==Char:
-                syms[x.s] = newString($(syms[x.s].c) & $(y.c))
-        else:
-            if y.kind==Block:
-                for item in y.a:
-                    syms[x.s].a.add(item)
-            else:
-                syms[x.s].a.add(y)
-    else:
-        if x.kind==String:
-            if y.kind==String:
-                stack.push(newString(x.s & y.s))
-            elif y.kind==Char:
-                stack.push(newString(x.s & $(y.c)))  
-        elif x.kind==Char:
-            if y.kind==String:
-                stack.push(newString($(x.c) & y.s))
-            elif y.kind==Char:
-                stack.push(newString($(x.c) & $(y.c)))          
-        else:
-            var ret = newBlock(x.a)
+        let preevaled = doEval(z)
+        var all = true
 
-            if y.kind==Block:
-                for item in y.a:
-                    ret.a.add(item)
-            else:
-                ret.a.add(y)
-                
-            stack.push(ret)
-
-template Combine*(): untyped =
-    # EXAMPLE:
-    # combine ["one" "two" "three"] [1 2 3]
-    # ; => [[1 "one"] [2 "two"] [3 "three"]]
-
-    require(opCombine)
-
-    stack.push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
-
-template Drop*(): untyped =
-    # EXAMPLE:
-    # str: drop "some text" 5
-    # print str                     ; text
-    #
-    # arr: 1..10
-    # drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
-
-    require(opDrop)
-
-    if x.kind==Literal:
-        if syms[x.s].kind==String:
-            syms[x.s].s = syms[x.s].s[y.i..^1]
-        elif syms[x.s].kind==Block:
-            syms[x.s].a = syms[x.s].a[y.i..^1]
-    else:
-        if x.kind==String:
-            stack.push(newString(x.s[y.i..^1]))
-        elif x.kind==Block:
-            stack.push(newBlock(x.a[y.i..^1]))
-
-template Empty*(): untyped =
-    # EXAMPLE:
-    # a: [1 2 3]
-    # empty 'a              ; a: []
-    #
-    # str: "some text"
-    # empty 'str            ; str: ""
-
-    require(opEmpty)
-
-    case syms[x.s].kind:
-        of String: syms[x.s].s = ""
-        of Block: syms[x.s].a = @[]
-        of Dictionary: syms[x.s].d = initOrderedTable[string,Value]()
-        else: discard
-
-template Extend*(): untyped =
-    require(opExtend)
-
-    if x.kind==Literal:
-        for k,v in pairs(y.d):
-            syms[x.s].d[k] = v
-    else:
-        var res = copyValue(x)
-        for k,v in y.d:
-            res.d[k] = v
-
-        stack.push(res)
-
-template Filter*(): untyped =
-    # EXAMPLE:
-    # print filter 1..10 [x][
-    # ____even? x
-    # ]
-    # ; 1 3 5 7 9
-    #
-    # arr: 1..10
-    # filter 'arr 'x -> even? x
-    # print arr
-    # ; 1 3 5 7 9
-
-    require(opFilter)
-
-    var args: ValueArray
-
-    if y.kind==Literal: args = @[y]
-    else: args = y.a
-
-    let preevaled = doEval(z)
-
-    var res: ValueArray = @[]
-
-    if x.kind==Literal:
-        for i,item in syms[x.s].a:
-            stack.push(item)
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-            if not stack.pop().b:
-                res.add(item)
-
-        syms[x.s].a = res
-    else:
         for item in x.a:
             stack.push(item)
             discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-            if not stack.pop().b:
-                res.add(item)
+            let popped = stack.pop()
+            if popped.kind==Boolean and not popped.b:
+                stack.push(newBoolean(false))
+                all = false
+                break
 
-        stack.push(newBlock(res))
-
-template First*(): untyped = 
-    # EXAMPLE:
-    # print first "this is some text"       ; t
-    # print first ["one" "two" "three"]     ; one
-    #
-    # print first.n:2 ["one" "two" "three"] ; one two
-
-    require(opFirst)
-
-    if (let aN = popAttr("n"); aN != VNULL):
-        if x.kind==String: stack.push(newString(x.s[0..aN.i-1]))
-        else: stack.push(newBlock(x.a[0..aN.i-1]))
-    else:
-        if x.kind==String: stack.push(newChar(x.s.runeAt(0)))
-        else: stack.push(x.a[0])
-
-
-template Flatten*(): untyped =
-    # EXAMPLE:
-    # arr: [[1 2 3] [4 5 6]]
-    # print flatten arr
-    # ; 1 2 3 4 5 6
-    # 
-    # arr: [[1 2 3] [4 5 6]]
-    # flatten 'arr
-    # ; arr: [1 2 3 4 5 6]
-
-    require(opFlatten)
-
-    if x.kind==Literal:
-        syms[x.s] = syms[x.s].flattened()
-    else:
-        stack.push(x.flattened())
-
-template Fold*(): untyped =
-    # EXAMPLE:
-    # fold 1..10 [x,y]-> x + y
-    # ; => 55 (1+2+3+4..) 
-    #
-    # fold 1..10 .seed:1 [x,y][ x * y ]
-    # ; => 3628800 (10!) 
-    #
-    # fold 1..3 [x y]-> x - y
-    # ; => -6
-    #
-    # fold.right 1..3 [x y]-> x - y
-    # ; => 2
-
-    require(opFold)
-
-    var args = y.a
-    let preevaled = doEval(z)
-
-    var seed = I0
-    if x.kind==Literal:
-        if syms[x.s].a[0].kind == String:
-            seed = newString("")
-    else:
-        if x.a[0].kind == String:
-            seed = newString("")
-
-    if (let aSeed = popAttr("seed"); aSeed != VNULL):
-        seed = aSeed
-
-    let doRightFold = (popAttr("right")!=VNULL)
-
-    if (x.kind==Literal and syms[x.s].a.len==0):
-        discard
-    elif (x.kind!=Literal and x.a.len==0):
-        stack.push(x)
-    else:
-        if (doRightFold):
-            # right fold
-
-            if x.kind == Literal:
-                var res: Value = seed
-                for i in countdown(syms[x.s].a.len-1,0):
-                    let a = syms[x.s].a[i]
-                    let b = res
-
-                    stack.push(b)
-                    stack.push(a)
-
-                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-
-                    res = stack.pop()
-
-                syms[x.s] = res
-
-            else:
-                var res: Value = seed
-                for i in countdown(x.a.len-1,0):
-                    let a = x.a[i]
-                    let b = res
-
-                    stack.push(b)
-                    stack.push(a)
-
-                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-
-                    res = stack.pop()
-
-                stack.push(res)
-        else:
-            # left fold
-
-            if x.kind == Literal:
-                var res: Value = seed
-                for i in x.a:
-                    let a = res
-                    let b = i
-
-                    stack.push(b)
-                    stack.push(a)
-
-                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-
-                    res = stack.pop()
-
-                syms[x.s] = res
-
-            else:
-                var res: Value = seed
-                for i in x.a:
-                    let a = res
-                    let b = i
-
-                    stack.push(b)
-                    stack.push(a)
-
-                    discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-
-                    res = stack.pop()
-
-                stack.push(res)
-
-template Get*(): untyped =
-    # EXAMPLE:
-    # user: #[
-    # ____name: "John"
-    # ____surname: "Doe"
-    # ]
-    #
-    # print user\name               ; John
-    #
-    # print get user 'surname       ; Doe
-    # print user \ 'username        ; Doe
-    #
-    # arr: ["zero" "one" "two"]
-    #
-    # print arr\1                   ; one
-    #
-    # print get arr 2               ; two
-    # print arr \ 2                 ; two
-    #
-    # str: "Hello world!"
-    #
-    # print str\0                   ; H
-    #
-    # print get str 1               ; e
-    # print str \ 1                 ; e
-
-    require(opGet)
-
-    case x.kind:
-        of Block: stack.push(x.a[y.i])
-        of Dictionary: stack.push(x.d[y.s])
-        of String: stack.push(newChar(x.s.runeAtPos(y.i)))
-        of Date: 
-            stack.push(x.e[y.s])
-        else: discard
-
-template HasKey*(): untyped =
-    # EXAMPLE:
-    # user: #[
-    # ____name: "John"
-    # ____surname: "Doe"
-    # ]
-    #
-    # key? user 'age            ; => false
-    # if key? user 'name [
-    # ____print ["Hello" user\name]
-    # ]
-    # ; Hello John
-
-    require(opHasKey)
-
-    stack.push(newBoolean(x.d.hasKey(y.s)))
-
-template Index*(): untyped =
-    # EXAMPLE:
-    # ind: index "hello" "e"
-    # print ind                 ; 1
-    #
-    # print index [1 2 3] 3     ; 2
-    #
-    # type index "hello" "x"
-    # ; :null
-
-    require(opIndex)
-
-    case x.kind:
-        of String:
-            let indx = x.s.find(y.s)
-            if indx != -1: stack.push(newInteger(indx))
-            else: stack.push(VNULL)
-        of Block:
-            let indx = x.a.find(y)
-            if indx != -1: stack.push(newInteger(indx))
-            else: stack.push(VNULL)
-        of Dictionary:
-            var found = false
-            for k,v in pairs(x.d):
-                if v==y:
-                    stack.push(newString(k))
-                    found=true
-                    break
-
-            if not found:
-                stack.push(VNULL)
-        else: discard
-
-template Insert*(): untyped =
-    # EXAMPLE:
-    # insert [1 2 3 4] 0 "zero"
-    # ; => ["zero" 1 2 3 4]
-    #
-    # print insert "heo" 2 "ll"
-    # ; hello
-    #
-    # dict: #[
-    # ____name: John
-    # ]
-    #
-    # insert 'dict 'name "Jane"
-    # ; dict: [name: "Jane"]
- 
-    require(opInsert)
-
-    if x.kind==Literal:
-        case syms[x.s].kind:
-            of String: syms[x.s].s.insert(z.s, y.i)
-            of Block: syms[x.s].a.insert(z, y.i)
-            of Dictionary:
-                syms[x.s].d[y.s] = z
-            else: discard
-    else:
-        case x.kind:
-            of String: 
-                var copied = x.s
-                copied.insert(z.s, y.i)
-                stack.push(newString(copied))
-            of Block: 
-                var copied = x.a
-                copied.insert(z, y.i)
-                stack.push(newBlock(copied))
-            of Dictionary:
-                var copied = x.d
-                copied[y.s] = z
-                stack.push(newDictionary(copied))
-            else: discard
-
-template IsAll*(): untyped =
-    require(opAll)
-
-    var args: ValueArray
-
-    if y.kind==Literal: args = @[y]
-    else: args = y.a
-
-    let preevaled = doEval(z)
-    var all = true
-
-    for item in x.a:
-        stack.push(item)
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-        let popped = stack.pop()
-        if popped.kind==Boolean and not popped.b:
-            stack.push(newBoolean(false))
-            all = false
-            break
-
-    if all:
-        stack.push(newBoolean(true))
-
-template IsAny*(): untyped =
-    require(opAny)
-
-    var args: ValueArray
-
-    if y.kind==Literal: args = @[y]
-    else: args = y.a
-
-    let preevaled = doEval(z)
-    var one = false
-
-    for item in x.a:
-        stack.push(item)
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
-        let popped = stack.pop()
-        if popped.kind==Boolean and popped.b:
+        if all:
             stack.push(newBoolean(true))
-            one = true
-            break
 
-    if not one:
-        stack.push(newBoolean(false))
+builtin "any?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "check if any of collection's items satisfy given condition",
+    args        = {
+        "collection"    : {Block},
+        "params"        : {Literal,Block}
+        "condition"     : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Boolean},
+    example     = """
+    """:
+        ##########################################################
+        var args: ValueArray
 
-template IsContains*(): untyped =
-    # EXAMPLE:
-    # arr: [1 2 3 4]
-    #
-    # contains? arr 5             ; => false
-    # contains? arr 2             ; => true
-    #
-    # user: #[
-    # ____name: "John"
-    # ____surname: "Doe"
-    # ]
-    #
-    # contains? dict "John"       ; => true
-    # contains? dict "Paul"       ; => false
-    #
-    # contains? keys dict "name"  ; => true
-    #
-    # contains? "hello" "x"       ; => false
+        if y.kind==Literal: args = @[y]
+        else: args = y.a
 
-    require(opIsContains)
+        let preevaled = doEval(z)
+        var one = false
 
-    case x.kind:
-        of String:
-            if (popAttr("regex") != VNULL):
-                stack.push(newBoolean(nre.contains(x.s, re(y.s))))
+        for item in x.a:
+            stack.push(item)
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+            let popped = stack.pop()
+            if popped.kind==Boolean and popped.b:
+                stack.push(newBoolean(true))
+                one = true
+                break
+
+        if not one:
+            stack.push(newBoolean(false))
+
+builtin "append",
+    alias       = doubleplus, 
+    rule        = InfixPrecedence,
+    description = "append value to given collection",
+    args        = {
+        "collection"    : {String,Char,Block,Literal},
+        "value"         : {Any}
+    },
+    attrs       = NoAttrs,
+    returns     = {String,Block,Nothing},
+    example     = """
+        append "hell" "o"         ; => "hello"
+        append [1 2 3] 4          ; => [1 2 3 4]
+        append [1 2 3] [4 5]      ; => [1 2 3 4 5]
+        
+        print "hell" ++ "o!"      ; hello!             
+        print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
+        
+        a: "hell"
+        append 'a "o"
+        print a                   ; hello
+        
+        b: [1 2 3]
+        'b ++ 4
+        print b                   ; [1 2 3 4]
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            if syms[x.s].kind==String:
+                if y.kind==String:
+                    syms[x.s].s &= y.s
+                elif y.kind==Char:
+                    syms[x.s].s &= $(y.c)
+            elif syms[x.s].kind==Char:
+                if y.kind==String:
+                    syms[x.s] = newString($(syms[x.s].c) & y.s)
+                elif y.kind==Char:
+                    syms[x.s] = newString($(syms[x.s].c) & $(y.c))
             else:
-                stack.push(newBoolean(y.s in x.s))
-        of Block:
-           stack.push(newBoolean(y in x.a))
-        of Dictionary: 
-            let values = toSeq(x.d.values)
-            stack.push(newBoolean(y in values))
+                if y.kind==Block:
+                    for item in y.a:
+                        syms[x.s].a.add(item)
+                else:
+                    syms[x.s].a.add(y)
         else:
-            discard
-
-template IsEmpty*(): untyped =
-    # EXAMPLE:
-    # empty? ""             ; => true
-    # empty? []             ; => true
-    # empty? #[]            ; => true
-    #
-    # empty [1 "two" 3]     ; => false
-
-    require(opIsEmpty)    
-
-    case x.kind:
-        of Null: stack.push(VTRUE)
-        of String: stack.push(newBoolean(x.s==""))
-        of Block: stack.push(newBoolean(x.a.len==0))
-        of Dictionary: stack.push(newBoolean(x.d.len==0))
-        else: discard
-
-template IsIn*(): untyped =
-    # EXAMPLE:
-    # arr: [1 2 3 4]
-    #
-    # in? 5 arr             ; => false
-    # in? 2 arr             ; => true
-    #
-    # user: #[
-    # ____name: "John"
-    # ____surname: "Doe"
-    # ]
-    #
-    # in? "John" dict       ; => true
-    # in? "Paul" dict       ; => false
-    #
-    # in? "name" keys dict  ; => true
-    #
-    # in? "x" "hello"       ; => false
-
-    require(opIsIn)
-
-    case y.kind:
-        of String:
-            if (popAttr("regex") != VNULL):
-                stack.push(newBoolean(nre.contains(y.s, re(x.s))))
+            if x.kind==String:
+                if y.kind==String:
+                    stack.push(newString(x.s & y.s))
+                elif y.kind==Char:
+                    stack.push(newString(x.s & $(y.c)))  
+            elif x.kind==Char:
+                if y.kind==String:
+                    stack.push(newString($(x.c) & y.s))
+                elif y.kind==Char:
+                    stack.push(newString($(x.c) & $(y.c)))          
             else:
-                stack.push(newBoolean(x.s in y.s))
-        of Block:
-           stack.push(newBoolean(x in y.a))
-        of Dictionary: 
-            let values = toSeq(y.d.values)
-            stack.push(newBoolean(x in values))
+                var ret = newBlock(x.a)
+
+                if y.kind==Block:
+                    for item in y.a:
+                        ret.a.add(item)
+                else:
+                    ret.a.add(y)
+                    
+                stack.push(ret)
+
+builtin "combine",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "get combination of elements in given collections",
+    args        = {
+        "collectionA"   : {Block},
+        "collectionB"   : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Block},
+    example     = """
+        combine ["one" "two" "three"] [1 2 3]
+        ; => [[1 "one"] [2 "two"] [3 "three"]]
+    """:
+        ##########################################################
+        stack.push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
+
+builtin "contains?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "check if collection contains given value",
+    args        = {
+        "collection"    : {String,Block,Dictionary},
+        "value"         : {Any}
+    },
+    attrs       = {
+        "regex" : ({Boolean},"match against a regular expression")
+    },
+    returns     = {String,Block,Dictionary,Nothing},
+    example     = """
+        arr: [1 2 3 4]
+        
+        contains? arr 5             ; => false
+        contains? arr 2             ; => true
+        
+        user: #[
+        ____name: "John"
+        ____surname: "Doe"
+        ]
+        
+        contains? dict "John"       ; => true
+        contains? dict "Paul"       ; => false
+        
+        contains? keys dict "name"  ; => true
+        
+        contains? "hello" "x"       ; => false
+    """:
+        ##########################################################
+        case x.kind:
+            of String:
+                if (popAttr("regex") != VNULL):
+                    stack.push(newBoolean(nre.contains(x.s, re(y.s))))
+                else:
+                    stack.push(newBoolean(y.s in x.s))
+            of Block:
+            stack.push(newBoolean(y in x.a))
+            of Dictionary: 
+                let values = toSeq(x.d.values)
+                stack.push(newBoolean(y in values))
+            else:
+                discard
+
+builtin "drop",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "drop first <number> of elements from given collection and return the remaining ones",
+    args        = {
+        "collection"    : {String,Block,Literal},
+        "number"        : {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {String,Block,Nothing},
+    example     = """
+        str: drop "some text" 5
+        print str                     ; text
+        
+        arr: 1..10
+        drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            if syms[x.s].kind==String:
+                syms[x.s].s = syms[x.s].s[y.i..^1]
+            elif syms[x.s].kind==Block:
+                syms[x.s].a = syms[x.s].a[y.i..^1]
         else:
+            if x.kind==String:
+                stack.push(newString(x.s[y.i..^1]))
+            elif x.kind==Block:
+                stack.push(newBlock(x.a[y.i..^1]))
+
+builtin "empty",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "empty given collection",
+    args        = {
+        "collection"    : {Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        a: [1 2 3]
+        empty 'a              ; a: []
+        
+        str: "some text"
+        empty 'str            ; str: ""
+    """:
+        ##########################################################
+        case syms[x.s].kind:
+            of String: syms[x.s].s = ""
+            of Block: syms[x.s].a = @[]
+            of Dictionary: syms[x.s].d = initOrderedTable[string,Value]()
+            else: discard
+
+builtin "empty?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "check if given collection is empty",
+    args        = {
+        "collection"    : {String,Block,Dictionary,Null}
+    },
+    attrs       = NoAttrs,
+    returns     = {Boolean},
+    example     = """
+        empty? ""             ; => true
+        empty? []             ; => true
+        empty? #[]            ; => true
+        
+        empty [1 "two" 3]     ; => false
+    """:
+        ##########################################################
+        case x.kind:
+            of Null: stack.push(VTRUE)
+            of String: stack.push(newBoolean(x.s==""))
+            of Block: stack.push(newBoolean(x.a.len==0))
+            of Dictionary: stack.push(newBoolean(x.d.len==0))
+            else: discard
+
+builtin "extend",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "get new dictionary by merging given ones",
+    args        = {
+        "parent"        : {Dictionary},
+        "additional"    : {Dictionary}
+    },
+    attrs       = NoAttrs,
+    returns     = {Dictionary},
+    example     = """
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            for k,v in pairs(y.d):
+                syms[x.s].d[k] = v
+        else:
+            var res = copyValue(x)
+            for k,v in y.d:
+                res.d[k] = v
+
+            stack.push(res)
+
+builtin "filter",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "get collection's items by filtering those that do not fulfil given condition",
+    args        = {
+        "collection"    : {Block,Literal},
+        "params"        : {Literal,Block},
+        "condition"     : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Block,Nothing},
+    example     = """
+        print filter 1..10 [x][
+        ____even? x
+        ]
+        ; 1 3 5 7 9
+        
+        arr: 1..10
+        filter 'arr 'x -> even? x
+        print arr
+        ; 1 3 5 7 9
+    """:
+        ##########################################################
+        var args: ValueArray
+
+        if y.kind==Literal: args = @[y]
+        else: args = y.a
+
+        let preevaled = doEval(z)
+
+        var res: ValueArray = @[]
+
+        if x.kind==Literal:
+            for i,item in syms[x.s].a:
+                stack.push(item)
+                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                if not stack.pop().b:
+                    res.add(item)
+
+            syms[x.s].a = res
+        else:
+            for item in x.a:
+                stack.push(item)
+                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                if not stack.pop().b:
+                    res.add(item)
+
+            stack.push(newBlock(res))
+
+builtin "first",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "return the first item of the given collection",
+    args        = {
+        "collection"    : {String,Block}
+    },
+    attrs       = {
+        "n"     : ({Integer},"get first <n> items")
+    },
+    returns     = {Any},
+    example     = """
+        print first "this is some text"       ; t
+        print first ["one" "two" "three"]     ; one
+        
+        print first.n:2 ["one" "two" "three"] ; one two
+    """:
+        ##########################################################
+        if (let aN = popAttr("n"); aN != VNULL):
+            if x.kind==String: stack.push(newString(x.s[0..aN.i-1]))
+            else: stack.push(newBlock(x.a[0..aN.i-1]))
+        else:
+            if x.kind==String: stack.push(newChar(x.s.runeAt(0)))
+            else: stack.push(x.a[0])
+
+builtin "flatten",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "flatten given collection by eliminating nested blocks",
+    args        = {
+        "collection"    : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Block},
+    example     = """
+        arr: [[1 2 3] [4 5 6]]
+        print flatten arr
+        ; 1 2 3 4 5 6
+        
+        arr: [[1 2 3] [4 5 6]]
+        flatten 'arr
+        ; arr: [1 2 3 4 5 6]
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            syms[x.s] = syms[x.s].flattened()
+        else:
+            stack.push(x.flattened())
+
+builtin "fold",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "flatten given collection by eliminating nested blocks",
+    args        = {
+        "collection"    : {Block,Literal},
+        "params"        : {Literal,Block},
+        "action"        : {Block}
+    },
+    attrs       = {
+        "seed"  : ({Any},"use specific seed value"),
+        "right" : ({Boolean},"perform right folding")
+    },
+    returns     = {Block,Nothing},
+    example     = """
+        fold 1..10 [x,y]-> x + y
+        ; => 55 (1+2+3+4..) 
+        
+        fold 1..10 .seed:1 [x,y][ x * y ]
+        ; => 3628800 (10!) 
+        
+        fold 1..3 [x y]-> x - y
+        ; => -6
+        
+        fold.right 1..3 [x y]-> x - y
+        ; => 2
+    """:
+        ##########################################################
+        var args = y.a
+        let preevaled = doEval(z)
+
+        var seed = I0
+        if x.kind==Literal:
+            if syms[x.s].a[0].kind == String:
+                seed = newString("")
+        else:
+            if x.a[0].kind == String:
+                seed = newString("")
+
+        if (let aSeed = popAttr("seed"); aSeed != VNULL):
+            seed = aSeed
+
+        let doRightFold = (popAttr("right")!=VNULL)
+
+        if (x.kind==Literal and syms[x.s].a.len==0):
             discard
+        elif (x.kind!=Literal and x.a.len==0):
+            stack.push(x)
+        else:
+            if (doRightFold):
+                # right fold
+
+                if x.kind == Literal:
+                    var res: Value = seed
+                    for i in countdown(syms[x.s].a.len-1,0):
+                        let a = syms[x.s].a[i]
+                        let b = res
+
+                        stack.push(b)
+                        stack.push(a)
+
+                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                        res = stack.pop()
+
+                    syms[x.s] = res
+
+                else:
+                    var res: Value = seed
+                    for i in countdown(x.a.len-1,0):
+                        let a = x.a[i]
+                        let b = res
+
+                        stack.push(b)
+                        stack.push(a)
+
+                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                        res = stack.pop()
+
+                    stack.push(res)
+            else:
+                # left fold
+
+                if x.kind == Literal:
+                    var res: Value = seed
+                    for i in x.a:
+                        let a = res
+                        let b = i
+
+                        stack.push(b)
+                        stack.push(a)
+
+                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                        res = stack.pop()
+
+                    syms[x.s] = res
+
+                else:
+                    var res: Value = seed
+                    for i in x.a:
+                        let a = res
+                        let b = i
+
+                        stack.push(b)
+                        stack.push(a)
+
+                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+
+                        res = stack.pop()
+
+                    stack.push(res)
+
+builtin "get",
+    alias       = backslash, 
+    rule        = InfixPrecedence,
+    description = "get collection's item by given index",
+    args        = {
+        "collection"    : {String,Block,Dictionary,Date},
+        "index"         : {Integer,String,Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {Any},
+    example     = """
+        user: #[
+        ____name: "John"
+        ____surname: "Doe"
+        ]
+        
+        print user\name               ; John
+        
+        print get user 'surname       ; Doe
+        print user \ 'username        ; Doe
+        
+        arr: ["zero" "one" "two"]
+        
+        print arr\1                   ; one
+        
+        print get arr 2               ; two
+        print arr \ 2                 ; two
+        
+        str: "Hello world!"
+        
+        print str\0                   ; H
+        
+        print get str 1               ; e
+        print str \ 1                 ; e
+    """:
+        ##########################################################
+        case x.kind:
+            of Block: stack.push(x.a[y.i])
+            of Dictionary: stack.push(x.d[y.s])
+            of String: stack.push(newChar(x.s.runeAtPos(y.i)))
+            of Date: 
+                stack.push(x.e[y.s])
+            else: discard
+
+builtin "in?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "check if value exists in given collection",
+    args        = {
+        "value"         : {Any},
+        "collection"    : {String,Block,Dictionary}
+    },
+    attrs       = {
+        "regex" : ({Boolean},"match against a regular expression")
+    },
+    returns     = {String,Block,Dictionary,Nothing},
+    example     = """
+        arr: [1 2 3 4]
+        
+        in? 5 arr             ; => false
+        in? 2 arr             ; => true
+        
+        user: #[
+        ____name: "John"
+        ____surname: "Doe"
+        ]
+        
+        in? "John" dict       ; => true
+        in? "Paul" dict       ; => false
+        
+        in? "name" keys dict  ; => true
+        
+        in? "x" "hello"       ; => false
+    """:
+        ##########################################################
+        case y.kind:
+            of String:
+                if (popAttr("regex") != VNULL):
+                    stack.push(newBoolean(nre.contains(y.s, re(x.s))))
+                else:
+                    stack.push(newBoolean(x.s in y.s))
+            of Block:
+            stack.push(newBoolean(x in y.a))
+            of Dictionary: 
+                let values = toSeq(y.d.values)
+                stack.push(newBoolean(x in values))
+            else:
+                discard
+
+builtin "index",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "return first index of value in given collection",
+    args        = {
+        "collection"    : {String,Block,Dictionary},
+        "value"         : {Any}
+    },
+    attrs       = NoAttrs,
+    returns     = {Integer,String,Null},
+    example     = """
+        ind: index "hello" "e"
+        print ind                 ; 1
+        
+        print index [1 2 3] 3     ; 2
+        
+        type index "hello" "x"
+        ; :null
+    """:
+        ##########################################################
+        case x.kind:
+            of String:
+                let indx = x.s.find(y.s)
+                if indx != -1: stack.push(newInteger(indx))
+                else: stack.push(VNULL)
+            of Block:
+                let indx = x.a.find(y)
+                if indx != -1: stack.push(newInteger(indx))
+                else: stack.push(VNULL)
+            of Dictionary:
+                var found = false
+                for k,v in pairs(x.d):
+                    if v==y:
+                        stack.push(newString(k))
+                        found=true
+                        break
+
+                if not found:
+                    stack.push(VNULL)
+            else: discard
+
+builtin "insert",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "insert value in collection at given index",
+    args        = {
+        "collection"    : {String,Block,Dictionary,Literal},
+        "index"         : {Integer,String}
+        "value"         : {Any}
+    },
+    attrs       = NoAttrs,
+    returns     = {String,Block,Dictionary,Nothing},
+    example     = """
+        insert [1 2 3 4] 0 "zero"
+        ; => ["zero" 1 2 3 4]
+        
+        print insert "heo" 2 "ll"
+        ; hello
+        
+        dict: #[
+        ____name: John
+        ]
+        
+        insert 'dict 'name "Jane"
+        ; dict: [name: "Jane"]
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            case syms[x.s].kind:
+                of String: syms[x.s].s.insert(z.s, y.i)
+                of Block: syms[x.s].a.insert(z, y.i)
+                of Dictionary:
+                    syms[x.s].d[y.s] = z
+                else: discard
+        else:
+            case x.kind:
+                of String: 
+                    var copied = x.s
+                    copied.insert(z.s, y.i)
+                    stack.push(newString(copied))
+                of Block: 
+                    var copied = x.a
+                    copied.insert(z, y.i)
+                    stack.push(newBlock(copied))
+                of Dictionary:
+                    var copied = x.d
+                    copied[y.s] = z
+                    stack.push(newDictionary(copied))
+                else: discard
 
 template Join*(): untyped =
     # EXAMPLE:
@@ -692,6 +725,30 @@ template Join*(): untyped =
         else:
             stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
 
+builtin "key?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "check if dictionary contains given key",
+    args        = {
+        "collection"    : {Dictionary},
+        "key"           : {String,Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {Boolean},
+    example     = """
+        user: #[
+        ____name: "John"
+        ____surname: "Doe"
+        ]
+        
+        key? user 'age            ; => false
+        if key? user 'name [
+        ____print ["Hello" user\name]
+        ]
+        ; Hello John
+    """:
+        ##########################################################
+        stack.push(newBoolean(x.d.hasKey(y.s)))
 
 template Keys*(): untyped =
     # EXAMPLE:
@@ -709,23 +766,31 @@ template Keys*(): untyped =
 
     stack.push(newStringBlock(s))
 
-template Last*(): untyped =
-    # EXAMPLE:
-    # print last "this is some text"       ; t
-    # print last ["one" "two" "three"]     ; three
-    #
-    # print last.n:2 ["one" "two" "three"] ; two three
-
-    require(opLast)
-
-    if (let aN = getAttr("n"); aN != VNULL):
-        if x.kind==String: stack.push(newString(x.s[x.s.len-aN.i..^1]))
-        else: stack.push(newBlock(x.a[x.a.len-aN.i..^1]))
-    else:
-        if x.kind==String: 
-            stack.push(newChar(toRunes(x.s)[^1]))
-        else: stack.push(x.a[x.a.len-1])
-
+builtin "last",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "return the last item of the given collection",
+    args        = {
+        "collection"    : {String,Block}
+    },
+    attrs       = {
+        "n"     : ({Integer},"get last <n> items")
+    },
+    returns     = {Any},
+    example     = """
+        print last "this is some text"       ; t
+        print last ["one" "two" "three"]     ; three
+        
+        print last.n:2 ["one" "two" "three"] ; two three
+    """:
+        ##########################################################
+        if (let aN = getAttr("n"); aN != VNULL):
+            if x.kind==String: stack.push(newString(x.s[x.s.len-aN.i..^1]))
+            else: stack.push(newBlock(x.a[x.a.len-aN.i..^1]))
+        else:
+            if x.kind==String: 
+                stack.push(newChar(toRunes(x.s)[^1]))
+            else: stack.push(x.a[x.a.len-1])
 
 template Loop*(): untyped =
     # EXAMPLE:
@@ -927,61 +992,72 @@ template Range*(): untyped =
 
     stack.push(res)
 
-
-template Remove*(): untyped =
-    # EXAMPLE:
-    # remove "hello" "l"        ; => "heo"
-    # print "hello" -- "l"      ; heo
-    #
-    # str: "mystring"
-    # remove 'str "str"         
-    # print str                 ; mying
-    #
-    # print remove.once "hello" "l"
-    # ; helo
-    #
-    # remove [1 2 3 4] 4        ; => [1 2 3]
-
-    require(opRemove)
-
-    if x.kind==Literal:
-        if syms[x.s].kind==String:
-            if (popAttr("once") != VNULL):
-                syms[x.s] = newString(syms[x.s].s.removeFirst(y.s))
-            else:
-                syms[x.s] = newString(syms[x.s].s.replace(y.s))
-        elif syms[x.s].kind==Block: 
-            if (popAttr("once") != VNULL):
-                syms[x.s] = newBlock(syms[x.s].a.removeFirst(y))
-            elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                syms[x.s] = newBlock(syms[x.s].a.removeByIndex(aIndex.i))
-            else:
-                syms[x.s] = newBlock(syms[x.s].a.removeAll(y))
-        elif syms[x.s].kind==Dictionary:
-            let key = (popAttr("key") != VNULL)
-            if (popAttr("once") != VNULL):
-                syms[x.s] = newDictionary(syms[x.s].d.removeFirst(y, key))
-            else:
-                syms[x.s] = newDictionary(syms[x.s].d.removeAll(y, key))
-    else:
-        if x.kind==String:
-            if (popAttr("once") != VNULL):
-                stack.push(newString(x.s.removeFirst(y.s)))
-            else:
-                stack.push(newString(x.s.replace(y.s)))
-        elif x.kind==Block: 
-            if (popAttr("once") != VNULL):
-                stack.push(newBlock(x.a.removeFirst(y)))
-            elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                stack.push(newBlock(x.a.removeByIndex(aIndex.i)))
-            else:
-                stack.push(newBlock(x.a.removeAll(y)))
-        elif x.kind==Dictionary:
-            let key = (popAttr("key") != VNULL)
-            if (popAttr("once") != VNULL):
-                stack.push(newDictionary(x.d.removeFirst(y, key)))
-            else:
-                stack.push(newDictionary(x.d.removeAll(y, key)))
+builtin "remove",
+    alias       = doubleminus, 
+    rule        = InfixPrecedence,
+    description = "remove value from given collection",
+    args        = {
+        "collection"    : {String,Block,Dictionary,Literal},
+        "value"         : {Any}
+    },
+    attrs       = {
+        "key"   : ({Boolean},"remove dictionary key"),
+        "once"  : ({Boolean},"remove only first occurence"),
+        "index" : ({Integer},"remove specific index")
+    },
+    returns     = {String,Block,Dictionary,Nothing},
+    example     = """
+        remove "hello" "l"        ; => "heo"
+        print "hello" -- "l"      ; heo
+        
+        str: "mystring"
+        remove 'str "str"         
+        print str                 ; mying
+        
+        print remove.once "hello" "l"
+        ; helo
+        
+        remove [1 2 3 4] 4        ; => [1 2 3]
+    """:
+        ##########################################################
+        if x.kind==Literal:
+            if syms[x.s].kind==String:
+                if (popAttr("once") != VNULL):
+                    syms[x.s] = newString(syms[x.s].s.removeFirst(y.s))
+                else:
+                    syms[x.s] = newString(syms[x.s].s.replace(y.s))
+            elif syms[x.s].kind==Block: 
+                if (popAttr("once") != VNULL):
+                    syms[x.s] = newBlock(syms[x.s].a.removeFirst(y))
+                elif (let aIndex = popAttr("index"); aIndex != VNULL):
+                    syms[x.s] = newBlock(syms[x.s].a.removeByIndex(aIndex.i))
+                else:
+                    syms[x.s] = newBlock(syms[x.s].a.removeAll(y))
+            elif syms[x.s].kind==Dictionary:
+                let key = (popAttr("key") != VNULL)
+                if (popAttr("once") != VNULL):
+                    syms[x.s] = newDictionary(syms[x.s].d.removeFirst(y, key))
+                else:
+                    syms[x.s] = newDictionary(syms[x.s].d.removeAll(y, key))
+        else:
+            if x.kind==String:
+                if (popAttr("once") != VNULL):
+                    stack.push(newString(x.s.removeFirst(y.s)))
+                else:
+                    stack.push(newString(x.s.replace(y.s)))
+            elif x.kind==Block: 
+                if (popAttr("once") != VNULL):
+                    stack.push(newBlock(x.a.removeFirst(y)))
+                elif (let aIndex = popAttr("index"); aIndex != VNULL):
+                    stack.push(newBlock(x.a.removeByIndex(aIndex.i)))
+                else:
+                    stack.push(newBlock(x.a.removeAll(y)))
+            elif x.kind==Dictionary:
+                let key = (popAttr("key") != VNULL)
+                if (popAttr("once") != VNULL):
+                    stack.push(newDictionary(x.d.removeFirst(y, key)))
+                else:
+                    stack.push(newDictionary(x.d.removeAll(y, key)))
 
 template Repeat*():untyped =
     # EXAMPLE:
