@@ -406,12 +406,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "push"       : addCommand(opPush)
 
-                    of "equal?"             : addCommand(opEq)
-                    of "notEqual?"          : addCommand(opNe)
-                    of "greater?"           : addCommand(opGt)
-                    of "greaterOrEqual?"    : addCommand(opGe)
-                    of "less?"              : addCommand(opLt)
-                    of "lessOrEqual?"       : addCommand(opLe)
+                    # of "equal?"             : addCommand(opEq)
+                    # of "notEqual?"          : addCommand(opNe)
+                    # of "greater?"           : addCommand(opGt)
+                    # of "greaterOrEqual?"    : addCommand(opGe)
+                    # of "less?"              : addCommand(opLt)
+                    # of "lessOrEqual?"       : addCommand(opLe)
 
                     of "array"      : addCommand(opArray)
                     of "dictionary" : addCommand(opDictionary)
@@ -870,14 +870,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     else:
                         let symalias = node.m
                         if aliases.hasKey(symalias):
-                            let symfunc = syms[aliases[symalias].s]
+                            let symfunc = syms[aliases[symalias].name.s]
                             echo "found alias: " & $(node)
                             if symfunc.arity!=0:
-                                addConst(consts, aliases[symalias], opCallX)
+                                addConst(consts, aliases[symalias].name, opCallX)
                                 argStack.add(symfunc.arity)
                             else:
                                 addTerminalValue(false):
-                                    addConst(consts, aliases[symalias], opCallX)
+                                    addConst(consts, aliases[symalias].name, opCallX)
                         else:
                             addTerminalValue(false):
                                 addConst(consts, node, opPushX)

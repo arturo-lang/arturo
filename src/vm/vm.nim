@@ -100,16 +100,19 @@ template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped
                 when (static spec.len)>=3:
                     var z {.inject.} = stack.pop()
 
-template builtin*(n: string, alias: SymbolKind, precedence: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    let b = newBuiltin(n, alias, precedence, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
+template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+    let b = newBuiltin(n, alias, rule, static (instantiationInfo().filename).replace(".nim"), description, static args.len, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
         requireArgs(n, args)
         act
     )
     Funcs[n] = static args.len
     syms[n] = b
     when alias != unaliased:
-        aliases[alias] = newWord(n)
-        
+        aliases[alias] = AliasBinding(
+            precedence: rule,
+            name: newWord(n)
+        )
+
 template constant*(n: string, description: string, v: untyped):untyped =
     v.info = description
     syms[n] = (v)
@@ -137,6 +140,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
 
     include library/Arithmetic
     include library/Binary
+    include library/Comparison
     include library/Crypto
     include library/Database
     include library/Dates

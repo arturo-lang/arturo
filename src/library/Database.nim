@@ -12,7 +12,7 @@
 
 builtin "close",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "close given database",
     args        = {
         "database"  : {Database}
@@ -29,7 +29,7 @@ builtin "close",
 
 builtin "query",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "execute command or block of commands in given database and get returned rows",
     args        = {
         "database"  : {Database},
@@ -58,7 +58,7 @@ builtin "query",
 
 builtin "open",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "opens a new database connection and returns database",
     args        = {
         "name"  : {String}

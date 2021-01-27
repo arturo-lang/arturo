@@ -12,7 +12,7 @@
 
 builtin "decode",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "base-64 encode given value",
     args        = {
         "value" : {String,Literal}
@@ -31,7 +31,7 @@ builtin "decode",
 
 builtin "encode",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "base-64 decode given value",
     args        = {
         "value" : {Integer,Literal}
@@ -50,7 +50,7 @@ builtin "encode",
 
 builtin "digest",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get digest for given value (default: MD5)",
     args        = {
         "value" : {String,Literal}
@@ -80,7 +80,7 @@ builtin "digest",
 
 builtin "hash",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get hash for given value",
     args        = {
         "value" : {Any}

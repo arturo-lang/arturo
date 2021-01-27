@@ -12,7 +12,7 @@
 
 builtin "download",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "download file from url to disk",
     args        = {
         "url"   : {String}
@@ -45,7 +45,7 @@ builtin "download",
 
 builtin "mail",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "send mail using given message and configuration",
     args        = {
         "recipient" : {String},
@@ -81,7 +81,7 @@ builtin "mail",
 
 builtin "serve",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "start web server using given routes",
     args        = {
         "routes"    : {Dictionary}

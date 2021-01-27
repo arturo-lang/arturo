@@ -27,7 +27,6 @@ import utils
 type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string,Value]
-    SymbolDict* = OrderedTable[SymbolKind,Value]
 
     Byte = byte
     ByteArray*  = seq[Byte]
@@ -125,6 +124,12 @@ type
         InfixPrecedence
         PrefixPrecedence
         PostfixPrecedence
+
+    AliasBinding* = object
+        precedence*: PrecedenceKind
+        name*:       Value
+        
+    SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
 
     Value* {.acyclic.} = ref object 
         info*: string

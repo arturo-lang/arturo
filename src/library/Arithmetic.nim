@@ -12,7 +12,7 @@
 
 builtin "add",
     alias       = plus, 
-    precedence  = InfixPrecedence,
+    rule        = InfixPrecedence,
     description = "add given values and return result",
     args        = {
         "valueA": {Integer,Floating,Literal},
@@ -33,7 +33,7 @@ builtin "add",
 
 builtin "dec",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "decrease given value by 1",
     args        = {
         "value" : {Integer,Floating,Literal}
@@ -52,7 +52,7 @@ builtin "dec",
     
 builtin "div",
     alias       = slash, 
-    precedence  = InfixPrecedence,
+    rule        = InfixPrecedence,
     description = "perform integer division between given values and return result",
     args        = {
         "valueA": {Integer,Floating,Literal},
@@ -73,7 +73,7 @@ builtin "div",
 
 builtin "fdiv",
     alias       = unaliased, 
-    precedence  = InfixPrecedence,
+    rule        = InfixPrecedence,
     description = "divide given values and return result",
     args        = {
         "valueA": {Integer,Floating,Literal},
@@ -93,7 +93,7 @@ builtin "fdiv",
 
 builtin "inc",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "increase given value by 1",
     args        = {
         "value" : {Integer,Floating,Literal}
@@ -112,7 +112,7 @@ builtin "inc",
 
 builtin "mod",
     alias       = percent, 
-    precedence  = InfixPrecedence,
+    rule        = InfixPrecedence,
     description = "calculate the modulo given values and return result",
     args        = {
         "valueA": {Integer,Literal},
@@ -133,7 +133,7 @@ builtin "mod",
 
 builtin "mul",
     alias       = asterisk, 
-    precedence  = InfixPrecedence,
+    rule        = InfixPrecedence,
     description = "calculate the modulo given values and return result",
     args        = {
         "valueA": {Integer,Floating,Literal},
@@ -154,7 +154,7 @@ builtin "mul",
 
 builtin "neg",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "reverse sign of given value and return it",
     args        = {
         "value" : {Integer,Floating,Literal}
@@ -173,7 +173,7 @@ builtin "neg",
 
 builtin "pow",
     alias       = caret, 
-    precedence  = InfixPrecedence,
+    rule        = InfixPrecedence,
     description = "calculate the power of given values and return result",
     args        = {
         "valueA": {Integer,Floating,Literal},
@@ -194,7 +194,7 @@ builtin "pow",
 
 builtin "sub",
     alias       = minus, 
-    precedence  = InfixPrecedence,
+    rule        = InfixPrecedence,
     description = "subtract given values and return result",
     args        = {
         "valueA": {Integer,Floating,Literal},
