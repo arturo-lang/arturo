@@ -31,6 +31,21 @@ builtin "execute",
         
         stack.push(newString(res[0]))
 
+builtin "exit",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "exit program",
+    args        = NoArgs,
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        exit              ; (terminates the program)
+        
+        exit.with: 3      ; (terminates the program with code 3)
+    """:
+        ##########################################################
+        quit()
+
 builtin "list",
     alias       = unaliased, 
     rule        = PrefixPrecedence,
@@ -71,3 +86,41 @@ builtin "list",
                 stack.push(newStringBlock(toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])))
             else:
                 stack.push(newStringBlock(toSeq(walkDir(x.s)).map((x)=>x[1])))
+
+builtin "panic",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "exit program with error message",
+    args        = {
+        "message"   : {String}
+    },
+    attrs       = {
+        "code"  : ({Integer},"return given exit code")
+    },
+    returns     = {Boolean},
+    example     = """
+    """:
+        ##########################################################
+        vmPanic = true
+        vmError = x.s
+
+        showVMErrors()
+
+        if (let aCode = popAttr("code"); aCode != VNULL):
+            quit(aCode.i)
+        else:
+            quit()    
+
+builtin "pause",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "pause program's execution~for the given amount of milliseconds",
+    args        = {
+        "time"  : {Integer}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+    """:
+        ##########################################################
+        sleep(x.i)
