@@ -121,6 +121,7 @@ type
         MysqlDatabase
 
     Value* {.acyclic.} = ref object 
+        info*: string
         case kind*: ValueKind:
             of Null,
                Nothing,
