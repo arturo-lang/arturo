@@ -12,7 +12,7 @@
 
 builtin "now",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get date/time now",
     args        = NoArgs,
     attrs       = NoAttrs,

@@ -12,7 +12,7 @@
 
 builtin "abs",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get the absolute value for given integer",
     args        = {
         "value" : {Integer}
@@ -31,7 +31,7 @@ builtin "abs",
 
 builtin "acos",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the inverse cosine of given angle",
     args        = {
         "angle" : {Floating}
@@ -45,7 +45,7 @@ builtin "acos",
 
 builtin "acosh",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the inverse hyperbolic cosine of given angle",
     args        = {
         "angle" : {Floating}
@@ -59,7 +59,7 @@ builtin "acosh",
 
 builtin "asin",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the inverse sine of given angle",
     args        = {
         "angle" : {Floating}
@@ -73,7 +73,7 @@ builtin "asin",
 
 builtin "asinh",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the inverse hyperbolic sine of given angle",
     args        = {
         "angle" : {Floating}
@@ -87,7 +87,7 @@ builtin "asinh",
 
 builtin "atan",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the inverse tangent of given angle",
     args        = {
         "angle" : {Floating}
@@ -101,7 +101,7 @@ builtin "atan",
 
 builtin "atanh",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the inverse hyperbolic tangent of given angle",
     args        = {
         "angle" : {Floating}
@@ -115,7 +115,7 @@ builtin "atanh",
 
 builtin "average",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get average from given collection of numbers",
     args        = {
         "collection"    : {Block}
@@ -138,7 +138,7 @@ builtin "average",
 
 builtin "cos",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the cosine of given angle",
     args        = {
         "angle" : {Floating}
@@ -152,7 +152,7 @@ builtin "cos",
 
 builtin "cosh",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the hyperbolic cosine of given angle",
     args        = {
         "angle" : {Floating}
@@ -166,7 +166,7 @@ builtin "cosh",
 
 builtin "csec",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the cosecant of given angle",
     args        = {
         "angle" : {Floating}
@@ -180,7 +180,7 @@ builtin "csec",
 
 builtin "csech",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the hyperbolic cosecant of given angle",
     args        = {
         "angle" : {Floating}
@@ -194,7 +194,7 @@ builtin "csech",
 
 builtin "ctan",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the cotangent of given angle",
     args        = {
         "angle" : {Floating}
@@ -208,7 +208,7 @@ builtin "ctan",
 
 builtin "ctanh",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the hyperbolic cotangent of given angle",
     args        = {
         "angle" : {Floating}
@@ -222,7 +222,7 @@ builtin "ctanh",
 
 builtin "even?",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "check if given number is even",
     args        = {
         "number"    : {Integer}
@@ -240,7 +240,7 @@ builtin "even?",
 
 builtin "factors",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get list of factors for given integer",
     args        = {
         "number"    : {Integer}
@@ -270,7 +270,7 @@ builtin "factors",
 
 builtin "gcd",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate greatest common divisor for given collection of integers",
     args        = {
         "numbers"   : {Block}
@@ -302,7 +302,7 @@ builtin "gcd",
 
 builtin "median",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get median from given collection of numbers",
     args        = {
         "collection"    : {Block}
@@ -330,7 +330,7 @@ builtin "median",
 
 builtin "negative?",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "check if given number is negative",
     args        = {
         "number"    : {Integer,Floating}
@@ -349,7 +349,7 @@ builtin "negative?",
 
 builtin "odd?",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "check if given number is odd",
     args        = {
         "number"    : {Integer}
@@ -371,7 +371,7 @@ constant "pi",
 
 builtin "positive?",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "check if given number is positive",
     args        = {
         "number"    : {Integer}
@@ -390,7 +390,7 @@ builtin "positive?",
     
 builtin "prime?",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "check if given integer is prime",
     args        = {
         "number"    : {Integer}
@@ -417,7 +417,7 @@ builtin "prime?",
 
 builtin "product",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the product of all values in given list",
     args        = {
         "collection"    : {Block}
@@ -441,7 +441,7 @@ builtin "product",
 
 builtin "random",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get a random integer between given limits",
     args        = {
         "lowerLimit"    : {Integer},
@@ -457,7 +457,7 @@ builtin "random",
 
 builtin "sec",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the secant of given angle",
     args        = {
         "angle" : {Floating}
@@ -471,7 +471,7 @@ builtin "sec",
 
 builtin "sech",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the hyperbolic secant of given angle",
     args        = {
         "angle" : {Floating}
@@ -485,7 +485,7 @@ builtin "sech",
 
 builtin "sin",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the sine of given angle",
     args        = {
         "angle" : {Floating}
@@ -499,7 +499,7 @@ builtin "sin",
 
 builtin "sinh",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the hyperbolic sine of given angle",
     args        = {
         "angle" : {Floating}
@@ -513,7 +513,7 @@ builtin "sinh",
 
 builtin "sqrt",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "get square root of given value",
     args        = {
         "value" : {Integer,Floating}
@@ -528,7 +528,7 @@ builtin "sqrt",
 
 builtin "sum",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the sum of all values in given list",
     args        = {
         "collection"    : {Block}
@@ -552,7 +552,7 @@ builtin "sum",
 
 builtin "tan",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the tangent of given angle",
     args        = {
         "angle" : {Floating}
@@ -566,7 +566,7 @@ builtin "tan",
 
 builtin "tanh",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "calculate the hyperbolic tangent of given angle",
     args        = {
         "angle" : {Floating}
@@ -580,7 +580,7 @@ builtin "tanh",
 
 builtin "zero?",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "check if given number is zero",
     args        = {
         "number"    : {Integer,Floating}

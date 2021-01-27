@@ -12,7 +12,7 @@
 
 builtin "webview",
     alias       = unaliased, 
-    precedence  = PrefixPrecedence,
+    rule        = PrefixPrecedence,
     description = "show webview window with given url or html and dictionary of callback functions",
     args        = {
         "content"   : {String,Literal},

@@ -44,7 +44,6 @@ import helpers/xml          as xmlHelper
 
 import library/[
     Collections, 
-    Comparison, 
     Conversion,
     Core, 
     Reflection
@@ -532,12 +531,12 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             # # comparison operations
 
-            of opEq         : Comparison.IsEqual()
-            of opNe         : Comparison.IsNotEqual()
-            of opGt         : Comparison.IsGreater()
-            of opGe         : Comparison.IsGreaterOrEqual()
-            of opLt         : Comparison.IsLess()
-            of opLe         : Comparison.IsLessOrEqual()
+            of opEq         : discard #Comparison.IsEqual()
+            of opNe         : discard #Comparison.IsNotEqual()
+            of opGt         : discard #Comparison.IsGreater()
+            of opGe         : discard #Comparison.IsGreaterOrEqual()
+            of opLt         : discard #Comparison.IsLess()
+            of opLe         : discard #Comparison.IsLessOrEqual()
 
             # # structures
 
