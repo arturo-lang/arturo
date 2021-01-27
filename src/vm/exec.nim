@@ -568,7 +568,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opGet: syms["get"].action() #discard #Collections.Get()  
             of opSet: syms["set"].action() #discard #Collections.Set()
 
-            of opTo: Conversion.To()
+            of opTo: discard #Conversion.To()
             
             of opEven: discard #Numbers.IsEven()
             of opOdd: discard #Numbers.IsOdd()
@@ -742,7 +742,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opAverage: discard #Numbers.Average()
             of opMedian: discard #Numbers.Median()
 
-            of opAs: Conversion.As()
+            of opAs: discard #Conversion.As()
 
             of opGcd: discard #Numbers.Gcd()
             of opPrime: discard #Numbers.IsPrime()

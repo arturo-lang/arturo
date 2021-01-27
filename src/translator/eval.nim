@@ -397,7 +397,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "get"        : addCommand(opGet)
                     # of "set"        : addCommand(opSet)
 
-                    of "to"         : addCommand(opTo)
+                    # of "to"         : addCommand(opTo)
 
                     # of "even?"      : addCommand(opEven)
                     # of "odd?"       : addCommand(opOdd)
@@ -572,7 +572,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "average"    : addCommand(opAverage)
                     # of "median"     : addCommand(opMedian)
 
-                    of "as"         : addCommand(opAs)
+                    # of "as"         : addCommand(opAs)
 
                     # of "gcd"        : addCommand(opGcd)
                     # of "prime?"     : addCommand(opPrime)
