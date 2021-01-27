@@ -48,7 +48,6 @@ import library/[
     Comparison, 
     Conversion,
     Core, 
-    Logic, 
     Reflection,
     Strings
 ]
@@ -499,10 +498,10 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opNeg        : Arithmetic.Neg()
 
-            of opNot        : Logic.IsNot()
-            of opAnd        : Logic.IsAnd()
-            of opOr         : Logic.IsOr()
-            of opXor        : Logic.IsXor()
+            of opNot        : discard #Logic.IsNot()
+            of opAnd        : discard #Logic.IsAnd()
+            of opOr         : discard #Logic.IsOr()
+            of opXor        : discard #Logic.IsXor()
 
             of opShl        : discard #Binary.Shl()
             of opShr        : discard #Binary.Shr()
@@ -774,9 +773,9 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                 case extra:
                     of opLevenshtein: Strings.Levenshtein()
-                    of opNand: Logic.IsNand()
-                    of opNor: Logic.IsNor()
-                    of opXnor: Logic.IsXnor()
+                    of opNand: discard #Logic.IsNand()
+                    of opNor: discard #Logic.IsNor()
+                    of opXnor: discard #Logic.IsXnor()
 
                     of opBNand: discard #Binary.Nand()
                     of opBNor: discard #Binary.Nor()
@@ -803,8 +802,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                     of opExtend: Collections.Extend()
 
-                    of opIsTrue: Logic.IsTrue()
-                    of opIsFalse: Logic.IsFalse()
+                    of opIsTrue: discard #Logic.IsTrue()
+                    of opIsFalse: discard #Logic.IsFalse()
 
                     of opIsNull: Reflection.IsNull()
                     of opIsBoolean: Reflection.IsBoolean()

@@ -391,10 +391,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "neg"        : addCommand(opNeg)
 
-                    of "not?"       : addCommand(opNot)
-                    of "and?"       : addCommand(opAnd)
-                    of "or?"        : addCommand(opOr)
-                    of "xor?"       : addCommand(opXor)
+                    # of "not?"       : addCommand(opNot)
+                    # of "and?"       : addCommand(opAnd)
+                    # of "or?"        : addCommand(opOr)
+                    # of "xor?"       : addCommand(opXor)
 
                     # of "shl"        : addCommand(opShl)
                     # of "shr"        : addCommand(opShr)
@@ -636,9 +636,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "levenshtein": addExtraCommand(opLevenshtein)
 
-                    of "nand?"      : addExtraCommand(opNand)
-                    of "nor?"       : addExtraCommand(opNor)
-                    of "xnor?"      : addExtraCommand(opXnor)
+                    # of "nand?"      : addExtraCommand(opNand)
+                    # of "nor?"       : addExtraCommand(opNor)
+                    # of "xnor?"      : addExtraCommand(opXnor)
 
                     # of "nand"       : addExtraCommand(opBNand)
                     # of "nor"        : addExtraCommand(opBNor)
@@ -665,8 +665,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "extend"     : addExtraCommand(opExtend)
 
-                    of "true?"      : addExtraCommand(opIsTrue)
-                    of "false?"     : addExtraCommand(opIsFalse)
+                    # of "true?"      : addExtraCommand(opIsTrue)
+                    # of "false?"     : addExtraCommand(opIsFalse)
 
                     of "null?"      : addExtraCommand(opIsNull)
                     of "boolean?"   : addExtraCommand(opIsBoolean)
