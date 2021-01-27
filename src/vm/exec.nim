@@ -538,9 +538,9 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             # # structures
 
-            of opArray      : Core.MakeArray()
-            of opDictionary : Core.MakeDictionary()
-            of opFunction   : Core.MakeFunction()
+            of opArray      : discard #Core.MakeArray()
+            of opDictionary : discard #Core.MakeDictionary()
+            of opFunction   : discard #Core.MakeFunction()
 
             # [0x7] #
             # system calls (144 slots)

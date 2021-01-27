@@ -180,18 +180,6 @@ template IsIf*():untyped =
     if x.b: discard execBlock(y)
     stack.push(x)
 
-template Input*():untyped =
-    # EXAMPLE:
-    # name: input "What is your name? "
-    # ; (user enters his name: Bob)
-    #
-    # print ["Hello" name "!"]
-    # ; Hello Bob!
-
-    require(opInput)
-
-    stack.push(newString(readLineFromStdin(x.s)))
-
 template IsWhen*():untyped =
     # EXAMPLE:
     # a: 2
@@ -231,122 +219,6 @@ template Let*():untyped =
     require(opLet)
 
     syms[x.s] = y
-
-template MakeArray*(): untyped = 
-    # EXAMPLE:
-    # none: @[]               ; none: []
-    # a: @[1 2 3]             ; a: [1 2 3]
-    #
-    # b: 5
-    # c: @[b b+1 b+2]         ; c: [5 6 7]
-    #
-    # d: @[
-    # ____3+1
-    # ____print "we are in the block"
-    # ____123
-    # ____print "yep"
-    # ]
-    # ; we are in the block
-    # ; yep
-    # ; => [4 123]
-
-    require(opArray)
-
-    let stop = SP
-
-    if x.kind==Block:
-        discard execBlock(x)
-    elif x.kind==String:
-        let (_{.inject.}, tp) = getSource(x.s)
-
-        if tp!=TextData:
-            discard execBlock(doParse(x.s, isFile=false), isIsolated=true)
-        else:
-            echo "file does not exist"
-
-    let arr: ValueArray = sTopsFrom(stop)
-    SP = stop
-
-    stack.push(newBlock(arr))
-
-template MakeDictionary*(): untyped = 
-    # EXAMPLE:
-    # none: #[]               ; none: []
-    # a: #[
-    # ____name: "John"
-    # ____age: 34
-    # ]             
-    # ; a: [name: "John", age: 34]
-    #
-    # d: #[
-    # ____name: "John"
-    # ____print "we are in the block"
-    # ____age: 34
-    # ____print "yep"
-    # ]
-    # ; we are in the block
-    # ; yep
-    # ; => [name: "John", age: 34]
-
-    require(opDictionary)
-
-    var dict: ValueDict
-
-    if x.kind==Block:
-        #dict = execDictionary(x)
-        dict = execBlock(x,dictionary=true)
-    elif x.kind==String:
-        let (src, tp) = getSource(x.s)
-
-        if tp!=TextData:
-            dict = execBlock(doParse(src, isFile=false), dictionary=true, isIsolated=true)
-        else:
-            echo "file does not exist"
-
-    stack.push(newDictionary(dict))
-
-template MakeFunction*(): untyped = 
-    # EXAMPLE:
-    # f: function [x][ x + 2 ]
-    # print f 10                ; 12
-    #
-    # f: $[x][x+2]
-    # print f 10                ; 12
-    #
-    # multiply: function [x,y][
-    # ____x * y
-    # ]
-    # print multiply 3 5        ; 15
-    #
-    # publicF: function .export['x] [z][
-    # ____print ["z =>" z]
-    # ____x: 5
-    # ]
-    #
-    # publicF 10
-    # ; z => 10
-    #
-    # print x
-    # ; 5
-    #
-    # pureF: function.pure [sth][
-    # ____print ["sth =>" sth]
-    # ____print ["is x set?" set? 'x]
-    # ]
-    #
-    # pureF 23
-    # ; sth => 23
-    # ; is x set? false
-
-    require(opFunction)
-
-    var exports = VNULL
-    if (let aExport = popAttr("export"); aExport != VNULL):
-        exports = aExport
-
-    let isPure = popAttr("pure")!=VNULL
-
-    stack.push(newFunction(x,y,exports,isPure))
 
 template Native*():untyped =
     require(opNative)
@@ -404,66 +276,6 @@ template Pop*():untyped =
                 res.add stack.pop()
                 i+=1
             stack.push(newBlock(res))
-
-template Print*():untyped =
-    # EXAMPLE:
-    # print "Hello world!"          ; Hello world!
-
-    require(opPrint)
-
-    if x.kind==Block:
-        let xblock = doEval(x)
-        let stop = SP
-        discard doExec(xblock, depth+1)
-
-        var res: ValueArray = @[]
-        while SP>stop:
-            res.add(stack.pop())
-
-        for r in res.reversed:
-            stdout.write($(r))
-            stdout.write(" ")
-            # r.print(newLine = false)
-            # stdout.write(" ")
-
-        stdout.write("\n")
-        stdout.flushFile()
-    else:
-        echo $(x)
-        # stdout.write($(x))
-        # stdout.write("\n")
-        # stdout.wr
-        # x.print()
-
-template Prints*():untyped =
-    # EXAMPLE:
-    # prints "Hello "
-    # prints "world"
-    # print "!"             
-    #
-    # ; Hello world!
-
-    require(opPrints)
-
-    if x.kind==Block:
-        let xblock = doEval(x)
-        let stop = SP
-        discard doExec(xblock, depth+1)
-
-        var res: ValueArray = @[]
-        while SP>stop:
-            res.add(stack.pop())
-
-        for r in res.reversed:
-            stdout.write($(r))
-            #r.print(newLine = false)
-            stdout.write(" ")
-
-        stdout.flushFile()
-    else:
-        stdout.write($(x))
-        stdout.flushFile()
-        #x.print(newLine = false)
 
 template Push*():untyped =
     require(opPush, true)
