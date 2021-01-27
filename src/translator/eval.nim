@@ -433,8 +433,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "size"       : addCommand(opSize)
 
-                    of "upper"      : addCommand(opUpper)
-                    of "lower"      : addCommand(opLower)
+                    # of "upper"      : addCommand(opUpper)
+                    # of "lower"      : addCommand(opLower)
 
                     of "get"        : addCommand(opGet)
                     of "set"        : addCommand(opSet)
@@ -477,7 +477,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "case"       : addCommand(opCase)
                     of "when?"      : addCommand(opWhen)
 
-                    of "capitalize" : addCommand(opCapitalize)
+                    # of "capitalize" : addCommand(opCapitalize)
 
                     of "repeat"     : addCommand(opRepeat)
                     of "while"      : addCommand(opWhile)
@@ -520,22 +520,22 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "return"     : addCommand(opReturn)
 
-                    of "pad"        : addCommand(opPad)
-                    of "replace"    : addCommand(opReplace)
-                    of "strip"      : addCommand(opStrip)
-                    of "split"      : addCommand(opSplit)
-                    of "prefix"     : addCommand(opPrefix)
-                    of "prefix?"    : addCommand(opHasPrefix)
-                    of "suffix"     : addCommand(opSuffix)
-                    of "suffix?"    : addCommand(opHasSuffix)
+                    # of "pad"        : addCommand(opPad)
+                    # of "replace"    : addCommand(opReplace)
+                    # of "strip"      : addCommand(opStrip)
+                    # of "split"      : addCommand(opSplit)
+                    # of "prefix"     : addCommand(opPrefix)
+                    # of "prefix?"    : addCommand(opHasPrefix)
+                    # of "suffix"     : addCommand(opSuffix)
+                    # of "suffix?"    : addCommand(opHasSuffix)
 
                     #of "exists?"    : addCommand(opExists)
 
                     of "try"        : addCommand(opTry)
                     of "try?"       : addCommand(opTryE)
 
-                    of "upper?"     : addCommand(opIsUpper)
-                    of "lower?"     : addCommand(opIsLower)
+                    # of "upper?"     : addCommand(opIsUpper)
+                    # of "lower?"     : addCommand(opIsLower)
 
                     of "help"       : addCommand(opHelp)
 
@@ -570,7 +570,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "attribute"          : addCommand(opGetAttr)
                     of "hasAttribute?"      : addCommand(opHasAttr)
 
-                    of "render"     : addCommand(opRender)
+                    # of "render"     : addCommand(opRender)
 
                     # of "encode"     : addCommand(opEncode)
                     # of "decode"     : addCommand(opDecode)
@@ -621,12 +621,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "permutate"  : addCommand(opPermutate)
 
-                    of "whitespace?": addCommand(opIsWhitespace)
-                    of "numeric?"   : addCommand(opIsNumeric)
+                    # of "whitespace?": addCommand(opIsWhitespace)
+                    # of "numeric?"   : addCommand(opIsNumeric)
 
                     of "factors"    : addCommand(opFactors)
 
-                    of "match"      : addCommand(opMatch)
+                    # of "match"      : addCommand(opMatch)
 
                     # of "module"     : addCommand(opModule)
 
@@ -634,7 +634,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "flatten"    : addCommand(opFlatten)
 
-                    of "levenshtein": addExtraCommand(opLevenshtein)
+                    # of "levenshtein": addExtraCommand(opLevenshtein)
 
                     # of "nand?"      : addExtraCommand(opNand)
                     # of "nor?"       : addExtraCommand(opNor)
