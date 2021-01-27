@@ -575,7 +575,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "encode"     : addCommand(opEncode)
                     # of "decode"     : addCommand(opDecode)
 
-                    of "color"      : addCommand(opColor)
+                    # of "color"      : addCommand(opColor)
 
                     of "take"       : addCommand(opTake)
                     of "drop"       : addCommand(opDrop)
