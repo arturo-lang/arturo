@@ -43,7 +43,7 @@ import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import translator/eval, translator/parse
-import vm/env, vm/exec, vm/globals, vm/stack, vm/value
+import vm/env, vm/errors, vm/exec, vm/globals, vm/stack, vm/value
 import version
 
 import utils
@@ -142,11 +142,13 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     include library/Binary
     include library/Collections
     include library/Comparison
+    include library/Converters
     include library/Crypto
     include library/Database
     include library/Dates
     include library/Files
     include library/Io
+    include library/Iterators
     include library/Logic
     include library/Net
     include library/Numbers

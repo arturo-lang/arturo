@@ -90,6 +90,45 @@ builtin "color",
 
         stack.push(newString(pre & x.s & reset))
 
+builtin "join",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "join collection of strings into string",
+    args        = {
+        "collection"    : {Block,Literal}
+    },
+    attrs       = {
+        "with"  : ({String},"use given separator"),
+        "path"  : ({Boolean},"join as path components")
+    },
+    returns     = {String,Nothing},
+    example     = """
+        arr: ["one" "two" "three"]
+        print join arr
+        ; onetwothree
+        
+        print join.with:"," arr
+        ; one,two,three
+        
+        join 'arr
+        ; arr: "onetwothree"
+    """:
+        ##########################################################
+        if (popAttr("path") != VNULL):
+            if x.kind==Literal:
+                syms[x.s] = newString(joinPath(syms[x.s].a.map(proc (v:Value):string = v.s)))
+            else:
+                stack.push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
+        else:
+            var sep = ""
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                sep = aWith.s
+
+            if x.kind==Literal:
+                syms[x.s] = newString(syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
+            else:
+                stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
+
 builtin "levenshtein",
     alias       = unaliased, 
     rule        = PrefixPrecedence,
