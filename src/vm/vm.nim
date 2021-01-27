@@ -107,7 +107,8 @@ template builtin*(n: string, alias: SymbolKind, description: string, args: untyp
     )
     Funcs[n] = static args.len
 
-template constant*(n: string, v: untyped):untyped =
+template constant*(n: string, description: string, v: untyped):untyped =
+    v.info = description
     syms[n] = (v)
 
 #=======================================
