@@ -108,8 +108,8 @@ template builtin*(n: string, alias: SymbolKind, precedence: PrecedenceKind, desc
     Funcs[n] = static args.len
     syms[n] = b
     when alias != unaliased:
-        aliases[alias] = b
-
+        aliases[alias] = newWord(n)
+        
 template constant*(n: string, description: string, v: untyped):untyped =
     v.info = description
     syms[n] = (v)

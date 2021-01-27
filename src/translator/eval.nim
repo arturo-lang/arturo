@@ -790,7 +790,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Symbol: 
                 case node.m:
-                    of tilde            : addCommand(opRender)
+                    #of tilde            : addCommand(opRender)
                     of at               : addCommand(opArray)
                     of sharp            : addCommand(opDictionary)
                     of dollar           : addCommand(opFunction)
@@ -871,8 +871,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                         i += 1
                     else:
-                        addTerminalValue(false):
-                            addConst(consts, node, opPushX)
+                        let symalias = node.m
+                        if aliases.hasKey(symalias):
+                            let symfunc = syms[aliases[symalias].s]
+                            echo "found alias: " & $(node)
+                            if symfunc.arity!=0:
+                                addConst(consts, aliases[symalias], opCallX)
+                                argStack.add(symfunc.arity)
+                            else:
+                                addTerminalValue(false):
+                                    addConst(consts, aliases[symalias], opCallX)
+                        else:
+                            addTerminalValue(false):
+                                addConst(consts, node, opPushX)
 
             of Date : discard
 
