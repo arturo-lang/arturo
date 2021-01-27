@@ -17,243 +17,297 @@ import vm/env, vm/stack, vm/value
 # Methods
 #=======================================
 
-template Break*():untyped = 
-    require(opBreak)
+builtin "break",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "break out of current block or loop",
+    args        = NoArgs,
+    attrs       = NoAttrs,
+    returns     = {Block},
+    example     = """
+    """:
+        ##########################################################
+        vmBreak = true
+        return syms
 
-    vmBreak = true
-    return syms
+builtin "call",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "call function with given list of parameters",
+    args        = {
+        "function"  : {String,Literal,Function},
+        "params"    : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Any},
+    example     = """
+        multiply: function [x y][
+        ____x * y
+        ]
+        
+        call 'multiply [3 5]          ; => 15
+        
+        call $[x][x+2] [5]            ; 7
+    """:
+        ##########################################################
+        var fun: Value
 
-template Call*():untyped =
-    # EXAMPLE:
-    # multiply: function [x y][
-    # ____x * y
-    # ]
-    #
-    # call 'multiply [3 5]          ; => 15
-    #
-    # call $[x][x+2] [5]            ; 7
-
-    require(opCall)
-
-    var fun: Value
-
-    if x.kind==Literal or x.kind==String:
-        fun = syms[x.s]
-    else:
-        fun = x
-
-    for v in y.a.reversed:
-        stack.push(v)
-
-    discard execBlock(fun.main, useArgs=true, args=fun.params.a)
-    
-template Case*():untyped =
-    # EXAMPLE:
-    # a: 2
-    # case [a]
-    # ____when? [<2] -> print "a is less than 2"
-    # ____when? [=2] -> print "a is 2"
-    # ____else       -> print "a is greater than 2"
-
-    require(opCase)
-
-    stack.push(x)
-    stack.push(newBoolean(false))
-
-template Continue*():untyped = 
-    require(opContinue)
-    
-    vmContinue = true
-    return syms
-
-template Do*():untyped =
-    # EXAMPLE:
-    # do "print 123"                ; 123
-    #
-    # do [
-    # ____x: 3
-    # ____print ["x =>" x]          ; x => 3
-    # ]
-    #
-    # do.import [
-    # ____x: 3
-    # ]
-    # print ["x =>" x]              ; x => 3
-    #
-    # print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
-    # ; 233168
-
-    require(opDo)
-
-    var execInParent = (popAttr("import") != VNULL)
-
-    if x.kind==Block:
-        if execInParent:
-            discard execBlock(x, execInParent=true)
-            showVMErrors()
+        if x.kind==Literal or x.kind==String:
+            fun = syms[x.s]
         else:
-            discard execBlock(x)
-    else:
-        let (src, tp) = getSource(x.s)
+            fun = x
 
-        if tp==FileData:
-            addPath(x.s)
+        for v in y.a.reversed:
+            stack.push(v)
 
-        if execInParent:
-            let parsed = doParse(src, isFile=false)
+        discard execBlock(fun.main, useArgs=true, args=fun.params.a)
+    
+builtin "case",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "initiate a case block to check for different cases",
+    args        = {
+        "predicate" : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        a: 2
+        case [a]
+        ____when? [<2] -> print "a is less than 2"
+        ____when? [=2] -> print "a is 2"
+        ____else       -> print "a is greater than 2"
+    """:
+        ##########################################################
+        stack.push(x)
+        stack.push(newBoolean(false))
 
-            if not isNil(parsed):
-                discard execBlock(parsed, execInParent=true)
+builtin "continue",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "immediately continue with next iteration",
+    args        = NoArgs,
+    attrs       = NoAttrs,
+    returns     = {Block},
+    example     = """
+    """:
+        ##########################################################
+        vmContinue = true
+        return syms
+
+builtin "do",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "evaluate and execute given code",
+    args        = {
+        "code"  : {String,Block}
+    },
+    attrs       = {
+        "import": ({Boolean},"execute at root level")
+    },
+    returns     = {Any,Nothing},
+    example     = """
+        do "print 123"                ; 123
+        
+        do [
+        ____x: 3
+        ____print ["x =>" x]          ; x => 3
+        ]
+        
+        do.import [
+        ____x: 3
+        ]
+        print ["x =>" x]              ; x => 3
+        
+        print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
+        ; 233168
+    """:
+        ##########################################################
+        var execInParent = (popAttr("import") != VNULL)
+
+        if x.kind==Block:
+            if execInParent:
+                discard execBlock(x, execInParent=true)
                 showVMErrors()
+            else:
+                discard execBlock(x)
         else:
-            let parsed = doParse(src, isFile=false)
-            if not isNil(parsed):
-                discard execBlock(parsed)
+            let (src, tp) = getSource(x.s)
 
-        if tp==FileData:
-            discard popPath()
+            if tp==FileData:
+                addPath(x.s)
 
-template Else*():untyped =
-    # EXAMPLE:
-    # x: 2
-    # z: 3
-    #
-    # if? x>z [
-    # ____print "x was greater than z"
-    # ]
-    # else [
-    # ____print "nope, x was not greater than z"
-    # ]
+            if execInParent:
+                let parsed = doParse(src, isFile=false)
 
-    require(opElse)
+                if not isNil(parsed):
+                    discard execBlock(parsed, execInParent=true)
+                    showVMErrors()
+            else:
+                let parsed = doParse(src, isFile=false)
+                if not isNil(parsed):
+                    discard execBlock(parsed)
 
-    let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-    if not y.b: discard execBlock(x)
+            if tp==FileData:
+                discard popPath()
 
-template Exit*():untyped =
-    # EXAMPLE:
-    # exit              ; (terminates the program)
-    #
-    # exit.with: 3      ; (terminates the program with code 3)
+builtin "else",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "perform action, if last condition was not true",
+    args        = {
+        "otherwise" : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        x: 2
+        z: 3
+        
+        if? x>z [
+        ____print "x was greater than z"
+        ]
+        else [
+        ____print "nope, x was not greater than z"
+        ]
+    """:
+        ##########################################################
+        let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
+        if not y.b: discard execBlock(x)
 
-    require(opExit)
+builtin "globalize",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "make all symbols within current context global",
+    args        = NoArgs,
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+    """:
+        ##########################################################
+        for k,v in pairs(syms):
+            syms[k] = v
 
-    quit()
+builtin "if",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "perform action, if given condition is true",
+    args        = {
+        "condition" : {Boolean},
+        "action"    : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        x: 2
+        
+        if x=2 -> print "yes, that's right!"
+        ; yes, that's right!
+    """:
+        ##########################################################
+        if x.b: discard execBlock(y)
 
+builtin "if?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "perform action, if given condition is true and return condition result",
+    args        = {
+        "condition" : {Boolean},
+        "action"    : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Boolean},
+    example     = """
+        x: 2
+        
+        result: if? x=2 -> print "yes, that's right!"
+        ; yes, that's right!
+        
+        print result
+        ; true
+        
+        z: 3
+        
+        if? x>z [
+        ____print "x was greater than z"
+        ]
+        else [
+        ____print "nope, x was not greater than z"
+        ]
+    """:
+        ##########################################################
+        if x.b: discard execBlock(y)
+        stack.push(x)
 
-template Globalize*():untyped =
-    require(opGlobalize)
+builtin "let",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "set symbol to given value",
+    args        = {
+        "symbol"    : {String,Literal},
+        "value"     : {Any}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        let 'x 10         ; x: 10
+        print x           ; 10
+    """:
+        ##########################################################
+        syms[x.s] = y
 
-    for k,v in pairs(syms):
-        syms[k] = v
+builtin "new",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "create new value by cloning given one",
+    args        = {
+        "value"     : {Any}
+    },
+    attrs       = NoAttrs,
+    returns     = {Any},
+    example     = """
+    """:
+        ##########################################################
+        stack.push(copyValue(x))
 
-template If*():untyped =
-    # EXAMPLE:
-    # x: 2
-    #
-    # if x=2 -> print "yes, that's right!"
-    # ; yes, that's right!
+builtin "when?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "check if a specific condition is fulfilled and, if so, execute given action",
+    args        = {
+        "condition" : {Boolean},
+        "action"    : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Boolean},
+    example     = """
+        a: 2
+        case [a]
+        ____when? [<2] -> print "a is less than 2"
+        ____when? [=2] -> print "a is 2"
+        ____else       -> print "a is greater than 2"
+    """:
+        ##########################################################
+        let z = pop()
+        if not z.b:
+            let top = stack.sTop()
 
-    require(opIf)
-    if x.b: discard execBlock(y)
+            var newb: Value = newBlock()
+            for old in top.a:
+                newb.a.add(old)
+            for cond in x.a:
+                newb.a.add(cond)
 
-template IsIf*():untyped =
-    # EXAMPLE:
-    # x: 2
-    #
-    # result: if? x=2 -> print "yes, that's right!"
-    # ; yes, that's right!
-    #
-    # print result
-    # ; true
-    #
-    # z: 3
-    #
-    # if? x>z [
-    # ____print "x was greater than z"
-    # ]
-    # else [
-    # ____print "nope, x was not greater than z"
-    # ]
+            discard execBlock(newb)
 
-    require(opIsIf)
-    if x.b: discard execBlock(y)
-    stack.push(x)
-
-template IsWhen*():untyped =
-    # EXAMPLE:
-    # a: 2
-    # case [a]
-    # ____when? [<2] -> print "a is less than 2"
-    # ____when? [=2] -> print "a is 2"
-    # ____else       -> print "a is greater than 2"
-
-    require(opWhen)
-
-    let z = pop()
-    if not z.b:
-        let top = stack.sTop()
-
-        var newb: Value = newBlock()
-        for old in top.a:
-            newb.a.add(old)
-        for cond in x.a:
-            newb.a.add(cond)
-
-        discard execBlock(newb)
-
-        let res = stack.sTop()
-        if res.b: 
-            discard execBlock(y)
-            discard pop()
-            discard pop()
-            push(newBoolean(true))
-    else:
-        push(z)
-
-template Let*():untyped =
-    # EXAMPLE:
-    # let 'x 10         ; x: 10
-    # print x           ; 10
-
-    require(opLet)
-
-    syms[x.s] = y
-
-template Native*():untyped =
-    require(opNative)
-
-    discard
-
-    # echo "Executing native: " & x.s & " with " 
-    # y.a[0].dump()
-
-    # case x.s:
-    #     of "execSqlite":     execSqlite(y.a[0].s)
-    #     else: echo "unrecognized native"
-
-template New*():untyped =
-    require(opNew)
-
-    stack.push(copyValue(x))
-
-template Panic*():untyped =
-    require(opPanic)
-
-    vmPanic = true
-    vmError = x.s
-
-    showVMErrors()
-
-    if (let aCode = popAttr("code"); aCode != VNULL):
-        quit(aCode.i)
-    else:
-        quit()    
-
-template Pause*():untyped = 
-    require(opPause)
-
-    sleep(x.i)
+            let res = stack.sTop()
+            if res.b: 
+                discard execBlock(y)
+                discard pop()
+                discard pop()
+                push(newBoolean(true))
+        else:
+            push(z)
 
 template Pop*():untyped =
     require(opPop)
