@@ -696,7 +696,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of "standalone?": addExtraCommand(opIsStandalone)
 
-                    of "pi"         : addExtraCommand(opPi)
+                    # of "pi"         : addExtraCommand(opPi)
 
                     of "contains?"  : addExtraCommand(opIsContains)
 

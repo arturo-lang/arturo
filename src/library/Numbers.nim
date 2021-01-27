@@ -283,11 +283,6 @@ builtin "gcd",
 
         stack.push(current)
 
-# template GetPi*():untyped =
-#     require(opPi)
-
-#     stack.push(newFloating(PI))
-
 builtin "median",
     alias       = unaliased, 
     description = "get median from given collection of numbers",
@@ -349,6 +344,9 @@ builtin "odd?",
     """:
         ##########################################################
         stack.push(newBoolean(x % I2 == I1))
+
+constant "pi":
+    newFloating(PI)
 
 builtin "positive?",
     alias       = unaliased, 
