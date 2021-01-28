@@ -34,6 +34,7 @@ builtin "and?",
         stack.push(newBoolean(x.b and y.b))
 
 constant "false",
+    alias       = unaliased,
     description = "the FALSE/0 boolean constant":
         VFALSE
 
@@ -147,6 +148,7 @@ builtin "or?",
         stack.push(newBoolean(x.b or y.b))
 
 constant "true",
+    alias       = unaliased,
     description = "the TRUE/1 boolean constant":
         VTRUE
 
