@@ -220,7 +220,6 @@ builtin "attributeLabel?",
         ##########################################################
         stack.push(newBoolean(x.kind==AttributeLabel))
 
-
 builtin "attrs",
     alias       = unaliased, 
     rule        = PrefixPrecedence,
