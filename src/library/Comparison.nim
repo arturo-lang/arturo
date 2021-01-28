@@ -106,7 +106,7 @@ builtin "lessOrEqual?",
         stack.push(newBoolean(x <= y))
             
 builtin "notEqual?",
-    alias       = equalless, 
+    alias       = lessgreater, 
     rule        = InfixPrecedence,
     description = "check if valueA <> valueB (not equal)",
     args        = {
