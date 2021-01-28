@@ -201,265 +201,265 @@ type
 
         opTo            = 0x7F
 
-        opEven          = 0x80
-        opOdd           = 0x81
+        # opEven          = 0x80
+        # opOdd           = 0x81
 
-        opRange         = 0x82
-        opSum           = 0x83
-        opProduct       = 0x84
+        # opRange         = 0x82
+        # opSum           = 0x83
+        # opProduct       = 0x84
 
-        opExit          = 0x85
+        # opExit          = 0x85
 
-        opInfo          = 0x86
+        # opInfo          = 0x86
 
-        opType          = 0x87
-        opIs            = 0x88
+        # opType          = 0x87
+        # opIs            = 0x88
 
-        opBNot          = 0x89
-        opBAnd          = 0x8A
-        opBOr           = 0x8B
-        opBXor          = 0x8C
+        # opBNot          = 0x89
+        # opBAnd          = 0x8A
+        # opBOr           = 0x8B
+        # opBXor          = 0x8C
 
-        opFirst         = 0x8D
-        opLast          = 0x8E
+        # opFirst         = 0x8D
+        # opLast          = 0x8E
 
-        opUnique        = 0x8F
-        opSort          = 0x90
+        # opUnique        = 0x8F
+        # opSort          = 0x90
 
-        opInc           = 0x91
-        opDec           = 0x92
+        # opInc           = 0x91
+        # opDec           = 0x92
 
-        opIsSet         = 0x93
+        # opIsSet         = 0x93
 
-        opSymbols       = 0x94
-        opStack         = 0x95
+        # opSymbols       = 0x94
+        # opStack         = 0x95
 
-        opCase          = 0x96
-        opWhen          = 0x97
+        # opCase          = 0x96
+        # opWhen          = 0x97
 
-        opCapitalize    = 0x98
+        # opCapitalize    = 0x98
 
-        opRepeat        = 0x99
-        opWhile         = 0x9A
+        # opRepeat        = 0x99
+        # opWhile         = 0x9A
 
-        opRandom        = 0x9B
+        # opRandom        = 0x9B
 
-        opSample        = 0x9C
-        opShuffle       = 0x9D
-        opSlice         = 0x9E
+        # opSample        = 0x9C
+        # opShuffle       = 0x9D
+        # opSlice         = 0x9E
 
-        opClear         = 0x9F
+        # opClear         = 0x9F
 
-        opAll           = 0xA0
-        opAny           = 0xA1
+        # opAll           = 0xA0
+        # opAny           = 0xA1
 
-        opRead          = 0xA2
-        opWrite         = 0xA3
+        # opRead          = 0xA2
+        # opWrite         = 0xA3
 
-        opAbs           = 0xA4
-        opAcos          = 0xA5 
-        opAcosh         = 0xA6
-        opAsin          = 0xA7
-        opAsinh         = 0xA8 
-        opAtan          = 0xA9 
-        opAtanh         = 0xAA
-        opCos           = 0xAB
-        opCosh          = 0xAC
-        opCsec          = 0xAD
-        opCsech         = 0xAE
-        opCtan          = 0xAF
-        opCtanh         = 0xB0
-        opSec           = 0xB1
-        opSech          = 0xB2
-        opSin           = 0xB3
-        opSinh          = 0xB4
-        opTan           = 0xB5
-        opTanh          = 0xB6
+        # opAbs           = 0xA4
+        # opAcos          = 0xA5 
+        # opAcosh         = 0xA6
+        # opAsin          = 0xA7
+        # opAsinh         = 0xA8 
+        # opAtan          = 0xA9 
+        # opAtanh         = 0xAA
+        # opCos           = 0xAB
+        # opCosh          = 0xAC
+        # opCsec          = 0xAD
+        # opCsech         = 0xAE
+        # opCtan          = 0xAF
+        # opCtanh         = 0xB0
+        # opSec           = 0xB1
+        # opSech          = 0xB2
+        # opSin           = 0xB3
+        # opSinh          = 0xB4
+        # opTan           = 0xB5
+        # opTanh          = 0xB6
 
-        opInput         = 0xB7
+        # opInput         = 0xB7
 
-        opPad           = 0xB8
-        opReplace       = 0xB9
-        opStrip         = 0xBA
-        opSplit         = 0xBB
-        opPrefix        = 0xBC
-        opHasPrefix     = 0xBD
-        opSuffix        = 0xBE
-        opHasSuffix     = 0xBF
+        # opPad           = 0xB8
+        # opReplace       = 0xB9
+        # opStrip         = 0xBA
+        # opSplit         = 0xBB
+        # opPrefix        = 0xBC
+        # opHasPrefix     = 0xBD
+        # opSuffix        = 0xBE
+        # opHasSuffix     = 0xBF
 
-        opExists        = 0xC0
+        # opExists        = 0xC0
 
-        opTry           = 0xC1
-        opTryE          = 0xC2
+        # opTry           = 0xC1
+        # opTryE          = 0xC2
 
-        opIsUpper       = 0xC3
-        opIsLower       = 0xC4
+        # opIsUpper       = 0xC3
+        # opIsLower       = 0xC4
 
-        opHelp          = 0xC5
+        # opHelp          = 0xC5
 
-        opEmpty         = 0xC6
-        opIsEmpty       = 0xC7
+        # opEmpty         = 0xC6
+        # opIsEmpty       = 0xC7
 
-        opInsert        = 0xC8 
-        opIsIn          = 0xC9
-        opIndex         = 0xCA
-        opHasKey        = 0xCB
-        opReverse       = 0xCC
+        # opInsert        = 0xC8 
+        # opIsIn          = 0xC9
+        # opIndex         = 0xCA
+        # opHasKey        = 0xCB
+        # opReverse       = 0xCC
 
-        opExecute       = 0xCD
+        # opExecute       = 0xCD
 
-        opPrints        = 0xCE
+        # opPrints        = 0xCE
 
-        opBenchmark     = 0xCF
+        # opBenchmark     = 0xCF
 
-        opJoin          = 0xD0
+        # opJoin          = 0xD0
 
-        opMax           = 0xD1
-        opMin           = 0xD2
+        # opMax           = 0xD1
+        # opMin           = 0xD2
 
-        opKeys          = 0xD3
-        opValues        = 0xD4
+        # opKeys          = 0xD3
+        # opValues        = 0xD4
 
-        opDigest        = 0xD5
+        # opDigest        = 0xD5
 
-        opAlias         = 0xD6
+        # opAlias         = 0xD6
 
-        opMail          = 0xD7
-        opDownload      = 0xD8
+        # opMail          = 0xD7
+        # opDownload      = 0xD8
 
-        opGetAttr       = 0xD9
-        opHasAttr       = 0xDA
+        # opGetAttr       = 0xD9
+        # opHasAttr       = 0xDA
 
-        opRender        = 0xDB
+        # opRender        = 0xDB
 
-        opEncode        = 0xDC
-        opDecode        = 0xDD
+        # opEncode        = 0xDC
+        # opDecode        = 0xDD
 
-        opColor         = 0xDE
+        # opColor         = 0xDE
 
-        opTake          = 0xDF
-        opDrop          = 0xE0
+        # opTake          = 0xDF
+        # opDrop          = 0xE0
 
-        opAppend        = 0xE1
-        opRemove        = 0xE2
-        opCombine       = 0xE3
+        # opAppend        = 0xE1
+        # opRemove        = 0xE2
+        # opCombine       = 0xE3
 
-        opList          = 0xE4
+        # opList          = 0xE4
 
-        opFold          = 0xE5 
-        opSqrt          = 0xE6
+        # opFold          = 0xE5 
+        # opSqrt          = 0xE6
 
-        opServe         = 0xE7
+        # opServe         = 0xE7
 
-        opLet           = 0xE8
-        opVar           = 0xE9
+        # opLet           = 0xE8
+        # opVar           = 0xE9
 
-        opNow           = 0xEA
+        # opNow           = 0xEA
 
-        opPause         = 0xEB
+        # opPause         = 0xEB
 
-        opCall          = 0xEC
+        # opCall          = 0xEC
 
-        opNew           = 0xED
+        # opNew           = 0xED
 
-        opGetAttrs      = 0xEE
+        # opGetAttrs      = 0xEE
 
-        opUntil         = 0xEF
+        # opUntil         = 0xEF
         
-        opGlobalize     = 0xF0
+        # opGlobalize     = 0xF0
 
-        opRelative      = 0xF1
+        # opRelative      = 0xF1
 
-        opAverage       = 0xF2
-        opMedian        = 0xF3
+        # opAverage       = 0xF2
+        # opMedian        = 0xF3
 
-        opAs            = 0xF4
+        # opAs            = 0xF4
 
-        opGcd           = 0xF5
-        opPrime         = 0xF6
+        # opGcd           = 0xF5
+        # opPrime         = 0xF6
 
-        opPermutate     = 0xF7
+        # opPermutate     = 0xF7
 
-        opIsWhitespace  = 0xF8
-        opIsNumeric     = 0xF9
+        # opIsWhitespace  = 0xF8
+        # opIsNumeric     = 0xF9
 
-        opFactors       = 0xFA
+        # opFactors       = 0xFA
 
-        opMatch         = 0xFB
+        # opMatch         = 0xFB
 
-        opModule        = 0xFC
+        # opModule        = 0xFC
 
-        opWebview       = 0xFD
+        # opWebview       = 0xFD
 
-        opFlatten       = 0xFE
+        # opFlatten       = 0xFE
 
-        opExtra         = 0xFF
+        # opExtra         = 0xFF
 
-        ######
+        # ######
 
-        opLevenshtein   = 0x100
-        opNand          = 0x101
-        opNor           = 0x102
-        opXnor          = 0x103
-        opBNand         = 0x104
-        opBNor          = 0x105
-        opBXnor         = 0x106
+        # opLevenshtein   = 0x100
+        # opNand          = 0x101
+        # opNor           = 0x102
+        # opXnor          = 0x103
+        # opBNand         = 0x104
+        # opBNor          = 0x105
+        # opBXnor         = 0x106
 
-        opNegative      = 0x107
-        opPositive      = 0x108
-        opZero          = 0x109
+        # opNegative      = 0x107
+        # opPositive      = 0x108
+        # opZero          = 0x109
 
-        opPanic         = 0x10A
+        # opPanic         = 0x10A
 
-        opOpen          = 0x10B
-        opQuery         = 0x10C
-        opClose         = 0x10D
+        # opOpen          = 0x10B
+        # opQuery         = 0x10C
+        # opClose         = 0x10D
 
-        opNative        = 0x10E
+        # opNative        = 0x10E
 
-        opExtract       = 0x10F
+        # opExtract       = 0x10F
 
-        opZip           = 0x110
-        opUnzip         = 0x111
+        # opZip           = 0x110
+        # opUnzip         = 0x111
 
-        opGetHash       = 0x112
+        # opGetHash       = 0x112
 
-        opExtend        = 0x113
+        # opExtend        = 0x113
 
-        opIsTrue        = 0x114
-        opIsFalse       = 0x115
+        # opIsTrue        = 0x114
+        # opIsFalse       = 0x115
 
-        opIsNull        = 0x116
-        opIsBoolean     = 0x117
-        opIsInteger     = 0x118
-        opIsFloating    = 0x119
-        opIsType        = 0x11A
-        opIsChar        = 0x11B
-        opIsString      = 0x11C
-        opIsWord        = 0x11D
-        opIsLiteral     = 0x11E
-        opIsLabel       = 0x11F
-        opIsAttribute        = 0x120
-        opIsAttributeLabel   = 0x121
-        opIsPath        = 0x122
-        opIsPathLabel   = 0x123
-        opIsSymbol      = 0x124
-        opIsDate        = 0x125
-        opIsBinary      = 0x126
-        opIsDictionary  = 0x127
-        opIsFunction    = 0x128
-        opIsInline      = 0x129
-        opIsBlock       = 0x12A
-        opIsDatabase    = 0x12B 
+        # opIsNull        = 0x116
+        # opIsBoolean     = 0x117
+        # opIsInteger     = 0x118
+        # opIsFloating    = 0x119
+        # opIsType        = 0x11A
+        # opIsChar        = 0x11B
+        # opIsString      = 0x11C
+        # opIsWord        = 0x11D
+        # opIsLiteral     = 0x11E
+        # opIsLabel       = 0x11F
+        # opIsAttribute        = 0x120
+        # opIsAttributeLabel   = 0x121
+        # opIsPath        = 0x122
+        # opIsPathLabel   = 0x123
+        # opIsSymbol      = 0x124
+        # opIsDate        = 0x125
+        # opIsBinary      = 0x126
+        # opIsDictionary  = 0x127
+        # opIsFunction    = 0x128
+        # opIsInline      = 0x129
+        # opIsBlock       = 0x12A
+        # opIsDatabase    = 0x12B 
 
-        opBreak         = 0x12C
-        opContinue      = 0x12D
+        # opBreak         = 0x12C
+        # opContinue      = 0x12D
 
-        opIsStandalone  = 0x12E
+        # opIsStandalone  = 0x12E
 
-        opPi            = 0x12F
+        # opPi            = 0x12F
 
-        opIsContains    = 0x130
+        # opIsContains    = 0x130
 
     ParamSpec* = set[ValueKind]
 
@@ -937,1598 +937,1598 @@ const
                                 desc    : "set collection's item at index to given value" ),
 
 
-        opTo        : OpSpec(   name    : "to",      
-                                args    : 2,   
+        # opTo        : OpSpec(   name    : "to",      
+        #                         args    : 2,   
 
-                                an      : "type",        
-                                a       : {Type},      
-                                bn      : "value",       
-                                b       : {Any},      
-                                ret     : {Any},      
-                                desc    : "convert value to given type" ),
+        #                         an      : "type",        
+        #                         a       : {Type},      
+        #                         bn      : "value",       
+        #                         b       : {Any},      
+        #                         ret     : {Any},      
+        #                         desc    : "convert value to given type" ),
 
-        opEven      : OpSpec(   name    : "even?",        
-                                args    : 1,   
+        # opEven      : OpSpec(   name    : "even?",        
+        #                         args    : 1,   
 
-                                an      : "number",      
-                                a       : {Integer},      
-                                ret     : {Boolean},      
-                                desc    : "check if given number is even" ),
+        #                         an      : "number",      
+        #                         a       : {Integer},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given number is even" ),
 
-        opOdd       : OpSpec(   name    : "odd?",      
-                                args    : 1,   
+        # opOdd       : OpSpec(   name    : "odd?",      
+        #                         args    : 1,   
 
-                                an      : "number",      
-                                a       : {Integer},      
-                                ret     : {Boolean},      
-                                desc    : "check if given number is odd" ),
+        #                         an      : "number",      
+        #                         a       : {Integer},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given number is odd" ),
 
-        opRange     : OpSpec(   name    : "range", 
-                                alias   : "..",       
-                                args    : 2,   
+        # opRange     : OpSpec(   name    : "range", 
+        #                         alias   : "..",       
+        #                         args    : 2,   
 
-                                an      : "from",        
-                                a       : {Integer},      
-                                bn      : "to",          
-                                b       : {Integer},
-                                ret     : {Block},     
-                                attrs   :   ".step :integer -> use step between range values", 
-                                desc    : "get list of numbers in given range (inclusive)" ),
+        #                         an      : "from",        
+        #                         a       : {Integer},      
+        #                         bn      : "to",          
+        #                         b       : {Integer},
+        #                         ret     : {Block},     
+        #                         attrs   :   ".step :integer -> use step between range values", 
+        #                         desc    : "get list of numbers in given range (inclusive)" ),
 
-        opSum       : OpSpec(   name    : "sum",          
-                                args    : 1,   
+        # opSum       : OpSpec(   name    : "sum",          
+        #                         args    : 1,   
 
-                                an      : "numbers",      
-                                a       : {Block},      
-                                ret     : {Integer,Floating},   
-                                desc    : "calculate the sum of all values in given list" ),
+        #                         an      : "numbers",      
+        #                         a       : {Block},      
+        #                         ret     : {Integer,Floating},   
+        #                         desc    : "calculate the sum of all values in given list" ),
 
-        opProduct   : OpSpec(   name    : "product",      
-                                args    : 1,   
+        # opProduct   : OpSpec(   name    : "product",      
+        #                         args    : 1,   
 
-                                an      : "numbers",      
-                                a       : {Block},      
-                                ret     : {Integer,Floating},   
-                                desc    : "calculate the product of all values in given list" ),
+        #                         an      : "numbers",      
+        #                         a       : {Block},      
+        #                         ret     : {Integer,Floating},   
+        #                         desc    : "calculate the product of all values in given list" ),
 
-        opExit      : OpSpec(   name    : "exit",      
-                                args    : 0,   
+        # opExit      : OpSpec(   name    : "exit",      
+        #                         args    : 0,   
       
-                                ret     : {Null},    
-                                desc    : "exit program" ),
+        #                         ret     : {Null},    
+        #                         desc    : "exit program" ),
 
-        opInfo      : OpSpec(   name    : "info",      
-                                args    : 1,   
+        # opInfo      : OpSpec(   name    : "info",      
+        #                         args    : 1,   
 
-                                an      : "symbol",      
-                                a       : {String,Literal},      
-                                ret     : {Dictionary,Null},      
-                                desc    : "print info for given symbol" ),
+        #                         an      : "symbol",      
+        #                         a       : {String,Literal},      
+        #                         ret     : {Dictionary,Null},      
+        #                         desc    : "print info for given symbol" ),
 
-        opType      : OpSpec(   name    : "type",      
-                                args    : 1,   
+        # opType      : OpSpec(   name    : "type",      
+        #                         args    : 1,   
 
-                                an      : "value",      
-                                a       : {Any},      
-                                ret     : {Type},      
-                                desc    : "get datatype of given value"),
+        #                         an      : "value",      
+        #                         a       : {Any},      
+        #                         ret     : {Type},      
+        #                         desc    : "get datatype of given value"),
 
-        opIs        : OpSpec(   name    : "is?",          
-                                args    : 2,   
+        # opIs        : OpSpec(   name    : "is?",          
+        #                         args    : 2,   
 
-                                an      : "type",      
-                                a       : {Type},      
-                                bn      : "value",      
-                                b       : {Any},      
-                                ret     : {Boolean},      
-                                desc    : "check if given parameter is of a specific datatype"),
+        #                         an      : "type",      
+        #                         a       : {Type},      
+        #                         bn      : "value",      
+        #                         b       : {Any},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given parameter is of a specific datatype"),
 
-        opBNot      : OpSpec(   name    : "not",          
-                                args    : 1,   
+        # opBNot      : OpSpec(   name    : "not",          
+        #                         args    : 1,   
 
-                                an      : "value",      
-                                a       : {Integer,Literal},      
-                                ret     : {Integer,Null},      
-                                desc    : "calculate the binary complement of the given value" ),
+        #                         an      : "value",      
+        #                         a       : {Integer,Literal},      
+        #                         ret     : {Integer,Null},      
+        #                         desc    : "calculate the binary complement of the given value" ),
 
-        opBAnd      : OpSpec(   name    : "and",          
-                                args    : 2,   
+        # opBAnd      : OpSpec(   name    : "and",          
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Integer,Literal},      
-                                bn      : "valueB",      
-                                b       : {Integer},
-                                ret     : {Integer,Null},      
-                                desc    : "calculate the binary AND for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Integer,Literal},      
+        #                         bn      : "valueB",      
+        #                         b       : {Integer},
+        #                         ret     : {Integer,Null},      
+        #                         desc    : "calculate the binary AND for the given values" ),
 
-        opBOr       : OpSpec(   name    : "or",      
-                                args    : 2,   
+        # opBOr       : OpSpec(   name    : "or",      
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Integer,Literal},      
-                                bn      : "valueB",      
-                                b       : {Integer},
-                                ret     : {Integer,Null},      
-                                desc    : "calculate the binary OR for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Integer,Literal},      
+        #                         bn      : "valueB",      
+        #                         b       : {Integer},
+        #                         ret     : {Integer,Null},      
+        #                         desc    : "calculate the binary OR for the given values" ),
 
-        opBXor      : OpSpec(   name    : "xor",          
-                                args    : 2,   
+        # opBXor      : OpSpec(   name    : "xor",          
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Integer,Literal},      
-                                bn      : "valueB",      
-                                b       : {Integer},
-                                ret     : {Integer,Null},      
-                                desc    : "calculate the binary XOR for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Integer,Literal},      
+        #                         bn      : "valueB",      
+        #                         b       : {Integer},
+        #                         ret     : {Integer,Null},      
+        #                         desc    : "calculate the binary XOR for the given values" ),
 
-        opFirst     : OpSpec(   name    : "first",        
-                                args    : 1,   
+        # opFirst     : OpSpec(   name    : "first",        
+        #                         args    : 1,   
 
-                                an      : "collection",      
-                                a       : {String,Block},
-                                ret     : {Any},      
-                                attrs   :   ".n :integer -> get first <n> items",           
-                                desc    : "return the first item of the given collection"),
+        #                         an      : "collection",      
+        #                         a       : {String,Block},
+        #                         ret     : {Any},      
+        #                         attrs   :   ".n :integer -> get first <n> items",           
+        #                         desc    : "return the first item of the given collection"),
 
-        opLast      : OpSpec(   name    : "last",      
-                                args    : 1,   
+        # opLast      : OpSpec(   name    : "last",      
+        #                         args    : 1,   
 
-                                an      : "collection",      
-                                a       : {String,Block},
-                                ret     : {Any},   
-                                attrs   :   ".n :integer -> get last <n> items",               
-                                desc    : "return the last item of the given collection"),
+        #                         an      : "collection",      
+        #                         a       : {String,Block},
+        #                         ret     : {Any},   
+        #                         attrs   :   ".n :integer -> get last <n> items",               
+        #                         desc    : "return the last item of the given collection"),
 
-        opUnique    : OpSpec(   name    : "unique",       
-                                args    : 1,   
+        # opUnique    : OpSpec(   name    : "unique",       
+        #                         args    : 1,   
 
-                                an      : "collection",      
-                                a       : {Block,Literal},                 
-                                ret     : {Block,Null},         
-                                desc    : "get given block without duplicates"),
+        #                         an      : "collection",      
+        #                         a       : {Block,Literal},                 
+        #                         ret     : {Block,Null},         
+        #                         desc    : "get given block without duplicates"),
 
-        opSort      : OpSpec(   name    : "sort",      
-                                args    : 1,   
+        # opSort      : OpSpec(   name    : "sort",      
+        #                         args    : 1,   
 
-                                an      : "collection",      
-                                a       : {Block,Literal},                  
-                                ret     : {Block,Null}, 
-                                attrs   :   ".as :literal -> localized by ISO 639-1 language code~" &                       
-                                            ".sensitive -> case-sensitive sort~" &
-                                            ".descending -> sort descending",
-                                desc    : "sort given block in ascending order"),
+        #                         an      : "collection",      
+        #                         a       : {Block,Literal},                  
+        #                         ret     : {Block,Null}, 
+        #                         attrs   :   ".as :literal -> localized by ISO 639-1 language code~" &                       
+        #                                     ".sensitive -> case-sensitive sort~" &
+        #                                     ".descending -> sort descending",
+        #                         desc    : "sort given block in ascending order"),
 
-        opInc       : OpSpec(   name    : "inc",          
-                                args    : 1,   
+        # opInc       : OpSpec(   name    : "inc",          
+        #                         args    : 1,   
 
-                                an      : "value",      
-                                a       : {Integer,Floating,Literal},
-                                ret     : {Integer,Floating,Null},      
-                                desc    : "increase first argument by 1"),
+        #                         an      : "value",      
+        #                         a       : {Integer,Floating,Literal},
+        #                         ret     : {Integer,Floating,Null},      
+        #                         desc    : "increase first argument by 1"),
 
-        opDec       : OpSpec(   name    : "dec",          
-                                args    : 1,   
+        # opDec       : OpSpec(   name    : "dec",          
+        #                         args    : 1,   
 
-                                an      : "value",      
-                                a       : {Integer,Floating,Literal},
-                                ret     : {Integer,Floating,Null},      
-                                desc    : "decrease first argument by 1"),
+        #                         an      : "value",      
+        #                         a       : {Integer,Floating,Literal},
+        #                         ret     : {Integer,Floating,Null},      
+        #                         desc    : "decrease first argument by 1"),
 
-        opIsSet     : OpSpec(   name    : "set?",      
-                                args    : 1,   
+        # opIsSet     : OpSpec(   name    : "set?",      
+        #                         args    : 1,   
 
-                                an      : "symbol",      
-                                a       : {Literal},      
-                                ret     : {Boolean},      
-                                desc    : "check if given variable is defined"),
+        #                         an      : "symbol",      
+        #                         a       : {Literal},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given variable is defined"),
 
-        opSymbols   : OpSpec(   name    : "symbols",      
-                                args    : 0,   
+        # opSymbols   : OpSpec(   name    : "symbols",      
+        #                         args    : 0,   
       
-                                ret     : {Dictionary},         
-                                desc    : "get currently defined symbols"),
+        #                         ret     : {Dictionary},         
+        #                         desc    : "get currently defined symbols"),
 
-        opStack     : OpSpec(   name    : "stack",         
-                                args    : 0,   
+        # opStack     : OpSpec(   name    : "stack",         
+        #                         args    : 0,   
       
-                                ret     : {Dictionary},         
-                                desc    : "get current stack"),
+        #                         ret     : {Dictionary},         
+        #                         desc    : "get current stack"),
 
-        opCase      : OpSpec(   name    : "case",      
-                                args    : 1,   
+        # opCase      : OpSpec(   name    : "case",      
+        #                         args    : 1,   
 
-                                an      : "predicate",      
-                                a       : {Block},      
-                                ret     : {Null},         
-                                desc    : "initiate a case block to check for different cases"),
+        #                         an      : "predicate",      
+        #                         a       : {Block},      
+        #                         ret     : {Null},         
+        #                         desc    : "initiate a case block to check for different cases"),
 
-        opWhen      : OpSpec(   name    : "when?",        
-                                args    : 2,   
+        # opWhen      : OpSpec(   name    : "when?",        
+        #                         args    : 2,   
 
-                                an      : "condition",      
-                                a       : {Block},      
-                                bn      : "action",      
-                                b       : {Block},      
-                                ret     : {Boolean},         
-                                desc    : "check if a specific condition is fulfilled~and if so, execute given action"),
+        #                         an      : "condition",      
+        #                         a       : {Block},      
+        #                         bn      : "action",      
+        #                         b       : {Block},      
+        #                         ret     : {Boolean},         
+        #                         desc    : "check if a specific condition is fulfilled~and if so, execute given action"),
 
-        opCapitalize: OpSpec(   name    : "capitalize",   
-                                args    : 1,   
+        # opCapitalize: OpSpec(   name    : "capitalize",   
+        #                         args    : 1,   
 
-                                an      : "string",      
-                                a       : {String,Literal},
-                                ret     : {String,Null},        
-                                desc    : "convert given string to capitalized"),
+        #                         an      : "string",      
+        #                         a       : {String,Literal},
+        #                         ret     : {String,Null},        
+        #                         desc    : "convert given string to capitalized"),
 
-        opRepeat    : OpSpec(   name    : "repeat",       
-                                args    : 2,   
+        # opRepeat    : OpSpec(   name    : "repeat",       
+        #                         args    : 2,   
 
-                                an      : "value",      
-                                a       : {Literal,Any},      
-                                bn      : "times",      
-                                b       : {Integer},      
-                                ret     : {String,Block},      
-                                desc    : "repeat value the given number of times~and return new one"),
+        #                         an      : "value",      
+        #                         a       : {Literal,Any},      
+        #                         bn      : "times",      
+        #                         b       : {Integer},      
+        #                         ret     : {String,Block},      
+        #                         desc    : "repeat value the given number of times~and return new one"),
 
-        opWhile     : OpSpec(   name    : "while",        
-                                args    : 2,   
+        # opWhile     : OpSpec(   name    : "while",        
+        #                         args    : 2,   
 
-                                an      : "condition",      
-                                a       : {Block},      
-                                bn      : "action",      
-                                b       : {Block},      
-                                ret     : {Null},      
-                                desc    : "execute action while the given condition is true"),
+        #                         an      : "condition",      
+        #                         a       : {Block},      
+        #                         bn      : "action",      
+        #                         b       : {Block},      
+        #                         ret     : {Null},      
+        #                         desc    : "execute action while the given condition is true"),
 
-        opRandom    : OpSpec(   name    : "random",       
-                                args    : 2,   
+        # opRandom    : OpSpec(   name    : "random",       
+        #                         args    : 2,   
 
-                                an      : "lowerLimit",  
-                                a       : {Integer},      
-                                bn      : "upperLimit",  
-                                b       : {Integer},
-                                ret     : {Integer},      
-                                desc    : "get a random integer between given limits"),
+        #                         an      : "lowerLimit",  
+        #                         a       : {Integer},      
+        #                         bn      : "upperLimit",  
+        #                         b       : {Integer},
+        #                         ret     : {Integer},      
+        #                         desc    : "get a random integer between given limits"),
 
-        opSample    : OpSpec(   name    : "sample",       
-                                args    : 1,   
+        # opSample    : OpSpec(   name    : "sample",       
+        #                         args    : 1,   
 
-                                an      : "collection",  
-                                a       : {Block},      
-                                ret     : {Any},                
-                                desc    : "get a random element from given collection"),
+        #                         an      : "collection",  
+        #                         a       : {Block},      
+        #                         ret     : {Any},                
+        #                         desc    : "get a random element from given collection"),
 
-        opShuffle   : OpSpec(   name    : "shuffle",      
-                                args    : 1,   
+        # opShuffle   : OpSpec(   name    : "shuffle",      
+        #                         args    : 1,   
 
-                                an      : "collection",  
-                                a       : {Block,Literal},      
-                                ret     : {Block,Null},   
-                                desc    : "get given collection shuffled"),
+        #                         an      : "collection",  
+        #                         a       : {Block,Literal},      
+        #                         ret     : {Block,Null},   
+        #                         desc    : "get given collection shuffled"),
 
-        opSlice     : OpSpec(   name    : "slice",        
-                                args    : 3,   
+        # opSlice     : OpSpec(   name    : "slice",        
+        #                         args    : 3,   
 
-                                an      : "collection",  
-                                a       : {String,Block},       
-                                bn      : "from",        
-                                b       : {Integer},                  
-                                cn      : "to",              
-                                c       : {Integer},          
-                                ret     : {String,Block}, 
-                                desc    : "get a slice of collection between given indices"),
+        #                         an      : "collection",  
+        #                         a       : {String,Block},       
+        #                         bn      : "from",        
+        #                         b       : {Integer},                  
+        #                         cn      : "to",              
+        #                         c       : {Integer},          
+        #                         ret     : {String,Block}, 
+        #                         desc    : "get a slice of collection between given indices"),
 
-        opClear     : OpSpec(   name    : "clear",        
-                                args    : 0,   
+        # opClear     : OpSpec(   name    : "clear",        
+        #                         args    : 0,   
       
-                                ret     : {Null},      
-                                desc    : "clear terminal"),
-
-        opAll       : OpSpec(   name    : "all?",      
-                                args    : 3,   
-
-                                an      : "collection",  
-                                a       : {Block},              
-                                bn      : "params",      
-                                b       : {Literal,Block},            
-                                cn      : "condition",       
-                                c       : {Block},            
-                                ret     : {Boolean},      
-                                desc    : "check if all of collection's item satisfy given condition"),
-
-        opAny       : OpSpec(   name    : "any?",      
-                                args    : 3,   
-
-                                an      : "collection",  
-                                a       : {Block},              
-                                bn      : "params",      
-                                b       : {Literal,Block},            
-                                cn      : "condition",       
-                                c       : {Block},            
-                                ret     : {Boolean},      
-                                desc    : "check if any of collection's item satisfy given condition"),
-
-        opRead      : OpSpec(   name    : "read",    
-                                alias   : "<<",  
-                                args    : 1,   
-
-                                an      : "file",        
-                                a       : {String},                      
-                                ret     : {String,Block,Binary},                
-                                attrs   :   ".lines -> read file lines into block~" &
-                                            ".json -> read json file into a valid value~" &
-                                            ".csv -> read CSV file into a block of rows~" &
-                                            ".withHeaders -> read CSV headers~"&
-                                            ".html* -> read html file into node dictionary~" &
-                                            ".markdown* -> read markdown and convert to html~" &
-                                            ".binary -> read as binary", 
-                                desc    : "read file from given path", ),
-
-        opWrite     : OpSpec(   name    : "write",  
-                                alias   : ">>",      
-                                args    : 2,   
-
-                                an      : "file",        
-                                a       : {String,Null},                   
-                                bn      : "content",     
-                                b       : {Any},      
-                                ret     : {Null},      
-                                attrs   :   ".directory -> create directory at path~" &
-                                            ".json -> write value as json~" &
-                                            ".binary -> write as binary",
-                                desc    : "write content to file at given path"),
-
-        opAbs       : OpSpec(   name    : "abs",        
-                                args    : 1,   
-
-                                an      : "value",        
-                                a       : {Integer},                        
-                                ret     : {Integer},      
-                                desc    : "get the absolute value for given integer"),
-
-        opAcos      : OpSpec(   name    : "acos",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the inverse cosine of given angle"),
-
-        opAcosh     : OpSpec(   name    : "acosh",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the inverse hyperbolic cosine of given angle"),
-
-        opAsin      : OpSpec(   name    : "asin",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the inverse sine of given angle"),
-
-        opAsinh     : OpSpec(   name    : "asinh",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the inverse hyperbolic sine of given angle"),
-
-        opAtan      : OpSpec(   name    : "atan",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the inverse tangent of given angle"),
+        #                         ret     : {Null},      
+        #                         desc    : "clear terminal"),
+
+        # opAll       : OpSpec(   name    : "all?",      
+        #                         args    : 3,   
+
+        #                         an      : "collection",  
+        #                         a       : {Block},              
+        #                         bn      : "params",      
+        #                         b       : {Literal,Block},            
+        #                         cn      : "condition",       
+        #                         c       : {Block},            
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if all of collection's item satisfy given condition"),
+
+        # opAny       : OpSpec(   name    : "any?",      
+        #                         args    : 3,   
+
+        #                         an      : "collection",  
+        #                         a       : {Block},              
+        #                         bn      : "params",      
+        #                         b       : {Literal,Block},            
+        #                         cn      : "condition",       
+        #                         c       : {Block},            
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if any of collection's item satisfy given condition"),
+
+        # opRead      : OpSpec(   name    : "read",    
+        #                         alias   : "<<",  
+        #                         args    : 1,   
+
+        #                         an      : "file",        
+        #                         a       : {String},                      
+        #                         ret     : {String,Block,Binary},                
+        #                         attrs   :   ".lines -> read file lines into block~" &
+        #                                     ".json -> read json file into a valid value~" &
+        #                                     ".csv -> read CSV file into a block of rows~" &
+        #                                     ".withHeaders -> read CSV headers~"&
+        #                                     ".html* -> read html file into node dictionary~" &
+        #                                     ".markdown* -> read markdown and convert to html~" &
+        #                                     ".binary -> read as binary", 
+        #                         desc    : "read file from given path", ),
+
+        # opWrite     : OpSpec(   name    : "write",  
+        #                         alias   : ">>",      
+        #                         args    : 2,   
+
+        #                         an      : "file",        
+        #                         a       : {String,Null},                   
+        #                         bn      : "content",     
+        #                         b       : {Any},      
+        #                         ret     : {Null},      
+        #                         attrs   :   ".directory -> create directory at path~" &
+        #                                     ".json -> write value as json~" &
+        #                                     ".binary -> write as binary",
+        #                         desc    : "write content to file at given path"),
+
+        # opAbs       : OpSpec(   name    : "abs",        
+        #                         args    : 1,   
+
+        #                         an      : "value",        
+        #                         a       : {Integer},                        
+        #                         ret     : {Integer},      
+        #                         desc    : "get the absolute value for given integer"),
+
+        # opAcos      : OpSpec(   name    : "acos",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the inverse cosine of given angle"),
+
+        # opAcosh     : OpSpec(   name    : "acosh",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the inverse hyperbolic cosine of given angle"),
+
+        # opAsin      : OpSpec(   name    : "asin",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the inverse sine of given angle"),
+
+        # opAsinh     : OpSpec(   name    : "asinh",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the inverse hyperbolic sine of given angle"),
+
+        # opAtan      : OpSpec(   name    : "atan",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the inverse tangent of given angle"),
 
-        opAtanh     : OpSpec(   name    : "atanh",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the inverse hyperbolic tangent of given angle"),
+        # opAtanh     : OpSpec(   name    : "atanh",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the inverse hyperbolic tangent of given angle"),
 
-        opCos       : OpSpec(   name    : "cos",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the cosine of given angle"),
+        # opCos       : OpSpec(   name    : "cos",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the cosine of given angle"),
 
-        opCosh      : OpSpec(   name    : "cosh",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the hyperbolic cosine of given angle"),
-
-        opCsec      : OpSpec(   name    : "csec",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the cosecant of given angle"),
-
-        opCsech     : OpSpec(   name    : "csech",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the hyperbolic cosecant of given angle"),
-
-        opCtan      : OpSpec(   name    : "ctan",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the cotangent of given angle"),
-
-        opCtanh     : OpSpec(   name    : "ctanh",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the hyperbolic cotangent of given angle"),
-
-        opSec       : OpSpec(   name    : "sec",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the secant of given angle"),
-
-        opSech      : OpSpec(   name    : "sech",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the hyperbolic secant of given angle"),
-
-        opSin       : OpSpec(   name    : "sin",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the sine of given angle"),
-
-        opSinh      : OpSpec(   name    : "sinh",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the hyperbolic sine of given angle"),
-
-        opTan       : OpSpec(   name    : "tan",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the tangent of given angle"),
-
-        opTanh      : OpSpec(   name    : "tanh",        
-                                args    : 1,   
-
-                                an      : "angle",        
-                                a       : {Floating},                        
-                                ret     : {Floating},      
-                                desc    : "calculate the hyperbolic tangent of given angle"),
-
-        opInput     : OpSpec(   name    : "input",        
-                                args    : 1,   
-
-                                an      : "prompt",        
-                                a       : {String},                        
-                                ret     : {String},      
-                                desc    : "print prompt and get user input"),
-
-        opPad       : OpSpec(   name    : "pad",        
-                                args    : 2,   
-
-                                an      : "string",        
-                                a       : {String,Literal},
-                                bn      : "padding",
-                                b       : {Integer},
-                                ret     : {String},  
-                                attrs   :   ".center -> add padding to both sides~" &
-                                            ".right -> add right padding",
-                                desc    : "align string by adding given padding (spaces)"),
-
-        opReplace   : OpSpec(   name    : "replace",
-                                args    : 3,
-
-                                an      : "string",
-                                a       : {String,Literal},
-                                bn      : "match",
-                                b       : {String},
-                                cn      : "replacement",
-                                c       : {String},
-                                ret     : {String,Null}, #SHOULD add .once
-                                attrs   :   ".regex -> match against a regular expression",
-                                desc    : "look for substring in given string~and replace them given replacement"),
-
-        opStrip     : OpSpec(   name    : "strip",
-                                args    : 1,
-
-                                an      : "string",
-                                a       : {String,Literal},
-                                ret     : {String,Null},
-                                desc    : "strip whitespace from given string"),
-
-        opSplit     : OpSpec(   name    : "split",
-                                args    : 1,
-
-                                an      : "collection",
-                                a       : {Block,String,Literal},
-                                ret     : {Block,Null},
-                                attrs   :   ".words -> split string by whitespace~" &
-                                            ".lines -> split string by lines~" &
-                                            ".by :string -> split using given separator~" &
-                                            ".regex :string -> match against a regular expression~" &
-                                            ".at :integer -> split collection at given position~" &
-                                            ".every :integer -> split collection every number of elements",
-                                desc    : "split collection to components"),
-
-        opPrefix    : OpSpec(   name    : "prefix",
-                                args    : 2,
-
-                                an      : "string",
-                                a       : {String,Literal},
-                                bn      : "start",
-                                b       : {String},
-                                ret     : {String,Null},
-                                desc    : "add given prefix to string"),
-
-        opHasPrefix : OpSpec(   name    : "prefix?",
-                                args    : 2,
-
-                                an      : "string",
-                                a       : {String},
-                                bn      : "start",
-                                b       : {String},
-                                ret     : {Boolean},
-                                attrs   :   ".regex -> match against a regular expression", 
-                                desc    : "check if string starts with given prefix"),
-
-        opSuffix    : OpSpec(   name    : "suffix",
-                                args    : 2,
-
-                                an      : "string",
-                                a       : {String,Literal},
-                                bn      : "ending",
-                                b       : {String},
-                                ret     : {String,Null},
-                                desc    : "add given suffix to string"),
-
-        opHasSuffix : OpSpec(   name    : "suffix?",
-                                args    : 2,
-
-                                an      : "string",
-                                a       : {String},
-                                bn      : "ending",
-                                b       : {String},
-                                ret     : {Boolean},
-                                attrs   :   ".regex -> match against a regular expression", 
-                                desc    : "check if string ends with given suffix"),
-
-        opExists    : OpSpec(   name    : "exists?",
-                                args    : 1,
-
-                                an      : "file",
-                                a       : {String},
-                                ret     : {Boolean},
-                                attrs   :   ".dir -> check for directory",
-                                desc    : "check if given file exists"),
-
-        opTry       : OpSpec(   name    : "try",      
-                                args    : 1,   
+        # opCosh      : OpSpec(   name    : "cosh",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the hyperbolic cosine of given angle"),
+
+        # opCsec      : OpSpec(   name    : "csec",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the cosecant of given angle"),
+
+        # opCsech     : OpSpec(   name    : "csech",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the hyperbolic cosecant of given angle"),
+
+        # opCtan      : OpSpec(   name    : "ctan",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the cotangent of given angle"),
+
+        # opCtanh     : OpSpec(   name    : "ctanh",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the hyperbolic cotangent of given angle"),
+
+        # opSec       : OpSpec(   name    : "sec",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the secant of given angle"),
+
+        # opSech      : OpSpec(   name    : "sech",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the hyperbolic secant of given angle"),
+
+        # opSin       : OpSpec(   name    : "sin",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the sine of given angle"),
+
+        # opSinh      : OpSpec(   name    : "sinh",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the hyperbolic sine of given angle"),
+
+        # opTan       : OpSpec(   name    : "tan",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the tangent of given angle"),
+
+        # opTanh      : OpSpec(   name    : "tanh",        
+        #                         args    : 1,   
+
+        #                         an      : "angle",        
+        #                         a       : {Floating},                        
+        #                         ret     : {Floating},      
+        #                         desc    : "calculate the hyperbolic tangent of given angle"),
+
+        # opInput     : OpSpec(   name    : "input",        
+        #                         args    : 1,   
+
+        #                         an      : "prompt",        
+        #                         a       : {String},                        
+        #                         ret     : {String},      
+        #                         desc    : "print prompt and get user input"),
+
+        # opPad       : OpSpec(   name    : "pad",        
+        #                         args    : 2,   
+
+        #                         an      : "string",        
+        #                         a       : {String,Literal},
+        #                         bn      : "padding",
+        #                         b       : {Integer},
+        #                         ret     : {String},  
+        #                         attrs   :   ".center -> add padding to both sides~" &
+        #                                     ".right -> add right padding",
+        #                         desc    : "align string by adding given padding (spaces)"),
+
+        # opReplace   : OpSpec(   name    : "replace",
+        #                         args    : 3,
+
+        #                         an      : "string",
+        #                         a       : {String,Literal},
+        #                         bn      : "match",
+        #                         b       : {String},
+        #                         cn      : "replacement",
+        #                         c       : {String},
+        #                         ret     : {String,Null}, #SHOULD add .once
+        #                         attrs   :   ".regex -> match against a regular expression",
+        #                         desc    : "look for substring in given string~and replace them given replacement"),
+
+        # opStrip     : OpSpec(   name    : "strip",
+        #                         args    : 1,
+
+        #                         an      : "string",
+        #                         a       : {String,Literal},
+        #                         ret     : {String,Null},
+        #                         desc    : "strip whitespace from given string"),
+
+        # opSplit     : OpSpec(   name    : "split",
+        #                         args    : 1,
+
+        #                         an      : "collection",
+        #                         a       : {Block,String,Literal},
+        #                         ret     : {Block,Null},
+        #                         attrs   :   ".words -> split string by whitespace~" &
+        #                                     ".lines -> split string by lines~" &
+        #                                     ".by :string -> split using given separator~" &
+        #                                     ".regex :string -> match against a regular expression~" &
+        #                                     ".at :integer -> split collection at given position~" &
+        #                                     ".every :integer -> split collection every number of elements",
+        #                         desc    : "split collection to components"),
+
+        # opPrefix    : OpSpec(   name    : "prefix",
+        #                         args    : 2,
+
+        #                         an      : "string",
+        #                         a       : {String,Literal},
+        #                         bn      : "start",
+        #                         b       : {String},
+        #                         ret     : {String,Null},
+        #                         desc    : "add given prefix to string"),
+
+        # opHasPrefix : OpSpec(   name    : "prefix?",
+        #                         args    : 2,
+
+        #                         an      : "string",
+        #                         a       : {String},
+        #                         bn      : "start",
+        #                         b       : {String},
+        #                         ret     : {Boolean},
+        #                         attrs   :   ".regex -> match against a regular expression", 
+        #                         desc    : "check if string starts with given prefix"),
+
+        # opSuffix    : OpSpec(   name    : "suffix",
+        #                         args    : 2,
+
+        #                         an      : "string",
+        #                         a       : {String,Literal},
+        #                         bn      : "ending",
+        #                         b       : {String},
+        #                         ret     : {String,Null},
+        #                         desc    : "add given suffix to string"),
+
+        # opHasSuffix : OpSpec(   name    : "suffix?",
+        #                         args    : 2,
+
+        #                         an      : "string",
+        #                         a       : {String},
+        #                         bn      : "ending",
+        #                         b       : {String},
+        #                         ret     : {Boolean},
+        #                         attrs   :   ".regex -> match against a regular expression", 
+        #                         desc    : "check if string ends with given suffix"),
+
+        # opExists    : OpSpec(   name    : "exists?",
+        #                         args    : 1,
+
+        #                         an      : "file",
+        #                         a       : {String},
+        #                         ret     : {Boolean},
+        #                         attrs   :   ".dir -> check for directory",
+        #                         desc    : "check if given file exists"),
+
+        # opTry       : OpSpec(   name    : "try",      
+        #                         args    : 1,   
      
-                                an      : "action",      
-                                a       : {Block},      
-                                ret     : {Null},      
-                                desc    : "perform action and catch possible errors" ),
+        #                         an      : "action",      
+        #                         a       : {Block},      
+        #                         ret     : {Null},      
+        #                         desc    : "perform action and catch possible errors" ),
 
-        opTryE      : OpSpec(   name    : "try?",          
-                                args    : 1,   
+        # opTryE      : OpSpec(   name    : "try?",          
+        #                         args    : 1,   
     
-                                an      : "action",      
-                                a       : {Block},      
-                                ret     : {Boolean},      
-                                desc    : "perform action, catch possible errors and return status" ),
-
-        opIsUpper   : OpSpec(   name    : "upper?",        
-                                args    : 1,   
-
-                                an      : "string",      
-                                a       : {String},
-                                ret     : {Boolean},      
-                                desc    : "check if given string is uppercase" ),
-
-        opIsLower   : OpSpec(   name    : "lower?",        
-                                args    : 1,   
-
-                                an      : "string",      
-                                a       : {String},
-                                ret     : {Boolean},      
-                                desc    : "check if given string is lowercase" ),
-
-        opHelp      : OpSpec(   name    : "help",        
-                                args    : 1,   
-
-                                an      : "function",
-                                a       : {Literal,Block},
-                                ret     : {Null},      
-                                desc    : "print help for given function or ~a complete list of built-in functions" ),
-
-        opEmpty     : OpSpec(   name    : "empty",        
-                                args    : 1,   
-
-                                an      : "collection",
-                                a       : {Literal},
-                                ret     : {Null},      
-                                desc    : "empty given collection" ),
-
-        opIsEmpty   : OpSpec(   name    : "empty?",        
-                                args    : 1,   
-
-                                an      : "collection",
-                                a       : {String,Block,Dictionary,Null},
-                                ret     : {Boolean},      
-                                desc    : "check if given collection is empty" ),
-
-        opInsert    : OpSpec(   name    : "insert",        
-                                args    : 3,   
-
-                                an      : "collection",
-                                a       : {String,Block,Dictionary,Literal},
-                                bn      : "index",
-                                b       : {Integer,String},
-                                cn      : "value",
-                                c       : {Any},
-                                ret     : {String,Block,Dictionary},      
-                                desc    : "insert value in collection at given index" ),
-
-        opIsIn      : OpSpec(   name    : "in?",        
-                                args    : 2,   
-
-                                an      : "value",
-                                a       : {Any},
-                                bn      : "collection",
-                                b       : {String,Block,Dictionary},
-                                ret     : {Boolean},    
-                                attrs   :   ".regex -> match against a regular expression", 
-                                desc    : "check if value exists in given collection" ),
-
-        opIndex     : OpSpec(   name    : "index",        
-                                args    : 2,   
-
-                                an      : "collection",
-                                a       : {String,Block,Dictionary},
-                                bn      : "value",
-                                b       : {Any},
-                                ret     : {Integer,String,Null},      
-                                desc    : "return first index of value in given collection" ),
-
-        opHasKey    : OpSpec(   name    : "key?",        
-                                args    : 2,   
-
-                                an      : "collection",
-                                a       : {Dictionary},
-                                bn      : "key",
-                                b       : {String,Literal},
-                                ret     : {Boolean},      
-                                desc    : "check if dictionary contains given key" ),
-
-        opReverse   : OpSpec(   name    : "reverse",        
-                                args    : 1,   
-
-                                an      : "collection",
-                                a       : {Block,String,Literal},
-                                ret     : {Block,String,Null},      
-                                desc    : "reverse given collection" ),
-
-        opExecute   : OpSpec(   name    : "execute",        
-                                args    : 1,   
-
-                                an      : "command",
-                                a       : {String},
-                                ret     : {String},      
-                                desc    : "execute given shell command" ),
-
-        opPrints    : OpSpec(   name    : "prints",
-                                args    : 1,
-
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Null},
-                                desc    : "print given value to screen"),
-
-        opBenchmark : OpSpec(   name    : "benchmark",
-                                args    : 1,
-
-                                an      : "action",
-                                a       : {Block},
-                                ret     : {Null},
-                                desc    : "benchmark given code"),
-
-        opJoin      : OpSpec(   name    : "join",
-                                args    : 1,
-
-                                an      : "collection",
-                                a       : {Block,Literal},
-                                ret     : {Block,Null},
-                                attrs   :   ".with :string -> use given separator~" &
-                                            ".path -> join as path components",
-                                desc    : "join collection of strings into string"),
-
-        opMax       : OpSpec(   name    : "max",
-                                args    : 1,
-
-                                an      : "collection",
-                                a       : {Block},
-                                ret     : {Any,Null},
-                                desc    : "get maximum element in given collection"),
-
-        opMin       : OpSpec(   name    : "min",
-                                args    : 1,
-
-                                an      : "collection",
-                                a       : {Block},
-                                ret     : {Any,Null},
-                                desc    : "get minimum element in given collection"),
-
-        opKeys      : OpSpec(   name    : "keys",
-                                args    : 1,
-
-                                an      : "dictionary",
-                                a       : {Dictionary},
-                                ret     : {Block},
-                                desc    : "get list of keys for given dictionary"),
-
-        opValues    : OpSpec(   name    : "values",
-                                args    : 1,
-
-                                an      : "dictionary",
-                                a       : {Dictionary},
-                                ret     : {Block},
-                                desc    : "get list of values for given dictionary"),
-
-        opDigest    : OpSpec(   name    : "digest",
-                                args    : 1,
-
-                                an      : "value",
-                                a       : {String,Literal},
-                                ret     : {String},
-                                attrs   :   ".sha -> use SHA1",
-                                desc    : "get digest for given value (default: MD5)"),
-
-        opAlias     : OpSpec(),
-
-        opMail      : OpSpec(   name    : "mail",
-                                args    : 3,
-
-                                an      : "recipient",
-                                a       : {String},
-                                bn      : "message",
-                                b       : {Dictionary},
-                                cn      : "config",
-                                c       : {Dictionary},
-                                ret     : {Null},
-                                desc    : "send mail using given message and configuration"),
-
-        opDownload  : OpSpec(   name    : "download",
-                                args    : 1,
-
-                                an      : "url",
-                                a       : {String},
-                                ret     : {Null},
-                                attrs   :   ".as :string -> set target file",
-                                desc    : "download file from url to disk"),
-
-        opGetAttr   : OpSpec(   name    : "attribute",
-                                args    : 1,
-
-                                an      : "key",
-                                a       : {String},
-                                ret     : {Any,Null},
-                                desc    : "get given attribute, if it exists"),
-
-        opHasAttr   : OpSpec(   name    : "hasAttribute?",
-                                args    : 1,
-
-                                an      : "key",
-                                a       : {String},
-                                ret     : {Boolean},
-                                desc    : "check if given attribute exists"),
-
-        opRender    : OpSpec(   name    : "render",
-                                alias   : "~",
-                                args    : 1,
-
-                                an      : "template",
-                                a       : {String},
-                                ret     : {String},
-                                attrs   :   ".with :dictionary -> use given dictionary",
-                                desc    : "render template with |string| interpolation"),
-
-        opEncode    : OpSpec(   name    : "encode",
-                                args    : 1,
-
-                                an      : "value",
-                                a       : {String,Literal},
-                                ret     : {String},
-                                desc    : "base-64 encode given value"),
-
-        opDecode    : OpSpec(   name    : "decode",
-                                args    : 1,
-
-                                an      : "value",
-                                a       : {String,Literal},
-                                ret     : {String},
-                                desc    : "base-64 decode given value"),
-
-        opColor     : OpSpec(   name    : "color",
-                                args    : 1,
-
-                                an      : "string",
-                                a       : {String},
-                                ret     : {String},
-                                attrs   :   ".rgb :integer -> use specific RGB color~" &
-                                            ".bold -> bold color~" &
-                                            ".black -> black foreground~" &
-                                            ".red -> red foreground~" &
-                                            ".green -> green foreground~" &
-                                            ".yellow -> yellow foreground~" &
-                                            ".blue -> blue foreground~" &
-                                            ".magenta -> magenta foreground~" &
-                                            ".cyan -> cyan foreground~" &
-                                            ".white -> white foreground~" &
-                                            ".gray -> gray foreground",
-                                desc    : "get colored version of given string"),
-
-        opTake      : OpSpec(   name    : "take",
-                                args    : 2,
-
-                                an      : "collection",
-                                a       : {Block,String,Literal},
-                                bn      : "number",
-                                b       : {Integer},
-                                ret     : {Block,String,Null},
-                                desc    : "return first <number> of elements from given collection"),
-
-        opDrop      : OpSpec(   name    : "drop",
-                                args    : 2,
-
-                                an      : "collection",
-                                a       : {Block,String,Literal},
-                                bn      : "number",
-                                b       : {Integer},
-                                ret     : {Block,String,Null},
-                                desc    : "drop first <number> of elements from given collection~and return the remaining ones"),
-
-        opAppend    : OpSpec(   name    : "append",  
-                                alias   : "++",        
-                                args    : 2,   
-
-                                an      : "collection",      
-                                a       : {String,Char,Block,Literal},        
-                                bn      : "value",      
-                                b       : {Any},
-                                ret     : {String,Block,Null},               
-                                desc    : "append value to given collection" ),
-
-        opRemove    : OpSpec(   name    : "remove",
-                                alias   : "--",          
-                                args    : 2,   
-
-                                an      : "collection",      
-                                a       : {String,Block,Dictionary,Literal},        
-                                bn      : "value",      
-                                b       : {Any},
-                                ret     : {String,Block,Dictionary,Null},   
-                                attrs   :   ".key -> remove dictionary key~" &
-                                            ".once -> remove only first occurrence~" &
-                                            ".index :integer -> remove specific index",            
-                                desc    : "remove value from given collection" ),
-
-        opCombine   : OpSpec(   name    : "combine",          
-                                args    : 2,   
-
-                                an      : "collection",      
-                                a       : {Block},  
-                                bn      : "collection",      
-                                b       : {Block},        
-                                ret     : {Block},               
-                                desc    : "get combination of elements in given collections" ),
-
-        opList      : OpSpec(   name    : "list",          
-                                args    : 1,   
-
-                                an      : "path",      
-                                a       : {String},        
-                                ret     : {Block},  
-                                attrs   :   ".select :string -> select files satisfying given pattern~" &
-                                            ".relative -> get relative paths",
-                                desc    : "get files at given path" ),
-
-        opFold      : OpSpec(   name    : "fold",          
-                                args    : 3,   
-
-                                an      : "collection",  
-                                a       : {Block,Literal},              
-                                bn      : "params",      
-                                b       : {Literal,Block},            
-                                cn      : "action",          
-                                c       : {Block},            
-                                ret     : {Block,Null},   
-                                attrs   :   ".seed :any -> use specific seed value~" &
-                                            ".right -> perform right folding",   
-                                desc    : "fold collection's items by applying given action~and an initial seed value" ),
-
-        opSqrt      : OpSpec(   name    : "sqrt",          
-                                args    : 1,   
-
-                                an      : "value",      
-                                a       : {Integer,Floating},        
-                                ret     : {Floating},  
-                                desc    : "get square root of given value" ),
-
-        opServe     : OpSpec(   name    : "serve",          
-                                args    : 1,   
-
-                                an      : "routes",      
-                                a       : {Dictionary},        
-                                ret     : {Null},  
-                                attrs   :   ".port :integer -> use given port~" &
-                                            ".verbose -> print info log~" &
-                                            ".chrome -> open in Chrome window as an app",
-                                desc    : "start web server using given routes" ),
-
-        opLet       : OpSpec(   name    : "let",          
-                                args    : 2,   
-
-                                an      : "symbol",      
-                                a       : {String,Literal},     
-                                bn      : "value",
-                                b       : {Any},   
-                                ret     : {Null},  
-                                desc    : "set symbol to given value" ),
-
-        opVar       : OpSpec(   name    : "var",          
-                                args    : 1,   
-
-                                an      : "symbol",      
-                                a       : {String,Literal},      
-                                ret     : {Any},  
-                                desc    : "get symbol value by given name" ),
-
-        opNow       : OpSpec(   name    : "now",
-                                args    : 0,
-
-                                ret     : {Date},
-                                desc    : "get date/time now"),
-
-        opPause     : OpSpec(   name    : "pause",          
-                                args    : 1,   
-
-                                an      : "time",  
-                                a       : {Integer},                          
-                                ret     : {Null},      
-                                desc    : "pause program's execution~for the given amount of milliseconds" ),
-
-        opCall      : OpSpec(   name    : "call",          
-                                args    : 2,   
-
-                                an      : "function",  
-                                a       : {String,Literal,Function}, 
-                                bn      : "params",
-                                b       : {Block},                        
-                                ret     : {Any},      
-                                desc    : "call function with given list of parameters" ),
-
-        opNew       : OpSpec(   name    : "new",          
-                                args    : 1,   
-
-                                an      : "value",  
-                                a       : {Any},                        
-                                ret     : {Any},      
-                                desc    : "create new value by cloning given one" ),
-
-        opGetAttrs  : OpSpec(   name    : "attrs",
-                                args    : 0,
-
-                                ret     : {Dictionary},
-                                desc    : "get dictionary of set attributes"),
-
-        opUntil     : OpSpec(   name    : "until",        
-                                args    : 2,   
+        #                         an      : "action",      
+        #                         a       : {Block},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "perform action, catch possible errors and return status" ),
+
+        # opIsUpper   : OpSpec(   name    : "upper?",        
+        #                         args    : 1,   
+
+        #                         an      : "string",      
+        #                         a       : {String},
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given string is uppercase" ),
+
+        # opIsLower   : OpSpec(   name    : "lower?",        
+        #                         args    : 1,   
+
+        #                         an      : "string",      
+        #                         a       : {String},
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given string is lowercase" ),
+
+        # opHelp      : OpSpec(   name    : "help",        
+        #                         args    : 1,   
+
+        #                         an      : "function",
+        #                         a       : {Literal,Block},
+        #                         ret     : {Null},      
+        #                         desc    : "print help for given function or ~a complete list of built-in functions" ),
+
+        # opEmpty     : OpSpec(   name    : "empty",        
+        #                         args    : 1,   
+
+        #                         an      : "collection",
+        #                         a       : {Literal},
+        #                         ret     : {Null},      
+        #                         desc    : "empty given collection" ),
+
+        # opIsEmpty   : OpSpec(   name    : "empty?",        
+        #                         args    : 1,   
+
+        #                         an      : "collection",
+        #                         a       : {String,Block,Dictionary,Null},
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given collection is empty" ),
+
+        # opInsert    : OpSpec(   name    : "insert",        
+        #                         args    : 3,   
+
+        #                         an      : "collection",
+        #                         a       : {String,Block,Dictionary,Literal},
+        #                         bn      : "index",
+        #                         b       : {Integer,String},
+        #                         cn      : "value",
+        #                         c       : {Any},
+        #                         ret     : {String,Block,Dictionary},      
+        #                         desc    : "insert value in collection at given index" ),
+
+        # opIsIn      : OpSpec(   name    : "in?",        
+        #                         args    : 2,   
+
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         bn      : "collection",
+        #                         b       : {String,Block,Dictionary},
+        #                         ret     : {Boolean},    
+        #                         attrs   :   ".regex -> match against a regular expression", 
+        #                         desc    : "check if value exists in given collection" ),
+
+        # opIndex     : OpSpec(   name    : "index",        
+        #                         args    : 2,   
+
+        #                         an      : "collection",
+        #                         a       : {String,Block,Dictionary},
+        #                         bn      : "value",
+        #                         b       : {Any},
+        #                         ret     : {Integer,String,Null},      
+        #                         desc    : "return first index of value in given collection" ),
+
+        # opHasKey    : OpSpec(   name    : "key?",        
+        #                         args    : 2,   
+
+        #                         an      : "collection",
+        #                         a       : {Dictionary},
+        #                         bn      : "key",
+        #                         b       : {String,Literal},
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if dictionary contains given key" ),
+
+        # opReverse   : OpSpec(   name    : "reverse",        
+        #                         args    : 1,   
+
+        #                         an      : "collection",
+        #                         a       : {Block,String,Literal},
+        #                         ret     : {Block,String,Null},      
+        #                         desc    : "reverse given collection" ),
+
+        # opExecute   : OpSpec(   name    : "execute",        
+        #                         args    : 1,   
+
+        #                         an      : "command",
+        #                         a       : {String},
+        #                         ret     : {String},      
+        #                         desc    : "execute given shell command" ),
+
+        # opPrints    : OpSpec(   name    : "prints",
+        #                         args    : 1,
+
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Null},
+        #                         desc    : "print given value to screen"),
+
+        # opBenchmark : OpSpec(   name    : "benchmark",
+        #                         args    : 1,
+
+        #                         an      : "action",
+        #                         a       : {Block},
+        #                         ret     : {Null},
+        #                         desc    : "benchmark given code"),
+
+        # opJoin      : OpSpec(   name    : "join",
+        #                         args    : 1,
+
+        #                         an      : "collection",
+        #                         a       : {Block,Literal},
+        #                         ret     : {Block,Null},
+        #                         attrs   :   ".with :string -> use given separator~" &
+        #                                     ".path -> join as path components",
+        #                         desc    : "join collection of strings into string"),
+
+        # opMax       : OpSpec(   name    : "max",
+        #                         args    : 1,
+
+        #                         an      : "collection",
+        #                         a       : {Block},
+        #                         ret     : {Any,Null},
+        #                         desc    : "get maximum element in given collection"),
+
+        # opMin       : OpSpec(   name    : "min",
+        #                         args    : 1,
+
+        #                         an      : "collection",
+        #                         a       : {Block},
+        #                         ret     : {Any,Null},
+        #                         desc    : "get minimum element in given collection"),
+
+        # opKeys      : OpSpec(   name    : "keys",
+        #                         args    : 1,
+
+        #                         an      : "dictionary",
+        #                         a       : {Dictionary},
+        #                         ret     : {Block},
+        #                         desc    : "get list of keys for given dictionary"),
+
+        # opValues    : OpSpec(   name    : "values",
+        #                         args    : 1,
+
+        #                         an      : "dictionary",
+        #                         a       : {Dictionary},
+        #                         ret     : {Block},
+        #                         desc    : "get list of values for given dictionary"),
+
+        # opDigest    : OpSpec(   name    : "digest",
+        #                         args    : 1,
+
+        #                         an      : "value",
+        #                         a       : {String,Literal},
+        #                         ret     : {String},
+        #                         attrs   :   ".sha -> use SHA1",
+        #                         desc    : "get digest for given value (default: MD5)"),
+
+        # opAlias     : OpSpec(),
+
+        # opMail      : OpSpec(   name    : "mail",
+        #                         args    : 3,
+
+        #                         an      : "recipient",
+        #                         a       : {String},
+        #                         bn      : "message",
+        #                         b       : {Dictionary},
+        #                         cn      : "config",
+        #                         c       : {Dictionary},
+        #                         ret     : {Null},
+        #                         desc    : "send mail using given message and configuration"),
+
+        # opDownload  : OpSpec(   name    : "download",
+        #                         args    : 1,
+
+        #                         an      : "url",
+        #                         a       : {String},
+        #                         ret     : {Null},
+        #                         attrs   :   ".as :string -> set target file",
+        #                         desc    : "download file from url to disk"),
+
+        # opGetAttr   : OpSpec(   name    : "attribute",
+        #                         args    : 1,
+
+        #                         an      : "key",
+        #                         a       : {String},
+        #                         ret     : {Any,Null},
+        #                         desc    : "get given attribute, if it exists"),
+
+        # opHasAttr   : OpSpec(   name    : "hasAttribute?",
+        #                         args    : 1,
+
+        #                         an      : "key",
+        #                         a       : {String},
+        #                         ret     : {Boolean},
+        #                         desc    : "check if given attribute exists"),
+
+        # opRender    : OpSpec(   name    : "render",
+        #                         alias   : "~",
+        #                         args    : 1,
+
+        #                         an      : "template",
+        #                         a       : {String},
+        #                         ret     : {String},
+        #                         attrs   :   ".with :dictionary -> use given dictionary",
+        #                         desc    : "render template with |string| interpolation"),
+
+        # opEncode    : OpSpec(   name    : "encode",
+        #                         args    : 1,
+
+        #                         an      : "value",
+        #                         a       : {String,Literal},
+        #                         ret     : {String},
+        #                         desc    : "base-64 encode given value"),
+
+        # opDecode    : OpSpec(   name    : "decode",
+        #                         args    : 1,
+
+        #                         an      : "value",
+        #                         a       : {String,Literal},
+        #                         ret     : {String},
+        #                         desc    : "base-64 decode given value"),
+
+        # opColor     : OpSpec(   name    : "color",
+        #                         args    : 1,
+
+        #                         an      : "string",
+        #                         a       : {String},
+        #                         ret     : {String},
+        #                         attrs   :   ".rgb :integer -> use specific RGB color~" &
+        #                                     ".bold -> bold color~" &
+        #                                     ".black -> black foreground~" &
+        #                                     ".red -> red foreground~" &
+        #                                     ".green -> green foreground~" &
+        #                                     ".yellow -> yellow foreground~" &
+        #                                     ".blue -> blue foreground~" &
+        #                                     ".magenta -> magenta foreground~" &
+        #                                     ".cyan -> cyan foreground~" &
+        #                                     ".white -> white foreground~" &
+        #                                     ".gray -> gray foreground",
+        #                         desc    : "get colored version of given string"),
+
+        # opTake      : OpSpec(   name    : "take",
+        #                         args    : 2,
+
+        #                         an      : "collection",
+        #                         a       : {Block,String,Literal},
+        #                         bn      : "number",
+        #                         b       : {Integer},
+        #                         ret     : {Block,String,Null},
+        #                         desc    : "return first <number> of elements from given collection"),
+
+        # opDrop      : OpSpec(   name    : "drop",
+        #                         args    : 2,
+
+        #                         an      : "collection",
+        #                         a       : {Block,String,Literal},
+        #                         bn      : "number",
+        #                         b       : {Integer},
+        #                         ret     : {Block,String,Null},
+        #                         desc    : "drop first <number> of elements from given collection~and return the remaining ones"),
+
+        # opAppend    : OpSpec(   name    : "append",  
+        #                         alias   : "++",        
+        #                         args    : 2,   
+
+        #                         an      : "collection",      
+        #                         a       : {String,Char,Block,Literal},        
+        #                         bn      : "value",      
+        #                         b       : {Any},
+        #                         ret     : {String,Block,Null},               
+        #                         desc    : "append value to given collection" ),
+
+        # opRemove    : OpSpec(   name    : "remove",
+        #                         alias   : "--",          
+        #                         args    : 2,   
+
+        #                         an      : "collection",      
+        #                         a       : {String,Block,Dictionary,Literal},        
+        #                         bn      : "value",      
+        #                         b       : {Any},
+        #                         ret     : {String,Block,Dictionary,Null},   
+        #                         attrs   :   ".key -> remove dictionary key~" &
+        #                                     ".once -> remove only first occurrence~" &
+        #                                     ".index :integer -> remove specific index",            
+        #                         desc    : "remove value from given collection" ),
+
+        # opCombine   : OpSpec(   name    : "combine",          
+        #                         args    : 2,   
+
+        #                         an      : "collection",      
+        #                         a       : {Block},  
+        #                         bn      : "collection",      
+        #                         b       : {Block},        
+        #                         ret     : {Block},               
+        #                         desc    : "get combination of elements in given collections" ),
+
+        # opList      : OpSpec(   name    : "list",          
+        #                         args    : 1,   
+
+        #                         an      : "path",      
+        #                         a       : {String},        
+        #                         ret     : {Block},  
+        #                         attrs   :   ".select :string -> select files satisfying given pattern~" &
+        #                                     ".relative -> get relative paths",
+        #                         desc    : "get files at given path" ),
+
+        # opFold      : OpSpec(   name    : "fold",          
+        #                         args    : 3,   
+
+        #                         an      : "collection",  
+        #                         a       : {Block,Literal},              
+        #                         bn      : "params",      
+        #                         b       : {Literal,Block},            
+        #                         cn      : "action",          
+        #                         c       : {Block},            
+        #                         ret     : {Block,Null},   
+        #                         attrs   :   ".seed :any -> use specific seed value~" &
+        #                                     ".right -> perform right folding",   
+        #                         desc    : "fold collection's items by applying given action~and an initial seed value" ),
+
+        # opSqrt      : OpSpec(   name    : "sqrt",          
+        #                         args    : 1,   
+
+        #                         an      : "value",      
+        #                         a       : {Integer,Floating},        
+        #                         ret     : {Floating},  
+        #                         desc    : "get square root of given value" ),
+
+        # opServe     : OpSpec(   name    : "serve",          
+        #                         args    : 1,   
+
+        #                         an      : "routes",      
+        #                         a       : {Dictionary},        
+        #                         ret     : {Null},  
+        #                         attrs   :   ".port :integer -> use given port~" &
+        #                                     ".verbose -> print info log~" &
+        #                                     ".chrome -> open in Chrome window as an app",
+        #                         desc    : "start web server using given routes" ),
+
+        # opLet       : OpSpec(   name    : "let",          
+        #                         args    : 2,   
+
+        #                         an      : "symbol",      
+        #                         a       : {String,Literal},     
+        #                         bn      : "value",
+        #                         b       : {Any},   
+        #                         ret     : {Null},  
+        #                         desc    : "set symbol to given value" ),
+
+        # opVar       : OpSpec(   name    : "var",          
+        #                         args    : 1,   
+
+        #                         an      : "symbol",      
+        #                         a       : {String,Literal},      
+        #                         ret     : {Any},  
+        #                         desc    : "get symbol value by given name" ),
+
+        # opNow       : OpSpec(   name    : "now",
+        #                         args    : 0,
+
+        #                         ret     : {Date},
+        #                         desc    : "get date/time now"),
+
+        # opPause     : OpSpec(   name    : "pause",          
+        #                         args    : 1,   
+
+        #                         an      : "time",  
+        #                         a       : {Integer},                          
+        #                         ret     : {Null},      
+        #                         desc    : "pause program's execution~for the given amount of milliseconds" ),
+
+        # opCall      : OpSpec(   name    : "call",          
+        #                         args    : 2,   
+
+        #                         an      : "function",  
+        #                         a       : {String,Literal,Function}, 
+        #                         bn      : "params",
+        #                         b       : {Block},                        
+        #                         ret     : {Any},      
+        #                         desc    : "call function with given list of parameters" ),
+
+        # opNew       : OpSpec(   name    : "new",          
+        #                         args    : 1,   
+
+        #                         an      : "value",  
+        #                         a       : {Any},                        
+        #                         ret     : {Any},      
+        #                         desc    : "create new value by cloning given one" ),
+
+        # opGetAttrs  : OpSpec(   name    : "attrs",
+        #                         args    : 0,
+
+        #                         ret     : {Dictionary},
+        #                         desc    : "get dictionary of set attributes"),
+
+        # opUntil     : OpSpec(   name    : "until",        
+        #                         args    : 2,   
     
-                                an      : "action",      
-                                a       : {Block},      
-                                bn      : "condition",      
-                                b       : {Block},  
-                                ret     : {Null},      
-                                desc    : "execute action until the given condition is true"),
+        #                         an      : "action",      
+        #                         a       : {Block},      
+        #                         bn      : "condition",      
+        #                         b       : {Block},  
+        #                         ret     : {Null},      
+        #                         desc    : "execute action until the given condition is true"),
 
 
-        opGlobalize : OpSpec(   name    : "globalize",        
-                                args    : 0,   
+        # opGlobalize : OpSpec(   name    : "globalize",        
+        #                         args    : 0,   
     
-                                ret     : {Null},      
-                                desc    : "make all symbols within current context global"),
+        #                         ret     : {Null},      
+        #                         desc    : "make all symbols within current context global"),
 
 
-        opRelative  : OpSpec(   name    : "relative",   
-                                alias   : "./",     
-                                args    : 1,   
+        # opRelative  : OpSpec(   name    : "relative",   
+        #                         alias   : "./",     
+        #                         args    : 1,   
     
-                                an      : "path",
-                                a       : {String},
-                                ret     : {String},      
-                                desc    : "get relative path for given path~based on current script's location"),
+        #                         an      : "path",
+        #                         a       : {String},
+        #                         ret     : {String},      
+        #                         desc    : "get relative path for given path~based on current script's location"),
 
-        opAverage   : OpSpec(   name    : "average",        
-                                args    : 1,   
+        # opAverage   : OpSpec(   name    : "average",        
+        #                         args    : 1,   
     
-                                an      : "collection",
-                                a       : {Block},
-                                ret     : {Floating},      
-                                desc    : "get average from given collection of numbers"),
+        #                         an      : "collection",
+        #                         a       : {Block},
+        #                         ret     : {Floating},      
+        #                         desc    : "get average from given collection of numbers"),
 
-        opMedian    : OpSpec(   name    : "median",        
-                                args    : 1,   
+        # opMedian    : OpSpec(   name    : "median",        
+        #                         args    : 1,   
     
-                                an      : "collection",
-                                a       : {Block},
-                                ret     : {Integer,Floating,Null},      
-                                desc    : "get median from given collection of numbers"),
+        #                         an      : "collection",
+        #                         a       : {Block},
+        #                         ret     : {Integer,Floating,Null},      
+        #                         desc    : "get median from given collection of numbers"),
 
-        opAs        : OpSpec(   name    : "as",        
-                                args    : 1,   
+        # opAs        : OpSpec(   name    : "as",        
+        #                         args    : 1,   
     
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Any},      
-                                attrs   :   ".binary -> format integer as binary~" &
-                                            ".hex -> format integer as hexadecimal~" &
-                                            ".octal -> format integer as octal~" & 
-                                            ".ascii* -> transliterate string to ASCII~" &
-                                            ".agnostic -> convert words in block to literals if not in context",
-                                desc    : "format given value as given type (attribute)"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Any},      
+        #                         attrs   :   ".binary -> format integer as binary~" &
+        #                                     ".hex -> format integer as hexadecimal~" &
+        #                                     ".octal -> format integer as octal~" & 
+        #                                     ".ascii* -> transliterate string to ASCII~" &
+        #                                     ".agnostic -> convert words in block to literals if not in context",
+        #                         desc    : "format given value as given type (attribute)"),
 
-        opGcd       : OpSpec(   name    : "gcd",      
-                                args    : 1,   
+        # opGcd       : OpSpec(   name    : "gcd",      
+        #                         args    : 1,   
 
-                                an      : "numbers",        
-                                a       : {Block},          
-                                ret     : {Integer},      
-                                desc    : "calculate greatest common divisor~for given collection of integers" ),
+        #                         an      : "numbers",        
+        #                         a       : {Block},          
+        #                         ret     : {Integer},      
+        #                         desc    : "calculate greatest common divisor~for given collection of integers" ),
 
-        opPrime     : OpSpec(   name    : "prime?",      
-                                args    : 1,   
+        # opPrime     : OpSpec(   name    : "prime?",      
+        #                         args    : 1,   
 
-                                an      : "number",        
-                                a       : {Integer},          
-                                ret     : {Boolean},      
-                                desc    : "check if given integer is prime" ),
+        #                         an      : "number",        
+        #                         a       : {Integer},          
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given integer is prime" ),
 
-        opPermutate : OpSpec(   name    : "permutate",      
-                                args    : 1,   
+        # opPermutate : OpSpec(   name    : "permutate",      
+        #                         args    : 1,   
 
-                                an      : "collection",        
-                                a       : {Block},          
-                                ret     : {Block},      
-                                desc    : "get all possible permutations~of the elements in given collection" ),
+        #                         an      : "collection",        
+        #                         a       : {Block},          
+        #                         ret     : {Block},      
+        #                         desc    : "get all possible permutations~of the elements in given collection" ),
 
-        opIsWhitespace : OpSpec(   name    : "whitespace?",      
-                                args    : 1,   
+        # opIsWhitespace : OpSpec(   name    : "whitespace?",      
+        #                         args    : 1,   
 
-                                an      : "string",        
-                                a       : {String},          
-                                ret     : {Boolean},      
-                                desc    : "check if given string consists only of whitespace" ),
+        #                         an      : "string",        
+        #                         a       : {String},          
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given string consists only of whitespace" ),
 
-        opIsNumeric : OpSpec(   name    : "numeric?",      
-                                args    : 1,   
+        # opIsNumeric : OpSpec(   name    : "numeric?",      
+        #                         args    : 1,   
 
-                                an      : "string",        
-                                a       : {String},          
-                                ret     : {Boolean},      
-                                desc    : "check if given string contains a valid number" ),
+        #                         an      : "string",        
+        #                         a       : {String},          
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given string contains a valid number" ),
 
-        opFactors  : OpSpec(   name    : "factors",      
-                                args    : 1,   
+        # opFactors  : OpSpec(   name    : "factors",      
+        #                         args    : 1,   
 
-                                an      : "number",        
-                                a       : {Integer},          
-                                ret     : {Block},      
-                                attrs   :   ".prime -> get only prime factors",
-                                desc    : "get list of factors for given integer" ),
+        #                         an      : "number",        
+        #                         a       : {Integer},          
+        #                         ret     : {Block},      
+        #                         attrs   :   ".prime -> get only prime factors",
+        #                         desc    : "get list of factors for given integer" ),
 
-        opMatch     : OpSpec(   name    : "match",      
-                                args    : 2,   
+        # opMatch     : OpSpec(   name    : "match",      
+        #                         args    : 2,   
 
-                                an      : "string",        
-                                a       : {String}, 
-                                bn      : "regex",        
-                                b       : {String},          
-                                ret     : {Block},      
-                                desc    : "get matches within string~using given regular expression" ),
+        #                         an      : "string",        
+        #                         a       : {String}, 
+        #                         bn      : "regex",        
+        #                         b       : {String},          
+        #                         ret     : {Block},      
+        #                         desc    : "get matches within string~using given regular expression" ),
 
-        opModule    : OpSpec(   name    : "module",      
-                                args    : 1,   
+        # opModule    : OpSpec(   name    : "module",      
+        #                         args    : 1,   
 
-                                an      : "name",        
-                                a       : {String,Literal},           
-                                ret     : {String,Null},      
-                                desc    : "get module path for given name" ),
+        #                         an      : "name",        
+        #                         a       : {String,Literal},           
+        #                         ret     : {String,Null},      
+        #                         desc    : "get module path for given name" ),
 
-        opWebview   : OpSpec(   name    : "webview*",      
-                                args    : 2,   
+        # opWebview   : OpSpec(   name    : "webview*",      
+        #                         args    : 2,   
 
-                                an      : "content",        
-                                a       : {String,Literal}, 
-                                bn      : "callbacks",
-                                b       : {Dictionary},          
-                                ret     : {String,Null},  
-                                attrs   :   ".title :string -> set window title~" &
-                                            ".width :integer -> set window width~" &
-                                            ".height :integer -> set window height",   
-                                desc    : "show webview window with given url or html~and dictionary of callback functions" ),
+        #                         an      : "content",        
+        #                         a       : {String,Literal}, 
+        #                         bn      : "callbacks",
+        #                         b       : {Dictionary},          
+        #                         ret     : {String,Null},  
+        #                         attrs   :   ".title :string -> set window title~" &
+        #                                     ".width :integer -> set window width~" &
+        #                                     ".height :integer -> set window height",   
+        #                         desc    : "show webview window with given url or html~and dictionary of callback functions" ),
 
-        opFlatten   : OpSpec(   name    : "flatten",      
-                                args    : 1,   
+        # opFlatten   : OpSpec(   name    : "flatten",      
+        #                         args    : 1,   
 
-                                an      : "collection",  
-                                a       : {Block},      
-                                ret     : {Block},   
-                                desc    : "flatten given collection~by eliminating nested blocks"),
+        #                         an      : "collection",  
+        #                         a       : {Block},      
+        #                         ret     : {Block},   
+        #                         desc    : "flatten given collection~by eliminating nested blocks"),
 
-        opExtra     : OpSpec(),
+        # opExtra     : OpSpec(),
 
-        opLevenshtein: OpSpec(  name    : "levenshtein",
-                                args    : 2,
+        # opLevenshtein: OpSpec(  name    : "levenshtein",
+        #                         args    : 2,
 
-                                an      : "stringA",
-                                a       : {String},
-                                bn      : "stringB",
-                                b       : {String},
-                                ret     : {Integer},
-                                desc    : "get the Levenshtein edit distance~between given strings"),
+        #                         an      : "stringA",
+        #                         a       : {String},
+        #                         bn      : "stringB",
+        #                         b       : {String},
+        #                         ret     : {Integer},
+        #                         desc    : "get the Levenshtein edit distance~between given strings"),
 
-        opNand      : OpSpec(   name    : "nand?",         
-                                args    : 2,   
+        # opNand      : OpSpec(   name    : "nand?",         
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Boolean},                  
-                                bn      : "valueB",      
-                                b       : {Boolean},
-                                ret     : {Boolean},                        
-                                desc    : "return the logical NAND for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Boolean},                  
+        #                         bn      : "valueB",      
+        #                         b       : {Boolean},
+        #                         ret     : {Boolean},                        
+        #                         desc    : "return the logical NAND for the given values" ),
 
-        opNor       : OpSpec(   name    : "nor?",         
-                                args    : 2,   
+        # opNor       : OpSpec(   name    : "nor?",         
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Boolean},                  
-                                bn      : "valueB",      
-                                b       : {Boolean},
-                                ret     : {Boolean},                        
-                                desc    : "return the logical NOR for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Boolean},                  
+        #                         bn      : "valueB",      
+        #                         b       : {Boolean},
+        #                         ret     : {Boolean},                        
+        #                         desc    : "return the logical NOR for the given values" ),
 
-        opXnor      : OpSpec(   name    : "xnor?",         
-                                args    : 2,   
+        # opXnor      : OpSpec(   name    : "xnor?",         
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Boolean},                  
-                                bn      : "valueB",      
-                                b       : {Boolean},
-                                ret     : {Boolean},                        
-                                desc    : "return the logical XNOR for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Boolean},                  
+        #                         bn      : "valueB",      
+        #                         b       : {Boolean},
+        #                         ret     : {Boolean},                        
+        #                         desc    : "return the logical XNOR for the given values" ),
 
-        opBNand     : OpSpec(   name    : "nand",          
-                                args    : 2,   
+        # opBNand     : OpSpec(   name    : "nand",          
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Integer,Literal},      
-                                bn      : "valueB",      
-                                b       : {Integer},
-                                ret     : {Integer,Null},      
-                                desc    : "calculate the binary NAND for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Integer,Literal},      
+        #                         bn      : "valueB",      
+        #                         b       : {Integer},
+        #                         ret     : {Integer,Null},      
+        #                         desc    : "calculate the binary NAND for the given values" ),
 
-        opBNor      : OpSpec(   name    : "nor",          
-                                args    : 2,   
+        # opBNor      : OpSpec(   name    : "nor",          
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Integer,Literal},      
-                                bn      : "valueB",      
-                                b       : {Integer},
-                                ret     : {Integer,Null},      
-                                desc    : "calculate the binary NOR for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Integer,Literal},      
+        #                         bn      : "valueB",      
+        #                         b       : {Integer},
+        #                         ret     : {Integer,Null},      
+        #                         desc    : "calculate the binary NOR for the given values" ),
 
-        opBXnor     : OpSpec(   name    : "xnor",          
-                                args    : 2,   
+        # opBXnor     : OpSpec(   name    : "xnor",          
+        #                         args    : 2,   
 
-                                an      : "valueA",      
-                                a       : {Integer,Literal},      
-                                bn      : "valueB",      
-                                b       : {Integer},
-                                ret     : {Integer,Null},      
-                                desc    : "calculate the binary XNOR for the given values" ),
+        #                         an      : "valueA",      
+        #                         a       : {Integer,Literal},      
+        #                         bn      : "valueB",      
+        #                         b       : {Integer},
+        #                         ret     : {Integer,Null},      
+        #                         desc    : "calculate the binary XNOR for the given values" ),
 
-        opNegative  : OpSpec(   name    : "negative?",        
-                                args    : 1,   
+        # opNegative  : OpSpec(   name    : "negative?",        
+        #                         args    : 1,   
 
-                                an      : "number",      
-                                a       : {Integer,Floating},      
-                                ret     : {Boolean},      
-                                desc    : "check if given number is negative" ),
+        #                         an      : "number",      
+        #                         a       : {Integer,Floating},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given number is negative" ),
 
-        opPositive  : OpSpec(   name    : "positive?",        
-                                args    : 1,   
+        # opPositive  : OpSpec(   name    : "positive?",        
+        #                         args    : 1,   
 
-                                an      : "number",      
-                                a       : {Integer,Floating},      
-                                ret     : {Boolean},      
-                                desc    : "check if given number is positive" ),
+        #                         an      : "number",      
+        #                         a       : {Integer,Floating},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given number is positive" ),
 
-        opZero      : OpSpec(   name    : "zero?",        
-                                args    : 1,   
+        # opZero      : OpSpec(   name    : "zero?",        
+        #                         args    : 1,   
 
-                                an      : "number",      
-                                a       : {Integer,Floating},      
-                                ret     : {Boolean},      
-                                desc    : "check if given number is zero" ),
+        #                         an      : "number",      
+        #                         a       : {Integer,Floating},      
+        #                         ret     : {Boolean},      
+        #                         desc    : "check if given number is zero" ),
 
-        opPanic     : OpSpec(   name    : "panic",      
-                                args    : 1,   
+        # opPanic     : OpSpec(   name    : "panic",      
+        #                         args    : 1,   
       
-                                an      : "message",
-                                a       : {String},
-                                ret     : {Null},    
-                                attrs   :   ".code :integer -> return given exit code",  
-                                desc    : "exit program with error message" ),
+        #                         an      : "message",
+        #                         a       : {String},
+        #                         ret     : {Null},    
+        #                         attrs   :   ".code :integer -> return given exit code",  
+        #                         desc    : "exit program with error message" ),
 
-        opOpen      : OpSpec(   name    : "open",      
-                                args    : 1,   
+        # opOpen      : OpSpec(   name    : "open",      
+        #                         args    : 1,   
       
-                                an      : "name",
-                                a       : {String},
-                                ret     : {Database},    
-                                attrs   :   ".sqlite -> support for SQLite databases~" &
-                                            ".mysql -> support for MySQL databases",  
-                                desc    : "opens a new database connection and returns database" ),
+        #                         an      : "name",
+        #                         a       : {String},
+        #                         ret     : {Database},    
+        #                         attrs   :   ".sqlite -> support for SQLite databases~" &
+        #                                     ".mysql -> support for MySQL databases",  
+        #                         desc    : "opens a new database connection and returns database" ),
 
-        opQuery     : OpSpec(   name    : "query",      
-                                args    : 2,   
+        # opQuery     : OpSpec(   name    : "query",      
+        #                         args    : 2,   
       
-                                an      : "database",
-                                a       : {Database},
-                                bn      : "commands",
-                                b       : {String,Block},
-                                ret     : {Null,Block},    
-                                attrs   :   ".id -> return last insert ID",
-                                desc    : "execute command or block of commands~in given database and get returned rows" ),
+        #                         an      : "database",
+        #                         a       : {Database},
+        #                         bn      : "commands",
+        #                         b       : {String,Block},
+        #                         ret     : {Null,Block},    
+        #                         attrs   :   ".id -> return last insert ID",
+        #                         desc    : "execute command or block of commands~in given database and get returned rows" ),
 
-        opClose     : OpSpec(   name    : "close",      
-                                args    : 1,   
+        # opClose     : OpSpec(   name    : "close",      
+        #                         args    : 1,   
       
-                                an      : "database",
-                                a       : {Database},
-                                ret     : {Null},    
-                                desc    : "close given database" ),
+        #                         an      : "database",
+        #                         a       : {Database},
+        #                         ret     : {Null},    
+        #                         desc    : "close given database" ),
 
-        opNative    : OpSpec(   name    : "native",      
-                                args    : 2,   
+        # opNative    : OpSpec(   name    : "native",      
+        #                         args    : 2,   
       
-                                an      : "name",
-                                a       : {String,Literal},
-                                bn      : "arguments",
-                                b       : {Block},
-                                ret     : {Null},     
-                                desc    : "execute native function with given arguments" ),
+        #                         an      : "name",
+        #                         a       : {String,Literal},
+        #                         bn      : "arguments",
+        #                         b       : {Block},
+        #                         ret     : {Null},     
+        #                         desc    : "execute native function with given arguments" ),
 
-        opExtract   : OpSpec(   name    : "extract",      
-                                args    : 1,   
+        # opExtract   : OpSpec(   name    : "extract",      
+        #                         args    : 1,   
       
-                                an      : "path",
-                                a       : {String},
-                                ret     : {String,Dictionary},
-                                attrs   :   ".directory -> get path directory~" &
-                                            ".basename -> get path basename (filename+ext)~" &
-                                            ".filename -> get path filename~" &
-                                            ".extension -> get path extension~" &
-                                            ".scheme -> get scheme field from URL~" &
-                                            ".host -> get host field from URL~" &
-                                            ".port -> get port field from URL~" &
-                                            ".user -> get user field from URL~" &
-                                            ".password -> get password field from URL~" &
-                                            ".path -> get path field from URL~" &
-                                            ".query -> get query field from URL~" &
-                                            ".anchor -> get anchor field from URL",
-                                desc    : "extract components from path" ),
+        #                         an      : "path",
+        #                         a       : {String},
+        #                         ret     : {String,Dictionary},
+        #                         attrs   :   ".directory -> get path directory~" &
+        #                                     ".basename -> get path basename (filename+ext)~" &
+        #                                     ".filename -> get path filename~" &
+        #                                     ".extension -> get path extension~" &
+        #                                     ".scheme -> get scheme field from URL~" &
+        #                                     ".host -> get host field from URL~" &
+        #                                     ".port -> get port field from URL~" &
+        #                                     ".user -> get user field from URL~" &
+        #                                     ".password -> get password field from URL~" &
+        #                                     ".path -> get path field from URL~" &
+        #                                     ".query -> get query field from URL~" &
+        #                                     ".anchor -> get anchor field from URL",
+        #                         desc    : "extract components from path" ),
 
-        opZip       : OpSpec(   name    : "zip",      
-                                args    : 2,   
+        # opZip       : OpSpec(   name    : "zip",      
+        #                         args    : 2,   
       
-                                an      : "destination",
-                                a       : {String},
-                                bn      : "files",
-                                b       : {Block},
-                                ret     : {Null},
-                                desc    : "zip given files to file at destination" ),
+        #                         an      : "destination",
+        #                         a       : {String},
+        #                         bn      : "files",
+        #                         b       : {Block},
+        #                         ret     : {Null},
+        #                         desc    : "zip given files to file at destination" ),
 
-        opUnzip     : OpSpec(   name    : "unzip",      
-                                args    : 2,   
+        # opUnzip     : OpSpec(   name    : "unzip",      
+        #                         args    : 2,   
       
-                                an      : "destination",
-                                a       : {String},
-                                bn      : "original",
-                                b       : {String},
-                                ret     : {Null},
-                                desc    : "unzip given archive to destination" ),
+        #                         an      : "destination",
+        #                         a       : {String},
+        #                         bn      : "original",
+        #                         b       : {String},
+        #                         ret     : {Null},
+        #                         desc    : "unzip given archive to destination" ),
 
-        opGetHash   : OpSpec(   name    : "hash",      
-                                args    : 1,   
+        # opGetHash   : OpSpec(   name    : "hash",      
+        #                         args    : 1,   
       
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Integer},
-                                attrs   :   ".string -> get as a string",
-                                desc    : "get hash for given value" ),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Integer},
+        #                         attrs   :   ".string -> get as a string",
+        #                         desc    : "get hash for given value" ),
 
-        opExtend    : OpSpec(   name    : "extend",      
-                                args    : 2,   
+        # opExtend    : OpSpec(   name    : "extend",      
+        #                         args    : 2,   
       
-                                an      : "parent",
-                                a       : {Dictionary},
-                                bn      : "additional",
-                                b       : {Dictionary},
-                                ret     : {Dictionary},
-                                desc    : "get new dictionary by merging given ones" ),
+        #                         an      : "parent",
+        #                         a       : {Dictionary},
+        #                         bn      : "additional",
+        #                         b       : {Dictionary},
+        #                         ret     : {Dictionary},
+        #                         desc    : "get new dictionary by merging given ones" ),
         
-        opIsTrue    : OpSpec(   name    : "true?",
-                                args    : 1,
+        # opIsTrue    : OpSpec(   name    : "true?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Boolean},
-                                ret     : {Boolean},
-                                desc    : "returns true if given value is true~otherwise, it returns false"),
+        #                         an      : "value",
+        #                         a       : {Boolean},
+        #                         ret     : {Boolean},
+        #                         desc    : "returns true if given value is true~otherwise, it returns false"),
 
-        opIsFalse   : OpSpec(   name    : "false?",
-                                args    : 1,
+        # opIsFalse   : OpSpec(   name    : "false?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Boolean},
-                                ret     : {Boolean},
-                                desc    : "returns true if given value is false~otherwise, it returns false"),
+        #                         an      : "value",
+        #                         a       : {Boolean},
+        #                         ret     : {Boolean},
+        #                         desc    : "returns true if given value is false~otherwise, it returns false"),
 
-        opIsNull    : OpSpec(   name    : "null?",
-                                args    : 1,
+        # opIsNull    : OpSpec(   name    : "null?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :null"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :null"),
 
-        opIsBoolean : OpSpec(   name    : "boolean?",
-                                args    : 1,
+        # opIsBoolean : OpSpec(   name    : "boolean?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :boolean"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :boolean"),
 
-        opIsInteger : OpSpec(   name    : "integer?",
-                                args    : 1,
+        # opIsInteger : OpSpec(   name    : "integer?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :integer"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :integer"),
 
-        opIsFloating: OpSpec(   name    : "floating?",
-                                args    : 1,
+        # opIsFloating: OpSpec(   name    : "floating?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :floating"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :floating"),
 
-        opIsType    : OpSpec(   name    : "type?",
-                                args    : 1,
+        # opIsType    : OpSpec(   name    : "type?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :type"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :type"),
 
-        opIsChar    : OpSpec(   name    : "char?",
-                                args    : 1,
+        # opIsChar    : OpSpec(   name    : "char?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :char"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :char"),
 
-        opIsString  : OpSpec(   name    : "string?",
-                                args    : 1,
+        # opIsString  : OpSpec(   name    : "string?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :string"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :string"),
 
-        opIsWord    : OpSpec(   name    : "word?",
-                                args    : 1,
+        # opIsWord    : OpSpec(   name    : "word?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :word"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :word"),
 
-        opIsLiteral : OpSpec(   name    : "literal?",
-                                args    : 1,
+        # opIsLiteral : OpSpec(   name    : "literal?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :literal"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :literal"),
 
-        opIsLabel   : OpSpec(   name    : "label?",
-                                args    : 1,
+        # opIsLabel   : OpSpec(   name    : "label?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :label"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :label"),
 
-        opIsAttribute: OpSpec(  name    : "attribute?",
-                                args    : 1,
+        # opIsAttribute: OpSpec(  name    : "attribute?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :attr"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :attr"),
 
-        opIsAttributeLabel: OpSpec(  name    : "attributeLabel?",
-                                args    : 1,
+        # opIsAttributeLabel: OpSpec(  name    : "attributeLabel?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :attrlabel"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :attrlabel"),
 
-        opIsPath    : OpSpec(   name    : "path?",
-                                args    : 1,
+        # opIsPath    : OpSpec(   name    : "path?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :path"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :path"),
 
-        opIsPathLabel: OpSpec(  name    : "pathLabel?",
-                                args    : 1,
+        # opIsPathLabel: OpSpec(  name    : "pathLabel?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :pathlabel"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :pathlabel"),
 
-        opIsSymbol  : OpSpec(   name    : "symbol?",
-                                args    : 1,
+        # opIsSymbol  : OpSpec(   name    : "symbol?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :symbol"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :symbol"),
 
-        opIsDate    : OpSpec(   name    : "date?",
-                                args    : 1,
+        # opIsDate    : OpSpec(   name    : "date?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :date"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :date"),
 
-        opIsBinary  : OpSpec(   name    : "binary?",
-                                args    : 1,
+        # opIsBinary  : OpSpec(   name    : "binary?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :binary"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :binary"),
 
-        opIsDictionary: OpSpec( name    : "dictionary?",
-                                args    : 1,
+        # opIsDictionary: OpSpec( name    : "dictionary?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :dictionary"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :dictionary"),
 
-        opIsFunction: OpSpec(   name    : "function?",
-                                args    : 1,
+        # opIsFunction: OpSpec(   name    : "function?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :function"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :function"),
 
-        opIsInline  : OpSpec(   name    : "inline?",
-                                args    : 1,
+        # opIsInline  : OpSpec(   name    : "inline?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :inline"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :inline"),
 
-        opIsBlock   : OpSpec(   name    : "block?",
-                                args    : 1,
+        # opIsBlock   : OpSpec(   name    : "block?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :block"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :block"),
 
-        opIsDatabase: OpSpec(   name    : "database?",
-                                args    : 1,
+        # opIsDatabase: OpSpec(   name    : "database?",
+        #                         args    : 1,
 
-                                an      : "value",
-                                a       : {Any},
-                                ret     : {Boolean},
-                                desc    : "checks if given value is of type :database"),
+        #                         an      : "value",
+        #                         a       : {Any},
+        #                         ret     : {Boolean},
+        #                         desc    : "checks if given value is of type :database"),
 
-        opBreak     : OpSpec(   name    : "break",
-                                args    : 0,
+        # opBreak     : OpSpec(   name    : "break",
+        #                         args    : 0,
 
-                                ret     : {Null},
-                                desc    : "break out of current block or loop"),
+        #                         ret     : {Null},
+        #                         desc    : "break out of current block or loop"),
 
-        opContinue  : OpSpec(   name    : "continue",
-                                args    : 0,
+        # opContinue  : OpSpec(   name    : "continue",
+        #                         args    : 0,
 
-                                ret     : {Null},
-                                desc    : "immediately continue with next iteration"),
+        #                         ret     : {Null},
+        #                         desc    : "immediately continue with next iteration"),
 
-        opIsStandalone  : OpSpec(   name    : "standalone?",
-                                args    : 0,
+        # opIsStandalone  : OpSpec(   name    : "standalone?",
+        #                         args    : 0,
 
-                                ret     : {Boolean},
-                                desc    : "check if current script runs from command-line"),
+        #                         ret     : {Boolean},
+        #                         desc    : "check if current script runs from command-line"),
 
-        opPi        : OpSpec(   name    : "pi",      
-                                args    : 0,   
+        # opPi        : OpSpec(   name    : "pi",      
+        #                         args    : 0,   
    
-                                ret     : {Floating},      
-                                desc    : "get the Pi (π) constant"),
+        #                         ret     : {Floating},      
+        #                         desc    : "get the Pi (π) constant"),
 
-        opIsContains: OpSpec(   name    : "contains?",        
-                                args    : 2,   
+        # opIsContains: OpSpec(   name    : "contains?",        
+        #                         args    : 2,   
 
-                                an      : "collection",
-                                a       : {String,Block,Dictionary},
-                                bn      : "value",
-                                b       : {Any},
-                                ret     : {Boolean},    
-                                attrs   :   ".regex -> match against a regular expression", 
-                                desc    : "check if collection contains given value" ),
+        #                         an      : "collection",
+        #                         a       : {String,Block,Dictionary},
+        #                         bn      : "value",
+        #                         b       : {Any},
+        #                         ret     : {Boolean},    
+        #                         attrs   :   ".regex -> match against a regular expression", 
+        #                         desc    : "check if collection contains given value" ),
 
     ]
 

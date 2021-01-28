@@ -250,39 +250,40 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                                 discard
 
                 of Symbol: 
-                    case subnode.m:
-                        of plus             : addPartial(opAdd)       # +
-                        of minus            : addPartial(opSub)       # -   
-                        of asterisk         : addPartial(opMul)
-                        of slash            : addPartial(opDiv)       # /
-                        of doubleslash      : addPartial(opFDiv)      # //
-                        of percent          : addPartial(opMod)       # %
-                        of caret            : addPartial(opPow)       # ^
-                        of equal            : addPartial(opEq)        # =
-                        of lessgreater      : addPartial(opNe)        # <>
-                        of greaterthan      : addPartial(opGt)        # >
-                        of greaterequal     : addPartial(opGe)        # >=
-                        of lessthan         : addPartial(opLt)        # <
-                        of equalless        : addPartial(opLe)        # =<
-                        of ellipsis         : addPartial(opRange)     # ..
-                        of backslash        : addPartial(opGet)
-                        of doubleplus       : addPartial(opAppend)    # ++
-                        of doubleminus      : addPartial(opRemove)    # --
-                        of colon            : addPartial(opLet)       # :
+                    discard
+                    # case subnode.m:
+                    #     of plus             : addPartial(opAdd)       # +
+                    #     of minus            : addPartial(opSub)       # -   
+                    #     of asterisk         : addPartial(opMul)
+                    #     of slash            : addPartial(opDiv)       # /
+                    #     of doubleslash      : addPartial(opFDiv)      # //
+                    #     of percent          : addPartial(opMod)       # %
+                    #     of caret            : addPartial(opPow)       # ^
+                    #     of equal            : addPartial(opEq)        # =
+                    #     of lessgreater      : addPartial(opNe)        # <>
+                    #     of greaterthan      : addPartial(opGt)        # >
+                    #     of greaterequal     : addPartial(opGe)        # >=
+                    #     of lessthan         : addPartial(opLt)        # <
+                    #     of equalless        : addPartial(opLe)        # =<
+                    #     of ellipsis         : addPartial(opRange)     # ..
+                    #     of backslash        : addPartial(opGet)
+                    #     of doubleplus       : addPartial(opAppend)    # ++
+                    #     of doubleminus      : addPartial(opRemove)    # --
+                    #     of colon            : addPartial(opLet)       # :
 
-                        of tilde            : 
-                            subargStack.add(OpSpecs[opRender].args)#addCommand(opRender, inArrowBlock=true)
-                        of at               : addCommand(opArray, inArrowBlock=true)
-                        of sharp            : addCommand(opDictionary, inArrowBlock=true)
-                        of dollar           : addCommand(opFunction, inArrowBlock=true)
-                        of ampersand        : addCommand(opPush, inArrowBlock=true) 
-                        of dotslash         : addCommand(opRelative, inArrowBlock=true)
-                        of doublearrowright : addCommand(opWrite, inArrowBlock=true)   
-                        of doublearrowleft  : addCommand(opRead, inArrowBlock=true) 
+                    #     of tilde            : 
+                    #         subargStack.add(OpSpecs[opRender].args)#addCommand(opRender, inArrowBlock=true)
+                    #     of at               : addCommand(opArray, inArrowBlock=true)
+                    #     of sharp            : addCommand(opDictionary, inArrowBlock=true)
+                    #     of dollar           : addCommand(opFunction, inArrowBlock=true)
+                    #     of ampersand        : addCommand(opPush, inArrowBlock=true) 
+                    #     of dotslash         : addCommand(opRelative, inArrowBlock=true)
+                    #     of doublearrowright : addCommand(opWrite, inArrowBlock=true)   
+                    #     of doublearrowleft  : addCommand(opRead, inArrowBlock=true) 
 
-                        else:
-                            addTerminalValue(true):
-                                discard
+                    #     else:
+                    #         addTerminalValue(true):
+                    #             discard
                 else: discard
 
             
@@ -326,357 +327,31 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addConst(consts, node, opPushX)
 
             of Word:
-                case node.s:
-                    # of "null"   : 
-                    #     addTerminalValue(false):
-                    #         addToCommand((byte)opNPush)
-
-                    # of "true"   :
-                    #     addTerminalValue(false):
-                    #         addToCommand((byte)opBPushT)
-
-                    # of "false"  :
-                    #     addTerminalValue(false):
-                    #         addToCommand((byte)opBPushF)
-
-                    # of "add"        : addCommand(opAdd)
-                    # of "sub"        : addCommand(opSub)
-                    # of "mul"        : addCommand(opMul)
-                    # of "div"        : addCommand(opDiv)
-                    # of "fdiv"       : addCommand(opFDiv)
-                    # of "mod"        : addCommand(opMod)
-                    # of "pow"        : addCommand(opPow)
-
-                    # of "neg"        : addCommand(opNeg)
-
-                    # of "not?"       : addCommand(opNot)
-                    # of "and?"       : addCommand(opAnd)
-                    # of "or?"        : addCommand(opOr)
-                    # of "xor?"       : addCommand(opXor)
-
-                    # of "shl"        : addCommand(opShl)
-                    # of "shr"        : addCommand(opShr)
-
-                    # of "pop"        : addCommand(opPop)
-                    of "dup"        : addCommand(opDup)
-                    of "swap"       : addCommand(opSwap)
-                    of "nop"        : addCommand(opNop)
-
-                    # of "push"       : addCommand(opPush)
-
-                    # of "equal?"             : addCommand(opEq)
-                    # of "notEqual?"          : addCommand(opNe)
-                    # of "greater?"           : addCommand(opGt)
-                    # of "greaterOrEqual?"    : addCommand(opGe)
-                    # of "less?"              : addCommand(opLt)
-                    # of "lessOrEqual?"       : addCommand(opLe)
-
-                    # of "array"      : addCommand(opArray)
-                    # of "dictionary" : addCommand(opDictionary)
-                    # of "function"   : addCommand(opFunction)
-
-                    # of "print"      : addCommand(opPrint)
-                    # of "inspect"    : addCommand(opInspect)
-
-                    # of "if"         : addCommand(opIf)
-                    # of "if?"        : addCommand(opIsIf)
-                    # of "else"       : addCommand(opElse)
-
-                    # of "loop"       : addCommand(opLoop)
-
-                    # of "do"         : addCommand(opDo)
-                    # of "map"        : addCommand(opMap)
-                    # of "select"     : addCommand(opSelect)
-                    # of "filter"     : addCommand(opFilter)
-
-                    # of "size"       : addCommand(opSize)
-
-                    # of "upper"      : addCommand(opUpper)
-                    # of "lower"      : addCommand(opLower)
-
-                    # of "get"        : addCommand(opGet)
-                    # of "set"        : addCommand(opSet)
-
-                    # of "to"         : addCommand(opTo)
-
-                    # of "even?"      : addCommand(opEven)
-                    # of "odd?"       : addCommand(opOdd)
-
-                    # of "range"      : addCommand(opRange)
-                    # of "sum"        : addCommand(opSum)
-                    # of "product"    : addCommand(opProduct)
-
-                    # of "exit"       : addCommand(opExit)
-
-                    # of "info"       : addCommand(opInfo)
-
-                    # of "type"       : addCommand(opType)
-                    # of "is?"        : addCommand(opIs)
-
-                    # of "not"        : addCommand(opBNot)
-                    # of "and"        : addCommand(opBAnd)
-                    # of "or"         : addCommand(opBOr)
-                    # of "xor"        : addCommand(opBXor)
-
-                    # of "first"      : addCommand(opFirst)
-                    # of "last"       : addCommand(opLast)
-
-                    # of "unique"     : addCommand(opUnique)
-                    # of "sort"       : addCommand(opSort)
-
-                    # of "inc"        : addCommand(opInc)
-                    # of "dec"        : addCommand(opDec)
-
-                    # of "set?"       : addCommand(opIsSet)
-
-                    # of "symbols"    : addCommand(opSymbols)
-                    # of "stack"      : addCommand(opStack)
-
-                    # of "case"       : addCommand(opCase)
-                    # of "when?"      : addCommand(opWhen)
-
-                    # of "capitalize" : addCommand(opCapitalize)
-
-                    # of "repeat"     : addCommand(opRepeat)
-                    # of "while"      : addCommand(opWhile)
-
-                    # of "random"     : addCommand(opRandom)
-
-                    # of "sample"     : addCommand(opSample)
-                    # of "shuffle"    : addCommand(opShuffle)
-                    # of "slice"      : addCommand(opSlice)
-
-                    # of "clear"      : addCommand(opClear)
-
-                    # of "all?"       : addCommand(opAll)
-                    # of "any?"       : addCommand(opAny)
-
-                    # of "read"       : addCommand(opRead)
-                    # of "write"      : addCommand(opWrite)
-
-                    # of "abs"        : addCommand(opAbs)
-                    # of "acos"       : addCommand(opAcos)
-                    # of "acosh"      : addCommand(opAcosh)
-                    # of "asin"       : addCommand(opAsin)
-                    # of "asinh"      : addCommand(opAsinh)
-                    # of "atan"       : addCommand(opAtan)
-                    # of "atanh"      : addCommand(opAtanh)
-                    # of "cos"        : addCommand(opCos)
-                    # of "cosh"       : addCommand(opCosh)
-                    # of "csec"       : addCommand(opCsec)
-                    # of "csech"      : addCommand(opCsech)
-                    # of "ctan"       : addCommand(opCtan)
-                    # of "ctanh"      : addCommand(opCtanh)
-                    # of "sec"        : addCommand(opSec)
-                    # of "sech"       : addCommand(opSech)
-                    # of "sin"        : addCommand(opSin)
-                    # of "sinh"       : addCommand(opSinh)
-                    # of "tan"        : addCommand(opTan)
-                    # of "tanh"       : addCommand(opTanh)
-
-                    # of "input"      : addCommand(opInput)
-
-                    # of "return"     : addCommand(opReturn)
-
-                    # of "pad"        : addCommand(opPad)
-                    # of "replace"    : addCommand(opReplace)
-                    # of "strip"      : addCommand(opStrip)
-                    # of "split"      : addCommand(opSplit)
-                    # of "prefix"     : addCommand(opPrefix)
-                    # of "prefix?"    : addCommand(opHasPrefix)
-                    # of "suffix"     : addCommand(opSuffix)
-                    # of "suffix?"    : addCommand(opHasSuffix)
-
-                    #of "exists?"    : addCommand(opExists)
-
-                    # of "try"        : addCommand(opTry)
-                    # of "try?"       : addCommand(opTryE)
-
-                    # of "upper?"     : addCommand(opIsUpper)
-                    # of "lower?"     : addCommand(opIsLower)
-
-                    # of "help"       : addCommand(opHelp)
-
-                    # of "empty"      : addCommand(opEmpty)
-                    # of "empty?"     : addCommand(opIsEmpty)
-
-                    # of "insert"     : addCommand(opInsert)
-                    # of "in?"        : addCommand(opIsIn)
-                    # of "index"      : addCommand(opIndex)
-                    # of "key?"       : addCommand(opHasKey)
-                    # of "reverse"    : addCommand(opReverse)
-
-                    # of "execute"    : addCommand(opExecute)
-
-                    # of "prints"     : addCommand(opPrints)
-
-                    # of "benchmark"  : addCommand(opBenchmark)
-
-                    # of "join"       : addCommand(opJoin)
-
-                    # of "max"        : addCommand(opMax)
-                    # of "min"        : addCommand(opMin)
-
-                    # of "keys"       : addCommand(opKeys)
-                    # of "values"     : addCommand(opValues)
-
-                    # of "digest"     : addCommand(opDigest)
-
-                    # of "mail"       : addCommand(opMail)
-                    # of "download"   : addCommand(opDownload)
-
-                    # of "attribute"          : addCommand(opGetAttr)
-                    # of "hasAttribute?"      : addCommand(opHasAttr)
-
-                    # of "render"     : addCommand(opRender)
-
-                    # of "encode"     : addCommand(opEncode)
-                    # of "decode"     : addCommand(opDecode)
-
-                    # of "color"      : addCommand(opColor)
-
-                    # of "take"       : addCommand(opTake)
-                    # of "drop"       : addCommand(opDrop)
-
-                    # of "append"     : addCommand(opAppend)
-                    # of "remove"     : addCommand(opRemove)
-
-                    # of "combine"    : addCommand(opCombine)
-
-                    # of "list"       : addCommand(opList)
-
-                    # of "fold"       : addCommand(opFold)
-                    # of "sqrt"       : addCommand(opSqrt)
-
-                    # of "serve"      : addCommand(opServe)
-
-                    # of "let"        : addCommand(opLet)
-                    # of "var"        : addCommand(opVar)
-
-                    #of "now"        : addCommand(opNow)
-
-                    # of "pause"      : addCommand(opPause)
-
-                    # of "call"       : addCommand(opCall)
-
-                    # of "new"        : addCommand(opNew)
-
-                    # of "attrs"      : addCommand(opGetAttrs)
-
-                    # of "until"      : addCommand(opUntil)
-
-                    # of "globalize"  : addCommand(opGlobalize)
-
-                    # of "relative"   : addCommand(opRelative)
-
-                    # of "average"    : addCommand(opAverage)
-                    # of "median"     : addCommand(opMedian)
-
-                    # of "as"         : addCommand(opAs)
-
-                    # of "gcd"        : addCommand(opGcd)
-                    # of "prime?"     : addCommand(opPrime)
-
-                    # of "permutate"  : addCommand(opPermutate)
-
-                    # of "whitespace?": addCommand(opIsWhitespace)
-                    # of "numeric?"   : addCommand(opIsNumeric)
-
-                    # of "factors"    : addCommand(opFactors)
-
-                    # of "match"      : addCommand(opMatch)
-
-                    # of "module"     : addCommand(opModule)
-
-                    # of "webview"    : addCommand(opWebview)
-
-                    # of "flatten"    : addCommand(opFlatten)
-
-                    # of "levenshtein": addExtraCommand(opLevenshtein)
-
-                    # of "nand?"      : addExtraCommand(opNand)
-                    # of "nor?"       : addExtraCommand(opNor)
-                    # of "xnor?"      : addExtraCommand(opXnor)
-
-                    # of "nand"       : addExtraCommand(opBNand)
-                    # of "nor"        : addExtraCommand(opBNor)
-                    # of "xnor"       : addExtraCommand(opBXnor)
-
-                    # of "negative?"  : addExtraCommand(opNegative)
-                    # of "positive?"  : addExtraCommand(opPositive)
-                    # of "zero?"      : addExtraCommand(opZero)
-
-                    # of "panic"      : addExtraCommand(opPanic)
-
-                    # of "open"       : addExtraCommand(opOpen)
-                    # of "query"      : addExtraCommand(opQuery)
-                    # of "close"      : addExtraCommand(opClose)
-
-                    # of "native"     : addExtraCommand(opNative)
-
-                    # of "extract"    : addExtraCommand(opExtract)
-
-                    # of "zip"        : addExtraCommand(opZip)
-                    # of "unzip"      : addExtraCommand(opUnzip)
-
-                    # of "hash"       : addExtraCommand(opGetHash)
-
-                    # of "extend"     : addExtraCommand(opExtend)
-
-                    # of "true?"      : addExtraCommand(opIsTrue)
-                    # of "false?"     : addExtraCommand(opIsFalse)
-
-                    # of "null?"      : addExtraCommand(opIsNull)
-                    # of "boolean?"   : addExtraCommand(opIsBoolean)
-                    # of "integer?"   : addExtraCommand(opIsInteger)
-                    # of "floating?"  : addExtraCommand(opIsFloating)
-                    # of "type?"      : addExtraCommand(opIsType)
-                    # of "char?"      : addExtraCommand(opIsChar)
-                    # of "string?"    : addExtraCommand(opIsString)
-                    # of "word?"      : addExtraCommand(opIsWord)
-                    # of "literal?"   : addExtraCommand(opIsLiteral)
-                    # of "label?"     : addExtraCommand(opIsLabel)
-                    # of "attribute?"      : addExtraCommand(opIsAttribute)
-                    # of "attributeLabel?" : addExtraCommand(opIsAttributeLabel)
-                    # of "path?"      : addExtraCommand(opIsPath)
-                    # of "pathLabel?" : addExtraCommand(opIsPathLabel)
-                    # of "symbol?"    : addExtraCommand(opIsSymbol)
-                    # of "date?"      : addExtraCommand(opIsDate)
-                    # of "binary?"    : addExtraCommand(opIsBinary)
-                    # of "dictionary?": addExtraCommand(opIsDictionary)
-                    # of "function?"  : addExtraCommand(opIsFunction)
-                    # of "inline?"    : addExtraCommand(opIsInline)
-                    # of "block?"     : addExtraCommand(opIsBlock)
-                    # of "database?"  : addExtraCommand(opIsDatabase) 
-
-                    # of "break"      : addExtraCommand(opBreak)   
-                    # of "continue"   : addExtraCommand(opContinue)   
-
-                    # of "standalone?": addExtraCommand(opIsStandalone)
-
-                    # of "pi"         : addExtraCommand(opPi)
-
-                    # of "contains?"  : addExtraCommand(opIsContains)
-
-                    else:
-                        if syms.hasKey(node.s) and syms[node.s].kind==Function:
-                            if syms[node.s].fnKind==UserFunction:
-                                if Funcs[node.s]!=0:
-                                    addConst(consts, node, opCallX)
-                                    argStack.add(Funcs[node.s])
-                                else:
-                                    addTerminalValue(false):
-                                        addConst(consts, node, opCallX)
-                            else:
-                                if syms[node.s].arity!=0:
-                                    addConst(consts, node, opCallX)
-                                    argStack.add(syms[node.s].arity)
-                                else:
-                                    addTerminalValue(false):
-                                        addConst(consts, node, opCallX)
+                if syms.hasKey(node.s) and syms[node.s].kind==Function:
+                    if syms[node.s].fnKind==UserFunction:
+                        if syms[node.s].params.a.len!=0:
+                            addConst(consts, node, opCallX)
+                            argStack.add(syms[node.s].params.a.len)
                         else:
                             addTerminalValue(false):
-                                addConst(consts, node, opLoadX)
+                                addConst(consts, node, opCallX)
+                    else:
+                        if syms[node.s].arity!=0:
+                            addConst(consts, node, opCallX)
+                            argStack.add(syms[node.s].arity)
+                        else:
+                            addTerminalValue(false):
+                                addConst(consts, node, opCallX)
+                elif Funcs.hasKey(node.s):
+                    if Funcs[node.s]!=0:
+                        addConst(consts, node, opCallX)
+                        argStack.add(Funcs[node.s])
+                    else:
+                        addTerminalValue(false):
+                            addConst(consts, node, opCallX)
+                else:
+                    addTerminalValue(false):
+                        addConst(consts, node, opLoadX)
                         # if Funcs.hasKey(node.s):
                         #     if Funcs[node.s]!=0:
                         #         addConst(consts, node, opCallX)
@@ -925,10 +600,10 @@ proc dump*(evaled: Translation) =
                 i += 1
                 let indx = it[i]
                 stdout.write fmt("\t#{indx}\n")
-            of opExtra:
-                i += 1
-                let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
-                stdout.write fmt("\t%{extra}\n")
+            # of opExtra:
+            #     i += 1
+            #     let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
+            #     stdout.write fmt("\t%{extra}\n")
             else:
                 discard
 

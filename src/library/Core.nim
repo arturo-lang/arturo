@@ -119,6 +119,7 @@ builtin "do",
         var execInParent = (popAttr("import") != VNULL)
 
         if x.kind==Block:
+            # discard executeBlock(x)
             if execInParent:
                 discard execBlock(x, execInParent=true)
                 showVMErrors()
