@@ -34,7 +34,7 @@ builtin "encode",
     rule        = PrefixPrecedence,
     description = "base-64 decode given value",
     args        = {
-        "value" : {Integer,Literal}
+        "value" : {String,Literal}
     },
     attrs       = NoAttrs,
     returns     = {String,Nothing},
