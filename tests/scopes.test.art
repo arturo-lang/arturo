@@ -1,28 +1,32 @@
 ; NORMAL FUNCTION CALL
-; from the inside can we access the outer variable
+; from the inside we can access the outer variable
 ; but not modify it
 
 x: 1
+print ["x before:" x]
 
 f: function[][
     x: x+10
+	print ["x in f:" x]
 ]
 
 f
-print x
+print ["x after:" x]
 
 ; FUNCTION CALL WITH .EXPORT
 ; from the inside can we access the outer variable
 ; and modify it
 
 y: 1
+print ["y before:" y]
 
 g: function [] .export:[y][
     y: y+10
+	print ["y in g:" y]
 ]
 
 g
-print y
+print ["y after:" y]
 
 ; NESTED FUNCTION CALLS
 ; the local variables should remain intact
@@ -30,20 +34,19 @@ print y
 
 z: function[x][
 	s: x
-	print ["in G: x=" x ", s=" s]
+	print ["in Z: x=" x ", s=" s]
 ]
 
 w: function[x y][
 	s: x
 	do y
-	print ["in F: x=" x ", s=" s]
+	print ["in W: x=" x ", s=" s]
 ]
 
 w 10 [z 20]
 
 ; NESTED FUNCTION CALLS (WITH STRINGS)
 ; as above
-
 
 l: function[x][
 	m: x
@@ -72,7 +75,7 @@ do [
 			print [x a b y]
 		]
 		print [x a b y]
-	]	a
+	]
 
 	if? set? 'b [
  		print [a b y x]
@@ -86,15 +89,15 @@ do [
 ; a function can only access its own parameters
 
 va: 34
-p: function[r].pure[
-	print ["in p: r =" r]
+p: function [r].pure[
+	; print ["in p: r =" r]
 
-	if? set? 'va [
-		print va
-	]
-	else [
-		print "va: not set"
-	]
+	; if? set? 'va [
+	; 	print va
+	; ]
+	; else [
+	; 	print "va: not set"
+	; ]
 ]
 
 p 123
