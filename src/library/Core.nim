@@ -7,13 +7,6 @@
 ######################################################
 
 #=======================================
-# Libraries
-#=======================================
-
-import translator/parse
-import vm/env, vm/stack, vm/value
-
-#=======================================
 # Methods
 #=======================================
 
@@ -28,7 +21,7 @@ builtin "break",
     """:
         ##########################################################
         vmBreak = true
-        return syms
+        #return syms
 
 builtin "call",
     alias       = unaliased, 
@@ -93,7 +86,7 @@ builtin "continue",
     """:
         ##########################################################
         vmContinue = true
-        return syms
+        #return syms
 
 builtin "do",
     alias       = unaliased, 
@@ -270,6 +263,180 @@ builtin "new",
         ##########################################################
         stack.push(copyValue(x))
 
+builtin "pop",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "pop top <number> values from stack",
+    args        = {
+        "number"    : {Integer}
+    },
+    attrs       = {
+        "discard"   : ({Boolean},"do not return anything")
+    },
+    returns     = {Any},
+    example     = """
+    """:
+        ##########################################################
+        let doDiscard = (popAttr("discard") != VNULL)
+
+        if x.i==1:
+            if doDiscard: discard stack.pop()
+            else: discard
+        else:
+            if doDiscard: 
+                var i = 0
+                while i<x.i:
+                    discard stack.pop()
+                    i+=1
+            else:
+                var res: ValueArray = @[]
+                var i = 0
+                while i<x.i:
+                    res.add stack.pop()
+                    i+=1
+                stack.push(newBlock(res))
+
+builtin "push",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "push given value to stack twice",
+    args        = {
+        "value" : {Any}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+    """:
+        ##########################################################
+        stack.push(sTop())
+
+builtin "return",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "return given value from current function",
+    args        = {
+        "value" : {Any}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        f: function [x][ 
+        ____loop 1..x 'y [ 
+        ________if y=5 [ return y*2 ] 
+        ____] 
+        ____return x*2
+        ]
+        
+        print f 3         ; 6
+        print f 6         ; 10
+    """:
+        ##########################################################
+        stack.push(x)
+        vmReturn = true
+        #return syms
+
+builtin "try",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "perform action and catch possible errors",
+    args        = {
+        "action": {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        try [
+        ____; let's try something dangerous
+        ____print 10 / 0
+        ]
+        
+        ; we catch the exception but do nothing with it
+    """:
+        ##########################################################
+        try:
+            discard execBlock(x)
+        except:
+            discard
+
+builtin "try?",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "perform action, catch possible errors and return status",
+    args        = {
+        "action": {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Boolean},
+    example     = """
+        try? [
+        ____; let's try something dangerous
+        ____print 10 / 0
+        ]
+        else [
+        ____print "something went terribly wrong..."
+        ]
+        
+        ; something went terribly wrong...
+    """:
+        ##########################################################
+        try:
+            discard execBlock(x)
+            stack.push(VTRUE)
+        except:
+            stack.push(VFALSE)
+
+builtin "until",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "execute action until the given condition is true",
+    args        = {
+        "action"    : {Block},
+        "condition" : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        i: 0 
+        until [
+        ____print ["i =>" i] 
+        ____i: i + 1
+        ][i = 10]
+        
+        ; i => 0 
+        ; i => 1 
+        ; i => 2 
+        ; i => 3 
+        ; i => 4 
+        ; i => 5 
+        ; i => 6 
+        ; i => 7 
+        ; i => 8 
+        ; i => 9 
+    """:
+        ##########################################################
+        let preevaledX = doEval(x)
+        let preevaledY = doEval(y)
+
+        while true:
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
+            if stack.pop().b:
+                break
+
+builtin "var",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "get symbol value by given name",
+    args        = {
+        "symbol"    : {String,Literal}
+    },
+    attrs       = NoAttrs,
+    returns     = {Any},
+    example     = """
+    """:
+        ##########################################################
+        stack.push(syms[x.s])
+
 builtin "when?",
     alias       = unaliased, 
     rule        = PrefixPrecedence,
@@ -309,147 +476,40 @@ builtin "when?",
         else:
             push(z)
 
-template Pop*():untyped =
-    require(opPop)
+builtin "while",
+    alias       = unaliased, 
+    rule        = PrefixPrecedence,
+    description = "execute action while the given condition is true",
+    args        = {
+        "condition" : {Block},
+        "action"    : {Block}
+    },
+    attrs       = NoAttrs,
+    returns     = {Nothing},
+    example     = """
+        i: 0 
+        while [i<10][
+        ____print ["i =>" i] 
+        ____i: i + 1
+        ]
+        
+        ; i => 0 
+        ; i => 1 
+        ; i => 2 
+        ; i => 3 
+        ; i => 4 
+        ; i => 5 
+        ; i => 6 
+        ; i => 7 
+        ; i => 8 
+        ; i => 9 
+    """:
+        ##########################################################
+        let preevaledX = doEval(x)
+        let preevaledY = doEval(y)
 
-    let doDiscard = (popAttr("discard") != VNULL)
-
-    if x.i==1:
-        if doDiscard: discard stack.pop()
-        else: discard
-    else:
-        if doDiscard: 
-            var i = 0
-            while i<x.i:
-                discard stack.pop()
-                i+=1
-        else:
-            var res: ValueArray = @[]
-            var i = 0
-            while i<x.i:
-                res.add stack.pop()
-                i+=1
-            stack.push(newBlock(res))
-
-template Push*():untyped =
-    require(opPush, true)
-
-    stack.push(sTop())
-
-template Return*():untyped = 
-    # EXAMPLE:
-    # f: function [x][ 
-    # ____loop 1..x 'y [ 
-    # ________if y=5 [ return y*2 ] 
-    # ____] 
-    # ____return x*2
-    # ]
-    #
-    # print f 3         ; 6
-    # print f 6         ; 10
-
-    require(opReturn)
-    stack.push(x)
-
-    vmReturn = true
-    return syms
-
-template Try*():untyped =
-    # EXAMPLE:
-    # try [
-    # ____; let's try something dangerous
-    # ____print 10 / 0
-    # ]
-    #
-    # ; we catch the exception but do nothing with it
-
-    require(opTry)
-
-    try:
-        discard execBlock(x)
-    except:
-        discard
-
-template TryE*():untyped = 
-    # EXAMPLE:
-    # try? [
-    # ____; let's try something dangerous
-    # ____print 10 / 0
-    # ]
-    # else [
-    # ____print "something went terribly wrong..."
-    # ]
-    #
-    # ; something went terribly wrong...
-
-    require(opTryE)
-
-    try:
-        discard execBlock(x)
-        stack.push(VTRUE)
-    except:
-        stack.push(VFALSE)
-
-template Until*():untyped =
-    # EXAMPLE:
-    # i: 0 
-    # until [
-    # ____print ["i =>" i] 
-    # ____i: i + 1
-    # ][i = 10]
-    #
-    # ; i => 0 
-    # ; i => 1 
-    # ; i => 2 
-    # ; i => 3 
-    # ; i => 4 
-    # ; i => 5 
-    # ; i => 6 
-    # ; i => 7 
-    # ; i => 8 
-    # ; i => 9 
-    require(opUntil)
-
-    let preevaledX = doEval(x)
-    let preevaledY = doEval(y)
-
-    while true:
         discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
-        if stack.pop().b:
-            break
 
-template Var*():untyped =
-    require(opVar)
-
-    stack.push(syms[x.s])
-
-template While*():untyped =
-    # EXAMPLE:
-    # i: 0 
-    # while [i<10][
-    # ____print ["i =>" i] 
-    # ____i: i + 1
-    # ]
-    #
-    # ; i => 0 
-    # ; i => 1 
-    # ; i => 2 
-    # ; i => 3 
-    # ; i => 4 
-    # ; i => 5 
-    # ; i => 6 
-    # ; i => 7 
-    # ; i => 8 
-    # ; i => 9 
-
-    require(opWhile)
-
-    let preevaledX = doEval(x)
-    let preevaledY = doEval(y)
-
-    discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
-
-    while stack.pop().b:
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
+        while stack.pop().b:
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
+            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
