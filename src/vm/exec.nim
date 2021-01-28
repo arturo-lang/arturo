@@ -43,7 +43,6 @@ import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import library/[
-    Core, 
     Reflection
 ]
 
@@ -510,12 +509,12 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                 stack.pushAttr(attr.r, val)
 
-            of opReturn     : Core.Return()
+            of opReturn     : discard #Core.Return()
 
             # # [0x6] #
             # # stack operations
 
-            of opPop        : Core.Pop()
+            of opPop        : discard #Core.Pop()
             of opDup        : stack.push(sTop())
             of opSwap       : swap(Stack[SP-1], Stack[SP-2])
             of opNop        : discard
@@ -525,7 +524,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opJmp        : discard # UNIMPLEMENTED
             of opJmpIf      : discard # UNIMPLEMENTED
         
-            of opPush       : Core.Push()
+            of opPush       : discard #Core.Push()
 
             # # comparison operations
 
@@ -548,13 +547,13 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opPrint      : discard #Core.Print()
             of opInspect    : Reflection.Inspect() 
 
-            of opIf         : Core.If()
-            of opIsIf       : Core.IsIf()
-            of opElse       : Core.Else()
+            of opIf         : discard #Core.If()
+            of opIsIf       : discard #Core.IsIf()
+            of opElse       : discard #Core.Else()
 
             of opLoop       : discard #Collections.Loop()
 
-            of opDo         : Core.Do() 
+            of opDo         : discard #Core.Do() 
 
             of opMap        : discard #Collections.Map()
             of opSelect     : discard #Collections.Select()
@@ -578,7 +577,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opSum: discard #Numbers.Sum()
             of opProduct: discard #Numbers.Product()
                 
-            of opExit: Core.Exit()
+            of opExit: discard #Core.Exit()
             of opInfo: Reflection.Info()
             of opType: Reflection.Type()
             of opIs: Reflection.Is()
@@ -602,13 +601,13 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opSymbols: Reflection.Symbols()
             of opStack: Reflection.GetStack()
 
-            of opCase: Core.Case()
-            of opWhen: Core.IsWhen()
+            of opCase: discard #Core.Case()
+            of opWhen: discard #Core.IsWhen()
 
             of opCapitalize: discard #Strings.Capitalize()
 
             of opRepeat: discard #Collections.Repeat()
-            of opWhile: Core.While()
+            of opWhile: discard #Core.While()
 
             of opRandom: discard #Numbers.Random()
 
@@ -657,8 +656,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opExists: discard #Files.IsExists()
 
-            of opTry: Core.Try()
-            of opTryE: Core.TryE()
+            of opTry: discard #Core.Try()
+            of opTryE: discard #Core.TryE()
 
             of opIsUpper: discard #Strings.IsUpper()
             of opIsLower: discard #Strings.IsLower()
@@ -720,22 +719,22 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opServe: discard #Net.Serve()
 
-            of opLet: Core.Let()
-            of opVar: Core.Var()
+            of opLet: discard #Core.Let()
+            of opVar: discard #Core.Var()
 
             of opNow: discard #Dates.Now()
 
-            of opPause: Core.Pause()
+            of opPause: discard #Core.Pause()
 
-            of opCall: Core.Call()
+            of opCall: discard #Core.Call()
 
-            of opNew: Core.New()
+            of opNew: discard #Core.New()
 
             of opGetAttrs: Reflection.GetAttrs()
 
-            of opUntil: Core.Until()
+            of opUntil: discard #Core.Until()
 
-            of opGlobalize: Core.Globalize()
+            of opGlobalize: discard #Core.Globalize()
 
             of opRelative: discard #Path.Relative()
 
@@ -780,13 +779,13 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
                     of opPositive: discard #Numbers.IsPositive()
                     of opZero: discard #Numbers.IsZero()
 
-                    of opPanic: Core.Panic()
+                    of opPanic: discard #Core.Panic()
 
                     of opOpen: discard #Database.Open()
                     of opQuery: discard #Database.Query()
                     of opClose: discard #Database.Close()
 
-                    of opNative: Core.Native()
+                    of opNative: discard #Core.Native()
 
                     of opExtract: discard #Path.Extract()
 
@@ -823,8 +822,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
                     of opIsBlock: Reflection.IsBlock()
                     of opIsDatabase: Reflection.IsDatabase() 
 
-                    of opBreak: Core.Break()
-                    of opContinue: Core.Continue()
+                    of opBreak: discard #Core.Break()
+                    of opContinue: discard #Core.Continue()
 
                     of opIsStandalone: Reflection.IsStandalone()
 

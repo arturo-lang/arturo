@@ -357,12 +357,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "shl"        : addCommand(opShl)
                     # of "shr"        : addCommand(opShr)
 
-                    of "pop"        : addCommand(opPop)
+                    # of "pop"        : addCommand(opPop)
                     of "dup"        : addCommand(opDup)
                     of "swap"       : addCommand(opSwap)
                     of "nop"        : addCommand(opNop)
 
-                    of "push"       : addCommand(opPush)
+                    # of "push"       : addCommand(opPush)
 
                     # of "equal?"             : addCommand(opEq)
                     # of "notEqual?"          : addCommand(opNe)
@@ -378,13 +378,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "print"      : addCommand(opPrint)
                     of "inspect"    : addCommand(opInspect)
 
-                    of "if"         : addCommand(opIf)
-                    of "if?"        : addCommand(opIsIf)
-                    of "else"       : addCommand(opElse)
+                    # of "if"         : addCommand(opIf)
+                    # of "if?"        : addCommand(opIsIf)
+                    # of "else"       : addCommand(opElse)
 
                     # of "loop"       : addCommand(opLoop)
 
-                    of "do"         : addCommand(opDo)
+                    # of "do"         : addCommand(opDo)
                     # of "map"        : addCommand(opMap)
                     # of "select"     : addCommand(opSelect)
                     # of "filter"     : addCommand(opFilter)
@@ -406,7 +406,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "sum"        : addCommand(opSum)
                     # of "product"    : addCommand(opProduct)
 
-                    of "exit"       : addCommand(opExit)
+                    # of "exit"       : addCommand(opExit)
 
                     of "info"       : addCommand(opInfo)
 
@@ -432,13 +432,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "symbols"    : addCommand(opSymbols)
                     of "stack"      : addCommand(opStack)
 
-                    of "case"       : addCommand(opCase)
-                    of "when?"      : addCommand(opWhen)
+                    # of "case"       : addCommand(opCase)
+                    # of "when?"      : addCommand(opWhen)
 
                     # of "capitalize" : addCommand(opCapitalize)
 
                     # of "repeat"     : addCommand(opRepeat)
-                    of "while"      : addCommand(opWhile)
+                    # of "while"      : addCommand(opWhile)
 
                     # of "random"     : addCommand(opRandom)
 
@@ -476,7 +476,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "input"      : addCommand(opInput)
 
-                    of "return"     : addCommand(opReturn)
+                    # of "return"     : addCommand(opReturn)
 
                     # of "pad"        : addCommand(opPad)
                     # of "replace"    : addCommand(opReplace)
@@ -489,8 +489,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     #of "exists?"    : addCommand(opExists)
 
-                    of "try"        : addCommand(opTry)
-                    of "try?"       : addCommand(opTryE)
+                    # of "try"        : addCommand(opTry)
+                    # of "try?"       : addCommand(opTryE)
 
                     # of "upper?"     : addCommand(opIsUpper)
                     # of "lower?"     : addCommand(opIsLower)
@@ -550,20 +550,20 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "serve"      : addCommand(opServe)
 
-                    of "let"        : addCommand(opLet)
-                    of "var"        : addCommand(opVar)
+                    # of "let"        : addCommand(opLet)
+                    # of "var"        : addCommand(opVar)
 
                     #of "now"        : addCommand(opNow)
 
-                    of "pause"      : addCommand(opPause)
+                    # of "pause"      : addCommand(opPause)
 
-                    of "call"       : addCommand(opCall)
+                    # of "call"       : addCommand(opCall)
 
-                    of "new"        : addCommand(opNew)
+                    # of "new"        : addCommand(opNew)
 
                     of "attrs"      : addCommand(opGetAttrs)
 
-                    of "until"      : addCommand(opUntil)
+                    # of "until"      : addCommand(opUntil)
 
                     of "globalize"  : addCommand(opGlobalize)
 
@@ -606,13 +606,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "positive?"  : addExtraCommand(opPositive)
                     # of "zero?"      : addExtraCommand(opZero)
 
-                    of "panic"      : addExtraCommand(opPanic)
+                    # of "panic"      : addExtraCommand(opPanic)
 
                     # of "open"       : addExtraCommand(opOpen)
                     # of "query"      : addExtraCommand(opQuery)
                     # of "close"      : addExtraCommand(opClose)
 
-                    of "native"     : addExtraCommand(opNative)
+                    # of "native"     : addExtraCommand(opNative)
 
                     # of "extract"    : addExtraCommand(opExtract)
 
@@ -649,8 +649,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     of "block?"     : addExtraCommand(opIsBlock)
                     of "database?"  : addExtraCommand(opIsDatabase) 
 
-                    of "break"      : addExtraCommand(opBreak)   
-                    of "continue"   : addExtraCommand(opContinue)   
+                    # of "break"      : addExtraCommand(opBreak)   
+                    # of "continue"   : addExtraCommand(opContinue)   
 
                     of "standalone?": addExtraCommand(opIsStandalone)
 
