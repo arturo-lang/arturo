@@ -65,6 +65,5 @@ while [true] .import [
 	if StackSize > 0 		-> Got: pop 1 
 	if Got <> null 			-> print color.gray ~"=> |Got|" 
 
-	globalize
 	print ""
 ]
