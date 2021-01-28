@@ -42,10 +42,6 @@ import helpers/url          as urlHelper
 import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
-import library/[
-    Reflection
-]
-
 import translator/eval, translator/parse
 import vm/bytecode, vm/globals, vm/stack, vm/value
 
@@ -546,7 +542,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             # system calls (144 slots)
 
             of opPrint      : discard #Core.Print()
-            of opInspect    : Reflection.Inspect() 
+            of opInspect    : discard #Reflection.Inspect() 
 
             of opIf         : discard #Core.If()
             of opIsIf       : discard #Core.IsIf()
@@ -579,9 +575,9 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opProduct: discard #Numbers.Product()
                 
             of opExit: discard #Core.Exit()
-            of opInfo: Reflection.Info()
-            of opType: Reflection.Type()
-            of opIs: Reflection.Is()
+            of opInfo: discard #Reflection.Info()
+            of opType: discard #Reflection.Type()
+            of opIs: discard #Reflection.Is()
 
             of opBNot: discard #Binary.Not()
             of opBAnd: discard #Binary.And()
@@ -597,10 +593,10 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opInc: discard #Arithmetic.Inc()
             of opDec: discard #Arithmetic.Dec()
 
-            of opIsSet: Reflection.IsSet()
+            of opIsSet: discard #Reflection.IsSet()
                 
-            of opSymbols: Reflection.Symbols()
-            of opStack: Reflection.GetStack()
+            of opSymbols: discard #Reflection.Symbols()
+            of opStack: discard #Reflection.GetStack()
 
             of opCase: discard #Core.Case()
             of opWhen: discard #Core.IsWhen()
@@ -663,7 +659,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opIsUpper: discard #Strings.IsUpper()
             of opIsLower: discard #Strings.IsLower()
 
-            of opHelp: Reflection.Help()
+            of opHelp: discard #Reflection.Help()
 
             of opEmpty: discard #Collections.Empty()
             of opIsEmpty: discard #Collections.IsEmpty()
@@ -678,7 +674,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opPrints: discard #Core.Prints()
 
-            of opBenchmark: Reflection.Benchmark()
+            of opBenchmark: discard #Reflection.Benchmark()
 
             of opJoin: discard #Collections.Join()
 
@@ -695,8 +691,8 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opMail: discard #Net.Mail()
             of opDownload: discard #Net.Download()
 
-            of opGetAttr: Reflection.GetAttr()
-            of opHasAttr: Reflection.HasAttr()
+            of opGetAttr: discard #Reflection.GetAttr()
+            of opHasAttr: discard #Reflection.HasAttr()
 
             of opRender: discard #Strings.Render()
 
@@ -731,7 +727,7 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
             of opNew: discard #Core.New()
 
-            of opGetAttrs: Reflection.GetAttrs()
+            of opGetAttrs: discard #Reflection.GetAttrs()
 
             of opUntil: discard #Core.Until()
 
@@ -800,33 +796,33 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
                     of opIsTrue: discard #Logic.IsTrue()
                     of opIsFalse: discard #Logic.IsFalse()
 
-                    of opIsNull: Reflection.IsNull()
-                    of opIsBoolean: Reflection.IsBoolean()
-                    of opIsInteger: Reflection.IsInteger()
-                    of opIsFloating: Reflection.IsFloating()
-                    of opIsType: Reflection.IsType()
-                    of opIsChar: Reflection.IsChar()
-                    of opIsString: Reflection.IsString()
-                    of opIsWord: Reflection.IsWord()
-                    of opIsLiteral: Reflection.IsLiteral()
-                    of opIsLabel: Reflection.IsLabel()
-                    of opIsAttribute: Reflection.IsAttribute()
-                    of opIsAttributeLabel: Reflection.IsAttributeLabel()
-                    of opIsPath: Reflection.IsPath()
-                    of opIsPathLabel: Reflection.IsPathLabel()
-                    of opIsSymbol: Reflection.IsSymbol()
-                    of opIsDate: Reflection.IsDate()
-                    of opIsBinary: Reflection.IsBinary()
-                    of opIsDictionary: Reflection.IsDictionary()
-                    of opIsFunction: Reflection.IsFunction()
-                    of opIsInline: Reflection.IsInline()
-                    of opIsBlock: Reflection.IsBlock()
-                    of opIsDatabase: Reflection.IsDatabase() 
+                    of opIsNull: discard #Reflection.IsNull()
+                    of opIsBoolean: discard #Reflection.IsBoolean()
+                    of opIsInteger: discard #Reflection.IsInteger()
+                    of opIsFloating: discard #Reflection.IsFloating()
+                    of opIsType: discard #Reflection.IsType()
+                    of opIsChar: discard #Reflection.IsChar()
+                    of opIsString: discard #Reflection.IsString()
+                    of opIsWord: discard #Reflection.IsWord()
+                    of opIsLiteral: discard #Reflection.IsLiteral()
+                    of opIsLabel: discard #Reflection.IsLabel()
+                    of opIsAttribute: discard #Reflection.IsAttribute()
+                    of opIsAttributeLabel: discard #Reflection.IsAttributeLabel()
+                    of opIsPath: discard #Reflection.IsPath()
+                    of opIsPathLabel: discard #Reflection.IsPathLabel()
+                    of opIsSymbol: discard #Reflection.IsSymbol()
+                    of opIsDate: discard #Reflection.IsDate()
+                    of opIsBinary: discard #Reflection.IsBinary()
+                    of opIsDictionary: discard #Reflection.IsDictionary()
+                    of opIsFunction: discard #Reflection.IsFunction()
+                    of opIsInline: discard #Reflection.IsInline()
+                    of opIsBlock: discard #Reflection.IsBlock()
+                    of opIsDatabase: discard #Reflection.IsDatabase() 
 
                     of opBreak: discard #Core.Break()
                     of opContinue: discard #Core.Continue()
 
-                    of opIsStandalone: Reflection.IsStandalone()
+                    of opIsStandalone: discard #Reflection.IsStandalone()
 
                     of opPi: discard #Numbers.GetPi()
 
