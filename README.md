@@ -1,4 +1,4 @@
-<img align="left" width="190" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/logo.png"/>
+<img align="left" width="190" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/logo.png"/>
 
 <h1>Arturo</h1>
 
