@@ -447,7 +447,7 @@ builtin "when?",
     rule        = PrefixPrecedence,
     description = "check if a specific condition is fulfilled and, if so, execute given action",
     args        = {
-        "condition" : {Boolean},
+        "condition" : {Block},
         "action"    : {Block}
     },
     attrs       = NoAttrs,
