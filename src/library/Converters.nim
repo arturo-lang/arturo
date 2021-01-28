@@ -147,8 +147,7 @@ builtin "function",
         "body"      : {Block}
     },
     attrs       = {
-        "export": ({Block},"export given symbols to parent"),
-        "pure"  : ({Boolean},"denotes pure function with no access to parent")
+        "export": ({Block},"export given symbols to parent")
     },
     returns     = {Function},
     example     = """
@@ -173,24 +172,13 @@ builtin "function",
         
         print x
         ; 5
-        
-        pureF: function.pure [sth][
-        ____print ["sth =>" sth]
-        ____print ["is x set?" set? 'x]
-        ]
-        
-        pureF 23
-        ; sth => 23
-        ; is x set? false
     """:
         ##########################################################
         var exports = VNULL
         if (let aExport = popAttr("export"); aExport != VNULL):
             exports = aExport
 
-        let isPure = popAttr("pure")!=VNULL
-
-        stack.push(newFunction(x,y,exports,isPure))
+        stack.push(newFunction(x,y,exports))
 
 builtin "to",
     alias       = unaliased, 
