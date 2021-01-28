@@ -117,7 +117,7 @@ or (to run a specific local script):
 
 ► ~[arturo-lang.io](http://arturo-lang.io/)~ (Temporarily in maintenance)
 
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/demo.gif"/>
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/demo.gif"/>
     
 Editors & IDEs
 ------------------------------
