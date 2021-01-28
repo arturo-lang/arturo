@@ -366,6 +366,7 @@ builtin "odd?",
         stack.push(newBoolean(x % I2 == I1))
 
 constant "pi",
+    alias       = unaliased,
     description = "The number π, mathematical constant":
         newFloating(PI)
 

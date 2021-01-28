@@ -265,6 +265,7 @@ builtin "new",
         stack.push(copyValue(x))
 
 constant "null",
+    alias       = slashedzero,
     description = "the NULL constant":
         VNULL
 

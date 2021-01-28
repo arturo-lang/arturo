@@ -117,9 +117,14 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
             name: newWord(n)
         )
 
-template constant*(n: string, description: string, v: untyped):untyped =
+template constant*(n: string, alias: SymbolKind, description: string, v: untyped):untyped =
     v.info = description
     syms[n] = (v)
+    when alias != unaliased:
+        aliases[alias] = AliasBinding(
+            precedence: PrefixPrecedence,
+            name: newWord(n)
+        )
 
 #=======================================
 # Helpers

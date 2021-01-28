@@ -423,14 +423,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Symbol: 
                 case node.m:
-                    #of tilde            : addCommand(opRender)
-                    # of at               : addCommand(opArray)
-                    # of sharp            : addCommand(opDictionary)
-                    # of dollar           : addCommand(opFunction)
-                    of ampersand        : addCommand(opPush)
-                    of slashedzero      :
-                        addTerminalValue(false):
-                            addToCommand((byte)opNPush)
+                    # #of tilde            : addCommand(opRender)
+                    # # of at               : addCommand(opArray)
+                    # # of sharp            : addCommand(opDictionary)
+                    # # of dollar           : addCommand(opFunction)
+                    # of ampersand        : addCommand(opPush)
+                    # of slashedzero      :
+                    #     addTerminalValue(false):
+                    #         addToCommand((byte)opNPush)
                     of arrowright       : 
                         var subargStack: seq[int] = @[]
                         var ended = false
@@ -504,13 +504,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         let symalias = node.m
                         if aliases.hasKey(symalias):
                             let symfunc = syms[aliases[symalias].name.s]
-                            #echo "found alias: " & $(node)
-                            if symfunc.arity!=0:
-                                addConst(consts, aliases[symalias].name, opCallX)
-                                argStack.add(symfunc.arity)
+                            if symfunc.kind==Function:
+                                #echo "found alias: " & $(node)
+                                if symfunc.arity!=0:
+                                    addConst(consts, aliases[symalias].name, opCallX)
+                                    argStack.add(symfunc.arity)
+                                else:
+                                    addTerminalValue(false):
+                                        addConst(consts, aliases[symalias].name, opCallX)
                             else:
                                 addTerminalValue(false):
-                                    addConst(consts, aliases[symalias].name, opCallX)
+                                    addConst(consts, aliases[symalias].name, opLoadX)
                         else:
                             addTerminalValue(false):
                                 addConst(consts, node, opPushX)
