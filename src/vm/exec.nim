@@ -86,6 +86,7 @@ template loadByIndex(idx: int):untyped =
 
 template callByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
+
     let fun = syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
     if fun.fnKind==UserFunction:

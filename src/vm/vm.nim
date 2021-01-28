@@ -101,9 +101,10 @@ template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped
                     var z {.inject.} = stack.pop()
 
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    var argsLen = static args.len
-    when argsLen==1 and args==NoArgs:
-        argsLen = 0
+    when args.len==1 and args==NoArgs:
+        const argsLen = 0
+    else:
+        const argsLen = static args.len
     let b = newBuiltin(n, alias, rule, static (instantiationInfo().filename).replace(".nim"), description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, example, proc ()=
         requireArgs(n, args)
         act

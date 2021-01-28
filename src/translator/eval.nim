@@ -111,7 +111,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if symfunc.kind==Function and aliases[symalias].precedence==InfixPrecedence:
                         i += step;
                         
-                        echo "found infix alias: " & $(n.a[i])
+                        #echo "found infix alias: " & $(n.a[i])
                         if symfunc.arity!=0:
                             addConst(consts, aliases[symalias].name, opCallX)
                             argStack.add(symfunc.arity)
@@ -565,7 +565,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "until"      : addCommand(opUntil)
 
-                    of "globalize"  : addCommand(opGlobalize)
+                    # of "globalize"  : addCommand(opGlobalize)
 
                     # of "relative"   : addCommand(opRelative)
 
@@ -829,7 +829,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         let symalias = node.m
                         if aliases.hasKey(symalias):
                             let symfunc = syms[aliases[symalias].name.s]
-                            echo "found alias: " & $(node)
+                            #echo "found alias: " & $(node)
                             if symfunc.arity!=0:
                                 addConst(consts, aliases[symalias].name, opCallX)
                                 argStack.add(symfunc.arity)
