@@ -263,6 +263,10 @@ builtin "new",
         ##########################################################
         stack.push(copyValue(x))
 
+constant "null",
+    description = "the NULL constant":
+        VNULL
+
 builtin "pop",
     alias       = unaliased, 
     rule        = PrefixPrecedence,
