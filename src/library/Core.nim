@@ -489,7 +489,9 @@ builtin "while",
         "condition" : {Block},
         "action"    : {Block}
     },
-    attrs       = NoAttrs,
+    attrs       = {
+        "import": ({Boolean},"execute at root level")
+    },
     returns     = {Nothing},
     example     = """
         i: 0 
@@ -510,11 +512,16 @@ builtin "while",
         ; i => 9 
     """:
         ##########################################################
+        var execInParent = (popAttr("import") != VNULL)
+
         let preevaledX = doEval(x)
         let preevaledY = doEval(y)
 
         discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
 
         while stack.pop().b:
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
+            if execInParent:
+                discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY, execInParent=true)
+            else:
+                discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
             discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
