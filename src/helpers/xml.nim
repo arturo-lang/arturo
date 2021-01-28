@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2020 Yanis Zafirópulos
+# (c) 2019-2021 Yanis Zafirópulos
 #
 # @file: helpers/xml.nim
 ######################################################
