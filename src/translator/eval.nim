@@ -327,9 +327,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Word:
                 case node.s:
-                    of "null"   : 
-                        addTerminalValue(false):
-                            addToCommand((byte)opNPush)
+                    # of "null"   : 
+                    #     addTerminalValue(false):
+                    #         addToCommand((byte)opNPush)
 
                     # of "true"   :
                     #     addTerminalValue(false):
@@ -376,7 +376,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "function"   : addCommand(opFunction)
 
                     # of "print"      : addCommand(opPrint)
-                    of "inspect"    : addCommand(opInspect)
+                    # of "inspect"    : addCommand(opInspect)
 
                     # of "if"         : addCommand(opIf)
                     # of "if?"        : addCommand(opIsIf)
@@ -408,10 +408,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "exit"       : addCommand(opExit)
 
-                    of "info"       : addCommand(opInfo)
+                    # of "info"       : addCommand(opInfo)
 
-                    of "type"       : addCommand(opType)
-                    of "is?"        : addCommand(opIs)
+                    # of "type"       : addCommand(opType)
+                    # of "is?"        : addCommand(opIs)
 
                     # of "not"        : addCommand(opBNot)
                     # of "and"        : addCommand(opBAnd)
@@ -427,10 +427,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "inc"        : addCommand(opInc)
                     # of "dec"        : addCommand(opDec)
 
-                    of "set?"       : addCommand(opIsSet)
+                    # of "set?"       : addCommand(opIsSet)
 
-                    of "symbols"    : addCommand(opSymbols)
-                    of "stack"      : addCommand(opStack)
+                    # of "symbols"    : addCommand(opSymbols)
+                    # of "stack"      : addCommand(opStack)
 
                     # of "case"       : addCommand(opCase)
                     # of "when?"      : addCommand(opWhen)
@@ -495,7 +495,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "upper?"     : addCommand(opIsUpper)
                     # of "lower?"     : addCommand(opIsLower)
 
-                    of "help"       : addCommand(opHelp)
+                    # of "help"       : addCommand(opHelp)
 
                     # of "empty"      : addCommand(opEmpty)
                     # of "empty?"     : addCommand(opIsEmpty)
@@ -510,7 +510,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "prints"     : addCommand(opPrints)
 
-                    of "benchmark"  : addCommand(opBenchmark)
+                    # of "benchmark"  : addCommand(opBenchmark)
 
                     # of "join"       : addCommand(opJoin)
 
@@ -525,8 +525,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "mail"       : addCommand(opMail)
                     # of "download"   : addCommand(opDownload)
 
-                    of "attribute"          : addCommand(opGetAttr)
-                    of "hasAttribute?"      : addCommand(opHasAttr)
+                    # of "attribute"          : addCommand(opGetAttr)
+                    # of "hasAttribute?"      : addCommand(opHasAttr)
 
                     # of "render"     : addCommand(opRender)
 
@@ -561,7 +561,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     # of "new"        : addCommand(opNew)
 
-                    of "attrs"      : addCommand(opGetAttrs)
+                    # of "attrs"      : addCommand(opGetAttrs)
 
                     # of "until"      : addCommand(opUntil)
 
@@ -626,33 +626,33 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     # of "true?"      : addExtraCommand(opIsTrue)
                     # of "false?"     : addExtraCommand(opIsFalse)
 
-                    of "null?"      : addExtraCommand(opIsNull)
-                    of "boolean?"   : addExtraCommand(opIsBoolean)
-                    of "integer?"   : addExtraCommand(opIsInteger)
-                    of "floating?"  : addExtraCommand(opIsFloating)
-                    of "type?"      : addExtraCommand(opIsType)
-                    of "char?"      : addExtraCommand(opIsChar)
-                    of "string?"    : addExtraCommand(opIsString)
-                    of "word?"      : addExtraCommand(opIsWord)
-                    of "literal?"   : addExtraCommand(opIsLiteral)
-                    of "label?"     : addExtraCommand(opIsLabel)
-                    of "attribute?"      : addExtraCommand(opIsAttribute)
-                    of "attributeLabel?" : addExtraCommand(opIsAttributeLabel)
-                    of "path?"      : addExtraCommand(opIsPath)
-                    of "pathLabel?" : addExtraCommand(opIsPathLabel)
-                    of "symbol?"    : addExtraCommand(opIsSymbol)
-                    of "date?"      : addExtraCommand(opIsDate)
-                    of "binary?"    : addExtraCommand(opIsBinary)
-                    of "dictionary?": addExtraCommand(opIsDictionary)
-                    of "function?"  : addExtraCommand(opIsFunction)
-                    of "inline?"    : addExtraCommand(opIsInline)
-                    of "block?"     : addExtraCommand(opIsBlock)
-                    of "database?"  : addExtraCommand(opIsDatabase) 
+                    # of "null?"      : addExtraCommand(opIsNull)
+                    # of "boolean?"   : addExtraCommand(opIsBoolean)
+                    # of "integer?"   : addExtraCommand(opIsInteger)
+                    # of "floating?"  : addExtraCommand(opIsFloating)
+                    # of "type?"      : addExtraCommand(opIsType)
+                    # of "char?"      : addExtraCommand(opIsChar)
+                    # of "string?"    : addExtraCommand(opIsString)
+                    # of "word?"      : addExtraCommand(opIsWord)
+                    # of "literal?"   : addExtraCommand(opIsLiteral)
+                    # of "label?"     : addExtraCommand(opIsLabel)
+                    # of "attribute?"      : addExtraCommand(opIsAttribute)
+                    # of "attributeLabel?" : addExtraCommand(opIsAttributeLabel)
+                    # of "path?"      : addExtraCommand(opIsPath)
+                    # of "pathLabel?" : addExtraCommand(opIsPathLabel)
+                    # of "symbol?"    : addExtraCommand(opIsSymbol)
+                    # of "date?"      : addExtraCommand(opIsDate)
+                    # of "binary?"    : addExtraCommand(opIsBinary)
+                    # of "dictionary?": addExtraCommand(opIsDictionary)
+                    # of "function?"  : addExtraCommand(opIsFunction)
+                    # of "inline?"    : addExtraCommand(opIsInline)
+                    # of "block?"     : addExtraCommand(opIsBlock)
+                    # of "database?"  : addExtraCommand(opIsDatabase) 
 
                     # of "break"      : addExtraCommand(opBreak)   
                     # of "continue"   : addExtraCommand(opContinue)   
 
-                    of "standalone?": addExtraCommand(opIsStandalone)
+                    # of "standalone?": addExtraCommand(opIsStandalone)
 
                     # of "pi"         : addExtraCommand(opPi)
 
