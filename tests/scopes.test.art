@@ -81,26 +81,9 @@ do [
  		print [a b y x]
  	]
  	else [
- 		print "b: not set"
+ 		print "b: not set -> CORRECT"
  	]
 ]
-
-; .PURE FUNCTION CALL
-; a function can only access its own parameters
-
-va: 34
-p: function [r].pure[
-	; print ["in p: r =" r]
-
-	; if? set? 'va [
-	; 	print va
-	; ]
-	; else [
-	; 	print "va: not set"
-	; ]
-]
-
-p 123
 
 ; LOOP BLOCK
 ; the local parameters have to remain local
@@ -118,7 +101,7 @@ if? set? 'o [
 	print o
 ]
 else [
-	print "o: not set"
+	print "o: not set -> CORRECT"
 ]
 
 ; LOOP BLOCK WITH INTERNAL VARS
@@ -138,14 +121,14 @@ if? set? 'o [
 	print o
 ]
 else [
-	print "o: not set"
+	print "o: not set -> CORRECT"
 ]
 
 if? set? 'h [
 	print h
 ]
 else [
-	print "h: not set"
+	print "h: not set -> CORRECT"
 ]
 
 ; MAP BLOCK
@@ -160,7 +143,7 @@ if? set? 'm [
 	print m
 ]
 else [
-	print "m: not set"
+	print "m: not set -> CORRECT"
 ]
 
 ; DO WITH .IMPORT
