@@ -128,7 +128,7 @@ type
     AliasBinding* = object
         precedence*: PrecedenceKind
         name*:       Value
-        
+
     SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
 
     Value* {.acyclic.} = ref object 
@@ -168,7 +168,6 @@ type
                         params* : Value         
                         main*   : Value
                         exports*: Value
-                        pure*   : bool
                     of BuiltinFunction:
                         fname*  : string
                         alias*  : SymbolKind
@@ -348,8 +347,8 @@ proc newBinary*(n: ByteArray = @[]): Value {.inline.} =
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value, exports: Value = VNULL, pure: bool = false): Value {.inline.} =
-    Value(kind: Function, fnKind: UserFunction, params: params, main: main, exports: exports, pure: pure)
+proc newFunction*(params: Value, main: Value, exports: Value = VNULL): Value {.inline.} =
+    Value(kind: Function, fnKind: UserFunction, params: params, main: main, exports: exports)
 
 proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
     Value(
@@ -969,7 +968,7 @@ proc `==`*(x: Value, y: Value): bool =
                 return true
             of Function:
                 if x.fnKind==UserFunction:
-                    return x.params == y.params and x.main == y.main and x.exports == y.exports and x.pure == y.pure
+                    return x.params == y.params and x.main == y.main and x.exports == y.exports
                 else:
                     return x.fname == y.fname
             of Database:
