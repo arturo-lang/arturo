@@ -46,7 +46,7 @@ print join @[
 
 ;; start the REPL
 
-while [true] [
+while [true] .import [
 	;push null
 	Got: null
 
