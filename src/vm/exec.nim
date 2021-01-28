@@ -58,6 +58,8 @@ var
     vmBreak* = false
     vmContinue* = false
 
+proc doExec*(input:Translation, depth: int = 0): ValueDict
+
 #=======================================
 # Helpers
 #=======================================
@@ -86,12 +88,8 @@ template callByIndex(idx: int):untyped =
     let fun = syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
     if fun.fnKind==UserFunction:
-        if fun.pure:
-            discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports, isPureFunc=true)
-        else:
-            discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports, isPureFunc=false)
+        discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
     else:
-        #echo "exec:builtin: " & $(symIndx)
         fun.action()
 
 ####
@@ -178,7 +176,6 @@ template execBlock*(
     isFuncBlock     : bool = false, 
     isBreakable     : bool = false,
     exports         : Value = VNULL, 
-    isPureFunc      : bool = false,
     isIsolated      : bool = false,
     willInject      : bool = false,
     inject          : ptr ValueDict = nil
@@ -187,14 +184,9 @@ template execBlock*(
     #-----------------------------
     # store previous symbols
     #-----------------------------
-
-    when (not isFuncBlock and not execInParent) or isPureFunc:
+    when (not isFuncBlock and not execInParent):
         # save previous symbols 
         let previous = syms
-
-        when isPureFunc:
-            # and cleanup current ones
-            syms = initOrderedTable[string,Value]()
 
     #-----------------------------
     # pre-process arguments
@@ -204,10 +196,9 @@ template execBlock*(
         for arg in args:
             let symIndx = arg.s
 
-            if not isPureFunc:
-                # if argument already exists, save it
-                if syms.hasKey(symIndx):
-                    saved[symIndx] = syms[symIndx]
+            # if argument already exists, save it
+            if syms.hasKey(symIndx):
+                saved[symIndx] = syms[symIndx]
 
             # pop argument and set it
             syms[symIndx] = stack.pop()
@@ -312,24 +303,18 @@ template execBlock*(
                     else:
                         syms.del(k)
         else:
-            when isPureFunc:
-                # nothing will be touched,
-                # so let's restore them all
-                syms = previous
+            # if the symbol already existed (e.g. nested functions)
+            # restore it as we normally would
+            for k, v in pairs(subSyms):
+                if saved.hasKey(k):
+                    syms[k] = saved[k]
 
-            else:
-                # if the symbol already existed (e.g. nested functions)
-                # restore it as we normally would
-                for k, v in pairs(subSyms):
-                    if saved.hasKey(k):
-                        syms[k] = saved[k]
-
-                # if there are exportable variables
-                # do set them in parent
-                if exports!=VNULL:
-                    for k in exports.a:
-                        if subSyms.hasKey(k.s):
-                            syms[k.s] = subSyms[k.s]
+            # if there are exportable variables
+            # do set them in parent
+            if exports!=VNULL:
+                for k in exports.a:
+                    if subSyms.hasKey(k.s):
+                        syms[k.s] = subSyms[k.s]
 
         #-----------------------------
         # break / continue
@@ -348,6 +333,10 @@ template execBlock*(
                 vmReturn = false
                 
         subSyms
+
+proc executeBlock*(blk: Value, withArgs: ValueArray = NoValues): ValueDict =
+    let evaled = doEval(blk)
+    return doExec(evaled)
 
 template execInternal*(path: string): untyped =
     execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
@@ -476,27 +465,6 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
             of opCallX                          :   i += 1; callByIndex((int)(it[i]))
             of opCallY                          :   i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
-            # [0x5] #
-            # arithmetic & logical operations
-
-            of opAdd        : discard #Arithmetic.Add()
-            of opSub        : discard #Arithmetic.Sub()
-            of opMul        : discard #Arithmetic.Mul()
-            of opDiv        : discard #Arithmetic.Div()
-            of opFDiv       : discard #Arithmetic.Fdiv()
-            of opMod        : discard #Arithmetic.Mod()
-            of opPow        : discard #Arithmetic.Pow()                
-
-            of opNeg        : discard #Arithmetic.Neg()
-
-            of opNot        : discard #Logic.IsNot()
-            of opAnd        : discard #Logic.IsAnd()
-            of opOr         : discard #Logic.IsOr()
-            of opXor        : discard #Logic.IsXor()
-
-            of opShl        : discard #Binary.Shl()
-            of opShr        : discard #Binary.Shr()
-
             of opAttr       : 
                 i += 1
                 let indx = it[i]
@@ -506,329 +474,14 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
 
                 stack.pushAttr(attr.r, val)
 
-            of opReturn     : discard #Core.Return()
-
-            # # [0x6] #
-            # # stack operations
 
             of opPop        : discard #Core.Pop()
             of opDup        : stack.push(sTop())
             of opSwap       : swap(Stack[SP-1], Stack[SP-2])
             of opNop        : discard
 
-            # flow control 
-
-            of opJmp        : discard # UNIMPLEMENTED
-            of opJmpIf      : discard # UNIMPLEMENTED
-        
-            of opPush       : discard #Core.Push()
-
-            # # comparison operations
-
-            of opEq         : discard #Comparison.IsEqual()
-            of opNe         : discard #Comparison.IsNotEqual()
-            of opGt         : discard #Comparison.IsGreater()
-            of opGe         : discard #Comparison.IsGreaterOrEqual()
-            of opLt         : discard #Comparison.IsLess()
-            of opLe         : discard #Comparison.IsLessOrEqual()
-
-            # # structures
-
-            of opArray      : discard #Core.MakeArray()
-            of opDictionary : discard #Core.MakeDictionary()
-            of opFunction   : discard #Core.MakeFunction()
-
-            # [0x7] #
-            # system calls (144 slots)
-
-            of opPrint      : discard #Core.Print()
-            of opInspect    : discard #Reflection.Inspect() 
-
-            of opIf         : discard #Core.If()
-            of opIsIf       : discard #Core.IsIf()
-            of opElse       : discard #Core.Else()
-
-            of opLoop       : discard #Collections.Loop()
-
-            of opDo         : discard #Core.Do() 
-
-            of opMap        : discard #Collections.Map()
-            of opSelect     : discard #Collections.Select()
-            of opFilter     : discard #Collections.Filter()
-
-            of opSize: discard #Collections.Size()
-
-            of opUpper: discard #Strings.Upper()
-            of opLower: discard #Strings.Lower()
-
             of opGet: syms["get"].action() #discard #Collections.Get()  
             of opSet: syms["set"].action() #discard #Collections.Set()
-
-            of opTo: discard #Conversion.To()
-            
-            of opEven: discard #Numbers.IsEven()
-            of opOdd: discard #Numbers.IsOdd()
-
-            of opRange: discard #Collections.Range()
-
-            of opSum: discard #Numbers.Sum()
-            of opProduct: discard #Numbers.Product()
-                
-            of opExit: discard #Core.Exit()
-            of opInfo: discard #Reflection.Info()
-            of opType: discard #Reflection.Type()
-            of opIs: discard #Reflection.Is()
-
-            of opBNot: discard #Binary.Not()
-            of opBAnd: discard #Binary.And()
-            of opBOr: discard #Binary.Or()
-            of opBXor: discard #Binary.Xor()
-
-            of opFirst: discard #Collections.First()
-            of opLast: discard #Collections.Last()
-            
-            of opUnique: discard #Collections.Unique()
-            of opSort: discard #Collections.Sort()
-
-            of opInc: discard #Arithmetic.Inc()
-            of opDec: discard #Arithmetic.Dec()
-
-            of opIsSet: discard #Reflection.IsSet()
-                
-            of opSymbols: discard #Reflection.Symbols()
-            of opStack: discard #Reflection.GetStack()
-
-            of opCase: discard #Core.Case()
-            of opWhen: discard #Core.IsWhen()
-
-            of opCapitalize: discard #Strings.Capitalize()
-
-            of opRepeat: discard #Collections.Repeat()
-            of opWhile: discard #Core.While()
-
-            of opRandom: discard #Numbers.Random()
-
-            of opSample: discard #Collections.Sample()
-            of opShuffle: discard #Collections.Shuffle()
-            of opSlice: discard #Collections.Slice()
-
-            of opClear: discard #Core.Clear()
-
-            of opAll: discard #Collections.IsAll()
-            of opAny: discard #Collections.IsAny()
-
-            of opRead: discard #Files.Read()
-            of opWrite: discard #Files.Write()
-
-            of opAbs: discard #Numbers.Abs()
-            of opAcos: discard #Numbers.Acos()
-            of opAcosh: discard #Numbers.Acosh()
-            of opAsin: discard #Numbers.Asin()
-            of opAsinh: discard #Numbers.Asinh()
-            of opAtan: discard #Numbers.Atan()
-            of opAtanh: discard #Numbers.Atanh()
-            of opCos: discard #Numbers.Cos()
-            of opCosh: discard #Numbers.Cosh()
-            of opCsec: discard #Numbers.Csec()
-            of opCsech: discard #Numbers.Csech()
-            of opCtan: discard #Numbers.Ctan()
-            of opCtanh: discard #Numbers.Ctanh()
-            of opSec: discard #Numbers.Sec()
-            of opSech: discard #Numbers.Sech()
-            of opSin: discard #Numbers.Sin()
-            of opSinh: discard #Numbers.Sinh()
-            of opTan: discard #Numbers.Tan()
-            of opTanh: discard #Numbers.Tanh()
-
-            of opInput: discard #Core.Input()
-
-            of opPad: discard #Strings.Pad()
-            of opReplace: discard #Strings.Replace()
-            of opStrip: discard #Strings.Strip()
-            of opSplit: discard #Collections.Split()
-            of opPrefix: discard #Strings.Prefix()
-            of opHasPrefix: discard #Strings.HasPrefix()
-            of opSuffix: discard #Strings.Suffix()
-            of opHasSuffix: discard #Strings.HasSuffix()
-
-            of opExists: discard #Files.IsExists()
-
-            of opTry: discard #Core.Try()
-            of opTryE: discard #Core.TryE()
-
-            of opIsUpper: discard #Strings.IsUpper()
-            of opIsLower: discard #Strings.IsLower()
-
-            of opHelp: discard #Reflection.Help()
-
-            of opEmpty: discard #Collections.Empty()
-            of opIsEmpty: discard #Collections.IsEmpty()
-
-            of opInsert: discard #Collections.Insert()
-            of opIsIn: discard #Collections.IsIn()
-            of opIndex: discard #Collections.Index()
-            of opHasKey: discard #Collections.HasKey()
-            of opReverse: discard #Collections.Reverse()
-
-            of opExecute: discard #Shell.Execute()
-
-            of opPrints: discard #Core.Prints()
-
-            of opBenchmark: discard #Reflection.Benchmark()
-
-            of opJoin: discard #Collections.Join()
-
-            of opMax: discard #Collections.Max()
-            of opMin: discard #Collections.Min()
-
-            of opKeys: discard #Collections.Keys()
-            of opValues: discard #Collections.Values()
-
-            of opDigest: discard #Crypto.Digest()
-
-            of opAlias: discard
-
-            of opMail: discard #Net.Mail()
-            of opDownload: discard #Net.Download()
-
-            of opGetAttr: discard #Reflection.GetAttr()
-            of opHasAttr: discard #Reflection.HasAttr()
-
-            of opRender: discard #Strings.Render()
-
-            of opEncode: discard #Crypto.Encode()
-            of opDecode: discard #Crypto.Decode()
-
-            of opColor: discard #Strings.Color()
-
-            of opTake: discard #Collections.Take()
-            of opDrop: discard #Collections.Drop()
-
-            of opAppend: discard #Collections.Append()
-            of opRemove: discard #Collections.Remove()
-
-            of opCombine: discard #Collections.Combine()
-
-            of opList: discard #Shell.List()
-
-            of opFold: discard #Collections.Fold()
-            of opSqrt: discard #Numbers.Sqrt()
-
-            of opServe: discard #Net.Serve()
-
-            of opLet: discard #Core.Let()
-            of opVar: discard #Core.Var()
-
-            of opNow: discard #Dates.Now()
-
-            of opPause: discard #Core.Pause()
-
-            of opCall: discard #Core.Call()
-
-            of opNew: discard #Core.New()
-
-            of opGetAttrs: discard #Reflection.GetAttrs()
-
-            of opUntil: discard #Core.Until()
-
-            of opGlobalize: discard #Core.Globalize()
-
-            of opRelative: discard #Path.Relative()
-
-            of opAverage: discard #Numbers.Average()
-            of opMedian: discard #Numbers.Median()
-
-            of opAs: discard #Conversion.As()
-
-            of opGcd: discard #Numbers.Gcd()
-            of opPrime: discard #Numbers.IsPrime()
-
-            of opPermutate: discard #Collections.Permutate()
-
-            of opIsWhitespace: discard #Strings.IsWhitespace()
-            of opIsNumeric: discard #Strings.IsNumeric()
-
-            of opFactors: discard #Numbers.Factors()
-
-            of opMatch: discard #Strings.Match()
-
-            of opModule: discard #Path.Module()
-
-            of opWebview: discard #Ui.Webview()
-
-            of opFlatten: discard #Collections.Flatten()
-
-            of opExtra:
-                i += 1
-                let extra = (OpCode)((int)(it[i])+(int)(opExtra))
-
-                case extra:
-                    of opLevenshtein: discard #Strings.Levenshtein()
-                    of opNand: discard #Logic.IsNand()
-                    of opNor: discard #Logic.IsNor()
-                    of opXnor: discard #Logic.IsXnor()
-
-                    of opBNand: discard #Binary.Nand()
-                    of opBNor: discard #Binary.Nor()
-                    of opBXnor: discard #Binary.Xnor()
-
-                    of opNegative: discard #Numbers.IsNegative()
-                    of opPositive: discard #Numbers.IsPositive()
-                    of opZero: discard #Numbers.IsZero()
-
-                    of opPanic: discard #Core.Panic()
-
-                    of opOpen: discard #Database.Open()
-                    of opQuery: discard #Database.Query()
-                    of opClose: discard #Database.Close()
-
-                    of opNative: discard #Core.Native()
-
-                    of opExtract: discard #Path.Extract()
-
-                    of opZip: discard #Files.Zip()
-                    of opUnzip: discard #Files.Unzip()
-
-                    of opGetHash: discard #Crypto.GetHash()
-
-                    of opExtend: discard #Collections.Extend()
-
-                    of opIsTrue: discard #Logic.IsTrue()
-                    of opIsFalse: discard #Logic.IsFalse()
-
-                    of opIsNull: discard #Reflection.IsNull()
-                    of opIsBoolean: discard #Reflection.IsBoolean()
-                    of opIsInteger: discard #Reflection.IsInteger()
-                    of opIsFloating: discard #Reflection.IsFloating()
-                    of opIsType: discard #Reflection.IsType()
-                    of opIsChar: discard #Reflection.IsChar()
-                    of opIsString: discard #Reflection.IsString()
-                    of opIsWord: discard #Reflection.IsWord()
-                    of opIsLiteral: discard #Reflection.IsLiteral()
-                    of opIsLabel: discard #Reflection.IsLabel()
-                    of opIsAttribute: discard #Reflection.IsAttribute()
-                    of opIsAttributeLabel: discard #Reflection.IsAttributeLabel()
-                    of opIsPath: discard #Reflection.IsPath()
-                    of opIsPathLabel: discard #Reflection.IsPathLabel()
-                    of opIsSymbol: discard #Reflection.IsSymbol()
-                    of opIsDate: discard #Reflection.IsDate()
-                    of opIsBinary: discard #Reflection.IsBinary()
-                    of opIsDictionary: discard #Reflection.IsDictionary()
-                    of opIsFunction: discard #Reflection.IsFunction()
-                    of opIsInline: discard #Reflection.IsInline()
-                    of opIsBlock: discard #Reflection.IsBlock()
-                    of opIsDatabase: discard #Reflection.IsDatabase() 
-
-                    of opBreak: discard #Core.Break()
-                    of opContinue: discard #Core.Continue()
-
-                    of opIsStandalone: discard #Reflection.IsStandalone()
-
-                    of opPi: discard #Numbers.GetPi()
-
-                    of opIsContains: discard #Collections.IsContains()
-
-                    else: discard
 
             else: discard
 
@@ -852,5 +505,18 @@ proc doExec*(input:Translation, depth: int = 0): ValueDict =
                 stdout.write fmt("{k} => ")
                 v.dump(0, false)
 
-    return syms
+    let newSyms = syms
+    syms = oldSyms
+    return newSyms
+
+    # var newSyms: ValueDict = initOrderedTable[string,Value]()
+
+    # for k,v in pairs(syms):
+    #     if not oldSyms.hasKey(k) or oldSyms[k]!=syms[k]:
+    #         echo "new: " & k & " = " & $(v)
+    #         newSyms[k] = v
+
+    # echo "-------"
+
+    # return newSyms
     
