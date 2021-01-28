@@ -191,7 +191,7 @@ The main goals are: performance, energy-efficiency, and portability. (With that 
 
 #### General schema
 
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/schema.png"/>
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/schema.png"/>
 
 Community
 ------------------------------
