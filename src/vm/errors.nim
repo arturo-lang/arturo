@@ -3,18 +3,24 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2021 Yanis Zafirópulos
 #
-# @file: helpers/url.nim
+# @file: vm/errors.nim
 ######################################################
 
 #=======================================
 # Libraries
 #=======================================
 
-import re
+import vm/value
+
+type ReturnTriggered* = object of Exception
 
 #=======================================
-# Methods
+# Templates
 #=======================================
 
-proc isUrl*(s: string): bool {.inline.} =
-    return s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
+template showConversionError*():untyped =
+    echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
+
+template invalidConversionError*(origin: string):untyped =
+    echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
+

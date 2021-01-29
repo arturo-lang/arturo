@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2020 Yanis Zafirópulos
+# (c) 2019-2021 Yanis Zafirópulos
 #
 # @file: vm/globals.nim
 ######################################################
@@ -10,11 +10,12 @@
 # Libraries
 #=======================================
 
-import db_sqlite as sqlite
+import vm/value
 
 #=======================================
 # Super-Globals
 #=======================================
 
 var
-    MainDb*: sqlite.DbConn
+    syms*{.threadvar.}      : ValueDict
+    aliases*{.threadvar.}   : SymbolDict

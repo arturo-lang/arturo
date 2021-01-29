@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2020 Yanis Zafirópulos
+# (c) 2019-2021 Yanis Zafirópulos
 #
 # @file: vm/env.nim
 ######################################################
@@ -59,8 +59,7 @@ proc getEnvDictionary*(): ValueDict =
         "build"     : newInteger(parseInt(Build)),
         "buildDate" : newDate(now()),
         "cpu"       : newString(hostCPU),
-        "os"        : newString(hostOS),
-        "builtin"   : newBlock(getBuiltins())
+        "os"        : newString(hostOS)
     }.toOrderedTable)
 
     result["path"] = newDictionary({

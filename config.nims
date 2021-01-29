@@ -21,6 +21,7 @@ switch("opt", "speed")
 switch("overflowChecks", "on")
 switch("panics", "off")
 switch("threads", "on")
+switch("threadAnalysis", "off")
 switch("path","src")
 
 when not defined DEBUG:
