@@ -354,7 +354,7 @@ builtin "render",
 
                             for v in ((toSeq(values(aWith.d))).reversed):
                                 stack.push(v)
-                            discard execBlock(doParse(match.captures[0], isFile=false), useArgs=true, args=args)
+                            discard execBlock(doParse(match.captures[0], isFile=false), args=args)
                             $(stack.pop())
                     ))
                 stack.push(res)
@@ -366,7 +366,7 @@ builtin "render",
 
                             for v in ((toSeq(values(aWith.d))).reversed):
                                 stack.push(v)
-                            discard execBlock(doParse(match.captures[0], isFile=false), useArgs=true, args=args)
+                            discard execBlock(doParse(match.captures[0], isFile=false), args=args)
                             $(stack.pop())
                     )
 

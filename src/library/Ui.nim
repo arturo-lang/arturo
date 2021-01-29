@@ -81,7 +81,7 @@ builtin "webview",
 
                     var args: ValueArray = @[binding.params.a[0]]
                     stack.push(param)
-                    discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
+                    discard execBlock(binding.main, execInParent=true, args=args)
                     let got = stack.pop().s
                     #echo " - got: " & $(got)
 

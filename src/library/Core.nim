@@ -53,7 +53,7 @@ builtin "call",
         for v in y.a.reversed:
             stack.push(v)
 
-        discard execBlock(fun.main, useArgs=true, args=fun.params.a)
+        discard execBlock(fun.main, args=fun.params.a)
     
 builtin "case",
     alias       = unaliased, 
@@ -430,8 +430,8 @@ builtin "until",
         let preevaledY = doEval(y)
 
         while true:
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
+            discard execBlock(VNULL, evaluated=preevaledX)
+            discard execBlock(VNULL, evaluated=preevaledY)
             if stack.pop().b:
                 break
 
@@ -524,11 +524,11 @@ builtin "while",
         let preevaledX = doEval(x)
         let preevaledY = doEval(y)
 
-        discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
+        discard execBlock(VNULL, evaluated=preevaledX)
 
         while stack.pop().b:
             if execInParent:
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY, execInParent=true)
+                discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
             else:
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaledY)
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaledX)
+                discard execBlock(VNULL, evaluated=preevaledY)
+            discard execBlock(VNULL, evaluated=preevaledX)

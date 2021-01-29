@@ -88,7 +88,7 @@ template callByIndex(idx: int):untyped =
     let fun = syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
     if fun.fnKind==UserFunction:
-        discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
+        discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
     else:
         fun.action()
 
@@ -129,23 +129,20 @@ template require*(op: OpCode, nopop: bool = false): untyped =
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
-    useArgs         : bool = false, 
+    #useArgs         : bool = false, 
     args            : ValueArray = NoValues, 
-    usePreeval      : bool = false, 
+    #usePreeval      : bool = false, 
     evaluated       : Translation = NoTranslation, 
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
-    isBreakable     : bool = false,
-    exports         : Value = VNULL, 
-    isIsolated      : bool = false,
-    willInject      : bool = false,
-    inject          : ptr ValueDict = nil
+    #isBreakable     : bool = false,
+    exports         : Value = nil
 ): ValueDict =
     var newSyms: ValueDict
     try:
         let evaled = 
-            if not usePreeval:    doEval(blk)
-            else:                   evaluated
+            if evaluated==NoTranslation : doEval(blk)
+            else                        : evaluated
 
         newSyms = doExec(evaled, 1, args)
     except ReturnTriggered as e:
@@ -167,7 +164,7 @@ proc execBlock*(
             return res
         else:
             if isFuncBlock:
-                if exports!=VNULL:
+                if not exports.isNil():
                     for k in exports.a:
                         if newSyms.hasKey(k.s):
                             syms[k.s] = newSyms[k.s]
