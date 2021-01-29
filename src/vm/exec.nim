@@ -155,6 +155,7 @@ proc execBlock*(
             raise e
         else:
             # echo "it's function block"
+            discard
     finally:
         # echo "processing finalization"
         if dictionary:
