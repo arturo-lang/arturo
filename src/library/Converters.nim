@@ -45,7 +45,7 @@ builtin "array",
             let (_{.inject.}, tp) = getSource(x.s)
 
             if tp!=TextData:
-                discard execBlock(doParse(x.s, isFile=false), isIsolated=true)
+                discard execBlock(doParse(x.s, isFile=false))#, isIsolated=true)
             else:
                 echo "file does not exist"
 
@@ -103,7 +103,8 @@ builtin "dictionary",
         "source": {String,Block}
     },
     attrs       = {
-        "with"  : ({Block},"embed given symbols")
+        "with"  : ({Block},"embed given symbols"),
+        "raw"   : ({Boolean},"create dictionary from raw block")
     },
     returns     = {Dictionary},
     example     = """
@@ -129,12 +130,19 @@ builtin "dictionary",
 
         if x.kind==Block:
             #dict = execDictionary(x)
-            dict = execBlock(x,dictionary=true)
+            if (popAttr("raw") != VNULL):
+                dict = initOrderedTable[string,Value]()
+                var idx = 0
+                while idx < x.a.len:
+                    dict[x.a[idx].s] = x.a[idx+1]
+                    idx += 2
+            else:
+                dict = execBlock(x,dictionary=true)
         elif x.kind==String:
             let (src, tp) = getSource(x.s)
 
             if tp!=TextData:
-                dict = execBlock(doParse(src, isFile=false), dictionary=true, isIsolated=true)
+                dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
             else:
                 echo "file does not exist"
 

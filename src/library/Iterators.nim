@@ -34,7 +34,7 @@ builtin "all?",
 
         for item in x.a:
             stack.push(item)
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+            discard execBlock(VNULL, evaluated=preevaled, args=args)
             let popped = stack.pop()
             if popped.kind==Boolean and not popped.b:
                 stack.push(newBoolean(false))
@@ -68,7 +68,7 @@ builtin "any?",
 
         for item in x.a:
             stack.push(item)
-            discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+            discard execBlock(VNULL, evaluated=preevaled, args=args)
             let popped = stack.pop()
             if popped.kind==Boolean and popped.b:
                 stack.push(newBoolean(true))
@@ -113,7 +113,7 @@ builtin "filter",
         if x.kind==Literal:
             for i,item in syms[x.s].a:
                 stack.push(item)
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
                 if not stack.pop().b:
                     res.add(item)
 
@@ -121,7 +121,7 @@ builtin "filter",
         else:
             for item in x.a:
                 stack.push(item)
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
                 if not stack.pop().b:
                     res.add(item)
 
@@ -188,7 +188,7 @@ builtin "fold",
                         stack.push(b)
                         stack.push(a)
 
-                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
 
                         res = stack.pop()
 
@@ -203,7 +203,7 @@ builtin "fold",
                         stack.push(b)
                         stack.push(a)
 
-                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
 
                         res = stack.pop()
 
@@ -220,7 +220,7 @@ builtin "fold",
                         stack.push(b)
                         stack.push(a)
 
-                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
 
                         res = stack.pop()
 
@@ -235,7 +235,7 @@ builtin "fold",
                         stack.push(b)
                         stack.push(a)
 
-                        discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
 
                         res = stack.pop()
 
@@ -317,7 +317,7 @@ builtin "loop",
             for k,v in pairs(x.d):
                 stack.push(v)
                 stack.push(newString(k))
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args, isBreakable=true)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)#, isBreakable=true)
                 checkForBreak()
         else:
             var arr: seq[Value]
@@ -335,7 +335,7 @@ builtin "loop",
                 if withIndex:
                     stack.push(newInteger(run))
 
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=allArgs, isBreakable=true)
+                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
 
                 checkForBreak()
                 run += 1
@@ -376,12 +376,12 @@ builtin "map",
         if x.kind==Literal:
             for i,item in syms[x.s].a:
                 stack.push(item)
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
                 syms[x.s].a[i] = stack.pop()
         else:
             for item in x.a:
                 stack.push(item)
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
                 res.add(stack.pop())
             
             stack.push(newBlock(res))
@@ -421,7 +421,7 @@ builtin "select",
         if x.kind==Literal:
             for i,item in syms[x.s].a:
                 stack.push(item)
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
                 if stack.pop().b:
                     res.add(item)
 
@@ -429,7 +429,7 @@ builtin "select",
         else:
             for item in x.a:
                 stack.push(item)
-                discard execBlock(VNULL, usePreeval=true, evaluated=preevaled, useArgs=true, args=args)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
                 if stack.pop().b:
                     res.add(item)
 
