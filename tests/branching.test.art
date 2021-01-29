@@ -11,6 +11,8 @@ print "before calling f"
 print f
 print "after calling f"
 
+print "---"
+
 ; FUNCTION CALL
 ; WITH IF-ELSE AND RETURN
 
@@ -33,4 +35,36 @@ loop [1 3 5 7] 'i [
     print "before calling g"
     print ["g" i "=" g i]
     print "after calling g"
+]
+
+print "---"
+
+; FUNCTION CALL
+; WITH NESTED IF-ELSE 
+; AND RETURN
+
+h: function [z][
+    print "in h"
+    if? z<5 [
+        print "z<5"
+        return z
+        print "after return - ERROR"
+    ]
+    else [
+        if z=5 [
+            print "z=5"
+            return 3*z
+            print "after return - ERROR"
+        ]
+        print "z>=5"
+        return 2*z
+        print "after return - ERROR"
+    ]
+    print "still in h - ERROR"
+]
+
+loop [1 3 5 7] 'j [
+    print "before calling h"
+    print ["h" j "=" h j]
+    print "after calling h"
 ]
