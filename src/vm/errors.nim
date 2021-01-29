@@ -12,6 +12,8 @@
 
 import vm/value
 
+type ReturnTriggered* = object of Exception
+
 #=======================================
 # Templates
 #=======================================

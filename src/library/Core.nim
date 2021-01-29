@@ -230,7 +230,10 @@ builtin "if?",
         ]
     """:
         ##########################################################
-        if x.b: discard execBlock(y)
+        if x.b: 
+            discard execBlock(y)
+            # if vmReturn:
+            #     return ReturnResult
         stack.push(x)
 
 builtin "let",
@@ -338,8 +341,11 @@ builtin "return",
     """:
         ##########################################################
         stack.push(x)
-        vmReturn = true
-        #return syms
+        echo "emitting: ReturnTriggered"
+        raise ReturnTriggered.newException("return")
+        # vmReturn = true
+        # # return ReturnResult
+        # #return syms
 
 builtin "try",
     alias       = unaliased, 

@@ -43,7 +43,7 @@ import helpers/webview      as webviewHelper
 import helpers/xml          as xmlHelper
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/globals, vm/stack, vm/value
+import vm/bytecode, vm/errors, vm/globals, vm/stack, vm/value
 
 import utils    
 
@@ -91,6 +91,7 @@ template callByIndex(idx: int):untyped =
         discard execBlock(fun.main, useArgs=true, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
     else:
         fun.action()
+
 
 ####
 
@@ -165,7 +166,188 @@ template require*(op: OpCode, nopop: bool = false): untyped =
 #     res
 
 
-template execBlock*(
+# template execBlock*(
+#     blk             : Value, 
+#     dictionary      : bool = false, 
+#     useArgs         : bool = false, 
+#     args            : ValueArray = NoValues, 
+#     usePreeval      : bool = false, 
+#     evaluated       : Translation = NoTranslation, 
+#     execInParent    : bool = false, 
+#     isFuncBlock     : bool = false, 
+#     isBreakable     : bool = false,
+#     exports         : Value = VNULL, 
+#     isIsolated      : bool = false,
+#     willInject      : bool = false,
+#     inject          : ptr ValueDict = nil
+# ): untyped =
+#     var subSyms: ValueDict
+#     var saved: ValueDict
+#     var previous: ValueDict
+#     try:
+#         #-----------------------------
+#         # store previous symbols
+#         #-----------------------------
+#         when (not isFuncBlock and not execInParent):
+#             # save previous symbols 
+#             previous = syms
+
+#         #-----------------------------
+#         # pre-process arguments
+#         #-----------------------------
+#         when useArgs:
+#             var saved = initOrderedTable[string,Value]()
+#             for arg in args:
+#                 let symIndx = arg.s
+
+#                 # if argument already exists, save it
+#                 if syms.hasKey(symIndx):
+#                     saved[symIndx] = syms[symIndx]
+
+#                 # pop argument and set it
+#                 syms[symIndx] = stack.pop()
+
+#                 # properly set arity, if argument is a function
+#                 if syms[symIndx].kind==Function:
+#                     Funcs[symIndx] = syms[symIndx].params.a.len 
+
+#         #-----------------------------
+#         # pre-process injections
+#         #-----------------------------
+#         when willInject:
+#             when not useArgs:
+#                 saved = initOrderedTable[string,Value]()
+
+#             for k,v in pairs(inject[]):
+#                 if syms.hasKey(k):
+#                     saved[k] = syms[k]
+
+#                 syms[k] = v
+
+#                 if syms[k].kind==Function:
+#                     Funcs[k] = syms[k].params.a.len
+
+#         #-----------------------------
+#         # evaluate block
+#         #-----------------------------
+#         let evaled = 
+#             when not usePreeval:    doEval(blk)
+#             else:                   evaluated
+
+#         #-----------------------------
+#         # execute it
+#         #-----------------------------
+
+#         when isIsolated:
+#             subSyms = doExec(evaled, 1)#depth+1)#, nil)
+#         else:
+#             subSyms = doExec(evaled, 1)#depth+1)#, addr syms)
+#     except ReturnTriggered as e:
+#         echo "caught: ReturnTriggered"
+#         when not isFuncBlock:
+#             echo "\tnot a Function - re-emitting"
+#             raise e
+#         else:
+#             echo "\tit's a function, that was it"
+#             discard
+#     finally:
+#         echo "\tperforming housekeeping"
+#         #-----------------------------
+#         # handle result
+#         #-----------------------------
+
+#         when dictionary:
+#             # it's specified as a dictionary,
+#             # so let's handle it this way
+
+#             var res: ValueDict = initOrderedTable[string,Value]()
+
+#             for k, v in pairs(subSyms):
+#                 if not previous.hasKey(k):
+#                     # it wasn't in the initial symbols, add it
+#                     res[k] = v
+#                 else:
+#                     # it already was in the symbols
+#                     # let's see if the value was the same
+#                     if (subSyms[k]) != (previous[k]):
+#                         # the value was not the same,
+#                         # so we add it a dictionary key
+#                         res[k] = v
+
+#             #-----------------------------
+#             # return
+#             #-----------------------------
+
+#             return res
+
+#         else:
+#             # it's not a dictionary,
+#             # it's either a normal block or a function block
+
+#             #-----------------------------
+#             # update symbols
+#             #-----------------------------
+#             when not isFuncBlock:
+
+#                 for k, v in pairs(subSyms):
+#                     # if we are explicitly .import-ing, 
+#                     # set symbol no matter what
+#                     when execInParent:
+#                         syms[k] = v
+#                     else:
+#                         # update parent only if symbol already existed
+#                         if previous.hasKey(k):
+#                             syms[k] = v
+
+#                 when useArgs:
+#                     # go through the arguments
+#                     for arg in args:
+#                         # if the symbol already existed restore it
+#                         # otherwise, remove it
+#                         if saved.hasKey(arg.s):
+#                             syms[arg.s] = saved[arg.s]
+#                         else:
+#                             syms.del(arg.s)
+
+#                 when willInject:
+#                     for k,v in pairs(inject[]):
+#                         if saved.hasKey(k):
+#                             syms[k] = saved[k]
+#                         else:
+#                             syms.del(k)
+#             else:
+#                 # if the symbol already existed (e.g. nested functions)
+#                 # restore it as we normally would
+#                 for k, v in pairs(subSyms):
+#                     if saved.hasKey(k):
+#                         syms[k] = saved[k]
+
+#                 # if there are exportable variables
+#                 # do set them in parent
+#                 if exports!=VNULL:
+#                     for k in exports.a:
+#                         if subSyms.hasKey(k.s):
+#                             syms[k.s] = subSyms[k.s]
+
+#             # #-----------------------------
+#             # # break / continue
+#             # #-----------------------------
+#             # if vmBreak or vmContinue:
+#             #     when not isBreakable:
+#             #         return
+                    
+#             # #-----------------------------
+#             # # return
+#             # #-----------------------------
+#             # if vmReturn:
+#             #     when not isFuncBlock:
+#             #         return
+#             #     else:
+#             #         vmReturn = false
+                    
+#             return subSyms
+
+proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
     useArgs         : bool = false, 
@@ -179,164 +361,172 @@ template execBlock*(
     isIsolated      : bool = false,
     willInject      : bool = false,
     inject          : ptr ValueDict = nil
-): untyped =
-    
-    #-----------------------------
-    # store previous symbols
-    #-----------------------------
-    when (not isFuncBlock and not execInParent):
-        # save previous symbols 
-        let previous = syms
+): ValueDict =
+    var subSyms: ValueDict
+    var saved: ValueDict
+    var previous: ValueDict
+    try:
+        #-----------------------------
+        # store previous symbols
+        #-----------------------------
+        if (not isFuncBlock and not execInParent):
+            # save previous symbols 
+            previous = syms
 
-    #-----------------------------
-    # pre-process arguments
-    #-----------------------------
-    when useArgs:
-        var saved = initOrderedTable[string,Value]()
-        for arg in args:
-            let symIndx = arg.s
-
-            # if argument already exists, save it
-            if syms.hasKey(symIndx):
-                saved[symIndx] = syms[symIndx]
-
-            # pop argument and set it
-            syms[symIndx] = stack.pop()
-
-            # properly set arity, if argument is a function
-            if syms[symIndx].kind==Function:
-                Funcs[symIndx] = syms[symIndx].params.a.len 
-
-    #-----------------------------
-    # pre-process injections
-    #-----------------------------
-    when willInject:
-        when not useArgs:
+        #-----------------------------
+        # pre-process arguments
+        #-----------------------------
+        if useArgs:
             var saved = initOrderedTable[string,Value]()
+            for arg in args:
+                let symIndx = arg.s
 
-        for k,v in pairs(inject[]):
-            if syms.hasKey(k):
-                saved[k] = syms[k]
+                # if argument already exists, save it
+                if syms.hasKey(symIndx):
+                    saved[symIndx] = syms[symIndx]
 
-            syms[k] = v
+                # pop argument and set it
+                syms[symIndx] = stack.pop()
 
-            if syms[k].kind==Function:
-                Funcs[k] = syms[k].params.a.len
-
-    #-----------------------------
-    # evaluate block
-    #-----------------------------
-    let evaled = 
-        when not usePreeval:    doEval(blk)
-        else:                   evaluated
-
-    #-----------------------------
-    # execute it
-    #-----------------------------
-
-    when isIsolated:
-        let subSyms = doExec(evaled, 1)#depth+1)#, nil)
-    else:
-        let subSyms = doExec(evaled, 1)#depth+1)#, addr syms)
-
-    #-----------------------------
-    # handle result
-    #-----------------------------
-
-    when dictionary:
-        # it's specified as a dictionary,
-        # so let's handle it this way
-
-        var res: ValueDict = initOrderedTable[string,Value]()
-
-        for k, v in pairs(subSyms):
-            if not previous.hasKey(k):
-                # it wasn't in the initial symbols, add it
-                res[k] = v
-            else:
-                # it already was in the symbols
-                # let's see if the value was the same
-                if (subSyms[k]) != (previous[k]):
-                    # the value was not the same,
-                    # so we add it a dictionary key
-                    res[k] = v
+                # properly set arity, if argument is a function
+                if syms[symIndx].kind==Function:
+                    Funcs[symIndx] = syms[symIndx].params.a.len 
 
         #-----------------------------
-        # return
+        # pre-process injections
+        #-----------------------------
+        if willInject:
+            if not useArgs:
+                saved = initOrderedTable[string,Value]()
+
+            for k,v in pairs(inject[]):
+                if syms.hasKey(k):
+                    saved[k] = syms[k]
+
+                syms[k] = v
+
+                if syms[k].kind==Function:
+                    Funcs[k] = syms[k].params.a.len
+
+        #-----------------------------
+        # evaluate block
+        #-----------------------------
+        let evaled = 
+            if not usePreeval:    doEval(blk)
+            else:                   evaluated
+
+        #-----------------------------
+        # execute it
         #-----------------------------
 
-        res
-
-    else:
-        # it's not a dictionary,
-        # it's either a normal block or a function block
-
+        if isIsolated:
+            subSyms = doExec(evaled, 1)#depth+1)#, nil)
+        else:
+            subSyms = doExec(evaled, 1)#depth+1)#, addr syms)
+    except ReturnTriggered as e:
+        #echo "caught: ReturnTriggered"
+        if not isFuncBlock:
+            #echo "\tnot a Function - re-emitting"
+            raise e
+        else:
+            #echo "\tit's a function, that was it"
+            discard
+    finally:
+        #echo "\tperforming housekeeping"
         #-----------------------------
-        # update symbols
+        # handle result
         #-----------------------------
-        when not isFuncBlock:
+
+        if dictionary:
+            # it's specified as a dictionary,
+            # so let's handle it this way
+
+            var res: ValueDict = initOrderedTable[string,Value]()
 
             for k, v in pairs(subSyms):
-                # if we are explicitly .import-ing, 
-                # set symbol no matter what
-                when execInParent:
-                    syms[k] = v
+                if not previous.hasKey(k):
+                    # it wasn't in the initial symbols, add it
+                    res[k] = v
                 else:
-                    # update parent only if symbol already existed
-                    if previous.hasKey(k):
+                    # it already was in the symbols
+                    # let's see if the value was the same
+                    if (subSyms[k]) != (previous[k]):
+                        # the value was not the same,
+                        # so we add it a dictionary key
+                        res[k] = v
+
+            #-----------------------------
+            # return
+            #-----------------------------
+
+            return res
+
+        else:
+            # it's not a dictionary,
+            # it's either a normal block or a function block
+
+            #-----------------------------
+            # update symbols
+            #-----------------------------
+            if not isFuncBlock:
+
+                for k, v in pairs(subSyms):
+                    # if we are explicitly .import-ing, 
+                    # set symbol no matter what
+                    if execInParent:
                         syms[k] = v
-
-            when useArgs:
-                # go through the arguments
-                for arg in args:
-                    # if the symbol already existed restore it
-                    # otherwise, remove it
-                    if saved.hasKey(arg.s):
-                        syms[arg.s] = saved[arg.s]
                     else:
-                        syms.del(arg.s)
+                        # update parent only if symbol already existed
+                        if previous.hasKey(k):
+                            syms[k] = v
 
-            when willInject:
-                for k,v in pairs(inject[]):
+                if useArgs:
+                    # go through the arguments
+                    for arg in args:
+                        # if the symbol already existed restore it
+                        # otherwise, remove it
+                        if saved.hasKey(arg.s):
+                            syms[arg.s] = saved[arg.s]
+                        else:
+                            syms.del(arg.s)
+
+                if willInject:
+                    for k,v in pairs(inject[]):
+                        if saved.hasKey(k):
+                            syms[k] = saved[k]
+                        else:
+                            syms.del(k)
+            else:
+                # if the symbol already existed (e.g. nested functions)
+                # restore it as we normally would
+                for k, v in pairs(subSyms):
                     if saved.hasKey(k):
                         syms[k] = saved[k]
-                    else:
-                        syms.del(k)
-        else:
-            # if the symbol already existed (e.g. nested functions)
-            # restore it as we normally would
-            for k, v in pairs(subSyms):
-                if saved.hasKey(k):
-                    syms[k] = saved[k]
 
-            # if there are exportable variables
-            # do set them in parent
-            if exports!=VNULL:
-                for k in exports.a:
-                    if subSyms.hasKey(k.s):
-                        syms[k.s] = subSyms[k.s]
+                # if there are exportable variables
+                # do set them in parent
+                if exports!=VNULL:
+                    for k in exports.a:
+                        if subSyms.hasKey(k.s):
+                            syms[k.s] = subSyms[k.s]
 
-        #-----------------------------
-        # break / continue
-        #-----------------------------
-        if vmBreak or vmContinue:
-            when not isBreakable:
-                return
-                
-        #-----------------------------
-        # return
-        #-----------------------------
-        if vmReturn:
-            when not isFuncBlock:
-                return
-            else:
-                vmReturn = false
-                
-        subSyms
-
-proc executeBlock*(blk: Value, withArgs: ValueArray = NoValues): ValueDict =
-    let evaled = doEval(blk)
-    return doExec(evaled)
+            # #-----------------------------
+            # # break / continue
+            # #-----------------------------
+            # if vmBreak or vmContinue:
+            #     when not isBreakable:
+            #         return
+                    
+            # #-----------------------------
+            # # return
+            # #-----------------------------
+            # if vmReturn:
+            #     when not isFuncBlock:
+            #         return
+            #     else:
+            #         vmReturn = false
+                    
+            return subSyms
 
 template execInternal*(path: string): untyped =
     execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
