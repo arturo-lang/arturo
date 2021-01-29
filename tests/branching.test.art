@@ -1,0 +1,32 @@
+; SIMPLE FUNCTION CALL
+; WITH RETURN
+
+f: function [][
+    print "in f"
+    return 10
+    print "still in f - ERROR"
+]
+
+print f
+
+; FUNCTION CALL
+; WITH IF-ELSE AND RETURN
+
+g: function [x][
+    print "in g"
+    if? x<5 [
+        print "x<5"
+        return x
+        print "after return - ERROR"
+    ]
+    else [
+        print "x>=5"
+        return 2*x
+        print "after return - ERROR"
+    ]
+    print "still in g - ERROR"
+]
+
+loop [1 3 5 7] 'i [
+    print ["g" i "=" g i]
+]
