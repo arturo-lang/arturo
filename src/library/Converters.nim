@@ -102,7 +102,9 @@ builtin "dictionary",
     args        = {
         "source": {String,Block}
     },
-    attrs       = NoAttrs,
+    attrs       = {
+        "with"  : ({Block},"embed given symbols")
+    },
     returns     = {Dictionary},
     example     = """
         none: #[]               ; none: []
@@ -136,6 +138,10 @@ builtin "dictionary",
             else:
                 echo "file does not exist"
 
+        if (let aWith = popAttr("with"); aWith != VNULL):
+            for x in aWith.a:
+                dict[x.s] = syms[x.s]
+                
         stack.push(newDictionary(dict))
 
 builtin "function",
