@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2020 Yanis Zafirópulos
+# (c) 2019-2021 Yanis Zafirópulos
 #
 # @file: arturo.nim
 ######################################################
@@ -13,10 +13,10 @@
 when defined(PROFILE):
     import nimprof
 
-import os, parseopt, segFaults, sequtils
+import os, parseopt, segFaults, sequtils, tables
 
 import translator/eval, translator/parse
-import vm/bytecode, vm/env, vm/exec, vm/value
+import vm/bytecode, vm/env, vm/exec, vm/stack, vm/value, vm/vm
 import version
 
 when defined(BENCHMARK):
@@ -30,14 +30,17 @@ type
     CmdAction = enum
         execFile
         evalCode
-        readBcode
-        writeBcode
+        # readBcode
+        # writeBcode
         showHelp
         showVersion
 
 #=======================================
 # Globals
 #=======================================
+
+#   -o --output               Compile script and write bytecode
+#   -i --input                Execute script from bytecode
 
 let helpTxt = """
 
@@ -47,9 +50,6 @@ Usage:
 Options:
   -e --evaluate             Evaluate given code
   -c --console              Show repl / interactive console
-
-  -o --output               Compile script and write bytecode
-  -i --input                Execute script from bytecode
 
   -u --update               Update to latest version
 
@@ -70,30 +70,6 @@ Options:
 #=======================================
 
 when isMainModule:
-
-    #=======================================
-    # Helpers
-    #=======================================
-
-    template bootup*(run: bool, perform: untyped):untyped =
-        initEnv(
-            arguments = arguments, 
-            version = Version,
-            build = Build
-        )
-        if action==execFile:
-            env.addPath(code)
-        else:
-            env.addPath(getCurrentDir())
-
-        var presets = getEnvDictionary()
-
-        perform
-
-        if run:
-            initVM()
-            discard doExec(evaled, withSyms=addr presets)
-            showVMErrors()
 
     var token = initOptParser()
 
@@ -125,12 +101,12 @@ when isMainModule:
                         of "e","evaluate":
                             action = evalCode
                             code = token.val
-                        of "o","output":
-                            action = writeBcode
-                            code = token.val
-                        of "i","input":
-                            action = readBcode
-                            code = token.val
+                        # of "o","output":
+                        #     action = writeBcode
+                        #     code = token.val
+                        # of "i","input":
+                        #     action = readBcode
+                        #     code = token.val
                         of "u","update":
                             action = evalCode
                             code = runUpdate
@@ -152,29 +128,23 @@ when isMainModule:
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        let parsed = doParse(move code, isFile = action==execFile)
-                        let evaled = parsed.doEval()
+                        run(code, arguments, action==execFile)
                 else:
-                    bootup(run=true):
-                        when defined(PYTHONIC):
-                            code = readFile(code)
-                            let parsed = doParse(move code, isFile = false)
-                        else:
-                            let parsed = doParse(move code, isFile = action==execFile)
-                            
-                        let evaled = parsed.doEval()
+                    run(code, arguments, action==execFile)
                     
-            of writeBcode:
-                bootup(run=false):
-                    let filename = code
-                    let parsed = doParse(move code, isFile = true)
-                    let evaled = parsed.doEval()
+            # of writeBcode:
+            #     discard
+            #     # bootup(run=false):
+            #     #     let filename = code
+            #     #     let parsed = doParse(move code, isFile = true)
+            #     #     let evaled = parsed.doEval()
 
-                    discard writeBytecode(evaled, filename & ".bcode")
+            #     #     discard writeBytecode(evaled, filename & ".bcode")
 
-            of readBcode:
-                bootup(run=true):
-                    let evaled = readBytecode(code)
+            # of readBcode:
+            #     discard
+            #     # bootup(run=true):
+            #     #     let evaled = readBytecode(code)
 
             of showHelp:
                 echo helpTxt
@@ -184,6 +154,4 @@ when isMainModule:
         arguments = commandLineParams().map(proc (x:string):Value = newString(x))
         code = static readFile(getEnv("PORTABLE_INPUT"))
 
-        bootup(run=true):
-            let parsed = doParse(move code, isFile = false)
-            let evaled = parsed.doEval()
+        run(code, arguments, isFile=false)

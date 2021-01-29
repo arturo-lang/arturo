@@ -1,0 +1,110 @@
+; SIMPLE DICTIONARY
+
+print #[
+	name: "John"
+	surname: "Doe"
+	age: 35
+]
+
+di: #[
+	name: "John"
+	surname: "Doe"
+	age: 35
+]
+
+print di
+
+; NESTED DICTIONARY
+; + VARIABLE REFERENCES
+; the inner (dictionary) scope 
+; should be able to read external variables
+
+cntr: "Spain"
+
+ei: #[
+	name: "John"
+	surname: "Doe"
+	location: #[
+		country: cntr
+	]
+]
+
+print ei
+
+; DICTIONARY
+; + VARIABLE REFERENCES
+; the inner - dictionary - scope 
+; should be able to read external variables
+; but not be confused or altered them
+
+country: "Spain"
+ent: "EU"
+
+location: #[
+	continent: "Europe"
+	country: "Greece"
+	entity: ent
+]
+
+print location
+
+; DICTIONARY
+; + EMBEDDED VARIABLES
+; the dictionary should be able 
+; to inject outer fields/variable
+; (with the same name and value)
+
+location: #.with:['country][
+	continent: "Europe"
+	entity: "EU"
+]
+
+print location
+
+; DICTIONARY 
+; IN A BLOCK
+
+do [ 
+    a: #[
+        some: "value"
+    ]
+    print a
+]
+
+if? set? 'a [
+	print a
+]
+else [
+	print "a: not set -> CORRECT"
+]
+
+; DICTIONARY 
+; IN AN IMPORTED BLOCK
+
+do.import [ 
+    b: #[
+        some: "value"
+    ]
+    print b
+]
+
+if? set? 'b [
+	print b
+]
+else [
+	print "b: not set -> NOT CORRECT"
+]
+
+; DICTIONARY 
+; RETURNED FROM A FUNCTION
+
+getUser: function [x][
+    surn: "Doe"
+    #[
+        name: x
+        surname: surn
+    ]
+]
+
+gu: getUser "John"
+print gu
