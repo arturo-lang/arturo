@@ -341,7 +341,7 @@ builtin "return",
     """:
         ##########################################################
         stack.push(x)
-        echo "emitting: ReturnTriggered"
+        #echo "emitting: ReturnTriggered"
         raise ReturnTriggered.newException("return")
         # vmReturn = true
         # # return ReturnResult
