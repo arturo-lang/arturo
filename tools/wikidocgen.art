@@ -1,0 +1,88 @@
+IndexTemplate: relative "wikidocs/index.template.md"
+SidebarTemplate: relative "wikidocs/sidebar.template.md"
+LibraryTemplate: relative "wikidocs/library.template.md"
+FunctionTemplate: relative "wikidocs/function.template.md"
+FunctionExamplesTemplate: relative "wikidocs/function.examples.template.md"
+FunctionAttributesTemplate: relative "wikidocs/function.attributes.template.md"
+
+modules: []
+functions: #[]
+
+; get modules and functions
+
+loop symbols [sym][
+    inf: info.get sym
+
+    if key? inf 'module [
+        fun: inf\name
+        lib: inf\module
+        append 'modules lib
+        if not? key? functions lib [
+            set functions lib []
+        ]
+        set functions lib append (get functions lib) fun
+    ]
+]
+
+unique 'modules
+
+; generate main index
+
+contents: join.with:"\n" map modules [md][
+    ~"- [|md|](Library-‣-|md|)"
+]
+
+write relative ~"wikidocs/out/Library.md" (render.single read IndexTemplate)
+write relative ~"wikidocs/out/_Sidebar.md" (render.single read SidebarTemplate)
+
+; generate library pages
+
+loop functions [md,fns][
+    indx: join.with:"\n" map fns [fn][
+        ~"   * [|fn|](#|fn|)"
+    ]
+    contents: join.with:"\n\n" map fns [f][
+        fn: info.get f
+        alias: ""
+        if key? fn 'alias [
+            alias: ~"\n**Alias:** `|fn\alias|`\n"
+        ]
+        examples: ""
+        if key? fn 'example [
+            if 10 < size fn\example [
+                example: replace fn\example "_" " "
+                examples: render.single read FunctionExamplesTemplate
+            ]
+        ]
+        attributos: ""
+        if not? empty? fn\attrs [
+            attributos: new read FunctionAttributesTemplate
+
+            loop fn\attrs [k,at][
+                append 'attributos 
+                    "|" ++ k ++ 
+                    "|" ++ "<i>:" ++ (to :string first at\types) ++ "</i>" ++
+                    "|" ++ (at\description) ++
+                    "|" ++ "\n"
+            ]
+        ]
+        ; <ins>from</ins> <i>:integer</i>
+        pars: new []
+
+        loop (fn\args) [k,params][
+            typestring: join.with: " " map params [p]["<i>:" ++ (to :string p) ++ "</i>"]
+            append 'pars ~"<ins>|k|</ins> |typestring|"
+
+        ]
+        pre: new ""
+        loop 1 + size fn\name [i][
+            append 'pre " "
+        ]
+        usage: join.with:~"\n|pre|" pars
+        returns: join.with:"\n" map get fn 'returns [ret][
+            "- *:" ++ (to :string ret) ++ "*"
+        ]
+        replace render.single read FunctionTemplate "%ATTRIBS%" attributos
+    ]
+    write relative ~"wikidocs/out/Library-‣-|md|.md" (render.single read LibraryTemplate) ++ contents
+]
