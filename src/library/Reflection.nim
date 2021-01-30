@@ -424,7 +424,7 @@ builtin "info",
     example     = """
     """:
         ##########################################################
-        echo "showing info for: " & $(x.s)
+        printInfo(x.s, syms[x.s])
 
     # # print info 'print
     # #
