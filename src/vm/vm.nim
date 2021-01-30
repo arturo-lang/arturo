@@ -121,9 +121,10 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
             name: newWord(n)
         )
 
-template constant*(n: string, alias: SymbolKind, description: string, v: untyped):untyped =
-    v.info = description
+template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
+    #echo "setting constant " & $(n) & " with description = " & description
     syms[n] = (v)
+    syms[n].info = description
     when alias != unaliased:
         aliases[alias] = AliasBinding(
             precedence: PrefixPrecedence,
