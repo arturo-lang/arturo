@@ -325,6 +325,7 @@ builtin "render",
         "template"  : {String}
     },
     attrs       = {
+        "single"    : ({Boolean},"don't render recursively"),
         "with"      : ({Dictionary},"use given dictionary for reference")
     },
     returns     = {String,Nothing},
@@ -373,12 +374,19 @@ builtin "render",
         else:
             if x.kind==String:
                 var res = newString(x.s)
-                while (contains(res.s, nre.re"\|([^\|]+)\|")):
+                if (popAttr("single") != VNULL):
                     res = newString(res.s.replace(nre.re"\|([^\|]+)\|",
-                        proc (match: RegexMatch): string =
-                            discard execBlock(doParse(match.captures[0], isFile=false))
-                            $(stack.pop())
-                    ))
+                            proc (match: RegexMatch): string =
+                                discard execBlock(doParse(match.captures[0], isFile=false))
+                                $(stack.pop())
+                        ))
+                else:
+                    while (contains(res.s, nre.re"\|([^\|]+)\|")):
+                        res = newString(res.s.replace(nre.re"\|([^\|]+)\|",
+                            proc (match: RegexMatch): string =
+                                discard execBlock(doParse(match.captures[0], isFile=false))
+                                $(stack.pop())
+                        ))
                 stack.push(res)
             elif x.kind==Literal:
                 while (contains(syms[x.s].s, nre.re"\|([^\|]+)\|")):
