@@ -10,131 +10,11 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strformat, strutils, sugar, tables
+import algorithm, sequtils, sets, strformat
+import strutils, sugar, tables
 
 import vm/globals, vm/value
 import utils
-
-# proc printHelp*() {.inline.} =
-#     var tbl = initTable[string,string]()
-
-#     for spec in OpSpecs:
-#         if spec.name!="":
-#             var args = ""
-#             if spec.an!="":
-#                 args &= spec.an
-#             if spec.bn!="":
-#                 args &= ", " & spec.bn
-#             if spec.cn!="":
-#                 args &= ", " & spec.cn
-
-#             tbl[spec.name] = alignLeft("(" & args & ")",35) & spec.desc.replace("~"," ")
-
-#     let sorted = toSeq(tbl.pairs).sorted
-
-#     for pair in sorted:
-#         echo fgBold & alignLeft(pair[0],20) & fgWhite & pair[1]
-
-# proc getInfo*(op: OpSpec): Value {.inline.} =
-#     var argArray: ValueArray = @[]
-#     if op.args >= 1:
-#         argArray.add(newDictionary({"name": newString(op.an), "type": newBlock(toSeq((op.a).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
-
-#         if op.args >= 2:
-#             argArray.add(newDictionary({"name": newString(op.bn), "type": newBlock(toSeq((op.b).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
-
-#             if op.args >= 3:
-#                 argArray.add(newDictionary({"name": newString(op.cn), "type": newBlock(toSeq((op.c).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
-
-
-#     var ret: Value = newBlock(toSeq((op.ret).items).map(proc(x:ValueKind):Value = newType(x)))         
-
-#     var attrArray: ValueArray = @[]
-#     if op.attrs!="":
-#         var parts = op.attrs.split("~")
-#         for part in parts:
-#             var subparts = part.split("->")
-#             var descr = subparts[1].strip
-#             var subsubparts = subparts[0].split()
-#             var name = subsubparts[0]
-#             var params: ValueArray = @[]
-            
-#             for subsub in subsubparts:
-#                 if subsub != name:
-#                     if subsub.strip!="":
-#                         params.add(newType(subsub.strip.replace(":")))
-
-#             attrArray.add(newDictionary({
-#                     "name": newString(name.strip.replace(".")),
-#                     "action": newString(descr.strip),
-#                     "parameters": newBlock(params)
-#                 }.toOrderedTable))
-#         discard
-
-#     let clearName = op.name.replace("*","")
-#     result = newDictionary({
-#                     "name"          : newString(clearName),
-#                     "description"   : newString(op.desc.replace("~"," ")),
-#                     "alias"         : newString(op.alias),
-#                     "arguments"     : newBlock(argArray),
-#                     "attributes"    : newBlock(attrArray),
-#                     "return"        : ret
-#                 }.toOrderedTable)
-
-# proc printInfo*(op: OpSpec) {.inline.} =
-
-#     proc countSubstr(s, sub: string): int =
-#         var i = 0
-#         while true:
-#             i = s.find(sub, i)
-#             if i < 0:
-#                 break
-#             i += sub.len # i += 1 for overlapping substrings
-#             inc result
-
-#     var params = ""
-
-#     let maxLen = @[op.an.len, op.bn.len, op.cn.len].max() + 1
-
-#     if op.args >= 1:
-#         params &= alignLeft(op.an,maxLen) & fgGray & " " & toSeq((op.a).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ") & " " & fgWhite
-#     if op.args >= 2:
-#         params &= "\n|" & ' '.repeat(18+op.name.len) & alignLeft(op.bn,maxLen) & fgGray & " " & toSeq((op.b).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ") & " " & fgWhite
-#     if op.args >= 3:
-#         params &= "\n|" & ' '.repeat(18+op.name.len) & alignLeft(op.cn,maxLen) & fgGray & " " & toSeq((op.c).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ") & "" & fgWhite
-
-#     var ret = toSeq((op.ret).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-#     var formattedDesc = op.desc.replace("~","\n|                 ")
-
-#     echo fmt("|------------------------------------------------------------------")
-#     echo fmt("|    {fgMagenta}{align(op.name,11)}{fgWhite}  {formattedDesc}")
-#     if op.alias!="":
-#         echo fmt("|          {fgWhite}alias{fgWhite}  {op.alias}")
-#     # echo fmt("|")
-#     # echo fmt("|                 {formattedDesc}")
-#     echo fmt("|------------------------------------------------------------------")
-#     let clearName = op.name.replace("*","")
-#     echo fmt("|          {fgGreen}usage{fgWhite}  {fgBold}{clearName}{fgWhite} {params}")
-
-#     if op.attrs!="":
-#         echo "|"
-#         var attrLines = op.attrs.replacef(re":(\w+)", fgGray & ":$1" & fgWhite)
-#                             .replacef(re"\.(\w+)", fgBold & ".$1" & fgWhite)
-#                             .split("~")
-#         var maxattr = attrLines.map(proc (x:string):int = (x.split("->"))[0].len ).max()
-#         var maxprop = attrLines.map(proc (x:string):int = (x.split("->"))[0].countSubstr(":") ).max()
-#         #maxattr = attrLines.map(proc (x:string):int = (echo x.split("->"); echo (x.split("->"))[0].len; x.split("->"))[0].len ).max()
-#         attrLines = attrLines.map(proc (x:string):string = 
-#             alignLeft( (x.split("->"))[0], maxattr-((maxprop-(x.split("->"))[0].countSubstr(":"))*11)) & "->" & (x.split("->"))[1]
-#         )
-#         #echo fmt("maxattr: {maxattr}")
-#         var formattedAttrs = attrLines.join("\n|                 ")
-                                     
-#         echo fmt("|        {fgGreen}options{fgWhite}  {formattedAttrs}")
-
-#     echo "|"
-#     echo fmt("|        {fgGreen}returns{fgWhite}  {fgGray}{ret}{fgWhite}")
-#     echo fmt("|------------------------------------------------------------------")
 
 #=======================================
 # Constants
@@ -148,7 +28,7 @@ const
     labelAlignment = 11
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
 template printLine() =
@@ -253,6 +133,66 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
             leftSide = fmt("{fgCyan}.{attr[0]}")
         
         result.add fmt("{alignLeft(leftSide,maxLen)} {fgWhite}-> {attr[1][1]}")
+
+#=======================================
+# Methods
+#=======================================
+
+proc printHelp*() =
+    let sorted = toSeq(syms.keys).sorted
+    for key in sorted:
+        let v = syms[key]
+        if v.kind==Function and v.fnKind==BuiltinFunction:
+            var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
+            
+            echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.fdesc
+
+proc getInfo*(n: string, v: Value):ValueDict =
+    result = initOrderedTable[string,Value]()
+
+    result["name"] = newString(n)
+    result["address"] = newString(fmt("{cast[ByteAddress](v):#X}"))
+    result["type"] = newType(v.kind)
+
+    if v.info!="":
+        result["description"] = newString(v.info)
+
+    if v.kind==Function:
+        if v.fnKind==BuiltinFunction:
+            result["module"] = newString(v.module)
+
+            var args = initOrderedTable[string,Value]()
+            if (toSeq(v.args.keys))[0]!="":
+                for k,spec in v.args:
+                    var specs:ValueArray = @[]
+                    for s in spec:
+                        specs.add(newType(s))
+
+                    args[k] = newBlock(specs)
+            result["args"] = newDictionary(args)
+
+            var attrs = initOrderedTable[string,Value]()
+            if (toSeq(v.attrs.keys))[0]!="":
+                for k,dd in v.attrs:
+                    let spec = dd[0]
+                    let descr = dd[1]
+
+                    var ss = initOrderedTable[string,Value]()
+
+                    var specs:ValueArray = @[]
+                    for s in spec:
+                        specs.add(newType(s))
+
+                    ss["types"] = newBlock(specs)
+                    ss["description"] = newString(descr)
+
+                    attrs[k] = newDictionary(ss)
+            result["attrs"] = newDictionary(attrs)
+            result["description"] = newString(v.fdesc)
+            result["example"] = newString(v.example)
+
+        else:
+            result["args"] = v.params
 
 
 proc printInfo*(n: string, v: Value) =
