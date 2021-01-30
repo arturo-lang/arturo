@@ -249,13 +249,7 @@ builtin "help",
     example     = """
     """:
         ##########################################################
-        let sorted = toSeq(syms.keys).sorted
-        for key in sorted:
-            let v = syms[key]
-            if v.kind==Function and v.fnKind==BuiltinFunction:
-                var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
-                
-                echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.fdesc
+        printHelp()
 
 builtin "info",
     alias       = unaliased, 
@@ -264,40 +258,17 @@ builtin "info",
     args        = {
         "symbol": {String,Literal}
     },
-    attrs       = NoAttrs,
-    returns     = {Nothing},
+    attrs       = {
+        "get"   : ({Boolean},"get information as dictionary")
+    },
+    returns     = {Dictionary,Nothing},
     example     = """
     """:
         ##########################################################
-        printInfo(x.s, syms[x.s])
-
-    # # print info 'print
-    # #
-    # # ;_[
-    # # ;____name:           print
-    # # ;____description:    print given value to screen with newline
-    # # ;____alias:          
-    # # ;____arguments:      [
-    # # ;________[
-    # # ;____________name:           value
-    # # ;____________type:           [
-    # # ;________________:any
-    # # ;____________]
-    # # ;________]
-    # # ;____]
-    # # ;____attributes:     [
-    # # ;____]
-    # # ;____return:         [
-    # # ;________:null
-    # # ;____]
-    # # ; ]
-
-    # require(opInfo)
-
-    # for opspec in OpSpecs:
-    #     if opspec.name.replace("*","") == x.s:
-    #         stack.push(opspec.getInfo())
-    #         break
+        if (popAttr("get") != VNULL):
+            stack.push(newDictionary(getInfo(x.s, syms[x.s])))
+        else:
+            printInfo(x.s, syms[x.s])
 
 builtin "inline?",
     alias       = unaliased, 
