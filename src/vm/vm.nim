@@ -30,6 +30,7 @@ import helpers/arrays       as arraysHelper
 import helpers/csv          as csvHelper
 import helpers/database     as databaseHelper
 import helpers/datasource   as datasourceHelper
+import helpers/helper       as helperHelper
 import helpers/html         as htmlHelper
 import helpers/json         as jsonHelper
 import helpers/markdown     as markdownHelper
