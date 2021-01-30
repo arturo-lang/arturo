@@ -35,11 +35,11 @@ print join @[
 	~LongHeader BR BR
 	color.gray ~Details BR BR
 	orange "# Type " 
-	orangeBold "help 'function"
-	orange " for info about a specific built-in function" BR
+	orangeBold "info 'symbol"
+	orange " for info about a specific symbol or built-in function" BR
 	orange "# Type " 
-	orangeBold "help []"
-	orange " to get a list of all available functions" BR
+	orangeBold "help"
+	orange " to get a list of all available functions with a short description" BR
 	orange "# For multi-line input, just add a blank space at the end of a line" BR BR
 	orange "# Launching interactive console - rock on! 🤘" BR
 ]
