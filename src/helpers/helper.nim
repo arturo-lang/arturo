@@ -188,6 +188,16 @@ proc getInfo*(n: string, v: Value):ValueDict =
 
                     attrs[k] = newDictionary(ss)
             result["attrs"] = newDictionary(attrs)
+
+            var returns:ValueArray = @[]
+            for ret in v.returns:
+                returns.add(newType(ret))
+            result["returns"] = newBlock(returns)
+
+            let alias = getAlias(n)
+            if alias!="":
+                result["alias"] = newString(alias)
+
             result["description"] = newString(v.fdesc)
             result["example"] = newString(v.example)
 
