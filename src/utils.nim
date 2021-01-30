@@ -18,6 +18,7 @@ import strutils, times
 
 const
     # colors
+    fgCyan*      = "\e[0;36m"
     fgGray*      = "\e[0;90m"
     fgGreen*     = "\e[1;32m"
     fgRed*       = "\e[1;31m"
