@@ -6,131 +6,6 @@
 # @file: library/Reflection.nim
 ######################################################
 
-# #=======================================
-# # Helpers
-# #=======================================
-
-# proc printHelp*() {.inline.} =
-#     var tbl = initTable[string,string]()
-
-#     for spec in OpSpecs:
-#         if spec.name!="":
-#             var args = ""
-#             if spec.an!="":
-#                 args &= spec.an
-#             if spec.bn!="":
-#                 args &= ", " & spec.bn
-#             if spec.cn!="":
-#                 args &= ", " & spec.cn
-
-#             tbl[spec.name] = alignLeft("(" & args & ")",35) & spec.desc.replace("~"," ")
-
-#     let sorted = toSeq(tbl.pairs).sorted
-
-#     for pair in sorted:
-#         echo fgBold & alignLeft(pair[0],20) & fgWhite & pair[1]
-
-# proc getInfo*(op: OpSpec): Value {.inline.} =
-#     var argArray: ValueArray = @[]
-#     if op.args >= 1:
-#         argArray.add(newDictionary({"name": newString(op.an), "type": newBlock(toSeq((op.a).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
-
-#         if op.args >= 2:
-#             argArray.add(newDictionary({"name": newString(op.bn), "type": newBlock(toSeq((op.b).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
-
-#             if op.args >= 3:
-#                 argArray.add(newDictionary({"name": newString(op.cn), "type": newBlock(toSeq((op.c).items).map(proc(x:ValueKind):Value = newType(x)))}.toOrderedTable))
-
-
-#     var ret: Value = newBlock(toSeq((op.ret).items).map(proc(x:ValueKind):Value = newType(x)))         
-
-#     var attrArray: ValueArray = @[]
-#     if op.attrs!="":
-#         var parts = op.attrs.split("~")
-#         for part in parts:
-#             var subparts = part.split("->")
-#             var descr = subparts[1].strip
-#             var subsubparts = subparts[0].split()
-#             var name = subsubparts[0]
-#             var params: ValueArray = @[]
-            
-#             for subsub in subsubparts:
-#                 if subsub != name:
-#                     if subsub.strip!="":
-#                         params.add(newType(subsub.strip.replace(":")))
-
-#             attrArray.add(newDictionary({
-#                     "name": newString(name.strip.replace(".")),
-#                     "action": newString(descr.strip),
-#                     "parameters": newBlock(params)
-#                 }.toOrderedTable))
-#         discard
-
-#     let clearName = op.name.replace("*","")
-#     result = newDictionary({
-#                     "name"          : newString(clearName),
-#                     "description"   : newString(op.desc.replace("~"," ")),
-#                     "alias"         : newString(op.alias),
-#                     "arguments"     : newBlock(argArray),
-#                     "attributes"    : newBlock(attrArray),
-#                     "return"        : ret
-#                 }.toOrderedTable)
-
-# proc printInfo*(op: OpSpec) {.inline.} =
-
-#     proc countSubstr(s, sub: string): int =
-#         var i = 0
-#         while true:
-#             i = s.find(sub, i)
-#             if i < 0:
-#                 break
-#             i += sub.len # i += 1 for overlapping substrings
-#             inc result
-
-#     var params = ""
-
-#     let maxLen = @[op.an.len, op.bn.len, op.cn.len].max() + 1
-
-#     if op.args >= 1:
-#         params &= alignLeft(op.an,maxLen) & fgGray & " " & toSeq((op.a).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ") & " " & fgWhite
-#     if op.args >= 2:
-#         params &= "\n|" & ' '.repeat(18+op.name.len) & alignLeft(op.bn,maxLen) & fgGray & " " & toSeq((op.b).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ") & " " & fgWhite
-#     if op.args >= 3:
-#         params &= "\n|" & ' '.repeat(18+op.name.len) & alignLeft(op.cn,maxLen) & fgGray & " " & toSeq((op.c).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ") & "" & fgWhite
-
-#     var ret = toSeq((op.ret).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-#     var formattedDesc = op.desc.replace("~","\n|                 ")
-
-#     echo fmt("|------------------------------------------------------------------")
-#     echo fmt("|    {fgMagenta}{align(op.name,11)}{fgWhite}  {formattedDesc}")
-#     if op.alias!="":
-#         echo fmt("|          {fgWhite}alias{fgWhite}  {op.alias}")
-#     # echo fmt("|")
-#     # echo fmt("|                 {formattedDesc}")
-#     echo fmt("|------------------------------------------------------------------")
-#     let clearName = op.name.replace("*","")
-#     echo fmt("|          {fgGreen}usage{fgWhite}  {fgBold}{clearName}{fgWhite} {params}")
-
-#     if op.attrs!="":
-#         echo "|"
-#         var attrLines = op.attrs.replacef(re":(\w+)", fgGray & ":$1" & fgWhite)
-#                             .replacef(re"\.(\w+)", fgBold & ".$1" & fgWhite)
-#                             .split("~")
-#         var maxattr = attrLines.map(proc (x:string):int = (x.split("->"))[0].len ).max()
-#         var maxprop = attrLines.map(proc (x:string):int = (x.split("->"))[0].countSubstr(":") ).max()
-#         #maxattr = attrLines.map(proc (x:string):int = (echo x.split("->"); echo (x.split("->"))[0].len; x.split("->"))[0].len ).max()
-#         attrLines = attrLines.map(proc (x:string):string = 
-#             alignLeft( (x.split("->"))[0], maxattr-((maxprop-(x.split("->"))[0].countSubstr(":"))*11)) & "->" & (x.split("->"))[1]
-#         )
-#         #echo fmt("maxattr: {maxattr}")
-#         var formattedAttrs = attrLines.join("\n|                 ")
-                                     
-#         echo fmt("|        {fgGreen}options{fgWhite}  {formattedAttrs}")
-
-#     echo "|"
-#     echo fmt("|        {fgGreen}returns{fgWhite}  {fgGray}{ret}{fgWhite}")
-#     echo fmt("|------------------------------------------------------------------")
-
 #=======================================
 # Methods
 #=======================================
@@ -367,50 +242,20 @@ builtin "dictionary?",
 builtin "help",
     alias       = unaliased, 
     rule        = PrefixPrecedence,
-    description = "print help",
+    description = "print a list of all available builtin functions",
     args        = NoArgs,
     attrs       = NoAttrs,
     returns     = {Nothing},
     example     = """
     """:
         ##########################################################
-        echo "showing help"
-
-# template Help*():untyped =
-#     # EXAMPLE:
-#     # help
-#     #
-#     # ; abs      (value)   get the absolute value for given integer
-#     # ; acos     (angle)   calculate the inverse cosine of given angle
-#     # ; acosh    (angle)   calculate the inverse hyperbolic cosine of given angle
-#     # ; ...
-#     #
-#     # help 'print
-#     # ; |------------------------------------------------------------------
-#     # ;           print  print given value to screen with newline
-#     # ; |------------------------------------------------------------------
-#     # ; |          usage  print value  :any 
-#     # ; |
-#     # ; |        returns  :null
-#     # ; |------------------------------------------------------------------
-#     #
-    
-#     require(opHelp)
-
-#     if x.kind==Literal:
-
-#         var found = false
-#         for opspec in OpSpecs:
-#             if opspec.name.replace("*","") == x.s:
-#                 found = true
-#                 opspec.printInfo()
-#                 break
-
-#         if not found:
-#             echo "no information found for given symbol"
-
-#     else:
-#         printHelp()
+        let sorted = toSeq(syms.keys).sorted
+        for key in sorted:
+            let v = syms[key]
+            if v.kind==Function and v.fnKind==BuiltinFunction:
+                var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
+                
+                echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.fdesc
 
 builtin "info",
     alias       = unaliased, 
