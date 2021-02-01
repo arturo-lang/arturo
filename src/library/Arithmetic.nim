@@ -72,7 +72,7 @@ builtin "div",
         else                : stack.push(x/y)
 
 builtin "fdiv",
-    alias       = unaliased, 
+    alias       = doubleslash, 
     rule        = InfixPrecedence,
     description = "divide given values and return result",
     args        = {
