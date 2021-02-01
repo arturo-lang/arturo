@@ -69,6 +69,7 @@ builtin "open",
     },
     returns     = {Integer},
     example     = """
+        db: open "my.db"    ; opens an SQLite database named 'my.db'
     """:
         ##########################################################
         var dbKind = SqliteDatabase
