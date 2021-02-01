@@ -93,7 +93,9 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     ReflectionLib.importSymbols()
     StringsLib.importSymbols()
     SystemLib.importSymbols()
-    UiLib.importSymbols()
+
+    when not defined(MINI):
+        UiLib.importSymbols()
 
     initVM()
     let parsed = doParse(move code, isFile)
