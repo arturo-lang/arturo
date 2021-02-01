@@ -13,10 +13,9 @@
 when defined(PROFILE):
     import nimprof
 
-import os, parseopt, segFaults, sequtils, tables
+import parseopt, segFaults, tables
 
-import translator/eval, translator/parse
-import vm/bytecode, vm/env, vm/exec, vm/stack, vm/value, vm/vm
+import vm/value, vm/vm
 import version
 
 when defined(BENCHMARK):

@@ -11,7 +11,7 @@
 #=======================================
 
 import algorithm, sequtils, sets, strformat
-import strutils, sugar, tables
+import strutils, tables
 
 import vm/globals, vm/value
 import utils
