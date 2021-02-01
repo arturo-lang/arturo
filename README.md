@@ -91,7 +91,7 @@ brew install arturo
 
 #### Build & Install Arturo
 
-a) via the main build script
+**a) via the main build script** (*recommended)
 
     ./install
 
@@ -100,7 +100,7 @@ The binary will be automatically installed in `~/.arturo/bin`
 > 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./install mini`
 
 
-b) via Nimble
+**b) via Nimble**
 
     nimble install -Y
 
@@ -172,10 +172,10 @@ To get an initial idea of the project, here's a brief guide to where is what:
 | `src/` | The main source folder |
 | `src/extras/` | 3rd party open-source code used by Arturo |
 | `src/helpers/` | Useful helper methods grouped by category and used mostly by library functions |
+| `src/library/` | The Arturo standard library functions, grouped by category |
 | `src/system/` | Components of the Arturo binary, written in Arturo (the REPL, the packager, etc) |
 | `src/translator/` | The 2 main translators: parse.nim (to perform the initial lexing and parsing to a block of words and values) and eval.nim (to convert a block of words to bytecode for our VM) |
 | `src/vm/` | The Virtual Machine |
-| `src/vm/library/` | The Arturo standard library functions, grouped by category |
 | `src/vm/bytecode.nim` | A list of all the VM bytecodes along with their description |
 | `src/vm/env.nim` | VM Environment handling (paths, etc) |
 | `src/vm/exec.nim` | The most important VM module, where the main loop is triggered |
