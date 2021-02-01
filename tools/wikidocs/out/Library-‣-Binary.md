@@ -38,11 +38,10 @@ Calculate the binary AND for the given values
 #### Examples
 
 ```red
-        print and 2 3      ; 2
-        
-        a: 2
-        and 'a 3           ; a: 2
-    
+print and 2 3      ; 2
+
+a: 2
+and 'a 3           ; a: 2
 ```
 
 ## nand
@@ -66,11 +65,10 @@ Calculate the binary NAND for the given values
 #### Examples
 
 ```red
-        print nand 2 3     ; -3
-        
-        a: 2
-        nand 'a 3          ; a: -3
-    
+print nand 2 3     ; -3
+
+a: 2
+nand 'a 3          ; a: -3
 ```
 
 ## nor
@@ -94,11 +92,10 @@ Calculate the binary NOR for the given values
 #### Examples
 
 ```red
-        print nor 2 3      ; -4
-        
-        a: 2
-        nor 'a 3           ; a: -4
-    
+print nor 2 3      ; -4
+
+a: 2
+nor 'a 3           ; a: -4
 ```
 
 ## not
@@ -121,11 +118,10 @@ Calculate the binary complement the given value
 #### Examples
 
 ```red
-        print not 123      ; -124
-        
-        a: 123
-        not 'a             ; a: -124
-    
+print not 123      ; -124
+
+a: 123
+not 'a             ; a: -124
 ```
 
 ## or
@@ -149,11 +145,10 @@ Calculate the binary OR for the given values
 #### Examples
 
 ```red
-        print or 2 3       ; 3
-        
-        a: 2
-        or 'a 3            ; a: 3
-    
+print or 2 3       ; 3
+
+a: 2
+or 'a 3            ; a: 3
 ```
 
 ## shl
@@ -177,11 +172,10 @@ Shift-left first value bits by second value
 #### Examples
 
 ```red
-        print shl 2 3      ; 16
-        
-        a: 2
-        shl 'a 3           ; a: 16
-    
+print shl 2 3      ; 16
+
+a: 2
+shl 'a 3           ; a: 16
 ```
 
 ## shr
@@ -205,11 +199,10 @@ Shift-right first value bits by second value
 #### Examples
 
 ```red
-        print shr 16 3     ; 2
-        
-        a: 16
-        shr 'a 3           ; a: 2
-    
+print shr 16 3     ; 2
+
+a: 16
+shr 'a 3           ; a: 2
 ```
 
 ## xnor
@@ -233,11 +226,10 @@ Calculate the binary XNOR for the given values
 #### Examples
 
 ```red
-        print xnor 2 3     ; -2
-        
-        a: 2
-        xnor 'a 3          ; a: -2
-    
+print xnor 2 3     ; -2
+
+a: 2
+xnor 'a 3          ; a: -2
 ```
 
 ## xor
@@ -261,9 +253,8 @@ Calculate the binary XOR for the given values
 #### Examples
 
 ```red
-        print xor 2 3      ; 1
-        
-        a: 2
-        xor 'a 3           ; a: 1
-    
+print xor 2 3      ; 1
+
+a: 2
+xor 'a 3           ; a: 1
 ```

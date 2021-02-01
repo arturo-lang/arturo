@@ -47,11 +47,10 @@ Convert given string to capitalized
 #### Examples
 
 ```red
-        print capitalize "hello World"      ; "Hello World"
-        
-        str: "hello World"
-        capitalize 'str                     ; str: "Hello World"
-    
+print capitalize "hello World"      ; "Hello World"
+
+str: "hello World"
+capitalize 'str                     ; str: "Hello World"
 ```
 
 ## color
@@ -88,9 +87,8 @@ Get colored version of given string
 #### Examples
 
 ```red
-        print color.green "Hello!"                ; Hello! (in green)
-        print color.red.bold "Some text"          ; Some text (in red/bold)
-    
+print color.green "Hello!"                ; Hello! (in green)
+print color.red.bold "Some text"          ; Some text (in red/bold)
 ```
 
 ## join
@@ -119,16 +117,15 @@ Join collection of strings into string
 #### Examples
 
 ```red
-        arr: ["one" "two" "three"]
-        print join arr
-        ; onetwothree
-        
-        print join.with:"," arr
-        ; one,two,three
-        
-        join 'arr
-        ; arr: "onetwothree"
-    
+arr: ["one" "two" "three"]
+print join arr
+; onetwothree
+
+print join.with:"," arr
+; one,two,three
+
+join 'arr
+; arr: "onetwothree"
 ```
 
 ## levenshtein
@@ -151,9 +148,8 @@ Calculate Levenshtein distance between given strings
 #### Examples
 
 ```red
-        print levenshtein "for" "fur"         ; 1
-        print levenshtein "one" "one"         ; 0
-    
+print levenshtein "for" "fur"         ; 1
+print levenshtein "one" "one"         ; 0
 ```
 
 ## lower
@@ -176,11 +172,10 @@ Convert given string to lowercase
 #### Examples
 
 ```red
-        print lower "hello World, 你好!"      ; "hello world, 你好!"
-        
-        str: "hello World, 你好!"
-        lower 'str                           ; str: "hello world, 你好!"
-    
+print lower "hello World, 你好!"      ; "hello world, 你好!"
+
+str: "hello World, 你好!"
+lower 'str                           ; str: "hello world, 你好!"
 ```
 
 ## lower?
@@ -202,11 +197,10 @@ Check if given string is lowercase
 #### Examples
 
 ```red
-        lower? "ñ"               ; => true
-        lower? "X"               ; => false
-        lower? "Hello World"     ; => false
-        lower? "hello"           ; => true
-    
+lower? "ñ"               ; => true
+lower? "X"               ; => false
+lower? "Hello World"     ; => false
+lower? "hello"           ; => true
 ```
 
 ## match
@@ -229,10 +223,9 @@ Get matches within string, using given regular expression
 #### Examples
 
 ```red
-        print match "hello" "hello"             ; => ["hello"]
-        match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
-        match "this is a string" "[0-9]+"       ; => []
-    
+print match "hello" "hello"             ; => ["hello"]
+match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
+match "this is a string" "[0-9]+"       ; => []
 ```
 
 ## numeric?
@@ -254,11 +247,10 @@ Check if given string is numeric
 #### Examples
 
 ```red
-        numeric? "hello"           ; => false
-        numeric? "3.14"            ; => true
-        numeric? "18966"           ; => true
-        numeric? "123xxy"          ; => false
-    
+numeric? "hello"           ; => false
+numeric? "3.14"            ; => true
+numeric? "18966"           ; => true
+numeric? "123xxy"          ; => false
 ```
 
 ## pad
@@ -287,13 +279,12 @@ Check if given string consists only of whitespace
 #### Examples
 
 ```red
-        pad "good" 10                 ; => "      good"
-        pad.right "good" 10           ; => "good      "
-        pad.center "good" 10          ; => "   good   "
-        
-        a: "hello"
-        pad 'a 10            ; a: "     hello"
-    
+pad "good" 10                 ; => "      good"
+pad.right "good" 10           ; => "good      "
+pad.center "good" 10          ; => "   good   "
+
+a: "hello"
+pad 'a 10            ; a: "     hello"
 ```
 
 ## prefix
@@ -317,11 +308,10 @@ Add given prefix to string
 #### Examples
 
 ```red
-        prefix "ello" "h"                  ; => "hello"
-        
-        str: "ello"
-        prefix 'str                        ; str: "hello"
-    
+prefix "ello" "h"                  ; => "hello"
+
+str: "ello"
+prefix 'str                        ; str: "hello"
 ```
 
 ## prefix?
@@ -349,9 +339,8 @@ Check if string starts with given prefix
 #### Examples
 
 ```red
-        prefix? "hello" "he"          ; => true
-        prefix? "boom" "he"           ; => false
-    
+prefix? "hello" "he"          ; => true
+prefix? "boom" "he"           ; => false
 ```
 
 ## render
@@ -382,20 +371,19 @@ Render template with |string| interpolation
 #### Examples
 
 ```red
-        x: 2
-        greeting: "hello"
-        print ~"|greeting|, your number is |x|"       ; hello, your number is 2
-        
-        data: #[
-            name: "John"
-            age: 34
-        ]
-        
-        print render.with: data 
-            "Hello, your name is |name| and you are |age| years old"
-        
-        ; Hello, your name is John and you are 34 years old
-    
+x: 2
+greeting: "hello"
+print ~"|greeting|, your number is |x|"       ; hello, your number is 2
+
+data: #[
+    name: "John"
+    age: 34
+]
+
+print render.with: data 
+    "Hello, your name is |name| and you are |age| years old"
+
+; Hello, your name is John and you are 34 years old
 ```
 
 ## replace
@@ -425,11 +413,10 @@ Add given suffix to string
 #### Examples
 
 ```red
-        replace "hello" "l" "x"           ; => "hexxo"
-        
-        str: "hello"
-        replace 'str "l" "x"              ; str: "hexxo"
-    
+replace "hello" "l" "x"           ; => "hexxo"
+
+str: "hello"
+replace 'str "l" "x"              ; str: "hexxo"
 ```
 
 ## strip
@@ -452,11 +439,10 @@ Strip whitespace from given string
 #### Examples
 
 ```red
-        strip "  this is a string "        ; => "this is a string"
-        
-        str: "  some string  "
-        strip 'str                         ; str: "some string"
-    
+strip "  this is a string "        ; => "this is a string"
+
+str: "  some string  "
+strip 'str                         ; str: "some string"
 ```
 
 ## suffix
@@ -480,11 +466,10 @@ Add given suffix to string
 #### Examples
 
 ```red
-        suffix "hell" "o"                  ; => "hello"
-        
-        str: "hell"
-        suffix 'str                        ; str: "hello"
-    
+suffix "hell" "o"                  ; => "hello"
+
+str: "hell"
+suffix 'str                        ; str: "hello"
 ```
 
 ## suffix?
@@ -512,9 +497,8 @@ Check if string ends with given suffix
 #### Examples
 
 ```red
-        suffix? "hello" "lo"          ; => true
-        suffix? "boom" "lo"           ; => false
-    
+suffix? "hello" "lo"          ; => true
+suffix? "boom" "lo"           ; => false
 ```
 
 ## upper
@@ -537,11 +521,10 @@ Convert given string to uppercase
 #### Examples
 
 ```red
-        print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
-        
-        str: "hello World, 你好!"
-        upper 'str                           ; str: "HELLO WORLD, 你好!"
-    
+print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
+
+str: "hello World, 你好!"
+upper 'str                           ; str: "HELLO WORLD, 你好!"
 ```
 
 ## upper?
@@ -563,11 +546,10 @@ Check if given string is uppercase
 #### Examples
 
 ```red
-        upper? "Ñ"               ; => true
-        upper? "x"               ; => false
-        upper? "Hello World"     ; => false
-        upper? "HELLO"           ; => true
-    
+upper? "Ñ"               ; => true
+upper? "x"               ; => false
+upper? "Hello World"     ; => false
+upper? "HELLO"           ; => true
 ```
 
 ## whitespace?
@@ -589,8 +571,7 @@ Check if given string consists only of whitespace
 #### Examples
 
 ```red
-        whitespace? "hello"           ; => false
-        whitespace? " "               ; => true
-        whitespace? "\n \n"           ; => true
-    
+whitespace? "hello"           ; => false
+whitespace? " "               ; => true
+whitespace? "\n \n"           ; => true
 ```

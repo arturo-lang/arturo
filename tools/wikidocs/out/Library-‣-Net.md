@@ -35,14 +35,13 @@ Download file from url to disk
 #### Examples
 
 ```red
-        download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
-        ; (downloads file as "logo.png")
-        
-        download.as:"arturoLogo.png"
-                    "https://github.com/arturo-lang/arturo/raw/master/logo.png"
-        
-        ; (downloads file with a different name)
-    
+download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
+; (downloads file as "logo.png")
+
+download.as:"arturoLogo.png"
+            "https://github.com/arturo-lang/arturo/raw/master/logo.png"
+
+; (downloads file with a different name)
 ```
 
 ## mail
@@ -66,17 +65,16 @@ Send mail using given message and configuration
 #### Examples
 
 ```red
-        mail "recipient@somemail.com"
-              #[
-                   title: "Hello from Arturo"
-                   content: "Arturo rocks!"
-               ]
-              #[
-                   server: "mymailserver.com"
-                   username: "myusername"
-                   password: "mypass123"
-               ]
-    
+mail "recipient@somemail.com"
+      #[
+           title: "Hello from Arturo"
+           content: "Arturo rocks!"
+       ]
+      #[
+           server: "mymailserver.com"
+           username: "myusername"
+           password: "mypass123"
+       ]
 ```
 
 ## serve
@@ -105,11 +103,10 @@ Start web server using given routes
 #### Examples
 
 ```red
-        serve .port:18966 [
-            "/":                          [ "This is the homepage" ]
-            "/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
-        ]
-        
-        ; (run the app and go to localhost:18966 - that was it!)
-    
+serve .port:18966 [
+    "/":                          [ "This is the homepage" ]
+    "/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
+]
+
+; (run the app and go to localhost:18966 - that was it!)
 ```

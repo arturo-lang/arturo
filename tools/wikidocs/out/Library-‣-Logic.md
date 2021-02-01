@@ -36,15 +36,14 @@ Return the logical AND for the given values
 #### Examples
 
 ```red
-        x: 2
-        y: 5
-        
-        if and? x=2 y>5 [
-            print "yep, that's correct!"]
-        ]
-        
-        ; yep, that's correct!
-    
+x: 2
+y: 5
+
+if and? x=2 y>5 [
+    print "yep, that's correct!"]
+]
+
+; yep, that's correct!
 ```
 
 ## false?
@@ -84,18 +83,17 @@ Return the logical NAND for the given values
 #### Examples
 
 ```red
-        x: 2
-        y: 3
-        
-        if? nand? x=2 y=3 [
-            print "yep, that's correct!"]
-        ]
-        else [
-            print "nope, that's not correct"
-        ]
-        
-        ; nope, that's not correct
-    
+x: 2
+y: 3
+
+if? nand? x=2 y=3 [
+    print "yep, that's correct!"]
+]
+else [
+    print "nope, that's not correct"
+]
+
+; nope, that's not correct
 ```
 
 ## nor?
@@ -118,18 +116,17 @@ Return the logical NAND for the given values
 #### Examples
 
 ```red
-        x: 2
-        y: 3
-        
-        if? nor? x>2 y=3 [
-            print "yep, that's correct!"]
-        ]
-        else [
-            print "nope, that's not correct"
-        ]
-        
-        ; nope, that's not correct
-    
+x: 2
+y: 3
+
+if? nor? x>2 y=3 [
+    print "yep, that's correct!"]
+]
+else [
+    print "nope, that's not correct"
+]
+
+; nope, that's not correct
 ```
 
 ## not?
@@ -151,13 +148,12 @@ Return the logical complement of the given value
 #### Examples
 
 ```red
-        ready: false
-        if not? ready [
-            print "we're still not ready!"
-        ]
-        
-        ; we're still not ready!
-    
+ready: false
+if not? ready [
+    print "we're still not ready!"
+]
+
+; we're still not ready!
 ```
 
 ## or?
@@ -180,15 +176,14 @@ Return the logical OR for the given values
 #### Examples
 
 ```red
-        x: 2
-        y: 4
-        
-        if or? x=2 y>5 [
-            print "yep, that's correct!"]
-        ]
-        
-        ; yep, that's correct!
-    
+x: 2
+y: 4
+
+if or? x=2 y>5 [
+    print "yep, that's correct!"]
+]
+
+; yep, that's correct!
 ```
 
 ## true?
@@ -228,16 +223,15 @@ Return the logical XNOR for the given values
 #### Examples
 
 ```red
-        x: 2
-        y: 3
-        
-        if? xor? x=2 y=3 [
-            print "yep, that's correct!"]
-        ]
-        else [
-            print "nope, that's not correct"
-        ]
-        
-        ; nope, that's not correct
-    
+x: 2
+y: 3
+
+if? xor? x=2 y=3 [
+    print "yep, that's correct!"]
+]
+else [
+    print "nope, that's not correct"
+]
+
+; nope, that's not correct
 ```

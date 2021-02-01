@@ -65,10 +65,9 @@ Get path for given module name
 #### Examples
 
 ```red
-        print module 'html        ; /usr/local/lib/arturo/html.art
-        
-        do.import module 'html    ; (imports given module)
-    
+print module 'html        ; /usr/local/lib/arturo/html.art
+
+do.import module 'html    ; (imports given module)
 ```
 
 ## relative
@@ -92,9 +91,8 @@ Get relative path for given path, based on current script's location
 #### Examples
 
 ```red
-        ; we are in folder: /Users/admin/Desktop
-        
-        print relative "test.txt"
-        ; /Users/admin/Desktop/test.txt
-    
+; we are in folder: /Users/admin/Desktop
+
+print relative "test.txt"
+; /Users/admin/Desktop/test.txt
 ```

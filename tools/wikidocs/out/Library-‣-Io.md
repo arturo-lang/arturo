@@ -31,8 +31,7 @@ Clear terminal
 #### Examples
 
 ```red
-        clear             ; (clears the screen)
-    
+clear             ; (clears the screen)
 ```
 
 ## input
@@ -54,12 +53,11 @@ Print prompt and get user input
 #### Examples
 
 ```red
-        name: input "What is your name? "
-        ; (user enters his name: Bob)
-        
-        print ["Hello" name "!"]
-        ; Hello Bob!
-    
+name: input "What is your name? "
+; (user enters his name: Bob)
+
+print ["Hello" name "!"]
+; Hello Bob!
 ```
 
 ## print
@@ -81,8 +79,7 @@ Print given value to screen with newline
 #### Examples
 
 ```red
-        print "Hello world!"          ; Hello world!
-    
+print "Hello world!"          ; Hello world!
 ```
 
 ## prints
@@ -104,10 +101,9 @@ Print given value to screen
 #### Examples
 
 ```red
-        prints "Hello "
-        prints "world"
-        print "!"             
-        
-        ; Hello world!
-    
+prints "Hello "
+prints "world"
+print "!"             
+
+; Hello world!
 ```

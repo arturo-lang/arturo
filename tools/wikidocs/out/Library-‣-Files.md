@@ -37,10 +37,9 @@ Check if given file exists
 #### Examples
 
 ```red
-        if exists? "somefile.txt" [ 
-            print "file exists!" 
-        ]
-    
+if exists? "somefile.txt" [ 
+    print "file exists!" 
+]
 ```
 
 ## read
@@ -76,18 +75,17 @@ Read file from given path
 #### Examples
 
 ```red
-        ; reading a simple local file
-        str: read "somefile.txt"
+; reading a simple local file
+str: read "somefile.txt"
 
-        ; also works with remote urls
-        page: read "http://www.somewebsite.com/page.html"
+; also works with remote urls
+page: read "http://www.somewebsite.com/page.html"
 
-        ; we can also "read" JSON data as an object
-        data: read.json "mydata.json"
+; we can also "read" JSON data as an object
+data: read.json "mydata.json"
 
-        ; or even convert Markdown to HTML on-the-fly
-        html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
-    
+; or even convert Markdown to HTML on-the-fly
+html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
 ```
 
 ## unzip
@@ -110,8 +108,7 @@ Unzip given archive to destination
 #### Examples
 
 ```red
-        unzip "folder" "archive.zip"
-    
+unzip "folder" "archive.zip"
 ```
 
 ## write
@@ -143,12 +140,11 @@ Write content to file at given path
 #### Examples
 
 ```red
-        ; write some string data to given file path
-        write "somefile.txt" "Hello world!"
+; write some string data to given file path
+write "somefile.txt" "Hello world!"
 
-        ; we can also write any type of data as JSON
-        write.json "data.json" myData
-    
+; we can also write any type of data as JSON
+write.json "data.json" myData
 ```
 
 ## zip
@@ -171,6 +167,5 @@ Zip given files to file at destination
 #### Examples
 
 ```red
-        zip "dest.zip" ["file1.txt" "img.png"]
-    
+zip "dest.zip" ["file1.txt" "img.png"]
 ```

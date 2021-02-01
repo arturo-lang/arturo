@@ -64,21 +64,20 @@ Append value to given collection
 #### Examples
 
 ```red
-        append "hell" "o"         ; => "hello"
-        append [1 2 3] 4          ; => [1 2 3 4]
-        append [1 2 3] [4 5]      ; => [1 2 3 4 5]
-        
-        print "hell" ++ "o!"      ; hello!             
-        print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
-        
-        a: "hell"
-        append 'a "o"
-        print a                   ; hello
-        
-        b: [1 2 3]
-        'b ++ 4
-        print b                   ; [1 2 3 4]
-    
+append "hell" "o"         ; => "hello"
+append [1 2 3] 4          ; => [1 2 3 4]
+append [1 2 3] [4 5]      ; => [1 2 3 4 5]
+
+print "hell" ++ "o!"      ; hello!             
+print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
+
+a: "hell"
+append 'a "o"
+print a                   ; hello
+
+b: [1 2 3]
+'b ++ 4
+print b                   ; [1 2 3 4]
 ```
 
 ## combine
@@ -101,9 +100,8 @@ Get combination of elements in given collections
 #### Examples
 
 ```red
-        combine ["one" "two" "three"] [1 2 3]
-        ; => [[1 "one"] [2 "two"] [3 "three"]]
-    
+combine ["one" "two" "three"] [1 2 3]
+; => [[1 "one"] [2 "two"] [3 "three"]]
 ```
 
 ## contains?
@@ -134,23 +132,22 @@ Check if collection contains given value
 #### Examples
 
 ```red
-        arr: [1 2 3 4]
-        
-        contains? arr 5             ; => false
-        contains? arr 2             ; => true
-        
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        contains? dict "John"       ; => true
-        contains? dict "Paul"       ; => false
-        
-        contains? keys dict "name"  ; => true
-        
-        contains? "hello" "x"       ; => false
-    
+arr: [1 2 3 4]
+
+contains? arr 5             ; => false
+contains? arr 2             ; => true
+
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+
+contains? dict "John"       ; => true
+contains? dict "Paul"       ; => false
+
+contains? keys dict "name"  ; => true
+
+contains? "hello" "x"       ; => false
 ```
 
 ## drop
@@ -175,12 +172,11 @@ Drop first <number> of elements from given collection and return the remaining o
 #### Examples
 
 ```red
-        str: drop "some text" 5
-        print str                     ; text
-        
-        arr: 1..10
-        drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
-    
+str: drop "some text" 5
+print str                     ; text
+
+arr: 1..10
+drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
 ```
 
 ## empty
@@ -202,12 +198,11 @@ Empty given collection
 #### Examples
 
 ```red
-        a: [1 2 3]
-        empty 'a              ; a: []
-        
-        str: "some text"
-        empty 'str            ; str: ""
-    
+a: [1 2 3]
+empty 'a              ; a: []
+
+str: "some text"
+empty 'str            ; str: ""
 ```
 
 ## empty?
@@ -229,12 +224,11 @@ Check if given collection is empty
 #### Examples
 
 ```red
-        empty? ""             ; => true
-        empty? []             ; => true
-        empty? #[]            ; => true
-        
-        empty [1 "two" 3]     ; => false
-    
+empty? ""             ; => true
+empty? []             ; => true
+empty? #[]            ; => true
+
+empty [1 "two" 3]     ; => false
 ```
 
 ## extend
@@ -279,11 +273,10 @@ Return the first item of the given collection
 #### Examples
 
 ```red
-        print first "this is some text"       ; t
-        print first ["one" "two" "three"]     ; one
-        
-        print first.n:2 ["one" "two" "three"] ; one two
-    
+print first "this is some text"       ; t
+print first ["one" "two" "three"]     ; one
+
+print first.n:2 ["one" "two" "three"] ; one two
 ```
 
 ## flatten
@@ -305,14 +298,13 @@ Flatten given collection by eliminating nested blocks
 #### Examples
 
 ```red
-        arr: [[1 2 3] [4 5 6]]
-        print flatten arr
-        ; 1 2 3 4 5 6
-        
-        arr: [[1 2 3] [4 5 6]]
-        flatten 'arr
-        ; arr: [1 2 3 4 5 6]
-    
+arr: [[1 2 3] [4 5 6]]
+print flatten arr
+; 1 2 3 4 5 6
+
+arr: [[1 2 3] [4 5 6]]
+flatten 'arr
+; arr: [1 2 3 4 5 6]
 ```
 
 ## get
@@ -337,30 +329,29 @@ Get collection's item by given index
 #### Examples
 
 ```red
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        print user\name               ; John
-        
-        print get user 'surname       ; Doe
-        print user \ 'username        ; Doe
-        
-        arr: ["zero" "one" "two"]
-        
-        print arr\1                   ; one
-        
-        print get arr 2               ; two
-        print arr \ 2                 ; two
-        
-        str: "Hello world!"
-        
-        print str\0                   ; H
-        
-        print get str 1               ; e
-        print str \ 1                 ; e
-    
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+
+print user\name               ; John
+
+print get user 'surname       ; Doe
+print user \ 'username        ; Doe
+
+arr: ["zero" "one" "two"]
+
+print arr\1                   ; one
+
+print get arr 2               ; two
+print arr \ 2                 ; two
+
+str: "Hello world!"
+
+print str\0                   ; H
+
+print get str 1               ; e
+print str \ 1                 ; e
 ```
 
 ## in?
@@ -391,23 +382,22 @@ Check if value exists in given collection
 #### Examples
 
 ```red
-        arr: [1 2 3 4]
-        
-        in? 5 arr             ; => false
-        in? 2 arr             ; => true
-        
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        in? "John" dict       ; => true
-        in? "Paul" dict       ; => false
-        
-        in? "name" keys dict  ; => true
-        
-        in? "x" "hello"       ; => false
-    
+arr: [1 2 3 4]
+
+in? 5 arr             ; => false
+in? 2 arr             ; => true
+
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+
+in? "John" dict       ; => true
+in? "Paul" dict       ; => false
+
+in? "name" keys dict  ; => true
+
+in? "x" "hello"       ; => false
 ```
 
 ## index
@@ -432,14 +422,13 @@ Return first index of value in given collection
 #### Examples
 
 ```red
-        ind: index "hello" "e"
-        print ind                 ; 1
-        
-        print index [1 2 3] 3     ; 2
-        
-        type index "hello" "x"
-        ; :null
-    
+ind: index "hello" "e"
+print ind                 ; 1
+
+print index [1 2 3] 3     ; 2
+
+type index "hello" "x"
+; :null
 ```
 
 ## insert
@@ -466,19 +455,18 @@ Insert value in collection at given index
 #### Examples
 
 ```red
-        insert [1 2 3 4] 0 "zero"
-        ; => ["zero" 1 2 3 4]
-        
-        print insert "heo" 2 "ll"
-        ; hello
-        
-        dict: #[
-            name: John
-        ]
-        
-        insert 'dict 'name "Jane"
-        ; dict: [name: "Jane"]
-    
+insert [1 2 3 4] 0 "zero"
+; => ["zero" 1 2 3 4]
+
+print insert "heo" 2 "ll"
+; hello
+
+dict: #[
+    name: John
+]
+
+insert 'dict 'name "Jane"
+; dict: [name: "Jane"]
 ```
 
 ## key?
@@ -501,17 +489,16 @@ Check if dictionary contains given key
 #### Examples
 
 ```red
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        key? user 'age            ; => false
-        if key? user 'name [
-            print ["Hello" user\name]
-        ]
-        ; Hello John
-    
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+
+key? user 'age            ; => false
+if key? user 'name [
+    print ["Hello" user\name]
+]
+; Hello John
 ```
 
 ## keys
@@ -533,14 +520,13 @@ Get list of keys for given dictionary
 #### Examples
 
 ```red
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        keys user
-        => ["name" "surname"]
-    
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+
+keys user
+=> ["name" "surname"]
 ```
 
 ## last
@@ -567,11 +553,10 @@ Return the last item of the given collection
 #### Examples
 
 ```red
-        print last "this is some text"       ; t
-        print last ["one" "two" "three"]     ; three
-        
-        print last.n:2 ["one" "two" "three"] ; two three
-    
+print last "this is some text"       ; t
+print last ["one" "two" "three"]     ; three
+
+print last.n:2 ["one" "two" "three"] ; two three
 ```
 
 ## max
@@ -594,8 +579,7 @@ Get maximum element in given collection
 #### Examples
 
 ```red
-        print max [4 2 8 5 1 9]       ; 9
-    
+print max [4 2 8 5 1 9]       ; 9
 ```
 
 ## min
@@ -618,8 +602,7 @@ Get minimum element in given collection
 #### Examples
 
 ```red
-        print min [4 2 8 5 1 9]       ; 1
-    
+print min [4 2 8 5 1 9]       ; 1
 ```
 
 ## permutate
@@ -641,9 +624,8 @@ Get all possible permutations of the elements in given collection
 #### Examples
 
 ```red
-        permutate [A B C]
-        ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
-    
+permutate [A B C]
+; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
 ```
 
 ## remove
@@ -678,18 +660,17 @@ Remove value from given collection
 #### Examples
 
 ```red
-        remove "hello" "l"        ; => "heo"
-        print "hello" -- "l"      ; heo
-        
-        str: "mystring"
-        remove 'str "str"         
-        print str                 ; mying
-        
-        print remove.once "hello" "l"
-        ; helo
-        
-        remove [1 2 3 4] 4        ; => [1 2 3]
-    
+remove "hello" "l"        ; => "heo"
+print "hello" -- "l"      ; heo
+
+str: "mystring"
+remove 'str "str"         
+print str                 ; mying
+
+print remove.once "hello" "l"
+; helo
+
+remove [1 2 3 4] 4        ; => [1 2 3]
 ```
 
 ## repeat
@@ -713,18 +694,17 @@ Repeat value the given number of times and return new one
 #### Examples
 
 ```red
-        print repeat "hello" 3
-        ; hellohellohello
-        
-        repeat [1 2 3] 3
-        ; => [1 2 3 1 2 3 1 2 3]
-        
-        repeat 5 3
-        ; => [5 5 5]
-        
-        repeat [[1 2 3]] 3
-        ; => [[1 2 3] [1 2 3] [1 2 3]]
-    
+print repeat "hello" 3
+; hellohellohello
+
+repeat [1 2 3] 3
+; => [1 2 3 1 2 3 1 2 3]
+
+repeat 5 3
+; => [5 5 5]
+
+repeat [[1 2 3]] 3
+; => [[1 2 3] [1 2 3] [1 2 3]]
 ```
 
 ## reverse
@@ -748,13 +728,12 @@ Reverse given collection
 #### Examples
 
 ```red
-        print reverse [1 2 3 4]           ; 4 3 2 1
-        print reverse "Hello World"       ; dlroW olleH
-        
-        str: "my string"
-        reverse 'str
-        print str                         ; gnirts ym
-    
+print reverse [1 2 3 4]           ; 4 3 2 1
+print reverse "Hello World"       ; dlroW olleH
+
+str: "my string"
+reverse 'str
+print str                         ; gnirts ym
 ```
 
 ## sample
@@ -776,10 +755,9 @@ Get a random element from given collection
 #### Examples
 
 ```red
-        sample [1 2 3]        ; (return a random number from 1 to 3)
-        print sample ["apple" "appricot" "banana"]
-        ; apple
-    
+sample [1 2 3]        ; (return a random number from 1 to 3)
+print sample ["apple" "appricot" "banana"]
+; apple
 ```
 
 ## set
@@ -803,16 +781,15 @@ Set collection's item at index to given value
 #### Examples
 
 ```red
-        myDict: #[ 
-            name: "John"
-            age: 34
-        ]
-        
-        set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
-        
-        arr: [1 2 3 4]
-        set arr 0 "one"                   ; => ["one" 2 3 4]
-    
+myDict: #[ 
+    name: "John"
+    age: 34
+]
+
+set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
+
+arr: [1 2 3 4]
+set arr 0 "one"                   ; => ["one" 2 3 4]
 ```
 
 ## shuffle
@@ -835,12 +812,11 @@ Get given collection shuffled
 #### Examples
 
 ```red
-        shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]
-        
-        arr: [2 5 9]
-        shuffle 'arr
-        print arr                     ; 5 9 2
-    
+shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]
+
+arr: [2 5 9]
+shuffle 'arr
+print arr                     ; 5 9 2
 ```
 
 ## size
@@ -862,11 +838,10 @@ Get size/length of given collection
 #### Examples
 
 ```red
-        str: "some text"      
-        print size str                ; 9
-        
-        print size "你好!"              ; 3
-    
+str: "some text"      
+print size str                ; 9
+
+print size "你好!"              ; 3
 ```
 
 ## slice
@@ -891,9 +866,8 @@ Get a slice of collection between given indices
 #### Examples
 
 ```red
-        slice "Hello" 0 3             ; => "Hell"
-        print slice 1..10 3 4         ; 4 5
-    
+slice "Hello" 0 3             ; => "Hell"
+print slice 1..10 3 4         ; 4 5
 ```
 
 ## sort
@@ -923,15 +897,14 @@ Sort given block in ascending order
 #### Examples
 
 ```red
-        a: [3 1 6]
-        print sort a                  ; 1 3 6
-        
-        print sort.descending a       ; 6 3 1
-        
-        b: ["one" "two" "three"]
-        sort 'b
-        print b                       ; one three two
-    
+a: [3 1 6]
+print sort a                  ; 1 3 6
+
+print sort.descending a       ; 6 3 1
+
+b: ["one" "two" "three"]
+sort 'b
+print b                       ; one three two
 ```
 
 ## split
@@ -964,19 +937,18 @@ Split collection to components
 #### Examples
 
 ```red
-        split "hello"                 ; => [`h` `e` `l` `l` `o`]
-        split.words "hello world"     ; => ["hello" "world"]
-        
-        split.every: 2 "helloworld"
-        ; => ["he" "ll" "ow" "or" "ld"]
-        
-        split.at: 4 "helloworld"
-        ; => ["hell" "oworld"]
-        
-        arr: 1..9
-        split.at:3 'arr
-        ; => [ [1 2 3 4] [5 6 7 8 9] ]
-    
+split "hello"                 ; => [`h` `e` `l` `l` `o`]
+split.words "hello world"     ; => ["hello" "world"]
+
+split.every: 2 "helloworld"
+; => ["he" "ll" "ow" "or" "ld"]
+
+split.at: 4 "helloworld"
+; => ["hell" "oworld"]
+
+arr: 1..9
+split.at:3 'arr
+; => [ [1 2 3 4] [5 6 7 8 9] ]
 ```
 
 ## take
@@ -1001,12 +973,11 @@ Keep first <number> of elements from given collection and return the remaining o
 #### Examples
 
 ```red
-        str: take "some text" 5
-        print str                     ; some
-        
-        arr: 1..10
-        take 'arr 3                   ; arr: [1 2 3]
-    
+str: take "some text" 5
+print str                     ; some
+
+arr: 1..10
+take 'arr 3                   ; arr: [1 2 3]
 ```
 
 ## unique
@@ -1029,13 +1000,12 @@ Get given block without duplicates
 #### Examples
 
 ```red
-        arr: [1 2 4 1 3 2]
-        print unique arr              ; 1 2 4 3
-        
-        arr: [1 2 4 1 3 2]
-        unique 'arr
-        print arr                     ; 1 2 4 3
-    
+arr: [1 2 4 1 3 2]
+print unique arr              ; 1 2 4 3
+
+arr: [1 2 4 1 3 2]
+unique 'arr
+print arr                     ; 1 2 4 3
 ```
 
 ## values
@@ -1057,12 +1027,11 @@ Get list of values for given dictionary
 #### Examples
 
 ```red
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        values user
-        => ["John" "Doe"]
-    
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+
+values user
+=> ["John" "Doe"]
 ```
