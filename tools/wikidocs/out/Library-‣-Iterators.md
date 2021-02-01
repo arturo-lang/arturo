@@ -75,16 +75,15 @@ Get collection's items by filtering those that do not fulfil given condition
 #### Examples
 
 ```red
-        print filter 1..10 [x][
-            even? x
-        ]
-        ; 1 3 5 7 9
-        
-        arr: 1..10
-        filter 'arr 'x -> even? x
-        print arr
-        ; 1 3 5 7 9
-    
+print filter 1..10 [x][
+    even? x
+]
+; 1 3 5 7 9
+
+arr: 1..10
+filter 'arr 'x -> even? x
+print arr
+; 1 3 5 7 9
 ```
 
 ## fold
@@ -115,18 +114,17 @@ Flatten given collection by eliminating nested blocks
 #### Examples
 
 ```red
-        fold 1..10 [x,y]-> x + y
-        ; => 55 (1+2+3+4..) 
-        
-        fold 1..10 .seed:1 [x,y][ x * y ]
-        ; => 3628800 (10!) 
-        
-        fold 1..3 [x y]-> x - y
-        ; => -6
-        
-        fold.right 1..3 [x y]-> x - y
-        ; => 2
-    
+fold 1..10 [x,y]-> x + y
+; => 55 (1+2+3+4..) 
+
+fold 1..10 .seed:1 [x,y][ x * y ]
+; => 3628800 (10!) 
+
+fold 1..3 [x y]-> x - y
+; => -6
+
+fold.right 1..3 [x y]-> x - y
+; => 2
 ```
 
 ## loop
@@ -155,45 +153,44 @@ Loop through collection, using given iterator and block
 #### Examples
 
 ```red
-        loop [1 2 3] 'x [
-            print x
-        ]
-        ; 1
-        ; 2
-        ; 3
-        
-        loop 1..3 [x][
-            print ["x =>" x]
-        ]
-        ; x => 1
-        ; x => 2
-        ; x => 3
-        
-        loop [A a B b C c] [x y][
-            print [x "=>" y]
-        ]
-        ; A => a
-        ; B => b
-        ; C => c
-        
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        loop user [k v][
-            print [k "=>" v]
-        ]
-        ; name => John
-        ; surname => Doe
-        
-        loop.with:'i ["zero" "one" "two"] 'x [
-            print ["item at:" i "=>" x]
-        ]
-        ; 0 => zero
-        ; 1 => one
-        ; 2 => two
-    
+loop [1 2 3] 'x [
+    print x
+]
+; 1
+; 2
+; 3
+
+loop 1..3 [x][
+    print ["x =>" x]
+]
+; x => 1
+; x => 2
+; x => 3
+
+loop [A a B b C c] [x y][
+    print [x "=>" y]
+]
+; A => a
+; B => b
+; C => c
+
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+
+loop user [k v][
+    print [k "=>" v]
+]
+; name => John
+; surname => Doe
+
+loop.with:'i ["zero" "one" "two"] 'x [
+    print ["item at:" i "=>" x]
+]
+; 0 => zero
+; 1 => one
+; 2 => two
 ```
 
 ## map
@@ -218,16 +215,15 @@ Map collection's items by applying given action
 #### Examples
 
 ```red
-        print map 1..5 [x][
-            2*x
-        ]
-        ; 2 4 6 8 10
-        
-        arr: 1..5
-        map 'arr 'x -> 2*x
-        print arr
-        ; 2 4 6 8 10
-    
+print map 1..5 [x][
+    2*x
+]
+; 2 4 6 8 10
+
+arr: 1..5
+map 'arr 'x -> 2*x
+print arr
+; 2 4 6 8 10
 ```
 
 ## select
@@ -252,14 +248,13 @@ Get collection's items that fulfil given condition
 #### Examples
 
 ```red
-        print select 1..10 [x][
-            even? x
-        ]
-        ; 2 4 6 8 10
-        
-        arr: 1..10
-        select 'arr 'x -> even? x
-        print arr
-        ; 2 4 6 8 10
-    
+print select 1..10 [x][
+    even? x
+]
+; 2 4 6 8 10
+
+arr: 1..10
+select 'arr 'x -> even? x
+print arr
+; 2 4 6 8 10
 ```

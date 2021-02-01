@@ -42,12 +42,11 @@ Add given values and return result
 #### Examples
 
 ```red
-        print add 1 2      ; 3
-        print 1 + 3        ; 4
-        
-        a: 4
-        add 'a 1           ; a: 5
-    
+print add 1 2      ; 3
+print 1 + 3        ; 4
+
+a: 4
+add 'a 1           ; a: 5
 ```
 
 ## dec
@@ -71,11 +70,10 @@ Decrease given value by 1
 #### Examples
 
 ```red
-        print dec 5        ; 4
-        
-        a: 4
-        dec 'a             ; a: 3
-    
+print dec 5        ; 4
+
+a: 4
+dec 'a             ; a: 3
 ```
 
 ## div
@@ -101,12 +99,11 @@ Perform integer division between given values and return result
 #### Examples
 
 ```red
-        print div 5 2      ; 2
-        print 9 / 3        ; 3
-        
-        a: 6
-        div 'a 3           ; a: 2
-    
+print div 5 2      ; 2
+print 9 / 3        ; 3
+
+a: 6
+div 'a 3           ; a: 2
 ```
 
 ## fdiv
@@ -130,11 +127,10 @@ Divide given values and return result
 #### Examples
 
 ```red
-        print fdiv 5 2     ; 2.5
-        
-        a: 6
-        fdiv 'a 3          ; a: 2.0
-    
+print fdiv 5 2     ; 2.5
+
+a: 6
+fdiv 'a 3          ; a: 2.0
 ```
 
 ## inc
@@ -158,11 +154,10 @@ Increase given value by 1
 #### Examples
 
 ```red
-        print inc 5        ; 6
-        
-        a: 4
-        inc 'a             ; a: 5
-    
+print inc 5        ; 6
+
+a: 4
+inc 'a             ; a: 5
 ```
 
 ## mod
@@ -188,12 +183,11 @@ Calculate the modulo given values and return result
 #### Examples
 
 ```red
-        print mod 5 2      ; 1
-        print 9 % 3        ; 0
-        
-        a: 8
-        mod 'a 3           ; a: 2
-    
+print mod 5 2      ; 1
+print 9 % 3        ; 0
+
+a: 8
+mod 'a 3           ; a: 2
 ```
 
 ## mul
@@ -220,12 +214,11 @@ Calculate the modulo given values and return result
 #### Examples
 
 ```red
-        print mul 1 2      ; 2
-        print 2 * 3        ; 6
-        
-        a: 5
-        mul 'a 2           ; a: 10
-    
+print mul 1 2      ; 2
+print 2 * 3        ; 6
+
+a: 5
+mul 'a 2           ; a: 10
 ```
 
 ## neg
@@ -249,11 +242,10 @@ Reverse sign of given value and return it
 #### Examples
 
 ```red
-        print neg 1        ; -1
-        
-        a: 5
-        neg 'a             ; a: -5
-    
+print neg 1        ; -1
+
+a: 5
+neg 'a             ; a: -5
 ```
 
 ## pow
@@ -280,12 +272,11 @@ Calculate the power of given values and return result
 #### Examples
 
 ```red
-        print pow 2 3      ; 8
-        print 3 ^ 2        ; 9
-        
-        a: 5
-        pow 'a 2           ; a: 25
-    
+print pow 2 3      ; 8
+print 3 ^ 2        ; 9
+
+a: 5
+pow 'a 2           ; a: 25
 ```
 
 ## sub
@@ -312,10 +303,9 @@ Subtract given values and return result
 #### Examples
 
 ```red
-        print sub 2 1      ; 1
-        print 5 - 3        ; 2
-        
-        a: 7
-        sub 'a 2           ; a: 5
-    
+print sub 2 1      ; 1
+print 5 - 3        ; 2
+
+a: 7
+sub 'a 2           ; a: 5
 ```

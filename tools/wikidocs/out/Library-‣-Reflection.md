@@ -63,21 +63,20 @@ Get given attribute, if it exists
 #### Examples
 
 ```red
-        multiply: function [x][
-            if? attr? "with" [ 
-                x * attr "with"
-            ] 
-            else [ 
-                2*x 
-            ]
-        ]
-        
-        print multiply 5
-        ; 10
-        
-        print multiply.with: 6 5
-        ; 60
-    
+multiply: function [x][
+    if? attr? "with" [ 
+        x * attr "with"
+    ] 
+    else [ 
+        2*x 
+    ]
+]
+
+print multiply 5
+; 10
+
+print multiply.with: 6 5
+; 60
 ```
 
 ## attr?
@@ -99,19 +98,18 @@ Check if given attribute exists
 #### Examples
 
 ```red
-        # greet: function [x][
-        #     if? not? attr? 'later [
-        #         print ["Hello" x "!"]
-        #     ]
-        #     else [
-        #         print [x "I'm afraid I'll greet you later!"]
-        #     ]
-        # ]
-        #
-        # greet.later "John"
-        #
-        # ; John I'm afraid I'll greet you later!
-    
+# greet: function [x][
+#     if? not? attr? 'later [
+#         print ["Hello" x "!"]
+#     ]
+#     else [
+#         print [x "I'm afraid I'll greet you later!"]
+#     ]
+# ]
+#
+# greet.later "John"
+#
+# ; John I'm afraid I'll greet you later!
 ```
 
 ## attribute?
@@ -167,18 +165,17 @@ Get dictionary of set attributes
 #### Examples
 
 ```red
-        greet: function [x][
-            print ["Hello" x "!"]
-            print attrs
-        ]
-        
-        greet.later "John"
-        
-        ; Hello John!
-        ; [
-        ;    later:    true
-        ; ]
-    
+greet: function [x][
+    print ["Hello" x "!"]
+    print attrs
+]
+
+greet.later "John"
+
+; Hello John!
+; [
+;    later:    true
+; ]
 ```
 
 ## benchmark
@@ -200,13 +197,12 @@ Benchmark given code
 #### Examples
 
 ```red
-        benchmark [ 
-            ; some process that takes some time
-            loop 1..10000 => prime? 
-        ]
-        
-        ; [benchmark] time: 0.065s
-    
+benchmark [ 
+    ; some process that takes some time
+    loop 1..10000 => prime? 
+]
+
+; [benchmark] time: 0.065s
 ```
 
 ## binary?
@@ -404,11 +400,10 @@ Print full dump of given value to screen
 #### Examples
 
 ```red
-        inspect 3                 ; 3 :integer
-        
-        a: "some text"
-        inspect a                 ; some text :string
-    
+inspect 3                 ; 3 :integer
+
+a: "some text"
+inspect a                 ; some text :string
 ```
 
 ## integer?
@@ -448,10 +443,9 @@ Print full dump of given value to screen
 #### Examples
 
 ```red
-        is? :string "hello"       ; => true
-        is? :block [1 2 3]        ; => true
-        is? :integer "boom"       ; => false
-    
+is? :string "hello"       ; => true
+is? :block [1 2 3]        ; => true
+is? :integer "boom"       ; => false
 ```
 
 ## floating?
@@ -592,11 +586,10 @@ Check if given variable is defined
 #### Examples
 
 ```red
-        boom: 12
-        print set? 'boom          ; true
-        
-        print set? 'zoom          ; false
-    
+boom: 12
+print set? 'boom          ; true
+
+print set? 'zoom          ; false
 ```
 
 ## stack
@@ -686,16 +679,15 @@ Get currently defined symbols
 #### Examples
 
 ```red
-        a: 2
-        b: "hello"
-        
-        print symbols
-        
-        ; [
-        ;    a: 2
-        ;    b: "hello"
-        ; ]
-    
+a: 2
+b: "hello"
+
+print symbols
+
+; [
+;    a: 2
+;    b: "hello"
+; ]
 ```
 
 ## type
@@ -717,9 +709,8 @@ Get type of given value
 #### Examples
 
 ```red
-        print type 18966          ; :integer
-        print type "hello world"  ; :string
-    
+print type 18966          ; :integer
+print type "hello world"  ; :string
 ```
 
 ## type?

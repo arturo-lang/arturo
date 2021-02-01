@@ -61,9 +61,8 @@ Get the absolute value for given integer
 #### Examples
 
 ```red
-        print abs 6       ; 6
-        print abs 6-7     ; 1
-    
+print abs 6       ; 6
+print abs 6-7     ; 1
 ```
 
 ## acos
@@ -187,9 +186,8 @@ Get average from given collection of numbers
 #### Examples
 
 ```red
-        print average [2 4 5 6 7 2 3]
-        ; 4.142857142857143
-    
+print average [2 4 5 6 7 2 3]
+; 4.142857142857143
 ```
 
 ## cos
@@ -313,11 +311,10 @@ Check if given number is even
 #### Examples
 
 ```red
-        even? 4           ; => true
-        even? 3           ; => false
-        
-        print select 1..10 => even?       ; 2 4 6 8 10
-    
+even? 4           ; => true
+even? 3           ; => false
+
+print select 1..10 => even?       ; 2 4 6 8 10
 ```
 
 ## factors
@@ -344,9 +341,8 @@ Get list of factors for given integer
 #### Examples
 
 ```red
-        factors 16          ; => [1 2 4 8 16]
-        factors.prime 16    ; => [2]
-    
+factors 16          ; => [1 2 4 8 16]
+factors.prime 16    ; => [2]
 ```
 
 ## gcd
@@ -368,8 +364,7 @@ Calculate greatest common divisor for given collection of integers
 #### Examples
 
 ```red
-        print gcd [48 60 120]         ; 12
-    
+print gcd [48 60 120]         ; 12
 ```
 
 ## median
@@ -393,12 +388,11 @@ Get median from given collection of numbers
 #### Examples
 
 ```red
-        print median [2 4 5 6 7 2 3]
-        ; 6
-        
-        print median [1 5 2 3 4 7 9 8]
-        ; 3.5
-    
+print median [2 4 5 6 7 2 3]
+; 6
+
+print median [1 5 2 3 4 7 9 8]
+; 3.5
 ```
 
 ## negative?
@@ -420,9 +414,8 @@ Check if given number is negative
 #### Examples
 
 ```red
-        negative? 5       ; => false
-        negative? 6-7     ; => true 
-    
+negative? 5       ; => false
+negative? 6-7     ; => true
 ```
 
 ## odd?
@@ -444,11 +437,10 @@ Check if given number is odd
 #### Examples
 
 ```red
-        odd? 4            ; => false
-        odd? 3            ; => true
-        
-        print select 1..10 => odd?       ; 1 3 5 7 9
-    
+odd? 4            ; => false
+odd? 3            ; => true
+
+print select 1..10 => odd?       ; 1 3 5 7 9
 ```
 
 ## positive?
@@ -470,9 +462,8 @@ Check if given number is positive
 #### Examples
 
 ```red
-        positive? 5       ; => true
-        positive? 6-7     ; => false
-    
+positive? 5       ; => true
+positive? 6-7     ; => false
 ```
 
 ## prime?
@@ -494,17 +485,16 @@ Check if given integer is prime
 #### Examples
 
 ```red
-        prime? 2          ; => true
-        prime? 6          ; => false
-        prime? 11         ; => true
-        
-        ; let's check the 14th Mersenne:
-        ; 53113799281676709868958820655246862732959311772703192319944413
-        ; 82004035598608522427391625022652292856688893294862465010153465
-        ; 79337652707239409519978766587351943831270835393219031728127
-        
-        prime? (2^607)-1  ; => true
-    
+prime? 2          ; => true
+prime? 6          ; => false
+prime? 11         ; => true
+
+; let's check the 14th Mersenne:
+; 53113799281676709868958820655246862732959311772703192319944413
+; 82004035598608522427391625022652292856688893294862465010153465
+; 79337652707239409519978766587351943831270835393219031728127
+
+prime? (2^607)-1  ; => true
 ```
 
 ## product
@@ -527,11 +517,10 @@ Calculate the product of all values in given list
 #### Examples
 
 ```red
-        print product [3 4]       ; 12
-        print product [1 2 4 6]   ; 48
-        
-        print product 1..10       ; 3628800
-    
+print product [3 4]       ; 12
+print product [1 2 4 6]   ; 48
+
+print product 1..10       ; 3628800
 ```
 
 ## random
@@ -554,8 +543,7 @@ Get a random integer between given limits
 #### Examples
 
 ```red
-        rnd: random 0 60          ; rnd: (a random number between 0 and 60)
-    
+rnd: random 0 60          ; rnd: (a random number between 0 and 60)
 ```
 
 ## range
@@ -583,9 +571,8 @@ Get list of numbers in given range (inclusive)
 #### Examples
 
 ```red
-        print range 1 4       ; 1 2 3 4
-        1..10                 ; [1 2 3 4 5 6 7 8 9 10]
-    
+print range 1 4       ; 1 2 3 4
+1..10                 ; [1 2 3 4 5 6 7 8 9 10]
 ```
 
 ## sec
@@ -693,11 +680,10 @@ Calculate the sum of all values in given list
 #### Examples
 
 ```red
-        print sum [3 4]           ; 7
-        print sum [1 2 4 6]       ; 13
-        
-        print sum 1..10           ; 55
-    
+print sum [3 4]           ; 7
+print sum [1 2 4 6]       ; 13
+
+print sum 1..10           ; 55
 ```
 
 ## tan
@@ -753,7 +739,6 @@ Check if given number is zero
 #### Examples
 
 ```red
-        zero? 5-5         ; => true
-        zero? 4           ; => false
-    
+zero? 5-5         ; => true
+zero? 4           ; => false
 ```

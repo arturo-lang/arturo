@@ -65,14 +65,13 @@ Call function with given list of parameters
 #### Examples
 
 ```red
-        multiply: function [x y][
-            x * y
-        ]
-        
-        call 'multiply [3 5]          ; => 15
-        
-        call $[x][x+2] [5]            ; 7
-    
+multiply: function [x y][
+    x * y
+]
+
+call 'multiply [3 5]          ; => 15
+
+call $[x][x+2] [5]            ; 7
 ```
 
 ## case
@@ -94,12 +93,11 @@ Initiate a case block to check for different cases
 #### Examples
 
 ```red
-        a: 2
-        case [a]
-            when? [<2] -> print "a is less than 2"
-            when? [=2] -> print "a is 2"
-            else       -> print "a is greater than 2"
-    
+a: 2
+case [a]
+    when? [<2] -> print "a is less than 2"
+    when? [=2] -> print "a is 2"
+    else       -> print "a is greater than 2"
 ```
 
 ## continue
@@ -144,21 +142,20 @@ Evaluate and execute given code
 #### Examples
 
 ```red
-        do "print 123"                ; 123
-        
-        do [
-            x: 3
-            print ["x =>" x]          ; x => 3
-        ]
-        
-        do.import [
-            x: 3
-        ]
-        print ["x =>" x]              ; x => 3
-        
-        print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
-        ; 233168
-    
+do "print 123"                ; 123
+
+do [
+    x: 3
+    print ["x =>" x]          ; x => 3
+]
+
+do.import [
+    x: 3
+]
+print ["x =>" x]              ; x => 3
+
+print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
+; 233168
 ```
 
 ## else
@@ -180,16 +177,15 @@ Perform action, if last condition was not true
 #### Examples
 
 ```red
-        x: 2
-        z: 3
-        
-        if? x>z [
-            print "x was greater than z"
-        ]
-        else [
-            print "nope, x was not greater than z"
-        ]
-    
+x: 2
+z: 3
+
+if? x>z [
+    print "x was greater than z"
+]
+else [
+    print "nope, x was not greater than z"
+]
 ```
 
 ## globalize
@@ -229,11 +225,10 @@ Perform action, if given condition is true
 #### Examples
 
 ```red
-        x: 2
-        
-        if x=2 -> print "yes, that's right!"
-        ; yes, that's right!
-    
+x: 2
+
+if x=2 -> print "yes, that's right!"
+; yes, that's right!
 ```
 
 ## if?
@@ -256,23 +251,22 @@ Perform action, if given condition is true and return condition result
 #### Examples
 
 ```red
-        x: 2
-        
-        result: if? x=2 -> print "yes, that's right!"
-        ; yes, that's right!
-        
-        print result
-        ; true
-        
-        z: 3
-        
-        if? x>z [
-            print "x was greater than z"
-        ]
-        else [
-            print "nope, x was not greater than z"
-        ]
-    
+x: 2
+
+result: if? x=2 -> print "yes, that's right!"
+; yes, that's right!
+
+print result
+; true
+
+z: 3
+
+if? x>z [
+    print "x was greater than z"
+]
+else [
+    print "nope, x was not greater than z"
+]
 ```
 
 ## let
@@ -295,9 +289,8 @@ Set symbol to given value
 #### Examples
 
 ```red
-        let 'x 10         ; x: 10
-        print x           ; 10
-    
+let 'x 10         ; x: 10
+print x           ; 10
 ```
 
 ## new
@@ -375,16 +368,15 @@ Return given value from current function
 #### Examples
 
 ```red
-        f: function [x][ 
-            loop 1..x 'y [ 
-                if y=5 [ return y*2 ] 
-            ] 
-            return x*2
-        ]
-        
-        print f 3         ; 6
-        print f 6         ; 10
-    
+f: function [x][ 
+    loop 1..x 'y [ 
+        if y=5 [ return y*2 ] 
+    ] 
+    return x*2
+]
+
+print f 3         ; 6
+print f 6         ; 10
 ```
 
 ## try
@@ -406,13 +398,12 @@ Perform action and catch possible errors
 #### Examples
 
 ```red
-        try [
-            ; let's try something dangerous
-            print 10 / 0
-        ]
-        
-        ; we catch the exception but do nothing with it
-    
+try [
+    ; let's try something dangerous
+    print 10 / 0
+]
+
+; we catch the exception but do nothing with it
 ```
 
 ## try?
@@ -434,16 +425,15 @@ Perform action, catch possible errors and return status
 #### Examples
 
 ```red
-        try? [
-            ; let's try something dangerous
-            print 10 / 0
-        ]
-        else [
-            print "something went terribly wrong..."
-        ]
-        
-        ; something went terribly wrong...
-    
+try? [
+    ; let's try something dangerous
+    print 10 / 0
+]
+else [
+    print "something went terribly wrong..."
+]
+
+; something went terribly wrong...
 ```
 
 ## until
@@ -466,23 +456,22 @@ Execute action until the given condition is true
 #### Examples
 
 ```red
-        i: 0 
-        until [
-            print ["i =>" i] 
-            i: i + 1
-        ][i = 10]
-        
-        ; i => 0 
-        ; i => 1 
-        ; i => 2 
-        ; i => 3 
-        ; i => 4 
-        ; i => 5 
-        ; i => 6 
-        ; i => 7 
-        ; i => 8 
-        ; i => 9 
-    
+i: 0 
+until [
+    print ["i =>" i] 
+    i: i + 1
+][i = 10]
+
+; i => 0 
+; i => 1 
+; i => 2 
+; i => 3 
+; i => 4 
+; i => 5 
+; i => 6 
+; i => 7 
+; i => 8 
+; i => 9
 ```
 
 ## var
@@ -522,12 +511,11 @@ Check if a specific condition is fulfilled and, if so, execute given action
 #### Examples
 
 ```red
-        a: 2
-        case [a]
-            when? [<2] -> print "a is less than 2"
-            when? [=2] -> print "a is 2"
-            else       -> print "a is greater than 2"
-    
+a: 2
+case [a]
+    when? [<2] -> print "a is less than 2"
+    when? [=2] -> print "a is 2"
+    else       -> print "a is greater than 2"
 ```
 
 ## while
@@ -555,21 +543,20 @@ Execute action while the given condition is true
 #### Examples
 
 ```red
-        i: 0 
-        while [i<10][
-            print ["i =>" i] 
-            i: i + 1
-        ]
-        
-        ; i => 0 
-        ; i => 1 
-        ; i => 2 
-        ; i => 3 
-        ; i => 4 
-        ; i => 5 
-        ; i => 6 
-        ; i => 7 
-        ; i => 8 
-        ; i => 9 
-    
+i: 0 
+while [i<10][
+    print ["i =>" i] 
+    i: i + 1
+]
+
+; i => 0 
+; i => 1 
+; i => 2 
+; i => 3 
+; i => 4 
+; i => 5 
+; i => 6 
+; i => 7 
+; i => 8 
+; i => 9
 ```

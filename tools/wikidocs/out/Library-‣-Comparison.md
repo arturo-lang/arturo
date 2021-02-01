@@ -36,11 +36,10 @@ Check if valueA = valueB (equality)
 #### Examples
 
 ```red
-        equal? 5 2            ; => false
-        equal? 5 6-1          ; => true
-        
-        print 3=3             ; true
-    
+equal? 5 2            ; => false
+equal? 5 6-1          ; => true
+
+print 3=3             ; true
 ```
 
 ## greater?
@@ -65,11 +64,10 @@ Check if valueA > valueB (greater than)
 #### Examples
 
 ```red
-        greater? 5 2          ; => true
-        greater? 5 6-1        ; => false
-        
-        print 3>2             ; true
-    
+greater? 5 2          ; => true
+greater? 5 6-1        ; => false
+
+print 3>2             ; true
 ```
 
 ## greaterOrEqual?
@@ -94,11 +92,10 @@ Check if valueA >= valueB (greater than or equal)
 #### Examples
 
 ```red
-        greaterOrEqual? 5 2   ; => true
-        greaterOrEqual? 5 4-1 ; => false
-        
-        print 2>=2            ; true
-    
+greaterOrEqual? 5 2   ; => true
+greaterOrEqual? 5 4-1 ; => false
+
+print 2>=2            ; true
 ```
 
 ## less?
@@ -123,11 +120,10 @@ Check if valueA < valueB (less than)
 #### Examples
 
 ```red
-        less? 5 2             ; => false
-        less? 5 6+1           ; => true
-        
-        print 2<3             ; true
-    
+less? 5 2             ; => false
+less? 5 6+1           ; => true
+
+print 2<3             ; true
 ```
 
 ## lessOrEqual?
@@ -152,11 +148,10 @@ Check if valueA =< valueB (less than or equal)
 #### Examples
 
 ```red
-        lessOrEqual? 5 2      ; => false
-        lessOrEqual? 5 6-1    ; => true
-        
-        print 2=<3            ; true
-    
+lessOrEqual? 5 2      ; => false
+lessOrEqual? 5 6-1    ; => true
+
+print 2=<3            ; true
 ```
 
 ## notEqual?
@@ -181,9 +176,8 @@ Check if valueA <> valueB (not equal)
 #### Examples
 
 ```red
-        notEqual? 5 2         ; => true
-        notEqual? 5 6-1       ; => false
-        
-        print 2<>3            ; true
-    
+notEqual? 5 2         ; => true
+notEqual? 5 6-1       ; => false
+
+print 2<>3            ; true
 ```

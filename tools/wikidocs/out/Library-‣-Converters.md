@@ -34,22 +34,21 @@ Create array from given block, by reducing/calculating all internal values
 #### Examples
 
 ```red
-        none: @[]               ; none: []
-        a: @[1 2 3]             ; a: [1 2 3]
-        
-        b: 5
-        c: @[b b+1 b+2]         ; c: [5 6 7]
-        
-        d: @[
-            3+1
-            print "we are in the block"
-            123
-            print "yep"
-        ]
-        ; we are in the block
-        ; yep
-        ; => [4 123]
-    
+none: @[]               ; none: []
+a: @[1 2 3]             ; a: [1 2 3]
+
+b: 5
+c: @[b b+1 b+2]         ; c: [5 6 7]
+
+d: @[
+    3+1
+    print "we are in the block"
+    123
+    print "yep"
+]
+; we are in the block
+; yep
+; => [4 123]
 ```
 
 ## as
@@ -80,13 +79,12 @@ Format given value as implied type
 #### Examples
 
 ```red
-        print as.binary 123           ; 1111011
-        print as.octal 123            ; 173
-        print as.hex 123              ; 7b
-        
-        print as.ascii "thís ìß ñot à tést"
-        ; this iss not a test
-    
+print as.binary 123           ; 1111011
+print as.octal 123            ; 173
+print as.hex 123              ; 7b
+
+print as.ascii "thís ìß ñot à tést"
+; this iss not a test
 ```
 
 ## dictionary
@@ -116,23 +114,22 @@ Create dictionary from given block or file, by getting all internal symbols
 #### Examples
 
 ```red
-        none: #[]               ; none: []
-        a: #[
-            name: "John"
-            age: 34
-        ]             
-        ; a: [name: "John", age: 34]
-        
-        d: #[
-            name: "John"
-            print "we are in the block"
-            age: 34
-            print "yep"
-        ]
-        ; we are in the block
-        ; yep
-        ; => [name: "John", age: 34]
-    
+none: #[]               ; none: []
+a: #[
+    name: "John"
+    age: 34
+]             
+; a: [name: "John", age: 34]
+
+d: #[
+    name: "John"
+    print "we are in the block"
+    age: 34
+    print "yep"
+]
+; we are in the block
+; yep
+; => [name: "John", age: 34]
 ```
 
 ## function
@@ -162,28 +159,27 @@ Create function with given arguments and body
 #### Examples
 
 ```red
-        f: function [x][ x + 2 ]
-        print f 10                ; 12
-        
-        f: $[x][x+2]
-        print f 10                ; 12
-        
-        multiply: function [x,y][
-            x * y
-        ]
-        print multiply 3 5        ; 15
-        
-        publicF: function .export['x] [z][
-            print ["z =>" z]
-            x: 5
-        ]
-        
-        publicF 10
-        ; z => 10
-        
-        print x
-        ; 5
-    
+f: function [x][ x + 2 ]
+print f 10                ; 12
+
+f: $[x][x+2]
+print f 10                ; 12
+
+multiply: function [x,y][
+    x * y
+]
+print multiply 3 5        ; 15
+
+publicF: function .export['x] [z][
+    print ["z =>" z]
+    x: 5
+]
+
+publicF 10
+; z => 10
+
+print x
+; 5
 ```
 
 ## to
@@ -206,23 +202,22 @@ Convert value to given type
 #### Examples
 
 ```red
-        to :string 2020               ; "2020"
-        to :integer "2020"            ; 2020
-        
-        to :integer `A`               ; 65
-        to :char 65                   ; `A`
-        
-        to :integer 4.3               ; 4
-        to :floating 4                ; 4.0
-        
-        to :boolean 0                 ; false
-        to :boolean 1                 ; true
-        to :boolean "true"            ; true
-        
-        to :literal "symbol"          ; 'symbol
-        to :string 'symbol            ; "symbol"
-        to :string :word              ; "word"
-        
-        to :block "one two three"     ; [one two three]
-    
+to :string 2020               ; "2020"
+to :integer "2020"            ; 2020
+
+to :integer `A`               ; 65
+to :char 65                   ; `A`
+
+to :integer 4.3               ; 4
+to :floating 4                ; 4.0
+
+to :boolean 0                 ; false
+to :boolean 1                 ; true
+to :boolean "true"            ; true
+
+to :literal "symbol"          ; 'symbol
+to :string 'symbol            ; "symbol"
+to :string :word              ; "word"
+
+to :block "one two three"     ; [one two three]
 ```

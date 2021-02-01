@@ -32,12 +32,11 @@ Execute given shell command
 #### Examples
 
 ```red
-        print execute "pwd"
-        ; /Users/admin/Desktop
-        
-        split.lines execute "ls"
-        ; => ["tests" "var" "data.txt"]
-    
+print execute "pwd"
+; /Users/admin/Desktop
+
+split.lines execute "ls"
+; => ["tests" "var" "data.txt"]
 ```
 
 ## exit
@@ -59,10 +58,9 @@ Exit program
 #### Examples
 
 ```red
-        exit              ; (terminates the program)
-        
-        exit.with: 3      ; (terminates the program with code 3)
-    
+exit              ; (terminates the program)
+
+exit.with: 3      ; (terminates the program with code 3)
 ```
 
 ## list
@@ -90,22 +88,21 @@ Get files at given path
 #### Examples
 
 ```red
-        loop list "." 'file [
-           print file
-        ]
-        
-        ; ./tests
-        ; ./var
-        ; ./data.txt
-        
-        loop list.relative "tests" 'file [
-           print file
-        ]
-        
-        ; test1.art
-        ; test2.art
-        ; test3.art
-    
+loop list "." 'file [
+   print file
+]
+
+; ./tests
+; ./var
+; ./data.txt
+
+loop list.relative "tests" 'file [
+   print file
+]
+
+; test1.art
+; test2.art
+; test3.art
 ```
 
 ## panic
