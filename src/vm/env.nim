@@ -12,7 +12,7 @@
 
 import os, strutils, tables, times
 
-import vm/bytecode, vm/value
+import vm/value
 
 #=======================================
 # Globals

@@ -10,37 +10,15 @@
 # Libraries
 #=======================================
 
-import algorithm, asyncdispatch, asynchttpserver
-import base64, cgi, db_sqlite, std/editdistance
-import httpClient, json, math, md5, os, osproc
-import random, rdstdin, re, sequtils, smtp
+import asyncdispatch, asynchttpserver
+import db_sqlite
+import httpClient, json, md5, os
+import random, sequtils, smtp
 import std/sha1, strformat, strutils, sugar
 import tables, times, unicode, uri, xmltree
 import nre except toSeq
 
-when not defined(windows):
-    import linenoise
-
-import extras/bignum, extras/miniz, extras/parsetoml
-
-when not defined(MINI):
-    import extras/webview
-
-import helpers/arrays       as arraysHelper   
-import helpers/csv          as csvHelper
-import helpers/database     as databaseHelper
-import helpers/datasource   as datasourceHelper
-import helpers/html         as htmlHelper
-import helpers/json         as jsonHelper
-import helpers/markdown     as markdownHelper
-import helpers/math         as mathHelper
-import helpers/path         as pathHelper
-import helpers/strings      as stringsHelper
-import helpers/toml         as tomlHelper
-import helpers/unisort      as unisortHelper
-import helpers/url          as urlHelper
-import helpers/webview      as webviewHelper
-import helpers/xml          as xmlHelper
+import extras/bignum, extras/parsetoml
 
 import translator/eval, translator/parse
 import vm/bytecode, vm/errors, vm/globals, vm/stack, vm/value
