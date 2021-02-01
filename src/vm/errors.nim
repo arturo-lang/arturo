@@ -12,7 +12,7 @@
 
 import vm/value
 
-type ReturnTriggered* = object of Exception
+type ReturnTriggered* = object of Defect
 
 #=======================================
 # Templates
