@@ -568,7 +568,7 @@ proc doEval*(root: Value): Translation =
 
         result = (cnsts,newit)
         Evaled[root] = result
-
+        
 #=======================================
 # Inspection
 #=======================================
