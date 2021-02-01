@@ -15,7 +15,8 @@ import cgi, httpclient, os, sequtils, smtp
 import nre except toSeq
 
 import helpers/colors as ColorsHelper
-import helpers/webview as WebviewHelper
+when not defined(MINI):
+    import helpers/webview as WebviewHelper
 
 import vm/[env, exec, globals, stack, value]
 
@@ -125,8 +126,9 @@ proc importSymbols*() =
                 if (let aPort = popAttr("port"); aPort != VNULL):
                     port = aPort.i
 
-                if (let aChrome = popAttr("chrome"); aChrome != VNULL):
-                    openChromeWindow(port)
+                when not defined(MINI):
+                    if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+                        openChromeWindow(port)
 
                 var server = newAsyncHttpServer()
 
