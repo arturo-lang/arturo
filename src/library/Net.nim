@@ -26,7 +26,7 @@ builtin "download",
         ; (downloads file as "logo.png")
         
         download.as:"arturoLogo.png"
-        ____________"https://github.com/arturo-lang/arturo/raw/master/logo.png"
+                    "https://github.com/arturo-lang/arturo/raw/master/logo.png"
         
         ; (downloads file with a different name)
     """:
@@ -56,15 +56,15 @@ builtin "mail",
     returns     = {Nothing},
     example     = """
         mail "recipient@somemail.com"
-        ______#[
-        ______     title: "Hello from Arturo"
-        ______     content: "Arturo rocks!"
-        ______ ]
-        ______#[
-        ___________server: "mymailserver.com"
-        ___________username: "myusername"
-        ___________password: "mypass123"
-        ______ ]
+              #[
+                   title: "Hello from Arturo"
+                   content: "Arturo rocks!"
+               ]
+              #[
+                   server: "mymailserver.com"
+                   username: "myusername"
+                   password: "mypass123"
+               ]
     """:
         ##########################################################
         let recipient = x.s
@@ -94,8 +94,8 @@ builtin "serve",
     returns     = {Nothing},
     example     = """
         serve .port:18966 [
-        ____"/":                          [ "This is the homepage" ]
-        ____"/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
+            "/":                          [ "This is the homepage" ]
+            "/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
         ]
         
         ; (run the app and go to localhost:18966 - that was it!)

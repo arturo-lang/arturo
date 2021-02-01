@@ -27,10 +27,10 @@ builtin "array",
         c: @[b b+1 b+2]         ; c: [5 6 7]
         
         d: @[
-        ____3+1
-        ____print "we are in the block"
-        ____123
-        ____print "yep"
+            3+1
+            print "we are in the block"
+            123
+            print "yep"
         ]
         ; we are in the block
         ; yep
@@ -110,16 +110,16 @@ builtin "dictionary",
     example     = """
         none: #[]               ; none: []
         a: #[
-        ____name: "John"
-        ____age: 34
+            name: "John"
+            age: 34
         ]             
         ; a: [name: "John", age: 34]
         
         d: #[
-        ____name: "John"
-        ____print "we are in the block"
-        ____age: 34
-        ____print "yep"
+            name: "John"
+            print "we are in the block"
+            age: 34
+            print "yep"
         ]
         ; we are in the block
         ; yep
@@ -172,13 +172,13 @@ builtin "function",
         print f 10                ; 12
         
         multiply: function [x,y][
-        ____x * y
+            x * y
         ]
         print multiply 3 5        ; 15
         
         publicF: function .export['x] [z][
-        ____print ["z =>" z]
-        ____x: 5
+            print ["z =>" z]
+            x: 5
         ]
         
         publicF 10

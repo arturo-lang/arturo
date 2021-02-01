@@ -35,7 +35,7 @@ builtin "call",
     returns     = {Any},
     example     = """
         multiply: function [x y][
-        ____x * y
+            x * y
         ]
         
         call 'multiply [3 5]          ; => 15
@@ -67,9 +67,9 @@ builtin "case",
     example     = """
         a: 2
         case [a]
-        ____when? [<2] -> print "a is less than 2"
-        ____when? [=2] -> print "a is 2"
-        ____else       -> print "a is greater than 2"
+            when? [<2] -> print "a is less than 2"
+            when? [=2] -> print "a is 2"
+            else       -> print "a is greater than 2"
     """:
         ##########################################################
         stack.push(x)
@@ -103,12 +103,12 @@ builtin "do",
         do "print 123"                ; 123
         
         do [
-        ____x: 3
-        ____print ["x =>" x]          ; x => 3
+            x: 3
+            print ["x =>" x]          ; x => 3
         ]
         
         do.import [
-        ____x: 3
+            x: 3
         ]
         print ["x =>" x]              ; x => 3
         
@@ -159,10 +159,10 @@ builtin "else",
         z: 3
         
         if? x>z [
-        ____print "x was greater than z"
+            print "x was greater than z"
         ]
         else [
-        ____print "nope, x was not greater than z"
+            print "nope, x was not greater than z"
         ]
     """:
         ##########################################################
@@ -223,10 +223,10 @@ builtin "if?",
         z: 3
         
         if? x>z [
-        ____print "x was greater than z"
+            print "x was greater than z"
         ]
         else [
-        ____print "nope, x was not greater than z"
+            print "nope, x was not greater than z"
         ]
     """:
         ##########################################################
@@ -330,10 +330,10 @@ builtin "return",
     returns     = {Nothing},
     example     = """
         f: function [x][ 
-        ____loop 1..x 'y [ 
-        ________if y=5 [ return y*2 ] 
-        ____] 
-        ____return x*2
+            loop 1..x 'y [ 
+                if y=5 [ return y*2 ] 
+            ] 
+            return x*2
         ]
         
         print f 3         ; 6
@@ -358,8 +358,8 @@ builtin "try",
     returns     = {Nothing},
     example     = """
         try [
-        ____; let's try something dangerous
-        ____print 10 / 0
+            ; let's try something dangerous
+            print 10 / 0
         ]
         
         ; we catch the exception but do nothing with it
@@ -381,11 +381,11 @@ builtin "try?",
     returns     = {Boolean},
     example     = """
         try? [
-        ____; let's try something dangerous
-        ____print 10 / 0
+            ; let's try something dangerous
+            print 10 / 0
         ]
         else [
-        ____print "something went terribly wrong..."
+            print "something went terribly wrong..."
         ]
         
         ; something went terribly wrong...
@@ -410,8 +410,8 @@ builtin "until",
     example     = """
         i: 0 
         until [
-        ____print ["i =>" i] 
-        ____i: i + 1
+            print ["i =>" i] 
+            i: i + 1
         ][i = 10]
         
         ; i => 0 
@@ -462,9 +462,9 @@ builtin "when?",
     example     = """
         a: 2
         case [a]
-        ____when? [<2] -> print "a is less than 2"
-        ____when? [=2] -> print "a is 2"
-        ____else       -> print "a is greater than 2"
+            when? [<2] -> print "a is less than 2"
+            when? [=2] -> print "a is 2"
+            else       -> print "a is greater than 2"
     """:
         ##########################################################
         let z = pop()
@@ -503,8 +503,8 @@ builtin "while",
     example     = """
         i: 0 
         while [i<10][
-        ____print ["i =>" i] 
-        ____i: i + 1
+            print ["i =>" i] 
+            i: i + 1
         ]
         
         ; i => 0 
