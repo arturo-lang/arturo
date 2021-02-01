@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
