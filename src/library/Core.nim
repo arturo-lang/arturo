@@ -237,8 +237,8 @@ builtin "if?",
         stack.push(x)
 
 builtin "let",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
+    alias       = colon, 
+    rule        = InfixPrecedence,
     description = "set symbol to given value",
     args        = {
         "symbol"    : {String,Literal},
@@ -306,7 +306,7 @@ builtin "pop",
                 stack.push(newBlock(res))
 
 builtin "push",
-    alias       = unaliased, 
+    alias       = ampersand, 
     rule        = PrefixPrecedence,
     description = "push given value to stack twice",
     args        = {
