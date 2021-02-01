@@ -1,214 +1,88 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Arturo
-;; Programming Language + Bytecode VM compiler
-;; (c) 2019-2020 Yanis Zafirópulos
-;;
-;; @file: tools/docgen.art
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+IndexTemplate: relative "wikidocs/index.template.md"
+SidebarTemplate: relative "wikidocs/sidebar.template.md"
+LibraryTemplate: relative "wikidocs/library.template.md"
+FunctionTemplate: relative "wikidocs/function.template.md"
+FunctionExamplesTemplate: relative "wikidocs/function.examples.template.md"
+FunctionAttributesTemplate: relative "wikidocs/function.attributes.template.md"
 
-functionsByLib: #[]
-examples: []
+modules: []
+functions: #[]
 
-parseExamples: function[l,i][
-	print ["parsing examples for library:" l "function:" i]
-	if ""=strip i -> return ""
+; get modules and functions
 
-	lines: read.lines l
-	example: []
+loop symbols [sym][
+    inf: info.get sym
 
-	indx: 0
-	while [indx<size lines] [
-		line: lines \ indx
-		if in? line ~"template |i|" [
-			indx: indx+1
-			if in? (lines \ indx) "# EXAMPLE:" [
-				print "found example!!!"
-				indx: indx+1
-				while [in? (lines \ indx) "#"][
-					exampleLine: strip lines \ indx
-					exampleLine: replace strip slice exampleLine 1 (size exampleLine)-1 "_" " "
-					example: example ++ exampleLine
-					indx: indx+1
-				]
-			]
-		]
-		indx: indx+1
-	]
-	join.with:"\n" example
+    if key? inf 'module [
+        fun: inf\name
+        lib: inf\module
+        append 'modules lib
+        if not? key? functions lib [
+            set functions lib []
+        ]
+        set functions lib append (get functions lib) fun
+    ]
 ]
 
-getFunctionsByLib: function[][
-	libs: sort list relative "../src/vm/library"
-	loop libs 'lib [
+unique 'modules
 
-		if and? lib<>"src/vm/library/.DS_Store" not? in? lib "internal" [
-			funcsInLib: sort map unique select map 
-				match read lib "template [A-Za-z]+"
-				'x [ strip replace x "template " ""]
-				'y [ (to :string y\0) = upper to :string y\0 ]
-				'z [
-					initial: z
-					result: z
-					if? suffix? z "E" [ result: replace z .regex "E$" "?" ]
-					else [ 
-						if? or? prefix? z "Has" prefix? z "Is" [
-							stripped: suffix replace replace z "Has" "" "Is" "" "?"
+; generate main index
 
-							if? stripped="?" [ result: "is?" ]
-							else [ result: stripped ]
-						]
-						else [
-							if? prefix? z "Get" [result: replace z "Get" ""]
-							else [result: replace z "Make" ""]
-						]
-					]
-					final: (lower to :string result\0) ++ slice result 1 (size result)-1
-					append 'examples @[@[final parseExamples lib initial]]
-					
-					final
-				]
-
-			;inspect funcsInLib
-			set functionsByLib replace replace lib "src/vm/library/" "" ".nim" "" funcsInLib
-		]
-	]
-]
-getFunctionsByLib
-
-
-funcTemplate: {
-## |fname||falias|
-
-#### Description
-
-|fdescription|
-
-#### Usage
-
-<pre>
-<b>|fname|</b> |fusage|
-</pre>|fattrs|
-
-#### Returns
-
-|fret||fexam|
-}
-
-tocTemplate: 
-{
-
-<!--ts-->
-   * [The Language](#the-language)
-   * [The Compiler](#the-compiler)
-   * [Trying it out](#trying-it-out)
-      * [Online](#online)
-      * [Manually](#manually)
-        * [Prerequisites](#prerequisites)
-        * [Build & Install Arturo](#build--install-arturo)
-      * [Docker](#docker)
-   * [Using the command line](#using-the-command-line)
-      * [Run a script](#run-a-script)
-      * [Interactive console (REPL)](#interactive-console--repl)
-   * [Editors & IDEs](#editors--ides)
-   * [Roadmap](#roadmap)
-   * [Contributing](#contributing)
-   * [License](#license)
-<!--te-->
-
-}
-
-inspect examples
-
-loop functionsByLib [lib,functions][
-	if lib<>"sys" [
-		libMd: ""
-		toc: "### Functions\n\n---\n\n<!--ts-->\n"
-		loop functions 'func [
-			print func
-			;exampl: get examples to :string func
-			if null<>info func [
-				funcLink: func
-
-				if in? funcLink "?" [
-					funcLink: replace funcLink "?" ""
-
-					if in? functions funcLink [
-						funcLink: funcLink ++ "-1"
-					]
-				]
-				toc: toc ++ ~"   * [|func|](#|funcLink|)\n"
-				funcInfo: info func
-
-				fname: funcInfo\name
-				fdescription: capitalize funcInfo\description
-				falias: ""
-				if ""<>funcInfo\alias [ falias: "\n\n**Alias:** `" ++ (funcInfo\alias) ++ "`" ]
-				fret: join.with:"  \n" map funcInfo \ "return" 'x ["- *:" ++ (to :string x) ++ "*"]
-				fusagepre: new []
-				loop funcInfo\arguments 'arg [
-					aname: arg\name
-					atype: join .with:" " map arg \ "type" 'z ["<i>:" ++ (to :string z) ++ "</i>"]
-					'fusagepre ++ ("<ins>" ++ aname ++ "</ins> " ++ atype)
-				]
-				tabbing: "\n" ++ join map 1..(size fname)+1 'x [" "]
-				fusage: join .with:tabbing fusagepre
-				fattrs: ""
-				if 0<size funcInfo\attributes [
-					fattrs:"\n\n#### Attributes\n\n"
-
-					pipe: to :string to :char 124
-					
-					fattrs: fattrs ++ pipe ++ "Attribute" ++ pipe ++ "Type" ++ pipe ++ "Description" ++ pipe ++ "\n"
-					fattrs: fattrs ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "---" ++ pipe ++ "\n"
-
-					loop funcInfo\attributes 'attrb [
-						params: join.with:" " map attrb\parameters 'param ["<i>:" ++ (to :string param) ++ "</i>"]
-						fattrs: fattrs ++ pipe ++ attrb\name ++ pipe ++ params ++ pipe ++ attrb\action ++ pipe ++ "\n"
-					]
-				]
-				fexam: new ""
-
-				fexams: select examples 'x [ and? x\0=func x\1<>"" ]
-
-				print ["got" fexams]
-
-				if not? empty? fexams [
-					fexam: "\n\n" ++ render {
-					#### Examples
-
-					```red
-					|fexams\0\1|
-					```
-
-					}
-				]
-				
-				; loop examples 'exam [
-				; 	;print [exam\0 "->" exam\1]
-					
-				; 	if (exam\0)=to :string func [
-				; 		print "FOUND!!!!"
-				; 		fexam: exam\1
-				; 	]
-				; ]
-				; 	if k=to :string func [
-				; 		print [k "=>" v]
-				; 		if v<>"" [
-				; 			print ["found!!:" v]
-				; 			fexam: v
-				; 		]
-				; 	]
-				; ]
-				;print ["examples for:" func "->" examples \ to :string func]
-
-				libMd: libMd ++ "\n\n" ++ render funcTemplate
-			]
-		]
-		toc: toc ++ "\n<!--te-->\n\n---"
-		write relative ~"../../arturo.wiki/Library-‣-|lib|.md" toc++libMd++"\n"
-	]
+contents: join.with:"\n" map modules [md][
+    ~"- [|md|](Library-‣-|md|)"
 ]
 
-loop functionsByLib [lib,functions][
-	print "- #### [" ++ lib ++  "](Library-‣-" ++ lib ++ ")"
+write relative ~"wikidocs/out/Library.md" (render.single read IndexTemplate)
+write relative ~"wikidocs/out/_Sidebar.md" (render.single read SidebarTemplate)
+
+; generate library pages
+
+loop functions [md,fns][
+    indx: join.with:"\n" map fns [fn][
+        ~"   * [|fn|](#|fn|)"
+    ]
+    contents: join.with:"\n\n" map fns [f][
+        fn: info.get f
+        alias: ""
+        if key? fn 'alias [
+            alias: ~"\n**Alias:** `|fn\alias|`\n"
+        ]
+        examples: ""
+        if key? fn 'example [
+            if 10 < size fn\example [
+                example: replace fn\example "_" " "
+                examples: render.single read FunctionExamplesTemplate
+            ]
+        ]
+        attributos: ""
+        if not? empty? fn\attrs [
+            attributos: new read FunctionAttributesTemplate
+
+            loop fn\attrs [k,at][
+                append 'attributos 
+                    "|" ++ k ++ 
+                    "|" ++ "<i>:" ++ (to :string first at\types) ++ "</i>" ++
+                    "|" ++ (at\description) ++
+                    "|" ++ "\n"
+            ]
+        ]
+        ; <ins>from</ins> <i>:integer</i>
+        pars: new []
+
+        loop (fn\args) [k,params][
+            typestring: join.with: " " map params [p]["<i>:" ++ (to :string p) ++ "</i>"]
+            append 'pars ~"<ins>|k|</ins> |typestring|"
+
+        ]
+        pre: new ""
+        loop 1 + size fn\name [i][
+            append 'pre " "
+        ]
+        usage: join.with:~"\n|pre|" pars
+        returns: join.with:"\n" map get fn 'returns [ret][
+            "- *:" ++ (to :string ret) ++ "*"
+        ]
+        replace render.single read FunctionTemplate "%ATTRIBS%" attributos
+    ]
+    write relative ~"wikidocs/out/Library-‣-|md|.md" (render.single read LibraryTemplate) ++ contents
 ]
