@@ -85,8 +85,8 @@ brew install arturo
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
       choosenim stable
 * Dependencies (for Linux):
-   - gtk+-3.0 *(\* needed only for "complete" builds)*
-   - webkit2gtk-4.0 *(\* needed only for "complete" builds)*
+   - gtk+-3.0 *(\* needed only for non-mini builds)*
+   - webkit2gtk-4.0 *(\* needed only for non-mini builds)*
    - libgmp-dev
 
 #### Build & Install Arturo
@@ -95,7 +95,10 @@ a) via the main build script
 
     ./install
 
-The binary will be automatically installed in `/usr/local/bin`
+The binary will be automatically installed in `~/.arturo/bin`
+
+> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./install mini`
+
 
 b) via Nimble
 
