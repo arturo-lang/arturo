@@ -7,430 +7,440 @@
 ######################################################
 
 #=======================================
+# Libraries
+#=======================================
+
+import algorithm, sequtils, sugar
+
+import vm/[eval, exec, globals, stack, value]
+
+#=======================================
 # Methods
 #=======================================
 
-builtin "all?",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "check if all of collection's item satisfy given condition",
-    args        = {
-        "collection"    : {Block},
-        "params"        : {Literal,Block},
-        "condition"     : {Block}
-    },
-    attrs       = NoAttrs,
-    returns     = {Boolean},
-    example     = """
-    """:
-        ##########################################################
-        var args: ValueArray
+proc importSymbols*() =
 
-        if y.kind==Literal: args = @[y]
-        else: args = y.a
+    builtin "all?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if all of collection's item satisfy given condition",
+        args        = {
+            "collection"    : {Block},
+            "params"        : {Literal,Block},
+            "condition"     : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+        """:
+            ##########################################################
+            var args: ValueArray
 
-        let preevaled = doEval(z)
-        var all = true
+            if y.kind==Literal: args = @[y]
+            else: args = y.a
 
-        for item in x.a:
-            stack.push(item)
-            discard execBlock(VNULL, evaluated=preevaled, args=args)
-            let popped = stack.pop()
-            if popped.kind==Boolean and not popped.b:
-                stack.push(newBoolean(false))
-                all = false
-                break
+            let preevaled = doEval(z)
+            var all = true
 
-        if all:
-            stack.push(newBoolean(true))
+            for item in x.a:
+                stack.push(item)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                let popped = stack.pop()
+                if popped.kind==Boolean and not popped.b:
+                    stack.push(newBoolean(false))
+                    all = false
+                    break
 
-builtin "any?",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "check if any of collection's items satisfy given condition",
-    args        = {
-        "collection"    : {Block},
-        "params"        : {Literal,Block},
-        "condition"     : {Block}
-    },
-    attrs       = NoAttrs,
-    returns     = {Boolean},
-    example     = """
-    """:
-        ##########################################################
-        var args: ValueArray
-
-        if y.kind==Literal: args = @[y]
-        else: args = y.a
-
-        let preevaled = doEval(z)
-        var one = false
-
-        for item in x.a:
-            stack.push(item)
-            discard execBlock(VNULL, evaluated=preevaled, args=args)
-            let popped = stack.pop()
-            if popped.kind==Boolean and popped.b:
+            if all:
                 stack.push(newBoolean(true))
-                one = true
-                break
 
-        if not one:
-            stack.push(newBoolean(false))
+    builtin "any?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if any of collection's items satisfy given condition",
+        args        = {
+            "collection"    : {Block},
+            "params"        : {Literal,Block},
+            "condition"     : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+        """:
+            ##########################################################
+            var args: ValueArray
 
-builtin "filter",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "get collection's items by filtering those that do not fulfil given condition",
-    args        = {
-        "collection"    : {Block,Literal},
-        "params"        : {Literal,Block},
-        "condition"     : {Block}
-    },
-    attrs       = NoAttrs,
-    returns     = {Block,Nothing},
-    example     = """
-        print filter 1..10 [x][
-            even? x
-        ]
-        ; 1 3 5 7 9
-        
-        arr: 1..10
-        filter 'arr 'x -> even? x
-        print arr
-        ; 1 3 5 7 9
-    """:
-        ##########################################################
-        var args: ValueArray
+            if y.kind==Literal: args = @[y]
+            else: args = y.a
 
-        if y.kind==Literal: args = @[y]
-        else: args = y.a
+            let preevaled = doEval(z)
+            var one = false
 
-        let preevaled = doEval(z)
-
-        var res: ValueArray = @[]
-
-        if x.kind==Literal:
-            for i,item in syms[x.s].a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                if not stack.pop().b:
-                    res.add(item)
-
-            syms[x.s].a = res
-        else:
             for item in x.a:
                 stack.push(item)
                 discard execBlock(VNULL, evaluated=preevaled, args=args)
-                if not stack.pop().b:
-                    res.add(item)
+                let popped = stack.pop()
+                if popped.kind==Boolean and popped.b:
+                    stack.push(newBoolean(true))
+                    one = true
+                    break
 
-            stack.push(newBlock(res))
+            if not one:
+                stack.push(newBoolean(false))
 
-builtin "fold",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "flatten given collection by eliminating nested blocks",
-    args        = {
-        "collection"    : {Block,Literal},
-        "params"        : {Literal,Block},
-        "action"        : {Block}
-    },
-    attrs       = {
-        "seed"  : ({Any},"use specific seed value"),
-        "right" : ({Boolean},"perform right folding")
-    },
-    returns     = {Block,Nothing},
-    example     = """
-        fold 1..10 [x,y]-> x + y
-        ; => 55 (1+2+3+4..) 
-        
-        fold 1..10 .seed:1 [x,y][ x * y ]
-        ; => 3628800 (10!) 
-        
-        fold 1..3 [x y]-> x - y
-        ; => -6
-        
-        fold.right 1..3 [x y]-> x - y
-        ; => 2
-    """:
-        ##########################################################
-        var args = y.a
-        let preevaled = doEval(z)
-
-        var seed = I0
-        if x.kind==Literal:
-            if syms[x.s].a[0].kind == String:
-                seed = newString("")
-        else:
-            if x.a[0].kind == String:
-                seed = newString("")
-
-        if (let aSeed = popAttr("seed"); aSeed != VNULL):
-            seed = aSeed
-
-        let doRightFold = (popAttr("right")!=VNULL)
-
-        if (x.kind==Literal and syms[x.s].a.len==0):
-            discard
-        elif (x.kind!=Literal and x.a.len==0):
-            stack.push(x)
-        else:
-            if (doRightFold):
-                # right fold
-
-                if x.kind == Literal:
-                    var res: Value = seed
-                    for i in countdown(syms[x.s].a.len-1,0):
-                        let a = syms[x.s].a[i]
-                        let b = res
-
-                        stack.push(b)
-                        stack.push(a)
-
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                        res = stack.pop()
-
-                    syms[x.s] = res
-
-                else:
-                    var res: Value = seed
-                    for i in countdown(x.a.len-1,0):
-                        let a = x.a[i]
-                        let b = res
-
-                        stack.push(b)
-                        stack.push(a)
-
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                        res = stack.pop()
-
-                    stack.push(res)
-            else:
-                # left fold
-
-                if x.kind == Literal:
-                    var res: Value = seed
-                    for i in x.a:
-                        let a = res
-                        let b = i
-
-                        stack.push(b)
-                        stack.push(a)
-
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                        res = stack.pop()
-
-                    syms[x.s] = res
-
-                else:
-                    var res: Value = seed
-                    for i in x.a:
-                        let a = res
-                        let b = i
-
-                        stack.push(b)
-                        stack.push(a)
-
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                        res = stack.pop()
-
-                    stack.push(res)
-
-builtin "loop",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "loop through collection, using given iterator and block",
-    args        = {
-        "collection"    : {Integer,Block,Dictionary},
-        "params"        : {Literal,Block},
-        "action"        : {Block}
-    },
-    attrs       = {
-        "with"  : ({Literal},"use given index")
-    },
-    returns     = {Nothing},
-    example     = """
-        loop [1 2 3] 'x [
-            print x
-        ]
-        ; 1
-        ; 2
-        ; 3
-        
-        loop 1..3 [x][
-            print ["x =>" x]
-        ]
-        ; x => 1
-        ; x => 2
-        ; x => 3
-        
-        loop [A a B b C c] [x y][
-            print [x "=>" y]
-        ]
-        ; A => a
-        ; B => b
-        ; C => c
-        
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        loop user [k v][
-            print [k "=>" v]
-        ]
-        ; name => John
-        ; surname => Doe
-        
-        loop.with:'i ["zero" "one" "two"] 'x [
-            print ["item at:" i "=>" x]
-        ]
-        ; 0 => zero
-        ; 1 => one
-        ; 2 => two
-    """:
-        ##########################################################
-        var args: ValueArray
-
-        var withIndex = false
-        let aWith = popAttr("with")
-
-        if aWith != VNULL:
-            withIndex = true
-
-        if y.kind==Literal: args = @[y]
-        else: args = y.a
-
-        var allArgs = args
-
-        if withIndex:
-            allArgs = concat(@[aWith], args)
-
-        let preevaled = doEval(z)
-
-        if x.kind==Dictionary:
-            for k,v in pairs(x.d):
-                stack.push(v)
-                stack.push(newString(k))
-                discard execBlock(VNULL, evaluated=preevaled, args=args)#, isBreakable=true)
-                checkForBreak()
-        else:
-            var arr: seq[Value]
-            if x.kind==Integer:
-                arr = (toSeq(1..x.i)).map((x) => newInteger(x))
-            else:
-                arr = x.a
-
-            var indx = 0
-            var run = 0
-            while indx+args.len<=arr.len:
-                for item in arr[indx..indx+args.len-1].reversed:
-                    stack.push(item)
-
-                if withIndex:
-                    stack.push(newInteger(run))
-
-                discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
-
-                checkForBreak()
-                run += 1
-                indx += args.len
-
-builtin "map",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "map collection's items by applying given action",
-    args        = {
-        "collection"    : {Block,Literal},
-        "params"        : {Literal,Block},
-        "action"        : {Block}
-    },
-    attrs       = NoAttrs,
-    returns     = {Block,Nothing},
-    example     = """
-        print map 1..5 [x][
-            2*x
-        ]
-        ; 2 4 6 8 10
-        
-        arr: 1..5
-        map 'arr 'x -> 2*x
-        print arr
-        ; 2 4 6 8 10
-    """:
-        ##########################################################
-        var args: ValueArray
-
-        if y.kind==Literal: args = @[y]
-        else: args = y.a
-
-        let preevaled = doEval(z)
-
-        var res: ValueArray = @[]
-
-        if x.kind==Literal:
-            for i,item in syms[x.s].a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                syms[x.s].a[i] = stack.pop()
-        else:
-            for item in x.a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                res.add(stack.pop())
+    builtin "filter",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get collection's items by filtering those that do not fulfil given condition",
+        args        = {
+            "collection"    : {Block,Literal},
+            "params"        : {Literal,Block},
+            "condition"     : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block,Nothing},
+        example     = """
+            print filter 1..10 [x][
+                even? x
+            ]
+            ; 1 3 5 7 9
             
-            stack.push(newBlock(res))
+            arr: 1..10
+            filter 'arr 'x -> even? x
+            print arr
+            ; 1 3 5 7 9
+        """:
+            ##########################################################
+            var args: ValueArray
 
-builtin "select",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "get collection's items that fulfil given condition",
-    args        = {
-        "collection"    : {Block,Literal},
-        "params"        : {Literal,Block},
-        "action"        : {Block}
-    },
-    attrs       = NoAttrs,
-    returns     = {Block,Nothing},
-    example     = """
-        print select 1..10 [x][
-            even? x
-        ]
-        ; 2 4 6 8 10
-        
-        arr: 1..10
-        select 'arr 'x -> even? x
-        print arr
-        ; 2 4 6 8 10
-    """:
-        ##########################################################
-        var args: ValueArray
+            if y.kind==Literal: args = @[y]
+            else: args = y.a
 
-        if y.kind==Literal: args = @[y]
-        else: args = y.a
+            let preevaled = doEval(z)
 
-        let preevaled = doEval(z)
+            var res: ValueArray = @[]
 
-        var res: ValueArray = @[]
+            if x.kind==Literal:
+                for i,item in syms[x.s].a:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    if not stack.pop().b:
+                        res.add(item)
 
-        if x.kind==Literal:
-            for i,item in syms[x.s].a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                if stack.pop().b:
-                    res.add(item)
+                syms[x.s].a = res
+            else:
+                for item in x.a:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    if not stack.pop().b:
+                        res.add(item)
 
-            syms[x.s].a = res
-        else:
-            for item in x.a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                if stack.pop().b:
-                    res.add(item)
+                stack.push(newBlock(res))
 
-            stack.push(newBlock(res))
+    builtin "fold",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "flatten given collection by eliminating nested blocks",
+        args        = {
+            "collection"    : {Block,Literal},
+            "params"        : {Literal,Block},
+            "action"        : {Block}
+        },
+        attrs       = {
+            "seed"  : ({Any},"use specific seed value"),
+            "right" : ({Boolean},"perform right folding")
+        },
+        returns     = {Block,Nothing},
+        example     = """
+            fold 1..10 [x,y]-> x + y
+            ; => 55 (1+2+3+4..) 
+            
+            fold 1..10 .seed:1 [x,y][ x * y ]
+            ; => 3628800 (10!) 
+            
+            fold 1..3 [x y]-> x - y
+            ; => -6
+            
+            fold.right 1..3 [x y]-> x - y
+            ; => 2
+        """:
+            ##########################################################
+            var args = y.a
+            let preevaled = doEval(z)
+
+            var seed = I0
+            if x.kind==Literal:
+                if syms[x.s].a[0].kind == String:
+                    seed = newString("")
+            else:
+                if x.a[0].kind == String:
+                    seed = newString("")
+
+            if (let aSeed = popAttr("seed"); aSeed != VNULL):
+                seed = aSeed
+
+            let doRightFold = (popAttr("right")!=VNULL)
+
+            if (x.kind==Literal and syms[x.s].a.len==0):
+                discard
+            elif (x.kind!=Literal and x.a.len==0):
+                stack.push(x)
+            else:
+                if (doRightFold):
+                    # right fold
+
+                    if x.kind == Literal:
+                        var res: Value = seed
+                        for i in countdown(syms[x.s].a.len-1,0):
+                            let a = syms[x.s].a[i]
+                            let b = res
+
+                            stack.push(b)
+                            stack.push(a)
+
+                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+
+                            res = stack.pop()
+
+                        syms[x.s] = res
+
+                    else:
+                        var res: Value = seed
+                        for i in countdown(x.a.len-1,0):
+                            let a = x.a[i]
+                            let b = res
+
+                            stack.push(b)
+                            stack.push(a)
+
+                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+
+                            res = stack.pop()
+
+                        stack.push(res)
+                else:
+                    # left fold
+
+                    if x.kind == Literal:
+                        var res: Value = seed
+                        for i in x.a:
+                            let a = res
+                            let b = i
+
+                            stack.push(b)
+                            stack.push(a)
+
+                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+
+                            res = stack.pop()
+
+                        syms[x.s] = res
+
+                    else:
+                        var res: Value = seed
+                        for i in x.a:
+                            let a = res
+                            let b = i
+
+                            stack.push(b)
+                            stack.push(a)
+
+                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+
+                            res = stack.pop()
+
+                        stack.push(res)
+
+    builtin "loop",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "loop through collection, using given iterator and block",
+        args        = {
+            "collection"    : {Integer,Block,Dictionary},
+            "params"        : {Literal,Block},
+            "action"        : {Block}
+        },
+        attrs       = {
+            "with"  : ({Literal},"use given index")
+        },
+        returns     = {Nothing},
+        example     = """
+            loop [1 2 3] 'x [
+                print x
+            ]
+            ; 1
+            ; 2
+            ; 3
+            
+            loop 1..3 [x][
+                print ["x =>" x]
+            ]
+            ; x => 1
+            ; x => 2
+            ; x => 3
+            
+            loop [A a B b C c] [x y][
+                print [x "=>" y]
+            ]
+            ; A => a
+            ; B => b
+            ; C => c
+            
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            loop user [k v][
+                print [k "=>" v]
+            ]
+            ; name => John
+            ; surname => Doe
+            
+            loop.with:'i ["zero" "one" "two"] 'x [
+                print ["item at:" i "=>" x]
+            ]
+            ; 0 => zero
+            ; 1 => one
+            ; 2 => two
+        """:
+            ##########################################################
+            var args: ValueArray
+
+            var withIndex = false
+            let aWith = popAttr("with")
+
+            if aWith != VNULL:
+                withIndex = true
+
+            if y.kind==Literal: args = @[y]
+            else: args = y.a
+
+            var allArgs = args
+
+            if withIndex:
+                allArgs = concat(@[aWith], args)
+
+            let preevaled = doEval(z)
+
+            if x.kind==Dictionary:
+                for k,v in pairs(x.d):
+                    stack.push(v)
+                    stack.push(newString(k))
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)#, isBreakable=true)
+                    checkForBreak()
+            else:
+                var arr: seq[Value]
+                if x.kind==Integer:
+                    arr = (toSeq(1..x.i)).map((x) => newInteger(x))
+                else:
+                    arr = x.a
+
+                var indx = 0
+                var run = 0
+                while indx+args.len<=arr.len:
+                    for item in arr[indx..indx+args.len-1].reversed:
+                        stack.push(item)
+
+                    if withIndex:
+                        stack.push(newInteger(run))
+
+                    discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+
+                    checkForBreak()
+                    run += 1
+                    indx += args.len
+
+    builtin "map",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "map collection's items by applying given action",
+        args        = {
+            "collection"    : {Block,Literal},
+            "params"        : {Literal,Block},
+            "action"        : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block,Nothing},
+        example     = """
+            print map 1..5 [x][
+                2*x
+            ]
+            ; 2 4 6 8 10
+            
+            arr: 1..5
+            map 'arr 'x -> 2*x
+            print arr
+            ; 2 4 6 8 10
+        """:
+            ##########################################################
+            var args: ValueArray
+
+            if y.kind==Literal: args = @[y]
+            else: args = y.a
+
+            let preevaled = doEval(z)
+
+            var res: ValueArray = @[]
+
+            if x.kind==Literal:
+                for i,item in syms[x.s].a:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    syms[x.s].a[i] = stack.pop()
+            else:
+                for item in x.a:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    res.add(stack.pop())
+                
+                stack.push(newBlock(res))
+
+    builtin "select",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get collection's items that fulfil given condition",
+        args        = {
+            "collection"    : {Block,Literal},
+            "params"        : {Literal,Block},
+            "action"        : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block,Nothing},
+        example     = """
+            print select 1..10 [x][
+                even? x
+            ]
+            ; 2 4 6 8 10
+            
+            arr: 1..10
+            select 'arr 'x -> even? x
+            print arr
+            ; 2 4 6 8 10
+        """:
+            ##########################################################
+            var args: ValueArray
+
+            if y.kind==Literal: args = @[y]
+            else: args = y.a
+
+            let preevaled = doEval(z)
+
+            var res: ValueArray = @[]
+
+            if x.kind==Literal:
+                for i,item in syms[x.s].a:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    if stack.pop().b:
+                        res.add(item)
+
+                syms[x.s].a = res
+            else:
+                for item in x.a:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    if stack.pop().b:
+                        res.add(item)
+
+                stack.push(newBlock(res))

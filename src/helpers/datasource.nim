@@ -12,7 +12,7 @@
 
 import httpClient, os
 
-import helpers/url
+import helpers/url as UrlHelper
 
 #=======================================
 # Types
