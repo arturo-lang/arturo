@@ -33,7 +33,9 @@ import library/Paths        as PathsLib
 import library/Reflection   as ReflectionLib
 import library/Strings      as StringsLib
 import library/System       as SystemLib
-import library/Ui           as UiLib
+
+when not defined(MINI):
+    import library/Ui           as UiLib
 
 #=======================================
 # Types
