@@ -457,8 +457,8 @@ builtin "random",
         stack.push(newInteger(rand(x.i..y.i)))
 
 builtin "range",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
+    alias       = ellipsis, 
+    rule        = InfixPrecedence,
     description = "get list of numbers in given range (inclusive)",
     args        = {
         "from"  : {Integer},
