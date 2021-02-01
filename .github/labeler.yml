@@ -9,10 +9,11 @@ helpers:
   
 installer:
   - arturo.nimble
-  - build.sh
+  - install
+  - src/system/update.art
 
 library:
-  - src/vm/library/*
+  - src/library/*
 
 package-manager:
   - src/system/module.art
@@ -27,12 +28,7 @@ unit-test:
   - tests/*
 
 vm:
-  - src/vm/bytecode.nim
-  - src/vm/env.nim
-  - src/vm/exec.nim
-  - src/vm/globals.nim
-  - src/vm/stack.nim
-  - src/vm/value.nim
+  - src/vm/*
 
 workflows:
   - .github/workflows/*
