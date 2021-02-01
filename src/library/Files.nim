@@ -59,7 +59,7 @@ builtin "read",
         data: read.json "mydata.json"
 
         ; or even convert Markdown to HTML on-the-fly
-        html: read.markdown "## Hello" ____; "<h2>Hello</h2>"
+        html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
     """:
         ##########################################################
         if (popAttr("binary") != VNULL):

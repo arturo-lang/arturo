@@ -91,7 +91,7 @@ builtin "filter",
     returns     = {Block,Nothing},
     example     = """
         print filter 1..10 [x][
-        ____even? x
+            even? x
         ]
         ; 1 3 5 7 9
         
@@ -256,39 +256,39 @@ builtin "loop",
     returns     = {Nothing},
     example     = """
         loop [1 2 3] 'x [
-        ____print x
+            print x
         ]
         ; 1
         ; 2
         ; 3
         
         loop 1..3 [x][
-        ____print ["x =>" x]
+            print ["x =>" x]
         ]
         ; x => 1
         ; x => 2
         ; x => 3
         
         loop [A a B b C c] [x y][
-        ____print [x "=>" y]
+            print [x "=>" y]
         ]
         ; A => a
         ; B => b
         ; C => c
         
         user: #[
-        ____name: "John"
-        ____surname: "Doe"
+            name: "John"
+            surname: "Doe"
         ]
         
         loop user [k v][
-        ____print [k "=>" v]
+            print [k "=>" v]
         ]
         ; name => John
         ; surname => Doe
         
         loop.with:'i ["zero" "one" "two"] 'x [
-        ____print ["item at:" i "=>" x]
+            print ["item at:" i "=>" x]
         ]
         ; 0 => zero
         ; 1 => one
@@ -354,7 +354,7 @@ builtin "map",
     returns     = {Block,Nothing},
     example     = """
         print map 1..5 [x][
-        ____2*x
+            2*x
         ]
         ; 2 4 6 8 10
         
@@ -399,7 +399,7 @@ builtin "select",
     returns     = {Block,Nothing},
     example     = """
         print select 1..10 [x][
-        ____even? x
+            even? x
         ]
         ; 2 4 6 8 10
         

@@ -21,11 +21,11 @@ builtin "add",
     attrs       = NoAttrs,
     returns     = {Integer,Floating,Nothing},
     example     = """
-        print add 1 2  ____; 3
-        print 1 + 3    ____; 4
+        print add 1 2      ; 3
+        print 1 + 3        ; 4
         
         a: 4
-        add 'a 1       ____; a: 5
+        add 'a 1           ; a: 5
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] += y
@@ -41,10 +41,10 @@ builtin "dec",
     attrs       = NoAttrs,
     returns     = {Integer,Floating,Nothing},
     example     = """
-        print dec 5    ____; 4
+        print dec 5        ; 4
         
         a: 4
-        dec 'a         ____; a: 3
+        dec 'a             ; a: 3
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] -= I1
@@ -61,11 +61,11 @@ builtin "div",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print div 5 2  ____; 2
-        print 9 / 3    ____; 3
+        print div 5 2      ; 2
+        print 9 / 3        ; 3
         
         a: 6
-        div 'a 3       ____; a: 2
+        div 'a 3           ; a: 2
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] /= y
@@ -82,10 +82,10 @@ builtin "fdiv",
     attrs       = NoAttrs,
     returns     = {Floating,Nothing},
     example     = """
-        print fdiv 5 2 ____; 2.5
+        print fdiv 5 2     ; 2.5
         
         a: 6
-        fdiv 'a 3      ____; a: 2.0
+        fdiv 'a 3          ; a: 2.0
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] //= y
@@ -101,10 +101,10 @@ builtin "inc",
     attrs       = NoAttrs,
     returns     = {Integer,Floating,Nothing},
     example     = """
-        print inc 5    ____; 6
+        print inc 5        ; 6
         
         a: 4
-        inc 'a         ____; a: 5
+        inc 'a             ; a: 5
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] += I1
@@ -121,11 +121,11 @@ builtin "mod",
     attrs       = NoAttrs,
     returns     = {Integer,Nothing},
     example     = """
-        print mod 5 2  ____; 1
-        print 9 % 3    ____; 0
+        print mod 5 2      ; 1
+        print 9 % 3        ; 0
         
         a: 8
-        mod 'a 3       ____; a: 2
+        mod 'a 3           ; a: 2
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] %= y
@@ -142,11 +142,11 @@ builtin "mul",
     attrs       = NoAttrs,
     returns     = {Integer,Floating,Nothing},
     example     = """
-        print mul 1 2  ____; 2
-        print 2 * 3    ____; 6
+        print mul 1 2      ; 2
+        print 2 * 3        ; 6
         
         a: 5
-        mul 'a 2       ____; a: 10
+        mul 'a 2           ; a: 10
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] *= y
@@ -162,10 +162,10 @@ builtin "neg",
     attrs       = NoAttrs,
     returns     = {Integer,Floating,Nothing},
     example     = """
-        print neg 1    ____; -1
+        print neg 1        ; -1
         
         a: 5
-        neg 'a         ____; a: -5
+        neg 'a             ; a: -5
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] *= I1M
@@ -182,11 +182,11 @@ builtin "pow",
     attrs       = NoAttrs,
     returns     = {Integer,Floating,Nothing},
     example     = """
-        print pow 2 3  ____; 8
-        print 3 ^ 2    ____; 9
+        print pow 2 3      ; 8
+        print 3 ^ 2        ; 9
         
         a: 5
-        pow 'a 2       ____; a: 25
+        pow 'a 2           ; a: 25
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] ^= y
@@ -203,11 +203,11 @@ builtin "sub",
     attrs       = NoAttrs,
     returns     = {Integer,Floating,Nothing},
     example     = """
-        print sub 2 1  ____; 1
-        print 5 - 3    ____; 2
+        print sub 2 1      ; 1
+        print 5 - 3        ; 2
         
         a: 7
-        sub 'a 2       ____; a: 5
+        sub 'a 2           ; a: 5
     """:
         ##########################################################
         if x.kind==Literal  : syms[x.s] -= y

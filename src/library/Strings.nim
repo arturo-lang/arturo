@@ -20,10 +20,10 @@ builtin "capitalize",
     attrs       = NoAttrs,
     returns     = {String,Nothing},
     example     = """
-        print capitalize "hello World"  ____; "Hello World"
+        print capitalize "hello World"      ; "Hello World"
         
         str: "hello World"
-        capitalize 'str                 ____; str: "Hello World"
+        capitalize 'str                     ; str: "Hello World"
     """:
         ##########################################################
         if x.kind==String: stack.push(newString(x.s.capitalize()))
@@ -51,8 +51,8 @@ builtin "color",
     },
     returns     = {String},
     example     = """
-        print color.green "Hello!"            ____; Hello! (in green)
-        print color.red.bold "Some text"      ____; Some text (in red/bold)
+        print color.green "Hello!"                ; Hello! (in green)
+        print color.red.bold "Some text"          ; Some text (in red/bold)
     """:
         ##########################################################
         var pre: string = "\e[0;"
@@ -140,8 +140,8 @@ builtin "levenshtein",
     attrs       = NoAttrs,
     returns     = {Integer},
     example     = """
-        print levenshtein "for" "fur"     ____; 1
-        print levenshtein "one" "one"     ____; 0
+        print levenshtein "for" "fur"         ; 1
+        print levenshtein "one" "one"         ; 0
     """:
         stack.push(newInteger(editDistance(x.s,y.s)))
 
@@ -155,10 +155,10 @@ builtin "lower",
     attrs       = NoAttrs,
     returns     = {String,Nothing},
     example     = """
-        print lower "hello World, 你好!"  ____; "hello world, 你好!"
+        print lower "hello World, 你好!"      ; "hello world, 你好!"
         
         str: "hello World, 你好!"
-        lower 'str                       ____; str: "hello world, 你好!"
+        lower 'str                           ; str: "hello world, 你好!"
     """:
         ##########################################################
         if x.kind==String: stack.push(newString(x.s.toLower()))
@@ -174,10 +174,10 @@ builtin "lower?",
     attrs       = NoAttrs,
     returns     = {Boolean},
     example     = """
-        lower? "ñ"           ____; => true
-        lower? "X"           ____; => false
-        lower? "Hello World" ____; => false
-        lower? "hello"       ____; => true
+        lower? "ñ"               ; => true
+        lower? "X"               ; => false
+        lower? "Hello World"     ; => false
+        lower? "hello"           ; => true
     """:
         ##########################################################
         var broken = false
@@ -201,9 +201,9 @@ builtin "match",
     attrs       = NoAttrs,
     returns     = {Block},
     example     = """
-        print match "hello" "hello"         ____; => ["hello"]
-        match "x: 123, y: 456" "[0-9]+"     ____; => [123 456]
-        match "this is a string" "[0-9]+"   ____; => []
+        print match "hello" "hello"             ; => ["hello"]
+        match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
+        match "this is a string" "[0-9]+"       ; => []
     """:
         ##########################################################
         stack.push(newStringBlock(x.s.findAll(re.re(y.s))))
@@ -218,10 +218,10 @@ builtin "numeric?",
     attrs       = NoAttrs,
     returns     = {Boolean},
     example     = """
-        numeric? "hello"       ____; => false
-        numeric? "3.14"        ____; => true
-        numeric? "18966"       ____; => true
-        numeric? "123xxy"      ____; => false
+        numeric? "hello"           ; => false
+        numeric? "3.14"            ; => true
+        numeric? "18966"           ; => true
+        numeric? "123xxy"          ; => false
     """:
         ##########################################################
         var found = false
@@ -257,12 +257,12 @@ builtin "pad",
     },
     returns     = {String},
     example     = """
-        pad "good" 10             ____; => "      good"
-        pad.right "good" 10       ____; => "good      "
-        pad.center "good" 10      ____; => "   good   "
+        pad "good" 10                 ; => "      good"
+        pad.right "good" 10           ; => "good      "
+        pad.center "good" 10          ; => "   good   "
         
         a: "hello"
-        pad 'a 10        ____; a: "     hello"
+        pad 'a 10            ; a: "     hello"
     """:
         ##########################################################
         if (popAttr("right") != VNULL):
@@ -286,10 +286,10 @@ builtin "prefix",
     attrs       = NoAttrs,
     returns     = {String,Nothing},
     example     = """
-        prefix "ello" "h"              ____; => "hello"
+        prefix "ello" "h"                  ; => "hello"
         
         str: "ello"
-        prefix 'str                    ____; str: "hello"
+        prefix 'str                        ; str: "hello"
     """:
         ##########################################################
         if x.kind==String: stack.push(newString(y.s & x.s))
@@ -308,8 +308,8 @@ builtin "prefix?",
     },
     returns     = {Boolean},
     example     = """
-        prefix? "hello" "he"      ____; => true
-        prefix? "boom" "he"       ____; => false
+        prefix? "hello" "he"          ; => true
+        prefix? "boom" "he"           ; => false
     """:
         ##########################################################
         if (popAttr("regex") != VNULL):
@@ -332,15 +332,15 @@ builtin "render",
     example     = """
         x: 2
         greeting: "hello"
-        print ~"|greeting|, your number is |x|"   ____; hello, your number is 2
+        print ~"|greeting|, your number is |x|"       ; hello, your number is 2
         
         data: #[
-        ____name: "John"
-        ____age: 34
+            name: "John"
+            age: 34
         ]
         
         print render.with: data 
-        ____"Hello, your name is |name| and you are |age| years old"
+            "Hello, your name is |name| and you are |age| years old"
         
         ; Hello, your name is John and you are 34 years old
     """:
@@ -410,10 +410,10 @@ builtin "replace",
     },
     returns     = {String,Nothing},
     example     = """
-        replace "hello" "l" "x"       ____; => "hexxo"
+        replace "hello" "l" "x"           ; => "hexxo"
         
         str: "hello"
-        replace 'str "l" "x"          ____; str: "hexxo"
+        replace 'str "l" "x"              ; str: "hexxo"
     """:
         ##########################################################
         if (popAttr("regex") != VNULL):
@@ -433,10 +433,10 @@ builtin "strip",
     attrs       = NoAttrs,
     returns     = {String,Nothing},
     example     = """
-        strip "  this is a string "    ____; => "this is a string"
+        strip "  this is a string "        ; => "this is a string"
         
         str: "  some string  "
-        strip 'str                     ____; str: "some string"
+        strip 'str                         ; str: "some string"
     """:
         ##########################################################
         if x.kind==String: stack.push(newString(strutils.strip(x.s)))
@@ -453,10 +453,10 @@ builtin "suffix",
     attrs       = NoAttrs,
     returns     = {String,Nothing},
     example     = """
-        suffix "hell" "o"              ____; => "hello"
+        suffix "hell" "o"                  ; => "hello"
         
         str: "hell"
-        suffix 'str                    ____; str: "hello"
+        suffix 'str                        ; str: "hello"
     """:
         ##########################################################
         if x.kind==String: stack.push(newString(x.s & y.s))
@@ -475,8 +475,8 @@ builtin "suffix?",
     },
     returns     = {Boolean},
     example     = """
-        suffix? "hello" "lo"      ____; => true
-        suffix? "boom" "lo"       ____; => false
+        suffix? "hello" "lo"          ; => true
+        suffix? "boom" "lo"           ; => false
     """:
         ##########################################################
         if (popAttr("regex") != VNULL):
@@ -494,10 +494,10 @@ builtin "upper",
     attrs       = NoAttrs,
     returns     = {String,Nothing},
     example     = """
-        print upper "hello World, 你好!"   ____; "HELLO WORLD, 你好!"
+        print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
         
         str: "hello World, 你好!"
-        upper 'str                       ____; str: "HELLO WORLD, 你好!"
+        upper 'str                           ; str: "HELLO WORLD, 你好!"
     """:
         ##########################################################
         if x.kind==String: stack.push(newString(x.s.toUpper()))
@@ -513,10 +513,10 @@ builtin "upper?",
     attrs       = NoAttrs,
     returns     = {Boolean},
     example     = """
-        upper? "Ñ"           ____; => true
-        upper? "x"           ____; => false
-        upper? "Hello World" ____; => false
-        upper? "HELLO"       ____; => true
+        upper? "Ñ"               ; => true
+        upper? "x"               ; => false
+        upper? "Hello World"     ; => false
+        upper? "HELLO"           ; => true
     """:
         ##########################################################
         var broken = false
@@ -539,9 +539,9 @@ builtin "whitespace?",
     attrs       = NoAttrs,
     returns     = {Boolean},
     example     = """
-        whitespace? "hello"       ____; => false
-        whitespace? " "           ____; => true
-        whitespace? "\n \n"       ____; => true
+        whitespace? "hello"           ; => false
+        whitespace? " "               ; => true
+        whitespace? "\n \n"           ; => true
     """:
         ##########################################################
         stack.push(newBoolean(x.s.isEmptyOrWhitespace()))

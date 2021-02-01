@@ -25,7 +25,7 @@ builtin "and?",
         y: 5
         
         if and? x=2 y>5 [
-        ____print "yep, that's correct!"]
+            print "yep, that's correct!"]
         ]
         
         ; yep, that's correct!
@@ -67,10 +67,10 @@ builtin "nand?",
         y: 3
         
         if? nand? x=2 y=3 [
-        ____print "yep, that's correct!"]
+            print "yep, that's correct!"]
         ]
         else [
-        ____print "nope, that's not correct"
+            print "nope, that's not correct"
         ]
         
         ; nope, that's not correct
@@ -93,10 +93,10 @@ builtin "nor?",
         y: 3
         
         if? nor? x>2 y=3 [
-        ____print "yep, that's correct!"]
+            print "yep, that's correct!"]
         ]
         else [
-        ____print "nope, that's not correct"
+            print "nope, that's not correct"
         ]
         
         ; nope, that's not correct
@@ -116,7 +116,7 @@ builtin "not?",
     example     = """
         ready: false
         if not? ready [
-        ____print "we're still not ready!"
+            print "we're still not ready!"
         ]
         
         ; we're still not ready!
@@ -139,7 +139,7 @@ builtin "or?",
         y: 4
         
         if or? x=2 y>5 [
-        ____print "yep, that's correct!"]
+            print "yep, that's correct!"]
         ]
         
         ; yep, that's correct!
@@ -181,10 +181,10 @@ builtin "xnor?",
         y: 3
         
         if? xnor? x=2 y=3 [
-        ____print "yep, that's correct!"]
+            print "yep, that's correct!"]
         ]
         else [
-        ____print "nope, that's not correct"
+            print "nope, that's not correct"
         ]
         
         ; yep, that's not correct
@@ -207,10 +207,10 @@ builtin "xnor?",
         y: 3
         
         if? xor? x=2 y=3 [
-        ____print "yep, that's correct!"]
+            print "yep, that's correct!"]
         ]
         else [
-        ____print "nope, that's not correct"
+            print "nope, that's not correct"
         ]
         
         ; nope, that's not correct

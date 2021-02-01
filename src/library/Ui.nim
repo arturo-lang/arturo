@@ -32,10 +32,10 @@ builtin "webview",
                 .height: 300
                 .title:  "My webview app"
         ---
-        ____<h1>This is my webpage</h1>
-        ____<p>
-        ________This is some content
-        ____</p>
+            <h1>This is my webpage</h1>
+            <p>
+                This is some content
+            </p>
         ---
         ; (opens a webview with given attributes)
     """:
