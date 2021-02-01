@@ -14,38 +14,23 @@ import asyncdispatch, asynchttpserver
 import db_sqlite
 import httpClient, json, md5, os
 import random, sequtils, smtp
-import std/sha1, strformat, strutils, sugar
+import std/sha1, strformat, strutils
 import tables, times, unicode, uri, xmltree
 import nre except toSeq
 
-import extras/bignum, extras/parsetoml
+import extras/[bignum, parsetoml]
 
-import translator/eval, translator/parse
-import vm/bytecode, vm/errors, vm/globals, vm/stack, vm/value
-
-import utils    
+import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
 #=======================================
 # Globals
 #=======================================
-
-var
-    vmPanic* = false
-    vmError* = ""
-    vmReturn* = false
-    vmBreak* = false
-    vmContinue* = false
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict
 
 #=======================================
 # Helpers
 #=======================================
-
-template panic*(error: string): untyped =
-    vmPanic = true
-    vmError = error
-    return
 
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
@@ -348,13 +333,6 @@ proc initVM*() =
     emptyAttrs()
 
     randomize()
-
-proc showVMErrors*() =
-    if vmPanic:
-        let errMsg = vmError.split(";").map((x)=>strutils.strip(x)).join(fmt("\n         {fgRed}|{fgWhite} "))
-        echo fmt("{fgRed}>> Error |{fgWhite} {errMsg}")
-        emptyStack()
-        vmPanic = false
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
     #syms.printSyms("In doExec")
