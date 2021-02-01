@@ -101,6 +101,7 @@ builtin "serve",
         ; (run the app and go to localhost:18966 - that was it!)
     """:
         ##########################################################
+        {.push warning[GcUnsafe2]:off.}
         when not defined(VERBOSE):
             let routes = x
 
@@ -188,3 +189,4 @@ builtin "serve",
                 let e = getCurrentException()
                 echo "Something went wrong." & e.msg
                 server.close()
+        {.push warning[GcUnsafe2]:on.}
