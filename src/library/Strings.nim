@@ -339,7 +339,8 @@ proc importSymbols*() =
         },
         attrs       = {
             "single"    : ({Boolean},"don't render recursively"),
-            "with"      : ({Dictionary},"use given dictionary for reference")
+            "with"      : ({Dictionary},"use given dictionary for reference"),
+            "template"  : ({Boolean},"render as a template")
         },
         returns     = {String,Nothing},
         example     = """
@@ -358,11 +359,16 @@ proc importSymbols*() =
             ; Hello, your name is John and you are 34 years old
         """:
             ##########################################################
+            var rgx = nre.re"\|([^\|]+)\|"
+
+            if (popAttr("template") != VNULL):
+                rgx = nre.re"\<\|(.+)\|\>"
+
             if (let aWith = popAttr("with"); aWith != VNULL):
                 if x.kind==String:
                     var res = newString(x.s)
-                    while (contains(res.s, nre.re"\|([^\|]+)\|")):
-                        res = newString(x.s.replace(nre.re"\|([^\|]+)\|",
+                    while (contains(res.s, rgx)):
+                        res = newString(x.s.replace(rgx,
                             proc (match: RegexMatch): string =
                                 var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
@@ -373,8 +379,8 @@ proc importSymbols*() =
                         ))
                     stack.push(res)
                 elif x.kind==Literal:
-                    while (contains(syms[x.s].s, nre.re"\|([^\|]+)\|")):
-                        syms[x.s].s = syms[x.s].s.replace(nre.re"\|([^\|]+)\|",
+                    while (contains(syms[x.s].s, rgx)):
+                        syms[x.s].s = syms[x.s].s.replace(rgx,
                             proc (match: RegexMatch): string =
                                 var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
@@ -388,22 +394,22 @@ proc importSymbols*() =
                 if x.kind==String:
                     var res = newString(x.s)
                     if (popAttr("single") != VNULL):
-                        res = newString(res.s.replace(nre.re"\|([^\|]+)\|",
+                        res = newString(res.s.replace(rgx,
                                 proc (match: RegexMatch): string =
                                     discard execBlock(doParse(match.captures[0], isFile=false))
                                     $(stack.pop())
                             ))
                     else:
-                        while (contains(res.s, nre.re"\|([^\|]+)\|")):
-                            res = newString(res.s.replace(nre.re"\|([^\|]+)\|",
+                        while (contains(res.s, rgx)):
+                            res = newString(res.s.replace(rgx,
                                 proc (match: RegexMatch): string =
                                     discard execBlock(doParse(match.captures[0], isFile=false))
                                     $(stack.pop())
                             ))
                     stack.push(res)
                 elif x.kind==Literal:
-                    while (contains(syms[x.s].s, nre.re"\|([^\|]+)\|")):
-                        syms[x.s].s = syms[x.s].s.replace(nre.re"\|([^\|]+)\|",
+                    while (contains(syms[x.s].s, rgx)):
+                        syms[x.s].s = syms[x.s].s.replace(rgx,
                             proc (match: RegexMatch): string =
                                 discard execBlock(doParse(match.captures[0], isFile=false))
                                 $(stack.pop())
