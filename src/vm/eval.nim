@@ -26,7 +26,7 @@ proc dump*(evaled: Translation)
 # Methods
 #=======================================
 
-proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool = false) =
+proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool = false, isDictionary: bool = false) =
     var argStack: seq[int] = @[]
     var currentCommand: ByteArray = @[]
     #var itIndex = 0
@@ -319,54 +319,79 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addConst(consts, node, opPushX)
 
             of Word:
-                if syms.hasKey(node.s) and syms[node.s].kind==Function:
-                    if syms[node.s].fnKind==UserFunction:
-                        if syms[node.s].params.a.len!=0:
-                            addConst(consts, node, opCallX)
-                            argStack.add(syms[node.s].params.a.len)
-                        else:
-                            addTerminalValue(false):
-                                addConst(consts, node, opCallX)
-                    else:
-                        if syms[node.s].arity!=0:
-                            addConst(consts, node, opCallX)
-                            argStack.add(syms[node.s].arity)
-                        else:
-                            addTerminalValue(false):
-                                addConst(consts, node, opCallX)
-                elif Funcs.hasKey(node.s):
-                    if Funcs[node.s]!=0:
+                #echo "found word:" & node.s
+                if Funcs.hasKey(node.s):
+                    #echo "it's in the function index"
+                    let funcArity = Funcs[node.s]
+                    #echo "with arity:" & $(funcArity)
+                    if funcArity!=0:
                         addConst(consts, node, opCallX)
-                        argStack.add(Funcs[node.s])
+                        argStack.add(funcArity)
                     else:
                         addTerminalValue(false):
                             addConst(consts, node, opCallX)
                 else:
+                    #echo "not in the function index - it's a var"
                     addTerminalValue(false):
                         addConst(consts, node, opLoadX)
-                        # if Funcs.hasKey(node.s):
-                        #     if Funcs[node.s]!=0:
-                        #         addConst(consts, node, opCallX)
-                        #         argStack.add(Funcs[node.s])
-                        #     else:
-                        #         addTerminalValue(false):
-                        #             addConst(consts, node, opCallX)
-                        # else:
-                        #     addTerminalValue(false):
-                        #         addConst(consts, node, opLoadX)
+
+                # if syms.hasKey(node.s) and syms[node.s].kind==Function:
+                #     if syms[node.s].fnKind==UserFunction:
+                #         if syms[node.s].params.a.len!=0:
+                #             addConst(consts, node, opCallX)
+                #             argStack.add(syms[node.s].params.a.len)
+                #         else:
+                #             addTerminalValue(false):
+                #                 addConst(consts, node, opCallX)
+                #     else:
+                #         if syms[node.s].arity!=0:
+                #             addConst(consts, node, opCallX)
+                #             argStack.add(syms[node.s].arity)
+                #         else:
+                #             addTerminalValue(false):
+                #                 addConst(consts, node, opCallX)
+                # elif Funcs.hasKey(node.s):
+                #     if Funcs[node.s]!=0:
+                #         addConst(consts, node, opCallX)
+                #         argStack.add(Funcs[node.s])
+                #     else:
+                #         addTerminalValue(false):
+                #             addConst(consts, node, opCallX)
+                # else:
+                #     addTerminalValue(false):
+                #         addConst(consts, node, opLoadX)
+                #         # if Funcs.hasKey(node.s):
+                #         #     if Funcs[node.s]!=0:
+                #         #         addConst(consts, node, opCallX)
+                #         #         argStack.add(Funcs[node.s])
+                #         #     else:
+                #         #         addTerminalValue(false):
+                #         #             addConst(consts, node, opCallX)
+                #         # else:
+                #         #     addTerminalValue(false):
+                #         #         addConst(consts, node, opLoadX)
 
             of Literal: 
                 addTerminalValue(false):
                     addConst(consts, node, opPushX)
 
             of Label: 
+                let funcIndx = node.s
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    let funcIndx = node.s
                     Funcs[funcIndx] = n.a[i+2].a.len
+                    #echo "LABEL: create user function: " & node.s & " with arity: " & $(Funcs[funcIndx])
+                else:
+                    if not isDictionary:
+                        #echo "NOT-A-LABEL: delete function: " & node.s & " from index (if exists)"
+                        Funcs.del(funcIndx)
+                    #echo "here"
 
+                #echo "adding const"
                 addConst(consts, node, opStoreX)
+                #echo "adding to argStack"
                 argStack.add(1)
+                #echo "done"
 
             of Attribute:
                 addAttr(consts, node)
@@ -520,7 +545,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Inline: 
                 addTerminalValue(false):
-                    evalOne(node, consts, currentCommand, inBlock=true)
+                    evalOne(node, consts, currentCommand, inBlock=true, isDictionary=isDictionary)
 
             of Block:
                 addTerminalValue(false):
@@ -543,14 +568,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         else:
             for b in currentCommand.reversed: it.add(b)
 
-proc doEval*(root: Value): Translation = 
+proc doEval*(root: Value, isDictionary=false): Translation = 
     if Evaled.hasKey(root):
         return Evaled[root]
     else:
         var cnsts: ValueArray = @[]
         var newit: ByteArray = @[]
 
-        evalOne(root, cnsts, newit)
+        evalOne(root, cnsts, newit, isDictionary=isDictionary)
         newit.add((byte)opEnd)
 
         result = (cnsts, newit)

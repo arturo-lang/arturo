@@ -107,7 +107,9 @@ proc execBlock*(
     var newSyms: ValueDict
     try:
         let evaled = 
-            if evaluated==NoTranslation : doEval(blk)
+            if evaluated==NoTranslation : 
+                if dictionary       : doEval(blk, isDictionary=true)
+                else                : doEval(blk)
             else                        : evaluated
 
         newSyms = doExec(evaled, 1, args)
