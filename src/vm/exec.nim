@@ -20,6 +20,9 @@ import nre except toSeq
 
 import extras/[bignum, parsetoml]
 
+when defined(BENCHMARK) or defined(VERBOSE):
+    import helpers/debug as debugHelper
+
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
 #=======================================
