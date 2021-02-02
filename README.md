@@ -133,6 +133,9 @@ https://github.com/arturo-lang/art-vscode-package
 - **SublimeText**:    
 https://github.com/arturo-lang/art-sublimetext-package
 
+- **Vim**: (Thanks @xigoi :-))   
+https://github.com/xigoi/vim-arturo
+
 Roadmap
 ------------------------------
 
