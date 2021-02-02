@@ -46,8 +46,10 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         act
     )
 
-    Funcs[n] = static args.len
+    Funcs[n] = static argsLen
     syms[n] = b
+
+    #echo "SYSTEM: create builtin function: " & n & " with arity: " & $(argsLen)
 
     when alias != unaliased:
         aliases[alias] = AliasBinding(
