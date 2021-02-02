@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2021 Yanis Zafirópulos
 #
-# @file: translator/eval.nim
+# @file: vm/eval.nim
 ######################################################
 
 #=======================================
@@ -12,17 +12,9 @@
 
 import algorithm, strformat, strutils, tables
 
-import vm/bytecode, vm/globals, vm/value
+import helpers/debug as DebugHelper
 
-import utils
-
-#=======================================
-# Globals
-#=======================================
-
-var
-    Funcs*{.threadvar.}: Table[string,int]
-    Evaled*{.threadvar.}: Table[Value,Translation]
+import vm/[bytecode, globals, value]
 
 #=======================================
 # Forward Declarations
@@ -568,7 +560,7 @@ proc doEval*(root: Value): Translation =
 
         result = (cnsts,newit)
         Evaled[root] = result
-
+        
 #=======================================
 # Inspection
 #=======================================

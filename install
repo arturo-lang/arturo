@@ -89,8 +89,6 @@ FLAGS="\
  --checks:off\
  --overflowChecks:on\
  -d:ssl\
- --threads:on\
- --threadAnalysis:off\
  --passC:"-O3"\
  --cincludes:extras\
  --nimcache:.cache\

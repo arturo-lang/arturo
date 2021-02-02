@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2021 Yanis Zafirópulos
 #
-# @file: translator/parse.nim
+# @file: vm/parse.nim
 ######################################################
 
 #=======================================
