@@ -12,10 +12,10 @@
 
 import lexbase, streams, strformat, strutils, unicode
 
-import vm/value
-
 when defined(BENCHMARK) or defined(VERBOSE):
-    import utils
+    import helpers/debug as debugHelper
+
+import vm/value
 
 #=======================================
 # Types
