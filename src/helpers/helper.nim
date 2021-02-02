@@ -13,8 +13,9 @@
 import algorithm, sequtils, sets, strformat
 import strutils, tables
 
-import vm/globals, vm/value
-import utils
+import helpers/colors as ColorsHelper
+
+import vm/[globals, value]
 
 #=======================================
 # Constants
@@ -49,13 +50,13 @@ proc getAlias(n: string): string =
             return $(newSymbol(k))
     return ""
 
-proc printOneData(label: string, data: string, color: string = fgWhite, colorb: string = fgWhite) =
-    echo fmt("{initialSep}{initialPadding}{color}{align(label,labelAlignment)}{fgWhite}  {colorb}{data}{fgWhite}")
+proc printOneData(label: string, data: string, color: string = resetColor, colorb: string = resetColor) =
+    echo fmt("{initialSep}{initialPadding}{color}{align(label,labelAlignment)}{resetColor}  {colorb}{data}{resetColor}")
 
-proc printMultiData(label: string, data: seq[string], color: string = fgWhite, colorb: string = fgWhite) =
+proc printMultiData(label: string, data: seq[string], color: string = resetColor, colorb: string = resetColor) =
     printOneData(label, data[0], color, colorb)
     for item in data[1..^1]:
-        printOneData("",item,fgWhite,colorb)
+        printOneData("",item,resetColor,colorb)
 
 proc getShortData(initial: string): seq[string] =
     result = @[initial]
@@ -86,12 +87,12 @@ proc getUsageForBuiltin(n: string, v: Value): seq[string] =
         j+=1
 
     if args[0][0]!="":
-        result.add fmt("{fgBold}{n}{fgWhite} {args[0][0]} {fgGray}{getTypeString(args[0][1])}")
+        result.add fmt("{bold()}{n}{resetColor} {args[0][0]} {fg(grayColor)}{getTypeString(args[0][1])}")
     else:
-        result.add fmt("{fgBold}{n}{fgWhite} {fgGray}{getTypeString(args[0][1])}")
+        result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}{getTypeString(args[0][1])}")
 
     for arg in args[1..^1]:
-        result.add fmt("{spaceBefore} {arg[0]} {fgGray}{getTypeString(arg[1])}")
+        result.add fmt("{spaceBefore} {arg[0]} {fg(grayColor)}{getTypeString(arg[1])}")
 
 proc getUsageForUser(n: string, v: Value): seq[string] =
     let args = v.params.a
@@ -104,9 +105,9 @@ proc getUsageForUser(n: string, v: Value): seq[string] =
         j+=1
 
     if args.len==0:
-        result.add fmt("{fgBold}{n}{fgWhite} {fgGray}:nothing")
+        result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}:nothing")
     else:
-        result.add fmt("{fgBold}{n}{fgWhite} {args[0].s}")
+        result.add fmt("{bold()}{n}{resetColor} {args[0].s}")
         for arg in args[1..^1]:
             result.add fmt("{spaceBefore} {arg.s}")
 
@@ -118,7 +119,7 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         if ts!=":boolean":
-            let len = fmt(".{attr[0]} {fgGray}{ts}").len
+            let len = fmt(".{attr[0]} {fg(grayColor)}{ts}").len
             if len>maxLen: maxLen = len
         else:
             let len = fmt(".{attr[0]}").len
@@ -128,11 +129,11 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
         let ts = getTypeString(attr[1][0])
         var leftSide = ""
         if ts!=":boolean":
-            leftSide = fmt("{fgCyan}.{attr[0]} {fgGray}{ts}")
+            leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
         else:
-            leftSide = fmt("{fgCyan}.{attr[0]}")
+            leftSide = fmt("{fg(cyanColor)}.{attr[0]}")
         
-        result.add fmt("{alignLeft(leftSide,maxLen)} {fgWhite}-> {attr[1][1]}")
+        result.add fmt("{alignLeft(leftSide,maxLen)} {resetColor}-> {attr[1][1]}")
 
 #=======================================
 # Methods
@@ -220,7 +221,7 @@ proc printInfo*(n: string, v: Value) =
 
     # Print header
     printLine()
-    printOneData(n,fmt("{typeStr}{fgGray}{address}"),fgMagenta,fgWhite)
+    printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
 
     # Print alias if it exists
     let alias = getAlias(n)
@@ -246,15 +247,15 @@ proc printInfo*(n: string, v: Value) =
     # print more details
     if v.kind==Function:
         if v.fnKind==BuiltinFunction:
-            printMultiData("usage",getUsageForBuiltin(n,v),fgGreen)
+            printMultiData("usage",getUsageForBuiltin(n,v),bold(greenColor))
             let opts = getOptionsForBuiltin(v)
             if opts.len>0:
                 printEmptyLine()
-                printMultiData("options",opts,fgGreen)
+                printMultiData("options",opts,bold(greenColor))
             
             printEmptyLine()
-            printOneData("returns",getTypeString(v.returns),fgGreen,fgGray)
+            printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
         else:
-            printMultiData("usage",getUsageForUser(n,v),fgGreen)
+            printMultiData("usage",getUsageForUser(n,v),bold(greenColor))
 
         printLine()

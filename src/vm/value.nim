@@ -18,7 +18,7 @@ import db_sqlite as sqlite
 
 import extras/bignum
 
-import utils
+import helpers/colors as ColorsHelper
 
 #=======================================
 # Types
@@ -1313,23 +1313,23 @@ proc `$`*(v: Value): string {.inline.} =
 proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} = 
 
     proc dumpPrimitive(str: string, v: Value) {.inline.} =
-        stdout.write fmt("{fgGreen}{str}{fgGray} :{($(v.kind)).toLowerAscii()}{fgWhite}")
+        stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
 
     proc dumpIdentifier(v: Value) {.inline.} =
-        stdout.write fmt("{fgWhite}{v.s}{fgGray} :{($(v.kind)).toLowerAscii()}{fgWhite}")
+        stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
 
     proc dumpAttribute(v: Value) {.inline.} =
-        stdout.write fmt("{fgWhite}{v.r}{fgGray} :{($(v.kind)).toLowerAscii()}{fgWhite}")
+        stdout.write fmt("{resetColor}{v.r}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
 
     proc dumpSymbol(v: Value) {.inline.} =
-        stdout.write fmt("{fgWhite}<{v.m}>{fgGray} :{($(v.kind)).toLowerAscii()}{fgWhite}")
+        stdout.write fmt("{resetColor}<{v.m}>{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
 
     proc dumpBlockStart(v: Value) {.inline.} =
-        stdout.write fmt("{fgMagenta}[{fgGray} :{($(v.kind)).toLowerAscii()}{fgWhite}\n")
+        stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}\n")
 
     proc dumpBlockEnd() =
         for i in 0..level-1: stdout.write "\t"
-        stdout.write fmt("{fgMagenta}]{fgWhite}")
+        stdout.write fmt("{bold(magentaColor)}]{resetColor}")
 
     for i in 0..level-1: stdout.write "\t"
 

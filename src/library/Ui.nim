@@ -7,103 +7,117 @@
 ######################################################
 
 #=======================================
+# Libraries
+#=======================================
+
+import os
+import extras/webview
+
+import helpers/url as UrlHelper
+import helpers/webview as WebviewHelper
+
+import vm/[env, exec, globals, stack, value]
+
+#=======================================
 # Methods
 #=======================================
 
-builtin "webview",
-    alias       = unaliased, 
-    rule        = PrefixPrecedence,
-    description = "show webview window with given url or html and dictionary of callback functions",
-    args        = {
-        "content"   : {String,Literal},
-        "callbacks" : {Dictionary}
-    },
-    attrs       = {
-        "title"     : ({String},"set window title"),
-        "width"     : ({Integer},"set window width"),
-        "height"    : ({Integer},"set window height")
-    },
-    returns     = {String,Nothing},
-    example     = """
-        webview "Hello world!"
-        ; (opens a webview windows with "Hello world!")
-        
-        webview .width:  200 
-                .height: 300
-                .title:  "My webview app"
-        ---
-            <h1>This is my webpage</h1>
-            <p>
-                This is some content
-            </p>
-        ---
-        ; (opens a webview with given attributes)
-    """:
-        ##########################################################
-        var title = "Arturo"
-        var width = 640
-        var height = 480
+proc importSymbols*() =
 
-        if (let aTitle = popAttr("title"); aTitle != VNULL):
-            title = aTitle.s
+    builtin "webview",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "show webview window with given url or html and dictionary of callback functions",
+        args        = {
+            "content"   : {String,Literal},
+            "callbacks" : {Dictionary}
+        },
+        attrs       = {
+            "title"     : ({String},"set window title"),
+            "width"     : ({Integer},"set window width"),
+            "height"    : ({Integer},"set window height")
+        },
+        returns     = {String,Nothing},
+        example     = """
+            webview "Hello world!"
+            ; (opens a webview windows with "Hello world!")
+            
+            webview .width:  200 
+                    .height: 300
+                    .title:  "My webview app"
+            ---
+                <h1>This is my webpage</h1>
+                <p>
+                    This is some content
+                </p>
+            ---
+            ; (opens a webview with given attributes)
+        """:
+            ##########################################################
+            var title = "Arturo"
+            var width = 640
+            var height = 480
 
-        if (let aWidth = popAttr("width"); aWidth != VNULL):
-            width = aWidth.i
+            if (let aTitle = popAttr("title"); aTitle != VNULL):
+                title = aTitle.s
 
-        if (let aHeight = popAttr("height"); aHeight != VNULL):
-            height = aHeight.i
+            if (let aWidth = popAttr("width"); aWidth != VNULL):
+                width = aWidth.i
 
-        var targetUrl = x.s
+            if (let aHeight = popAttr("height"); aHeight != VNULL):
+                height = aHeight.i
 
-        if not isUrl(x.s):
-            targetUrl = joinPath(TmpDir,"artview.html")
-            writeFile(targetUrl, x.s)
+            var targetUrl = x.s
 
-        # discard webview(title.cstring, targetUrl.cstring, width.cint, height.cint, 1.cint)
+            if not isUrl(x.s):
+                targetUrl = joinPath(TmpDir,"artview.html")
+                writeFile(targetUrl, x.s)
 
-        when not defined(MINI):
+            # discard webview(title.cstring, targetUrl.cstring, width.cint, height.cint, 1.cint)
 
-            let wv = newWebview(title=title, 
-                                url=targetUrl, 
-                                width=width, 
-                            height=height, 
-                            resizable=true, 
-                                debug=true,
-                                cb=nil)
+            when not defined(MINI):
 
-            for key,binding in y.d:
-                let meth = key
+                let wv = newWebview(title=title, 
+                                    url=targetUrl, 
+                                    width=width, 
+                                height=height, 
+                                resizable=true, 
+                                    debug=true,
+                                    cb=nil)
 
-                wv.bindMethod("webview", meth, proc (param: Value): string =
-                    # echo "calling method: " & meth
-                    # echo " - with argument: " & $(param)
-                    # echo " - for parameter: " & $(binding.params.a[0])
+                for key,binding in y.d:
+                    let meth = key
 
-                    var args: ValueArray = @[binding.params.a[0]]
-                    stack.push(param)
-                    discard execBlock(binding.main, execInParent=true, args=args)
-                    let got = stack.pop().s
-                    #echo " - got: " & $(got)
+                    wv.bindMethod("webview", meth, proc (param: Value): string =
+                        # echo "calling method: " & meth
+                        # echo " - with argument: " & $(param)
+                        # echo " - for parameter: " & $(binding.params.a[0])
 
-                    discard wv.eval(got)
-                )
+                        var args: ValueArray = @[binding.params.a[0]]
+                        stack.push(param)
+                        discard execBlock(binding.main, execInParent=true, args=args)
+                        let got = stack.pop().s
+                        #echo " - got: " & $(got)
 
-            # proc wvCallback (param: seq[string]): string =
-            #     echo "wvCallback :: " & param
-            #     echo "executing something..."
-            #     discard wv.eval("console.log('execd in JS');")
-            #     echo "returning value..."
-            #     return "returned value"
+                        discard wv.eval(got)
+                    )
 
-            # wv.bindProc("webview","run",wvCallback)
+                # proc wvCallback (param: seq[string]): string =
+                #     echo "wvCallback :: " & param
+                #     echo "executing something..."
+                #     discard wv.eval("console.log('execd in JS');")
+                #     echo "returning value..."
+                #     return "returned value"
 
-            wv.run()
-            wv.exit()
+                # wv.bindProc("webview","run",wvCallback)
 
-            # # showWebview(title=title, 
-            # #               url=targetUrl, 
-            # #             width=width, 
-            # #            height=height, 
-            # #         resizable=true, 
-            # #             debug=false,
-            # #          bindings=y.d)
+                wv.run()
+                wv.exit()
+
+                # # showWebview(title=title, 
+                # #               url=targetUrl, 
+                # #             width=width, 
+                # #            height=height, 
+                # #         resizable=true, 
+                # #             debug=false,
+                # #          bindings=y.d)

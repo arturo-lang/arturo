@@ -15,8 +15,7 @@ when defined(PROFILE):
 
 import parseopt, segFaults, tables
 
-import vm/value, vm/vm
-import version
+import vm/[version, value, vm]
 
 when defined(BENCHMARK):
     import utils
