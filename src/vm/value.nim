@@ -1161,9 +1161,9 @@ proc `$`*(v: Value): string {.inline.} =
             result = ""
             if v.fnKind==UserFunction:
                 result &= "<function>" & $(v.params)
-                result &= "(" & fmt("{cast[ByteAddress](v.main):#X}")
+                result &= "(" & fmt("{cast[ByteAddress](v.main):#X}") & ")"
             else:
-                result &= "<function>(builtin)" 
+                result &= "<function:builtin>" 
 
         of Database:
             if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
