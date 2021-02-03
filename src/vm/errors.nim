@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, strutils, sugar
+import sequtils, sets, strformat, strutils, sugar
 
 import helpers/colors as ColorsHelper
 
@@ -34,6 +34,25 @@ template showConversionError*():untyped =
 
 template invalidConversionError*(origin: string):untyped =
     echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
+
+template RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
+    "cannot perform '" & (static functionName) & "';" & 
+    "not enough parameters: " & $(static functionArity) & " required"
+
+template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
+    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
+    let acceptedStr = toSeq((expected[argumentPos][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+    
+    when argumentPos==0:
+        let ordinalPos = "first"
+    when argumentPos==1:
+        let ordinalPos = "second"
+    when argumentPos==2:
+        let ordinalPos = "third"
+
+    "cannot perform '" & (static functionName) & "' -> " & actualStr & ";" &
+    "incorrect argument type for " & ordinalPos & " parameter;" &
+    "accepts " & acceptedStr
 
 template panic*(error: string): untyped =
     vmPanic = true

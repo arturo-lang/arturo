@@ -68,32 +68,28 @@ template constant*(n: string, alias: SymbolKind, description: string, v: Value):
             name: newWord(n)
         )
 
-template require*(name: string, spec: untyped, nopop: bool = false): untyped =
+template require*(name: string, spec: untyped): untyped =
     if SP<(static spec.len) and spec!=NoArgs:
-        panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static spec.len) & " required"
+        panic RuntimeError_NotEnoughArguments(name, spec.len)
 
     when (static spec.len)>=1 and spec!=NoArgs:
         when not (ANY in static spec[0][1]):
             if not (Stack[SP-1].kind in (static spec[0][1])):
-                let acceptStr = toSeq((spec[0][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " ...; incorrect argument type for 1st parameter; accepts " & acceptStr
-
+                panic RuntimeError_WrongArgumentType(name, 0, spec)
+                
         when (static spec.len)>=2:
             when not (ANY in static spec[1][1]):
                 if not (Stack[SP-2].kind in (static spec[1][1])):
-                    let acceptStr = toSeq((spec[1][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                    panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
-
+                    panic RuntimeError_WrongArgumentType(name, 1, spec)
+                    
             when (static spec.len)>=3:
                 when not (ANY in static spec[2][1]):
                     if not (Stack[SP-3].kind in (static spec[2][1])):
-                        let acceptStr = toSeq((spec[2][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                        panic "cannot perform '" & (static name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
-
-    when not nopop:
-        when (static spec.len)>=1 and spec!=NoArgs:
-            var x {.inject.} = stack.pop()
-            when (static spec.len)>=2:
-                var y {.inject.} = stack.pop()
-                when (static spec.len)>=3:
-                    var z {.inject.} = stack.pop()
+                        panic RuntimeError_WrongArgumentType(name, 2, spec)
+                        
+    when (static spec.len)>=1 and spec!=NoArgs:
+        var x {.inject.} = stack.pop()
+        when (static spec.len)>=2:
+            var y {.inject.} = stack.pop()
+            when (static spec.len)>=3:
+                var z {.inject.} = stack.pop()
