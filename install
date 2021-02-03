@@ -81,7 +81,7 @@ fi
 CONFIG=""
 #--warning[UnusedImport]:off\
 FLAGS="\
- --skipProjCfg:on\
+ --skipParentCfg:on\
  --colors:off\
  -d:release\
  -d:danger\
