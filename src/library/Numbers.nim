@@ -15,7 +15,7 @@ import extras/bignum
 
 import helpers/math as MathHelper
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods

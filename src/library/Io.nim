@@ -15,7 +15,7 @@ import algorithm, rdstdin
 when not defined(windows):
     import linenoise
 
-import vm/[eval, exec, globals, stack, value]
+import vm/[common, eval, exec, globals, stack, value]
 
 #=======================================
 # Methods

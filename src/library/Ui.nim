@@ -16,7 +16,7 @@ import extras/webview
 import helpers/url as UrlHelper
 import helpers/webview as WebviewHelper
 
-import vm/[env, exec, globals, stack, value]
+import vm/[common, env, exec, globals, stack, value]
 
 #=======================================
 # Methods

@@ -14,7 +14,7 @@ import sequtils
 
 import helpers/database as DatabaseHelper
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods

@@ -16,7 +16,7 @@ import nre except toSeq
 
 import helpers/colors as ColorsHelper
 
-import vm/[exec, globals, parse, stack, value]
+import vm/[common, exec, globals, parse, stack, value]
 
 #=======================================
 # Methods

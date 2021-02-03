@@ -12,7 +12,7 @@
 
 import base64, md5, std/sha1
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods

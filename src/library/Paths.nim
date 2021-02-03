@@ -15,7 +15,7 @@ import os
 import helpers/path as PathHelper
 import helpers/url as UrlHelper
 
-import vm/[env, globals, stack, value]
+import vm/[common, env, globals, stack, value]
 
 #=======================================
 # Methods
