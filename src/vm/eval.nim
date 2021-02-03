@@ -224,26 +224,39 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addTerminalValue(true):
                         discard
                 of Word:
-                    var found = false
-                    for indx,spec in OpSpecs:
-                        if spec.name == subnode.s:
-                            found = true
-                            subargStack.add(OpSpecs[indx].args)
-                            break
-
-                    if not found:
-                        if Arities.hasKey(subnode.s):
-                            if Arities[subnode.s]!=0:
-                                subargStack.add(Arities[subnode.s])
-                            else:
-                                addTerminalValue(true):
-                                    discard
+                    if Arities.hasKey(subnode.s):
+                        let funcArity = Arities[subnode.s]
+                        if funcArity!=0:
+                            subargStack.add(funcArity)
                         else:
                             addTerminalValue(true):
                                 discard
+                    else:
+                        addTerminalValue(true):
+                            discard
 
                 of Symbol: 
-                    discard
+                    let symalias = subnode.m
+                    if Aliases.hasKey(symalias):
+                        let symfunc = Syms[Aliases[symalias].name.s]
+                        if symfunc.kind==Function:
+                            if Aliases[symalias].precedence==PrefixPrecedence:
+                                if symfunc.arity!=0:
+                                    subargStack.add(symfunc.arity)
+                                else:
+                                    addTerminalValue(true):
+                                        discard
+                            else:
+                                ret.add(newSymbol(ampersand))
+                                swap(ret[^1],ret[^2])
+                                subargStack.add(symfunc.arity-1)
+                        else:
+                            addTerminalValue(true):
+                                discard
+                    else:
+                        addTerminalValue(true):
+                            discard
+                    #discard
                     # case subnode.m:
                     #     of plus             : addPartial(opAdd)       # +
                     #     of minus            : addPartial(opSub)       # -   
@@ -401,14 +414,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Symbol: 
                 case node.m:
-                    # #of tilde            : addCommand(opRender)
-                    # # of at               : addCommand(opArray)
-                    # # of sharp            : addCommand(opDictionary)
-                    # # of dollar           : addCommand(opFunction)
-                    # of ampersand        : addCommand(opPush)
-                    # of slashedzero      :
-                    #     addTerminalValue(false):
-                    #         addToCommand((byte)opNPush)
                     of arrowright       : 
                         var subargStack: seq[int] = @[]
                         var ended = false
@@ -419,71 +424,71 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addConst(consts, newBlock(subblock), opPushX)
 
                     of thickarrowright  : 
-                        # get next node
-                        let subnode = n.a[i+1]
+                        discard
+                        # # get next node
+                        # let subnode = n.a[i+1]
 
-                        # we'll want to create the two blocks, 
-                        # for functions like loop, map, select, filter
-                        # so let's get them ready
-                        var argblock: seq[Value] = @[]
-                        var subblock: seq[Value] = @[subnode]
+                        # # we'll want to create the two blocks, 
+                        # # for functions like loop, map, select, filter
+                        # # so let's get them ready
+                        # var argblock: seq[Value] = @[]
+                        # var subblock: seq[Value] = @[subnode]
 
-                        # is it a word?
-                        # e.g. map ["one" "two"] => upper
-                        if subnode.kind==Word:
+                        # # is it a word?
+                        # # e.g. map ["one" "two"] => upper
+                        # if subnode.kind==Word:
 
-                            var nofArgs = -1
+                        #     var nofArgs = -1
 
-                            var found = false
-                            for indx,spec in OpSpecs:
-                                if spec.name == subnode.s:
-                                    found = true
-                                    nofArgs = OpSpecs[indx].args
-                                    break
+                        #     var found = false
+                        #     for indx,spec in OpSpecs:
+                        #         if spec.name == subnode.s:
+                        #             found = true
+                        #             nofArgs = OpSpecs[indx].args
+                        #             break
 
-                            if not found:
-                                if Arities.hasKey(subnode.s):
-                                    if Arities[subnode.s]!=0:
-                                        nofArgs = Arities[subnode.s]
-                                        found = true
+                        #     if not found:
+                        #         if Arities.hasKey(subnode.s):
+                        #             if Arities[subnode.s]!=0:
+                        #                 nofArgs = Arities[subnode.s]
+                        #                 found = true
 
-                            # then let's just push its argument
-                            # to the end
-                            if found:
+                        #     # then let's just push its argument
+                        #     # to the end
+                        #     if found:
                                 
-                                for i in 0..(nofArgs-1):
-                                    let arg = newWord("arg_" & $(i))
-                                    argblock.add(arg)
-                                    subblock.add(arg)
+                        #         for i in 0..(nofArgs-1):
+                        #             let arg = newWord("arg_" & $(i))
+                        #             argblock.add(arg)
+                        #             subblock.add(arg)
 
-                        # is it an inline block?
-                        # e.g. map 1..10 => (2+_)
-                        elif subnode.kind==Inline:
+                        # # is it an inline block?
+                        # # e.g. map 1..10 => (2+_)
+                        # elif subnode.kind==Inline:
 
-                            # replace underscore symbols, sequentially
-                            # with arguments
-                            var idx = 0
-                            while idx<subnode.a.len:
-                                if subnode.a[idx].kind==Symbol and subnode.a[idx].m==underscore:
-                                    let arg = newWord("arg_" & $(idx))
-                                    argblock.add(arg)
-                                    subnode.a[idx] = arg
-                                idx += 1
-                            subblock = @[subnode]
+                        #     # replace underscore symbols, sequentially
+                        #     # with arguments
+                        #     var idx = 0
+                        #     while idx<subnode.a.len:
+                        #         if subnode.a[idx].kind==Symbol and subnode.a[idx].m==underscore:
+                        #             let arg = newWord("arg_" & $(idx))
+                        #             argblock.add(arg)
+                        #             subnode.a[idx] = arg
+                        #         idx += 1
+                        #     subblock = @[subnode]
 
-                        # add the blocks
-                        addTerminalValue(false):
-                            addConst(consts, newBlock(argblock), opPushX)
-                        addTerminalValue(false):
-                            addConst(consts, newBlock(subblock), opPushX)
+                        # # add the blocks
+                        # addTerminalValue(false):
+                        #     addConst(consts, newBlock(argblock), opPushX)
+                        # addTerminalValue(false):
+                        #     addConst(consts, newBlock(subblock), opPushX)
 
-                        i += 1
+                        # i += 1
                     else:
                         let symalias = node.m
                         if Aliases.hasKey(symalias):
                             let symfunc = Syms[Aliases[symalias].name.s]
                             if symfunc.kind==Function:
-                                #echo "found alias: " & $(node)
                                 if symfunc.arity!=0:
                                     addConst(consts, Aliases[symalias].name, opCallX)
                                     argStack.add(symfunc.arity)
