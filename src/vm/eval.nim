@@ -320,11 +320,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addConst(consts, node, opPushX)
 
             of Word:
-                #echo "found word:" & node.s
                 if Arities.hasKey(node.s):
-                    #echo "it's in the function index"
                     let funcArity = Arities[node.s]
-                    #echo "with arity:" & $(funcArity)
                     if funcArity!=0:
                         addConst(consts, node, opCallX)
                         argStack.add(funcArity)
@@ -332,45 +329,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(false):
                             addConst(consts, node, opCallX)
                 else:
-                    #echo "not in the function index - it's a var"
                     addTerminalValue(false):
                         addConst(consts, node, opLoadX)
-
-                # if Syms.hasKey(node.s) and Syms[node.s].kind==Function:
-                #     if Syms[node.s].fnKind==UserFunction:
-                #         if Syms[node.s].params.a.len!=0:
-                #             addConst(consts, node, opCallX)
-                #             argStack.add(Syms[node.s].params.a.len)
-                #         else:
-                #             addTerminalValue(false):
-                #                 addConst(consts, node, opCallX)
-                #     else:
-                #         if Syms[node.s].arity!=0:
-                #             addConst(consts, node, opCallX)
-                #             argStack.add(Syms[node.s].arity)
-                #         else:
-                #             addTerminalValue(false):
-                #                 addConst(consts, node, opCallX)
-                # elif Arities.hasKey(node.s):
-                #     if Arities[node.s]!=0:
-                #         addConst(consts, node, opCallX)
-                #         argStack.add(Arities[node.s])
-                #     else:
-                #         addTerminalValue(false):
-                #             addConst(consts, node, opCallX)
-                # else:
-                #     addTerminalValue(false):
-                #         addConst(consts, node, opLoadX)
-                #         # if Arities.hasKey(node.s):
-                #         #     if Arities[node.s]!=0:
-                #         #         addConst(consts, node, opCallX)
-                #         #         argStack.add(Arities[node.s])
-                #         #     else:
-                #         #         addTerminalValue(false):
-                #         #             addConst(consts, node, opCallX)
-                #         # else:
-                #         #     addTerminalValue(false):
-                #         #         addConst(consts, node, opLoadX)
 
             of Literal: 
                 addTerminalValue(false):
