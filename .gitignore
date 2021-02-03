@@ -5,3 +5,5 @@
 .gitattributes
 test
 test.nim
+test.art
+old.nim
