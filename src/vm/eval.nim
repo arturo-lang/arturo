@@ -97,15 +97,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     let step = 1
 
                 let symalias = n.a[i+1].m
-                if aliases.hasKey(symalias):
-                    let symfunc = syms[aliases[symalias].name.s]
+                if Aliases.hasKey(symalias):
+                    let symfunc = Syms[Aliases[symalias].name.s]
 
-                    if symfunc.kind==Function and aliases[symalias].precedence==InfixPrecedence:
+                    if symfunc.kind==Function and Aliases[symalias].precedence==InfixPrecedence:
                         i += step;
                         
                         #echo "found infix alias: " & $(n.a[i])
                         if symfunc.arity!=0:
-                            addConst(consts, aliases[symalias].name, opCallX)
+                            addConst(consts, Aliases[symalias].name, opCallX)
                             argStack.add(symfunc.arity)
 
                         when inArrowBlock: ret.add(n.a[i])
@@ -231,9 +231,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             break
 
                     if not found:
-                        if Funcs.hasKey(subnode.s):
-                            if Funcs[subnode.s]!=0:
-                                subargStack.add(Funcs[subnode.s])
+                        if Arities.hasKey(subnode.s):
+                            if Arities[subnode.s]!=0:
+                                subargStack.add(Arities[subnode.s])
                             else:
                                 addTerminalValue(true):
                                     discard
@@ -320,9 +320,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Word:
                 #echo "found word:" & node.s
-                if Funcs.hasKey(node.s):
+                if Arities.hasKey(node.s):
                     #echo "it's in the function index"
-                    let funcArity = Funcs[node.s]
+                    let funcArity = Arities[node.s]
                     #echo "with arity:" & $(funcArity)
                     if funcArity!=0:
                         addConst(consts, node, opCallX)
@@ -335,35 +335,35 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addTerminalValue(false):
                         addConst(consts, node, opLoadX)
 
-                # if syms.hasKey(node.s) and syms[node.s].kind==Function:
-                #     if syms[node.s].fnKind==UserFunction:
-                #         if syms[node.s].params.a.len!=0:
+                # if Syms.hasKey(node.s) and Syms[node.s].kind==Function:
+                #     if Syms[node.s].fnKind==UserFunction:
+                #         if Syms[node.s].params.a.len!=0:
                 #             addConst(consts, node, opCallX)
-                #             argStack.add(syms[node.s].params.a.len)
+                #             argStack.add(Syms[node.s].params.a.len)
                 #         else:
                 #             addTerminalValue(false):
                 #                 addConst(consts, node, opCallX)
                 #     else:
-                #         if syms[node.s].arity!=0:
+                #         if Syms[node.s].arity!=0:
                 #             addConst(consts, node, opCallX)
-                #             argStack.add(syms[node.s].arity)
+                #             argStack.add(Syms[node.s].arity)
                 #         else:
                 #             addTerminalValue(false):
                 #                 addConst(consts, node, opCallX)
-                # elif Funcs.hasKey(node.s):
-                #     if Funcs[node.s]!=0:
+                # elif Arities.hasKey(node.s):
+                #     if Arities[node.s]!=0:
                 #         addConst(consts, node, opCallX)
-                #         argStack.add(Funcs[node.s])
+                #         argStack.add(Arities[node.s])
                 #     else:
                 #         addTerminalValue(false):
                 #             addConst(consts, node, opCallX)
                 # else:
                 #     addTerminalValue(false):
                 #         addConst(consts, node, opLoadX)
-                #         # if Funcs.hasKey(node.s):
-                #         #     if Funcs[node.s]!=0:
+                #         # if Arities.hasKey(node.s):
+                #         #     if Arities[node.s]!=0:
                 #         #         addConst(consts, node, opCallX)
-                #         #         argStack.add(Funcs[node.s])
+                #         #         argStack.add(Arities[node.s])
                 #         #     else:
                 #         #         addTerminalValue(false):
                 #         #             addConst(consts, node, opCallX)
@@ -379,12 +379,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let funcIndx = node.s
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    Funcs[funcIndx] = n.a[i+2].a.len
-                    #echo "LABEL: create user function: " & node.s & " with arity: " & $(Funcs[funcIndx])
+                    Arities[funcIndx] = n.a[i+2].a.len
+                    #echo "LABEL: create user function: " & node.s & " with arity: " & $(Arities[funcIndx])
                 else:
                     if not isDictionary:
                         #echo "NOT-A-LABEL: delete function: " & node.s & " from index (if exists)"
-                        Funcs.del(funcIndx)
+                        Arities.del(funcIndx)
                     #echo "here"
 
                 #echo "adding const"
@@ -481,9 +481,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                                     break
 
                             if not found:
-                                if Funcs.hasKey(subnode.s):
-                                    if Funcs[subnode.s]!=0:
-                                        nofArgs = Funcs[subnode.s]
+                                if Arities.hasKey(subnode.s):
+                                    if Arities[subnode.s]!=0:
+                                        nofArgs = Arities[subnode.s]
                                         found = true
 
                             # then let's just push its argument
@@ -519,19 +519,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         i += 1
                     else:
                         let symalias = node.m
-                        if aliases.hasKey(symalias):
-                            let symfunc = syms[aliases[symalias].name.s]
+                        if Aliases.hasKey(symalias):
+                            let symfunc = Syms[Aliases[symalias].name.s]
                             if symfunc.kind==Function:
                                 #echo "found alias: " & $(node)
                                 if symfunc.arity!=0:
-                                    addConst(consts, aliases[symalias].name, opCallX)
+                                    addConst(consts, Aliases[symalias].name, opCallX)
                                     argStack.add(symfunc.arity)
                                 else:
                                     addTerminalValue(false):
-                                        addConst(consts, aliases[symalias].name, opCallX)
+                                        addConst(consts, Aliases[symalias].name, opCallX)
                             else:
                                 addTerminalValue(false):
-                                    addConst(consts, aliases[symalias].name, opLoadX)
+                                    addConst(consts, Aliases[symalias].name, opLoadX)
                         else:
                             addTerminalValue(false):
                                 addConst(consts, node, opPushX)
@@ -569,22 +569,18 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             for b in currentCommand.reversed: it.add(b)
 
 proc doEval*(root: Value, isDictionary=false): Translation = 
-    if Evaled.hasKey(root):
-        return Evaled[root]
-    else:
-        var cnsts: ValueArray = @[]
-        var newit: ByteArray = @[]
+    var cnsts: ValueArray = @[]
+    var newit: ByteArray = @[]
 
-        evalOne(root, cnsts, newit, isDictionary=isDictionary)
-        newit.add((byte)opEnd)
+    evalOne(root, cnsts, newit, isDictionary=isDictionary)
+    newit.add((byte)opEnd)
 
-        result = (cnsts, newit)
+    result = (cnsts, newit)
 
-        when defined(VERBOSE):
-            result.dump()
+    when defined(VERBOSE):
+        result.dump()
 
-        result = (cnsts,newit)
-        Evaled[root] = result
+    result = (cnsts,newit)
         
 #=======================================
 # Inspection
@@ -630,11 +626,3 @@ proc dump*(evaled: Translation) =
 
         stdout.write "\n"
         i += 1
-
-#=======================================
-# Initialization
-#=======================================
-
-when isMainModule:
-    Funcs = initTable[string,int]()
-    Evaled = initTable[Value,Translation]()
