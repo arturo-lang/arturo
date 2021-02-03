@@ -17,7 +17,7 @@ export strutils, tables
 import vm/[bytecode, errors, stack, value]
 
 #=======================================
-# Super-Globals
+# Globals
 #=======================================
 
 var
@@ -34,6 +34,10 @@ const
     NoArgs*      = static {"" : {Nothing}}
     NoAttrs*     = static {"" : ({Nothing},"")}
 
+#=======================================
+# Templates
+#=======================================
+
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
     when args.len==1 and args==NoArgs:  
         const argsLen = 0
@@ -49,8 +53,6 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
     Funcs[n] = static argsLen
     syms[n] = b
 
-    #echo "SYSTEM: create builtin function: " & n & " with arity: " & $(argsLen)
-
     when alias != unaliased:
         aliases[alias] = AliasBinding(
             precedence: rule,
@@ -58,7 +60,6 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         )
 
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
-    #echo "setting constant " & $(n) & " with description = " & description
     syms[n] = (v)
     syms[n].info = description
     when alias != unaliased:
@@ -67,7 +68,7 @@ template constant*(n: string, alias: SymbolKind, description: string, v: Value):
             name: newWord(n)
         )
 
-template requireArgs*(name: string, spec: untyped, nopop: bool = false): untyped =
+template require*(name: string, spec: untyped, nopop: bool = false): untyped =
     if SP<(static spec.len) and spec!=NoArgs:
         panic "cannot perform '" & (static name) & "'; not enough parameters: " & $(static spec.len) & " required"
 
