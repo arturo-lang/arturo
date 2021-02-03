@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -21,7 +27,7 @@ import vm/[common, eval, exec, globals, stack, value]
 proc defineSymbols*() =
 
     when defined(VERBOSE):
-        echo "- Importing: Iterators"
+        echo "- Importing: " & static (instantiationInfo().filename).replace(".nim")
 
     builtin "all?",
         alias       = unaliased, 

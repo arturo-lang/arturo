@@ -10,9 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes, marshal, streams
-
-import vm/[globals, value]
+import hashes
 
 #=======================================
 # Types 

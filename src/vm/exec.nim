@@ -12,6 +12,10 @@
 
 import tables
 
+when defined(VERBOSE):
+    import strformat
+    import helpers/debug as debugHelper
+
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
 #=======================================
