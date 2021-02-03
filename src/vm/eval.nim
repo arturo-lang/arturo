@@ -164,42 +164,42 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     echo "found trailing pipe without adjunct command. exiting"
                     quit()
 
-    template addCommand(op: OpCode, inArrowBlock: bool = false): untyped =
-        when static OpSpecs[op].args!=0:
-            when not inArrowBlock:
-                addToCommand((byte)op)
-                argStack.add(static OpSpecs[op].args)
-            else:
-                subargStack.add(static OpSpecs[op].args)
-        else:
-            when not inArrowBlock:
-                addTerminalValue(false):
-                    addToCommand((byte)op)
-            else:
-                addTerminalValue(true):
-                    discard
+    # template addCommand(op: OpCode, inArrowBlock: bool = false): untyped =
+    #     when static OpSpecs[op].args!=0:
+    #         when not inArrowBlock:
+    #             addToCommand((byte)op)
+    #             argStack.add(static OpSpecs[op].args)
+    #         else:
+    #             subargStack.add(static OpSpecs[op].args)
+    #     else:
+    #         when not inArrowBlock:
+    #             addTerminalValue(false):
+    #                 addToCommand((byte)op)
+    #         else:
+    #             addTerminalValue(true):
+    #                 discard
 
-    template addExtraCommand(op: OpCode, inArrowBlock: bool = false): untyped =
-        when static OpSpecs[op].args!=0:
-            when not inArrowBlock:
-                addToCommand((byte)((int)(op)-(int)(opExtra)))
-                addToCommand((byte)opExtra)
-                argStack.add(static OpSpecs[op].args)
-            else:
-                subargStack.add(static OpSpecs[op].args)
-        else:
-            when not inArrowBlock:
-                addTerminalValue(false):
-                    addToCommand((byte)((int)(op)-(int)(opExtra)))
-                    addToCommand((byte)opExtra)
-            else:
-                addTerminalValue(true):
-                    discard
+    # template addExtraCommand(op: OpCode, inArrowBlock: bool = false): untyped =
+    #     when static OpSpecs[op].args!=0:
+    #         when not inArrowBlock:
+    #             addToCommand((byte)((int)(op)-(int)(opExtra)))
+    #             addToCommand((byte)opExtra)
+    #             argStack.add(static OpSpecs[op].args)
+    #         else:
+    #             subargStack.add(static OpSpecs[op].args)
+    #     else:
+    #         when not inArrowBlock:
+    #             addTerminalValue(false):
+    #                 addToCommand((byte)((int)(op)-(int)(opExtra)))
+    #                 addToCommand((byte)opExtra)
+    #         else:
+    #             addTerminalValue(true):
+    #                 discard
 
-    template addPartial(op: OpCode): untyped =
-        ret.add(newSymbol(ampersand))
-        swap(ret[^1],ret[^2])
-        subargStack.add(static OpSpecs[op].args-1)
+    # template addPartial(op: OpCode): untyped =
+    #     ret.add(newSymbol(ampersand))
+    #     swap(ret[^1],ret[^2])
+    #     subargStack.add(static OpSpecs[op].args-1)
 
     template processNextCommand(): untyped =
         i += 1
