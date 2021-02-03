@@ -21,7 +21,10 @@ import vm/[common, env, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Paths"
 
     builtin "extract",
         alias       = unaliased, 
@@ -117,3 +120,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             stack.push(newString(joinPath(env.currentPath(),x.s)))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

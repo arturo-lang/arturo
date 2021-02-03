@@ -22,7 +22,10 @@ import vm/[common, exec, globals, parse, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Strings"
 
     builtin "capitalize",
         alias       = unaliased, 
@@ -41,7 +44,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s.capitalize()))
-            else: syms[x.s].s = syms[x.s].s.capitalize()
+            else: Syms[x.s].s = Syms[x.s].s.capitalize()
 
     builtin "color",
         alias       = unaliased, 
@@ -129,7 +132,7 @@ proc importSymbols*() =
             ##########################################################
             if (popAttr("path") != VNULL):
                 if x.kind==Literal:
-                    syms[x.s] = newString(joinPath(syms[x.s].a.map(proc (v:Value):string = v.s)))
+                    Syms[x.s] = newString(joinPath(Syms[x.s].a.map(proc (v:Value):string = v.s)))
                 else:
                     stack.push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
             else:
@@ -138,7 +141,7 @@ proc importSymbols*() =
                     sep = aWith.s
 
                 if x.kind==Literal:
-                    syms[x.s] = newString(syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
+                    Syms[x.s] = newString(Syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
                 else:
                     stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
 
@@ -175,7 +178,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s.toLower()))
-            else: syms[x.s].s = syms[x.s].s.toLower()
+            else: Syms[x.s].s = Syms[x.s].s.toLower()
 
     builtin "lower?",
         alias       = unaliased, 
@@ -280,13 +283,13 @@ proc importSymbols*() =
             ##########################################################
             if (popAttr("right") != VNULL):
                 if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
-                else: syms[x.s].s = unicode.alignLeft(syms[x.s].s, y.i)
+                else: Syms[x.s].s = unicode.alignLeft(Syms[x.s].s, y.i)
             elif (popAttr("center") != VNULL): # PENDING unicode support
                 if x.kind==String: stack.push(newString(center(x.s, y.i)))
-                else: syms[x.s].s = center(syms[x.s].s, y.i)
+                else: Syms[x.s].s = center(Syms[x.s].s, y.i)
             else:
                 if x.kind==String: stack.push(newString(unicode.align(x.s, y.i)))
-                else: syms[x.s].s = unicode.align(syms[x.s].s, y.i)
+                else: Syms[x.s].s = unicode.align(Syms[x.s].s, y.i)
 
     builtin "prefix",
         alias       = unaliased, 
@@ -306,7 +309,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(y.s & x.s))
-            else: syms[x.s] = newString(y.s & syms[x.s].s)
+            else: Syms[x.s] = newString(y.s & Syms[x.s].s)
 
     builtin "prefix?",
         alias       = unaliased, 
@@ -379,8 +382,8 @@ proc importSymbols*() =
                         ))
                     stack.push(res)
                 elif x.kind==Literal:
-                    while (contains(syms[x.s].s, rgx)):
-                        syms[x.s].s = syms[x.s].s.replace(rgx,
+                    while (contains(Syms[x.s].s, rgx)):
+                        Syms[x.s].s = Syms[x.s].s.replace(rgx,
                             proc (match: RegexMatch): string =
                                 var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
@@ -408,8 +411,8 @@ proc importSymbols*() =
                             ))
                     stack.push(res)
                 elif x.kind==Literal:
-                    while (contains(syms[x.s].s, rgx)):
-                        syms[x.s].s = syms[x.s].s.replace(rgx,
+                    while (contains(Syms[x.s].s, rgx)):
+                        Syms[x.s].s = Syms[x.s].s.replace(rgx,
                             proc (match: RegexMatch): string =
                                 discard execBlock(doParse(match.captures[0], isFile=false))
                                 $(stack.pop())
@@ -437,10 +440,10 @@ proc importSymbols*() =
             ##########################################################
             if (popAttr("regex") != VNULL):
                 if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
-                else: syms[x.s].s = syms[x.s].s.replace(re.re(y.s), z.s)
+                else: Syms[x.s].s = Syms[x.s].s.replace(re.re(y.s), z.s)
             else:
                 if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
-                else: syms[x.s].s = syms[x.s].s.replace(y.s, z.s)
+                else: Syms[x.s].s = Syms[x.s].s.replace(y.s, z.s)
 
     builtin "strip",
         alias       = unaliased, 
@@ -459,7 +462,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(strutils.strip(x.s)))
-            else: syms[x.s].s = strutils.strip(syms[x.s].s) 
+            else: Syms[x.s].s = strutils.strip(Syms[x.s].s) 
 
     builtin "suffix",
         alias       = unaliased, 
@@ -479,7 +482,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s & y.s))
-            else: syms[x.s] = newString(syms[x.s].s & y.s)
+            else: Syms[x.s] = newString(Syms[x.s].s & y.s)
 
     builtin "suffix?",
         alias       = unaliased, 
@@ -520,7 +523,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s.toUpper()))
-            else: syms[x.s].s = syms[x.s].s.toUpper()
+            else: Syms[x.s].s = Syms[x.s].s.toUpper()
 
     builtin "upper?",
         alias       = unaliased, 
@@ -564,3 +567,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

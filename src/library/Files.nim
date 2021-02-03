@@ -26,7 +26,10 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Files"
 
     builtin "exists?",
         alias       = unaliased, 
@@ -182,3 +185,9 @@ proc importSymbols*() =
             ##########################################################
             let files: seq[string] = y.a.map((z)=>z.s)
             miniz.zip(files, x.s)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

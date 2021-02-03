@@ -20,7 +20,10 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Databases"
 
     builtin "close",
         alias       = unaliased, 
@@ -95,3 +98,9 @@ proc importSymbols*() =
                 stack.push(newDatabase(openSqliteDb(dbName)))
             # elif dbKind == MysqlDatabase:
             #     stack.push(newDatabase(openMysqlDb(dbName)))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

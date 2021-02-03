@@ -18,7 +18,10 @@ import vm/[common, errors, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: System"
 
     builtin "execute",
         alias       = unaliased, 
@@ -134,3 +137,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             sleep(x.i)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)
