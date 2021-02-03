@@ -21,10 +21,16 @@ import vm/[bytecode, errors, stack, value]
 #=======================================
 
 var
+    # symbols
     syms*{.threadvar.}      : ValueDict
     aliases*{.threadvar.}   : SymbolDict
     Funcs*{.threadvar.}     : Table[string,int]
     Evaled*{.threadvar.}    : Table[Value,Translation]
+
+    # stack
+    Stack*{.threadvar.}     : seq[Value]
+    Attrs*                  : OrderedTable[string,Value]
+    SP*, AP*, CSP*          : int
 
 #=======================================
 # Constants

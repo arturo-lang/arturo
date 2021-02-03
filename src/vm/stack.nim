@@ -12,7 +12,7 @@
 
 import strformat, tables
 
-import vm/value
+import vm/[globals, value]
 
 #=======================================
 # Constants
@@ -20,16 +20,6 @@ import vm/value
 
 const StackSize* = 100000
 const AttrsSize* = 10
-
-#=======================================
-# Globals
-#=======================================
-
-var Stack*{.threadvar.}: seq[Value]
-var Attrs*: OrderedTable[string,Value]
-var SP*: int
-var AP*: int
-var CSP*: int
 
 #=======================================
 # Methods
