@@ -13,9 +13,9 @@
 import asyncdispatch, asynchttpserver
 import db_sqlite
 import httpClient, json, md5, os
-import random, sequtils, smtp
+import random
 import std/sha1, strformat, strutils
-import tables, times, unicode, uri, xmltree
+import tables, times, unicode, xmltree
 import nre except toSeq
 
 import extras/[bignum, parsetoml]
