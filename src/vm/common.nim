@@ -39,20 +39,20 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         act
     )
 
-    Funcs[n] = static argsLen
-    syms[n] = b
+    Arities[n] = static argsLen
+    Syms[n] = b
 
     when alias != unaliased:
-        aliases[alias] = AliasBinding(
+        Aliases[alias] = AliasBinding(
             precedence: rule,
             name: newWord(n)
         )
 
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
-    syms[n] = (v)
-    syms[n].info = description
+    Syms[n] = (v)
+    Syms[n].info = description
     when alias != unaliased:
-        aliases[alias] = AliasBinding(
+        Aliases[alias] = AliasBinding(
             precedence: PrefixPrecedence,
             name: newWord(n)
         )

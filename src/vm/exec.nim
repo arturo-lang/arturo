@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import random, tables
+import tables
 
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
@@ -29,18 +29,18 @@ template pushByIndex(idx: int):untyped =
 
 template storeByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
-    syms[symIndx] = stack.pop()
+    Syms[symIndx] = stack.pop()
 
 template loadByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
-    let item = syms.getOrDefault(symIndx)
+    let item = Syms.getOrDefault(symIndx)
     if item.isNil: panic "symbol not found: " & symIndx
-    stack.push(syms[symIndx])
+    stack.push(Syms[symIndx])
 
 template callByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
 
-    let fun = syms.getOrDefault(symIndx)
+    let fun = Syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
     if fun.fnKind==UserFunction:
         discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
@@ -84,7 +84,7 @@ proc execBlock*(
         if dictionary:
             var res: ValueDict = initOrderedTable[string,Value]()
             for k, v in pairs(newSyms):
-                if not syms.hasKey(k) or (newSyms[k]!=syms[k]):
+                if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
                     res[k] = v
 
             return res
@@ -93,22 +93,22 @@ proc execBlock*(
                 if not exports.isNil():
                     for k in exports.a:
                         if newSyms.hasKey(k.s):
-                            syms[k.s] = newSyms[k.s]
+                            Syms[k.s] = newSyms[k.s]
             else:
                 if execInParent:
-                    syms=newSyms
+                    Syms=newSyms
                 else:
                     for k, v in pairs(newSyms):
-                        if syms.hasKey(k) and syms[k]!=newSyms[k]:
-                            syms[k] = newSyms[k]
+                        if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
+                            Syms[k] = newSyms[k]
 
-    return syms
+    return Syms
     #     #-----------------------------
     #     # store previous symbols
     #     #-----------------------------
     #     if (not isFuncBlock and not execInParent):
     #         # save previous symbols 
-    #         previous = syms
+    #         previous = Syms
 
     #     #-----------------------------
     #     # pre-process arguments
@@ -119,15 +119,15 @@ proc execBlock*(
     #             let symIndx = arg.s
 
     #             # if argument already exists, save it
-    #             if syms.hasKey(symIndx):
-    #                 saved[symIndx] = syms[symIndx]
+    #             if Syms.hasKey(symIndx):
+    #                 saved[symIndx] = Syms[symIndx]
 
     #             # pop argument and set it
-    #             syms[symIndx] = stack.pop()
+    #             Syms[symIndx] = stack.pop()
 
     #             # properly set arity, if argument is a function
-    #             if syms[symIndx].kind==Function:
-    #                 Funcs[symIndx] = syms[symIndx].params.a.len 
+    #             if Syms[symIndx].kind==Function:
+    #                 Funcs[symIndx] = Syms[symIndx].params.a.len 
 
     #     #-----------------------------
     #     # pre-process injections
@@ -137,13 +137,13 @@ proc execBlock*(
     #             saved = initOrderedTable[string,Value]()
 
     #         for k,v in pairs(inject[]):
-    #             if syms.hasKey(k):
-    #                 saved[k] = syms[k]
+    #             if Syms.hasKey(k):
+    #                 saved[k] = Syms[k]
 
-    #             syms[k] = v
+    #             Syms[k] = v
 
-    #             if syms[k].kind==Function:
-    #                 Funcs[k] = syms[k].params.a.len
+    #             if Syms[k].kind==Function:
+    #                 Funcs[k] = Syms[k].params.a.len
 
     #     #-----------------------------
     #     # evaluate block
@@ -159,7 +159,7 @@ proc execBlock*(
     #     if isIsolated:
     #         subSyms = doExec(evaled, 1)#depth+1)#, nil)
     #     else:
-    #         subSyms = doExec(evaled, 1)#depth+1)#, addr syms)
+    #         subSyms = doExec(evaled, 1)#depth+1)#, addr Syms)
     # except ReturnTriggered as e:
     #     #echo "caught: ReturnTriggered"
     #     if not isFuncBlock:
@@ -211,11 +211,11 @@ proc execBlock*(
     #                 # if we are explicitly .import-ing, 
     #                 # set symbol no matter what
     #                 if execInParent:
-    #                     syms[k] = v
+    #                     Syms[k] = v
     #                 else:
     #                     # update parent only if symbol already existed
     #                     if previous.hasKey(k):
-    #                         syms[k] = v
+    #                         Syms[k] = v
 
     #             if useArgs:
     #                 # go through the arguments
@@ -223,29 +223,29 @@ proc execBlock*(
     #                     # if the symbol already existed restore it
     #                     # otherwise, remove it
     #                     if saved.hasKey(arg.s):
-    #                         syms[arg.s] = saved[arg.s]
+    #                         Syms[arg.s] = saved[arg.s]
     #                     else:
-    #                         syms.del(arg.s)
+    #                         Syms.del(arg.s)
 
     #             if willInject:
     #                 for k,v in pairs(inject[]):
     #                     if saved.hasKey(k):
-    #                         syms[k] = saved[k]
+    #                         Syms[k] = saved[k]
     #                     else:
-    #                         syms.del(k)
+    #                         Syms.del(k)
     #         else:
     #             # if the symbol already existed (e.g. nested functions)
     #             # restore it as we normally would
     #             for k, v in pairs(subSyms):
     #                 if saved.hasKey(k):
-    #                     syms[k] = saved[k]
+    #                     Syms[k] = saved[k]
 
     #             # if there are exportable variables
     #             # do set them in parent
     #             if exports!=VNULL:
     #                 for k in exports.a:
     #                     if subSyms.hasKey(k.s):
-    #                         syms[k.s] = subSyms[k.s]
+    #                         Syms[k.s] = subSyms[k.s]
 
     #         # #-----------------------------
     #         # # break / continue
@@ -289,16 +289,8 @@ proc printSyms*(vv:ValueDict, message: string)=
             echo k & " => " & $(v)
     echo "----------------------------"
 
-proc initVM*() =
-    newSeq(Stack, StackSize)
-    SP = 0
-
-    emptyAttrs()
-
-    randomize()
-
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
-    #syms.printSyms("In doExec")
+    #Syms.printSyms("In doExec")
     when defined(VERBOSE):
         if depth==0:
             showDebugHeader("VM")
@@ -310,14 +302,14 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
     var op: OpCode
     var oldSyms: ValueDict
 
-    oldSyms = syms
+    oldSyms = Syms
 
     if args!=NoValues:
         for arg in args:
             let symIndx = arg.s
 
             # pop argument and set it
-            syms[symIndx] = stack.pop()
+            Syms[symIndx] = stack.pop()
 
     while true:
         if vmBreak:
@@ -416,8 +408,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opSwap       : swap(Stack[SP-1], Stack[SP-2])
             of opNop        : discard
 
-            of opGet: syms["get"].action() #discard #Collections.Get()  
-            of opSet: syms["set"].action() #discard #Collections.Set()
+            of opGet: Syms["get"].action() #discard #Collections.Get()  
+            of opSet: Syms["set"].action() #discard #Collections.Set()
 
             else: discard
 
@@ -437,21 +429,21 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 i += 1
 
             showDebugHeader("Symbols")
-            for k,v in syms:
+            for k,v in Syms:
                 stdout.write fmt("{k} => ")
                 v.dump(0, false)
 
-    let newSyms = syms
-    syms = oldSyms
+    let newSyms = Syms
+    Syms = oldSyms
 
     #newSyms.printSyms("newSyms")
-    #syms.printSyms("oldSyms -> syms")
+    #Syms.printSyms("oldSyms -> Syms")
     return newSyms
 
     # var newSyms: ValueDict = initOrderedTable[string,Value]()
 
-    # for k,v in pairs(syms):
-    #     if not oldSyms.hasKey(k) or oldSyms[k]!=syms[k]:
+    # for k,v in pairs(Syms):
+    #     if not oldSyms.hasKey(k) or oldSyms[k]!=Syms[k]:
     #         echo "new: " & k & " = " & $(v)
     #         newSyms[k] = v
 
