@@ -46,7 +46,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
 
     const cleanExample = replace(strutils.strip(example),"\n        ","\n")
     let b = newBuiltin(n, alias, rule, static (instantiationInfo().filename).replace(".nim"), description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
-        requireArgs(n, args)
+        require(n, args)
         act
     )
 
