@@ -18,7 +18,7 @@ import helpers/colors as ColorsHelper
 when not defined(MINI):
     import helpers/webview as WebviewHelper
 
-import vm/[env, exec, globals, stack, value]
+import vm/[common, env, exec, globals, stack, value]
 
 #=======================================
 # Methods

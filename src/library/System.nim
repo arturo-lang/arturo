@@ -12,7 +12,7 @@
 
 import os, osproc, sequtils, sugar
 
-import vm/[errors, globals, stack, value]
+import vm/[common, errors, globals, stack, value]
 
 #=======================================
 # Methods

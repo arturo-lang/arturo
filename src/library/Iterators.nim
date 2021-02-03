@@ -12,7 +12,7 @@
 
 import algorithm, sequtils, sugar
 
-import vm/[eval, exec, globals, stack, value]
+import vm/[common, eval, exec, globals, stack, value]
 
 #=======================================
 # Methods

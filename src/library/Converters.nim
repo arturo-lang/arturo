@@ -16,7 +16,7 @@ import extras/bignum
 import helpers/datasource as DatasourceHelper
 import helpers/strings as StringsHelper
 
-import vm/[errors, exec, globals, parse, stack, value]
+import vm/[common, errors, exec, globals, parse, stack, value]
 
 #=======================================
 # Methods

@@ -12,15 +12,13 @@
 
 import hashes, marshal, streams
 
-import vm/value
+import vm/[globals, value]
 
 #=======================================
 # Types 
 #=======================================
 
 type
-    Translation* = (ValueArray, ByteArray) # (constants, instructions)
-
     OpCode* = enum
         # [0x0] #
         # push constants 

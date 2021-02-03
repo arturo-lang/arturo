@@ -20,7 +20,7 @@ import helpers/json as JsonHelper
 import helpers/markdown as MarkdownHelper
 import helpers/toml as TomlHelper
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods

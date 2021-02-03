@@ -16,7 +16,7 @@ import nre except toSeq
 import helpers/arrays as arraysHelper  
 import helpers/unisort as unisortHelper 
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods

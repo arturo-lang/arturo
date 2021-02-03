@@ -14,7 +14,7 @@ import algorithm, sequtils
 
 import helpers/datasource as DatasourceHelper
 
-import vm/[env, errors, eval, exec, globals, parse, stack, value]
+import vm/[common, env, errors, eval, exec, globals, parse, stack, value]
 
 #=======================================
 # Methods
