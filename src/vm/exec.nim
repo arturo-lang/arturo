@@ -10,18 +10,7 @@
 # Libraries
 #=======================================
 
-import asyncdispatch, asynchttpserver
-import db_sqlite
-import httpClient, json, md5, os
-import random
-import std/sha1, strformat, strutils
-import tables, times, unicode, xmltree
-import nre except toSeq
-
-import extras/[bignum, parsetoml]
-
-when defined(BENCHMARK) or defined(VERBOSE):
-    import helpers/debug as debugHelper
+import random, tables
 
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
