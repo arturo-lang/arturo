@@ -61,37 +61,6 @@ template callByIndex(idx: int):untyped =
 
 ####
 
-template require*(op: OpCode, nopop: bool = false): untyped =
-    if SP<(static OpSpecs[op].args):
-        panic "cannot perform '" & (static OpSpecs[op].name) & "'; not enough parameters: " & $(static OpSpecs[op].args) & " required"
-
-    when (static OpSpecs[op].args)>=1:
-        when not (ANY in static OpSpecs[op].a):
-            if not (Stack[SP-1].kind in (static OpSpecs[op].a)):
-                let acceptStr = toSeq((OpSpecs[op].a).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " ...; incorrect argument type for 1st parameter; accepts " & acceptStr
-
-        when (static OpSpecs[op].args)>=2:
-            when not (ANY in static OpSpecs[op].b):
-                if not (Stack[SP-2].kind in (static OpSpecs[op].b)):
-                    let acceptStr = toSeq((OpSpecs[op].b).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                    panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
-                    break
-
-            when (static OpSpecs[op].args)>=3:
-                when not (ANY in static OpSpecs[op].c):
-                    if not (Stack[SP-3].kind in (static OpSpecs[op].c)):
-                        let acceptStr = toSeq((OpSpecs[op].c).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                        panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
-
-    when not nopop:
-        when (static OpSpecs[op].args)>=1:
-            var x {.inject.} = stack.pop()
-        when (static OpSpecs[op].args)>=2:
-            var y {.inject.} = stack.pop()
-        when (static OpSpecs[op].args)>=3:
-            var z {.inject.} = stack.pop()
-
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
