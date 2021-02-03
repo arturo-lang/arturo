@@ -10,15 +10,12 @@
 # Libraries
 #=======================================
 
+import parseopt, segFaults, tables
+
 when defined(PROFILE):
     import nimprof
 
-import parseopt, segFaults, tables
-
 import vm/[version, value, vm]
-
-when defined(BENCHMARK):
-    import utils
 
 #=======================================
 # Types
@@ -34,13 +31,13 @@ type
         showVersion
 
 #=======================================
-# Globals
+# Constants
 #=======================================
 
 #   -o --output               Compile script and write bytecode
 #   -i --input                Execute script from bytecode
 
-let helpTxt = """
+const helpTxt = """
 
 Usage:
   arturo [options] <path>
