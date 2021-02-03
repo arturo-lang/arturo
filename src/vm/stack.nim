@@ -50,6 +50,10 @@ template sTopsFrom*(start: int): ValueArray =
 template emptyStack*() =
     SP = 0
 
+template createMainStack*() =
+    newSeq(Stack, StackSize)
+    emptyStack()
+
 ## Attributes stack
 
 template pushAttr*(label: string, v: Value) =
@@ -57,6 +61,9 @@ template pushAttr*(label: string, v: Value) =
 
 template emptyAttrs*() =
     Attrs = initOrderedTable[string,Value]()
+
+template createAttrsStack*() =
+    emptyAttrs()
 
 proc getAttr*(attr: string): Value =
     Attrs.getOrDefault(attr, VNULL)
