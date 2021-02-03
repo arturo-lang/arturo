@@ -20,6 +20,7 @@ import vm/value
 
 type
     Translation* = (ValueArray, ByteArray) # (constants, instructions)
+    Library* = proc()
 
 #=======================================
 # Globals
@@ -27,7 +28,13 @@ type
 
 var
     # symbols
-    syms*{.threadvar.}      : ValueDict
-    aliases*{.threadvar.}   : SymbolDict
-    Funcs*{.threadvar.}     : Table[string,int]
-    Evaled*{.threadvar.}    : Table[Value,Translation]
+    Syms*       : ValueDict
+
+    # symbol aliases
+    Aliases*    : SymbolDict
+
+    # function arity reference
+    Arities*    : Table[string,int]
+
+    # libraries 
+    Libraries*  : seq[Library]
