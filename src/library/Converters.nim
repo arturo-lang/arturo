@@ -22,7 +22,10 @@ import vm/[common, errors, exec, globals, parse, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Converters"
 
     builtin "array",
         alias       = at, 
@@ -102,7 +105,7 @@ proc importSymbols*() =
                 stack.push(convertToAscii(x.s))
             elif (popAttr("agnostic") != VNULL):
                 let res = x.a.map(proc(v:Value):Value =
-                    if v.kind == Word and not syms.hasKey(v.s): newLiteral(v.s)
+                    if v.kind == Word and not Syms.hasKey(v.s): newLiteral(v.s)
                     else: v
                 )
                 stack.push(newBlock(res))
@@ -162,7 +165,7 @@ proc importSymbols*() =
 
             if (let aWith = popAttr("with"); aWith != VNULL):
                 for x in aWith.a:
-                    dict[x.s] = syms[x.s]
+                    dict[x.s] = Syms[x.s]
                     
             stack.push(newDictionary(dict))
 
@@ -411,3 +414,9 @@ proc importSymbols*() =
                         Date,
                         Custom,
                         Binary: discard
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

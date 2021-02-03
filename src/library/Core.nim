@@ -20,7 +20,10 @@ import vm/[common, env, errors, eval, exec, globals, parse, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Core"
 
     builtin "break",
         alias       = unaliased, 
@@ -33,7 +36,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             vmBreak = true
-            #return syms
+            #return Syms
 
     builtin "call",
         alias       = unaliased, 
@@ -58,7 +61,7 @@ proc importSymbols*() =
             var fun: Value
 
             if x.kind==Literal or x.kind==String:
-                fun = syms[x.s]
+                fun = Syms[x.s]
             else:
                 fun = x
 
@@ -98,7 +101,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             vmContinue = true
-            #return syms
+            #return Syms
 
     builtin "do",
         alias       = unaliased, 
@@ -191,8 +194,8 @@ proc importSymbols*() =
         example     = """
         """:
             ##########################################################
-            for k,v in pairs(syms):
-                syms[k] = v
+            for k,v in pairs(Syms):
+                Syms[k] = v
 
     builtin "if",
         alias       = unaliased, 
@@ -263,7 +266,7 @@ proc importSymbols*() =
             print x           ; 10
         """:
             ##########################################################
-            syms[x.s] = y
+            Syms[x.s] = y
 
     builtin "new",
         alias       = unaliased, 
@@ -357,7 +360,7 @@ proc importSymbols*() =
             raise ReturnTriggered.newException("return")
             # vmReturn = true
             # # return ReturnResult
-            # #return syms
+            # #return Syms
 
     builtin "try",
         alias       = unaliased, 
@@ -459,7 +462,7 @@ proc importSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(syms[x.s])
+            stack.push(Syms[x.s])
 
     builtin "when?",
         alias       = unaliased, 
@@ -544,3 +547,9 @@ proc importSymbols*() =
                 else:
                     discard execBlock(VNULL, evaluated=preevaledY)
                 discard execBlock(VNULL, evaluated=preevaledX)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

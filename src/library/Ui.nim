@@ -22,7 +22,10 @@ import vm/[common, env, exec, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Ui"
 
     builtin "webview",
         alias       = unaliased, 
@@ -121,3 +124,9 @@ proc importSymbols*() =
                 # #         resizable=true, 
                 # #             debug=false,
                 # #          bindings=y.d)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

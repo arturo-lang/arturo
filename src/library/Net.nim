@@ -24,7 +24,10 @@ import vm/[common, env, exec, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Net"
 
     builtin "download",
         alias       = unaliased, 
@@ -207,3 +210,9 @@ proc importSymbols*() =
                     echo "Something went wrong." & e.msg
                     server.close()
             {.push warning[GcUnsafe2]:on.}
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

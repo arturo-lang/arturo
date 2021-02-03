@@ -22,7 +22,10 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Collections"
 
     builtin "append",
         alias       = doubleplus, 
@@ -52,22 +55,22 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if syms[x.s].kind==String:
+                if Syms[x.s].kind==String:
                     if y.kind==String:
-                        syms[x.s].s &= y.s
+                        Syms[x.s].s &= y.s
                     elif y.kind==Char:
-                        syms[x.s].s &= $(y.c)
-                elif syms[x.s].kind==Char:
+                        Syms[x.s].s &= $(y.c)
+                elif Syms[x.s].kind==Char:
                     if y.kind==String:
-                        syms[x.s] = newString($(syms[x.s].c) & y.s)
+                        Syms[x.s] = newString($(Syms[x.s].c) & y.s)
                     elif y.kind==Char:
-                        syms[x.s] = newString($(syms[x.s].c) & $(y.c))
+                        Syms[x.s] = newString($(Syms[x.s].c) & $(y.c))
                 else:
                     if y.kind==Block:
                         for item in y.a:
-                            syms[x.s].a.add(item)
+                            Syms[x.s].a.add(item)
                     else:
-                        syms[x.s].a.add(y)
+                        Syms[x.s].a.add(y)
             else:
                 if x.kind==String:
                     if y.kind==String:
@@ -171,10 +174,10 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if syms[x.s].kind==String:
-                    syms[x.s].s = syms[x.s].s[y.i..^1]
-                elif syms[x.s].kind==Block:
-                    syms[x.s].a = syms[x.s].a[y.i..^1]
+                if Syms[x.s].kind==String:
+                    Syms[x.s].s = Syms[x.s].s[y.i..^1]
+                elif Syms[x.s].kind==Block:
+                    Syms[x.s].a = Syms[x.s].a[y.i..^1]
             else:
                 if x.kind==String:
                     stack.push(newString(x.s[y.i..^1]))
@@ -198,10 +201,10 @@ proc importSymbols*() =
             empty 'str            ; str: ""
         """:
             ##########################################################
-            case syms[x.s].kind:
-                of String: syms[x.s].s = ""
-                of Block: syms[x.s].a = @[]
-                of Dictionary: syms[x.s].d = initOrderedTable[string,Value]()
+            case Syms[x.s].kind:
+                of String: Syms[x.s].s = ""
+                of Block: Syms[x.s].a = @[]
+                of Dictionary: Syms[x.s].d = initOrderedTable[string,Value]()
                 else: discard
 
     builtin "empty?",
@@ -243,7 +246,7 @@ proc importSymbols*() =
             ##########################################################
             if x.kind==Literal:
                 for k,v in pairs(y.d):
-                    syms[x.s].d[k] = v
+                    Syms[x.s].d[k] = v
             else:
                 var res = copyValue(x)
                 for k,v in y.d:
@@ -296,7 +299,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                syms[x.s] = syms[x.s].flattened()
+                Syms[x.s] = Syms[x.s].flattened()
             else:
                 stack.push(x.flattened())
 
@@ -457,11 +460,11 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                case syms[x.s].kind:
-                    of String: syms[x.s].s.insert(z.s, y.i)
-                    of Block: syms[x.s].a.insert(z, y.i)
+                case Syms[x.s].kind:
+                    of String: Syms[x.s].s.insert(z.s, y.i)
+                    of Block: Syms[x.s].a.insert(z, y.i)
                     of Dictionary:
-                        syms[x.s].d[y.s] = z
+                        Syms[x.s].d[y.s] = z
                     else: discard
             else:
                 case x.kind:
@@ -651,24 +654,24 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if syms[x.s].kind==String:
+                if Syms[x.s].kind==String:
                     if (popAttr("once") != VNULL):
-                        syms[x.s] = newString(syms[x.s].s.removeFirst(y.s))
+                        Syms[x.s] = newString(Syms[x.s].s.removeFirst(y.s))
                     else:
-                        syms[x.s] = newString(syms[x.s].s.replace(y.s))
-                elif syms[x.s].kind==Block: 
+                        Syms[x.s] = newString(Syms[x.s].s.replace(y.s))
+                elif Syms[x.s].kind==Block: 
                     if (popAttr("once") != VNULL):
-                        syms[x.s] = newBlock(syms[x.s].a.removeFirst(y))
+                        Syms[x.s] = newBlock(Syms[x.s].a.removeFirst(y))
                     elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                        syms[x.s] = newBlock(syms[x.s].a.removeByIndex(aIndex.i))
+                        Syms[x.s] = newBlock(Syms[x.s].a.removeByIndex(aIndex.i))
                     else:
-                        syms[x.s] = newBlock(syms[x.s].a.removeAll(y))
-                elif syms[x.s].kind==Dictionary:
+                        Syms[x.s] = newBlock(Syms[x.s].a.removeAll(y))
+                elif Syms[x.s].kind==Dictionary:
                     let key = (popAttr("key") != VNULL)
                     if (popAttr("once") != VNULL):
-                        syms[x.s] = newDictionary(syms[x.s].d.removeFirst(y, key))
+                        Syms[x.s] = newDictionary(Syms[x.s].d.removeFirst(y, key))
                     else:
-                        syms[x.s] = newDictionary(syms[x.s].d.removeAll(y, key))
+                        Syms[x.s] = newDictionary(Syms[x.s].d.removeAll(y, key))
             else:
                 if x.kind==String:
                     if (popAttr("once") != VNULL):
@@ -714,12 +717,12 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if syms[x.s].kind==String:
-                    syms[x.s] = newString(syms[x.s].s.repeat(y.i))
-                elif syms[x.s].kind==Block:
-                    syms[x.s] = newBlock(syms[x.s].a.cycle(y.i))
+                if Syms[x.s].kind==String:
+                    Syms[x.s] = newString(Syms[x.s].s.repeat(y.i))
+                elif Syms[x.s].kind==Block:
+                    Syms[x.s] = newBlock(Syms[x.s].a.cycle(y.i))
                 else:
-                    syms[x.s] = newBlock(syms[x.s].repeat(y.i))
+                    Syms[x.s] = newBlock(Syms[x.s].repeat(y.i))
             else:
                 if x.kind==String:
                     stack.push(newString(x.s.repeat(y.i)))
@@ -756,10 +759,10 @@ proc importSymbols*() =
                     result[s.high - i] = c
 
             if x.kind==Literal:
-                if syms[x.s].kind==String:
-                    syms[x.s].s.reverse()
+                if Syms[x.s].kind==String:
+                    Syms[x.s].s.reverse()
                 else:
-                    syms[x.s].a.reverse()
+                    Syms[x.s].a.reverse()
             else:
                 if x.kind==Block: stack.push(newBlock(x.a.reversed))
                 elif x.kind==String: stack.push(newString(x.s.reversed))
@@ -829,7 +832,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                syms[x.s].a.shuffle()
+                Syms[x.s].a.shuffle()
             else:
                 stack.push(newBlock(x.a.dup(shuffle)))
 
@@ -921,15 +924,15 @@ proc importSymbols*() =
                         
             else: 
                 if (let aAs = popAttr("as"); aAs != VNULL):
-                    syms[x.s].a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
+                    Syms[x.s].a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
                 else:
                     if (popAttr("sensitive")!=VNULL):
-                        syms[x.s].a.unisort("en", sensitive=true, order = sortOrdering)
+                        Syms[x.s].a.unisort("en", sensitive=true, order = sortOrdering)
                     else:
-                        if syms[x.s].a[0].kind==String:
-                            syms[x.s].a.unisort("en", order = sortOrdering)
+                        if Syms[x.s].a[0].kind==String:
+                            Syms[x.s].a.unisort("en", order = sortOrdering)
                         else:
-                            syms[x.s].a.sort(order = sortOrdering)
+                            Syms[x.s].a.sort(order = sortOrdering)
 
     builtin "split",
         alias       = unaliased, 
@@ -963,42 +966,42 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if syms[x.s].kind==String:
+                if Syms[x.s].kind==String:
                     if (popAttr("words") != VNULL):
-                        syms[x.s] = newStringBlock(strutils.splitWhitespace(syms[x.s].s))
+                        Syms[x.s] = newStringBlock(strutils.splitWhitespace(Syms[x.s].s))
                     elif (popAttr("lines") != VNULL):
-                        syms[x.s] = newStringBlock(syms[x.s].s.splitLines())
+                        Syms[x.s] = newStringBlock(Syms[x.s].s.splitLines())
                     elif (let aBy = popAttr("by"); aBy != VNULL):
-                        syms[x.s] = newStringBlock(syms[x.s].s.split(aBy.s))
+                        Syms[x.s] = newStringBlock(Syms[x.s].s.split(aBy.s))
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                        syms[x.s] = newStringBlock(syms[x.s].s.split(nre.re(aRegex.s)))
+                        Syms[x.s] = newStringBlock(Syms[x.s].s.split(nre.re(aRegex.s)))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
-                        syms[x.s] = newStringBlock(@[syms[x.s].s[0..aAt.i-1], syms[x.s].s[aAt.i..^1]])
+                        Syms[x.s] = newStringBlock(@[Syms[x.s].s[0..aAt.i-1], Syms[x.s].s[aAt.i..^1]])
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
                         var ret: seq[string] = @[]
-                        var length = syms[x.s].s.len
+                        var length = Syms[x.s].s.len
                         var i = 0
 
                         while i<length:
-                            ret.add(syms[x.s].s[i..i+aEvery.i-1])
+                            ret.add(Syms[x.s].s[i..i+aEvery.i-1])
                             i += aEvery.i
 
-                        syms[x.s] = newStringBlock(ret)
+                        Syms[x.s] = newStringBlock(ret)
                     else:
-                        syms[x.s] = newStringBlock(syms[x.s].s.map(proc (x:char):string = $(x)))
+                        Syms[x.s] = newStringBlock(Syms[x.s].s.map(proc (x:char):string = $(x)))
                 else:
                     if (let aAt = popAttr("at"); aAt != VNULL):
-                        syms[x.s] = newBlock(@[newBlock(syms[x.s].a[0..aAt.i]), newBlock(syms[x.s].a[aAt.i..^1])])
+                        Syms[x.s] = newBlock(@[newBlock(Syms[x.s].a[0..aAt.i]), newBlock(Syms[x.s].a[aAt.i..^1])])
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
                         var ret: ValueArray = @[]
-                        var length = syms[x.s].a.len
+                        var length = Syms[x.s].a.len
                         var i = 0
 
                         while i<length:
-                            ret.add(syms[x.s].a[i..i+aEvery.i-1])
+                            ret.add(Syms[x.s].a[i..i+aEvery.i-1])
                             i += aEvery.i
 
-                        syms[x.s] = newBlock(ret)
+                        Syms[x.s] = newBlock(ret)
                     else: discard
 
             elif x.kind==String:
@@ -1063,10 +1066,10 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if syms[x.s].kind==String:
-                    syms[x.s].s = syms[x.s].s[0..y.i-1]
-                elif syms[x.s].kind==Block:
-                    syms[x.s].a = syms[x.s].a[0..y.i-1]
+                if Syms[x.s].kind==String:
+                    Syms[x.s].s = Syms[x.s].s[0..y.i-1]
+                elif Syms[x.s].kind==Block:
+                    Syms[x.s].a = Syms[x.s].a[0..y.i-1]
             else:
                 if x.kind==String:
                     stack.push(newString(x.s[0..y.i-1]))
@@ -1092,7 +1095,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
-            else: syms[x.s].a = syms[x.s].a.deduplicate()
+            else: Syms[x.s].a = Syms[x.s].a.deduplicate()
 
     builtin "values",
         alias       = unaliased, 
@@ -1115,3 +1118,9 @@ proc importSymbols*() =
             ##########################################################
             let s = toSeq(x.d.values)
             stack.push(newBlock(s))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

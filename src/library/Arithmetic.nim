@@ -16,7 +16,10 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Arithmetic"
 
     builtin "add",
         alias       = plus, 
@@ -36,7 +39,7 @@ proc importSymbols*() =
             add 'a 1           ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] += y
+            if x.kind==Literal  : Syms[x.s] += y
             else                : stack.push(x+y)
 
     builtin "dec",
@@ -55,7 +58,7 @@ proc importSymbols*() =
             dec 'a             ; a: 3
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] -= I1
+            if x.kind==Literal  : Syms[x.s] -= I1
             else                : stack.push(x-I1)
         
     builtin "div",
@@ -76,7 +79,7 @@ proc importSymbols*() =
             div 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] /= y
+            if x.kind==Literal  : Syms[x.s] /= y
             else                : stack.push(x/y)
 
     builtin "fdiv",
@@ -96,7 +99,7 @@ proc importSymbols*() =
             fdiv 'a 3          ; a: 2.0
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] //= y
+            if x.kind==Literal  : Syms[x.s] //= y
             else                : stack.push(x//y)
 
     builtin "inc",
@@ -115,7 +118,7 @@ proc importSymbols*() =
             inc 'a             ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] += I1
+            if x.kind==Literal  : Syms[x.s] += I1
             else                : stack.push(x+I1)
 
     builtin "mod",
@@ -136,7 +139,7 @@ proc importSymbols*() =
             mod 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] %= y
+            if x.kind==Literal  : Syms[x.s] %= y
             else                : stack.push(x%y)
 
     builtin "mul",
@@ -157,7 +160,7 @@ proc importSymbols*() =
             mul 'a 2           ; a: 10
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] *= y
+            if x.kind==Literal  : Syms[x.s] *= y
             else                : stack.push(x*y)
 
     builtin "neg",
@@ -176,7 +179,7 @@ proc importSymbols*() =
             neg 'a             ; a: -5
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] *= I1M
+            if x.kind==Literal  : Syms[x.s] *= I1M
             else                : stack.push(x * I1M)
 
     builtin "pow",
@@ -197,7 +200,7 @@ proc importSymbols*() =
             pow 'a 2           ; a: 25
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] ^= y
+            if x.kind==Literal  : Syms[x.s] ^= y
             else                : stack.push(x^y)
 
     builtin "sub",
@@ -218,5 +221,11 @@ proc importSymbols*() =
             sub 'a 2           ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : syms[x.s] -= y
+            if x.kind==Literal  : Syms[x.s] -= y
             else                : stack.push(x-y)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

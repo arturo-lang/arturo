@@ -16,7 +16,10 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Comparison"
 
     builtin "equal?",
         alias       = equal, 
@@ -132,3 +135,8 @@ proc importSymbols*() =
             ##########################################################
             stack.push(newBoolean(x != y))
             
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

@@ -18,7 +18,10 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Dates"
 
     builtin "now",
         alias       = unaliased, 
@@ -50,3 +53,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             stack.push(newDate(now()))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)
