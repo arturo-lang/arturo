@@ -15,6 +15,7 @@
 MAIN="src/arturo.nim"
 
 FLAGS="\
+ --skipProjCfg:on\
  --warning[UnusedImport]:off\
  --colors:off\
  -d:release\
