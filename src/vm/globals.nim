@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import strutils, sequtils, sets, tables
+import strutils, sets, tables
 
 export strutils, tables
 

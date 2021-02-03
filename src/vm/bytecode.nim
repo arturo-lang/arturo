@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes, marshal, streams
+import hashes, marshal, streams
 
 import vm/value
 
