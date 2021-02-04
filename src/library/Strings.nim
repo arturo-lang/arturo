@@ -339,6 +339,7 @@ proc defineSymbols*() =
             else:
                 stack.push(newBoolean(x.s.startsWith(y.s)))
 
+    # TODO fix .template implementation (more template-engine like)    
     builtin "render",
         alias       = tilde, 
         rule        = PrefixPrecedence,

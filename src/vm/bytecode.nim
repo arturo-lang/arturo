@@ -16,6 +16,9 @@ import hashes
 # Types 
 #=======================================
 
+# TODO cleanup unneeded opcodes
+# TODO extend range for PUSH/CALL/STORE's
+
 type
     OpCode* = enum
         # [0x0] #
