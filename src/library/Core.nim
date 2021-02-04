@@ -169,11 +169,21 @@ proc defineSymbols*() =
     builtin "dup",
         alias       = thickarrowleft, 
         rule        = PrefixPrecedence,
-        description = "duplicate the top of the stack",
+        description = "duplicate the top of the stack and convert non-returning call to a do-return call",
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
+            ; a label normally consumes its inputs
+            ; and returns nothing
+
+            ; using dup before a call, the non-returning function
+            ; becomes a returning one
+
+            a: b: <= 3
+
+            print a         ; 3
+            print b         ; 3
         """:
             ##########################################################
             stack.push(sTop())
