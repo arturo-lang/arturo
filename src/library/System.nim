@@ -95,16 +95,14 @@ proc defineSymbols*() =
             ; test3.art
         """:
             ##########################################################
+            let findRelative = (popAttr("relative") != VNULL)
+            let contents = toSeq(walkDir(x.s, relative=findRelative))
+
             if (let aSelect = popAttr("select"); aSelect != VNULL):
-                if (popAttr("relative") != VNULL):
-                    stack.push(newStringBlock((toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
-                else:
-                    stack.push(newStringBlock((toSeq(walkDir(x.s)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
+                stack.push(newStringBlock((contents.map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
             else:
-                if (popAttr("relative") != VNULL):
-                    stack.push(newStringBlock(toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])))
-                else:
-                    stack.push(newStringBlock(toSeq(walkDir(x.s)).map((x)=>x[1])))
+                stack.push(newStringBlock(contents.map((x)=>x[1])))
+
 
     builtin "panic",
         alias       = unaliased, 
