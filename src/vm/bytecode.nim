@@ -21,7 +21,7 @@ import hashes
 
 type
     OpCode* = enum
-        # [0x0] #
+        # [0x00-0x0F]
         # push constants 
         opConstI0       = 0x00      # 0
         opConstI1       = 0x01      # 1
@@ -43,9 +43,8 @@ type
 
         opConstN        = 0x0F      # null
  
-
-        # [0x1] #
-        # push value
+        # [0x10-0x2F]
+        # push values
         opPush0         = 0x10   
         opPush1         = 0x11
         opPush2         = 0x12
@@ -80,8 +79,8 @@ type
 
         opPush          = 0x2F
 
-        # [0x2] #
-        # store variable (from <- stack)
+        # [0x30-0x4F]
+        # store variables (from <- stack)
         opStore0        = 0x30   
         opStore1        = 0x31
         opStore2        = 0x32
@@ -116,8 +115,8 @@ type
 
         opStore         = 0x4F
 
-        # [0x3] #
-        # load variable (to -> stack)
+        # [0x50-0x6F]
+        # load variables (to -> stack)
         opLoad0         = 0x50   
         opLoad1         = 0x51
         opLoad2         = 0x52
@@ -152,8 +151,8 @@ type
 
         opLoad          = 0x6F
 
-        # [0x4] #
-        # user function calls
+        # [0x70-0x8F]
+        # function calls
         opCall0         = 0x70   
         opCall1         = 0x71
         opCall2         = 0x72

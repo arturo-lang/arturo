@@ -325,9 +325,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             echo fmt("exec: {op}")
 
         case op:
-            # [0x0] #
-            # stack.push constants 
-
+            # [0x00-0x0F]
+            # push constants 
             of opConstI0        : stack.push(I0)
             of opConstI1        : stack.push(I1)
             of opConstI2        : stack.push(I2)
@@ -348,27 +347,23 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of opConstN         : stack.push(VNULL)
 
-            # [0x1] #
-            # stack.push value
+            # [0x10-0x2F]
+            # push values
+            of opPush0..opPush30    : pushByIndex((int)(op)-(int)(opPush0))
+            of opPush               : i += 1; pushByIndex((int)(it[i]))
 
-            of opPush0..opPush30    :   pushByIndex((int)(op)-(int)(opPush0))
-            of opPush               :   i += 1; pushByIndex((int)(it[i]))
+            # [0x30-0x4F]
+            # store variables (from <- stack)
+            of opStore0..opStore30  : storeByIndex((int)(op)-(int)(opStore0))
+            of opStore              : i += 1; storeByIndex((int)(it[i]))                
 
-            # [0x2] #
-            # store variable (from <- stack)
+            # [0x50-0x6F]
+            # load variables (to -> stack)
+            of opLoad0..opLoad30    : loadByIndex((int)(op)-(int)(opLoad0))
+            of opLoad               : i += 1; loadByIndex((int)(it[i]))
 
-            of opStore0..opStore30  :   storeByIndex((int)(op)-(int)(opStore0))
-            of opStore              :   i += 1; storeByIndex((int)(it[i]))                
-
-            # [0x3] #
-            # load variable (to -> stack)
-
-            of opLoad0..opLoad30    :   loadByIndex((int)(op)-(int)(opLoad0))
-            of opLoad               :   i += 1; loadByIndex((int)(it[i]))
-
-            # [0x4] #
-            # user function calls
-
+            # [0x70-0x8F]
+            # function calls
             of opCall0..opCall30    :   callByIndex((int)(op)-(int)(opCall0))                
             of opCall               :   i += 1; callByIndex((int)(it[i]))
 
