@@ -109,7 +109,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                         when inArrowBlock: ret.add(n.a[i])
                 
-
             ## Run main code
             code
 
