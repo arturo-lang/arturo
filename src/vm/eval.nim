@@ -312,12 +312,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Integer:
                 addTerminalValue(false):
-                    if node.i<=10: addToCommand((byte)((byte)(opIPush0) + (byte)(node.i)))
+                    if node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
                     else: addConst(consts, node, opPushX)
 
             of Floating:
                 addTerminalValue(false):
-                    if node.f==1.0: addToCommand((byte)opFPush1)
+                    if node.f==1.0: addToCommand((byte)opConstF1)
                     else: addConst(consts, node, opPushX)
 
             of Type:
@@ -363,7 +363,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Attribute:
                 addAttr(consts, node)
-                addToCommand((byte)opBPushT)
+                addToCommand((byte)opConstBT)
 
             of AttributeLabel:
                 addAttr(consts, node)
