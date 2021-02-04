@@ -166,6 +166,18 @@ proc defineSymbols*() =
                 if tp==FileData:
                     discard popPath()
 
+    builtin "dup",
+        alias       = ampersand, 
+        rule        = PrefixPrecedence,
+        description = "duplicate the top of the stack",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+        """:
+            ##########################################################
+            stack.push(sTop())
+
     builtin "else",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -325,20 +337,6 @@ proc defineSymbols*() =
                         res.add stack.pop()
                         i+=1
                     stack.push(newBlock(res))
-
-    builtin "push",
-        alias       = ampersand, 
-        rule        = PrefixPrecedence,
-        description = "push given value to stack twice",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-        """:
-            ##########################################################
-            stack.push(sTop())
 
     builtin "return",
         alias       = unaliased, 
