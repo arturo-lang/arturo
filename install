@@ -134,17 +134,11 @@ else
     FLAGS="$FLAGS --opt:speed" 
 fi
 
-# if $IS_DEV_BUILD; then
-#     FLAGS="$FLAGS --hint[Performance]:off"
-# else
-#     if ! $PRINT_LOG; then
-#         FLAGS="$FLAGS --hints:off"
-#     fi
-# fi
-
 if $IS_DEV_BUILD; then
     awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
     git commit -m 'build update' version/build
+
+    FLAGS="$FLAGS -d:DEV"
 fi
 
 ################################################

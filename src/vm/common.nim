@@ -28,6 +28,9 @@ const
 #=======================================
 
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
+    when defined(DEV):
+        static: echo "processing: " & n
+
     when args.len==1 and args==NoArgs:  
         const argsLen = 0
     else:                               
