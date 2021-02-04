@@ -407,13 +407,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 stack.pushAttr(attr.r, val)
 
 
-            of opPop        : discard #Core.Pop()
-            of opDup        : stack.push(sTop())
-            of opSwap       : swap(Stack[SP-1], Stack[SP-2])
-            of opNop        : discard
+            # of opPop        : discard #Core.Pop()
+            # of opDup        : stack.push(sTop())
+            # of opSwap       : swap(Stack[SP-1], Stack[SP-2])
+            # of opNop        : discard
 
-            of opGet: Syms["get"].action() #discard #Collections.Get()  
-            of opSet: Syms["set"].action() #discard #Collections.Set()
+            # of opGet: Syms["get"].action() #discard #Collections.Get()  
+            # of opSet: Syms["set"].action() #discard #Collections.Set()
 
             else: discard
 
