@@ -155,7 +155,7 @@ Get dictionary of set attributes
 #### Usage
 
 <pre>
-<b>attrs</b> <ins>name</ins> <i>:string</i> <i>:literal</i>
+<b>attrs</b> 
 </pre>
 
 #### Returns

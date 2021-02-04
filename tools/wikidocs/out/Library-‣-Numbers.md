@@ -548,6 +548,8 @@ rnd: random 0 60          ; rnd: (a random number between 0 and 60)
 
 ## range
 
+**Alias:** `..`
+
 #### Description
 
 Get list of numbers in given range (inclusive)

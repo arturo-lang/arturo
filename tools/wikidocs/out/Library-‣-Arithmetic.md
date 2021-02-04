@@ -108,6 +108,8 @@ div 'a 3           ; a: 2
 
 ## fdiv
 
+**Alias:** `//`
+
 #### Description
 
 Divide given values and return result
