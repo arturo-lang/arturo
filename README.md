@@ -17,8 +17,9 @@
       * [Docker](#docker)
       * [Online](#online)
    * [Editors & IDEs](#editors--ides)
-   * [Roadmap](#roadmap)
+   * [Showcase](#showcase)
    * [Contributing](#contributing)
+      * [Roadmap](#roadmap)
       * [Project structure](#project-structure)
       * [The Compiler](#the-compiler)
         * [General schema](#general-schema)
@@ -136,8 +137,25 @@ https://github.com/arturo-lang/art-sublimetext-package
 - **Vim / Neovim**: (Thanks @xigoi :-))   
 https://github.com/xigoi/vim-arturo
 
-Roadmap
+Showcase
 ------------------------------
+
+<p align="center">
+	<a href="https://github.com/arturo-lang/grafito"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo.png"></a>    
+</p>
+<p align="center">
+	<a href="https://github.com/arturo-lang/grafito"><b>Portable, Serverless & Lightweight<br>SQLite-based Graph Database</b></a>
+</p>
+
+
+Contributing
+------------------------------
+
+Please read [docs/CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
+
+**In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
+
+### Roadmap
 
 The list of things to fix and/or add could be endless. But here is one, a bit prioritized (if you think you can help, you know the way ;-):
 
@@ -157,13 +175,6 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
 - [ ] Go full self-hosted (that's an ambitious one, I know...)
 
-Contributing
-------------------------------
-
-Please read [docs/CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
-
-**In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
-
 ### Project structure
 
 To get an initial idea of the project, here's a brief guide to where is what:
@@ -177,11 +188,12 @@ To get an initial idea of the project, here's a brief guide to where is what:
 | `src/helpers/` | Useful helper methods grouped by category and used mostly by library functions |
 | `src/library/` | The Arturo standard library functions, grouped by category |
 | `src/system/` | Components of the Arturo binary, written in Arturo (the REPL, the packager, etc) |
-| `src/translator/` | The 2 main translators: parse.nim (to perform the initial lexing and parsing to a block of words and values) and eval.nim (to convert a block of words to bytecode for our VM) |
 | `src/vm/` | The Virtual Machine |
 | `src/vm/bytecode.nim` | A list of all the VM bytecodes along with their description |
 | `src/vm/env.nim` | VM Environment handling (paths, etc) |
+| `src/vm/eval.nim` | The evaluator: where the parse tree turns into bytecode instructions |
 | `src/vm/exec.nim` | The most important VM module, where the main loop is triggered |
+| `src/vm/parse.nim` | The main lexer/parser: turning the initial input into a parse tree, of words, symbols and values |
 | `src/vm/stack.nim` | Manipulation code for the different stacks used by the VM |
 | `src/vm/value.nim` | The main Value object for our Virtual Machine along with numerous overloads, from initialization methods to printing and basic arithmetic |
 | `src/arturo.nim` | The main entry; where all the magic begins |
