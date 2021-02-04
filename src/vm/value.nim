@@ -45,6 +45,9 @@ type
         greaterequal    # >=
         lessgreater     # <>
 
+        lesscolon       # <:
+        minuscolon      # -:
+        
         tilde           # ~
         exclamation     # !
         at              # @
@@ -1100,6 +1103,9 @@ proc `$`*(v: Value): string {.inline.} =
                 of greaterequal     : return ">="
                 of lessgreater      : return "<>"
 
+                of lesscolon        : return "<:"
+                of minuscolon       : return "-:"
+
                 of tilde            : return "~"
                 of exclamation      : return "!"
                 of at               : return "@"
@@ -1322,6 +1328,9 @@ proc codify*(v: Value): string {.inline.} =
                 of equalless        : result = "=<"
                 of greaterequal     : result = ">="
                 of lessgreater      : result = "<>"
+
+                of lesscolon        : result = "<:"
+                of minuscolon       : result = "-:"
 
                 of tilde            : result = "~"
                 of exclamation      : result = "!"

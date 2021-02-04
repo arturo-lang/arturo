@@ -343,6 +343,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             else: p.symbol = plus
         of '-'  : 
             if p.buf[pos+1]=='>': inc(pos); p.symbol = arrowright
+            elif p.buf[pos+1]==':': inc(pos); p.symbol = minuscolon
             elif p.buf[pos+1]=='-': 
                 inc(pos)
                 if p.buf[pos+1]=='-':
@@ -364,6 +365,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 of '-': inc(pos); p.symbol = arrowleft
                 of '>': inc(pos); p.symbol = lessgreater
                 of '<': inc(pos); p.symbol = doublearrowleft
+                of ':': inc(pos); p.symbol = lesscolon
                 else: p.symbol = lessthan
         of '>':
             case p.buf[pos+1]:
