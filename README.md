@@ -160,7 +160,7 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 Contributing
 ------------------------------
 
-Please read [CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/CONTRIBUTING.md) for more details and the process for submitting pull requests.
+Please read [docs/CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
 
 **In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
 
