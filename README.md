@@ -39,7 +39,7 @@ The language has been designed following some very simple and straightforward pr
 - Words and symbols within a block are interpreted - when needed - according to the context
 - No reserved words or keywords - look for them as hard as you can; there are absolutely none
 
-```
+```red
 print "Hello world!"
 
 loop 1..10 'x [
