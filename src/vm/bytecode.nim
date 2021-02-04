@@ -23,26 +23,26 @@ type
     OpCode* = enum
         # [0x0] #
         # push constants 
-        opIPush0        = 0x00      # 0
-        opIPush1        = 0x01      # 1
-        opIPush2        = 0x02      # 2
-        opIPush3        = 0x03      # 3
-        opIPush4        = 0x04      # 4
-        opIPush5        = 0x05      # 5
-        opIPush6        = 0x06      # 6
-        opIPush7        = 0x07      # 7
-        opIPush8        = 0x08      # 8 
-        opIPush9        = 0x09      # 9
-        opIPush10       = 0x0A      # 10
+        opConstI0        = 0x00      # 0
+        opConstI1        = 0x01      # 1
+        opConstI2        = 0x02      # 2
+        opConstI3        = 0x03      # 3
+        opConstI4        = 0x04      # 4
+        opConstI5        = 0x05      # 5
+        opConstI6        = 0x06      # 6
+        opConstI7        = 0x07      # 7
+        opConstI8        = 0x08      # 8 
+        opConstI9        = 0x09      # 9
+        opConstI10       = 0x0A      # 10
 
-        opFPush1        = 0x0B      # 1.0
+        opConstI1M       = 0x0B      # -1
+        opConstF1        = 0x0C      # 1.0
 
-        opBPushT        = 0x0C      # true
-        opBPushF        = 0x0D      # false
+        opConstBT        = 0x0D      # true
+        opConstBF        = 0x0E      # false
 
-        opNPush         = 0x0E      # Null
-
-        opEnd           = 0x0F      
+        opConstN         = 0x0F      # null
+ 
 
         # [0x1] #
         # push value
@@ -124,27 +124,29 @@ type
         opCallX         = 0x4E
         opCallY         = 0x4F
 
-        # [0x5] #
-        # arithmetic & logical operations 
-        opAdd           = 0x50
-        opSub           = 0x51
-        opMul           = 0x52
-        opDiv           = 0x53
-        opFDiv          = 0x54
-        opMod           = 0x55
-        opPow           = 0x56
+        # # [0x5] #
+        # # arithmetic & logical operations 
+        # opAdd           = 0x50
+        # opSub           = 0x51
+        # opMul           = 0x52
+        # opDiv           = 0x53
+        # opFDiv          = 0x54
+        # opMod           = 0x55
+        # opPow           = 0x56
 
-        opNeg           = 0x57
+        # opNeg           = 0x57
 
-        opNot           = 0x58
-        opAnd           = 0x59
-        opOr            = 0x5A
-        opXor           = 0x5B
+        # opNot           = 0x58
+        # opAnd           = 0x59
+        # opOr            = 0x5A
+        # opXor           = 0x5B
 
-        opShl           = 0x5C
-        opShr           = 0x5D
+        # opShl           = 0x5C
+        # opShr           = 0x5D
 
-        opAttr          = 0x5E
+        opAttr          = 0x50
+
+        opEnd           = 0x51     
         # opReturn        = 0x5F
 
         # # [0x6] #

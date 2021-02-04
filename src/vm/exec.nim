@@ -328,26 +328,25 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # [0x0] #
             # stack.push constants 
 
-            of opIPush0         : stack.push(I0)
-            of opIPush1         : stack.push(I1)
-            of opIPush2         : stack.push(I2)
-            of opIPush3         : stack.push(I3)
-            of opIPush4         : stack.push(I4)
-            of opIPush5         : stack.push(I5)
-            of opIPush6         : stack.push(I6)
-            of opIPush7         : stack.push(I7)
-            of opIPush8         : stack.push(I8)
-            of opIPush9         : stack.push(I9)
-            of opIPush10        : stack.push(I10)
+            of opConstI0        : stack.push(I0)
+            of opConstI1        : stack.push(I1)
+            of opConstI2        : stack.push(I2)
+            of opConstI3        : stack.push(I3)
+            of opConstI4        : stack.push(I4)
+            of opConstI5        : stack.push(I5)
+            of opConstI6        : stack.push(I6)
+            of opConstI7        : stack.push(I7)
+            of opConstI8        : stack.push(I8)
+            of opConstI9        : stack.push(I9)
+            of opConstI10       : stack.push(I10)
 
-            of opFPush1         : stack.push(F1)
+            of opConstI1M       : stack.push(I1M)
+            of opConstF1        : stack.push(F1)
 
-            of opBPushT         : stack.push(VTRUE)
-            of opBPushF         : stack.push(VFALSE)
+            of opConstBT        : stack.push(VTRUE)
+            of opConstBF        : stack.push(VFALSE)
 
-            of opNPush          : stack.push(VNULL)
-
-            of opEnd            : break
+            of opConstN         : stack.push(VNULL)
 
             # [0x1] #
             # stack.push value
@@ -405,6 +404,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 let val = stack.pop()
 
                 stack.pushAttr(attr.r, val)
+
+            of opEnd            : break
 
 
             # of opPop        : discard #Core.Pop()
