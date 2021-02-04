@@ -167,7 +167,7 @@ proc defineSymbols*() =
                     discard popPath()
 
     builtin "dup",
-        alias       = ampersand, 
+        alias       = thickarrowleft, 
         rule        = PrefixPrecedence,
         description = "duplicate the top of the stack",
         args        = NoArgs,
