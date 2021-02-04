@@ -377,19 +377,21 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Path:
                 addTerminalValue(false):
-                    addToCommand((byte)opGet)
+                    addConst(consts, newWord("get"), opCallX)
+                    argStack.add(Arities["get"])
 
                     var i=1
                     while i<node.p.len-1:
-                        addToCommand((byte)opGet)
+                        addConst(consts, newWord("get"), opCallX)
+                        argStack.add(Arities["get"])
                         i += 1
                     
-                    let opName = "op" & node.p[0].s.capitalizeAscii()
-                    try:
-                        let op = parseEnum[OpCode](opName)
-                        addToCommand((byte)op)
-                    except:
-                        addConst(consts, node.p[0], opLoadX)
+                    # let opName = "op" & node.p[0].s.capitalizeAscii()
+                    # try:
+                    #     let op = parseEnum[OpCode](opName)
+                    #     addToCommand((byte)op)
+                    # except:
+                    addConst(consts, node.p[0], opLoadX)
 
                     i = 1
                     while i<node.p.len:
@@ -397,11 +399,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         i += 1
 
             of PathLabel:
-                addToCommand((byte)opSet)
+                addConst(consts, newWord("set"), opCallX)
+                argStack.add(Arities["set"])
                     
                 var i=1
                 while i<node.p.len-1:
-                    addToCommand((byte)opGet)
+                    addConst(consts, newWord("get"), opCallX)
+                    argStack.add(Arities["get"])
                     i += 1
                 
                 addConst(consts, node.p[0], opLoadX)
