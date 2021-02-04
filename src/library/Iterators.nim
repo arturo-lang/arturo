@@ -24,6 +24,7 @@ import vm/[common, eval, exec, globals, stack, value]
 # Methods
 #=======================================
 
+
 proc defineSymbols*() =
 
     when defined(VERBOSE):
@@ -34,7 +35,56 @@ proc defineSymbols*() =
     builtin "all?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if all of collection's item satisfy given condition",
+        description = "check if all values in given block are true",
+        args        = {
+            "conditions"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+        """:
+            ##########################################################
+            var allOK = true
+
+            for item in x.a:
+                if item!=VTRUE:
+                    allOK = false
+                    stack.push(newBoolean(false))
+                    break
+
+            if allOK:
+                stack.push(newBoolean(true))
+
+    # TODO check implementation
+    # TODO add example
+    builtin "any?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if any of the values in given block is true",
+        args        = {
+            "conditions"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+        """:
+            ##########################################################
+            var anyOK = false
+            for item in x.a:
+                if item==VTRUE:
+                    anyOK = true
+                    stack.push(newBoolean(true))
+                    break
+                
+            if not anyOK:
+                stack.push(newBoolean(false))
+
+    # TODO check implementation
+    # TODO add example
+    builtin "every?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if every single item in collection satisfy given condition",
         args        = {
             "collection"    : {Block},
             "params"        : {Literal,Block},
@@ -64,42 +114,6 @@ proc defineSymbols*() =
 
             if all:
                 stack.push(newBoolean(true))
-
-    # TODO check implementation
-    # TODO add example
-    builtin "any?",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "check if any of collection's items satisfy given condition",
-        args        = {
-            "collection"    : {Block},
-            "params"        : {Literal,Block},
-            "condition"     : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Boolean},
-        example     = """
-        """:
-            ##########################################################
-            var args: ValueArray
-
-            if y.kind==Literal: args = @[y]
-            else: args = y.a
-
-            let preevaled = doEval(z)
-            var one = false
-
-            for item in x.a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                let popped = stack.pop()
-                if popped.kind==Boolean and popped.b:
-                    stack.push(newBoolean(true))
-                    one = true
-                    break
-
-            if not one:
-                stack.push(newBoolean(false))
 
     builtin "filter",
         alias       = unaliased, 
@@ -457,6 +471,42 @@ proc defineSymbols*() =
                         res.add(item)
 
                 stack.push(newBlock(res))
+
+    # TODO check implementation
+    # TODO add example
+    builtin "some?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if any of collection's items satisfy given condition",
+        args        = {
+            "collection"    : {Block},
+            "params"        : {Literal,Block},
+            "condition"     : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+        """:
+            ##########################################################
+            var args: ValueArray
+
+            if y.kind==Literal: args = @[y]
+            else: args = y.a
+
+            let preevaled = doEval(z)
+            var one = false
+
+            for item in x.a:
+                stack.push(item)
+                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                let popped = stack.pop()
+                if popped.kind==Boolean and popped.b:
+                    stack.push(newBoolean(true))
+                    one = true
+                    break
+
+            if not one:
+                stack.push(newBoolean(false))
 
 #=======================================
 # Add Library
