@@ -47,7 +47,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 stdout.write ($instr).replace("op").toLowerAscii()
 
                 case instr:
-                    of opPushX, opStoreX, opLoadX, opCallX, opAttr :
+                    of opPush, opStore, opLoad, opCall, opAttr :
                         i += 1
                         let indx = currentCommand[i]
                         stdout.write fmt("\t#{indx}\n")
@@ -66,8 +66,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             consts.add(v)
             indx = consts.len-1
 
-        if indx <= 13:
-            addToCommand((byte)(((byte)(op)-0xE) + (byte)(indx)))
+        if indx <= 30:
+            addToCommand((byte)(((byte)(op)-0x1F) + (byte)(indx)))
         else:
             if indx>255:
                 addToCommand((byte)indx)
@@ -104,7 +104,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         
                         #echo "found infix alias: " & $(n.a[i])
                         if symfunc.arity!=0:
-                            addConst(consts, Aliases[symalias].name, opCallX)
+                            addConst(consts, Aliases[symalias].name, opCall)
                             argStack.add(symfunc.arity)
 
                         when inArrowBlock: ret.add(n.a[i])
@@ -313,41 +313,41 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Integer:
                 addTerminalValue(false):
                     if node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
-                    else: addConst(consts, node, opPushX)
+                    else: addConst(consts, node, opPush)
 
             of Floating:
                 addTerminalValue(false):
                     if node.f==1.0: addToCommand((byte)opConstF1)
-                    else: addConst(consts, node, opPushX)
+                    else: addConst(consts, node, opPush)
 
             of Type:
                 addTerminalValue(false):
-                    addConst(consts, node, opPushX)
+                    addConst(consts, node, opPush)
 
             of Char:
                 addTerminalValue(false):
-                    addConst(consts, node, opPushX)
+                    addConst(consts, node, opPush)
 
             of String:
                 addTerminalValue(false):
-                    addConst(consts, node, opPushX)
+                    addConst(consts, node, opPush)
 
             of Word:
                 if Arities.hasKey(node.s):
                     let funcArity = Arities[node.s]
                     if funcArity!=0:
-                        addConst(consts, node, opCallX)
+                        addConst(consts, node, opCall)
                         argStack.add(funcArity)
                     else:
                         addTerminalValue(false):
-                            addConst(consts, node, opCallX)
+                            addConst(consts, node, opCall)
                 else:
                     addTerminalValue(false):
-                        addConst(consts, node, opLoadX)
+                        addConst(consts, node, opLoad)
 
             of Literal: 
                 addTerminalValue(false):
-                    addConst(consts, node, opPushX)
+                    addConst(consts, node, opPush)
 
             of Label: 
                 let funcIndx = node.s
@@ -358,7 +358,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if not isDictionary:
                         Arities.del(funcIndx)
 
-                addConst(consts, node, opStoreX)
+                addConst(consts, node, opStore)
                 argStack.add(1)
 
             of Attribute:
@@ -371,32 +371,32 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Path:
                 addTerminalValue(false):
-                    addConst(consts, newWord("get"), opCallX)
+                    addConst(consts, newWord("get"), opCall)
 
                     var i=1
                     while i<node.p.len-1:
-                        addConst(consts, newWord("get"), opCallX)
+                        addConst(consts, newWord("get"), opCall)
                         i += 1
                     
-                    addConst(consts, node.p[0], opLoadX)
+                    addConst(consts, node.p[0], opLoad)
 
                     i = 1
                     while i<node.p.len:
-                        addConst(consts, node.p[i], opPushX)
+                        addConst(consts, node.p[i], opPush)
                         i += 1
 
             of PathLabel:
-                addConst(consts, newWord("set"), opCallX)
+                addConst(consts, newWord("set"), opCall)
                     
                 var i=1
                 while i<node.p.len-1:
-                    addConst(consts, newWord("get"), opCallX)
+                    addConst(consts, newWord("get"), opCall)
                     i += 1
                 
-                addConst(consts, node.p[0], opLoadX)
+                addConst(consts, node.p[0], opLoad)
                 i = 1
                 while i<node.p.len:
-                    addConst(consts, node.p[i], opPushX)
+                    addConst(consts, node.p[i], opPush)
                     i += 1
 
                 argStack.add(1)
@@ -410,7 +410,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                         let subblock = processNextCommand()
                         addTerminalValue(false):
-                            addConst(consts, newBlock(subblock), opPushX)
+                            addConst(consts, newBlock(subblock), opPush)
 
                     # TODO re-implement thickarrowright
                     of thickarrowright  : 
@@ -469,9 +469,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                         # # add the blocks
                         # addTerminalValue(false):
-                        #     addConst(consts, newBlock(argblock), opPushX)
+                        #     addConst(consts, newBlock(argblock), opPush)
                         # addTerminalValue(false):
-                        #     addConst(consts, newBlock(subblock), opPushX)
+                        #     addConst(consts, newBlock(subblock), opPush)
 
                         # i += 1
                     else:
@@ -480,17 +480,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             let symfunc = Syms[Aliases[symalias].name.s]
                             if symfunc.kind==Function:
                                 if symfunc.arity!=0:
-                                    addConst(consts, Aliases[symalias].name, opCallX)
+                                    addConst(consts, Aliases[symalias].name, opCall)
                                     argStack.add(symfunc.arity)
                                 else:
                                     addTerminalValue(false):
-                                        addConst(consts, Aliases[symalias].name, opCallX)
+                                        addConst(consts, Aliases[symalias].name, opCall)
                             else:
                                 addTerminalValue(false):
-                                    addConst(consts, Aliases[symalias].name, opLoadX)
+                                    addConst(consts, Aliases[symalias].name, opLoad)
                         else:
                             addTerminalValue(false):
-                                addConst(consts, node, opPushX)
+                                addConst(consts, node, opPush)
 
             of Date : discard
 
@@ -505,13 +505,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Block:
                 addTerminalValue(false):
-                    addConst(consts, node, opPushX)
+                    addConst(consts, node, opPush)
 
             of Database: discard
 
             of Custom:
                 addTerminalValue(false):
-                    addConst(consts, node, opPushX)
+                    addConst(consts, node, opPush)
 
             of Nothing: discard
             of Any: discard
@@ -569,7 +569,7 @@ proc dump*(evaled: Translation) =
         stdout.write ($instr).replace("op").toLowerAscii()
 
         case instr:
-            of opPushX, opStoreX, opLoadX, opCallX, opAttr:
+            of opPush, opStore, opLoad, opCall, opAttr:
                 i += 1
                 let indx = it[i]
                 stdout.write fmt("\t#{indx}\n")

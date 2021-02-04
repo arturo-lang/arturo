@@ -351,50 +351,26 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # [0x1] #
             # stack.push value
 
-            of opPush0, opPush1, opPush2,
-               opPush3, opPush4, opPush5,
-               opPush6, opPush7, opPush8,
-               opPush9, opPush10, opPush11, 
-               opPush12, opPush13               :   pushByIndex((int)(op)-(int)(opPush0))
-
-            of opPushX                          :   i += 1; pushByIndex((int)(it[i]))
-            of opPushY                          :   i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+            of opPush0..opPush30    :   pushByIndex((int)(op)-(int)(opPush0))
+            of opPush               :   i += 1; pushByIndex((int)(it[i]))
 
             # [0x2] #
             # store variable (from <- stack)
 
-            of opStore0, opStore1, opStore2,
-               opStore3, opStore4, opStore5,
-               opStore6, opStore7, opStore8, 
-               opStore9, opStore10, opStore11, 
-               opStore12, opStore13             :   storeByIndex((int)(op)-(int)(opStore0))
-
-            of opStoreX                         :   i += 1; storeByIndex((int)(it[i]))                
-            of opStoreY                         :   i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+            of opStore0..opStore30  :   storeByIndex((int)(op)-(int)(opStore0))
+            of opStore              :   i += 1; storeByIndex((int)(it[i]))                
 
             # [0x3] #
             # load variable (to -> stack)
 
-            of opLoad0, opLoad1, opLoad2,
-               opLoad3, opLoad4, opLoad5,
-               opLoad6, opLoad7, opLoad8, 
-               opLoad9, opLoad10, opLoad11, 
-               opLoad12, opLoad13               :   loadByIndex((int)(op)-(int)(opLoad0))
-
-            of opLoadX                          :   i += 1; loadByIndex((int)(it[i]))
-            of opLoadY                          :   i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+            of opLoad0..opLoad30    :   loadByIndex((int)(op)-(int)(opLoad0))
+            of opLoad               :   i += 1; loadByIndex((int)(it[i]))
 
             # [0x4] #
             # user function calls
 
-            of opCall0, opCall1, opCall2,
-               opCall3, opCall4, opCall5,
-               opCall6, opCall7, opCall8, 
-               opCall9, opCall10, opCall11, 
-               opCall12, opCall13               :   callByIndex((int)(op)-(int)(opCall0))                
-
-            of opCallX                          :   i += 1; callByIndex((int)(it[i]))
-            of opCallY                          :   i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+            of opCall0..opCall30    :   callByIndex((int)(op)-(int)(opCall0))                
+            of opCall               :   i += 1; callByIndex((int)(it[i]))
 
             of opAttr       : 
                 i += 1
