@@ -378,12 +378,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Path:
                 addTerminalValue(false):
                     addConst(consts, newWord("get"), opCallX)
-                    argStack.add(Arities["get"])
 
                     var i=1
                     while i<node.p.len-1:
                         addConst(consts, newWord("get"), opCallX)
-                        argStack.add(Arities["get"])
                         i += 1
                     
                     # let opName = "op" & node.p[0].s.capitalizeAscii()
@@ -400,12 +398,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of PathLabel:
                 addConst(consts, newWord("set"), opCallX)
-                argStack.add(Arities["set"])
                     
                 var i=1
                 while i<node.p.len-1:
                     addConst(consts, newWord("get"), opCallX)
-                    argStack.add(Arities["get"])
                     i += 1
                 
                 addConst(consts, node.p[0], opLoadX)
