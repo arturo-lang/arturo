@@ -16,11 +16,10 @@ import hashes
 # Types 
 #=======================================
 
-# TODO cleanup unneeded opcodes
-# TODO extend range for PUSH/CALL/STORE's
-
 type
     OpCode* = enum
+        #################################################
+
         # [0x00-0x0F]
         # push constants 
         opConstI0       = 0x00      # 0
@@ -187,81 +186,67 @@ type
 
         opCall          = 0x8F
 
-        # # [0x5] #
-        # # arithmetic & logical operations 
-        # opAdd           = 0x50
-        # opSub           = 0x51
-        # opMul           = 0x52
-        # opDiv           = 0x53
-        # opFDiv          = 0x54
-        # opMod           = 0x55
-        # opPow           = 0x56
+        #################################################
 
-        # opNeg           = 0x57
-
-        # opNot           = 0x58
-        # opAnd           = 0x59
-        # opOr            = 0x5A
-        # opXor           = 0x5B
-
-        # opShl           = 0x5C
-        # opShr           = 0x5D
-
+        # [0x90-9F] #
+        # generators
         opAttr          = 0x90
+        opArray         = 0x91
+        opDict          = 0x92
+        opFunc          = 0x93
 
-        opEnd           = 0x91     
-        # opReturn        = 0x5F
+        # stack operations
+        opPop           = 0x94
+        opDup           = 0x95
+        opSwap          = 0x96
 
-        # # [0x6] #
-        # # stack operations
-        # opPop           = 0x60
-        # opDup           = 0x61
-        # opSwap          = 0x62
-        # opNop           = 0x63
-
-        # #flow control 
-        # opJmp           = 0x64
-        # opJmpIf         = 0x65
+        # flow control
+        opJump          = 0x97
+        opJumpIf        = 0x98
+        opJumpIfNot     = 0x99
+        opRet           = 0x9A
+        opEnd           = 0x9B
         
-        # opPush          = 0x66
+        # reserved
+        opRsrv0         = 0x9C
+        opRsrv1         = 0x9D
+        opRsrv2         = 0x9E
+        opRsrv3         = 0x9F
 
-        # # comparison operations
-        # opEq            = 0x67
-        # opNe            = 0x68
-        # opGt            = 0x69
-        # opGe            = 0x6A
-        # opLt            = 0x6B
-        # opLe            = 0x6C
+        # [0xA0-AF] #
+        # arithmetic & logical operators
+        opAdd           = 0xA0
+        opSub           = 0xA1
+        opMul           = 0xA2
+        opDiv           = 0xA3
+        opFDiv          = 0xA4
+        opMod           = 0xA5
+        opPow           = 0xA6
 
-        # # structures
-        # opArray         = 0x6D
-        # opDictionary    = 0x6E
-        # opFunction      = 0x6F
+        opNeg           = 0xA7
 
-        # # [0x7] #
-        # # system calls (144 slots)
+        opBNot          = 0xA8
+        opBAnd          = 0xA9
+        opOr            = 0xAA
+        opXor           = 0xAB
 
-        # opPrint         = 0x70
-        # opInspect       = 0x71
+        opShl           = 0xAC
+        opShr           = 0xAD
 
-        # opIf            = 0x72
-        # opIsIf          = 0x73
-        # opElse          = 0x74
+        # reserved
+        opRsrv4         = 0xAE
+        opRsrv5         = 0xAF
 
-        # opLoop          = 0x75
+        # [0xB0-BF] #
+        # comparison operators
 
-        # opDo            = 0x76
-        # opMap           = 0x77
-        # opSelect        = 0x78
-        # opFilter        = 0x79
+        opEq            = 0xB0
+        opNe            = 0xB1
+        opGt            = 0xB2
+        opGe            = 0xB3
+        opLt            = 0xB4
+        opLe            = 0xB5
 
-        # opSize          = 0x7A
-
-        # opUpper         = 0x7B
-        # opLower         = 0x7C
-        
-        # opGet           = 0x7D
-        # opSet           = 0x7E
 
 #=======================================
 # Methods

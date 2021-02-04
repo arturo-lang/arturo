@@ -51,6 +51,11 @@ template callByIndex(idx: int):untyped =
     else:
         fun.action()
 
+template fetchAttributeByIndex(idx: int):untyped =
+    let attr = cnst[idx]
+    let val = stack.pop()
+
+    stack.pushAttr(attr.r, val)
 
 ####
 
@@ -107,6 +112,8 @@ proc execBlock*(
                             Syms[k] = newSyms[k]
 
     return Syms
+
+    # TODO to be removed after careful revision
     #     #-----------------------------
     #     # store previous symbols
     #     #-----------------------------
@@ -364,30 +371,43 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0x70-0x8F]
             # function calls
-            of opCall0..opCall30    :   callByIndex((int)(op)-(int)(opCall0))                
-            of opCall               :   i += 1; callByIndex((int)(it[i]))
+            of opCall0..opCall30    : callByIndex((int)(op)-(int)(opCall0))                
+            of opCall               : i += 1; callByIndex((int)(it[i]))
 
-            of opAttr       : 
-                i += 1
-                let indx = it[i]
+            # [0x90-9F] #
+            # generators
+            of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))            
+            of opArray, opDict,
+               opFunc               : discard
 
-                let attr = cnst[indx]
-                let val = stack.pop()
+            # stack operations
+            of opPop                : discard stack.pop()
+            of opDup                : stack.push(sTop())
+            of opSwap               : swap(Stack[SP-1], Stack[SP-2])
 
-                stack.pushAttr(attr.r, val)
+            # flow control
+            of opJump, opJumpIf,
+               opJumpIfNot, opRet   : discard        
+            of opEnd                : break 
 
-            of opEnd            : break
+            # reserved
+            of opRsrv0..opRsrv3     : discard
 
+            # [0xA0-AF] #
+            # arithmetic & logical operators
+            of opAdd, opSub, opMul,
+               opDiv, opFDiv, opMod, 
+               opPow, opNeg, opBNot, 
+               opBAnd, opOr, opXor, 
+               opShl, opShr         : discard
 
-            # of opPop        : discard #Core.Pop()
-            # of opDup        : stack.push(sTop())
-            # of opSwap       : swap(Stack[SP-1], Stack[SP-2])
-            # of opNop        : discard
+            # reserved
+            of opRsrv4..opRsrv5     : discard
 
-            # of opGet: Syms["get"].action() #discard #Collections.Get()  
-            # of opSet: Syms["set"].action() #discard #Collections.Set()
-
-            else: discard
+            # [0xB0-BF] #
+            # comparison operators
+            of opEq, opNe, opGt, 
+               opGe, opLt, opLe     : discard
 
         i += 1
 
