@@ -27,6 +27,31 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Logic"
 
+    # TODO check implementation
+    # TODO add example
+    builtin "all?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if all values in given block are true",
+        args        = {
+            "conditions"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+        """:
+            ##########################################################
+            var allOK = true
+
+            for item in x.a:
+                if item!=VTRUE:
+                    allOK = false
+                    stack.push(newBoolean(false))
+                    break
+
+            if allOK:
+                stack.push(newBoolean(true))
+
     builtin "and?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
@@ -49,6 +74,30 @@ proc defineSymbols*() =
         """:
             ##########################################################
             stack.push(newBoolean(x.b and y.b))
+
+    # TODO check implementation
+    # TODO add example
+    builtin "any?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if any of the values in given block is true",
+        args        = {
+            "conditions"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+        """:
+            ##########################################################
+            var anyOK = false
+            for item in x.a:
+                if item==VTRUE:
+                    anyOK = true
+                    stack.push(newBoolean(true))
+                    break
+                
+            if not anyOK:
+                stack.push(newBoolean(false))
 
     constant "false",
         alias       = unaliased,
