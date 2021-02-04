@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import httpClient, os
+import asyncdispatch, httpClient, os
 
 import helpers/url as UrlHelper
 
@@ -32,7 +32,8 @@ type
 
 proc getSource*(src: string): DataSource {.inline.} =
     if src.isUrl():
-        result = (newHttpClient().getContent(src), WebData)
+        let content = waitFor (newAsyncHttpClient().getContent(src))
+        result = (content, WebData)
     elif src.fileExists():
         result = (readFile(src), FileData)
     else:
