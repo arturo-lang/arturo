@@ -7,7 +7,7 @@
 # @file: install
 ######################################################
 
-source utils.sh
+source tools/utils.sh
 
 ################################################
 # FUNCTIONS
@@ -80,20 +80,6 @@ fi
 
 CONFIG=""
 #--warning[UnusedImport]:off\
-FLAGS="\
- --colors:off\
- -d:release\
- -d:danger\
- --panics:off\
- --gc:orc\
- --checks:off\
- --overflowChecks:on\
- -d:ssl\
- --passC:"-O3"\
- --cincludes:extras\
- --nimcache:.cache\
- --embedsrc:on\
- --path:src"
 
 # check switches
 
@@ -133,17 +119,11 @@ else
     FLAGS="$FLAGS --opt:speed" 
 fi
 
-# if $IS_DEV_BUILD; then
-#     FLAGS="$FLAGS --hint[Performance]:off"
-# else
-#     if ! $PRINT_LOG; then
-#         FLAGS="$FLAGS --hints:off"
-#     fi
-# fi
-
 if $IS_DEV_BUILD; then
     awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
     git commit -m 'build update' version/build
+
+    FLAGS="$FLAGS -d:DEV"
 fi
 
 ################################################

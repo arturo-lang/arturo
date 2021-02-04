@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -14,14 +20,19 @@ import algorithm, sequtils
 
 import helpers/datasource as DatasourceHelper
 
-import vm/[env, errors, eval, exec, globals, parse, stack, value]
+import vm/[common, env, errors, eval, exec, globals, parse, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
 
+    when defined(VERBOSE):
+        echo "- Importing: Core"
+
+    # TODO fix implementation
+    # TODO add example
     builtin "break",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -33,7 +44,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             vmBreak = true
-            #return syms
+            #return Syms
 
     builtin "call",
         alias       = unaliased, 
@@ -58,7 +69,7 @@ proc importSymbols*() =
             var fun: Value
 
             if x.kind==Literal or x.kind==String:
-                fun = syms[x.s]
+                fun = Syms[x.s]
             else:
                 fun = x
 
@@ -87,6 +98,8 @@ proc importSymbols*() =
             stack.push(x)
             stack.push(newBoolean(false))
 
+    # TODO fix implementation
+    # TODO add example
     builtin "continue",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -98,7 +111,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             vmContinue = true
-            #return syms
+            #return Syms
 
     builtin "do",
         alias       = unaliased, 
@@ -157,6 +170,28 @@ proc importSymbols*() =
                 if tp==FileData:
                     discard popPath()
 
+    builtin "dup",
+        alias       = thickarrowleft, 
+        rule        = PrefixPrecedence,
+        description = "duplicate the top of the stack and convert non-returning call to a do-return call",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            ; a label normally consumes its inputs
+            ; and returns nothing
+
+            ; using dup before a call, the non-returning function
+            ; becomes a returning one
+
+            a: b: <= 3
+
+            print a         ; 3
+            print b         ; 3
+        """:
+            ##########################################################
+            stack.push(sTop())
+
     builtin "else",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -181,6 +216,7 @@ proc importSymbols*() =
             let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if not y.b: discard execBlock(x)
 
+    # TODO remove function if not needed
     builtin "globalize",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -191,8 +227,8 @@ proc importSymbols*() =
         example     = """
         """:
             ##########################################################
-            for k,v in pairs(syms):
-                syms[k] = v
+            for k,v in pairs(Syms):
+                Syms[k] = v
 
     builtin "if",
         alias       = unaliased, 
@@ -248,6 +284,7 @@ proc importSymbols*() =
                 #     return ReturnResult
             stack.push(x)
 
+    # TODO verify if alias should be changed
     builtin "let",
         alias       = colon, 
         rule        = InfixPrecedence,
@@ -263,8 +300,10 @@ proc importSymbols*() =
             print x           ; 10
         """:
             ##########################################################
-            syms[x.s] = y
+            Syms[x.s] = y
 
+    # TODO review implementation
+    # TODO add example
     builtin "new",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -284,6 +323,8 @@ proc importSymbols*() =
         description = "the NULL constant":
             VNULL
 
+    # TODO review implementation
+    # TODO add example
     builtin "pop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -317,20 +358,6 @@ proc importSymbols*() =
                         i+=1
                     stack.push(newBlock(res))
 
-    builtin "push",
-        alias       = ampersand, 
-        rule        = PrefixPrecedence,
-        description = "push given value to stack twice",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-        """:
-            ##########################################################
-            stack.push(sTop())
-
     builtin "return",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -357,7 +384,7 @@ proc importSymbols*() =
             raise ReturnTriggered.newException("return")
             # vmReturn = true
             # # return ReturnResult
-            # #return syms
+            # #return Syms
 
     builtin "try",
         alias       = unaliased, 
@@ -447,6 +474,8 @@ proc importSymbols*() =
                 if stack.pop().b:
                     break
 
+    # TODO add alias?
+    # TODO add example
     builtin "var",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -459,7 +488,7 @@ proc importSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(syms[x.s])
+            stack.push(Syms[x.s])
 
     builtin "when?",
         alias       = unaliased, 
@@ -544,3 +573,9 @@ proc importSymbols*() =
                 else:
                     discard execBlock(VNULL, evaluated=preevaledY)
                 discard execBlock(VNULL, evaluated=preevaledX)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

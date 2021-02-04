@@ -7,19 +7,30 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
 import helpers/benchmark as benchmarkHelper
 import helpers/helper as helperHelper
 
-import vm/[env, exec, globals, stack, value]
+import vm/[common, env, exec, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+# TODO add missing examples for all type-checking functions
+
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Reflection"
 
     builtin "attr",
         alias       = unaliased, 
@@ -110,9 +121,7 @@ proc importSymbols*() =
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "get dictionary of set attributes",
-        args        = {
-            "name"  : {String,Literal}
-        },
+        args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
@@ -277,9 +286,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             if (popAttr("get") != VNULL):
-                stack.push(newDictionary(getInfo(x.s, syms[x.s])))
+                stack.push(newDictionary(getInfo(x.s, Syms[x.s])))
             else:
-                printInfo(x.s, syms[x.s])
+                printInfo(x.s, Syms[x.s])
 
     builtin "inline?",
         alias       = unaliased, 
@@ -459,7 +468,7 @@ proc importSymbols*() =
             print set? 'zoom          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(syms.hasKey(x.s)))
+            stack.push(newBoolean(Syms.hasKey(x.s)))
 
     builtin "stack",
         alias       = unaliased, 
@@ -533,7 +542,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             var symbols: ValueDict = initOrderedTable[string,Value]()
-            for k,v in pairs(syms):
+            for k,v in pairs(Syms):
                 if k[0]!=toUpperAscii(k[0]):
                     symbols[k] = v
             stack.push(newDictionary(symbols))
@@ -581,3 +590,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Word))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

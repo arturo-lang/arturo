@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -14,13 +20,18 @@ import sequtils
 
 import helpers/database as DatabaseHelper
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+# TODO add support for MySQL (and potentially other dbs?)
+
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Databases"
 
     builtin "close",
         alias       = unaliased, 
@@ -95,3 +106,9 @@ proc importSymbols*() =
                 stack.push(newDatabase(openSqliteDb(dbName)))
             # elif dbKind == MysqlDatabase:
             #     stack.push(newDatabase(openMysqlDb(dbName)))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

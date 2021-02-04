@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -15,14 +21,18 @@ import os
 import helpers/path as PathHelper
 import helpers/url as UrlHelper
 
-import vm/[env, globals, stack, value]
+import vm/[common, env, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
 
+    when defined(VERBOSE):
+        echo "- Importing: Paths"
+
+    # TODO add example
     builtin "extract",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -117,3 +127,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             stack.push(newString(joinPath(env.currentPath(),x.s)))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

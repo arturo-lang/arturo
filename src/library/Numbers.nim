@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -15,13 +21,18 @@ import extras/bignum
 
 import helpers/math as MathHelper
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+# TODO add missing examples for all math functions
+
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Numbers"
 
     builtin "abs",
         alias       = unaliased, 
@@ -646,3 +657,9 @@ proc importSymbols*() =
                 stack.push(newBoolean(isZero(x.bi)))
             else:
                 stack.push(newBoolean(x == I0))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

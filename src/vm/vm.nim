@@ -10,9 +10,9 @@
 # Libraries
 #=======================================
 
-import os, strutils, tables
+import os, random, strutils, tables
 
-import vm/[env, errors, eval, exec, globals, parse, value, version]
+import vm/[globals, env, errors, eval, exec, globals, parse, stack, value, version]
 
 import library/Arithmetic   as ArithmeticLib
 import library/Binary       as BinaryLib
@@ -38,31 +38,33 @@ when not defined(MINI):
     import library/Ui           as UiLib
 
 #=======================================
-# Types
-#=======================================
-
-
-#=======================================
-# Globals
-#=======================================
-
-
-#=======================================
-# Templates
-#=======================================ar
-
-
-
-#=======================================
 # Helpers
 #=======================================
 
+proc initialize*() =
+    # function arity
+    Arities = initTable[string,int]()
+    
+    # stack
+    createMainStack()
+
+    # attributes
+    createAttrsStack()
+    
+    # random number generator
+    randomize()
+
+proc setupLibrary*() =
+    for importLibrary in Libraries:
+        importLibrary()
 
 #=======================================
 # Methods
 #=======================================
 
 proc run*(code: var string, args: ValueArray, isFile: bool) =
+    initialize()
+
     initEnv(
         arguments = args, 
         version = Version,
@@ -72,33 +74,13 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     if isFile: env.addPath(code)
     else: env.addPath(getCurrentDir())
 
-    syms = getEnvDictionary()
+    Syms = getEnvDictionary()
 
-    ArithmeticLib.importSymbols()
-    BinaryLib.importSymbols()
-    CollectionsLib.importSymbols()
-    ComparisonLib.importSymbols()
-    ConvertersLib.importSymbols()
-    CoreLib.importSymbols()
-    CryptoLib.importSymbols()
-    DatabasesLib.importSymbols()
-    DatesLib.importSymbols()
-    FilesLib.importSymbols()
-    IoLib.importSymbols()
-    IteratorsLib.importSymbols()
-    LogicLib.importSymbols()
-    NetLib.importSymbols()
-    NumbersLib.importSymbols()
-    PathsLib.importSymbols()
-    ReflectionLib.importSymbols()
-    StringsLib.importSymbols()
-    SystemLib.importSymbols()
+    setupLibrary()
 
-    when not defined(MINI):
-        UiLib.importSymbols()
-
-    initVM()
     let parsed = doParse(move code, isFile)
     let evaled = parsed.doEval()
     discard doExec(evaled)
+    
     showVMErrors()
+    

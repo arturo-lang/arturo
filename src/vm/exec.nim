@@ -10,17 +10,10 @@
 # Libraries
 #=======================================
 
-import asyncdispatch, asynchttpserver
-import db_sqlite
-import httpClient, json, md5, os
-import random, sequtils, smtp
-import std/sha1, strformat, strutils
-import tables, times, unicode, uri, xmltree
-import nre except toSeq
+import tables
 
-import extras/[bignum, parsetoml]
-
-when defined(BENCHMARK) or defined(VERBOSE):
+when defined(VERBOSE):
+    import strformat
     import helpers/debug as debugHelper
 
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
@@ -40,57 +33,31 @@ template pushByIndex(idx: int):untyped =
 
 template storeByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
-    syms[symIndx] = stack.pop()
+    Syms[symIndx] = stack.pop()
 
 template loadByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
-    let item = syms.getOrDefault(symIndx)
+    let item = Syms.getOrDefault(symIndx)
     if item.isNil: panic "symbol not found: " & symIndx
-    stack.push(syms[symIndx])
+    stack.push(Syms[symIndx])
 
 template callByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
 
-    let fun = syms.getOrDefault(symIndx)
+    let fun = Syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
     if fun.fnKind==UserFunction:
         discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
     else:
         fun.action()
 
+template fetchAttributeByIndex(idx: int):untyped =
+    let attr = cnst[idx]
+    let val = stack.pop()
+
+    stack.pushAttr(attr.r, val)
 
 ####
-
-template require*(op: OpCode, nopop: bool = false): untyped =
-    if SP<(static OpSpecs[op].args):
-        panic "cannot perform '" & (static OpSpecs[op].name) & "'; not enough parameters: " & $(static OpSpecs[op].args) & " required"
-
-    when (static OpSpecs[op].args)>=1:
-        when not (ANY in static OpSpecs[op].a):
-            if not (Stack[SP-1].kind in (static OpSpecs[op].a)):
-                let acceptStr = toSeq((OpSpecs[op].a).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " ...; incorrect argument type for 1st parameter; accepts " & acceptStr
-
-        when (static OpSpecs[op].args)>=2:
-            when not (ANY in static OpSpecs[op].b):
-                if not (Stack[SP-2].kind in (static OpSpecs[op].b)):
-                    let acceptStr = toSeq((OpSpecs[op].b).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                    panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " ...; incorrect argument type for 2nd parameter; accepts " & acceptStr
-                    break
-
-            when (static OpSpecs[op].args)>=3:
-                when not (ANY in static OpSpecs[op].c):
-                    if not (Stack[SP-3].kind in (static OpSpecs[op].c)):
-                        let acceptStr = toSeq((OpSpecs[op].c).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-                        panic "cannot perform '" & (static OpSpecs[op].name) & "' -> :" & ($(Stack[SP-1].kind)).toLowerAscii() & " :" & ($(Stack[SP-2].kind)).toLowerAscii() & " :" & ($(Stack[SP-3].kind)).toLowerAscii() & " ...; incorrect argument type for third parameter; accepts " & acceptStr
-
-    when not nopop:
-        when (static OpSpecs[op].args)>=1:
-            var x {.inject.} = stack.pop()
-        when (static OpSpecs[op].args)>=2:
-            var y {.inject.} = stack.pop()
-        when (static OpSpecs[op].args)>=3:
-            var z {.inject.} = stack.pop()
 
 proc execBlock*(
     blk             : Value, 
@@ -126,7 +93,7 @@ proc execBlock*(
         if dictionary:
             var res: ValueDict = initOrderedTable[string,Value]()
             for k, v in pairs(newSyms):
-                if not syms.hasKey(k) or (newSyms[k]!=syms[k]):
+                if not Syms.hasKey(k) or (newSyms[k]!=Syms[k]):
                     res[k] = v
 
             return res
@@ -135,22 +102,24 @@ proc execBlock*(
                 if not exports.isNil():
                     for k in exports.a:
                         if newSyms.hasKey(k.s):
-                            syms[k.s] = newSyms[k.s]
+                            Syms[k.s] = newSyms[k.s]
             else:
                 if execInParent:
-                    syms=newSyms
+                    Syms=newSyms
                 else:
                     for k, v in pairs(newSyms):
-                        if syms.hasKey(k) and syms[k]!=newSyms[k]:
-                            syms[k] = newSyms[k]
+                        if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
+                            Syms[k] = newSyms[k]
 
-    return syms
+    return Syms
+
+    # TODO to be removed after careful revision
     #     #-----------------------------
     #     # store previous symbols
     #     #-----------------------------
     #     if (not isFuncBlock and not execInParent):
     #         # save previous symbols 
-    #         previous = syms
+    #         previous = Syms
 
     #     #-----------------------------
     #     # pre-process arguments
@@ -161,15 +130,15 @@ proc execBlock*(
     #             let symIndx = arg.s
 
     #             # if argument already exists, save it
-    #             if syms.hasKey(symIndx):
-    #                 saved[symIndx] = syms[symIndx]
+    #             if Syms.hasKey(symIndx):
+    #                 saved[symIndx] = Syms[symIndx]
 
     #             # pop argument and set it
-    #             syms[symIndx] = stack.pop()
+    #             Syms[symIndx] = stack.pop()
 
     #             # properly set arity, if argument is a function
-    #             if syms[symIndx].kind==Function:
-    #                 Funcs[symIndx] = syms[symIndx].params.a.len 
+    #             if Syms[symIndx].kind==Function:
+    #                 Funcs[symIndx] = Syms[symIndx].params.a.len 
 
     #     #-----------------------------
     #     # pre-process injections
@@ -179,13 +148,13 @@ proc execBlock*(
     #             saved = initOrderedTable[string,Value]()
 
     #         for k,v in pairs(inject[]):
-    #             if syms.hasKey(k):
-    #                 saved[k] = syms[k]
+    #             if Syms.hasKey(k):
+    #                 saved[k] = Syms[k]
 
-    #             syms[k] = v
+    #             Syms[k] = v
 
-    #             if syms[k].kind==Function:
-    #                 Funcs[k] = syms[k].params.a.len
+    #             if Syms[k].kind==Function:
+    #                 Funcs[k] = Syms[k].params.a.len
 
     #     #-----------------------------
     #     # evaluate block
@@ -201,7 +170,7 @@ proc execBlock*(
     #     if isIsolated:
     #         subSyms = doExec(evaled, 1)#depth+1)#, nil)
     #     else:
-    #         subSyms = doExec(evaled, 1)#depth+1)#, addr syms)
+    #         subSyms = doExec(evaled, 1)#depth+1)#, addr Syms)
     # except ReturnTriggered as e:
     #     #echo "caught: ReturnTriggered"
     #     if not isFuncBlock:
@@ -253,11 +222,11 @@ proc execBlock*(
     #                 # if we are explicitly .import-ing, 
     #                 # set symbol no matter what
     #                 if execInParent:
-    #                     syms[k] = v
+    #                     Syms[k] = v
     #                 else:
     #                     # update parent only if symbol already existed
     #                     if previous.hasKey(k):
-    #                         syms[k] = v
+    #                         Syms[k] = v
 
     #             if useArgs:
     #                 # go through the arguments
@@ -265,29 +234,29 @@ proc execBlock*(
     #                     # if the symbol already existed restore it
     #                     # otherwise, remove it
     #                     if saved.hasKey(arg.s):
-    #                         syms[arg.s] = saved[arg.s]
+    #                         Syms[arg.s] = saved[arg.s]
     #                     else:
-    #                         syms.del(arg.s)
+    #                         Syms.del(arg.s)
 
     #             if willInject:
     #                 for k,v in pairs(inject[]):
     #                     if saved.hasKey(k):
-    #                         syms[k] = saved[k]
+    #                         Syms[k] = saved[k]
     #                     else:
-    #                         syms.del(k)
+    #                         Syms.del(k)
     #         else:
     #             # if the symbol already existed (e.g. nested functions)
     #             # restore it as we normally would
     #             for k, v in pairs(subSyms):
     #                 if saved.hasKey(k):
-    #                     syms[k] = saved[k]
+    #                     Syms[k] = saved[k]
 
     #             # if there are exportable variables
     #             # do set them in parent
     #             if exports!=VNULL:
     #                 for k in exports.a:
     #                     if subSyms.hasKey(k.s):
-    #                         syms[k.s] = subSyms[k.s]
+    #                         Syms[k.s] = subSyms[k.s]
 
     #         # #-----------------------------
     #         # # break / continue
@@ -331,16 +300,8 @@ proc printSyms*(vv:ValueDict, message: string)=
             echo k & " => " & $(v)
     echo "----------------------------"
 
-proc initVM*() =
-    newSeq(Stack, StackSize)
-    SP = 0
-
-    emptyAttrs()
-
-    randomize()
-
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
-    #syms.printSyms("In doExec")
+    #Syms.printSyms("In doExec")
     when defined(VERBOSE):
         if depth==0:
             showDebugHeader("VM")
@@ -352,14 +313,14 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
     var op: OpCode
     var oldSyms: ValueDict
 
-    oldSyms = syms
+    oldSyms = Syms
 
     if args!=NoValues:
         for arg in args:
             let symIndx = arg.s
 
             # pop argument and set it
-            syms[symIndx] = stack.pop()
+            Syms[symIndx] = stack.pop()
 
     while true:
         if vmBreak:
@@ -371,97 +332,82 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             echo fmt("exec: {op}")
 
         case op:
-            # [0x0] #
-            # stack.push constants 
+            # [0x00-0x0F]
+            # push constants 
+            of opConstI0        : stack.push(I0)
+            of opConstI1        : stack.push(I1)
+            of opConstI2        : stack.push(I2)
+            of opConstI3        : stack.push(I3)
+            of opConstI4        : stack.push(I4)
+            of opConstI5        : stack.push(I5)
+            of opConstI6        : stack.push(I6)
+            of opConstI7        : stack.push(I7)
+            of opConstI8        : stack.push(I8)
+            of opConstI9        : stack.push(I9)
+            of opConstI10       : stack.push(I10)
 
-            of opIPush0         : stack.push(I0)
-            of opIPush1         : stack.push(I1)
-            of opIPush2         : stack.push(I2)
-            of opIPush3         : stack.push(I3)
-            of opIPush4         : stack.push(I4)
-            of opIPush5         : stack.push(I5)
-            of opIPush6         : stack.push(I6)
-            of opIPush7         : stack.push(I7)
-            of opIPush8         : stack.push(I8)
-            of opIPush9         : stack.push(I9)
-            of opIPush10        : stack.push(I10)
+            of opConstI1M       : stack.push(I1M)
+            of opConstF1        : stack.push(F1)
 
-            of opFPush1         : stack.push(F1)
+            of opConstBT        : stack.push(VTRUE)
+            of opConstBF        : stack.push(VFALSE)
 
-            of opBPushT         : stack.push(VTRUE)
-            of opBPushF         : stack.push(VFALSE)
+            of opConstN         : stack.push(VNULL)
 
-            of opNPush          : stack.push(VNULL)
+            # [0x10-0x2F]
+            # push values
+            of opPush0..opPush30    : pushByIndex((int)(op)-(int)(opPush0))
+            of opPush               : i += 1; pushByIndex((int)(it[i]))
 
-            of opEnd            : break
+            # [0x30-0x4F]
+            # store variables (from <- stack)
+            of opStore0..opStore30  : storeByIndex((int)(op)-(int)(opStore0))
+            of opStore              : i += 1; storeByIndex((int)(it[i]))                
 
-            # [0x1] #
-            # stack.push value
+            # [0x50-0x6F]
+            # load variables (to -> stack)
+            of opLoad0..opLoad30    : loadByIndex((int)(op)-(int)(opLoad0))
+            of opLoad               : i += 1; loadByIndex((int)(it[i]))
 
-            of opPush0, opPush1, opPush2,
-               opPush3, opPush4, opPush5,
-               opPush6, opPush7, opPush8,
-               opPush9, opPush10, opPush11, 
-               opPush12, opPush13               :   pushByIndex((int)(op)-(int)(opPush0))
+            # [0x70-0x8F]
+            # function calls
+            of opCall0..opCall30    : callByIndex((int)(op)-(int)(opCall0))                
+            of opCall               : i += 1; callByIndex((int)(it[i]))
 
-            of opPushX                          :   i += 1; pushByIndex((int)(it[i]))
-            of opPushY                          :   i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+            # [0x90-9F] #
+            # generators
+            of opAttr               : i += 1; fetchAttributeByIndex((int)(it[i]))            
+            of opArray, opDict,
+               opFunc               : discard
 
-            # [0x2] #
-            # store variable (from <- stack)
+            # stack operations
+            of opPop                : discard stack.pop()
+            of opDup                : stack.push(sTop())
+            of opSwap               : swap(Stack[SP-1], Stack[SP-2])
 
-            of opStore0, opStore1, opStore2,
-               opStore3, opStore4, opStore5,
-               opStore6, opStore7, opStore8, 
-               opStore9, opStore10, opStore11, 
-               opStore12, opStore13             :   storeByIndex((int)(op)-(int)(opStore0))
+            # flow control
+            of opJump, opJumpIf,
+               opJumpIfNot, opRet   : discard        
+            of opEnd                : break 
 
-            of opStoreX                         :   i += 1; storeByIndex((int)(it[i]))                
-            of opStoreY                         :   i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
+            # reserved
+            of opRsrv0..opRsrv3     : discard
 
-            # [0x3] #
-            # load variable (to -> stack)
+            # [0xA0-AF] #
+            # arithmetic & logical operators
+            of opAdd, opSub, opMul,
+               opDiv, opFDiv, opMod, 
+               opPow, opNeg, opBNot, 
+               opBAnd, opOr, opXor, 
+               opShl, opShr         : discard
 
-            of opLoad0, opLoad1, opLoad2,
-               opLoad3, opLoad4, opLoad5,
-               opLoad6, opLoad7, opLoad8, 
-               opLoad9, opLoad10, opLoad11, 
-               opLoad12, opLoad13               :   loadByIndex((int)(op)-(int)(opLoad0))
+            # reserved
+            of opRsrv4..opRsrv5     : discard
 
-            of opLoadX                          :   i += 1; loadByIndex((int)(it[i]))
-            of opLoadY                          :   i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
-
-            # [0x4] #
-            # user function calls
-
-            of opCall0, opCall1, opCall2,
-               opCall3, opCall4, opCall5,
-               opCall6, opCall7, opCall8, 
-               opCall9, opCall10, opCall11, 
-               opCall12, opCall13               :   callByIndex((int)(op)-(int)(opCall0))                
-
-            of opCallX                          :   i += 1; callByIndex((int)(it[i]))
-            of opCallY                          :   i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
-
-            of opAttr       : 
-                i += 1
-                let indx = it[i]
-
-                let attr = cnst[indx]
-                let val = stack.pop()
-
-                stack.pushAttr(attr.r, val)
-
-
-            of opPop        : discard #Core.Pop()
-            of opDup        : stack.push(sTop())
-            of opSwap       : swap(Stack[SP-1], Stack[SP-2])
-            of opNop        : discard
-
-            of opGet: syms["get"].action() #discard #Collections.Get()  
-            of opSet: syms["set"].action() #discard #Collections.Set()
-
-            else: discard
+            # [0xB0-BF] #
+            # comparison operators
+            of opEq, opNe, opGt, 
+               opGe, opLt, opLe     : discard
 
         i += 1
 
@@ -479,21 +425,21 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                 i += 1
 
             showDebugHeader("Symbols")
-            for k,v in syms:
+            for k,v in Syms:
                 stdout.write fmt("{k} => ")
                 v.dump(0, false)
 
-    let newSyms = syms
-    syms = oldSyms
+    let newSyms = Syms
+    Syms = oldSyms
 
     #newSyms.printSyms("newSyms")
-    #syms.printSyms("oldSyms -> syms")
+    #Syms.printSyms("oldSyms -> Syms")
     return newSyms
 
     # var newSyms: ValueDict = initOrderedTable[string,Value]()
 
-    # for k,v in pairs(syms):
-    #     if not oldSyms.hasKey(k) or oldSyms[k]!=syms[k]:
+    # for k,v in pairs(Syms):
+    #     if not oldSyms.hasKey(k) or oldSyms[k]!=Syms[k]:
     #         echo "new: " & k & " = " & $(v)
     #         newSyms[k] = v
 

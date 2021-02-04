@@ -2,14 +2,15 @@
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2020 Arturo Contributors
+# (c) 2021 Yanis Zafirópulos
 #
 # @file: arturo.nimble
 ######################################################
 
 # Package
 
-version       = "0.9.4"
-author        = "arturo-lang"
+version       = static readFile("version/version")
+author        = "Yanis Zafirópulos"
 description   = "Simple, modern and portable interpreted programming language for efficient scripting"
 license       = "MIT"
 srcDir        = "src"
@@ -19,7 +20,3 @@ binDir        = "bin"
 # Dependencies
 
 requires "nim >= 1.4.0"
-
-task buildJS, "build with js backend":
-    switch("d", "WEB")
-    selfExec "js src/arturo.nim"

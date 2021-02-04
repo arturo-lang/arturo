@@ -21,15 +21,11 @@ import vm/value
 const StackSize* = 100000
 const AttrsSize* = 10
 
-#=======================================
-# Globals
-#=======================================
-
-var Stack*{.threadvar.}: seq[Value]
-var Attrs*: OrderedTable[string,Value]
-var SP*: int
-var AP*: int
-var CSP*: int
+var
+    # stack
+    Stack*{.threadvar.}     : seq[Value]
+    Attrs*                  : OrderedTable[string,Value]
+    SP*, AP*, CSP*          : int
 
 #=======================================
 # Methods
@@ -54,6 +50,10 @@ template sTopsFrom*(start: int): ValueArray =
 template emptyStack*() =
     SP = 0
 
+template createMainStack*() =
+    newSeq(Stack, StackSize)
+    emptyStack()
+
 ## Attributes stack
 
 template pushAttr*(label: string, v: Value) =
@@ -61,6 +61,9 @@ template pushAttr*(label: string, v: Value) =
 
 template emptyAttrs*() =
     Attrs = initOrderedTable[string,Value]()
+
+template createAttrsStack*() =
+    emptyAttrs()
 
 proc getAttr*(attr: string): Value =
     Attrs.getOrDefault(attr, VNULL)

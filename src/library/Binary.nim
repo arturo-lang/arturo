@@ -7,16 +7,25 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Binary"
 
     builtin "and",
         alias       = unaliased, 
@@ -35,7 +44,7 @@ proc importSymbols*() =
             and 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] &&= y
+            if x.kind==Literal : Syms[x.s] &&= y
             else               : stack.push(x && y)
 
 
@@ -56,7 +65,7 @@ proc importSymbols*() =
             nand 'a 3          ; a: -3
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] &&= y; !!= syms[x.s]
+            if x.kind==Literal : Syms[x.s] &&= y; !!= Syms[x.s]
             else               : stack.push(!! (x && y))
 
     builtin "nor",
@@ -76,7 +85,7 @@ proc importSymbols*() =
             nor 'a 3           ; a: -4
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] ||= y; !!= syms[x.s]
+            if x.kind==Literal : Syms[x.s] ||= y; !!= Syms[x.s]
             else               : stack.push(!! (x || y))
 
     builtin "not",
@@ -95,7 +104,7 @@ proc importSymbols*() =
             not 'a             ; a: -124
         """:
             ##########################################################
-            if x.kind==Literal : !!= syms[x.s] 
+            if x.kind==Literal : !!= Syms[x.s] 
             else               : stack.push(!! x)
 
     builtin "or",
@@ -115,7 +124,7 @@ proc importSymbols*() =
             or 'a 3            ; a: 3
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] ||= y
+            if x.kind==Literal : Syms[x.s] ||= y
             else               : stack.push(x || y)
 
     builtin "shl",
@@ -135,7 +144,7 @@ proc importSymbols*() =
             shl 'a 3           ; a: 16
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] <<= y
+            if x.kind==Literal : Syms[x.s] <<= y
             else               : stack.push(x << y)
 
     builtin "shr",
@@ -155,7 +164,7 @@ proc importSymbols*() =
             shr 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] >>= y
+            if x.kind==Literal : Syms[x.s] >>= y
             else               : stack.push(x >> y)
 
     builtin "xnor",
@@ -175,7 +184,7 @@ proc importSymbols*() =
             xnor 'a 3          ; a: -2
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] ^^= y; !!= syms[x.s]
+            if x.kind==Literal : Syms[x.s] ^^= y; !!= Syms[x.s]
             else               : stack.push(!! (x ^^ y))
         
     builtin "xor",
@@ -195,5 +204,11 @@ proc importSymbols*() =
             xor 'a 3           ; a: 1
         """:
             ##########################################################
-            if x.kind==Literal : syms[x.s] ^^= y
+            if x.kind==Literal : Syms[x.s] ^^= y
             else               : stack.push(x ^^ y)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)
