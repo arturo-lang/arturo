@@ -8,6 +8,7 @@
    * [case](#case)
    * [continue](#continue)
    * [do](#do)
+   * [dup](#dup)
    * [else](#else)
    * [globalize](#globalize)
    * [if](#if)
@@ -15,7 +16,6 @@
    * [let](#let)
    * [new](#new)
    * [pop](#pop)
-   * [push](#push)
    * [return](#return)
    * [try](#try)
    * [try?](#try?)
@@ -158,6 +158,39 @@ print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/p
 ; 233168
 ```
 
+## dup
+
+**Alias:** `<=`
+
+#### Description
+
+Duplicate the top of the stack and convert non-returning call to a do-return call
+
+#### Usage
+
+<pre>
+<b>dup</b> 
+</pre>
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+; a label normally consumes its inputs
+; and returns nothing
+
+; using dup before a call, the non-returning function
+; becomes a returning one
+
+a: b: <= 3
+
+print a         ; 3
+print b         ; 3
+```
+
 ## else
 
 #### Description
@@ -271,6 +304,8 @@ else [
 
 ## let
 
+**Alias:** `:`
+
 #### Description
 
 Set symbol to given value
@@ -330,23 +365,6 @@ Pop top <number> values from stack
 #### Returns
 
 - *:any*
-
-
-## push
-
-#### Description
-
-Push given value to stack twice
-
-#### Usage
-
-<pre>
-<b>push</b> <ins>value</ins> <i>:any</i>
-</pre>
-
-#### Returns
-
-- *:nothing*
 
 
 ## return

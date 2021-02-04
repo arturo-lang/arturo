@@ -362,6 +362,7 @@ Render template with |string| interpolation
 |---|---|---|
 |single|<i>:boolean</i>|don't render recursively|
 |with|<i>:dictionary</i>|use given dictionary for reference|
+|template|<i>:boolean</i>|render as a template|
 
 #### Returns
 

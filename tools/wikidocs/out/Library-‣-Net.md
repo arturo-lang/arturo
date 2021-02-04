@@ -66,15 +66,15 @@ Send mail using given message and configuration
 
 ```red
 mail "recipient@somemail.com"
-      #[
-           title: "Hello from Arturo"
-           content: "Arturo rocks!"
-       ]
-      #[
-           server: "mymailserver.com"
-           username: "myusername"
-           password: "mypass123"
-       ]
+    #[
+        title: "Hello from Arturo"
+        content: "Arturo rocks!"
+    ]
+    #[
+        server: "mymailserver.com"
+        username: "myusername"
+        password: "mypass123"
+    ]
 ```
 
 ## serve
