@@ -119,9 +119,7 @@ proc defineSymbols*() =
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "get dictionary of set attributes",
-        args        = {
-            "name"  : {String,Literal}
-        },
+        args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
