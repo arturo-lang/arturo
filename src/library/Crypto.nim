@@ -7,18 +7,27 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
 import base64, md5, std/sha1
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Crypto"
 
     builtin "decode",
         alias       = unaliased, 
@@ -35,7 +44,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                syms[x.s].s = syms[x.s].s.decode()
+                Syms[x.s].s = Syms[x.s].s.decode()
             else:
                 stack.push(newString(x.s.decode()))
 
@@ -54,7 +63,7 @@ proc importSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                syms[x.s].s = syms[x.s].s.encode()
+                Syms[x.s].s = Syms[x.s].s.encode()
             else:
                 stack.push(newString(x.s.encode()))
 
@@ -79,15 +88,17 @@ proc importSymbols*() =
             ##########################################################
             if (popAttr("sha") != VNULL):
                 if x.kind==Literal:
-                    syms[x.s] = newString(($(secureHash(syms[x.s].s))).toLowerAscii())
+                    Syms[x.s] = newString(($(secureHash(Syms[x.s].s))).toLowerAscii())
                 else:
                     stack.push(newString(($(secureHash(x.s))).toLowerAscii()))
             else:
                 if x.kind==Literal:
-                    syms[x.s] = newString(($(toMD5(syms[x.s].s))).toLowerAscii())
+                    Syms[x.s] = newString(($(toMD5(Syms[x.s].s))).toLowerAscii())
                 else:
                     stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
 
+    # TODO check implementation
+    # TODO add example
     builtin "hash",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -106,3 +117,9 @@ proc importSymbols*() =
                 stack.push(newString($(hash(x))))
             else:
                 stack.push(newInteger(hash(x)))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

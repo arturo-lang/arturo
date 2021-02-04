@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -15,13 +21,16 @@ import algorithm, rdstdin
 when not defined(windows):
     import linenoise
 
-import vm/[eval, exec, globals, stack, value]
+import vm/[common, eval, exec, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Io"
 
     when not defined(windows):
         builtin "clear",
@@ -125,3 +134,9 @@ proc importSymbols*() =
             else:
                 stdout.write($(x))
                 stdout.flushFile()
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

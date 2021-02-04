@@ -15,7 +15,7 @@
 MAIN="src/arturo.nim"
 
 FLAGS="\
- --warning[UnusedImport]:off\
+ --skipParentCfg:on\
  --colors:off\
  -d:release\
  -d:danger\
@@ -24,7 +24,6 @@ FLAGS="\
  --checks:off\
  --overflowChecks:on\
  -d:ssl\
- --threads:on\
  --passC:"-O3"\
  --cincludes:extras\
  --nimcache:.cache\

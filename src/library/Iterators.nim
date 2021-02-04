@@ -7,19 +7,30 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
 import algorithm, sequtils, sugar
 
-import vm/[eval, exec, globals, stack, value]
+import vm/[common, eval, exec, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
 
+    when defined(VERBOSE):
+        echo "- Importing: " & static (instantiationInfo().filename).replace(".nim")
+
+    # TODO check implementation
+    # TODO add example
     builtin "all?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -54,6 +65,8 @@ proc importSymbols*() =
             if all:
                 stack.push(newBoolean(true))
 
+    # TODO check implementation
+    # TODO add example
     builtin "any?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -121,13 +134,13 @@ proc importSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in syms[x.s].a:
+                for i,item in Syms[x.s].a:
                     stack.push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
                     if not stack.pop().b:
                         res.add(item)
 
-                syms[x.s].a = res
+                Syms[x.s].a = res
             else:
                 for item in x.a:
                     stack.push(item)
@@ -170,7 +183,7 @@ proc importSymbols*() =
 
             var seed = I0
             if x.kind==Literal:
-                if syms[x.s].a[0].kind == String:
+                if Syms[x.s].a[0].kind == String:
                     seed = newString("")
             else:
                 if x.a[0].kind == String:
@@ -181,7 +194,7 @@ proc importSymbols*() =
 
             let doRightFold = (popAttr("right")!=VNULL)
 
-            if (x.kind==Literal and syms[x.s].a.len==0):
+            if (x.kind==Literal and Syms[x.s].a.len==0):
                 discard
             elif (x.kind!=Literal and x.a.len==0):
                 stack.push(x)
@@ -191,8 +204,8 @@ proc importSymbols*() =
 
                     if x.kind == Literal:
                         var res: Value = seed
-                        for i in countdown(syms[x.s].a.len-1,0):
-                            let a = syms[x.s].a[i]
+                        for i in countdown(Syms[x.s].a.len-1,0):
+                            let a = Syms[x.s].a[i]
                             let b = res
 
                             stack.push(b)
@@ -202,7 +215,7 @@ proc importSymbols*() =
 
                             res = stack.pop()
 
-                        syms[x.s] = res
+                        Syms[x.s] = res
 
                     else:
                         var res: Value = seed
@@ -234,7 +247,7 @@ proc importSymbols*() =
 
                             res = stack.pop()
 
-                        syms[x.s] = res
+                        Syms[x.s] = res
 
                     else:
                         var res: Value = seed
@@ -384,10 +397,10 @@ proc importSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in syms[x.s].a:
+                for i,item in Syms[x.s].a:
                     stack.push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    syms[x.s].a[i] = stack.pop()
+                    Syms[x.s].a[i] = stack.pop()
             else:
                 for item in x.a:
                     stack.push(item)
@@ -429,13 +442,13 @@ proc importSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in syms[x.s].a:
+                for i,item in Syms[x.s].a:
                     stack.push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
                     if stack.pop().b:
                         res.add(item)
 
-                syms[x.s].a = res
+                Syms[x.s].a = res
             else:
                 for item in x.a:
                     stack.push(item)
@@ -444,3 +457,9 @@ proc importSymbols*() =
                         res.add(item)
 
                 stack.push(newBlock(res))
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

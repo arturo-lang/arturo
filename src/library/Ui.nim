@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -16,14 +22,18 @@ import extras/webview
 import helpers/url as UrlHelper
 import helpers/webview as WebviewHelper
 
-import vm/[env, exec, globals, stack, value]
+import vm/[common, env, exec, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
 
+    when defined(VERBOSE):
+        echo "- Importing: Ui"
+
+    # TODO needs cleanup & revision
     builtin "webview",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -121,3 +131,9 @@ proc importSymbols*() =
                 # #         resizable=true, 
                 # #             debug=false,
                 # #          bindings=y.d)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

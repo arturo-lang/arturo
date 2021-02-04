@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -18,13 +24,16 @@ import helpers/colors as ColorsHelper
 when not defined(MINI):
     import helpers/webview as WebviewHelper
 
-import vm/[env, exec, globals, stack, value]
+import vm/[common, env, exec, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Net"
 
     builtin "download",
         alias       = unaliased, 
@@ -95,6 +104,7 @@ proc importSymbols*() =
             smtpConn.auth(config["username"].s, config["password"].s)
             smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
+    # TODO verify `.async` works fine
     builtin "serve",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -207,3 +217,9 @@ proc importSymbols*() =
                     echo "Something went wrong." & e.msg
                     server.close()
             {.push warning[GcUnsafe2]:on.}
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

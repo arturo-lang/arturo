@@ -7,16 +7,25 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
-import vm/[globals, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Logic"
 
     builtin "and?",
         alias       = unaliased, 
@@ -226,3 +235,8 @@ proc importSymbols*() =
             ##########################################################
             stack.push(newBoolean(x.b xor y.b))
             
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)

@@ -45,6 +45,9 @@ type
         greaterequal    # >=
         lessgreater     # <>
 
+        lesscolon       # <:
+        minuscolon      # -:
+        
         tilde           # ~
         exclamation     # !
         at              # @
@@ -199,7 +202,7 @@ const
     NoValues* = @[]
 
 #=======================================
-# Constant Values
+# Fixed Values
 #=======================================
 
 let I0*  = Value(kind: Integer, iKind: NormalInteger, i: 0)
@@ -225,7 +228,7 @@ let VFALSE* = Value(kind: Boolean, b: false)
 let VNULL* = Value(kind: Null)
 
 #=======================================
-# Constructors
+# Helpers
 #=======================================
 
 ## forward declarations
@@ -431,15 +434,11 @@ proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
         inc(result)
     result = -1
 
-#=======================================
-# Methods
-#=======================================
-
 proc addChild*(parent: Value, child: Value) {.inline.} =
     parent.a.add(child)
 
 #=======================================
-# Overloads
+# Methods
 #=======================================
 
 proc `+`*(x: Value, y: Value): Value =
@@ -1072,10 +1071,6 @@ proc `>=`*(x: Value, y: Value): bool =
 proc `!=`*(x: Value, y: Value): bool =
     not (x == y)
 
-#=======================================
-# Inspection
-#=======================================
-
 proc `$`*(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
@@ -1107,6 +1102,9 @@ proc `$`*(v: Value): string {.inline.} =
                 of equalless        : return "=<"
                 of greaterequal     : return ">="
                 of lessgreater      : return "<>"
+
+                of lesscolon        : return "<:"
+                of minuscolon       : return "-:"
 
                 of tilde            : return "~"
                 of exclamation      : return "!"
@@ -1174,141 +1172,6 @@ proc `$`*(v: Value): string {.inline.} =
             
         of Nothing: discard
         of ANY: discard
-
-
-# proc printOne(v: Value, level: int, isLast: bool, newLine: bool) =
-#     for i in 0..level-1: stdout.write "\t"
-
-#     case v.kind:
-#         of Null         : stdout.write "null"
-#         of Boolean      : stdout.write $(v.b)
-#         of Integer      : 
-#             if v.iKind==NormalInteger: stdout.write $(v.i)
-#             else: stdout.write $(v.bi)
-#         of Floating     : stdout.write $(v.f)
-#         of Type         : stdout.write ":" & ($(v.t)).toLowerAscii()
-#         of Char         : stdout.write $(v.c)
-#         of String,
-#            Word,
-#            Literal,
-#            Label        : stdout.write v.s
-#         of Attribute,
-#            AttributeLabel    : stdout.write v.r
-#         of Path,
-#            PathLabel    : 
-#             for child in v.p:
-#                 printOne(child, level, false, false)
-#                 stdout.write "\\"
-#         of Symbol       : 
-#             case v.m:
-#                 of thickarrowleft   : stdout.write "<="
-#                 of thickarrowright  : stdout.write "=>"
-#                 of arrowleft        : stdout.write "<-"
-#                 of arrowright       : stdout.write "->"
-#                 of doublearrowleft  : stdout.write "<<"
-#                 of doublearrowright : stdout.write ">>"
-
-#                 of equalless        : stdout.write "=<"
-#                 of greaterequal     : stdout.write ">="
-#                 of lessgreater      : stdout.write "<>"
-
-#                 of tilde            : stdout.write "~"
-#                 of exclamation      : stdout.write "!"
-#                 of at               : stdout.write "@"
-#                 of sharp            : stdout.write "#"
-#                 of dollar           : stdout.write "$"
-#                 of percent          : stdout.write "%"
-#                 of caret            : stdout.write "^"
-#                 of ampersand        : stdout.write "&"
-#                 of asterisk         : stdout.write "*"
-#                 of minus            : stdout.write "-"
-#                 of doubleminus      : stdout.write "--"
-#                 of underscore       : stdout.write "_"
-#                 of equal            : stdout.write "="
-#                 of plus             : stdout.write "+"
-#                 of doubleplus       : stdout.write "++"
-#                 of lessthan         : stdout.write "<"
-#                 of greaterthan      : stdout.write ">"
-#                 of slash            : stdout.write "/"
-#                 of doubleslash      : stdout.write "//"
-#                 of backslash        : stdout.write "\\"
-#                 of doublebackslash  : stdout.write "\\\\"
-#                 of pipe             : stdout.write "|"
-
-#                 of ellipsis         : stdout.write ".."
-#                 of dotslash         : stdout.write "./"
-#                 of colon            : stdout.write ":"
-
-#                 of slashedzero      : stdout.write "ø"
-
-#         of Date:
-#             stdout.write $(v.eobj)
-
-#         of Binary: 
-#             for i, bt in v.n:
-#                 stdout.write fmt"{bt:02X}"
-#                 if i mod 2==1:
-#                     stdout.write " "
-
-#         of Inline,
-#            Block     :
-#             stdout.write "["
-#             if newLine: stdout.write "\n"
-
-#             for i,child in v.a:
-#                 printOne(child, level+1, i==(v.a.len-1), newLine)
-
-#             if newLine: stdout.write "\n"
-
-#             for i in 0..level-1: stdout.write "\t"
-#             stdout.write "]"
-
-#         of Dictionary   :
-#             stdout.write "["
-#             if newLine: stdout.write "\n"
-
-#             let keys = toSeq(v.d.keys)
-
-#             if keys.len > 0:
-#                 let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
-
-#                 for key,value in v.d:
-#                     for i in 0..level: stdout.write "\t"
-
-#                     if newLine: stdout.write unicode.alignLeft(key & ": ", maxLen)
-#                     else: stdout.write key & ": "
-
-#                     printOne(value, level+1, key == keys[keys.len-1], newLine)
-
-#                 if newLine: stdout.write "\n"
-
-#             for i in 0..level-1: stdout.write "\t"
-#             stdout.write "]"
-
-#         of Function     : 
-#             stdout.write "["
-#             if newLine: stdout.write "\n"
-
-#             printOne(v.params, level+1, false, newLine)
-#             printOne(v.main, level+1, true, newLine)
-
-#             if newLine: stdout.write "\n"
-
-#             for i in 0..level-1: stdout.write "\t"
-#             stdout.write "]"
-
-#         of Database     :
-#             if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
-#             #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
-
-#         of ANY: discard
-
-#     if (not isLast) and newLine:
-#         stdout.write "\n"
-
-# proc print*(v: Value, newLine: bool = true) = 
-#     printOne(v, 0, false, newLine)
-#     stdout.flushFile()
 
 proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} = 
 
@@ -1465,6 +1328,9 @@ proc codify*(v: Value): string {.inline.} =
                 of equalless        : result = "=<"
                 of greaterequal     : result = ">="
                 of lessgreater      : result = "<>"
+
+                of lesscolon        : result = "<:"
+                of minuscolon       : result = "-:"
 
                 of tilde            : result = "~"
                 of exclamation      : result = "!"

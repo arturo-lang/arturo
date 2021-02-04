@@ -45,7 +45,7 @@ proc printEmptyLine() =
     echo "|"
 
 proc getAlias(n: string): string = 
-    for k,v in pairs(aliases):
+    for k,v in pairs(Aliases):
         if v.name.s==n:
             return $(newSymbol(k))
     return ""
@@ -140,9 +140,9 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
 #=======================================
 
 proc printHelp*() =
-    let sorted = toSeq(syms.keys).sorted
+    let sorted = toSeq(Syms.keys).sorted
     for key in sorted:
-        let v = syms[key]
+        let v = Syms[key]
         if v.kind==Function and v.fnKind==BuiltinFunction:
             var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
             

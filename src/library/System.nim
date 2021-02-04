@@ -7,18 +7,27 @@
 ######################################################
 
 #=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
 # Libraries
 #=======================================
 
 import os, osproc, sequtils, sugar
 
-import vm/[errors, globals, stack, value]
+import vm/[common, errors, globals, stack, value]
 
 #=======================================
 # Methods
 #=======================================
 
-proc importSymbols*() =
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: System"
 
     builtin "execute",
         alias       = unaliased, 
@@ -86,17 +95,15 @@ proc importSymbols*() =
             ; test3.art
         """:
             ##########################################################
-            if (let aSelect = popAttr("select"); aSelect != VNULL):
-                if (popAttr("relative") != VNULL):
-                    stack.push(newStringBlock((toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
-                else:
-                    stack.push(newStringBlock((toSeq(walkDir(x.s)).map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
-            else:
-                if (popAttr("relative") != VNULL):
-                    stack.push(newStringBlock(toSeq(walkDir(x.s, relative=true)).map((x)=>x[1])))
-                else:
-                    stack.push(newStringBlock(toSeq(walkDir(x.s)).map((x)=>x[1])))
+            let findRelative = (popAttr("relative") != VNULL)
+            let contents = toSeq(walkDir(x.s, relative=findRelative))
 
+            if (let aSelect = popAttr("select"); aSelect != VNULL):
+                stack.push(newStringBlock((contents.map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
+            else:
+                stack.push(newStringBlock(contents.map((x)=>x[1])))
+
+    # TODO add example
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -121,6 +128,7 @@ proc importSymbols*() =
             else:
                 quit()    
 
+    # TODO add example
     builtin "pause",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -134,3 +142,9 @@ proc importSymbols*() =
         """:
             ##########################################################
             sleep(x.i)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)
