@@ -7,7 +7,7 @@
 # @file: install
 ######################################################
 
-source utils.sh
+source tools/utils.sh
 
 ################################################
 # FUNCTIONS
@@ -80,21 +80,6 @@ fi
 
 CONFIG=""
 #--warning[UnusedImport]:off\
-FLAGS="\
- --skipParentCfg:on\
- --colors:off\
- -d:release\
- -d:danger\
- --panics:off\
- --gc:orc\
- --checks:off\
- --overflowChecks:on\
- -d:ssl\
- --passC:"-O3"\
- --cincludes:extras\
- --nimcache:.cache\
- --embedsrc:on\
- --path:src"
 
 # check switches
 
