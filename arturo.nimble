@@ -9,8 +9,8 @@
 
 # Package
 
-version       = "0.9.4"
-author        = "arturo-lang"
+version       = static readFile("version/version")
+author        = "Yanis Zafirópulos"
 description   = "Simple, modern and portable interpreted programming language for efficient scripting"
 license       = "MIT"
 srcDir        = "src"
