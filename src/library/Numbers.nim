@@ -27,6 +27,8 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
+# TODO add missing examples for all math functions
+
 proc defineSymbols*() =
 
     when defined(VERBOSE):

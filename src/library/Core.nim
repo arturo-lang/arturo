@@ -31,6 +31,8 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Core"
 
+    # TODO fix implementation
+    # TODO add example
     builtin "break",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -96,6 +98,8 @@ proc defineSymbols*() =
             stack.push(x)
             stack.push(newBoolean(false))
 
+    # TODO fix implementation
+    # TODO add example
     builtin "continue",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -212,6 +216,7 @@ proc defineSymbols*() =
             let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if not y.b: discard execBlock(x)
 
+    # TODO remove function if not needed
     builtin "globalize",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -279,6 +284,7 @@ proc defineSymbols*() =
                 #     return ReturnResult
             stack.push(x)
 
+    # TODO verify if alias should be changed
     builtin "let",
         alias       = colon, 
         rule        = InfixPrecedence,
@@ -296,6 +302,8 @@ proc defineSymbols*() =
             ##########################################################
             Syms[x.s] = y
 
+    # TODO review implementation
+    # TODO add example
     builtin "new",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -315,6 +323,8 @@ proc defineSymbols*() =
         description = "the NULL constant":
             VNULL
 
+    # TODO review implementation
+    # TODO add example
     builtin "pop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -464,6 +474,8 @@ proc defineSymbols*() =
                 if stack.pop().b:
                     break
 
+    # TODO add alias?
+    # TODO add example
     builtin "var",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

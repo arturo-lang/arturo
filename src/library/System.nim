@@ -103,7 +103,7 @@ proc defineSymbols*() =
             else:
                 stack.push(newStringBlock(contents.map((x)=>x[1])))
 
-
+    # TODO add example
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -128,6 +128,7 @@ proc defineSymbols*() =
             else:
                 quit()    
 
+    # TODO add example
     builtin "pause",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

@@ -22,6 +22,8 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
+# TODO add function to check for "identity"? - eg `identical?`
+
 proc defineSymbols*() =
 
     when defined(VERBOSE):

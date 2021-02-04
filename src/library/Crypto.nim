@@ -97,6 +97,8 @@ proc defineSymbols*() =
                 else:
                     stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
 
+    # TODO check implementation
+    # TODO add example
     builtin "hash",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
