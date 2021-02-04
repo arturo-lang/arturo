@@ -145,58 +145,58 @@ type
         opShr           = 0x5D
 
         opAttr          = 0x5E
-        opReturn        = 0x5F
+        # opReturn        = 0x5F
 
-        # [0x6] #
-        # stack operations
-        opPop           = 0x60
-        opDup           = 0x61
-        opSwap          = 0x62
-        opNop           = 0x63
+        # # [0x6] #
+        # # stack operations
+        # opPop           = 0x60
+        # opDup           = 0x61
+        # opSwap          = 0x62
+        # opNop           = 0x63
 
-        #flow control 
-        opJmp           = 0x64
-        opJmpIf         = 0x65
+        # #flow control 
+        # opJmp           = 0x64
+        # opJmpIf         = 0x65
         
-        opPush          = 0x66
+        # opPush          = 0x66
 
-        # comparison operations
-        opEq            = 0x67
-        opNe            = 0x68
-        opGt            = 0x69
-        opGe            = 0x6A
-        opLt            = 0x6B
-        opLe            = 0x6C
+        # # comparison operations
+        # opEq            = 0x67
+        # opNe            = 0x68
+        # opGt            = 0x69
+        # opGe            = 0x6A
+        # opLt            = 0x6B
+        # opLe            = 0x6C
 
-        # structures
-        opArray         = 0x6D
-        opDictionary    = 0x6E
-        opFunction      = 0x6F
+        # # structures
+        # opArray         = 0x6D
+        # opDictionary    = 0x6E
+        # opFunction      = 0x6F
 
-        # [0x7] #
-        # system calls (144 slots)
+        # # [0x7] #
+        # # system calls (144 slots)
 
-        opPrint         = 0x70
-        opInspect       = 0x71
+        # opPrint         = 0x70
+        # opInspect       = 0x71
 
-        opIf            = 0x72
-        opIsIf          = 0x73
-        opElse          = 0x74
+        # opIf            = 0x72
+        # opIsIf          = 0x73
+        # opElse          = 0x74
 
-        opLoop          = 0x75
+        # opLoop          = 0x75
 
-        opDo            = 0x76
-        opMap           = 0x77
-        opSelect        = 0x78
-        opFilter        = 0x79
+        # opDo            = 0x76
+        # opMap           = 0x77
+        # opSelect        = 0x78
+        # opFilter        = 0x79
 
-        opSize          = 0x7A
+        # opSize          = 0x7A
 
-        opUpper         = 0x7B
-        opLower         = 0x7C
+        # opUpper         = 0x7B
+        # opLower         = 0x7C
         
-        opGet           = 0x7D
-        opSet           = 0x7E
+        # opGet           = 0x7D
+        # opSet           = 0x7E
 
 #=======================================
 # Methods
