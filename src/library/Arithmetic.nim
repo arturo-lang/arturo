@@ -169,6 +169,7 @@ proc defineSymbols*() =
             if x.kind==Literal  : Syms[x.s] *= y
             else                : stack.push(x*y)
 
+    # TODO add alias (`_`?)
     builtin "neg",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

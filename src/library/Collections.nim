@@ -237,6 +237,8 @@ proc defineSymbols*() =
                 of Dictionary: stack.push(newBoolean(x.d.len==0))
                 else: discard
 
+    # TODO check implementation
+    # TODO add example
     builtin "extend",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

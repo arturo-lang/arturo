@@ -29,6 +29,8 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: " & static (instantiationInfo().filename).replace(".nim")
 
+    # TODO check implementation
+    # TODO add example
     builtin "all?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -63,6 +65,8 @@ proc defineSymbols*() =
             if all:
                 stack.push(newBoolean(true))
 
+    # TODO check implementation
+    # TODO add example
     builtin "any?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

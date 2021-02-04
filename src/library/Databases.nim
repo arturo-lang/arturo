@@ -26,6 +26,8 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
+# TODO add support for MySQL (and potentially other dbs?)
+
 proc defineSymbols*() =
 
     when defined(VERBOSE):

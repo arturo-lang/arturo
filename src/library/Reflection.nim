@@ -25,6 +25,8 @@ import vm/[common, env, exec, globals, stack, value]
 # Methods
 #=======================================
 
+# TODO add missing examples for all type-checking functions
+
 proc defineSymbols*() =
 
     when defined(VERBOSE):

@@ -104,6 +104,7 @@ proc defineSymbols*() =
             smtpConn.auth(config["username"].s, config["password"].s)
             smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
+    # TODO verify `.async` works fine
     builtin "serve",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
