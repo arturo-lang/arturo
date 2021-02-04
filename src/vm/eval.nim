@@ -29,7 +29,6 @@ proc dump*(evaled: Translation)
 proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool = false, isDictionary: bool = false) =
     var argStack: seq[int] = @[]
     var currentCommand: ByteArray = @[]
-    #var itIndex = 0
 
     let childrenCount = n.a.len
 
@@ -144,7 +143,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         
                         ended = true
 
-            # TO-FIX
+            # TODO fix trailing pipe recognition
             # ## Process trailing pipe            
             # if (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
                 
@@ -165,6 +164,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             #         echo "found trailing pipe without adjunct command. exiting"
             #         quit()
 
+    # TODO eliminate commented-out and/or re-implement
     # template addCommand(op: OpCode, inArrowBlock: bool = false): untyped =
     #     when static OpSpecs[op].args!=0:
     #         when not inArrowBlock:
@@ -179,7 +179,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     #         else:
     #             addTerminalValue(true):
     #                 discard
-
     # template addExtraCommand(op: OpCode, inArrowBlock: bool = false): untyped =
     #     when static OpSpecs[op].args!=0:
     #         when not inArrowBlock:
@@ -196,7 +195,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     #         else:
     #             addTerminalValue(true):
     #                 discard
-
     # template addPartial(op: OpCode): untyped =
     #     ret.add(newSymbol(ampersand))
     #     swap(ret[^1],ret[^2])
@@ -256,6 +254,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     else:
                         addTerminalValue(true):
                             discard
+
+                    # TODO verify everything is working & remove
                     #discard
                     # case subnode.m:
                     #     of plus             : addPartial(opAdd)       # +
@@ -307,7 +307,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         let node = n.a[i]
 
         case node.kind:
-            of Null: discard # cannot reach here - parse does not emit null values  
+            of Null:    discard # cannot reach here - parse does not emit null values  
             of Boolean: discard # cannot reach here - parse does not emit boolean values
 
             of Integer:
@@ -354,18 +354,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
                     Arities[funcIndx] = n.a[i+2].a.len
-                    #echo "LABEL: create user function: " & node.s & " with arity: " & $(Arities[funcIndx])
                 else:
                     if not isDictionary:
-                        #echo "NOT-A-LABEL: delete function: " & node.s & " from index (if exists)"
                         Arities.del(funcIndx)
-                    #echo "here"
 
-                #echo "adding const"
                 addConst(consts, node, opStoreX)
-                #echo "adding to argStack"
                 argStack.add(1)
-                #echo "done"
 
             of Attribute:
                 addAttr(consts, node)
@@ -384,11 +378,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addConst(consts, newWord("get"), opCallX)
                         i += 1
                     
-                    # let opName = "op" & node.p[0].s.capitalizeAscii()
-                    # try:
-                    #     let op = parseEnum[OpCode](opName)
-                    #     addToCommand((byte)op)
-                    # except:
                     addConst(consts, node.p[0], opLoadX)
 
                     i = 1
@@ -423,6 +412,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(false):
                             addConst(consts, newBlock(subblock), opPushX)
 
+                    # TODO re-implement thickarrowright
                     of thickarrowright  : 
                         discard
                         # # get next node
