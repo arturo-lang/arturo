@@ -28,7 +28,7 @@ import vm/[common, eval, exec, globals, stack, value]
 proc defineSymbols*() =
 
     when defined(VERBOSE):
-        echo "- Importing: " & static (instantiationInfo().filename).replace(".nim")
+        echo "- Importing: Iterators"
 
     # TODO check implementation
     # TODO add example
