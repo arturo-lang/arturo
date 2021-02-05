@@ -27,6 +27,35 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Logic"
 
+    builtin "all?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if all values in given block are true",
+        args        = {
+            "conditions"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+            if all? @[2>1 "DONE"=upper "done" true] 
+                -> print "yes, all are true"
+            ; yes, all are true
+
+            print all? @[true false true true]
+            ; false
+        """:
+            ##########################################################
+            var allOK = true
+
+            for item in x.a:
+                if item!=VTRUE:
+                    allOK = false
+                    stack.push(newBoolean(false))
+                    break
+
+            if allOK:
+                stack.push(newBoolean(true))
+
     builtin "and?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
@@ -49,6 +78,34 @@ proc defineSymbols*() =
         """:
             ##########################################################
             stack.push(newBoolean(x.b and y.b))
+
+    builtin "any?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if any of the values in given block is true",
+        args        = {
+            "conditions"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+            if any? @[false 3=4 2>1] 
+                -> print "yes, one (or more) of the values is true"
+            ; yes, one (or more) of the values is true
+
+            print any? @[false false false]
+            ; false
+        """:
+            ##########################################################
+            var anyOK = false
+            for item in x.a:
+                if item==VTRUE:
+                    anyOK = true
+                    stack.push(newBoolean(true))
+                    break
+                
+            if not anyOK:
+                stack.push(newBoolean(false))
 
     constant "false",
         alias       = unaliased,

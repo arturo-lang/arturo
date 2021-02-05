@@ -31,7 +31,8 @@ proc parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
         "port":     newString(res.port),
         "user":     newString(res.username),
         "password": newString(res.password),
-        "path":     newString(res.password),
+        "path":     newString(res.path),
         "query":    newString(res.query),
         "anchor":   newString(res.anchor)
         }.toOrderedTable
+        
