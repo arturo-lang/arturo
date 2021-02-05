@@ -237,8 +237,8 @@ proc defineSymbols*() =
                 of Dictionary: stack.push(newBoolean(x.d.len==0))
                 else: discard
 
-    # TODO check implementation
-    # TODO add example
+    # TODO(Collections\extend) verify functionality
+    #  labels: library, unit-test
     builtin "extend",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -249,6 +249,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Dictionary},
+        # TODO(Collections\extend) add example for documentation
+        #  labels: library,documentation
         example     = """
         """:
             ##########################################################
