@@ -19,7 +19,7 @@
 import helpers/benchmark as benchmarkHelper
 import helpers/helper as helperHelper
 
-import vm/[common, env, exec, globals, stack, value]
+import vm/[common, env, eval, exec, globals, stack, value]
 
 #=======================================
 # Methods
@@ -258,6 +258,26 @@ proc defineSymbols*() =
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Dictionary))
+
+    builtin "eval",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "evaluate given block into bytecode",
+        args        = {
+            "code"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        """:
+            ##########################################################
+            var ret: ValueDict = initOrderedTable[string,Value]()
+
+            let evaled = doEval(x)
+            ret["constants"] = newBlock(evaled[0])
+            ret["bytecode"] = newIntegerBlock(evaled[1])
+
+            stack.push(newDictionary(ret))
 
     builtin "help",
         alias       = unaliased, 
