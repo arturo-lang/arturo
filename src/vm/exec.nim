@@ -113,7 +113,7 @@ proc execBlock*(
 
     return Syms
 
-    # TODO (Exec\execBlock) verify functionality and remove previous code
+    # TODO(Exec\execBlock) verify functionality and remove previous code
     #  The actual implementation seems to be working fine but needs verification. Also, flow breaks need to be taken care of.
     #  labels: vm,enhancement,unit-test,cleanup
     #     #-----------------------------
