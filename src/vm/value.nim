@@ -382,6 +382,9 @@ proc newInline*(a: ValueArray = @[]): Value {.inline.} =
 proc newBlock*(a: ValueArray = @[]): Value {.inline.} =
     Value(kind: Block, a: a)
 
+proc newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
+    newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
+
 proc newStringBlock*(a: seq[string]): Value {.inline.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
