@@ -65,8 +65,6 @@ when not defined(MINI):
         discard eps.hasKeyOrPut(w, newTable[string, TableRef[string, CallHook]]())
         discard hasKeyOrPut(eps[w], scope, newTable[string, CallHook]())
         eps[w][scope][name] = hook
-        # TODO eval jscode
-        #echo jsTemplate%[name, scope]
         w.dispatch(proc() = discard w.eval(jsTemplate%[name, scope]))
 
 when not defined(MINI):

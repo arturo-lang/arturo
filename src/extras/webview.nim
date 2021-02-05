@@ -85,7 +85,7 @@ proc generalExternalInvokeCallback(w: Webview, arg: cstring) {.exportc.} =
         try:
             var mi = parseJson($arg).to(MethodInfo)
             if hasKey(eps[w], mi.scope) and hasKey(eps[w][mi.scope], mi.name):
-                discard eps[w][mi.scope][mi.name](mi.args) # TODO handle return values using js callbacks
+                discard eps[w][mi.scope][mi.name](mi.args)
                 handled = true
         except:
             echo getCurrentExceptionMsg()
@@ -248,7 +248,6 @@ proc bindProc*[P, R](w: Webview, scope, name: string, p: (proc(param: P): R)) =
     discard eps.hasKeyOrPut(w, newTable[string, TableRef[string, CallHook]]())
     discard hasKeyOrPut(eps[w], scope, newTable[string, CallHook]())
     eps[w][scope][name] = hook
-    # TODO eval jscode
     w.dispatch(proc() = discard w.eval(jsTemplate%[name, scope]))
 
 proc bindProcNoArg*(w: Webview, scope, name: string, p: proc()) =
@@ -259,7 +258,6 @@ proc bindProcNoArg*(w: Webview, scope, name: string, p: proc()) =
     discard eps.hasKeyOrPut(w, newTable[string, TableRef[string, CallHook]]())
     discard hasKeyOrPut(eps[w], scope, newTable[string, CallHook]())
     eps[w][scope][name] = hook
-    # TODO eval jscode
     w.dispatch(proc() = discard w.eval(jsTemplateNoArg%[name, scope]))
 
 proc bindProc*[P](w: Webview, scope, name: string, p: proc(arg:P)) =
@@ -277,7 +275,6 @@ proc bindProc*[P](w: Webview, scope, name: string, p: proc(arg:P)) =
     discard eps.hasKeyOrPut(w, newTable[string, TableRef[string, CallHook]]())
     discard hasKeyOrPut(eps[w], scope, newTable[string, CallHook]()) 
     eps[w][scope][name] = hook
-    # TODO eval jscode
     w.dispatch(proc() = discard w.eval(jsTemplateOnlyArg%[name, scope]))
 
 macro bindProcs*(w: Webview, scope: string, n: untyped): untyped =

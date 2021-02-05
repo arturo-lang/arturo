@@ -102,7 +102,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if symfunc.kind==Function and Aliases[symalias].precedence==InfixPrecedence:
                         i += step;
                         
-                        # TODO check if there is a problem with 0-arity functions (if any?)
                         when not inArrowBlock:
                             addConst(consts, Aliases[symalias].name, opCall)
                             argStack.add(symfunc.arity)
@@ -144,7 +143,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         
                         ended = true
 
-            # TODO fix trailing pipe recognition
+            # TODO(Eval\addTerminalValue) pipes need to be re-implemented
+            #  labels: vm,evaluator,enhancement,bug
             # ## Process trailing pipe            
             # if (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
                 
@@ -164,42 +164,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             #     else:
             #         echo "found trailing pipe without adjunct command. exiting"
             #         quit()
-
-    # TODO eliminate commented-out and/or re-implement
-    # template addCommand(op: OpCode, inArrowBlock: bool = false): untyped =
-    #     when static OpSpecs[op].args!=0:
-    #         when not inArrowBlock:
-    #             addToCommand((byte)op)
-    #             argStack.add(static OpSpecs[op].args)
-    #         else:
-    #             subargStack.add(static OpSpecs[op].args)
-    #     else:
-    #         when not inArrowBlock:
-    #             addTerminalValue(false):
-    #                 addToCommand((byte)op)
-    #         else:
-    #             addTerminalValue(true):
-    #                 discard
-    # template addExtraCommand(op: OpCode, inArrowBlock: bool = false): untyped =
-    #     when static OpSpecs[op].args!=0:
-    #         when not inArrowBlock:
-    #             addToCommand((byte)((int)(op)-(int)(opExtra)))
-    #             addToCommand((byte)opExtra)
-    #             argStack.add(static OpSpecs[op].args)
-    #         else:
-    #             subargStack.add(static OpSpecs[op].args)
-    #     else:
-    #         when not inArrowBlock:
-    #             addTerminalValue(false):
-    #                 addToCommand((byte)((int)(op)-(int)(opExtra)))
-    #                 addToCommand((byte)opExtra)
-    #         else:
-    #             addTerminalValue(true):
-    #                 discard
-    # template addPartial(op: OpCode): untyped =
-    #     ret.add(newSymbol(ampersand))
-    #     swap(ret[^1],ret[^2])
-    #     subargStack.add(static OpSpecs[op].args-1)
 
     template processNextCommand(): untyped =
         i += 1
@@ -256,41 +220,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(true):
                             discard
 
-                    # TODO verify everything is working & remove
-                    #discard
-                    # case subnode.m:
-                    #     of plus             : addPartial(opAdd)       # +
-                    #     of minus            : addPartial(opSub)       # -   
-                    #     of asterisk         : addPartial(opMul)
-                    #     of slash            : addPartial(opDiv)       # /
-                    #     of doubleslash      : addPartial(opFDiv)      # //
-                    #     of percent          : addPartial(opMod)       # %
-                    #     of caret            : addPartial(opPow)       # ^
-                    #     of equal            : addPartial(opEq)        # =
-                    #     of lessgreater      : addPartial(opNe)        # <>
-                    #     of greaterthan      : addPartial(opGt)        # >
-                    #     of greaterequal     : addPartial(opGe)        # >=
-                    #     of lessthan         : addPartial(opLt)        # <
-                    #     of equalless        : addPartial(opLe)        # =<
-                    #     of ellipsis         : addPartial(opRange)     # ..
-                    #     of backslash        : addPartial(opGet)
-                    #     of doubleplus       : addPartial(opAppend)    # ++
-                    #     of doubleminus      : addPartial(opRemove)    # --
-                    #     of colon            : addPartial(opLet)       # :
-
-                    #     of tilde            : 
-                    #         subargStack.add(OpSpecs[opRender].args)#addCommand(opRender, inArrowBlock=true)
-                    #     of at               : addCommand(opArray, inArrowBlock=true)
-                    #     of sharp            : addCommand(opDictionary, inArrowBlock=true)
-                    #     of dollar           : addCommand(opFunction, inArrowBlock=true)
-                    #     of ampersand        : addCommand(opPush, inArrowBlock=true) 
-                    #     of dotslash         : addCommand(opRelative, inArrowBlock=true)
-                    #     of doublearrowright : addCommand(opWrite, inArrowBlock=true)   
-                    #     of doublearrowleft  : addCommand(opRead, inArrowBlock=true) 
-
-                    #     else:
-                    #         addTerminalValue(true):
-                    #             discard
                 else: discard
 
             
@@ -413,7 +342,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(false):
                             addConst(consts, newBlock(subblock), opPush)
 
-                    # TODO re-implement thickarrowright
+                    # TODO(Eval\evalOne) thickarrowright needs to be re-implemented
+                    #  labels: vm,evaluator,enhancement,bug
                     of thickarrowright  : 
                         discard
                         # # get next node

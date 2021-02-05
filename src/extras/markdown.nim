@@ -1313,8 +1313,6 @@ method parse*(this: BlockquoteParser, doc: string, start: int): ParseResult =
     if doc[start ..< pos].find(re" {4,}[^\n]+\n") != -1 and doc.since(pos).matchLen(re"^\n|^ {4,}|$") > -1:
       break
 
-    # TODO laziness only applies to when the tip token is a paragraph.
-    # find the laziness text
     var lazyChunk: string
     for line in doc.since(pos).splitLines(keepEol=true):
       if line.isBlank: break
@@ -1837,7 +1835,6 @@ proc getLinkText*(doc: string, start: int, allowNested: bool = false): tuple[sli
     # Backtick: code spans bind more tightly than the brackets in link text.
     # Skip the tokens in code.
     elif ch == '`':
-      # FIXME: it's better to extract to a code span helper function
       skip = doc[start+i ..< doc.len].matchLen(re"^((`+)\s*([\s\S]*?[^`])\s*\2(?!`))") - 1
 
     # autolinks, and raw HTML tags bind more tightly than the brackets in link text.
@@ -2218,7 +2215,7 @@ proc getDelimiterStack*(token: Token): DoublyLinkedList[Delimiter] =
     if child of Text:
       var text = Text(child)
       if text.delimiter != nil:
-        text.delimiter.token = text # TODO: use treat delimiter as a token, instead of linking to a text token.
+        text.delimiter.token = text
         result.append(text.delimiter)
 
 proc processEmphasis*(state: State, token: Token) =
