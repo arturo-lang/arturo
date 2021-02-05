@@ -1,0 +1,42 @@
+runSet: function [title,location][
+    print color.bold.cyan ~"\n> |title|"
+
+    tests: sort list.select:".res" relative location
+    success: 0
+
+    loop tests 'test [
+        script: replace test ".res" ".art"
+        expected: strip read test
+
+        prints pad.right ((color.magenta "\n- Running: ") ++ extract.filename script) 70
+        result: strip execute ~{arturo "|script|"}
+
+        if? result=expected [
+            prints color.green.bold "[ OK ]"
+            success: success + 1
+        ]
+        else -> prints color.red "[ Error ]"
+    ]
+
+    print "\n"
+    print render {
+        ******************************
+        * |success| of |size tests|
+        * |title| succeeded.
+        ******************************
+    }
+
+    if success < size tests 
+        -> panic.code: 1 "testing failed"
+]
+
+print color.bold {
+	|============================================
+	| Arturo Tester
+	|============================================
+}
+
+runSet "Unit Tests" "../tests"
+runSet "Examples" "../examples/rosetta"
+
+exit
