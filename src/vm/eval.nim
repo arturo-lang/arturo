@@ -87,6 +87,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         addToCommand((byte)opAttr)
 
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
+        echo "=== in aTV ==="
+        echo "inArrowBlock? " & $(inArrowBlock)
         block:
             ## Check for potential Infix operator ahead
             if (i+1<childrenCount and n.a[i+1].kind == Symbol):
@@ -200,6 +202,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
     #     subargStack.add(static OpSpecs[op].args-1)
 
     template processNextCommand(): untyped =
+        echo "=== in pNC ==="
         i += 1
 
         while i < n.a.len and not ended:
@@ -218,9 +221,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                    Path,
                    Inline,
                    Block: 
+                    echo "adding terminal value"
                     addTerminalValue(true):
                         discard
                 of Word:
+                    echo "adding word"
                     if Arities.hasKey(subnode.s):
                         let funcArity = Arities[subnode.s]
                         if funcArity!=0:
@@ -233,6 +238,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             discard
 
                 of Symbol: 
+                    echo "adding symbol"
                     let symalias = subnode.m
                     if Aliases.hasKey(symalias):
                         let symfunc = Syms[Aliases[symalias].name.s]
@@ -403,6 +409,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Symbol: 
                 case node.m:
                     of arrowright       : 
+                        echo "FOUND: arrowright"
                         var subargStack: seq[int] = @[]
                         var ended = false
                         var ret: seq[Value] = @[]
@@ -536,6 +543,7 @@ proc doEval*(root: Value, isDictionary=false): Translation =
         result.dump()
 
     result = (cnsts,newit)
+    dump(result)
         
 #=======================================
 # Inspection
