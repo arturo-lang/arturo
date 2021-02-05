@@ -3,55 +3,49 @@
 ---
 
 <!--ts-->
-   * [all?](#all?)
-   * [any?](#any?)
+   * [every?](#every?)
    * [filter](#filter)
    * [fold](#fold)
    * [loop](#loop)
    * [map](#map)
    * [select](#select)
+   * [some?](#some?)
 <!--te-->
 
 ---
 
 
-## all?
+## every?
 
 #### Description
 
-Check if all of collection's item satisfy given condition
+Check if every single item in collection satisfy given condition
 
 #### Usage
 
 <pre>
-<b>all?</b> <ins>collection</ins> <i>:block</i>
-     <ins>params</ins> <i>:literal</i> <i>:block</i>
-     <ins>condition</ins> <i>:block</i>
+<b>every?</b> <ins>collection</ins> <i>:block</i>
+       <ins>params</ins> <i>:literal</i> <i>:block</i>
+       <ins>condition</ins> <i>:block</i>
 </pre>
 
 #### Returns
 
 - *:boolean*
 
+#### Examples
 
-## any?
+```red
+if every? [2 4 6 8] 'x [even? x] 
+    -> print "every number is an even integer"
+; every number is an even integer
 
-#### Description
+print every? 1..10 'x -> x < 11
+; true
 
-Check if any of collection's items satisfy given condition
-
-#### Usage
-
-<pre>
-<b>any?</b> <ins>collection</ins> <i>:block</i>
-     <ins>params</ins> <i>:literal</i> <i>:block</i>
-     <ins>condition</ins> <i>:block</i>
-</pre>
-
-#### Returns
-
-- *:boolean*
-
+print every? [2 3 5 7 11 14] 'x [prime? x]
+; false
+```
 
 ## filter
 
@@ -257,4 +251,36 @@ arr: 1..10
 select 'arr 'x -> even? x
 print arr
 ; 2 4 6 8 10
+```
+
+## some?
+
+#### Description
+
+Check if any of collection's items satisfy given condition
+
+#### Usage
+
+<pre>
+<b>some?</b> <ins>collection</ins> <i>:block</i>
+      <ins>params</ins> <i>:literal</i> <i>:block</i>
+      <ins>condition</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+if some? [1 3 5 6 7] 'x [even? x] 
+    -> print "at least one number is an even integer"
+; at least one number is an even integer
+
+print some? 1..10 'x -> x > 9
+; true
+
+print some? [4 6 8 10] 'x [prime? x]
+; false
 ```
