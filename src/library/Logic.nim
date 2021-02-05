@@ -27,8 +27,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Logic"
 
-    # TODO check implementation
-    # TODO add example
     builtin "all?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -39,6 +37,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
+            if all? @[2>1 "DONE"=upper "done" true] 
+                -> print "yes, all are true"
+            ; yes, all are true
+
+            print all? @[true false true true]
+            ; false
         """:
             ##########################################################
             var allOK = true
@@ -75,8 +79,6 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(newBoolean(x.b and y.b))
 
-    # TODO check implementation
-    # TODO add example
     builtin "any?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -87,6 +89,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
+            if any? @[false 3=4 2>1] 
+                -> print "yes, one (or more) of the values is true"
+            ; yes, one (or more) of the values is true
+
+            print any? @[false false false]
+            ; false
         """:
             ##########################################################
             var anyOK = false
