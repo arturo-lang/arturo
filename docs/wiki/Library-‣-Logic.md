@@ -3,7 +3,9 @@
 ---
 
 <!--ts-->
+   * [all?](#all?)
    * [and?](#and?)
+   * [any?](#any?)
    * [false?](#false?)
    * [nand?](#nand?)
    * [nor?](#nor?)
@@ -15,6 +17,33 @@
 
 ---
 
+
+## all?
+
+#### Description
+
+Check if all values in given block are true
+
+#### Usage
+
+<pre>
+<b>all?</b> <ins>conditions</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+if all? @[2>1 "DONE"=upper "done" true] 
+    -> print "yes, all are true"
+; yes, all are true
+
+print all? @[true false true true]
+; false
+```
 
 ## and?
 
@@ -44,6 +73,33 @@ if and? x=2 y>5 [
 ]
 
 ; yep, that's correct!
+```
+
+## any?
+
+#### Description
+
+Check if any of the values in given block is true
+
+#### Usage
+
+<pre>
+<b>any?</b> <ins>conditions</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+if any? @[false 3=4 2>1] 
+    -> print "yes, one (or more) of the values is true"
+; yes, one (or more) of the values is true
+
+print any? @[false false false]
+; false
 ```
 
 ## false?
