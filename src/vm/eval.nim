@@ -102,10 +102,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if symfunc.kind==Function and Aliases[symalias].precedence==InfixPrecedence:
                         i += step;
                         
-                        #echo "found infix alias: " & $(n.a[i])
-                        if symfunc.arity!=0:
+                        # TODO check if there is a problem with 0-arity functions (if any?)
+                        when not inArrowBlock:
                             addConst(consts, Aliases[symalias].name, opCall)
                             argStack.add(symfunc.arity)
+                        else:
+                            subargStack.add(symfunc.arity)
 
                         when inArrowBlock: ret.add(n.a[i])
                 
