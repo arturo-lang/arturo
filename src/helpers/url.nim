@@ -35,5 +35,4 @@ proc parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
         "query":    newString(res.query),
         "anchor":   newString(res.anchor)
         }.toOrderedTable
-
-    echo repr res
+        
