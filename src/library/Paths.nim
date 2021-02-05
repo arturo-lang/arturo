@@ -32,7 +32,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Paths"
 
-    # TODO add example
     builtin "extract",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -56,6 +55,30 @@ proc defineSymbols*() =
         },
         returns     = {String,Dictionary},
         example     = """
+            path: "/this/is/some/path.txt"
+
+            print extract.directory path        ; /this/is/some
+            print extract.basename path         ; path.txt
+            print extract.filename path         ; path
+            print extract.extension path        ; .txt
+
+            print extract path 
+            ; [directory:/this/is/some basename:path.txt filename:path extension:.txt]
+
+            url: "http://subdomain.website.com:8080/path/to/file.php?q=something#there"
+
+            print extract.scheme url            ; http
+            print extract.host url              ; subdomain.website.com
+            print extract.port url              ; 8080
+            print extract.user url              ; 
+            print extract.password url          ;
+            print extract.path url              ; /path/to/file.php
+            print extract.query url             ; q=something
+            print extract.anchor url            ; there
+
+            print extract url
+            ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
+
         """:
             ##########################################################
             if isUrl(x.s):
