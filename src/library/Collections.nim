@@ -238,7 +238,7 @@ proc defineSymbols*() =
                 else: discard
 
     # TODO(Collections\extend) verify functionality
-    #  labels: library, unit-test
+    #  labels: library, unit-test,easy
     builtin "extend",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -250,7 +250,7 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         # TODO(Collections\extend) add example for documentation
-        #  labels: library,documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################

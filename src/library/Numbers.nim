@@ -27,8 +27,6 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-# TODO add missing examples for all math functions
-
 proc defineSymbols*() =
 
     when defined(VERBOSE):
@@ -62,6 +60,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\acos) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -76,6 +76,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\acosh) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -90,6 +92,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\asin) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -104,6 +108,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\asinh) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -118,6 +124,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\atan) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -132,6 +140,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\atanh) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -169,6 +179,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\cos) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -183,6 +195,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\cosh) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -197,6 +211,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\csec) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -211,6 +227,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\csech) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -225,6 +243,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\ctan) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -239,6 +259,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\ctanh) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -525,6 +547,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\sec) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -539,6 +563,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\sech) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -553,6 +579,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\sin) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -567,6 +595,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\sinh) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -581,6 +611,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\sqrt) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -620,6 +652,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\tan) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -634,6 +668,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
+        # TODO(Numbers\tanh) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################

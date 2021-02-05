@@ -103,7 +103,6 @@ proc defineSymbols*() =
             else:
                 stack.push(newStringBlock(contents.map((x)=>x[1])))
 
-    # TODO add example
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -115,6 +114,8 @@ proc defineSymbols*() =
             "code"  : ({Integer},"return given exit code")
         },
         returns     = {Boolean},
+        # TODO(System\panic) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -128,7 +129,6 @@ proc defineSymbols*() =
             else:
                 quit()    
 
-    # TODO add example
     builtin "pause",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -138,6 +138,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
+        # TODO(System\pause) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################

@@ -24,8 +24,6 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-# TODO add different useful functions
-
 proc defineSymbols*() =
 
     when defined(VERBOSE):

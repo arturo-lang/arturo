@@ -97,8 +97,6 @@ proc defineSymbols*() =
                 else:
                     stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
 
-    # TODO check implementation
-    # TODO add example
     builtin "hash",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -110,6 +108,8 @@ proc defineSymbols*() =
             "string": ({Boolean},"get as a string")
         },
         returns     = {Integer,String},
+        # TODO(Crypto\hash) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################

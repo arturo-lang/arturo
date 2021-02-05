@@ -25,8 +25,6 @@ import vm/[common, env, exec, globals, stack, value]
 # Methods
 #=======================================
 
-# TODO add missing examples for all type-checking functions
-
 proc defineSymbols*() =
 
     when defined(VERBOSE):
@@ -98,6 +96,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\attribute?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -112,6 +112,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\attributeLabel?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -170,6 +172,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\binary?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -184,6 +188,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\block?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -198,6 +204,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\boolean?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -212,6 +220,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\char?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -226,6 +236,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\database?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -240,6 +252,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\date?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -254,6 +268,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\dictionary?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -266,6 +282,8 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Nothing},
+        # TODO(Reflection\help) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -282,6 +300,8 @@ proc defineSymbols*() =
             "get"   : ({Boolean},"get information as dictionary")
         },
         returns     = {Dictionary,Nothing},
+        # TODO(Reflection\info) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -299,6 +319,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\inline?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -331,6 +353,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\integer?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -363,6 +387,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\floating?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -377,6 +403,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\function?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -391,6 +419,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\label?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -405,6 +435,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\literal?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -419,6 +451,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\null?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -433,6 +467,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\path?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -447,6 +483,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\pathLabel?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -477,6 +515,8 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Dictionary},
+        # TODO(Reflection\stack) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -489,6 +529,8 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\standalone?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -503,6 +545,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\string?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -517,6 +561,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\symbol?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -572,6 +618,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\type?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -586,6 +634,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Reflection\word?) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################

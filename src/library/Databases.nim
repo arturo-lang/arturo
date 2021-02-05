@@ -26,7 +26,13 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-# TODO add support for MySQL (and potentially other dbs?)
+# TODO(Databases) Add support for MySQL
+#  Currently, the only supported database is Sqlite
+#  labels: library,enhancement
+
+# TODO(Databases) Add support for MongoDB
+#  Currently, the only supported database is Sqlite
+#  labels: library,enhancement
 
 proc defineSymbols*() =
 
