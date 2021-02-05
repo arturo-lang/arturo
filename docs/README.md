@@ -1,4 +1,4 @@
-<img align="left" width="190" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/logo.png"/>
+<img align="left" width="190" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/logo.png"/>
 
 <h1>Arturo</h1>
 
@@ -121,7 +121,7 @@ or (to run a specific local script):
 
 ► ~[arturo-lang.io](http://arturo-lang.io/)~ (Temporarily in maintenance)
 
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/demo.gif"/>
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/demo.gif"/>
     
 Editors & IDEs
 ------------------------------
@@ -209,7 +209,7 @@ The main goals are: performance, energy-efficiency, and portability. (With that 
 
 #### General schema
 
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/schema.png"/>
+<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/schema.png"/>
 
 Community
 ------------------------------
