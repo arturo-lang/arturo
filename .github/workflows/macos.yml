@@ -62,4 +62,4 @@ jobs:
       - name: Run unit tests
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tests/runAll.art
+          arturo tools/tester.art
