@@ -30,8 +30,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Iterators"
 
-    # TODO check implementation
-    # TODO add example
     builtin "every?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -44,6 +42,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
+            if every? [2 4 6 8] 'x [even? x] 
+                -> print "every number is an even integer"
+            ; every number is an even integer
+
+            print every? 1..10 'x -> x < 11
+            ; true
+
+            print every? [2 3 5 7 11 14] 'x [prime? x]
+            ; false
         """:
             ##########################################################
             var args: ValueArray
@@ -423,8 +430,6 @@ proc defineSymbols*() =
 
                 stack.push(newBlock(res))
 
-    # TODO check implementation
-    # TODO add example
     builtin "some?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -437,6 +442,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
+            if some? [1 3 5 6 7] 'x [even? x] 
+                -> print "at least one number is an even integer"
+            ; at least one number is an even integer
+
+            print some? 1..10 'x -> x > 9
+            ; true
+
+            print some? [4 6 8 10] 'x [prime? x]
+            ; false
         """:
             ##########################################################
             var args: ValueArray
