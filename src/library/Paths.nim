@@ -32,7 +32,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Paths"
 
-    # TODO add example
     builtin "extract",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
