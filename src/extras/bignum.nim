@@ -6,7 +6,7 @@
 # distribution, for details about the copyright.
 #
 
-# TODO(bignum) Include path needed for other OSes?
+# TODO(Bignum) Include path needed for other OSes?
 #  labels: 3rd-party
 {.passl: "-lgmp".}
 
