@@ -1,0 +1,11 @@
+quickSort: function [items][
+	if 2 > size items -> return items
+	
+	pivot: first items
+	left:  select slice items 1 (size items)-1 'x -> x < pivot
+	right: select slice items 1 (size items)-1 'x -> x >= pivot
+
+	((quickSort left) ++ pivot) ++ quickSort right
+]
+
+print quickSort [3 1 2 8 5 7 9 4 6]
