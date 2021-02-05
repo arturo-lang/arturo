@@ -339,7 +339,9 @@ proc defineSymbols*() =
             else:
                 stack.push(newBoolean(x.s.startsWith(y.s)))
 
-    # TODO fix .template implementation (more template-engine like)    
+    # TODO(Strings\render) `.template` attribute should behave more like a template engine
+    #  Other than changing interpolation delimiters to `<| .. |>`, the handling should be different from the usual implementation, with text outside the text being treated as a string and then concatenated with return values from tag-blocks.
+    #  labels: library,enhancement
     builtin "render",
         alias       = tilde, 
         rule        = PrefixPrecedence,

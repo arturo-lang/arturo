@@ -22,7 +22,9 @@ import vm/[common, globals, stack, value]
 # Methods
 #=======================================
 
-# TODO add function to check for "identity"? - eg `identical?`
+# TODO(Comparison) Add function to check for "identity"?
+#  Currently, we have only `equal?`. Should we add another like `identical?`?
+#  labels: library,open discussion
 
 proc defineSymbols*() =
 

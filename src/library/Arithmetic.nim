@@ -169,7 +169,9 @@ proc defineSymbols*() =
             if x.kind==Literal  : Syms[x.s] *= y
             else                : stack.push(x*y)
 
-    # TODO add alias (`_`?)
+    # TODO(Arithmetic\neg) Add alias `_`?
+    #  Current implementation has no alias. Should we add one? (Given that `-` is already reserved for subtraction and the function `sub`)
+    #  labels: library,open discussion
     builtin "neg",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

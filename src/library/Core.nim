@@ -31,8 +31,9 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Core"
 
-    # TODO fix implementation
-    # TODO add example
+    # TODO(Core\break) Not working - needs fix
+    #  The implementation was broken after cleaning up the standard library and eval/parse.
+    #  labels: library,bug,critical
     builtin "break",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -40,6 +41,8 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Block},
+        # TODO(Core\break) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -98,8 +101,9 @@ proc defineSymbols*() =
             stack.push(x)
             stack.push(newBoolean(false))
 
-    # TODO fix implementation
-    # TODO add example
+    # TODO(Core\continue) Not working - needs fix
+    #  The implementation was broken after cleaning up the standard library and eval/parse.
+    #  labels: library,bug,critical
     builtin "continue",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -107,6 +111,8 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Block},
+        # TODO(Core\continue) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -216,7 +222,9 @@ proc defineSymbols*() =
             let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if not y.b: discard execBlock(x)
 
-    # TODO remove function if not needed
+    # TODO(Core\globalize) Do we really need this functionality?
+    #  Already there are other options like the `.import` attribute
+    #  labels: library,open discussion
     builtin "globalize",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -284,7 +292,9 @@ proc defineSymbols*() =
                 #     return ReturnResult
             stack.push(x)
 
-    # TODO verify if alias should be changed
+    # TODO(Core\let) Do we really need an alias for that?
+    #  Currently, the alias is `:` - acting as an infix operator. But this could lead to confusion with existing `label:` or `path\label:`.
+    #  labels: library,open discussion
     builtin "let",
         alias       = colon, 
         rule        = InfixPrecedence,
@@ -302,8 +312,8 @@ proc defineSymbols*() =
             ##########################################################
             Syms[x.s] = y
 
-    # TODO review implementation
-    # TODO add example
+    # TODO(Core\new) verify functionality
+    #  labels: library, unit-test,easy
     builtin "new",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -313,6 +323,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Any},
+        # TODO(Core\new) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -323,8 +335,8 @@ proc defineSymbols*() =
         description = "the NULL constant":
             VNULL
 
-    # TODO review implementation
-    # TODO add example
+    # TODO(Core\pop) verify functionality
+    #  labels: library, unit-test,easy
     builtin "pop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -336,6 +348,8 @@ proc defineSymbols*() =
             "discard"   : ({Boolean},"do not return anything")
         },
         returns     = {Any},
+        # TODO(Core\pop) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
@@ -474,8 +488,9 @@ proc defineSymbols*() =
                 if stack.pop().b:
                     break
 
-    # TODO add alias?
-    # TODO add example
+    # TODO(Core\globalize) Do we really need an alias for that?
+    #  Currently, the alias is `:` - acting as an infix operator. But this could lead to confusion with existing `label:` or `path\label:`.
+    #  labels: library,open discussion
     builtin "var",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -485,6 +500,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Any},
+        # TODO(Core\var) add example for documentation
+        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################

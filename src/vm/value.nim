@@ -1397,6 +1397,8 @@ proc codify*(v: Value): string {.inline.} =
         else:
             result = ""
 
+# TODO(Value\hash) Verify hashing is done right
+#  labels: vm,unit-test
 proc hash*(v: Value): Hash {.inline.}=
     case v.kind:
         of Null         : result = 0
