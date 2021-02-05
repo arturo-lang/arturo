@@ -6,7 +6,8 @@
 # distribution, for details about the copyright.
 #
 
-#FIXME: other OSes need include path?
+# TODO(bignum) Include path needed for other OSes?
+#  labels: 3rd-party
 {.passl: "-lgmp".}
 
 
@@ -1897,8 +1898,6 @@ proc `*`*(x: int | culong, y: Int): Int =
 
 proc `*=`*(z: Int, x: int | culong | Int) =
   discard z.mul(z, x)
-
-# TODO - countdown
 
 # template countupImpl(incr: stmt) {.immediate, dirty.} =
 #   when a is int or a is culong:

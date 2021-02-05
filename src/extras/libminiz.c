@@ -191,7 +191,6 @@
 //#define MINIZ_NO_MALLOC
 
 #if defined(__TINYC__) && (defined(__linux) || defined(__linux__))
-  // TODO: Work around "error: include file 'sys\utime.h' when compiling with tcc on Linux
   #define MINIZ_NO_TIME
 #endif
 
@@ -1365,8 +1364,6 @@ const char *mz_error(int err)
 #define TINFL_CR_RETURN_FOREVER(state_index, result) do { for ( ; ; ) { TINFL_CR_RETURN(state_index, result); } } MZ_MACRO_END
 #define TINFL_CR_FINISH }
 
-// TODO: If the caller has indicated that there's no more input, and we attempt to read beyond the input buf, then something is wrong with the input because the inflator never
-// reads ahead more than it needs to. Currently TINFL_GET_BYTE() pads the end of the stream with 0's in this scenario.
 #define TINFL_GET_BYTE(state_index, c) do { \
   if (pIn_buf_cur >= pIn_buf_end) { \
     for ( ; ; ) { \
@@ -3388,7 +3385,6 @@ mz_bool mz_zip_reader_is_file_a_directory(mz_zip_archive *pZip, mz_uint file_ind
 
   // Bugfix: This code was also checking if the internal attribute was non-zero, which wasn't correct.
   // Most/all zip writers (hopefully) set DOS file/directory attributes in the low 16-bits, so check for the DOS directory flag and ignore the source OS ID in the created by field.
-  // FIXME: Remove this check? Is it necessary - we already check the filename.
   external_attr = MZ_READ_LE32(p + MZ_ZIP_CDH_EXTERNAL_ATTR_OFS);
   if ((external_attr & 0x10) != 0)
     return MZ_TRUE;
