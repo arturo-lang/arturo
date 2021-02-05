@@ -1,2 +1,2 @@
-print join.with:", " map 1..10 => to :string
+print join.with:", " map 1..10 => [to :string &]
  

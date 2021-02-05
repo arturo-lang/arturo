@@ -1,12 +1,12 @@
 if2: function [cond1 cond2 both one two none][
 	case []
-		when? [and? cond1 cond2] [both]
-		when? [cond1] [one]
-		when? [cond2] [two]
-		else  [none]
+		when? [and? cond1 cond2] -> do both
+		when? [cond1] -> do one
+		when? [cond2] -> do two
+		else  -> do none
 ]
 
-if2 false true $[][print "both"]
-			   $[][print "only first"]
-			   $[][print "only second"]
-			   $[][print "none"]
+if2 false true [print "both"]
+			   [print "only first"]
+			   [print "only second"]
+			   [print "none"]

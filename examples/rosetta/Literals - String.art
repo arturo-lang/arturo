@@ -2,11 +2,10 @@ str: "Hello world"
 
 print [str "->" type str]
 
-multiline: 
----
+multiline: {
 This
 is a multi-line
 string
----
+}
 
 print [multiline "->" type multiline]
