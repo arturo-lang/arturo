@@ -8,6 +8,8 @@ FunctionAttributesTemplate: relative "wikidocs/function.attributes.template.md"
 modules: []
 functions: #[]
 
+docsFolder: "../docs/wiki"
+
 ; get modules and functions
 
 loop symbols [sym][
@@ -32,8 +34,8 @@ contents: join.with:"\n" map modules [md][
     ~"- [|md|](Library-‣-|md|)"
 ]
 
-write relative ~"wikidocs/out/Library.md" (render.single read IndexTemplate)
-write relative ~"wikidocs/out/_Sidebar.md" (render.single read SidebarTemplate)
+write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
+write relative ~"|docsFolder|/_Sidebar.md" (render.single read SidebarTemplate)
 
 ; generate library pages
 
@@ -84,5 +86,5 @@ loop functions [md,fns][
         ]
         replace render.single read FunctionTemplate "%ATTRIBS%" attributos
     ]
-    write relative ~"wikidocs/out/Library-‣-|md|.md" (render.single read LibraryTemplate) ++ contents
+    write relative ~"|docsFolder|/Library-‣-|md|.md" (render.single read LibraryTemplate) ++ contents
 ]
