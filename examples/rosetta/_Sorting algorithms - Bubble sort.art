@@ -4,7 +4,7 @@ bubbleSort: function [items][
     while [changed] [
         changed: false
         i: 0
-        repeat (size items)-1 [
+        loop (size items)-1 [][
             if (items \ i) > (items \ i + 1) [
                 tmp: items \ i
                 set items i get items i + 1
@@ -18,7 +18,3 @@ bubbleSort: function [items][
 ]
  
 print bubbleSort [3 1 2 8 5 7 9 4 6]
-
-print "this is it"
-
-1..10 | print

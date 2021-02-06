@@ -1,7 +1,7 @@
 f: $[n][ if? n=0 -> 1 else -> n-m f n-1 ]
 m: $[n][ if? n=0 -> 0 else -> n-f m n-1 ]
  
-loop 0..50 'i [
+loop 0..20 'i [
 	print ["f(" i ")=" f i]
 	print ["m(" i ")=" m i]
 	print ""
