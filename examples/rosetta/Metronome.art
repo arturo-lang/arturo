@@ -1,0 +1,18 @@
+startMetronome: function [bpm,msr][
+    freq: 60000/bpm
+    i: 0
+    while [true][
+        loop msr-1 'x[
+            prints "\a"
+            pause freq
+        ]
+        inc 'i
+        print ~"\aAND |i|"
+        pause freq
+    ]
+]
+
+tempo: to :integer arg\0
+beats: to :integer arg\1
+
+startMetronome tempo beats
