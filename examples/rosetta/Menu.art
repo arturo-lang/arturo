@@ -1,0 +1,12 @@
+menu: function [items][
+    selection: neg 1
+    while [not? in? selection 1..size items][
+        loop.with:'i items 'item -> print ~"|i+1|. |item|"
+        inp: input "Enter a number: "
+        if numeric? inp ->
+            selection: to :integer inp
+    ]
+	print items \ selection-1
+]
+
+menu ["fee fie" "huff and puff" "mirror mirror" "tick tock"]
