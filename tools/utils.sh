@@ -24,7 +24,7 @@ FLAGS="\
  --checks:off\
  --overflowChecks:on\
  -d:ssl\
- --passC:"-O3"\
+ --passC:'-O3'\
  --cincludes:extras\
  --nimcache:.cache\
  --embedsrc:on\
