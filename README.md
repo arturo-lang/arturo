@@ -76,7 +76,7 @@ brew install arturo
 
 ### Manually
 
-> 💡  Arturo should compile practically everywhere: Windows, Linux, BSD, Mac OS. If you encounter an issue, or your OS is not supported, drop me a line!
+> 💡  Arturo should compile practically everywhere: Windows, Linux, BSD, Mac OS - [even Android](https://github.com/arturo-lang/arturo/issues/65#issuecomment-770723447). If you encounter an issue, or your OS is not supported, drop me a line!
 
 #### Prerequisites
 
