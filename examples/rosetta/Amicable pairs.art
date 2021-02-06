@@ -1,0 +1,20 @@
+properDivs: function [x] ->
+    (factors x) -- x
+
+amicable: function [x][
+    y: sum properDivs x 
+    if and? x = sum properDivs y 
+            x <> y 
+        -> return @[x,y]
+    return ø
+]
+
+amicables: []
+
+loop 1..20000 'n [
+    am: amicable n
+    if am <> ø 
+        -> 'amicables ++ @[sort am]
+]
+
+print unique amicables
