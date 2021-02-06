@@ -68,7 +68,7 @@ loop functions [md,fns][
                     "|" ++ "\n"
             ]
         ]
-        ; <ins>from</ins> <i>:integer</i>
+
         pars: new []
 
         loop (fn\args) [k,params][
