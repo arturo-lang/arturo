@@ -1,0 +1,11 @@
+proper divisors of 1 => [] 
+proper divisors of 2 => [] 
+proper divisors of 3 => [1] 
+proper divisors of 4 => [1 2] 
+proper divisors of 5 => [1] 
+proper divisors of 6 => [1 2 3] 
+proper divisors of 7 => [1] 
+proper divisors of 8 => [1 2 4] 
+proper divisors of 9 => [1 3] 
+proper divisors of 10 => [1 2 5] 
+The number with the most proper divisors ( 79 ) is 15120 

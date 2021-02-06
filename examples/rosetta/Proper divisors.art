@@ -1,0 +1,18 @@
+properDivisors: function [x] ->
+    (factors x) -- x
+
+loop 1..10 'x ->
+    print ["proper divisors of" x "=>" properDivisors x]
+
+maxN: 0
+maxProperDivisors: 0
+
+loop 1..20000 'x [
+    pd: size properDivisors x
+    if maxProperDivisors < pd [
+        maxN: x
+        maxProperDivisors: pd
+    ]
+]
+
+print ["The number with the most proper divisors (" maxProperDivisors ") is" maxN]
