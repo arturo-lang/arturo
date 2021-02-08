@@ -68,7 +68,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "lines"         : ({Boolean},"read file lines into block"),
-            "json"          : ({Boolean},"read JSON into value"),
+            "json"          : ({Boolean},"read Json into value"),
             "csv"           : ({Boolean},"read CSV file into a block of rows"),
             "withHeaders"   : ({Boolean},"read CSV headers"),
             "html"          : ({Boolean},"read HTML file into node dictionary"),
