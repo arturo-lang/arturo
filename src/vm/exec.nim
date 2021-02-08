@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import tables
+import math, tables
 
 when defined(VERBOSE):
     import strformat
@@ -404,9 +404,16 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xA0-AF] #
             # arithmetic & logical operators
-            of opIAdd, opISub, opIMul,
-               opIDiv, opIFDiv, opIMod, 
-               opIPow, opINeg, opBNot, 
+            of opIAdd               : stack.push(newInteger(Stack[SP-1].i + Stack[SP-2].i))
+            of opISub               : stack.push(newInteger(Stack[SP-1].i - Stack[SP-2].i))
+            of opIMul               : stack.push(newInteger(Stack[SP-1].i * Stack[SP-2].i))
+            of opIDiv               : stack.push(newInteger(Stack[SP-1].i div Stack[SP-2].i))
+        
+            of opIFDiv              : discard
+            of opIMod               : stack.push(newInteger(Stack[SP-1].i mod Stack[SP-2].i))
+            of opIPow               : stack.push(newInteger((Stack[SP-1].i)^(Stack[SP-2].i)))
+
+            of opINeg, opBNot, 
                opBAnd, opOr, opXor, 
                opShl, opShr         : discard
 
