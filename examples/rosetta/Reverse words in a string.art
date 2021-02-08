@@ -1,0 +1,16 @@
+text: {
+---------- Ice and Fire ------------
+ 
+fire, in end will world the say Some
+ice. in say Some
+desire of tasted I've what From
+fire. favor who those with hold I
+ 
+... elided paragraph last ...
+ 
+Frost Robert -----------------------}
+
+reversed: map split.lines text =>
+    [join.with:" " reverse split.words &]
+
+print join.with:"\n" reversed
