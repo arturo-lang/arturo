@@ -1,0 +1,5 @@
+i:0 
+while [true][
+    print i
+    inc 'i
+]
