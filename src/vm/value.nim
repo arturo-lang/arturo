@@ -104,10 +104,11 @@ type
         Inline          = 19
         Block           = 20
         Database        = 21
-        Custom          = 22
+        Bytecode        = 22
+        Custom          = 23
 
-        Nothing         = 23
-        Any             = 24
+        Nothing         = 24
+        Any             = 25
 
     ValueSpec* = set[ValueKind]
 
@@ -189,6 +190,10 @@ type
                     of SqliteDatabase: sqlitedb*: sqlite.DbConn
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
+            of Bytecode:
+                consts*: ValueArray
+                instrs*: ByteArray
+
             of Custom:
                 name*       : string
                 inherits*   : Value
@@ -375,6 +380,9 @@ proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
 
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
+
+proc newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
+    Value(kind: Bytecode, consts: c, instrs: i)
 
 proc newInline*(a: ValueArray = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)
@@ -1170,6 +1178,9 @@ proc `$`*(v: Value): string {.inline.} =
             if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
             #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
+        of Bytecode:
+            result = "<bytecode>"
+
         of Custom:
             result = "<custom>"
             
@@ -1292,6 +1303,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
         of Database     :
             if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
             #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+        
+        of Bytecode     : stdout.write("<bytecode>")
 
         of Custom       : stdout.write("<custom>")
 
@@ -1450,6 +1463,9 @@ proc hash*(v: Value): Hash {.inline.}=
         of Database:
             if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
             #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
+
+        of Bytecode:
+            result = cast[Hash](unsafeAddr v)
 
         of Custom:
             result = 0
