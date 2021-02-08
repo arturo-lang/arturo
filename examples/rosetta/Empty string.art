@@ -1,0 +1,9 @@
+s: ""
+
+if empty? s     -> print "the string is empty"
+if 0 = size s   -> print "yes, the string is empty"
+
+s: "hello world"
+
+if not? empty? s    -> print "the string is not empty"
+if 0 < size s       -> print "no, the string is not empty"
