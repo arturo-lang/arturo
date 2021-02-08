@@ -1,8 +1,8 @@
-hanoi: function [n from dir via][
+hanoi: function [n f dir via][
 	if n>0 [
-		hanoi n-1 from via dir
-		print ["Move disk" n "from" from "to" dir]
-		hanoi n-1 via dir from
+		hanoi n-1 f via dir
+		print ["Move disk" n "from" f "to" dir]
+		hanoi n-1 via dir f
 	]
 ]
  
