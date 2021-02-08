@@ -175,6 +175,43 @@ proc defineSymbols*() =
                     
             stack.push(newDictionary(dict))
 
+    builtin "from",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get value from string, using given representation",
+        args        = {
+            "value" : {String}
+        },
+        attrs       = {
+            "binary"    : ({Boolean},"get integer from binary representation"),
+            "hex"       : ({Boolean},"get integer from hexadecimal representation"),
+            "octal"     : ({Boolean},"get integer from octal representation")
+        },
+        returns     = {Any},
+        example     = """
+            print from.binary "1011"        ; 11
+            print from.octal "1011"         ; 521
+            print from.hex "0xDEADBEEF"     ; 3735928559
+        """:
+            ##########################################################
+            if (popAttr("binary") != VNULL):
+                try:
+                    stack.push(newInteger(parseBinInt(x.s)))
+                except ValueError:
+                    stack.push(VNULL)
+            elif (popAttr("hex") != VNULL):
+                try:
+                    stack.push(newInteger(parseHexInt(x.s)))
+                except ValueError:
+                    stack.push(VNULL)
+            elif (popAttr("octal") != VNULL):
+                try:
+                    stack.push(newInteger(parseOctInt(x.s)))
+                except ValueError:
+                    stack.push(VNULL)
+            else:
+                stack.push(x)
+
     builtin "function",
         alias       = dollar, 
         rule        = PrefixPrecedence,
@@ -394,6 +431,8 @@ proc defineSymbols*() =
                                     i += 2
 
                                 stack.push(newDictionary(dict))
+                            of Bytecode:
+                                stack.push(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
                             else:
                                 discard
 
