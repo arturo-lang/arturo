@@ -1,0 +1,28 @@
+source: to :block read arg\0
+frequencies: #[]
+
+inspectBlock: function [blk][
+    loop blk 'item [
+        case []
+            when? [word? item][
+                sItem: to :string item
+                if set? sItem ->
+                    if function? var sItem [
+                        if? key? frequencies sItem ->
+                            set frequencies sItem (get frequencies sItem)+1
+                        else ->
+                            set frequencies sItem 1
+                    ]
+            ]
+
+            when? [or? block? item
+                       inline? item] ->
+                inspectBlock item
+
+            else []
+    ]
+]
+
+inspectBlock source
+
+inspect frequencies
