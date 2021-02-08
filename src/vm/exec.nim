@@ -73,6 +73,11 @@ proc execBlock*(
 ): ValueDict =
     var newSyms: ValueDict
     try:
+        # declare function in case there is one in the args
+        for arg in args:
+            if Syms.hasKey(arg.s) and Syms[arg.s].kind==Function:
+                Arities[arg.s] = Syms[arg.s].params.a.len
+
         let evaled = 
             if evaluated==NoTranslation : 
                 if dictionary       : doEval(blk, isDictionary=true)
@@ -81,15 +86,11 @@ proc execBlock*(
 
         newSyms = doExec(evaled, 1, args)
     except ReturnTriggered as e:
-        # echo "caught:: Return"
         if not isFuncBlock:
-            # echo "re-raising"
             raise e
         else:
-            # echo "it's function block"
             discard
     finally:
-        # echo "processing finalization"
         if dictionary:
             var res: ValueDict = initOrderedTable[string,Value]()
             for k, v in pairs(newSyms):
