@@ -1,5 +1,5 @@
 i:0 
-while [true][
+while ø [
     print i
     inc 'i
 ]
