@@ -1,0 +1,6 @@
+doSthWith: function [x y f][
+	f x y
+]
+
+print [ "add:" doSthWith 2 3 $[x y][x+y] ]
+print [ "multiply:" doSthWith 2 3 $[x y][x*y] ]
