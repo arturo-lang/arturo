@@ -1,4 +1,4 @@
-isOpen: map 1..101 'x -> false
+isOpen: map 1..101 => false
  
 loop 1..100 'pass ->
 	loop (range.step:pass pass 100) 'door [
