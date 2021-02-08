@@ -1,0 +1,11 @@
+mulTable: function [n][
+    print ["    |"] ++ map 1..n => [pad to :string & 3]
+    print "----+" ++ join map 1..n => "----"
+    loop 1..n 'x [
+        prints (pad to :string x 3) ++ " |"
+        if x>1 -> loop 1..x-1 'y [prints "    "]
+        loop x..n 'y [prints " " ++ pad to :string x*y 3]
+        print ""
+    ]
+]
+mulTable 12
