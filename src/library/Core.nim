@@ -124,7 +124,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "evaluate and execute given code",
         args        = {
-            "code"  : {String,Block}
+            "code"  : {String,Block,Bytecode}
         },
         attrs       = {
             "import": ({Boolean},"execute at root level")
@@ -156,7 +156,15 @@ proc defineSymbols*() =
                     showVMErrors()
                 else:
                     discard execBlock(x)
-            else:
+            elif x.kind==Bytecode:
+                let trans = (x.consts, x.instrs)
+                if execInParent:
+                    discard execBlock(x, evaluated=trans, execInParent=true)
+                    showVMErrors()
+                else:
+                    discard execBlock(x, evaluated=trans)
+                
+            else: # string
                 let (src, tp) = getSource(x.s)
 
                 if tp==FileData:
