@@ -404,9 +404,9 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xA0-AF] #
             # arithmetic & logical operators
-            of opAdd, opSub, opMul,
-               opDiv, opFDiv, opMod, 
-               opPow, opNeg, opBNot, 
+            of opIAdd, opISub, opIMul,
+               opIDiv, opIFDiv, opIMod, 
+               opIPow, opINeg, opBNot, 
                opBAnd, opOr, opXor, 
                opShl, opShr         : discard
 

@@ -215,15 +215,15 @@ type
 
         # [0xA0-AF] #
         # arithmetic & logical operators
-        opAdd           = 0xA0
-        opSub           = 0xA1
-        opMul           = 0xA2
-        opDiv           = 0xA3
-        opFDiv          = 0xA4
-        opMod           = 0xA5
-        opPow           = 0xA6
+        opIAdd          = 0xA0
+        opISub          = 0xA1
+        opIMul          = 0xA2
+        opIDiv          = 0xA3
+        opIFDiv         = 0xA4
+        opIMod          = 0xA5
+        opIPow          = 0xA6
 
-        opNeg           = 0xA7
+        opINeg          = 0xA7
 
         opBNot          = 0xA8
         opBAnd          = 0xA9
