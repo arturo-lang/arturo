@@ -1,0 +1,25 @@
+print "---------------------------"
+print "As a loop"
+print "---------------------------"
+loop 4 'x ->
+    print "Example 1"
+
+repeatFunc: function [f,times][
+    loop times 'x ->
+        do f
+]
+
+print "---------------------------"
+print "With a block param"
+print "---------------------------"
+repeatFunc [print "Example 2"] 4
+
+repeatFunc: function [f,times][
+    loop times 'x ->
+        f
+]
+
+print "---------------------------"
+print "With a function param"
+print "---------------------------"
+repeatFunc $[][print "Example 3"] 4
