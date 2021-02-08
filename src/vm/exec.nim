@@ -73,10 +73,10 @@ proc execBlock*(
 ): ValueDict =
     var newSyms: ValueDict
     try:
-        # declare function in case there is one in the args
-        for arg in args:
-            if Syms.hasKey(arg.s) and Syms[arg.s].kind==Function:
-                Arities[arg.s] = Syms[arg.s].params.a.len
+        for i,arg in args:            
+            # declare function in case there is one in the args
+            if stack.peek(i).kind==Function:
+                Arities[arg.s] = stack.peek(i).params.a.len
 
         let evaled = 
             if evaluated==NoTranslation : 
