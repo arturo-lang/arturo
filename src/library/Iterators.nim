@@ -241,7 +241,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
-            "collection"    : {Integer,Block,Dictionary},
+            "collection"    : {Integer,Block,Inline,Dictionary},
             "params"        : {Literal,Block},
             "action"        : {Block}
         },
