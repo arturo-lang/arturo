@@ -73,10 +73,10 @@ proc execBlock*(
 ): ValueDict =
     var newSyms: ValueDict
     try:
-        for i,arg in args:            
-            # declare function in case there is one in the args
-            if stack.peek(i).kind==Function:
-                Arities[arg.s] = stack.peek(i).params.a.len
+        if isFuncBlock:
+            for i,arg in args:            
+                if stack.peek(i).kind==Function:
+                    Arities[arg.s] = stack.peek(i).params.a.len
 
         let evaled = 
             if evaluated==NoTranslation : 
@@ -85,11 +85,13 @@ proc execBlock*(
             else                        : evaluated
 
         newSyms = doExec(evaled, 1, args)
+
     except ReturnTriggered as e:
         if not isFuncBlock:
             raise e
         else:
             discard
+        
     finally:
         if dictionary:
             var res: ValueDict = initOrderedTable[string,Value]()
@@ -104,6 +106,10 @@ proc execBlock*(
                     for k in exports.a:
                         if newSyms.hasKey(k.s):
                             Syms[k.s] = newSyms[k.s]
+                else:
+                    for arg in args:
+                        Arities.del(arg.s)
+
             else:
                 if execInParent:
                     Syms=newSyms
