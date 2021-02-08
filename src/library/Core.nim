@@ -551,7 +551,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "execute action while the given condition is true",
         args        = {
-            "condition" : {Block},
+            "condition" : {Block,Null},
             "action"    : {Block}
         },
         attrs       = {
@@ -575,21 +575,33 @@ proc defineSymbols*() =
             ; i => 7 
             ; i => 8 
             ; i => 9 
+
+            while ø [
+                print "something"   ; infinitely
+            ]
         """:
             ##########################################################
             var execInParent = (popAttr("import") != VNULL)
 
-            let preevaledX = doEval(x)
-            let preevaledY = doEval(y)
+            if x.kind==Block:
+                let preevaledX = doEval(x)
+                let preevaledY = doEval(y)
 
-            discard execBlock(VNULL, evaluated=preevaledX)
-
-            while stack.pop().b:
-                if execInParent:
-                    discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
-                else:
-                    discard execBlock(VNULL, evaluated=preevaledY)
                 discard execBlock(VNULL, evaluated=preevaledX)
+
+                while stack.pop().b:
+                    if execInParent:
+                        discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
+                    else:
+                        discard execBlock(VNULL, evaluated=preevaledY)
+                    discard execBlock(VNULL, evaluated=preevaledX)
+            else:
+                let preevaledY = doEval(y)
+                while true:
+                    if execInParent:
+                        discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
+                    else:
+                        discard execBlock(VNULL, evaluated=preevaledY)
 
 #=======================================
 # Add Library
