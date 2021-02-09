@@ -5,7 +5,7 @@ z: {(from the "Wizard of OZ")}
 print join.with:"\n" sort @[x y z]
 
 x: 125
-y: 2
+y: neg 2
 z: pi
 
 print sort @[x y z]
