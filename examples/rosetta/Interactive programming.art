@@ -1,4 +1,20 @@
-$> f: function [a b sep] -> a ++ sep ++ sep ++ b
+➜  $ arturo 
+
+Arturo
+(c) 2019-2021 Yanis Zafirópulos
+
+# v/0.9.6.5 b/1097 @ 2021-02-09T16:40:43+01:00
+# arch: amd64/macosx
+
+# Type info 'symbol for info about a specific symbol or built-in function
+# Type help to get a list of all available functions with a short description
+# For multi-line input, just add a blank space at the end of a line
+
+# Launching interactive console - rock on! 🤘
+
+$> f: function [x y sep]-> x ++ (repeat sep 2) ++ y
 
 $> f "Rosetta" "Code" ":"
 => Rosetta::Code
+
+$> 
