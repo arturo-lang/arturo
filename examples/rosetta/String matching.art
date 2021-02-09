@@ -1,0 +1,13 @@
+print prefix? "abcd" "ab"
+print prefix? "abcd" "cd"
+print suffix? "abcd" "ab"
+print suffix? "abcd" "cd"
+
+print contains? "abcd" "ab"
+print contains? "abcd" "xy"
+
+print in? "ab" "abcd"
+print in? "xy" "abcd"
+
+print index "abcd" "bc"
+print index "abcd" "xy"
