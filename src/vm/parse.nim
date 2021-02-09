@@ -265,10 +265,18 @@ template parseCurlyString(p: var Parser) =
                 inc(pos)
             of CR:
                 pos = lexbase.handleCR(p, pos)
-                add(p.value, CR)
+                when not defined(windows):
+                    add(p.value, LF)
+                else:    
+                    add(p.value, CR)
+                    add(p.value, LF)
             of LF:
                 pos = lexbase.handleLF(p, pos)
-                add(p.value, LF)
+                when defined(windows):
+                    add(p.value, CR)
+                    add(p.value, LF)
+                else:
+                    add(p.value, LF)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
