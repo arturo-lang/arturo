@@ -1,0 +1,5 @@
+count: function [jewels,stones][
+    size select split stones => [in? & jewels]
+]
+
+print count "aA" "aAAbbbb"
