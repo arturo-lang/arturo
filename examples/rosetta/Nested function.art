@@ -1,0 +1,17 @@
+makeList: function [separator][
+    counter: 1
+
+    makeItem: function [item] .export:[counter][
+        result: ~"|counter||separator||item|"
+        counter: counter+1
+        return result
+    ]
+
+    @[
+        makeItem "first"
+        makeItem "second"
+        makeItem "third"
+    ]
+]
+
+print join.with:"\n" makeList ". "
