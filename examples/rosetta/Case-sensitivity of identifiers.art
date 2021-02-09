@@ -1,0 +1,7 @@
+dog: "Benjamin"
+Dog: "Samba"
+DOG: "Bernie"
+
+dogs: @[dog Dog DOG]
+
+print ["The" size dogs "dog(s) are named" join.with:", " dogs]
