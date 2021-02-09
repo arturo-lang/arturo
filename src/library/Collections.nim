@@ -898,7 +898,7 @@ proc defineSymbols*() =
             "collection"    : {Block,Literal}
         },
         attrs       = {
-            "as"        : ({Literal},"localizezd by ISO 639-1 language code"),
+            "as"        : ({Literal},"localized by ISO 639-1 language code"),
             "sensitive" : ({Boolean},"case-sensitive sorting"),
             "descending": ({Boolean},"sort in ascending order")
         },
