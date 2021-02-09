@@ -6,12 +6,10 @@ runSet: function [title,location][
 
     loop tests 'test [
         script: replace test ".res" ".art"
-        expected: strip read test
+        expected: split.lines strip read test
 
         prints pad.right ((color.magenta "\n- Running: ") ++ extract.filename script) 75 
-        result: strip execute ~{arturo "|script|"}
-
-        print result
+        result: split.lines strip execute ~{arturo "|script|"}
 
         if? result=expected [
             prints color.green.bold "[ OK ]"
