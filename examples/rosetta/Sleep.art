@@ -1,0 +1,4 @@
+time: to :integer input "Enter number of milliseconds: "
+print "Sleeping..."
+pause time
+print "Awake!"
