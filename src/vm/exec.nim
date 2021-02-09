@@ -395,8 +395,15 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opSwap               : swap(Stack[SP-1], Stack[SP-2])
 
             # flow control
-            of opJump, opJumpIf,
-               opJumpIfNot, opRet   : discard        
+            of opJump               : 
+                i = (int)(it[i+1])-1
+            of opJumpIf             : 
+                if stack.pop().b: 
+                    i = (int)(it[i+1])-1
+            of opJumpIfNot          : 
+                if not stack.pop().b: 
+                    i = (int)(it[i+1])-1
+            of opRet                : discard    
             of opEnd                : break 
 
             # reserved
@@ -422,8 +429,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xB0-BF] #
             # comparison operators
-            of opEq, opNe, opGt, 
-               opGe, opLt, opLe     : discard
+            of opEq                 : stack.push(newBoolean(Stack[SP-1]==Stack[SP-2]))
+            of opNe                 : stack.push(newBoolean(Stack[SP-1]!=Stack[SP-2]))
+            of opGt                 : stack.push(newBoolean(Stack[SP-1]>Stack[SP-2]))
+            of opGe                 : stack.push(newBoolean(Stack[SP-1]>=Stack[SP-2]))
+            of opLt                 : stack.push(newBoolean(Stack[SP-1]<Stack[SP-2]))
+            of opLe                 : stack.push(newBoolean(Stack[SP-1]<=Stack[SP-2]))
 
         i += 1
 
