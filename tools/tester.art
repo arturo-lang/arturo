@@ -11,6 +11,9 @@ runSet: function [title,location][
         prints pad.right ((color.magenta "\n- Running: ") ++ extract.filename script) 75 
         result: split.lines strip execute ~{arturo "|script|"}
 
+        inspect expected
+        inspect result
+
         if? result=expected [
             prints color.green.bold "[ OK ]"
             success: success + 1
