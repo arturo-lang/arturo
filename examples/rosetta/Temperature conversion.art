@@ -1,0 +1,9 @@
+convertKelvins: function [k][
+    #[
+        celcius:    k - 273.15
+        fahrenheit: (k * 9/5.0)-459.67
+        rankine:    k * 9/5.0
+    ]
+]
+
+print convertKelvins 100
