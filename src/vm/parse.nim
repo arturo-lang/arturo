@@ -220,10 +220,16 @@ template parseMultilineString(p: var Parser) =
                     add(p.value, '-')
             of CR:
                 pos = lexbase.handleCR(p, pos)
-                add(p.value, CR)
+                when not defined(windows):
+                    add(p.value, LF)
+                else:    
+                    add(p.value, CR)
             of LF:
                 pos = lexbase.handleLF(p, pos)
-                add(p.value, LF)
+                when defined(windows):
+                    add(p.value, CR)
+                else:
+                    add(p.value, LF)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
