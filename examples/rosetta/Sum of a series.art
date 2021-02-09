@@ -1,0 +1,2 @@
+series: map 1..1000 => [1.0/&^2]
+print [sum series]
