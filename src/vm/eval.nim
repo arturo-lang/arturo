@@ -242,7 +242,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Integer:
                 addTerminalValue(false):
-                    if node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                    if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
                     else: addConst(consts, node, opPush)
 
             of Floating:
