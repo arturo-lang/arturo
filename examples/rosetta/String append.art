@@ -1,0 +1,12 @@
+print join ["Hello" "World"]
+
+a: "Hello"
+'a ++ "World"
+print a
+
+b: "Hello"
+append 'b "World"
+print b
+
+c: "Hello"
+print append c "World"
