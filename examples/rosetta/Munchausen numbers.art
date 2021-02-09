@@ -1,0 +1,11 @@
+munchausen?: function [n][
+    n = sum map split to :string n 'digit [
+        d: to :integer digit
+        d^d
+    ]
+]
+
+loop 1..5000 'x [
+    if munchausen? x ->
+        print x
+]
