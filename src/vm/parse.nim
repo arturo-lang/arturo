@@ -224,10 +224,12 @@ template parseMultilineString(p: var Parser) =
                     add(p.value, LF)
                 else:    
                     add(p.value, CR)
+                    add(p.value, LF)
             of LF:
                 pos = lexbase.handleLF(p, pos)
                 when defined(windows):
                     add(p.value, CR)
+                    add(p.value, LF)
                 else:
                     add(p.value, LF)
             else:
