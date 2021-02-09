@@ -1,0 +1,2 @@
+try? -> 3/0 
+else -> print "division by zero" 
