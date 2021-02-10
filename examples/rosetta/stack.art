@@ -1,0 +1,23 @@
+Stack: $[]-> []
+
+pushTo:     function [st val]-> 'st ++ val
+popStack:   function [st]     [
+    result: last st
+    remove.index: (size st)-1 'st ø
+    return result
+]
+emptyStack: function [st]-> empty 'st
+printStack: function [st]-> print st
+
+st: new Stack
+
+pushTo st "one"
+pushTo st "two"
+pushTo st "three"
+printStack st
+
+print popStack st
+printStack st
+
+emptyStack st
+print ["finally:" st]
