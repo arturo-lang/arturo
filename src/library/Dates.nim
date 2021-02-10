@@ -29,6 +29,27 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Dates"
 
+    builtin "leap?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given year is a leap year",
+        args        = {
+            "year"  : {Integer,Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+            print leap? now     ; false
+
+            print map 2019..2021 => leap? 
+            ; false true false
+        """:
+            ##########################################################
+            if x.kind==Integer:
+                stack.push(newBoolean(isLeapYear(x.i)))
+            else:
+                stack.push(newBoolean(isLeapYear(x.e["year"].i)))
+
     builtin "now",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
