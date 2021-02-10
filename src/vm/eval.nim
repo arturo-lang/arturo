@@ -237,8 +237,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         let node = n.a[i]
 
         case node.kind:
-            of Null:    discard # cannot reach here - parse does not emit null values  
-            of Boolean: discard # cannot reach here - parse does not emit boolean values
+            of Null:    addToCommand((byte)opConstN)
+            of Boolean: 
+                    if node.b: addToCommand((byte)opConstBT)
+                    else: addToCommand((byte)opConstBF)
 
             of Integer:
                 addTerminalValue(false):
