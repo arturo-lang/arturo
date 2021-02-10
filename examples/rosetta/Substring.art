@@ -1,0 +1,20 @@
+str: "abcdefgh"
+n: 2
+m: 3
+
+; starting from n=2 characters in and m=3 in length
+print slice str n-1 n+m-2
+
+; starting from n characters in, up to the end of the string
+print slice str n-1 (size str)-1
+
+; whole string minus last character
+print slice str 0 (size str)-2
+
+; starting from a known character char="d" 
+; within the string and of m length
+print slice str index str "d" m+(index str "d")-1
+
+; starting from a known substring chars="cd" 
+; within the string and of m length
+print slice str index str "cd" m+(index str "cd")-1
