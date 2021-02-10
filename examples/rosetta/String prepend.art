@@ -1,0 +1,14 @@
+a: "World"
+a: "Hello" ++ a
+print a
+
+b: "World"
+b: append "Hello" b
+print a
+
+c: "World"
+prefix 'c "Hello"
+print c
+
+d: "World"
+print prefix d "Hello"
