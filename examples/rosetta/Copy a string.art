@@ -1,0 +1,19 @@
+a: "Hello"
+b: a            ; reference the same string
+
+; changing one string in-place
+; will change both strings
+
+'b ++ "World"
+print b
+print a
+
+c: "Hello"
+d: new c        ; make a copy of the older string
+
+; changing one string in-place
+; will change only the string in question
+
+'d ++ "World"
+print d
+print c
