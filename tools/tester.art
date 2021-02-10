@@ -23,7 +23,12 @@ runSet: function [title,location][
             prints color.green.bold "[ OK ]"
             success: success + 1
         ]
-        else -> prints color.red "[ Error ]"
+        else [
+            print "<-------------------"
+            print result
+            print "------------------->"
+            prints color.red "[ Error ]"
+        ]
     ]
 
     print "\n"
