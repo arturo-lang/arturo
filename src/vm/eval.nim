@@ -309,8 +309,13 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     while i<node.p.len-1:
                         addConst(consts, newWord("get"), opCall)
                         i += 1
-                    
-                    addConst(consts, node.p[0], opLoad)
+
+                    let baseNode = node.p[0]
+
+                    if Arities.hasKey(baseNode.s) and Arities[baseNode.s]==0:
+                        addConst(consts, baseNode, opCall)
+                    else:
+                        addConst(consts, baseNode, opLoad)
 
                     i = 1
                     while i<node.p.len:
