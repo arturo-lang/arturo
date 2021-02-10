@@ -246,24 +246,11 @@ proc defineSymbols*() =
             numeric? "123xxy"          ; => false
         """:
             ##########################################################
-            var found = false
-            var dotFound = false
-            for ch in x.s:
-                if ch=='.':
-                    if dotFound:
-                        found = true
-                        stack.push(VFALSE)
-                        break
-                    else:
-                        dotFound = true
-                else:
-                    if not ch.isDigit():
-                        found = true
-                        stack.push(VFALSE)
-                        break
-
-            if not found:
+            try:
+                discard x.s.parseFloat()
                 stack.push(VTRUE)
+            except ValueError:
+                stack.push(VFALSE)
 
     builtin "pad",
         alias       = unaliased, 
