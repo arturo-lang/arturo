@@ -1,0 +1,7 @@
+loop 1..5 'num [
+    case [num]
+        when? [<2] -> print [num ": it's less than 2"]
+        when? [=2] -> print [num ": it's 2!"]
+        when? [=3] -> print [num ": it's 3!"]
+        else       -> print [num ": the number is too big"]
+]
