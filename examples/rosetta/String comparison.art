@@ -1,0 +1,10 @@
+loop [["YUP" "YUP"] ["YUP" "Yup"] ["bot" "bat"] ["aaa" "zz"]] 'x [
+    print [x\0 "="  x\1 "=>" x\0 =  x\1]
+    print [x\0 "=" x\1 "(case-insensitive) =>" (upper x\0) = upper x\1]
+    print [x\0 "<>" x\1 "=>" x\0 <> x\1]
+    print [x\0 ">"  x\1 "=>" x\0 >  x\1]
+    print [x\0 ">=" x\1 "=>" x\0 >= x\1]
+    print [x\0 "<"  x\1 "=>" x\0 <  x\1]
+    print [x\0 "=<" x\1 "=>" x\0 =< x\1]
+    print "----"
+]
