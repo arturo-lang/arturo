@@ -1,0 +1,4 @@
+rootMeanSquare: function [arr]->
+    sqrt (sum map arr 'i -> i^2) // size arr
+
+print rootMeanSquare 1..10
