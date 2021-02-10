@@ -1,0 +1,5 @@
+lcm: function [x,y][
+    x * y / gcd @[x y]
+]
+
+print lcm 12 18
