@@ -314,6 +314,22 @@ proc defineSymbols*() =
                 else:
                     stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
+    builtin "gamma",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the gamma function for given value",
+        args        = {
+            "value" : {Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\gamma) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(newFloating(gamma(x.f)))
+
     builtin "gcd",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
