@@ -1,0 +1,12 @@
+arithmeticMean: function [arr]->
+    average arr
+
+geometricMean: function [arr]->
+    (product arr) ^ 1//size arr 
+
+harmonicMean: function [arr]->
+    (size arr) // sum map arr 'i [1//i]
+
+print arithmeticMean 1..10
+print geometricMean 1..10
+print harmonicMean 1..10
