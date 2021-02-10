@@ -1,0 +1,11 @@
+parts: [] current: ""
+loop split {gHHH5YY++///\} 'ch [
+    if? or? empty? current
+            contains? current ch -> 'current ++ ch
+    else [
+        'parts ++ current
+        current: new ch
+    ]
+]
+'parts ++ current
+print parts
