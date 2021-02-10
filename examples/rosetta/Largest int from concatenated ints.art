@@ -1,0 +1,7 @@
+largestConcInt: function [arr]->
+    max map permutate arr 's [
+        to :integer join map s => [to :string]
+    ]
+
+loop [[1 34 3 98 9 76 45 4] [54 546 548 60]] 'a ->
+    print largestConcInt a
