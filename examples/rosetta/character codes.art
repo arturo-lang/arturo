@@ -1,0 +1,3 @@
+print to :integer first "a"
+print to :integer `a`
+print to :char 97
