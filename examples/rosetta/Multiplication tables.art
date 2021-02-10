@@ -8,4 +8,5 @@ mulTable: function [n][
         print ""
     ]
 ]
+
 mulTable 12
