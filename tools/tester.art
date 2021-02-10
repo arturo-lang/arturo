@@ -1,3 +1,11 @@
+#!/usr/bin/env arturo
+;==========================================
+; Tester
+;
+; @file: tools/tester.art
+; @author: drkameleon
+;==========================================
+
 runSet: function [title,location][
     print color.bold.cyan ~"\n> |title|"
 
