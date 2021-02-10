@@ -1,0 +1,13 @@
+words: read.lines "http://wiki.puzzlers.org/pub/wordlists/unixdict.txt"
+pairs: []
+loop words 'wrd [ 
+    if and? contains? words reverse wrd 
+            wrd <> reverse wrd [
+        'pairs ++ @[@[wrd reverse wrd]]
+        print [wrd "-" reverse wrd]
+    ]
+]
+
+unique 'pairs
+
+print map 1..5 => [sample pairs]
