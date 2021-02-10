@@ -1,0 +1,6 @@
+print numeric? "hello world"
+print numeric? "1234"
+print numeric? "1234 hello world"
+print numeric? "12.34"
+print numeric? "!#@$"
+print numeric? "-1.23"
