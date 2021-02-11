@@ -294,9 +294,14 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "flatten given collection by eliminating nested blocks",
         args        = {
-            "collection"    : {Block}
+            "collection"    : {Block},
+
         },
-        attrs       = NoAttrs,
+        # TODO(Collections\flatten) add documentation example for .once
+        #  labels: library,documentation,easy
+        attrs       = {
+            "once"  : ({Boolean},"do not perform recursive flattening")
+        },
         returns     = {Block},
         example     = """
             arr: [[1 2 3] [4 5 6]]
@@ -309,9 +314,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                Syms[x.s] = Syms[x.s].flattened()
+                Syms[x.s] = Syms[x.s].flattened(once = popAttr("once")!=VNULL)
             else:
-                stack.push(x.flattened())
+                stack.push(x.flattened(once = popAttr("once")!=VNULL))
 
     builtin "get",
         alias       = backslash, 
