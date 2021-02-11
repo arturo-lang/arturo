@@ -1,0 +1,11 @@
+print ["Euler:" epsilon]
+print ["Pi:" pi]
+
+print ["sqrt 2.0:" sqrt 2.0]
+print ["ln 100:" ln 100]
+print ["log(10) 100:" log 100 10]
+print ["exp 3:" exp 3]
+print ["abs -1:" abs neg 1]
+print ["floor 23.536:" floor 23.536]
+print ["ceil 23.536:" ceil 23.536]
+print ["2 ^ 8:" 2 ^ 8]
