@@ -384,10 +384,7 @@ proc defineSymbols*() =
             print gamma 10.0    ; 362880.0
         """:
             ##########################################################
-            if x.kind==Floating:
-                stack.push(newFloating(gamma(x.f)))
-            else:
-                stack.push(newFloating(gamma((float)(x.i))))
+            stack.push(newFloating(gamma(asFloat(x))))
 
     builtin "gcd",
         alias       = unaliased, 
