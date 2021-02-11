@@ -310,7 +310,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the exponential function for given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -319,7 +319,10 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(exp(x.f)))
+            if x.kind==Floating:
+                stack.push(newFloating(exp(x.f)))
+            else:
+                stack.push(newFloating(exp((float)(x.i))))
 
     builtin "factors",
         alias       = unaliased, 
@@ -420,7 +423,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the natural logarithm of given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -429,14 +432,17 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(ln(x.f)))
+            if x.kind==Floating:
+                stack.push(newFloating(ln(x.f)))
+            else:
+                stack.push(newFloating(ln((float)(x.i))))
 
     builtin "log",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the logarithm of value using given base",
         args        = {
-            "value" : {Floating},
+            "value" : {Integer,Floating},
             "base"  : {Integer,Floating}
         },
         attrs       = NoAttrs,
@@ -447,9 +453,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if y.kind==Floating:
-                stack.push(newFloating(log(x.f, y.f)))
+                if x.kind==Floating:
+                    stack.push(newFloating(log(x.f, y.f)))
+                else:
+                    stack.push(newFloating(log((float)(x.i), y.f)))
             else:
-                stack.push(newFloating(log(x.f, (float)(y.i))))
+                if x.kind==Floating:
+                    stack.push(newFloating(log(x.f, (float)(y.i))))
+                else:
+                    stack.push(newFloating(log((float)(x.i), (float)(y.i))))
 
     builtin "median",
         alias       = unaliased, 
