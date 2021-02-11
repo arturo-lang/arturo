@@ -1,0 +1,10 @@
+addsub: function [x y]->
+    @[x+y x-y]
+
+a: 33
+b: 12
+
+result: addsub a b
+
+print [a "+" b "=" result\0]
+print [a "-" b "=" result\1]
