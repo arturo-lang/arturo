@@ -1,0 +1,8 @@
+chars: map 97..122 => [to :string to :char]
+pangram?: function [sentence][
+    every? chars 'ch ->
+        in? ch sentence
+]
+
+print pangram? "this is a sentence"
+print pangram? "The quick brown fox jumps over the lazy dog."
