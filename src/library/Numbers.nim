@@ -170,6 +170,22 @@ proc defineSymbols*() =
 
             stack.push(res)
 
+    builtin "ceil",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the smallest integer not smaller than given value",
+        args        = {
+            "value" : {Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer},
+        # TODO(Numbers\ceil) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(newInt((int)(ceil(x.f))))
+
     builtin "cos",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -343,13 +359,13 @@ proc defineSymbols*() =
             "value" : {Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Integer},
         # TODO(Numbers\floor) add example for documentation
         #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(floor(x.f)))
+            stack.push(newInteger((int)(floor(x.f))))
 
     builtin "gamma",
         alias       = unaliased, 
@@ -594,9 +610,10 @@ proc defineSymbols*() =
     builtin "round",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "round given value to zero decimal places",
+        description = "round value to given number of decimal places",
         args        = {
-            "value" : {Floating}
+            "value" : {Floating},
+            "places": {Integer}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -605,7 +622,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(round(x.f)))
+            stack.push(newFloating(round(x.f, y.i)))
 
     builtin "sec",
         alias       = unaliased, 
