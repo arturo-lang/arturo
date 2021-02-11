@@ -1,0 +1,17 @@
+n: 20
+ 
+; # select Pythagorean triplets
+
+; print
+;     select 
+;         flatten.once map 1..n 'x ->
+;             flatten.once map x..n 'y ->
+;                 map y..n 'z -> @[x y z]
+;         't -> t\2^2 = t\0^2 + t\1^2
+            
+
+
+; r = ((1..n).flat_map { |x|
+;        (x..n).flat_map { |y|
+;          (y..n).flat_map { |z|
+;            [[x, y, z]].keep_if { x * x + y * y == z * z }}}})
