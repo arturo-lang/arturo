@@ -1,0 +1,11 @@
+fileExtensions: map ["zip" "rar" "7z" "gz" "archive" "A##"] => ["." ++ lower]
+ 
+hasExtension?: function [file][
+    in? extract.extension lower file
+        fileExtensions
+]
+ 
+files: ["MyData.a##" "MyData.tar.Gz" "MyData.gzip" "MyData.7z.backup" "MyData..." "MyData"]
+
+loop files 'file ->
+    print [file "=> hasExtension?:" hasExtension? file]
