@@ -246,7 +246,8 @@ proc defineSymbols*() =
             "action"        : {Block}
         },
         attrs       = {
-            "with"  : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "forever"   : ({Boolean},"cycle through collection infinitely")
         },
         returns     = {Nothing},
         example     = """
@@ -292,9 +293,10 @@ proc defineSymbols*() =
             ##########################################################
             var args: ValueArray
 
+            let forever = popAttr("forever")!=VNULL
+
             var withIndex = false
             let aWith = popAttr("with")
-
             if aWith != VNULL:
                 withIndex = true
 
@@ -309,11 +311,15 @@ proc defineSymbols*() =
             let preevaled = doEval(z)
 
             if x.kind==Dictionary:
-                for k,v in pairs(x.d):
-                    stack.push(v)
-                    stack.push(newString(k))
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)#, isBreakable=true)
-                    checkForBreak()
+                var keepGoing = true
+                while keepGoing:
+                    for k,v in pairs(x.d):
+                        stack.push(v)
+                        stack.push(newString(k))
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)#, isBreakable=true)
+                        checkForBreak()
+                    if not forever:
+                        keepGoing = false
             else:
                 var arr: seq[Value]
                 if x.kind==Integer:
@@ -321,20 +327,25 @@ proc defineSymbols*() =
                 else:
                     arr = x.a
 
-                var indx = 0
-                var run = 0
-                while indx+args.len<=arr.len:
-                    for item in arr[indx..indx+args.len-1].reversed:
-                        stack.push(item)
+                var keepGoing = true
+                while keepGoing:
+                    var indx = 0
+                    var run = 0
+                    while indx+args.len<=arr.len:
+                        for item in arr[indx..indx+args.len-1].reversed:
+                            stack.push(item)
 
-                    if withIndex:
-                        stack.push(newInteger(run))
+                        if withIndex:
+                            stack.push(newInteger(run))
 
-                    discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+                        discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
 
-                    checkForBreak()
-                    run += 1
-                    indx += args.len
+                        checkForBreak()
+                        run += 1
+                        indx += args.len
+                        
+                        if not forever:
+                            keepGoing = false
 
     builtin "map",
         alias       = unaliased, 
