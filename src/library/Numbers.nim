@@ -266,6 +266,11 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(newFloating(coth(x.f)))
 
+    constant "epsilon",
+        alias       = unaliased,
+        description = "The constant e, Euler's number":
+            newFloating(E)
+
     builtin "even?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
