@@ -18,7 +18,7 @@
 
 import os, osproc, sequtils, sugar
 
-import vm/[common, errors, globals, stack, value]
+import vm/[common, errors, exec, globals, stack, value]
 
 #=======================================
 # Methods
@@ -34,7 +34,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "assert given condition is true, or exit",
         args        = {
-            "condition"     : {Boolean}
+            "condition"     : {Block}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
@@ -43,10 +43,11 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            if not x.b:
+            discard execBlock(x)
+            if not stack.pop().b:
                 vmPanic = true
-                vmError = "assertion failed"
-
+                vmError = "Assertion failed: " & x.codify()
+                        
                 showVMErrors()
 
                 quit(1)  
