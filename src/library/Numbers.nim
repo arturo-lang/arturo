@@ -375,16 +375,19 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the gamma function for given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\gamma) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print gamma 3.0     ; 2.0
+            print gamma 10.0    ; 362880.0
         """:
             ##########################################################
-            stack.push(newFloating(gamma(x.f)))
+            if x.kind==Floating:
+                stack.push(newFloating(gamma(x.f)))
+            else:
+                stack.push(newFloating(gamma((float)(x.i))))
 
     builtin "gcd",
         alias       = unaliased, 
