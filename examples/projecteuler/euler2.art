@@ -3,7 +3,7 @@ fib: function [n][
 	else [
 		prev: 0, f: 1
 
-		repeat n [
+		loop n 'x [
 			tmp: prev, prev: f, f: f + tmp
 		]
 		return f
@@ -19,7 +19,6 @@ fibsUnder: function [limit][
 		'results ++ num
 		x: x+1
 		num: fib x
-		print ["fib" x "=" num]
 	]
 
 	return unique @results
