@@ -448,6 +448,13 @@ proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
 proc addChild*(parent: Value, child: Value) {.inline.} =
     parent.a.add(child)
 
+proc asFloat*(v: Value): float = 
+    # get number value forcefully as a float
+    if v.kind == Floating:
+        result = v.f
+    else:
+        result = (float)(v.i)
+
 #=======================================
 # Methods
 #=======================================
