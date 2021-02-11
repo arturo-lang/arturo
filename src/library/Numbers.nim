@@ -415,6 +415,22 @@ proc defineSymbols*() =
 
             stack.push(current)
 
+    builtin "ln",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the natural logarithm of given value",
+        args        = {
+            "value" : {Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\ln) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(newFloating(ln(x.f)))
+
     builtin "median",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
