@@ -1,0 +1,4 @@
+do.import relative "modulinos - 1.art"
+ 
+print ~"Life means |meaningOfLife|."
+print "Death means invisible scary skeletons."
