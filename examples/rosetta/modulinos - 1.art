@@ -1,0 +1,8 @@
+; modulinos - 1
+ 
+meaningOfLife: function [][
+    42
+]
+
+if standalone? ->
+    print ~"Main: The meaning of life is |meaningOfLife|"
