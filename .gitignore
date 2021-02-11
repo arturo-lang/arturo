@@ -5,6 +5,6 @@
 .gitattributes
 test
 test.nim
-test.art
+test*.art
 test.js
 old.nim
