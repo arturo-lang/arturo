@@ -646,19 +646,24 @@ proc defineSymbols*() =
     builtin "round",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "round value to given number of decimal places",
+        description = "round given value",
         args        = {
-            "value" : {Floating},
-            "places": {Integer}
+            "value" : {Floating}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "to"    : ({Integer},"round to given decimal places")
+        },
         returns     = {Floating},
         # TODO(Numbers\round) add example for documentation
         #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(round(x.f, y.i)))
+            var places = 0
+            if (let aTo = popAttr("to"); aTo != VNULL):
+                places = aTo.i
+                
+            stack.push(newFloating(round(x.f, places)))
 
     builtin "sec",
         alias       = unaliased, 
