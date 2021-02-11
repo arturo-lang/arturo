@@ -245,6 +245,8 @@ proc defineSymbols*() =
             "params"        : {Literal,Block},
             "action"        : {Block}
         },
+        # TODO(Iterators\loop) add documentation example for .forever
+        #  labels: library,documentation,easy
         attrs       = {
             "with"      : ({Literal},"use given index"),
             "forever"   : ({Boolean},"cycle through collection infinitely")
@@ -343,7 +345,7 @@ proc defineSymbols*() =
                         checkForBreak()
                         run += 1
                         indx += args.len
-                        
+
                         if not forever:
                             keepGoing = false
 
