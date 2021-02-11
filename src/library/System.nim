@@ -29,6 +29,28 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: System"
 
+    builtin "ensure",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "assert given condition is true, or exit",
+        args        = {
+            "condition"     : {Boolean}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        # TODO(System\ensure) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if not x.b:
+                vmPanic = true
+                vmError = "assertion failed"
+
+                showVMErrors()
+
+                quit(1)  
+
     builtin "execute",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
