@@ -289,6 +289,22 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(newBoolean(x % I2 == I0))
 
+    builtin "exp",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the exponential function for given value",
+        args        = {
+            "value" : {Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\exp) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(newFloating(exp(x.f)))
+
     builtin "factors",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
