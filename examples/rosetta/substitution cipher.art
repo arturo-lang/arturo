@@ -1,0 +1,45 @@
+key: ---]kYV}(!7P$n5_0i R:?jOWtF/=-pe'AD&@r6%ZXs"v*N[#wSl9zq2^+g;LoB`aGh{3.HIu4fbK)mU8|dMET><,Qc\C1yxJ---
+ 
+encode: function [str][
+    bs: new []
+    loop split str 'ch ->
+        'bs ++ to :string key \ (to :integer to :char ch)-32
+    return join bs
+]
+
+decode: function [str][
+    bs: new []
+    loop split str 'ch ->
+        'bs ++ to :string to :char (index key ch)+32
+    return join bs
+]
+
+s: "The quick brown fox jumps over the lazy dog, who barks VERY loudly!"
+
+enc: encode s
+print ["encoded:" enc]
+print ["decoded:" decode enc]
+
+
+; func encode(s string) string {
+;     bs := []byte(s)
+;     for i := 0; i < len(bs); i++ {
+;         bs[i] = key[int(bs[i]) - 32]
+;     }
+;     return string(bs)
+; }
+ 
+; func decode(s string) string {
+;     bs := []byte(s)
+;     for i := 0; i < len(bs); i++ {
+;         bs[i] = byte(strings.IndexByte(key, bs[i]) + 32)
+;     }
+;     return string(bs)
+; }
+ 
+; func main() {
+;     s := "The quick brown fox jumps over the lazy dog, who barks VERY loudly!"
+;     enc := encode(s)
+;     fmt.Println("Encoded: ", enc)
+;     fmt.Println("Decoded: ", decode(enc))
+; }
