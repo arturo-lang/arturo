@@ -4,7 +4,8 @@
 /.cache
 .gitattributes
 test
-test.nim
+test2
+test*.nim
 test*.art
 test.js
 old.nim
