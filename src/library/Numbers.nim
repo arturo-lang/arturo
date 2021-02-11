@@ -431,6 +431,26 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(newFloating(ln(x.f)))
 
+    builtin "log",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the logarithm of value using given base",
+        args        = {
+            "value" : {Floating},
+            "base"  : {Integer,Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\log) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if y.kind==Floating:
+                stack.push(newFloating(log(x.f, y.f)))
+            else:
+                stack.push(newFloating(log(x.f, (float)(y.i))))
+
     builtin "median",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
