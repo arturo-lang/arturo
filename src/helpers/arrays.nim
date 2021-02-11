@@ -18,12 +18,14 @@ import vm/value
 # Methods
 #=======================================
 
-proc flattened*(v: Value): Value =
+# TODO(Helpers\arrays) verify/debug implementation for flattened
+#  labels: library, helpers, bug
+proc flattened*(v: Value,once = false,level = 0): Value =
     result = newBlock()
 
     for item in v.a:
-        if item.kind==Block:
-            for subitem in flattened(item).a:
+        if item.kind==Block and ((not once) or (once and level==0)):
+            for subitem in flattened(item,once,level+1).a:
                 result.a.add(subitem)
         else:
             result.a.add(item)
