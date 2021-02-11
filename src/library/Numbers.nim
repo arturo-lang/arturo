@@ -184,7 +184,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newInt((int)(ceil(x.f))))
+            stack.push(newInteger((int)(ceil(x.f))))
 
     builtin "cos",
         alias       = unaliased, 
