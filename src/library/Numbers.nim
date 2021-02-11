@@ -575,6 +575,22 @@ proc defineSymbols*() =
 
             stack.push(res)
 
+    builtin "round",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "round given value to zero decimal places",
+        args        = {
+            "value" : {Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\round) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(newFloating(round(x.f)))
+
     builtin "sec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
