@@ -335,6 +335,22 @@ proc defineSymbols*() =
                 else:
                     stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
+    builtin "floor",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the largest integer not greater than given value",
+        args        = {
+            "value" : {Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\floor) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(newFloating(floor(x.f)))
+
     builtin "gamma",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
