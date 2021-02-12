@@ -1,0 +1,4 @@
+stripChars: function [str, chars]->
+    join select split str => [not? in? & split chars]
+
+print stripChars "She was a soul stripper. She took my heart!" "aei"
