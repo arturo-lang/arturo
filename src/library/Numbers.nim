@@ -61,9 +61,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating},
         example     = """
-            acos 0          ; 1.570796326794897
-            acos 0.3        ; 1.266103672779499
-            acos 1.0        ; 0.0
+            print acos 0            ; 1.570796326794897
+            print acos 0.3          ; 1.266103672779499
+            print acos 1.0          ; 0.0
         """:
             ##########################################################
             stack.push(newFloating(arccos(asFloat(x))))
@@ -78,9 +78,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating},
         example     = """
-            acosh 1.0       ; 0.0
-            acosh 2         ; 1.316957896924817
-            acosh 5.0       ; 2.292431669561178
+            print acosh 1.0         ; 0.0
+            print acosh 2           ; 1.316957896924817
+            print acosh 5.0         ; 2.292431669561178
         """:
             ##########################################################
             stack.push(newFloating(arccosh(asFloat(x))))
@@ -95,9 +95,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating},
         example     = """
-            asin 0          ; 0.0
-            asin 0.3        ; 0.3046926540153975
-            asin 1.0        ; 1.570796326794897
+            print asin 0            ; 0.0
+            print asin 0.3          ; 0.3046926540153975
+            print asin 1.0          ; 1.570796326794897
         """:
             ##########################################################
             stack.push(newFloating(arcsin(asFloat(x))))
@@ -111,9 +111,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\asinh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print asinh 0           ; 0.0
+            print asinh 0.3         ; 0.2956730475634224
+            print asinh 1.0         ; 0.881373587019543
         """:
             ##########################################################
             stack.push(newFloating(arcsinh(asFloat(x))))
@@ -128,9 +129,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating},
         example     = """
-            atan 0          ; 0.0
-            atan 0.3        ; 0.2914567944778671
-            atan 1.0        ; 0.7853981633974483
+            print atan 0            ; 0.0
+            print atan 0.3          ; 0.2914567944778671
+            print atan 1.0          ; 0.7853981633974483
         """:
             ##########################################################
             stack.push(newFloating(arctan(asFloat(x))))
@@ -144,9 +145,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\atanh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print atanh 0           ; 0.0
+            print atanh 0.3         ; 0.3095196042031118
+            print atanh 1.0         ; inf
         """:
             ##########################################################
             stack.push(newFloating(arctanh(asFloat(x))))
@@ -201,9 +203,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\cos) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print cos 0             ; 1.0
+            print cos 0.3           ; 0.955336489125606
+            print cos 1.0           ; 0.5403023058681398
         """:
             ##########################################################
             stack.push(newFloating(cos(asFloat(x))))
@@ -217,9 +220,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\cosh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print cosh 0            ; 1.0
+            print cosh 0.3          ; 1.04533851412886
+            print cosh 1.0          ; 1.543080634815244
         """:
             ##########################################################
             stack.push(newFloating(cosh(asFloat(x))))
@@ -233,9 +237,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\csec) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print csec 0            ; inf
+            print csec 0.3          ; 3.383863361824123
+            print csec 1.0          ; 1.188395105778121
         """:
             ##########################################################
             stack.push(newFloating(csc(asFloat(x))))
@@ -249,9 +254,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\csech) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print csech 0           ; inf
+            print csech 0.3         ; 3.283853396698424
+            print csech 1.0         ; 0.8509181282393216
         """:
             ##########################################################
             stack.push(newFloating(csch(asFloat(x))))
@@ -265,9 +271,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\ctan) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ctan 0            ; inf
+            print ctan 0.3          ; 3.232728143765828
+            print ctan 1.0          ; 0.6420926159343308
         """:
             ##########################################################
             stack.push(newFloating(cot(asFloat(x))))
@@ -281,9 +288,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\ctanh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ctanh 0           ; inf
+            print ctanh 0.3         ; 3.432738430321741
+            print ctanh 1.0         ; 1.313035285499331
         """:
             ##########################################################
             stack.push(newFloating(coth(asFloat(x))))
@@ -385,9 +393,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating},
         example     = """
-            print gamma 3.0     ; 2.0
-            print gamma 10.0    ; 362880.0
-            print gamma 15      ; 87178291199.99985
+            print gamma 3.0         ; 2.0
+            print gamma 10.0        ; 362880.0
+            print gamma 15          ; 87178291199.99985
         """:
             ##########################################################
             stack.push(newFloating(gamma(asFloat(x))))
@@ -433,9 +441,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\ln) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ln 1.0            ; 0.0
+            print ln 0              ; -inf
+            print ln neg 7.0        ; nan
         """:
             ##########################################################
             stack.push(newFloating(ln(asFloat(x))))
@@ -450,9 +459,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\log) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print log 9 3           ; 2.0
+            print log 32.0 2.0      ; 5.0
+            print log 0.0 2         ; -inf
+            print log 100.0 10.0    ; 2.0
         """:
             ##########################################################
             stack.push(newFloating(log(asFloat(x),asFloat(y))))
@@ -660,9 +671,14 @@ proc defineSymbols*() =
             "to"    : ({Integer},"round to given decimal places")
         },
         returns     = {Floating},
-        # TODO(Numbers\round) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print round 2.1         ; 2.0
+            print round 2.9         ; 3.0
+            print round 6           ; 6.0
+
+            print round pi          ; 3.0
+            print round.to:5 pi     ; 3.14159
+            print round.to:2 pi     ; 3.14
         """:
             ##########################################################
             var places = 0
@@ -680,9 +696,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sec) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sec 0             ; 1.0
+            print sec 0.3           ; 1.046751601538086
+            print sec 1.0           ; 1.850815717680925
         """:
             ##########################################################
             stack.push(newFloating(sec(asFloat(x))))
@@ -696,9 +713,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sech) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sech 0            ; 1.0
+            print sech 0.3          ; 0.9566279119002483
+            print sech 1.0          ; 0.6480542736638855
         """:
             ##########################################################
             stack.push(newFloating(sech(asFloat(x))))
@@ -712,9 +730,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sin) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sin 0             ; 0.0
+            print sin 0.3           ; 0.2955202066613395
+            print sin 1.0           ; 0.8414709848078965
         """:
             ##########################################################
             stack.push(newFloating(sin(asFloat(x))))
@@ -728,9 +747,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sinh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sinh 0            ; 0.0
+            print sinh 0.3          ; 0.3045202934471426
+            print sinh 1.0          ; 1.175201193643801
         """:
             ##########################################################
             stack.push(newFloating(sinh(asFloat(x))))
@@ -744,9 +764,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sqrt) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sqrt 4            ; 2.0
+            print sqrt 16.0         ; 4.0
+            print sqrt 1.45         ; 1.20415945787923
         """:
             ##########################################################
             stack.push(newFloating(sqrt(asFloat(x))))
@@ -784,9 +805,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\tan) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print tan 0             ; 0.0
+            print tan 0.3           ; 0.3093362496096232
+            print tan 1.0           ; 1.557407724654902
         """:
             ##########################################################
             stack.push(newFloating(tan(asFloat(x))))
@@ -800,9 +822,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\tanh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print tanh 0            ; 0.0
+            print tanh 0.3          ; 0.2913126124515909
+            print tanh 1.0          ; 0.7615941559557649
         """:
             ##########################################################
             stack.push(newFloating(tanh(asFloat(x))))
