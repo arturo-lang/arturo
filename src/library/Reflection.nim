@@ -220,9 +220,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\char?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print char? `a`         ; true
+            print char? 123         ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Char))
