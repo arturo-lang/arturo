@@ -268,9 +268,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\dictionary?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print dictionary? #[name: "John"]   ; true
+            print dictionary? 123               ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Dictionary))
@@ -353,9 +353,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\integer?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print integer? 123          ; true
+            print integer? "hello"      ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Integer))
@@ -387,9 +387,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\floating?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print floating? 3.14        ; true
+            print floating? 123         ; false
+            print floating? "hello"     ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Floating))
@@ -435,9 +436,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\literal?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print literal? 'x           ; true
+            print literal? "x"          ; false
+            print literal? 123          ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Literal))
@@ -451,9 +453,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\null?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print null? null            ; true
+            print null? ø               ; true
+
+            print null? 123             ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Null))
@@ -545,9 +549,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\string?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print string? "x"           ; true
+            print string? 'x            ; false
+            print string? 123           ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==String))
@@ -618,9 +623,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\type?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print type? :string         ; true
+            print type? "string"        ; false
+            print type? 123             ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Type))
