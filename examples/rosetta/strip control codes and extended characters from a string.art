@@ -1,0 +1,10 @@
+str: ---string of ☺☻♥♦⌂, may include control characters and other    ♫☼§►↔◄░▒▓█┌┴┐±÷²¬└┬┘ilk.---
+
+print "with extended characters"
+print join select split str 'x ->
+    not? in? to :integer to :char x (0..31)++127
+
+print "without extended characters"
+print join select split str 'x ->
+    and? ascii? x
+         not? in? to :integer to :char x (0..31)++127
