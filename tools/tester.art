@@ -35,7 +35,7 @@ runSet: function [title,location][
     print render {
         ******************************
         * |success| of |size tests|
-        * |title| succeeded.
+        * tasks succeeded.
         ******************************
     }
 
