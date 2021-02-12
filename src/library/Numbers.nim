@@ -56,96 +56,102 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\acos) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print acos 0            ; 1.570796326794897
+            print acos 0.3          ; 1.266103672779499
+            print acos 1.0          ; 0.0
         """:
             ##########################################################
-            stack.push(newFloating(arccos(x.f)))
+            stack.push(newFloating(arccos(asFloat(x))))
 
     builtin "acosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\acosh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print acosh 1.0         ; 0.0
+            print acosh 2           ; 1.316957896924817
+            print acosh 5.0         ; 2.292431669561178
         """:
             ##########################################################
-            stack.push(newFloating(arccosh(x.f)))
+            stack.push(newFloating(arccosh(asFloat(x))))
 
     builtin "asin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\asin) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print asin 0            ; 0.0
+            print asin 0.3          ; 0.3046926540153975
+            print asin 1.0          ; 1.570796326794897
         """:
             ##########################################################
-            stack.push(newFloating(arcsin(x.f)))
+            stack.push(newFloating(arcsin(asFloat(x))))
 
     builtin "asinh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\asinh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print asinh 0           ; 0.0
+            print asinh 0.3         ; 0.2956730475634224
+            print asinh 1.0         ; 0.881373587019543
         """:
             ##########################################################
-            stack.push(newFloating(arcsinh(x.f)))
+            stack.push(newFloating(arcsinh(asFloat(x))))
 
     builtin "atan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\atan) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print atan 0            ; 0.0
+            print atan 0.3          ; 0.2914567944778671
+            print atan 1.0          ; 0.7853981633974483
         """:
             ##########################################################
-            stack.push(newFloating(arctan(x.f)))
+            stack.push(newFloating(arctan(asFloat(x))))
 
     builtin "atanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\atanh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print atanh 0           ; 0.0
+            print atanh 0.3         ; 0.3095196042031118
+            print atanh 1.0         ; inf
         """:
             ##########################################################
-            stack.push(newFloating(arctanh(x.f)))
+            stack.push(newFloating(arctanh(asFloat(x))))
 
     builtin "average",
         alias       = unaliased, 
@@ -175,112 +181,120 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
-        # TODO(Numbers\ceil) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ceil 2.1          ; 3
+            print ceil 2.9          ; 3
+            print ceil neg 3.5      ; -3
+            print ceil 4            ; 4
         """:
             ##########################################################
-            stack.push(newInteger((int)(ceil(x.f))))
+            stack.push(newInteger((int)(ceil(asFloat(x)))))
 
     builtin "cos",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\cos) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print cos 0             ; 1.0
+            print cos 0.3           ; 0.955336489125606
+            print cos 1.0           ; 0.5403023058681398
         """:
             ##########################################################
-            stack.push(newFloating(cos(x.f)))
+            stack.push(newFloating(cos(asFloat(x))))
 
     builtin "cosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\cosh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print cosh 0            ; 1.0
+            print cosh 0.3          ; 1.04533851412886
+            print cosh 1.0          ; 1.543080634815244
         """:
             ##########################################################
-            stack.push(newFloating(cosh(x.f)))
+            stack.push(newFloating(cosh(asFloat(x))))
 
     builtin "csec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\csec) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print csec 0            ; inf
+            print csec 0.3          ; 3.383863361824123
+            print csec 1.0          ; 1.188395105778121
         """:
             ##########################################################
-            stack.push(newFloating(csc(x.f)))
+            stack.push(newFloating(csc(asFloat(x))))
 
     builtin "csech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\csech) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print csech 0           ; inf
+            print csech 0.3         ; 3.283853396698424
+            print csech 1.0         ; 0.8509181282393216
         """:
             ##########################################################
-            stack.push(newFloating(csch(x.f)))
+            stack.push(newFloating(csch(asFloat(x))))
 
     builtin "ctan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\ctan) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ctan 0            ; inf
+            print ctan 0.3          ; 3.232728143765828
+            print ctan 1.0          ; 0.6420926159343308
         """:
             ##########################################################
-            stack.push(newFloating(cot(x.f)))
+            stack.push(newFloating(cot(asFloat(x))))
 
     builtin "ctanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\ctanh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ctanh 0           ; inf
+            print ctanh 0.3         ; 3.432738430321741
+            print ctanh 1.0         ; 1.313035285499331
         """:
             ##########################################################
-            stack.push(newFloating(coth(x.f)))
+            stack.push(newFloating(coth(asFloat(x))))
 
     constant "epsilon",
         alias       = unaliased,
@@ -319,10 +333,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            if x.kind==Floating:
-                stack.push(newFloating(exp(x.f)))
-            else:
-                stack.push(newFloating(exp((float)(x.i))))
+            stack.push(newFloating(exp(asFloat(x))))
 
     builtin "factors",
         alias       = unaliased, 
@@ -359,32 +370,35 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
-        # TODO(Numbers\floor) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print floor 2.1         ; 2
+            print floor 2.9         ; 2
+            print floor neg 3.5     ; -4
+            print floor 4           ; 4
         """:
             ##########################################################
-            stack.push(newInteger((int)(floor(x.f))))
+            stack.push(newInteger((int)(floor(asFloat(x)))))
 
     builtin "gamma",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the gamma function for given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\gamma) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print gamma 3.0         ; 2.0
+            print gamma 10.0        ; 362880.0
+            print gamma 15          ; 87178291199.99985
         """:
             ##########################################################
-            stack.push(newFloating(gamma(x.f)))
+            stack.push(newFloating(gamma(asFloat(x))))
 
     builtin "gcd",
         alias       = unaliased, 
@@ -427,15 +441,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\ln) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ln 1.0            ; 0.0
+            print ln 0              ; -inf
+            print ln neg 7.0        ; nan
         """:
             ##########################################################
-            if x.kind==Floating:
-                stack.push(newFloating(ln(x.f)))
-            else:
-                stack.push(newFloating(ln((float)(x.i))))
+            stack.push(newFloating(ln(asFloat(x))))
 
     builtin "log",
         alias       = unaliased, 
@@ -447,21 +459,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\log) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print log 9 3           ; 2.0
+            print log 32.0 2.0      ; 5.0
+            print log 0.0 2         ; -inf
+            print log 100.0 10.0    ; 2.0
         """:
             ##########################################################
-            if y.kind==Floating:
-                if x.kind==Floating:
-                    stack.push(newFloating(log(x.f, y.f)))
-                else:
-                    stack.push(newFloating(log((float)(x.i), y.f)))
-            else:
-                if x.kind==Floating:
-                    stack.push(newFloating(log(x.f, (float)(y.i))))
-                else:
-                    stack.push(newFloating(log((float)(x.i), (float)(y.i))))
+            stack.push(newFloating(log(asFloat(x),asFloat(y))))
 
     builtin "median",
         alias       = unaliased, 
@@ -660,86 +665,95 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "round given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = {
             "to"    : ({Integer},"round to given decimal places")
         },
         returns     = {Floating},
-        # TODO(Numbers\round) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print round 2.1         ; 2.0
+            print round 2.9         ; 3.0
+            print round 6           ; 6.0
+
+            print round pi          ; 3.0
+            print round.to:5 pi     ; 3.14159
+            print round.to:2 pi     ; 3.14
         """:
             ##########################################################
             var places = 0
             if (let aTo = popAttr("to"); aTo != VNULL):
                 places = aTo.i
                 
-            stack.push(newFloating(round(x.f, places)))
+            stack.push(newFloating(round(asFloat(x), places)))
 
     builtin "sec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the secant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sec) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sec 0             ; 1.0
+            print sec 0.3           ; 1.046751601538086
+            print sec 1.0           ; 1.850815717680925
         """:
             ##########################################################
-            stack.push(newFloating(sec(x.f)))
+            stack.push(newFloating(sec(asFloat(x))))
 
     builtin "sech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic secant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sech) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sech 0            ; 1.0
+            print sech 0.3          ; 0.9566279119002483
+            print sech 1.0          ; 0.6480542736638855
         """:
             ##########################################################
-            stack.push(newFloating(sech(x.f)))
+            stack.push(newFloating(sech(asFloat(x))))
 
     builtin "sin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sin) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sin 0             ; 0.0
+            print sin 0.3           ; 0.2955202066613395
+            print sin 1.0           ; 0.8414709848078965
         """:
             ##########################################################
-            stack.push(newFloating(sin(x.f)))
+            stack.push(newFloating(sin(asFloat(x))))
 
     builtin "sinh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sinh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sinh 0            ; 0.0
+            print sinh 0.3          ; 0.3045202934471426
+            print sinh 1.0          ; 1.175201193643801
         """:
             ##########################################################
-            stack.push(newFloating(sinh(x.f)))
+            stack.push(newFloating(sinh(asFloat(x))))
 
     builtin "sqrt",
         alias       = unaliased, 
@@ -750,13 +764,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\sqrt) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print sqrt 4            ; 2.0
+            print sqrt 16.0         ; 4.0
+            print sqrt 1.45         ; 1.20415945787923
         """:
             ##########################################################
-            if x.kind==Integer: stack.push(newFloating(sqrt((float)x.i)))
-            else: stack.push(newFloating(sqrt(x.f)))
+            stack.push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = unaliased, 
@@ -787,32 +801,34 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\tan) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print tan 0             ; 0.0
+            print tan 0.3           ; 0.3093362496096232
+            print tan 1.0           ; 1.557407724654902
         """:
             ##########################################################
-            stack.push(newFloating(tan(x.f)))
+            stack.push(newFloating(tan(asFloat(x))))
 
     builtin "tanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\tanh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print tanh 0            ; 0.0
+            print tanh 0.3          ; 0.2913126124515909
+            print tanh 1.0          ; 0.7615941559557649
         """:
             ##########################################################
-            stack.push(newFloating(tanh(x.f)))
+            stack.push(newFloating(tanh(asFloat(x))))
 
     builtin "zero?",
         alias       = unaliased, 
