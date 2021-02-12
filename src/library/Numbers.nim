@@ -56,7 +56,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -65,14 +65,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(arccos(x.f)))
+            stack.push(newFloating(arccos(asFloat(x))))
 
     builtin "acosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -81,14 +81,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(arccosh(x.f)))
+            stack.push(newFloating(arccosh(asFloat(x))))
 
     builtin "asin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -97,14 +97,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(arcsin(x.f)))
+            stack.push(newFloating(arcsin(asFloat(x))))
 
     builtin "asinh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -113,14 +113,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(arcsinh(x.f)))
+            stack.push(newFloating(arcsinh(asFloat(x))))
 
     builtin "atan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -129,14 +129,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(arctan(x.f)))
+            stack.push(newFloating(arctan(asFloat(x))))
 
     builtin "atanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -145,7 +145,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(arctanh(x.f)))
+            stack.push(newFloating(arctanh(asFloat(x))))
 
     builtin "average",
         alias       = unaliased, 
@@ -175,7 +175,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the smallest integer not smaller than given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
@@ -184,14 +184,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newInteger((int)(ceil(x.f))))
+            stack.push(newInteger((int)(ceil(asFloat(x)))))
 
     builtin "cos",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -200,14 +200,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(cos(x.f)))
+            stack.push(newFloating(cos(asFloat(x))))
 
     builtin "cosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -216,14 +216,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(cosh(x.f)))
+            stack.push(newFloating(cosh(asFloat(x))))
 
     builtin "csec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -232,14 +232,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(csc(x.f)))
+            stack.push(newFloating(csc(asFloat(x))))
 
     builtin "csech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -248,14 +248,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(csch(x.f)))
+            stack.push(newFloating(csch(asFloat(x))))
 
     builtin "ctan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -264,14 +264,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(cot(x.f)))
+            stack.push(newFloating(cot(asFloat(x))))
 
     builtin "ctanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -280,7 +280,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(coth(x.f)))
+            stack.push(newFloating(coth(asFloat(x))))
 
     constant "epsilon",
         alias       = unaliased,
@@ -319,10 +319,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            if x.kind==Floating:
-                stack.push(newFloating(exp(x.f)))
-            else:
-                stack.push(newFloating(exp((float)(x.i))))
+            stack.push(newFloating(exp(asFloat(x))))
 
     builtin "factors",
         alias       = unaliased, 
@@ -359,7 +356,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the largest integer not greater than given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
@@ -368,7 +365,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newInteger((int)(floor(x.f))))
+            stack.push(newInteger((int)(floor(asFloat(x)))))
 
     builtin "gamma",
         alias       = unaliased, 
@@ -432,10 +429,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            if x.kind==Floating:
-                stack.push(newFloating(ln(x.f)))
-            else:
-                stack.push(newFloating(ln((float)(x.i))))
+            stack.push(newFloating(ln(asFloat(x))))
 
     builtin "log",
         alias       = unaliased, 
@@ -452,16 +446,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            if y.kind==Floating:
-                if x.kind==Floating:
-                    stack.push(newFloating(log(x.f, y.f)))
-                else:
-                    stack.push(newFloating(log((float)(x.i), y.f)))
-            else:
-                if x.kind==Floating:
-                    stack.push(newFloating(log(x.f, (float)(y.i))))
-                else:
-                    stack.push(newFloating(log((float)(x.i), (float)(y.i))))
+            stack.push(newFloating(log(asFloat(x),asFloat(y))))
 
     builtin "median",
         alias       = unaliased, 
@@ -660,7 +645,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "round given value",
         args        = {
-            "value" : {Floating}
+            "value" : {Integer,Floating}
         },
         attrs       = {
             "to"    : ({Integer},"round to given decimal places")
@@ -675,14 +660,14 @@ proc defineSymbols*() =
             if (let aTo = popAttr("to"); aTo != VNULL):
                 places = aTo.i
                 
-            stack.push(newFloating(round(x.f, places)))
+            stack.push(newFloating(round(asFloat(x), places)))
 
     builtin "sec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the secant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -691,14 +676,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(sec(x.f)))
+            stack.push(newFloating(sec(asFloat(x))))
 
     builtin "sech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic secant of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -707,14 +692,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(sech(x.f)))
+            stack.push(newFloating(sech(asFloat(x))))
 
     builtin "sin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -723,14 +708,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(sin(x.f)))
+            stack.push(newFloating(sin(asFloat(x))))
 
     builtin "sinh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic sine of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -739,7 +724,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(sinh(x.f)))
+            stack.push(newFloating(sinh(asFloat(x))))
 
     builtin "sqrt",
         alias       = unaliased, 
@@ -755,8 +740,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            if x.kind==Integer: stack.push(newFloating(sqrt((float)x.i)))
-            else: stack.push(newFloating(sqrt(x.f)))
+            stack.push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = unaliased, 
@@ -787,7 +771,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -796,14 +780,14 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(tan(x.f)))
+            stack.push(newFloating(tan(asFloat(x))))
 
     builtin "tanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Floating}
+            "angle" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -812,7 +796,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(tanh(x.f)))
+            stack.push(newFloating(tanh(asFloat(x))))
 
     builtin "zero?",
         alias       = unaliased, 
