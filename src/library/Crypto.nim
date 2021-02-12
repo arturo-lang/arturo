@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import base64, md5, std/sha1
+import base64, md5, std/sha1, uri
 
 import vm/[common, globals, stack, value]
 
@@ -36,17 +36,28 @@ proc defineSymbols*() =
         args        = {
             "value" : {String,Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "url"   : ({Boolean},"decode URL based on RFC3986")
+        },
         returns     = {String,Nothing},
         example     = """
             print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
             ; Numquam fugiens respexeris
+
+            print decode.url "http%3A%2F%2Ffoo+bar%2F"
+            ; http://foo bar/
         """:
             ##########################################################
-            if x.kind==Literal:
-                Syms[x.s].s = Syms[x.s].s.decode()
+            if (popAttr("url")!=VNULL):
+                if x.kind==Literal:
+                    Syms[x.s].s = Syms[x.s].s.decodeUrl()
+                else:
+                    stack.push(newString(x.s.decodeUrl()))
             else:
-                stack.push(newString(x.s.decode()))
+                if x.kind==Literal:
+                    Syms[x.s].s = Syms[x.s].s.decode()
+                else:
+                    stack.push(newString(x.s.decode()))
 
     builtin "encode",
         alias       = unaliased, 
@@ -55,17 +66,28 @@ proc defineSymbols*() =
         args        = {
             "value" : {String,Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "url"   : ({Boolean},"encode URL based on RFC3986")
+        },
         returns     = {String,Nothing},
         example     = """
             print encode "Numquam fugiens respexeris"
             ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
+
+            print encode.url "http://foo bar/"
+            ; http%3A%2F%2Ffoo+bar%2F
         """:
             ##########################################################
-            if x.kind==Literal:
-                Syms[x.s].s = Syms[x.s].s.encode()
+            if (popAttr("url")!=VNULL):
+                if x.kind==Literal:
+                    Syms[x.s].s = Syms[x.s].s.encodeUrl()
+                else:
+                    stack.push(newString(x.s.encodeUrl()))
             else:
-                stack.push(newString(x.s.encode()))
+                if x.kind==Literal:
+                    Syms[x.s].s = Syms[x.s].s.encode()
+                else:
+                    stack.push(newString(x.s.encode()))
 
     builtin "digest",
         alias       = unaliased, 
