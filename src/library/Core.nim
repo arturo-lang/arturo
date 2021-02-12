@@ -320,8 +320,6 @@ proc defineSymbols*() =
             ##########################################################
             Syms[x.s] = y
 
-    # TODO(Core\new) verify functionality
-    #  labels: library, unit-test,easy
     builtin "new",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -331,9 +329,16 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Any},
-        # TODO(Core\new) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            c: "Hello"
+            d: new c        ; make a copy of the older string
+
+            ; changing one string in-place
+            ; will change only the string in question
+
+            'd ++ "World"
+            print d                 ; HelloWorld
+            print c                 ; Hello
         """:
             ##########################################################
             stack.push(copyValue(x))
@@ -356,9 +361,15 @@ proc defineSymbols*() =
             "discard"   : ({Boolean},"do not return anything")
         },
         returns     = {Any},
-        # TODO(Core\pop) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            1 2 3
+            a: pop 1        ; a: 3
+
+            1 2 3
+            b: pop 2        ; b: [3 2]
+
+            1 2 3
+            pop.discard 1   ; popped 3 from the stack
         """:
             ##########################################################
             let doDiscard = (popAttr("discard") != VNULL)
@@ -496,9 +507,6 @@ proc defineSymbols*() =
                 if stack.pop().b:
                     break
 
-    # TODO(Core\globalize) Do we really need an alias for that?
-    #  Currently, the alias is `:` - acting as an infix operator. But this could lead to confusion with existing `label:` or `path\label:`.
-    #  labels: library,open discussion
     builtin "var",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -508,9 +516,15 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Any},
-        # TODO(Core\var) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            a: 2
+            print var 'a            ; a
+
+            f: function [x][x+2]
+            print f 10              ; 12
+
+            g: var 'f               
+            print g 10              ; 12
         """:
             ##########################################################
             stack.push(Syms[x.s])

@@ -96,9 +96,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\attribute?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            attribute? first [.something x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Attribute))
@@ -112,9 +112,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\attributeLabel?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            attributeLabel? first [.something: x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==AttributeLabel))
@@ -172,9 +172,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\binary?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            binary? to :binary "string"
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Binary))
@@ -188,9 +188,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\block?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print block? [1 2 3]            ; true
+            print block? #[name: "John"]    ; false
+            print block? "hello"            ; false
+            print block? 123                ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Block))
@@ -204,9 +206,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\boolean?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print boolean? true         ; true
+            print boolean? false        ; true
+            print boolean? 1=1          ; true
+            print boolena? 123          ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Boolean))
@@ -220,9 +224,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\char?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print char? `a`         ; true
+            print char? 123         ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Char))
@@ -236,9 +240,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\database?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            database? open "my.db"
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Database))
@@ -252,9 +256,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\date?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print date? now             ; true
+            print date? "hello"         ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Date))
@@ -268,9 +272,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\dictionary?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print dictionary? #[name: "John"]   ; true
+            print dictionary? 123               ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Dictionary))
@@ -282,9 +286,14 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Nothing},
-        # TODO(Reflection\help) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            help        
+
+            ; abs              (value)                        -> get the absolute value for given integer
+            ; acos             (angle)                        -> calculate the inverse cosine of given angle
+            ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
+            ; add              (valueA,valueB)                -> add given values and return result
+            ; ...
         """:
             ##########################################################
             printHelp()
@@ -300,9 +309,21 @@ proc defineSymbols*() =
             "get"   : ({Boolean},"get information as dictionary")
         },
         returns     = {Dictionary,Nothing},
-        # TODO(Reflection\info) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            info 'print
+
+            ; |--------------------------------------------------------------------------------
+            ; |          print  :function                                          0x1028B3410
+            ; |--------------------------------------------------------------------------------
+            ; |                 print given value to screen with newline
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  print value :any
+            ; |
+            ; |        returns  :nothing
+            ; |--------------------------------------------------------------------------------
+
+            print info.get 'print
+            ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
         """:
             ##########################################################
             if (popAttr("get") != VNULL):
@@ -319,9 +340,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\inline?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            inline? first [(something) x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Inline))
@@ -353,9 +374,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\integer?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print integer? 123          ; true
+            print integer? "hello"      ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Integer))
@@ -387,9 +408,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\floating?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print floating? 3.14        ; true
+            print floating? 123         ; false
+            print floating? "hello"     ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Floating))
@@ -403,9 +425,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\function?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print function? $[x][2*x]       ; true
+            print function? var 'print      ; true
+            print function? "print"         ; false
+            print function? 123             ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Function))
@@ -419,9 +443,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\label?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            label? first [something: x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Label))
@@ -435,9 +459,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\literal?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print literal? 'x           ; true
+            print literal? "x"          ; false
+            print literal? 123          ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Literal))
@@ -451,9 +476,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\null?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print null? null            ; true
+            print null? ø               ; true
+
+            print null? 123             ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Null))
@@ -467,9 +494,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\path?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            path? first [a\b\c x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Path))
@@ -483,9 +510,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\pathLabel?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            pathLabel? first [a\b\c: x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==PathLabel))
@@ -515,9 +542,11 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Dictionary},
-        # TODO(Reflection\stack) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            1 2 3 "done"
+
+            print stack
+            ; 1 2 3 done
         """:
             ##########################################################
             stack.push(newBlock(Stack[0..SP-1]))
@@ -529,9 +558,15 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\standalone?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            doSomething: function [x][
+                print ["I'm doing something with" x]
+            ]
+            
+            if standalone? [
+                print "It's running from command line and not included."
+                print "Nothing to do!"
+            ]
         """:
             ##########################################################
             stack.push(newBoolean(PathStack.len == 1))
@@ -545,9 +580,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\string?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print string? "x"           ; true
+            print string? 'x            ; false
+            print string? 123           ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==String))
@@ -561,9 +597,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\symbol?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            symbol? first [+ x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Symbol))
@@ -618,9 +654,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\type?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print type? :string         ; true
+            print type? "string"        ; false
+            print type? 123             ; false
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Type))
@@ -634,9 +671,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Reflection\word?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            word? first [something x]
+            ; => true
         """:
             ##########################################################
             stack.push(newBoolean(x.kind==Word))
