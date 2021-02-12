@@ -476,8 +476,13 @@ proc defineSymbols*() =
         args        = {
             "string": {String,Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "start" : ({Boolean},"strip leading whitespace"),
+            "end"   : ({Boolean},"strip trailing whitespace")
+        },
         returns     = {String,Nothing},
+        # TODO(Collections\flatten) add documentation example for .start / .end
+        #  labels: library,documentation,easy
         example     = """
             strip "  this is a string "        ; => "this is a string"
             
@@ -485,8 +490,15 @@ proc defineSymbols*() =
             strip 'str                         ; str: "some string"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(strutils.strip(x.s)))
-            else: Syms[x.s].s = strutils.strip(Syms[x.s].s) 
+            var leading = (popAttr("start")!=VNULL)
+            var trailing = (popAttr("end")!=VNULL)
+
+            if not leading and not trailing:
+                leading = true
+                trailing = true
+
+            if x.kind==String: stack.push(newString(strutils.strip(x.s, leading, trailing)))
+            else: Syms[x.s].s = strutils.strip(Syms[x.s].s, leading, trailing) 
 
     builtin "suffix",
         alias       = unaliased, 
