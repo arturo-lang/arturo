@@ -485,13 +485,16 @@ proc defineSymbols*() =
             "end"   : ({Boolean},"strip trailing whitespace")
         },
         returns     = {String,Nothing},
-        # TODO(Collections\flatten) add documentation example for .start / .end
-        #  labels: library,documentation,easy
         example     = """
-            strip "  this is a string "        ; => "this is a string"
-            
-            str: "  some string  "
-            strip 'str                         ; str: "some string"
+            str: "     Hello World     "
+
+            print ["strip all:"      ">" strip str       "<"]
+            print ["strip leading:"  ">" strip.start str "<"]
+            print ["strip trailing:" ">" strip.end str   "<"]
+
+            ; strip all: > Hello World < 
+            ; strip leading: > Hello World      < 
+            ; strip trailing: >      Hello World <
         """:
             ##########################################################
             var leading = (popAttr("start")!=VNULL)
@@ -559,10 +562,21 @@ proc defineSymbols*() =
             "preserve"  : ({Boolean},"preserve word boundaries")
         },
         returns     = {String,Nothing},
-        # TODO(Strings\truncate) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
-        """:
+            str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
+
+            truncate str 30
+            ; => "Lorem ipsum dolor sit amet, con..."
+
+            truncate.preserve str 30
+            ; => "Lorem ipsum dolor sit amet,..."
+
+            truncate.with:"---" str 30
+            ; => "Lorem ipsum dolor sit amet, con---"
+
+            truncate.preserve.with:"---" str 30
+            ; => "Lorem ipsum dolor sit amet,---"
+        """: 
             ##########################################################
             var with = "..."
             if (let aWith = popAttr("with"); aWith != VNULL):
