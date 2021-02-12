@@ -245,8 +245,6 @@ proc defineSymbols*() =
             "params"        : {Literal,Block},
             "action"        : {Block}
         },
-        # TODO(Iterators\loop) add documentation example for .forever
-        #  labels: library,documentation,easy
         attrs       = {
             "with"      : ({Literal},"use given index"),
             "forever"   : ({Boolean},"cycle through collection infinitely")
@@ -291,6 +289,9 @@ proc defineSymbols*() =
             ; 0 => zero
             ; 1 => one
             ; 2 => two
+
+            loop.forever [1 2 3] => print 
+            ; 1 2 3 1 2 3 1 2 3 ...
         """:
             ##########################################################
             var args: ValueArray
