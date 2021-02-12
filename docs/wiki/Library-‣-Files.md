@@ -60,7 +60,8 @@ Read file from given path
 |Attribute|Type|Description|
 |---|---|---|
 |lines|<i>:boolean</i>|read file lines into block|
-|json|<i>:boolean</i>|read CSV file into a block of rows|
+|json|<i>:boolean</i>|read Json into value|
+|csv|<i>:boolean</i>|read CSV file into a block of rows|
 |withHeaders|<i>:boolean</i>|read CSV headers|
 |html|<i>:boolean</i>|read HTML file into node dictionary|
 |markdown|<i>:boolean</i>|read Markdown and convert to HTML|

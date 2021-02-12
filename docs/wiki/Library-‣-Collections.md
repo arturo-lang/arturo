@@ -4,6 +4,7 @@
 
 <!--ts-->
    * [append](#append)
+   * [chop](#chop)
    * [combine](#combine)
    * [contains?](#contains?)
    * [drop](#drop)
@@ -78,6 +79,36 @@ print a                   ; hello
 b: [1 2 3]
 'b ++ 4
 print b                   ; [1 2 3 4]
+```
+
+## chop
+
+#### Description
+
+Remove last item from given collection
+
+#### Usage
+
+<pre>
+<b>chop</b> <ins>collection</ins> <i>:string</i> <i>:literal</i> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:string*
+- *:block*
+- *:nothing*
+
+#### Examples
+
+```red
+print chop "books"          ; book
+print chop chop "books"     ; boo
+
+str: "books"
+chop 'str                   ; str: "book"
+
+chop [1 2 3 4]              ; => [1 2 3]
 ```
 
 ## combine
@@ -248,6 +279,14 @@ Get new dictionary by merging given ones
 
 - *:dictionary*
 
+#### Examples
+
+```red
+person: #[ name: "john" surname: "doe" ]
+
+print extend person #[ age: 35 ]
+; [name:john surname:doe age:35]
+```
 
 ## first
 
@@ -290,6 +329,11 @@ Flatten given collection by eliminating nested blocks
 <pre>
 <b>flatten</b> <ins>collection</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|once|<i>:boolean</i>|do not perform recursive flattening|
 
 #### Returns
 
@@ -305,6 +349,12 @@ print flatten arr
 arr: [[1 2 3] [4 5 6]]
 flatten 'arr
 ; arr: [1 2 3 4 5 6]
+
+flatten [1 [2 3] [4 [5 6]]]
+; => [1 2 3 4 5 6]
+
+flatten.once [1 [2 3] [4 [5 6]]]
+; => [1 2 3 4 [5 6]]
 ```
 
 ## get
@@ -885,7 +935,7 @@ Sort given block in ascending order
 
 |Attribute|Type|Description|
 |---|---|---|
-|as|<i>:literal</i>|localizezd by ISO 639-1 language code|
+|as|<i>:literal</i>|localized by ISO 639-1 language code|
 |sensitive|<i>:boolean</i>|case-sensitive sorting|
 |descending|<i>:boolean</i>|sort in ascending order|
 

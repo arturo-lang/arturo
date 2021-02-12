@@ -3,6 +3,7 @@
 ---
 
 <!--ts-->
+   * [ensure](#ensure)
    * [execute](#execute)
    * [exit](#exit)
    * [list](#list)
@@ -12,6 +13,32 @@
 
 ---
 
+
+## ensure
+
+#### Description
+
+Assert given condition is true, or exit
+
+#### Usage
+
+<pre>
+<b>ensure</b> <ins>condition</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+num: input "give me a positive number"
+
+ensure [num > 0]
+
+print "good, the number is positive indeed. let's continue..."
+```
 
 ## execute
 
@@ -126,6 +153,11 @@ Exit program with error message
 
 - *:boolean*
 
+#### Examples
+
+```red
+panic.code:1 "something went terribly wrong. quitting..."
+```
 
 ## pause
 
@@ -142,3 +174,13 @@ Pause program's execution~for the given amount of milliseconds
 #### Returns
 
 - *:nothing*
+
+#### Examples
+
+```red
+print "wait a moment"
+
+pause 1000      ; sleeping for one second
+
+print "done. let's continue..."
+```

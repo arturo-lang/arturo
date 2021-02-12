@@ -11,6 +11,7 @@
    * [atan](#atan)
    * [atanh](#atanh)
    * [average](#average)
+   * [ceil](#ceil)
    * [cos](#cos)
    * [cosh](#cosh)
    * [csec](#csec)
@@ -18,8 +19,13 @@
    * [ctan](#ctan)
    * [ctanh](#ctanh)
    * [even?](#even?)
+   * [exp](#exp)
    * [factors](#factors)
+   * [floor](#floor)
+   * [gamma](#gamma)
    * [gcd](#gcd)
+   * [ln](#ln)
+   * [log](#log)
    * [median](#median)
    * [negative?](#negative?)
    * [odd?](#odd?)
@@ -28,6 +34,7 @@
    * [product](#product)
    * [random](#random)
    * [range](#range)
+   * [round](#round)
    * [sec](#sec)
    * [sech](#sech)
    * [sin](#sin)
@@ -74,13 +81,20 @@ Calculate the inverse cosine of given angle
 #### Usage
 
 <pre>
-<b>acos</b> <ins>angle</ins> <i>:floating</i>
+<b>acos</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print acos 0            ; 1.570796326794897
+print acos 0.3          ; 1.266103672779499
+print acos 1.0          ; 0.0
+```
 
 ## acosh
 
@@ -91,13 +105,20 @@ Calculate the inverse hyperbolic cosine of given angle
 #### Usage
 
 <pre>
-<b>acosh</b> <ins>angle</ins> <i>:floating</i>
+<b>acosh</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print acosh 1.0         ; 0.0
+print acosh 2           ; 1.316957896924817
+print acosh 5.0         ; 2.292431669561178
+```
 
 ## asin
 
@@ -108,13 +129,20 @@ Calculate the inverse sine of given angle
 #### Usage
 
 <pre>
-<b>asin</b> <ins>angle</ins> <i>:floating</i>
+<b>asin</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print asin 0            ; 0.0
+print asin 0.3          ; 0.3046926540153975
+print asin 1.0          ; 1.570796326794897
+```
 
 ## asinh
 
@@ -125,13 +153,20 @@ Calculate the inverse hyperbolic sine of given angle
 #### Usage
 
 <pre>
-<b>asinh</b> <ins>angle</ins> <i>:floating</i>
+<b>asinh</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print asinh 0           ; 0.0
+print asinh 0.3         ; 0.2956730475634224
+print asinh 1.0         ; 0.881373587019543
+```
 
 ## atan
 
@@ -142,13 +177,20 @@ Calculate the inverse tangent of given angle
 #### Usage
 
 <pre>
-<b>atan</b> <ins>angle</ins> <i>:floating</i>
+<b>atan</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print atan 0            ; 0.0
+print atan 0.3          ; 0.2914567944778671
+print atan 1.0          ; 0.7853981633974483
+```
 
 ## atanh
 
@@ -159,13 +201,20 @@ Calculate the inverse hyperbolic tangent of given angle
 #### Usage
 
 <pre>
-<b>atanh</b> <ins>angle</ins> <i>:floating</i>
+<b>atanh</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print atanh 0           ; 0.0
+print atanh 0.3         ; 0.3095196042031118
+print atanh 1.0         ; inf
+```
 
 ## average
 
@@ -190,6 +239,31 @@ print average [2 4 5 6 7 2 3]
 ; 4.142857142857143
 ```
 
+## ceil
+
+#### Description
+
+Calculate the smallest integer not smaller than given value
+
+#### Usage
+
+<pre>
+<b>ceil</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+
+#### Returns
+
+- *:integer*
+
+#### Examples
+
+```red
+print ceil 2.1          ; 3
+print ceil 2.9          ; 3
+print ceil neg 3.5      ; -3
+print ceil 4            ; 4
+```
+
 ## cos
 
 #### Description
@@ -199,13 +273,20 @@ Calculate the cosine of given angle
 #### Usage
 
 <pre>
-<b>cos</b> <ins>angle</ins> <i>:floating</i>
+<b>cos</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print cos 0             ; 1.0
+print cos 0.3           ; 0.955336489125606
+print cos 1.0           ; 0.5403023058681398
+```
 
 ## cosh
 
@@ -216,13 +297,20 @@ Calculate the hyperbolic cosine of given angle
 #### Usage
 
 <pre>
-<b>cosh</b> <ins>angle</ins> <i>:floating</i>
+<b>cosh</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print cosh 0            ; 1.0
+print cosh 0.3          ; 1.04533851412886
+print cosh 1.0          ; 1.543080634815244
+```
 
 ## csec
 
@@ -233,13 +321,20 @@ Calculate the cosecant of given angle
 #### Usage
 
 <pre>
-<b>csec</b> <ins>angle</ins> <i>:floating</i>
+<b>csec</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print csec 0            ; inf
+print csec 0.3          ; 3.383863361824123
+print csec 1.0          ; 1.188395105778121
+```
 
 ## csech
 
@@ -250,13 +345,20 @@ Calculate the hyperbolic cosecant of given angle
 #### Usage
 
 <pre>
-<b>csech</b> <ins>angle</ins> <i>:floating</i>
+<b>csech</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print csech 0           ; inf
+print csech 0.3         ; 3.283853396698424
+print csech 1.0         ; 0.8509181282393216
+```
 
 ## ctan
 
@@ -267,13 +369,20 @@ Calculate the cotangent of given angle
 #### Usage
 
 <pre>
-<b>ctan</b> <ins>angle</ins> <i>:floating</i>
+<b>ctan</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print ctan 0            ; inf
+print ctan 0.3          ; 3.232728143765828
+print ctan 1.0          ; 0.6420926159343308
+```
 
 ## ctanh
 
@@ -284,13 +393,20 @@ Calculate the hyperbolic cotangent of given angle
 #### Usage
 
 <pre>
-<b>ctanh</b> <ins>angle</ins> <i>:floating</i>
+<b>ctanh</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print ctanh 0           ; inf
+print ctanh 0.3         ; 3.432738430321741
+print ctanh 1.0         ; 1.313035285499331
+```
 
 ## even?
 
@@ -315,6 +431,30 @@ even? 4           ; => true
 even? 3           ; => false
 
 print select 1..10 => even?       ; 2 4 6 8 10
+```
+
+## exp
+
+#### Description
+
+Calculate the exponential function for given value
+
+#### Usage
+
+<pre>
+<b>exp</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+
+#### Returns
+
+- *:floating*
+
+#### Examples
+
+```red
+print exp 1.0       ; 2.718281828459045
+print exp 0         ; 1.0
+print exp neg 1.0   ; 0.3678794411714423
 ```
 
 ## factors
@@ -345,6 +485,55 @@ factors 16          ; => [1 2 4 8 16]
 factors.prime 16    ; => [2]
 ```
 
+## floor
+
+#### Description
+
+Calculate the largest integer not greater than given value
+
+#### Usage
+
+<pre>
+<b>floor</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+
+#### Returns
+
+- *:integer*
+
+#### Examples
+
+```red
+print floor 2.1         ; 2
+print floor 2.9         ; 2
+print floor neg 3.5     ; -4
+print floor 4           ; 4
+```
+
+## gamma
+
+#### Description
+
+Calculate the gamma function for given value
+
+#### Usage
+
+<pre>
+<b>gamma</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+
+#### Returns
+
+- *:floating*
+
+#### Examples
+
+```red
+print gamma 3.0         ; 2.0
+print gamma 10.0        ; 362880.0
+print gamma 15          ; 87178291199.99985
+```
+
 ## gcd
 
 #### Description
@@ -365,6 +554,56 @@ Calculate greatest common divisor for given collection of integers
 
 ```red
 print gcd [48 60 120]         ; 12
+```
+
+## ln
+
+#### Description
+
+Calculate the natural logarithm of given value
+
+#### Usage
+
+<pre>
+<b>ln</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+
+#### Returns
+
+- *:floating*
+
+#### Examples
+
+```red
+print ln 1.0            ; 0.0
+print ln 0              ; -inf
+print ln neg 7.0        ; nan
+```
+
+## log
+
+#### Description
+
+Calculate the logarithm of value using given base
+
+#### Usage
+
+<pre>
+<b>log</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
+    <ins>base</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+
+#### Returns
+
+- *:floating*
+
+#### Examples
+
+```red
+print log 9 3           ; 2.0
+print log 32.0 2.0      ; 5.0
+print log 0.0 2         ; -inf
+print log 100.0 10.0    ; 2.0
 ```
 
 ## median
@@ -577,6 +816,39 @@ print range 1 4       ; 1 2 3 4
 1..10                 ; [1 2 3 4 5 6 7 8 9 10]
 ```
 
+## round
+
+#### Description
+
+Round given value
+
+#### Usage
+
+<pre>
+<b>round</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|to|<i>:integer</i>|round to given decimal places|
+
+#### Returns
+
+- *:floating*
+
+#### Examples
+
+```red
+print round 2.1         ; 2.0
+print round 2.9         ; 3.0
+print round 6           ; 6.0
+
+print round pi          ; 3.0
+print round.to:5 pi     ; 3.14159
+print round.to:2 pi     ; 3.14
+```
+
 ## sec
 
 #### Description
@@ -586,13 +858,20 @@ Calculate the secant of given angle
 #### Usage
 
 <pre>
-<b>sec</b> <ins>angle</ins> <i>:floating</i>
+<b>sec</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print sec 0             ; 1.0
+print sec 0.3           ; 1.046751601538086
+print sec 1.0           ; 1.850815717680925
+```
 
 ## sech
 
@@ -603,13 +882,20 @@ Calculate the hyperbolic secant of given angle
 #### Usage
 
 <pre>
-<b>sech</b> <ins>angle</ins> <i>:floating</i>
+<b>sech</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print sech 0            ; 1.0
+print sech 0.3          ; 0.9566279119002483
+print sech 1.0          ; 0.6480542736638855
+```
 
 ## sin
 
@@ -620,13 +906,20 @@ Calculate the sine of given angle
 #### Usage
 
 <pre>
-<b>sin</b> <ins>angle</ins> <i>:floating</i>
+<b>sin</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print sin 0             ; 0.0
+print sin 0.3           ; 0.2955202066613395
+print sin 1.0           ; 0.8414709848078965
+```
 
 ## sinh
 
@@ -637,13 +930,20 @@ Calculate the hyperbolic sine of given angle
 #### Usage
 
 <pre>
-<b>sinh</b> <ins>angle</ins> <i>:floating</i>
+<b>sinh</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print sinh 0            ; 0.0
+print sinh 0.3          ; 0.3045202934471426
+print sinh 1.0          ; 1.175201193643801
+```
 
 ## sqrt
 
@@ -661,6 +961,13 @@ Get square root of given value
 
 - *:floating*
 
+#### Examples
+
+```red
+print sqrt 4            ; 2.0
+print sqrt 16.0         ; 4.0
+print sqrt 1.45         ; 1.20415945787923
+```
 
 ## sum
 
@@ -697,13 +1004,20 @@ Calculate the tangent of given angle
 #### Usage
 
 <pre>
-<b>tan</b> <ins>angle</ins> <i>:floating</i>
+<b>tan</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print tan 0             ; 0.0
+print tan 0.3           ; 0.3093362496096232
+print tan 1.0           ; 1.557407724654902
+```
 
 ## tanh
 
@@ -714,13 +1028,20 @@ Calculate the hyperbolic tangent of given angle
 #### Usage
 
 <pre>
-<b>tanh</b> <ins>angle</ins> <i>:floating</i>
+<b>tanh</b> <ins>angle</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
 
 - *:floating*
 
+#### Examples
+
+```red
+print tanh 0            ; 0.0
+print tanh 0.3          ; 0.2913126124515909
+print tanh 1.0          ; 0.7615941559557649
+```
 
 ## zero?
 

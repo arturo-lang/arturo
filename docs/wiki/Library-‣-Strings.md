@@ -3,6 +3,7 @@
 ---
 
 <!--ts-->
+   * [ascii?](#ascii?)
    * [capitalize](#capitalize)
    * [color](#color)
    * [join](#join)
@@ -19,6 +20,7 @@
    * [strip](#strip)
    * [suffix](#suffix)
    * [suffix?](#suffix?)
+   * [truncate](#truncate)
    * [upper](#upper)
    * [upper?](#upper?)
    * [whitespace?](#whitespace?)
@@ -26,6 +28,33 @@
 
 ---
 
+
+## ascii?
+
+#### Description
+
+Check if given character/string is in ASCII
+
+#### Usage
+
+<pre>
+<b>ascii?</b> <ins>string</ins> <i>:char</i> <i>:string</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+ascii? `d`              ; true
+ascii? `😀`             ; false
+
+ascii? "hello world"    ; true
+ascii? "Hællø wœrld"    ; false
+ascii? "Γειά!"          ; false
+```
 
 ## capitalize
 
@@ -431,6 +460,12 @@ Strip whitespace from given string
 <pre>
 <b>strip</b> <ins>string</ins> <i>:string</i> <i>:literal</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|start|<i>:boolean</i>|strip leading whitespace|
+|end|<i>:boolean</i>|strip trailing whitespace|
 
 #### Returns
 
@@ -440,10 +475,15 @@ Strip whitespace from given string
 #### Examples
 
 ```red
-strip "  this is a string "        ; => "this is a string"
+str: "     Hello World     "
 
-str: "  some string  "
-strip 'str                         ; str: "some string"
+print ["strip all:"      ">" strip str       "<"]
+print ["strip leading:"  ">" strip.start str "<"]
+print ["strip trailing:" ">" strip.end str   "<"]
+
+; strip all: > Hello World < 
+; strip leading: > Hello World      < 
+; strip trailing: >      Hello World <
 ```
 
 ## suffix
@@ -500,6 +540,48 @@ Check if string ends with given suffix
 ```red
 suffix? "hello" "lo"          ; => true
 suffix? "boom" "lo"           ; => false
+```
+
+## truncate
+
+#### Description
+
+Truncate string at given length
+
+#### Usage
+
+<pre>
+<b>truncate</b> <ins>string</ins> <i>:string</i> <i>:literal</i>
+         <ins>cutoff</ins> <i>:integer</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|with|<i>:string</i>|use given filler|
+|preserve|<i>:boolean</i>|preserve word boundaries|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
+#### Examples
+
+```red
+str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
+
+truncate str 30
+; => "Lorem ipsum dolor sit amet, con..."
+
+truncate.preserve str 30
+; => "Lorem ipsum dolor sit amet,..."
+
+truncate.with:"---" str 30
+; => "Lorem ipsum dolor sit amet, con---"
+
+truncate.preserve.with:"---" str 30
+; => "Lorem ipsum dolor sit amet,---"
 ```
 
 ## upper

@@ -126,7 +126,7 @@ Evaluate and execute given code
 #### Usage
 
 <pre>
-<b>do</b> <ins>code</ins> <i>:string</i> <i>:block</i>
+<b>do</b> <ins>code</ins> <i>:string</i> <i>:block</i> <i>:bytecode</i>
 </pre>
 #### Attributes
 
@@ -344,6 +344,19 @@ Create new value by cloning given one
 
 - *:any*
 
+#### Examples
+
+```red
+c: "Hello"
+d: new c        ; make a copy of the older string
+
+; changing one string in-place
+; will change only the string in question
+
+'d ++ "World"
+print d                 ; HelloWorld
+print c                 ; Hello
+```
 
 ## pop
 
@@ -366,6 +379,18 @@ Pop top <number> values from stack
 
 - *:any*
 
+#### Examples
+
+```red
+1 2 3
+a: pop 1        ; a: 3
+
+1 2 3
+b: pop 2        ; b: [3 2]
+
+1 2 3
+pop.discard 1   ; popped 3 from the stack
+```
 
 ## return
 
@@ -508,6 +533,18 @@ Get symbol value by given name
 
 - *:any*
 
+#### Examples
+
+```red
+a: 2
+print var 'a            ; a
+
+f: function [x][x+2]
+print f 10              ; 12
+
+g: var 'f               
+print g 10              ; 12
+```
 
 ## when?
 
@@ -545,7 +582,7 @@ Execute action while the given condition is true
 #### Usage
 
 <pre>
-<b>while</b> <ins>condition</ins> <i>:block</i>
+<b>while</b> <ins>condition</ins> <i>:null</i> <i>:block</i>
       <ins>action</ins> <i>:block</i>
 </pre>
 #### Attributes
@@ -576,5 +613,9 @@ while [i<10][
 ; i => 6 
 ; i => 7 
 ; i => 8 
-; i => 9
+; i => 9 
+
+while ø [
+    print "something"   ; infinitely
+]
 ```

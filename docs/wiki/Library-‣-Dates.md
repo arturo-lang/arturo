@@ -3,11 +3,37 @@
 ---
 
 <!--ts-->
+   * [leap?](#leap?)
    * [now](#now)
 <!--te-->
 
 ---
 
+
+## leap?
+
+#### Description
+
+Check if given year is a leap year
+
+#### Usage
+
+<pre>
+<b>leap?</b> <ins>year</ins> <i>:integer</i> <i>:date</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+print leap? now     ; false
+
+print map 2019..2021 => leap? 
+; false true false
+```
 
 ## now
 
