@@ -68,18 +68,18 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
-            # greet: function [x][
-            # ____if? not? attr? 'later [
-            # ________print ["Hello" x "!"]
-            # ____]
-            # ____else [
-            # ________print [x "I'm afraid I'll greet you later!"]
-            # ____]
-            # ]
-            #
-            # greet.later "John"
-            #
-            # ; John I'm afraid I'll greet you later!
+            greet: function [x][
+            ____if? not? attr? 'later [
+            ________print ["Hello" x "!"]
+            ____]
+            ____else [
+            ________print [x "I'm afraid I'll greet you later!"]
+            ____]
+            ]
+            
+            greet.later "John"
+            
+            ; John I'm afraid I'll greet you later!
         """:
             ##########################################################
             if getAttr(x.s) != VNULL:

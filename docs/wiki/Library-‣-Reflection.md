@@ -98,18 +98,17 @@ Check if given attribute exists
 #### Examples
 
 ```red
-# greet: function [x][
-#     if? not? attr? 'later [
-#         print ["Hello" x "!"]
-#     ]
-#     else [
-#         print [x "I'm afraid I'll greet you later!"]
-#     ]
-# ]
-#
-# greet.later "John"
-#
-# ; John I'm afraid I'll greet you later!
+greet: function [x][
+    if? not? attr? 'later [
+        print ["Hello" x "!"]
+    ]
+    else [
+        print [x "I'm afraid I'll greet you later!"]
+    ]
+]
+
+greet.later "John"
+; John I'm afraid I'll greet you later!
 ```
 
 ## attribute?
