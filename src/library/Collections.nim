@@ -99,6 +99,31 @@ proc defineSymbols*() =
                         
                     stack.push(ret)
 
+    builtin "chop",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "remove last item from given collection",
+        args        = {
+            "collection"    : {String,Block,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {String,Block,Nothing},
+        # TODO(Collections\chop) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Literal:
+                if Syms[x.s].kind==String:
+                    Syms[x.s].s = Syms[x.s].s[0..^2]
+                elif Syms[x.s].kind==Block:
+                    Syms[x.s].a = Syms[x.s].a[0..^2]
+            else:
+                if x.kind==String:
+                    stack.push(newString(x.s[0..^2]))
+                elif x.kind==Block:
+                    stack.push(newBlock(x.a[0..^2]))
+
     builtin "combine",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
