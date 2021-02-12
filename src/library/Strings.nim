@@ -33,6 +33,33 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Strings"
 
+    builtin "ascii?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given character/string is in ASCII",
+        args        = {
+            "string": {Char,String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        # TODO(Strings\ascii?) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Char:
+                stack.push(newBoolean(ord(x.c)<128))
+            else:
+                var allOK = true
+                for ch in runes(x.s):
+                    if ord(ch) >= 128:
+                        allOK = false
+                        stack.push(VFALSE)
+                        break
+
+                if allOK:
+                    stack.push(VTRUE)
+
     builtin "capitalize",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
