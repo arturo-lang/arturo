@@ -1,0 +1,14 @@
+suffixes: ["th" "st" "nd" "rd" "th" "th" "th" "th" "th" "th"]
+ 
+nth: function [n][
+    if? or? 100 >= n%100
+            20 < n%100 
+            -> (to :string n) ++ "'" ++ suffixes \ n%10
+    else    -> (to :string n) ++ "'th"
+]
+
+loop range.step:250 0 1000 'j [
+    loop j..j+24 'i ->
+        prints (nth i)++" "
+    print ""
+]
