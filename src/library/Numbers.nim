@@ -328,9 +328,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\exp) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print exp 1.0       ; 2.718281828459045
+            print exp 0         ; 1.0
+            print exp neg 1.0   ; 0.3678794411714423
         """:
             ##########################################################
             stack.push(newFloating(exp(asFloat(x))))
