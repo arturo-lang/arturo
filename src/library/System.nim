@@ -38,9 +38,12 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
-        # TODO(System\ensure) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            num: input "give me a positive number"
+
+            ensure [num > 0]
+
+            print "good, the number is positive indeed. let's continue..."
         """:
             ##########################################################
             discard execBlock(x)
@@ -137,9 +140,8 @@ proc defineSymbols*() =
             "code"  : ({Integer},"return given exit code")
         },
         returns     = {Boolean},
-        # TODO(System\panic) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            panic.code:1 "something went terribly wrong. quitting..."
         """:
             ##########################################################
             vmPanic = true
@@ -161,9 +163,12 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
-        # TODO(System\pause) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print "wait a moment"
+
+            pause 1000      ; sleeping for one second
+
+            print "done. let's continue..."
         """:
             ##########################################################
             sleep(x.i)

@@ -130,9 +130,14 @@ proc defineSymbols*() =
             "string": ({Boolean},"get as a string")
         },
         returns     = {Integer,String},
-        # TODO(Crypto\hash) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print hash "hello"      ; 613153351
+            print hash [1 2 3]      ; 645676735036410
+            print hash 123          ; 123
+
+            a: [1 2 3]
+            b: [1 2 3]
+            print (hash a)=(hash b) ; true
         """:
             ##########################################################
             if (popAttr("string") != VNULL):

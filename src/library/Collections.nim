@@ -108,9 +108,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
-        # TODO(Collections\chop) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print chop "books"          ; book
+            print chop chop "books"     ; boo
+
+            str: "books"
+            chop 'str                   ; str: "book"
+
+            chop [1 2 3 4]              ; => [1 2 3]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -262,8 +267,6 @@ proc defineSymbols*() =
                 of Dictionary: stack.push(newBoolean(x.d.len==0))
                 else: discard
 
-    # TODO(Collections\extend) verify functionality
-    #  labels: library, unit-test,easy
     builtin "extend",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -274,9 +277,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Dictionary},
-        # TODO(Collections\extend) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            person: #[ name: "john" surname: "doe" ]
+
+            print extend person #[ age: 35 ]
+            ; [name:john surname:doe age:35]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -322,8 +327,6 @@ proc defineSymbols*() =
             "collection"    : {Block},
 
         },
-        # TODO(Collections\flatten) add documentation example for .once
-        #  labels: library,documentation,easy
         attrs       = {
             "once"  : ({Boolean},"do not perform recursive flattening")
         },
@@ -336,6 +339,12 @@ proc defineSymbols*() =
             arr: [[1 2 3] [4 5 6]]
             flatten 'arr
             ; arr: [1 2 3 4 5 6]
+
+            flatten [1 [2 3] [4 [5 6]]]
+            ; => [1 2 3 4 5 6]
+
+            flatten.once [1 [2 3] [4 [5 6]]]
+            ; => [1 2 3 4 [5 6]]
         """:
             ##########################################################
             if x.kind==Literal:

@@ -96,7 +96,7 @@ proc defineSymbols*() =
             "sqlite": ({Boolean},"support for SQLite databases"),
             "mysql" : ({Boolean},"support for MySQL databases")
         },
-        returns     = {Integer},
+        returns     = {Database},
         example     = """
             db: open "my.db"    ; opens an SQLite database named 'my.db'
         """:
