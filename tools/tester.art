@@ -16,7 +16,7 @@ runSet: function [title,location][
         script: replace test ".res" ".art"
         expected: split.lines strip read test
 
-        prints pad.right ((color.magenta "\n- Running: ") ++ extract.filename script) 80 
+        prints pad.right ((color.magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
         result: split.lines strip execute ~{arturo "|script|"}
 
         if? result=expected [
