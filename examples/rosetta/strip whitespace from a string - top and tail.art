@@ -1,0 +1,5 @@
+str: "     Hello World     "
+
+print [pad "strip all:"      15  ">" strip str       "<"]
+print [pad "strip leading:"  15  ">" strip.start str "<"]
+print [pad "strip trailing:" 15  ">" strip.end str   "<"]
