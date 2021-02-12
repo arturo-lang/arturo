@@ -320,8 +320,6 @@ proc defineSymbols*() =
             ##########################################################
             Syms[x.s] = y
 
-    # TODO(Core\new) verify functionality
-    #  labels: library, unit-test,easy
     builtin "new",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -331,9 +329,16 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Any},
-        # TODO(Core\new) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            c: "Hello"
+            d: new c        ; make a copy of the older string
+
+            ; changing one string in-place
+            ; will change only the string in question
+
+            'd ++ "World"
+            print d                 ; HelloWorld
+            print c                 ; Hello
         """:
             ##########################################################
             stack.push(copyValue(x))
