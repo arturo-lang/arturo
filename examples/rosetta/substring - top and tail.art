@@ -1,0 +1,13 @@
+knight: "knight"
+socks: "socks"
+brooms: "brooms"
+
+print drop knight 1                     ; strip first character
+print slice knight 1 (size knight)-1    ; alternate way to strip first character
+
+print chop socks                        ; strip last character
+print take socks (size socks)-1         ; alternate way to strip last character
+print slice socks 0 (size socks)-2      ; yet another way to strip last character
+
+print chop drop brooms 1                ; strip both first and last characters
+print slice brooms 1 (size brooms)-2    ; alternate way to strip both first and last characters
