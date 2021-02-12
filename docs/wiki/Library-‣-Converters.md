@@ -6,6 +6,7 @@
    * [array](#array)
    * [as](#as)
    * [dictionary](#dictionary)
+   * [from](#from)
    * [function](#function)
    * [to](#to)
 <!--te-->
@@ -130,6 +131,37 @@ d: #[
 ; we are in the block
 ; yep
 ; => [name: "John", age: 34]
+```
+
+## from
+
+#### Description
+
+Get value from string, using given representation
+
+#### Usage
+
+<pre>
+<b>from</b> <ins>value</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|binary|<i>:boolean</i>|get integer from binary representation|
+|hex|<i>:boolean</i>|get integer from hexadecimal representation|
+|octal|<i>:boolean</i>|get integer from octal representation|
+
+#### Returns
+
+- *:any*
+
+#### Examples
+
+```red
+print from.binary "1011"        ; 11
+print from.octal "1011"         ; 521
+print from.hex "0xDEADBEEF"     ; 3735928559
 ```
 
 ## function

@@ -73,7 +73,7 @@ Opens a new database connection and returns database
 
 #### Returns
 
-- *:integer*
+- *:database*
 
 #### Examples
 

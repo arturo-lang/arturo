@@ -130,7 +130,7 @@ Loop through collection, using given iterator and block
 #### Usage
 
 <pre>
-<b>loop</b> <ins>collection</ins> <i>:integer</i> <i>:dictionary</i> <i>:block</i>
+<b>loop</b> <ins>collection</ins> <i>:integer</i> <i>:dictionary</i> <i>:inline</i> <i>:block</i>
      <ins>params</ins> <i>:literal</i> <i>:block</i>
      <ins>action</ins> <i>:block</i>
 </pre>
@@ -139,6 +139,7 @@ Loop through collection, using given iterator and block
 |Attribute|Type|Description|
 |---|---|---|
 |with|<i>:literal</i>|use given index|
+|forever|<i>:boolean</i>|cycle through collection infinitely|
 
 #### Returns
 
@@ -185,6 +186,9 @@ loop.with:'i ["zero" "one" "two"] 'x [
 ; 0 => zero
 ; 1 => one
 ; 2 => two
+
+loop.forever [1 2 3] => print 
+; 1 2 3 1 2 3 1 2 3 ...
 ```
 
 ## map

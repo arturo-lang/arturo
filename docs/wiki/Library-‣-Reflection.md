@@ -128,6 +128,12 @@ Checks if given value is of type :attribute
 
 - *:boolean*
 
+#### Examples
+
+```red
+attribute? first [.something x]
+; => true
+```
 
 ## attributeLabel?
 
@@ -145,6 +151,12 @@ Checks if given value is of type :attributeLabel
 
 - *:boolean*
 
+#### Examples
+
+```red
+attributeLabel? first [.something: x]
+; => true
+```
 
 ## attrs
 
@@ -221,6 +233,12 @@ Checks if given value is of type :binary
 
 - *:boolean*
 
+#### Examples
+
+```red
+binary? to :binary "string"
+; => true
+```
 
 ## block?
 
@@ -238,6 +256,14 @@ Checks if given value is of type :block
 
 - *:boolean*
 
+#### Examples
+
+```red
+print block? [1 2 3]            ; true
+print block? #[name: "John"]    ; false
+print block? "hello"            ; false
+print block? 123                ; false
+```
 
 ## boolean?
 
@@ -255,6 +281,14 @@ Checks if given value is of type :boolean
 
 - *:boolean*
 
+#### Examples
+
+```red
+print boolean? true         ; true
+print boolean? false        ; true
+print boolean? 1=1          ; true
+print boolena? 123          ; false
+```
 
 ## char?
 
@@ -272,6 +306,12 @@ Checks if given value is of type :char
 
 - *:boolean*
 
+#### Examples
+
+```red
+print char? `a`         ; true
+print char? 123         ; false
+```
 
 ## database?
 
@@ -289,6 +329,12 @@ Checks if given value is of type :database
 
 - *:boolean*
 
+#### Examples
+
+```red
+database? open "my.db"
+; => true
+```
 
 ## date?
 
@@ -306,6 +352,12 @@ Checks if given value is of type :date
 
 - *:boolean*
 
+#### Examples
+
+```red
+print date? now             ; true
+print date? "hello"         ; false
+```
 
 ## dictionary?
 
@@ -323,6 +375,12 @@ Checks if given value is of type :dictionary
 
 - *:boolean*
 
+#### Examples
+
+```red
+print dictionary? #[name: "John"]   ; true
+print dictionary? 123               ; false
+```
 
 ## help
 
@@ -340,6 +398,17 @@ Print a list of all available builtin functions
 
 - *:nothing*
 
+#### Examples
+
+```red
+help        
+
+; abs              (value)                        -> get the absolute value for given integer
+; acos             (angle)                        -> calculate the inverse cosine of given angle
+; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
+; add              (valueA,valueB)                -> add given values and return result
+; ...
+```
 
 ## info
 
@@ -363,6 +432,24 @@ Print info for given symbol
 - *:dictionary*
 - *:nothing*
 
+#### Examples
+
+```red
+info 'print
+
+; |--------------------------------------------------------------------------------
+; |          print  :function                                          0x1028B3410
+; |--------------------------------------------------------------------------------
+; |                 print given value to screen with newline
+; |--------------------------------------------------------------------------------
+; |          usage  print value :any
+; |
+; |        returns  :nothing
+; |--------------------------------------------------------------------------------
+
+print info.get 'print
+; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
+```
 
 ## inline?
 
@@ -380,6 +467,12 @@ Checks if given value is of type :inline
 
 - *:boolean*
 
+#### Examples
+
+```red
+inline? first [(something) x]
+; => true
+```
 
 ## inspect
 
@@ -422,6 +515,12 @@ Checks if given value is of type :integer
 
 - *:boolean*
 
+#### Examples
+
+```red
+print integer? 123          ; true
+print integer? "hello"      ; false
+```
 
 ## is?
 
@@ -464,6 +563,13 @@ Checks if given value is of type :floating
 
 - *:boolean*
 
+#### Examples
+
+```red
+print floating? 3.14        ; true
+print floating? 123         ; false
+print floating? "hello"     ; false
+```
 
 ## function?
 
@@ -481,6 +587,14 @@ Checks if given value is of type :function
 
 - *:boolean*
 
+#### Examples
+
+```red
+print function? $[x][2*x]       ; true
+print function? var 'print      ; true
+print function? "print"         ; false
+print function? 123             ; false
+```
 
 ## label?
 
@@ -498,6 +612,12 @@ Checks if given value is of type :label
 
 - *:boolean*
 
+#### Examples
+
+```red
+label? first [something: x]
+; => true
+```
 
 ## literal?
 
@@ -515,6 +635,13 @@ Checks if given value is of type :literal
 
 - *:boolean*
 
+#### Examples
+
+```red
+print literal? 'x           ; true
+print literal? "x"          ; false
+print literal? 123          ; false
+```
 
 ## null?
 
@@ -532,6 +659,14 @@ Checks if given value is of type :null
 
 - *:boolean*
 
+#### Examples
+
+```red
+print null? null            ; true
+print null? ø               ; true
+
+print null? 123             ; false
+```
 
 ## path?
 
@@ -549,6 +684,12 @@ Checks if given value is of type :path
 
 - *:boolean*
 
+#### Examples
+
+```red
+path? first [a\b\c x]
+; => true
+```
 
 ## pathLabel?
 
@@ -566,6 +707,12 @@ Checks if given value is of type :pathLabel
 
 - *:boolean*
 
+#### Examples
+
+```red
+pathLabel? first [a\b\c: x]
+; => true
+```
 
 ## set?
 
@@ -608,6 +755,14 @@ Get current stack
 
 - *:dictionary*
 
+#### Examples
+
+```red
+1 2 3 "done"
+
+print stack
+; 1 2 3 done
+```
 
 ## standalone?
 
@@ -625,6 +780,18 @@ Checks if current script runs from the command-line
 
 - *:boolean*
 
+#### Examples
+
+```red
+doSomething: function [x][
+    print ["I'm doing something with" x]
+]
+
+if standalone? [
+    print "It's running from command line and not included."
+    print "Nothing to do!"
+]
+```
 
 ## string?
 
@@ -642,6 +809,13 @@ Checks if given value is of type :string
 
 - *:boolean*
 
+#### Examples
+
+```red
+print string? "x"           ; true
+print string? 'x            ; false
+print string? 123           ; false
+```
 
 ## symbol?
 
@@ -659,6 +833,12 @@ Checks if given value is of type :symbol
 
 - *:boolean*
 
+#### Examples
+
+```red
+symbol? first [+ x]
+; => true
+```
 
 ## symbols
 
@@ -729,6 +909,13 @@ Checks if given value is of type :type
 
 - *:boolean*
 
+#### Examples
+
+```red
+print type? :string         ; true
+print type? "string"        ; false
+print type? 123             ; false
+```
 
 ## word?
 
@@ -745,3 +932,10 @@ Checks if given value is of type :word
 #### Returns
 
 - *:boolean*
+
+#### Examples
+
+```red
+word? first [something x]
+; => true
+```
