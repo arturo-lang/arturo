@@ -179,9 +179,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Integer},
-        # TODO(Numbers\ceil) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print ceil 2.1          ; 3
+            print ceil 2.9          ; 3
+            print ceil neg 3.5      ; -3
+            print ceil 4            ; 4
         """:
             ##########################################################
             stack.push(newInteger((int)(ceil(asFloat(x)))))
@@ -360,9 +362,11 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Integer},
-        # TODO(Numbers\floor) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print floor 2.1         ; 2
+            print floor 2.9         ; 2
+            print floor neg 3.5     ; -4
+            print floor 4           ; 4
         """:
             ##########################################################
             stack.push(newInteger((int)(floor(asFloat(x)))))
@@ -379,6 +383,7 @@ proc defineSymbols*() =
         example     = """
             print gamma 3.0     ; 2.0
             print gamma 10.0    ; 362880.0
+            print gamma 15      ; 87178291199.99985
         """:
             ##########################################################
             stack.push(newFloating(gamma(asFloat(x))))
