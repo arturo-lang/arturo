@@ -77,9 +77,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\acosh) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            acosh 1.0       ; 0.0
+            acosh 2         ; 1.316957896924817
+            acosh 5.0       ; 2.292431669561178
         """:
             ##########################################################
             stack.push(newFloating(arccosh(asFloat(x))))
@@ -93,9 +94,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\asin) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            asin 0          ; 0.0
+            asin 0.3        ; 0.3046926540153975
+            asin 1.0        ; 1.570796326794897
         """:
             ##########################################################
             stack.push(newFloating(arcsin(asFloat(x))))
@@ -125,9 +127,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\atan) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            atan 0          ; 0.0
+            atan 0.3        ; 0.2914567944778671
+            atan 1.0        ; 0.7853981633974483
         """:
             ##########################################################
             stack.push(newFloating(arctan(asFloat(x))))
