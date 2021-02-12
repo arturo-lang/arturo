@@ -43,9 +43,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Strings\ascii?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            ascii? `d`              ; true
+            ascii? `😀`             ; false
+
+            ascii? "hello world"    ; true
+            ascii? "Hællø wœrld"    ; false
+            ascii? "Γειά!"          ; false
         """:
             ##########################################################
             if x.kind==Char:
