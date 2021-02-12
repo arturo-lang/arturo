@@ -60,9 +60,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\acos) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            acos 0          ; 1.570796326794897
+            acos 0.3        ; 1.266103672779499
+            acos 1.0        ; 0.0
         """:
             ##########################################################
             stack.push(newFloating(arccos(asFloat(x))))
