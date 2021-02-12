@@ -108,9 +108,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
-        # TODO(Collections\chop) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print chop "books"          ; book
+            print chop chop "books"     ; boo
+
+            str: "books"
+            chop 'str                   ; str: "book"
+
+            chop [1 2 3 4]              ; => [1 2 3]
         """:
             ##########################################################
             if x.kind==Literal:
