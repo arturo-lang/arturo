@@ -21,6 +21,7 @@ import sequtils, strutils, sugar, unicode
 import nre except toSeq
 
 import helpers/colors as ColorsHelper
+import helpers/strings as StringsHelper
 
 import vm/[common, exec, globals, parse, stack, value]
 
@@ -528,6 +529,35 @@ proc defineSymbols*() =
                 stack.push(newBoolean(re.endsWith(x.s, re.re(y.s))))
             else:
                 stack.push(newBoolean(x.s.endsWith(y.s)))
+
+    builtin "truncate",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "truncate string at given length",
+        args        = {
+            "string": {String,Literal},
+            "cutoff": {Integer}
+        },
+        attrs       = {
+            "with"      : ({String},"use given filler"),
+            "preserve"  : ({Boolean},"preserve word boundaries")
+        },
+        returns     = {String,Nothing},
+        # TODO(Strings\truncate) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            var with = "..."
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                with = aWith.s
+
+            if (popAttr("preserve")!=VNULL):
+                if x.kind==String: stack.push(newString(truncatePreserving(x.s, y.i, with)))
+                else: Syms[x.s].s = truncatePreserving(Syms[x.s].s, y.i, with)
+            else:
+                if x.kind==String: stack.push(newString(truncate(x.s, y.i, with)))
+                else: Syms[x.s].s = truncate(Syms[x.s].s, y.i, with)
 
     builtin "upper",
         alias       = unaliased, 
