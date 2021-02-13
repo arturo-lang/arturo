@@ -78,6 +78,8 @@ proc execBlock*(
     exports         : Value = nil
 ): ValueDict =
     var newSyms: ValueDict
+    let savedArities = Arities
+    Arities = savedArities
     try:
         if isFuncBlock:
             for i,arg in args:            
@@ -108,17 +110,18 @@ proc execBlock*(
             return res
         else:
             if isFuncBlock:
+                Arities = savedArities
                 if not exports.isNil():
                     for k in exports.a:
                         if newSyms.hasKey(k.s):
                             Syms[k.s] = newSyms[k.s]
                 else:
-                    for k, v in pairs(newSyms):
-                        if v.kind==Function and Syms.hasKey(k):
-                            if Syms[k].kind==Function:
-                                Arities[k]=getArity(Syms[k])
-                            else:
-                                Arities.del(k)
+                    # for k, v in pairs(newSyms):
+                    #     if v.kind==Function and Syms.hasKey(k):
+                    #         if Syms[k].kind==Function:
+                    #             Arities[k]=getArity(Syms[k])
+                    #         else:
+                    #             Arities.del(k)
 
                     for arg in args:
                         Arities.del(arg.s)
@@ -127,6 +130,7 @@ proc execBlock*(
                 if execInParent:
                     Syms=newSyms
                 else:
+                    Arities = savedArities
                     for k, v in pairs(newSyms):
                         if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
                             Syms[k] = newSyms[k]
