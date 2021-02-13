@@ -1,0 +1,17 @@
+properDivisors: function [n]->
+    (factors n) -- n
+
+abundant: new 0 deficient: new 0 perfect: new 0
+
+loop 1..20000 'x [
+    s: sum properDivisors x
+
+    case [s]
+        when? [<x] -> inc 'deficient
+        when? [>x] -> inc 'abundant
+        else       -> inc 'perfect
+]
+
+print ["Found" abundant "abundant," 
+               deficient "deficient and" 
+               perfect "perfect numbers."]
