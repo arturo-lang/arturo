@@ -34,6 +34,12 @@ template pushByIndex(idx: int):untyped =
 template storeByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
     Syms[symIndx] = stack.pop()
+    if Syms[symIndx].kind==Function:
+        let fun = Syms[symIndx]
+        if fun.fnKind==BuiltinFunction:
+            Arities[symIndx] = fun.arity
+        else:
+            Arities[symIndx] = fun.params.a.len
 
 template loadByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
