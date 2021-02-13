@@ -455,6 +455,12 @@ proc asFloat*(v: Value): float =
     else:
         result = (float)(v.i)
 
+proc getArity*(x: Value): int =
+    if x.fnKind==BuiltinFunction:
+        return x.arity
+    else:
+        return x.params.a.len
+
 #=======================================
 # Methods
 #=======================================
