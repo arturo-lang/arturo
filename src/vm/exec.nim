@@ -113,6 +113,13 @@ proc execBlock*(
                         if newSyms.hasKey(k.s):
                             Syms[k.s] = newSyms[k.s]
                 else:
+                    for k, v in pairs(newSyms):
+                        if v.kind==Function and Syms.hasKey(k):
+                            if Syms[k].kind==Function:
+                                Arities[k]=getArity(Syms[k])
+                            else:
+                                Arities.del(k)
+
                     for arg in args:
                         Arities.del(arg.s)
 
