@@ -5,6 +5,8 @@
 <!--ts-->
    * [difference](#difference)
    * [intersection](#intersection)
+   * [subset?](#subset?)
+   * [superset?](#superset?)
    * [union](#union)
 <!--te-->
 
@@ -78,6 +80,52 @@ b: [3 4 5 6]
 intersection 'a b
 ; a: [3 4]
 ```
+
+## subset?
+
+#### Description
+
+Check if given set is a subset of second set
+
+#### Usage
+
+<pre>
+<b>subset?</b> <ins>setA</ins> <i>:block</i>
+        <ins>setB</ins> <i>:block</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|proper|<i>:boolean</i>|check if proper subset|
+
+#### Returns
+
+- *:boolean*
+
+
+## superset?
+
+#### Description
+
+Check if given set is a superset of second set
+
+#### Usage
+
+<pre>
+<b>superset?</b> <ins>setA</ins> <i>:block</i>
+          <ins>setB</ins> <i>:block</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|proper|<i>:boolean</i>|check if proper superset|
+
+#### Returns
+
+- *:boolean*
+
 
 ## union
 
