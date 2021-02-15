@@ -72,6 +72,7 @@ Format given value as implied type
 |octal|<i>:boolean</i>|format integer as octal|
 |ascii|<i>:boolean</i>|transliterate string to ASCII|
 |agnostic|<i>:boolean</i>|convert words in block to literals, if not in context|
+|code|<i>:boolean</i>|convert value to valid Arturo code|
 
 #### Returns
 
