@@ -503,6 +503,11 @@ Print full dump of given value to screen
 <pre>
 <b>inspect</b> <ins>value</ins> <i>:any</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|muted|<i>:boolean</i>|don't use color output|
 
 #### Returns
 
