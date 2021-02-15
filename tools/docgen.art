@@ -36,6 +36,16 @@ contents: join.with:"\n" map modules [md][
     ~"- [|md|](Library-‣-|md|)"
 ]
 
+fs: new []
+
+loop functions [md,fns][
+    loop fns 'fn [
+        'fs ++ ~{[|replace fn "?" "AA"|](Library-‣-|md|.md)}
+    ]
+]
+
+aIndex: join.with: " ● " map sort fs => [replace & "AA" "?"]
+
 write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
 write relative ~"|docsFolder|/_Sidebar.md" (render.single read SidebarTemplate)
 
@@ -70,7 +80,6 @@ loop functions [md,fns][
                     "|" ++ "\n"
             ]
         ]
-
         pars: new []
 
         loop (fn\args) [k,params][
@@ -90,3 +99,5 @@ loop functions [md,fns][
     ]
     write relative ~"|docsFolder|/Library-‣-|md|.md" (render.single read LibraryTemplate) ++ contents
 ]
+
+; inspect sort fs
