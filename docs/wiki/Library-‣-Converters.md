@@ -183,6 +183,7 @@ Create function with given arguments and body
 
 |Attribute|Type|Description|
 |---|---|---|
+|import|<i>:block</i>|import/embed given list of symbols from current environment|
 |export|<i>:block</i>|export given symbols to parent|
 
 #### Returns
