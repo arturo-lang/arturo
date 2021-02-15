@@ -41,9 +41,17 @@ proc defineSymbols*() =
             "symmetric" : ({Boolean},"get the symmetric difference")
         },
         returns     = {Block,Nothing},
-        # TODO(Sets\difference) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print difference [1 2 3 4] [3 4 5 6]
+            ; 1 2
+
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            difference 'a b
+            ; a: [1 2]
+
+            print difference.symmetric [1 2 3 4] [3 4 5 6]
+            ; 1 2 5 6
         """:
             ##########################################################
             if (popAttr("symmetric")!=VNULL):
@@ -67,9 +75,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
-        # TODO(Sets\intersection) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print intersection [1 2 3 4] [3 4 5 6]
+            ; 3 4
+
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            intersection 'a b
+            ; a: [3 4]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -87,9 +100,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
-        # TODO(Sets\union) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print union [1 2 3 4] [3 4 5 6]
+            ; 1 2 3 4 5 6
+
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            union 'a b
+            ; a: [1 2 3 4 5 6]
         """:
             ##########################################################
             if x.kind==Literal:
