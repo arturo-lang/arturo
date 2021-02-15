@@ -3,6 +3,7 @@
 ---
 
 <!--ts-->
+   * [arity](#arity)
    * [attr](#attr)
    * [attr?](#attr?)
    * [attribute?](#attribute?)
@@ -41,6 +42,23 @@
 <!--te-->
 
 ---
+
+
+## arity
+
+#### Description
+
+Get index of function arities
+
+#### Usage
+
+<pre>
+<b>arity</b> 
+</pre>
+
+#### Returns
+
+- *:dictionary*
 
 
 ## attr
@@ -108,6 +126,7 @@ greet: function [x][
 ]
 
 greet.later "John"
+
 ; John I'm afraid I'll greet you later!
 ```
 

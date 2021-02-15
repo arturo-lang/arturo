@@ -1,3 +1,5 @@
+### Modules
+
 The Standard Library is split into different modules/dictionaries for keeping things better organized.  
 
 Here is the complete list, each one containing all the defined words/function:
@@ -21,8 +23,11 @@ Here is the complete list, each one containing all the defined words/function:
 - [Numbers](Library-‣-Numbers)
 - [Paths](Library-‣-Paths)
 - [Reflection](Library-‣-Reflection)
+- [Sets](Library-‣-Sets)
 - [Strings](Library-‣-Strings)
 - [System](Library-‣-System)
 - [Ui](Library-‣-Ui)
 
 ---
+
+### Alphabetical Index
