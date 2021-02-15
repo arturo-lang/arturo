@@ -252,11 +252,18 @@ proc defineSymbols*() =
             ; 5
         """:
             ##########################################################
+            var imports = VNULL
+            if (let aImport = popAttr("import"); aImport != VNULL):
+                var ret = initOrderedTable[string,Value]()
+                for item in aImport.a:
+                    ret[item.s] = Syms[item.s]
+                imports = newDictionary(ret)
+
             var exports = VNULL
             if (let aExport = popAttr("export"); aExport != VNULL):
                 exports = aExport
 
-            stack.push(newFunction(x,y,exports))
+            stack.push(newFunction(x,y,imports,exports))
 
     builtin "to",
         alias       = unaliased, 
