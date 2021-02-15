@@ -53,7 +53,7 @@ template callByIndex(idx: int):untyped =
     let fun = Syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
     if fun.fnKind==UserFunction:
-        discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, exports=fun.exports)
+        discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
     else:
         fun.action()
 
@@ -75,16 +75,25 @@ proc execBlock*(
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
     #isBreakable     : bool = false,
+    imports         : Value = nil,
     exports         : Value = nil
 ): ValueDict =
     var newSyms: ValueDict
     let savedArities = Arities
+    var savedSyms: OrderedTable[string,Value]
+
     Arities = savedArities
     try:
         if isFuncBlock:
             for i,arg in args:            
                 if stack.peek(i).kind==Function:
                     Arities[arg.s] = stack.peek(i).params.a.len
+
+            if imports!=VNULL:
+                savedSyms = Syms
+                dump(imports)
+                for k,v in pairs(imports.d):
+                    Syms[k] = v
 
         let evaled = 
             if evaluated==NoTranslation : 
@@ -110,6 +119,9 @@ proc execBlock*(
             return res
         else:
             if isFuncBlock:
+                if imports!=VNULL:
+                    Syms = savedSyms
+
                 Arities = savedArities
                 if not exports.isNil():
                     for k in exports.a:
