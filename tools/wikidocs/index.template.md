@@ -11,3 +11,5 @@ Here is the complete list, each one containing all the defined words/function:
 ---
 
 ### Alphabetical Index
+
+|aIndex|
