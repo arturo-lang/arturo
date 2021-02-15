@@ -12,6 +12,8 @@ Here is the complete list, each one containing all the defined words/function:
 
 ### Alphabetical Index
 
+Yes, all the |size aIndex| library functions in one place!
+
 <p align="justify">
-|aIndex|
+|join.with: " ▪︎ " aIndex|
 </p>
