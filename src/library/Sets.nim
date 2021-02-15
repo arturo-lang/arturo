@@ -102,9 +102,21 @@ proc defineSymbols*() =
             "proper": ({Boolean},"check if proper subset")
         },
         returns     = {Boolean},
-        # TODO(Sets\subset?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            subset? [1 3] [1 2 3 4]
+            ; => true
+
+            subset?.proper [1 3] [1 2 3 4]
+            ; => true
+
+            subset? [1 3] [3 5 6]
+            ; => false
+
+            subset? [1 3] [1 3]
+            ; => true
+
+            subset?.proper [1 3] [1 3]
+            ; => false
         """:
             ##########################################################
             if (popAttr("proper")!=VNULL):
@@ -142,9 +154,21 @@ proc defineSymbols*() =
             "proper": ({Boolean},"check if proper superset")
         },
         returns     = {Boolean},
-        # TODO(Sets\superset?) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            superset? [1 2 3 4] [1 3]
+            ; => true
+
+            superset?.proper [1 2 3 4] [1 3]
+            ; => true
+
+            superset? [3 5 6] [1 3]
+            ; => false
+
+            superset? [1 3] [1 3]
+            ; => true
+
+            superset?.proper [1 3] [1 3]
+            ; => false
         """:
             ##########################################################
             if (popAttr("proper")!=VNULL):
