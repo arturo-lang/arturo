@@ -29,7 +29,23 @@ proc defineSymbols*() =
 
     when defined(VERBOSE):
         echo "- Importing: Reflection"
+    
+    builtin "arity",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get index of function arities",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+        """:
+            ##########################################################
+            var ret = initOrderedTable[string,Value]()
+            for k,v in pairs(Arities):
+                ret[k] = newInteger(v)
 
+            stack.push(newDictionary(ret))
+            
     builtin "attr",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
