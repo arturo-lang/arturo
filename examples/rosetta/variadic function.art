@@ -1,0 +1,29 @@
+;-------------------------------------------
+; a quasi-variadic function
+;-------------------------------------------
+variadic: function [args][
+    loop args 'arg [
+        print arg
+    ]
+]
+
+; calling function with one block param
+; and the arguments inside
+
+variadic ["one" 2 "three"]
+
+;-------------------------------------------
+; a function with optional attributes
+;-------------------------------------------
+variable: function [args][
+    print ["args:" args]
+    if? attr? "with" [
+        print ["with:" attr "with"]
+    ]
+    else [
+        print "without attributes"
+    ]
+]
+
+variable "yes"
+variable.with:"something" "yes!"
