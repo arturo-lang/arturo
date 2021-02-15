@@ -23,5 +23,5 @@ Yes, all the |size aIndex| library functions in one place!
 ### Symbol index
 
 <p align="justify">
-|join.with: " ▪︎ " sIndex|
+|join.with: "&nbsp;&nbsp;&nbsp;" sIndex|
 </p>
