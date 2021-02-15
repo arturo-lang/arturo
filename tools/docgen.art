@@ -44,7 +44,7 @@ loop functions [md,fns][
     ]
 ]
 
-aIndex: join.with: " ● " map sort fs => [replace & "AA" "?"]
+aIndex: join.with: " ▪︎ " map sort fs => [replace & "AA" "?"]
 
 write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
 write relative ~"|docsFolder|/_Sidebar.md" (render.single read SidebarTemplate)
