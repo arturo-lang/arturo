@@ -24,6 +24,7 @@
 - [Numbers](Library-‣-Numbers)
 - [Paths](Library-‣-Paths)
 - [Reflection](Library-‣-Reflection)
+- [Sets](Library-‣-Sets)
 - [Strings](Library-‣-Strings)
 - [System](Library-‣-System)
 - [Ui](Library-‣-Ui)
