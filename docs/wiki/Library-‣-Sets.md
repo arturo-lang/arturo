@@ -103,6 +103,24 @@ Check if given set is a subset of second set
 
 - *:boolean*
 
+#### Examples
+
+```red
+subset? [1 3] [1 2 3 4]
+; => true
+
+subset?.proper [1 3] [1 2 3 4]
+; => true
+
+subset? [1 3] [3 5 6]
+; => false
+
+subset? [1 3] [1 3]
+; => true
+
+subset?.proper [1 3] [1 3]
+; => false
+```
 
 ## superset?
 
@@ -126,6 +144,24 @@ Check if given set is a superset of second set
 
 - *:boolean*
 
+#### Examples
+
+```red
+superset? [1 2 3 4] [1 3]
+; => true
+
+superset?.proper [1 2 3 4] [1 3]
+; => true
+
+superset? [3 5 6] [1 3]
+; => false
+
+superset? [1 3] [1 3]
+; => true
+
+superset?.proper [1 3] [1 3]
+; => false
+```
 
 ## union
 
