@@ -112,32 +112,7 @@ Some of the existing *aliases* in the built-in dictionary:
 
 |Symbol| Aliased word |
 |--|--|
-| `+` | add |
-| `++` | append |
-| `@` | array |
-| `#` | dictionary |
-| `/` | div |
-| `<=` | dup |
-| `=` | equal? |
-| `//` | fdiv |
-| `$` | function |
-| `\` | get |
-| `>` | greater? |
-| `>=` | greaterOrEqual? |
-| `<` | less? |
-| `=<` | lessOrEqual? |
-| `:` | let |
-| `%` | mod |
-| `*` | mul |
-| `<>` | notEqual? |
-| `^` | pow |
-| `..` | range |
-| `<<` | read |
-| `./` | relative |
-| `--` | remove |
-| `~` | render |
-| `-` | sub |
-| `>>` | write |
+%STABLE%
 
 ### Values
 

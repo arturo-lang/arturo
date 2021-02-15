@@ -6,6 +6,7 @@ LibraryTemplate: relative "wikidocs/library.template.md"
 FunctionTemplate: relative "wikidocs/function.template.md"
 FunctionExamplesTemplate: relative "wikidocs/function.examples.template.md"
 FunctionAttributesTemplate: relative "wikidocs/function.attributes.template.md"
+LanguageIndexTemplate: relative "wikidocs/languageIndex.template.md"
 
 modules: []
 functions: #[]
@@ -56,6 +57,8 @@ loop aIndexOld 'io [
     ]
 ]
 
+sTable: new []
+
 sIndex: map select aIndex => [
     key? info.get first map match & {>(.+)<} 'x [
         replace replace x ">" "" "<" ""
@@ -63,6 +66,7 @@ sIndex: map select aIndex => [
 ] 'z [
     fun: first map match z {>(.+)<} 'x [replace replace x ">" "" "<" ""]
     ali: get info.get fun 'alias
+    'sTable ++ ("| `" ++ ali ++ "` | " ++ fun ++ " |")
     ali: replace ali "<" "&lt;"
     ali: replace ali ">" "&gt;"
     replace z ~">|fun|<" ~"><b>|ali|</b><"
@@ -70,6 +74,8 @@ sIndex: map select aIndex => [
 
 write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
 write relative ~"|docsFolder|/_Sidebar.md" (render.single read SidebarTemplate)
+
+write relative ~"|docsFolder|/Language.md" (replace read LanguageIndexTemplate "%STABLE%" join.with:"\n" sTable)
 
 ; generate library pages
 
