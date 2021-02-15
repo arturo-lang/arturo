@@ -56,8 +56,6 @@ loop aIndexOld 'io [
     ]
 ]
 
-inspect aIndex
-
 sIndex: map select aIndex => [
     key? info.get first map match & {>(.+)<} 'x [
         replace replace x ">" "" "<" ""
@@ -67,7 +65,7 @@ sIndex: map select aIndex => [
     ali: get info.get fun 'alias
     ali: replace ali "<" "&lt;"
     ali: replace ali ">" "&gt;"
-    replace z ~">|fun|<" ~">|ali|<"
+    replace z ~">|fun|<" ~"><b>|ali|</b><"
 ]
 
 write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
