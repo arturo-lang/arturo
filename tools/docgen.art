@@ -40,11 +40,11 @@ fs: new []
 
 loop functions [md,fns][
     loop fns 'fn [
-        'fs ++ ~{<a href="Library-‣-|md|.md#|fn|">|replace fn "?" "AA"|</a>}
+        'fs ++ ~{<a href="Library-‣-|md|#|fn|">|replace fn "?" "AA"|</a>}
     ]
 ]
 
-aIndex: join.with: " ▪︎ " map sort fs => [replace & "AA" "?"]
+aIndex: map sort fs => [replace & "AA" "?"]
 
 write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
 write relative ~"|docsFolder|/_Sidebar.md" (render.single read SidebarTemplate)
