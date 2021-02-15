@@ -1200,26 +1200,32 @@ proc `$`*(v: Value): string {.inline.} =
         of Nothing: discard
         of ANY: discard
 
-proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} = 
+proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.exportc.} = 
 
-    proc dumpPrimitive(str: string, v: Value) {.inline.} =
-        stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+    proc dumpPrimitive(str: string, v: Value) =
+        if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
 
-    proc dumpIdentifier(v: Value) {.inline.} =
-        stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+    proc dumpIdentifier(v: Value) =
+        if not muted:   stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
 
-    proc dumpAttribute(v: Value) {.inline.} =
-        stdout.write fmt("{resetColor}{v.r}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+    proc dumpAttribute(v: Value) =
+        if not muted:   stdout.write fmt("{resetColor}{v.r}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{v.r} :{($(v.kind)).toLowerAscii()}")
 
-    proc dumpSymbol(v: Value) {.inline.} =
-        stdout.write fmt("{resetColor}<{v.m}>{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+    proc dumpSymbol(v: Value) =
+        if not muted:   stdout.write fmt("{resetColor}<{v.m}>{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("<{v.m}> :{($(v.kind)).toLowerAscii()}")
 
-    proc dumpBlockStart(v: Value) {.inline.} =
-        stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}\n")
+    proc dumpBlockStart(v: Value) =
+        if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}\n")
+        else:           stdout.write fmt("[ :{($(v.kind)).toLowerAscii()}\n")
 
     proc dumpBlockEnd() =
         for i in 0..level-1: stdout.write "\t"
-        stdout.write fmt("{bold(magentaColor)}]{resetColor}")
+        if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
+        else:           stdout.write fmt("]")
 
     for i in 0..level-1: stdout.write "\t"
 
@@ -1246,7 +1252,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
             dumpBlockStart(v)
 
             for i,child in v.p:
-                dump(child, level+1, i==(v.a.len-1))
+                dump(child, level+1, i==(v.a.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -1267,7 +1273,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
-                    dump(value, level+1, false)
+                    dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
 
@@ -1278,7 +1284,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
             dumpBlockStart(v)
 
             for i,child in v.a:
-                dump(child, level+1, i==(v.a.len-1))
+                dump(child, level+1, i==(v.a.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -1297,15 +1303,15 @@ proc dump*(v: Value, level: int=0, isLast: bool=false) {.exportc.} =
 
                     stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
 
-                    dump(value, level+1, false)
+                    dump(value, level+1, false, muted=muted)
 
             dumpBlockEnd()
         of Function     : 
             dumpBlockStart(v)
 
             if v.fnKind==UserFunction:
-                dump(v.params, level+1, false)
-                dump(v.main, level+1, true)
+                dump(v.params, level+1, false, muted=muted)
+                dump(v.main, level+1, true, muted=muted)
             else:
                 stdout.write "<function>(builtin)"
 
