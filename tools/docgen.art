@@ -1,3 +1,5 @@
+#!/usr/bin/env arturo
+
 IndexTemplate: relative "wikidocs/index.template.md"
 SidebarTemplate: relative "wikidocs/sidebar.template.md"
 LibraryTemplate: relative "wikidocs/library.template.md"
