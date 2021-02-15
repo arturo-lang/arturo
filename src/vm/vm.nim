@@ -31,6 +31,7 @@ import library/Net          as NetLib
 import library/Numbers      as NumbersLib
 import library/Paths        as PathsLib
 import library/Reflection   as ReflectionLib
+import library/Sets         as SetsLib
 import library/Strings      as StringsLib
 import library/System       as SystemLib
 
