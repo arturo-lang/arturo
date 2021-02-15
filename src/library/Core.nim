@@ -49,6 +49,9 @@ proc defineSymbols*() =
             vmBreak = true
             #return Syms
 
+    # TODO(Core\call) Needs fix
+    #  The function seems to be working fine with function 'literals but not with function values passed directly
+    #  labels: library,bug,critical
     builtin "call",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -79,7 +82,10 @@ proc defineSymbols*() =
             for v in y.a.reversed:
                 stack.push(v)
 
-            discard execBlock(fun.main, args=fun.params.a)
+            if fun.fnKind==UserFunction:
+                discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+            else:
+                fun.action()
         
     builtin "case",
         alias       = unaliased, 
