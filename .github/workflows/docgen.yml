@@ -1,6 +1,11 @@
-name: "DocGen"
+name: "Documentation Updater"
 
-on: workflow_dispatch
+on: 
+  push:
+    branches:
+      - 'master'
+    tags-ignore:
+      - '**'
 
 env:
   app-name: arturo
@@ -10,9 +15,8 @@ defaults:
     shell: bash -l {0}
 
 jobs:
-          
   documentation:
-    name: "Generate documentation"
+    name: "Update Wiki"
     runs-on: ubuntu-latest
     steps:
       - name: "Cancel similar actions in progress"
@@ -24,30 +28,6 @@ jobs:
         uses: actions/checkout@main
         with:
           submodules: recursive
-
-      - name: Install Nim
-        run: |
-          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
-          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install libwebkit2gtk-4.0-dev
-
-      - name: Verify dependecies
-        run: |
-          nim --version
-
-      - name: Build Arturo
-        run: |
-          ./install ${{ matrix.version }} log
-          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
-
-      - name: Build documentation
-        run: |
-          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/docgen.art
 
       - name: Upload Documentation to Wiki
         uses: SwiftDocOrg/github-wiki-publish-action@v1
