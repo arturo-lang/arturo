@@ -90,6 +90,86 @@ proc defineSymbols*() =
             else:
                 stack.push(newBlock(toSeq(intersection(toHashSet(x.a), toHashSet(y.a)))))
 
+    builtin "subset?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given set is a subset of second set",
+        args        = {
+            "setA"  : {Block},
+            "setB"  : {Block}
+        },
+        attrs       = {
+            "proper": ({Boolean},"check if proper subset")
+        },
+        returns     = {Boolean},
+        # TODO(Sets\subset?) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("proper")!=VNULL):
+                if x == y: 
+                    stack.push(newBoolean(false))
+                else:
+                    var contains = true
+                    for item in x.a:
+                        if item notin y.a:
+                            contains = false
+                            break
+
+                    stack.push(newBoolean(contains))
+            else:
+                if x == y:
+                    stack.push(newBoolean(true))
+                else:
+                    var contains = true
+                    for item in x.a:
+                        if item notin y.a:
+                            contains = false
+                            break
+
+                    stack.push(newBoolean(contains))
+
+    builtin "superset?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given set is a superset of second set",
+        args        = {
+            "setA"  : {Block},
+            "setB"  : {Block}
+        },
+        attrs       = {
+            "proper": ({Boolean},"check if proper superset")
+        },
+        returns     = {Boolean},
+        # TODO(Sets\superset?) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("proper")!=VNULL):
+                if x == y: 
+                    stack.push(newBoolean(false))
+                else:
+                    var contains = true
+                    for item in y.a:
+                        if item notin x.a:
+                            contains = false
+                            break
+
+                    stack.push(newBoolean(contains))
+            else:
+                if x == y:
+                    stack.push(newBoolean(true))
+                else:
+                    var contains = true
+                    for item in y.a:
+                        if item notin x.a:
+                            contains = false
+                            break
+
+                    stack.push(newBoolean(contains))
+
     builtin "union",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
