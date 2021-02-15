@@ -17,6 +17,13 @@ import helpers/debug as DebugHelper
 import vm/[bytecode, globals, value]
 
 #=======================================
+# Variables
+#=======================================
+
+var
+    TmpArities*    : Table[string,int]
+
+#=======================================
 # Forward Declarations
 #=======================================
 
@@ -187,8 +194,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addTerminalValue(true):
                         discard
                 of Word:
-                    if Arities.hasKey(subnode.s):
-                        let funcArity = Arities[subnode.s]
+                    if TmpArities.hasKey(subnode.s):
+                        let funcArity = TmpArities[subnode.s]
                         if funcArity!=0:
                             subargStack.add(funcArity)
                         else:
@@ -265,8 +272,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addConst(consts, node, opPush)
 
             of Word:
-                if Arities.hasKey(node.s):
-                    let funcArity = Arities[node.s]
+                if TmpArities.hasKey(node.s):
+                    let funcArity = TmpArities[node.s]
                     if funcArity!=0:
                         addConst(consts, node, opCall)
                         argStack.add(funcArity)
@@ -285,10 +292,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let funcIndx = node.s
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    Arities[funcIndx] = n.a[i+2].a.len
+                    TmpArities[funcIndx] = n.a[i+2].a.len
                 else:
                     if not isDictionary:
-                        Arities.del(funcIndx)
+                        TmpArities.del(funcIndx)
 
                 addConst(consts, node, opStore)
                 argStack.add(1)
@@ -312,7 +319,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     let baseNode = node.p[0]
 
-                    if Arities.hasKey(baseNode.s) and Arities[baseNode.s]==0:
+                    if TmpArities.hasKey(baseNode.s) and TmpArities[baseNode.s]==0:
                         addConst(consts, baseNode, opCall)
                     else:
                         addConst(consts, baseNode, opLoad)
@@ -364,9 +371,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         # if it's a word
                         if subnode.kind==Word:
                             # check if it's a function
-                            if Arities.hasKey(subnode.s):
+                            if TmpArities.hasKey(subnode.s):
                                  # automatically "push" all its required arguments
-                                let funcArity = Arities[subnode.s]
+                                let funcArity = TmpArities[subnode.s]
 
                                 for i in 0..(funcArity-1):
                                     let arg = newWord("_" & $(i))
@@ -449,6 +456,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 proc doEval*(root: Value, isDictionary=false): Translation = 
     var cnsts: ValueArray = @[]
     var newit: ByteArray = @[]
+
+    TmpArities = Arities
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
     newit.add((byte)opEnd)
