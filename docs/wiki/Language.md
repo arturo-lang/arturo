@@ -99,7 +99,7 @@ print add 2 3
 ```
 and Arturo will print out `5` for you.
 
-Now, if you don't want to use the `add` function (and *prefix notation*, which is the standard for *all* function call), there is a *symbol-alias* for that: `+`
+Now, if you don't want to use the `add` function (and *prefix notation*, which is the standard for *all* function calls), there is a *symbol-alias* for that: `+`
 
 So, you could just as well write:
 
