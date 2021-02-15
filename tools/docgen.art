@@ -56,9 +56,19 @@ loop aIndexOld 'io [
     ]
 ]
 
-; <a href="Library-‣-|md|#|fn|">
-
 inspect aIndex
+
+sIndex: map select aIndex => [
+    key? info.get first map match & {>(.+)<} 'x [
+        replace replace x ">" "" "<" ""
+    ] 'alias
+] 'z [
+    fun: first map match z {>(.+)<} 'x [replace replace x ">" "" "<" ""]
+    ali: get info.get fun 'alias
+    ali: replace ali "<" "&lt;"
+    ali: replace ali ">" "&gt;"
+    replace z ~">|fun|<" ~">|ali|<"
+]
 
 write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
 write relative ~"|docsFolder|/_Sidebar.md" (render.single read SidebarTemplate)
