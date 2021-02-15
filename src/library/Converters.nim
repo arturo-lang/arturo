@@ -225,6 +225,7 @@ proc defineSymbols*() =
             "body"      : {Block}
         },
         attrs       = {
+            "import": ({Block},"import/embed given list of symbols from current environment"),
             "export": ({Block},"export given symbols to parent")
         },
         returns     = {Function},
