@@ -370,7 +370,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "muted" : ({Boolean},"don't use color output")
+        },
         returns     = {Nothing},
         example     = """
             inspect 3                 ; 3 :integer
@@ -379,7 +381,8 @@ proc defineSymbols*() =
             inspect a                 ; some text :string
         """:
             ##########################################################
-            x.dump(0, false)
+            let mutedOutput = (popAttr("muted")!=VNULL)
+            x.dump(0, false, muted=mutedOutput)
 
     builtin "integer?",
         alias       = unaliased, 
