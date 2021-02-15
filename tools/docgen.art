@@ -40,11 +40,25 @@ fs: new []
 
 loop functions [md,fns][
     loop fns 'fn [
-        'fs ++ ~{<a href="Library-‣-|md|#|fn|">|replace fn "?" "AA"|</a>}
+        'fs ++ ~{|replace fn "?" "AA"|</a>}
     ]
 ]
 
-aIndex: map sort fs => [replace & "AA" "?"]
+aIndexOld: map sort fs => [replace & "AA" "?"]
+aIndex: new []
+
+loop aIndexOld 'io [
+    loop functions [md,fns][
+        cleanIo: replace replace io "AA" "?" "</a>" ""
+        if contains? fns cleanIo [
+            'aIndex ++ (~{<a href="Library-‣-|md|#|cleanIo|">} ++ io)
+        ]
+    ]
+]
+
+; <a href="Library-‣-|md|#|fn|">
+
+inspect aIndex
 
 write relative ~"|docsFolder|/Library.md" (render.single read IndexTemplate)
 write relative ~"|docsFolder|/_Sidebar.md" (render.single read SidebarTemplate)
