@@ -40,7 +40,7 @@ fs: new []
 
 loop functions [md,fns][
     loop fns 'fn [
-        'fs ++ ~{[|replace fn "?" "AA"|](Library-‣-|md|.md)}
+        'fs ++ ~{<a href="Library-‣-|md|.md#|fn|">|replace fn "?" "AA"|</a>}
     ]
 ]
 
