@@ -89,7 +89,9 @@ proc defineSymbols*() =
             "hex"       : ({Boolean},"format integer as hexadecimal"),
             "octal"     : ({Boolean},"format integer as octal"),
             "ascii"     : ({Boolean},"transliterate string to ASCII"),
-            "agnostic"  : ({Boolean},"convert words in block to literals, if not in context")
+            "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
+            "code"      : ({Boolean},"convert value to valid Arturo code")
+
         },
         returns     = {Any},
         example     = """
@@ -115,6 +117,8 @@ proc defineSymbols*() =
                     else: v
                 )
                 stack.push(newBlock(res))
+            elif (popAttr("code") != VNULL):
+                stack.push(newString(codify(x)))
             else:
                 stack.push(x)
 
