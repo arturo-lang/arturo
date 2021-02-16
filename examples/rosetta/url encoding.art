@@ -1,4 +1,2 @@
 encoded: encode.url "http://foo bar/"
 print encoded
-
-print decode.url encoded
