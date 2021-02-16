@@ -1,0 +1,10 @@
+nPowers: [1 2 4 8 16 32 64 128 256 512]
+fermatSet: map 0..9 'x -> 1 + 2 ^ nPowers \ x
+ 
+loop 0..9 'i ->
+    print ["F(" i ") =" fermatSet \ i]
+
+print ""
+
+loop 0..9 'i ->
+    print ["Prime factors of F(" i ") =" factors.prime fermatSet \ i]    
