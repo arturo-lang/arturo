@@ -70,7 +70,7 @@ interpret: function [].export:[DataPointer,InstructionPointer,Tape][
                     InstructionPointer: new get Jumps to :string InstructionPointer
                 ]
  
-        inc 'InstructionPointer;: InstructionPointer+1
+        inc 'InstructionPointer
     ]
 ]
  
