@@ -1,0 +1,16 @@
+#!/usr/bin/env arturo
+builtins1: new []
+builtins2: new []
+
+loop symbols [k,v][
+    if? suffix? k "?" -> 'builtins1 ++ k
+    else -> 'builtins2 ++ k
+]
+
+map 'builtins1 => chop
+sort 'builtins1
+sort 'builtins2
+
+print ["builtins1:" join.with:"|" builtins1]
+print ""
+print ["builtins2:" join.with:"|" builtins2]
