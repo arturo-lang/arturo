@@ -1,11 +1,11 @@
-; /*********************************
-;  * Brainf*ck compiler
-;  * In Art:uro
-;  *********************************/
+;
+; Brainf*ck compiler
+; In Arturo
+;
  
 Tape: [0]
-DataPointer: 0
-InstructionPointer: 0
+DataPointer: new 0
+InstructionPointer: new 0
  
 ; Look for jumps in Code an register them
 ; in the Jumps table
@@ -51,10 +51,10 @@ interpret: function [].export:[DataPointer,InstructionPointer,Tape][
             when? ["+"] -> set Tape DataPointer (Tape \ DataPointer)+1
             when? ["-"] -> set Tape DataPointer (Tape \ DataPointer)-1
             when? [">"] [
-                DataPointer: DataPointer + 1
+                inc 'DataPointer
                 if DataPointer = size Tape -> Tape: Tape ++ 0
             ]
-            when? ["<"] -> DataPointer - 1
+            when? ["<"] -> dec 'DataPointer
             when? ["."] -> prints to :string to :char Tape \ DataPointer
             when? [","][
                 inp: to :integer input ""
@@ -62,37 +62,22 @@ interpret: function [].export:[DataPointer,InstructionPointer,Tape][
                 if inp=3  -> panic "something went wrong!"
                 set Tape DataPointer inp
             ]
-            when? ["["][
-                if 0 = get Tape DataPointer -> InstructionPointer: get Jumps to :string InstructionPointer
-            ]
-            when? ["]"][
-                if 0 <> get Tape DataPointer -> InstructionPointer: get Jumps to :string InstructionPointer
-            ]
-        ; if command="+" -> Tape.[DataPointer]: Tape.[DataPointer]+1
-        ; if command="-" -> Tape.[DataPointer]: Tape.[DataPointer]-1
-        ; if command=">" { DataPointer: DataPointer+1, if DataPointer=[size Tape] -> Tape: Tape+0 }
-        ; if command="<" -> DataPointer: DataPointer-1
-        ; if command="." -> prints [char Tape.[DataPointer]]
-        ; if command="," {
-        ;     inp: toNumber|input ~
-        ;     if inp=13 { inp: 10 }
-        ;     if inp=3  { panic "something went wrong!" }
-        ;     Tape.DataPointer: inp
-        ; }
-        ; if command="[" {
-        ;     if Tape.[DataPointer]=0 -> InstructionPointer: Jumps.[toString InstructionPointer]
-        ; }
-        ; if command="]" {
-        ;     if Tape.[DataPointer]!=0 -> InstructionPointer: Jumps.[toString InstructionPointer]
-        ; }
+            when? ["["] ->
+                if 0 = get Tape DataPointer [ InstructionPointer: new get Jumps to :string InstructionPointer ]
+
+            when? ["]"] ->
+                if 0 <> get Tape DataPointer [
+                    InstructionPointer: new get Jumps to :string InstructionPointer
+                ]
  
-        InstructionPointer: InstructionPointer+1
+        inc 'InstructionPointer;: InstructionPointer+1
     ]
 ]
  
-if 1>size arg -> panic "Not enough arguments - Usage: bfc <script>"
- 
-Code: read arg\0
+Code: ""
+if? 1>size arg -> Code: "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+else -> Code: read arg\0
+
 CodeLength: size Code
 Jumps: precomputeJumps
 
