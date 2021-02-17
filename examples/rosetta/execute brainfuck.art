@@ -41,7 +41,7 @@ StateIsValid: function [][
         InstructionPointer < CodeLength
     ]
 ]
- 
+
 ; Compile the program
  
 interpret: function [].export:[DataPointer,InstructionPointer,Tape][
