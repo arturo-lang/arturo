@@ -423,6 +423,8 @@ proc defineSymbols*() =
                                 stack.push newString(y.s)
                             of Literal:
                                 stack.push newLiteral(y.s)
+                            of Word:
+                                stack.push newWord(y.s)
                             else:
                                 showConversionError()
 
