@@ -22,8 +22,8 @@ precomputeJumps: function [][
             if command="]" [
                 target: last vstack
                 chop 'vstack
-                set jumphash to :string target instrPointer
-                set jumphash to :string instrPointer target
+                set jumphash target instrPointer
+                set jumphash instrPointer target
             ]
         ]
         instrPointer: instrPointer+1
@@ -63,11 +63,11 @@ interpret: function [].export:[DataPointer,InstructionPointer,Tape][
                 set Tape DataPointer inp
             ]
             when? ["["] ->
-                if 0 = get Tape DataPointer [ InstructionPointer: new get Jumps to :string InstructionPointer ]
+                if 0 = get Tape DataPointer [ InstructionPointer: new get Jumps InstructionPointer ]
 
             when? ["]"] ->
                 if 0 <> get Tape DataPointer [
-                    InstructionPointer: new get Jumps to :string InstructionPointer
+                    InstructionPointer: new get Jumps InstructionPointer
                 ]
  
         inc 'InstructionPointer
