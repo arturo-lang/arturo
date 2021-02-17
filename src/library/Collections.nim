@@ -358,7 +358,7 @@ proc defineSymbols*() =
         description = "get collection's item by given index",
         args        = {
             "collection"    : {String,Block,Dictionary,Date},
-            "index"         : {Integer,String,Literal}
+            "index"         : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Any},
@@ -390,7 +390,11 @@ proc defineSymbols*() =
             ##########################################################
             case x.kind:
                 of Block: stack.push(x.a[y.i])
-                of Dictionary: stack.push(x.d[y.s])
+                of Dictionary: 
+                    if y.kind==String:
+                        stack.push(x.d[y.s])
+                    else:
+                        stack.push(x.d[$(y)])
                 of String: stack.push(newChar(x.s.runeAtPos(y.i)))
                 of Date: 
                     stack.push(x.e[y.s])
@@ -537,7 +541,7 @@ proc defineSymbols*() =
         description = "check if dictionary contains given key",
         args        = {
             "collection"    : {Dictionary},
-            "key"           : {String,Literal}
+            "key"           : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -554,7 +558,12 @@ proc defineSymbols*() =
             ; Hello John
         """:
             ##########################################################
-            stack.push(newBoolean(x.d.hasKey(y.s)))
+            var needle: string
+            if y.kind==String:
+                needle = y.s
+            else:
+                needle = $(y)
+            stack.push(newBoolean(x.d.hasKey(needle)))
 
     builtin "keys",
         alias       = unaliased, 
@@ -839,7 +848,7 @@ proc defineSymbols*() =
         description = "set collection's item at index to given value",
         args        = {
             "collection"    : {String,Block,Dictionary},
-            "index"         : {Integer,String,Literal},
+            "index"         : {Any},
             "value"         : {Any}
         },
         attrs       = NoAttrs,
@@ -860,7 +869,10 @@ proc defineSymbols*() =
                 of Block: 
                     x.a[y.i] = z
                 of Dictionary:
-                    x.d[y.s] = z
+                    if y.kind==String:
+                        x.d[y.s] = z
+                    else:
+                        x.d[$(y)] = z
                 else: discard
 
     builtin "shuffle",
