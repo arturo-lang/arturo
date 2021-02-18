@@ -501,7 +501,6 @@ proc defineSymbols*() =
                         PathLabel,
                         Date,
                         Bytecode,
-                        Custom,
                         Binary: discard
 
 #=======================================

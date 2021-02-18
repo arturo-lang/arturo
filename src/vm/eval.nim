@@ -438,10 +438,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Bytecode: discard
 
-            of Custom:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
             of Nothing: discard
             of Any: discard
 
