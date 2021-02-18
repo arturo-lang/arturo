@@ -137,19 +137,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            echo "define new type: " & $(x) & " with prototype: " & $(y)
-            # var imports = VNULL
-            # if (let aImport = popAttr("import"); aImport != VNULL):
-            #     var ret = initOrderedTable[string,Value]()
-            #     for item in aImport.a:
-            #         ret[item.s] = Syms[item.s]
-            #     imports = newDictionary(ret)
-
-            # var exports = VNULL
-            # if (let aExport = popAttr("export"); aExport != VNULL):
-            #     exports = aExport
-
-            # stack.push(newFunction(x,y,imports,exports))
+            x.prototype = newDictionary(execBlock(y,dictionary=true))
 
     builtin "dictionary",
         alias       = sharp, 
@@ -460,20 +448,36 @@ proc defineSymbols*() =
                     of Block:
                         case tp:
                             of Dictionary:
-                                let stop = SP
-                                discard execBlock(y)
+                                if x.tpKind==BuiltinType:
+                                    let stop = SP
+                                    discard execBlock(y)
 
-                                let arr: ValueArray = sTopsFrom(stop)
-                                var dict: ValueDict = initOrderedTable[string,Value]()
-                                SP = stop
+                                    let arr: ValueArray = sTopsFrom(stop)
+                                    var dict: ValueDict = initOrderedTable[string,Value]()
+                                    SP = stop
 
-                                var i = 0
-                                while i<arr.len:
-                                    if i+1<arr.len:
-                                        dict[$(arr[i])] = arr[i+1]
-                                    i += 2
+                                    var i = 0
+                                    while i<arr.len:
+                                        if i+1<arr.len:
+                                            dict[$(arr[i])] = arr[i+1]
+                                        i += 2
 
-                                stack.push(newDictionary(dict))
+                                    stack.push(newDictionary(dict))
+                                else:
+                                    let stop = SP
+                                    discard execBlock(y)
+
+                                    let arr: ValueArray = sTopsFrom(stop)
+                                    var dict = copyValue(x.prototype)
+                                    SP = stop
+
+                                    var i = 0
+                                    for k in keys(dict.d):
+                                        dict.d[k] = arr[i]
+                                        i += 1
+                                    dict.custom = x
+                                    stack.push(dict)
+
                             of Bytecode:
                                 stack.push(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
                             else:
