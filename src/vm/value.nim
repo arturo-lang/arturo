@@ -105,10 +105,9 @@ type
         Block           = 20
         Database        = 21
         Bytecode        = 22
-        Custom          = 23
 
-        Nothing         = 24
-        Any             = 25
+        Nothing         = 23
+        Any             = 24
 
     ValueSpec* = set[ValueKind]
 
@@ -1201,9 +1200,6 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Bytecode:
             result = "<bytecode>"
-
-        of Custom:
-            result = "<custom>"
             
         of Nothing: discard
         of ANY: discard
@@ -1332,8 +1328,6 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
         
         of Bytecode     : stdout.write("<bytecode>")
-
-        of Custom       : stdout.write("<custom>")
 
         of Nothing      : discard
         of ANY          : discard
@@ -1493,9 +1487,6 @@ proc hash*(v: Value): Hash {.inline.}=
 
         of Bytecode:
             result = cast[Hash](unsafeAddr v)
-
-        of Custom:
-            result = 0
-
+            
         of Nothing      : result = 0
         of ANY          : result = 0

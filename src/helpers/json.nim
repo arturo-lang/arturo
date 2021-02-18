@@ -54,7 +54,6 @@ proc generateJsonNode*(n: Value): JsonNode =
         of Function,
            Database,
            Bytecode,
-           Custom,
            Nothing,
            Any          : discard
 
