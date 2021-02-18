@@ -139,7 +139,10 @@ proc defineSymbols*() =
             x.prototype = y
             let methods = execBlock(z,dictionary=true)
             for k,v in pairs(methods):
+                # add a `this` first parameter
                 v.params.a.insert(newWord("this"),0)
+                # add as first command in block: 
+                # ensure [:TYPE = type this]
                 v.main.a.insert(newWord("ensure"),0)
                 v.main.a.insert(newBlock(@[
                     newUserType(x.name),
