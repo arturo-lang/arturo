@@ -140,6 +140,7 @@ type
 
     Value* {.acyclic.} = ref object 
         info*: string
+        custom*: Value
         case kind*: ValueKind:
             of Null,
                Nothing,
@@ -239,6 +240,9 @@ let VFALSE* = Value(kind: Boolean, b: false)
 
 let VNULL* = Value(kind: Null)
 
+var 
+    TypeLookup = initOrderedTable[string,Value]()
+
 #=======================================
 # Helpers
 #=======================================
@@ -294,10 +298,20 @@ proc newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
 proc newType*(t: ValueKind): Value {.inline.} =
-    Value(kind: Type, t: t)
+    Value(kind: Type, tpKind: BuiltinType, t: t)
+
+proc newUserType*(n: string, p: Value = VNULL): Value {.inline.} =
+    if TypeLookup.hasKey(n):
+        return TypeLookup[n]
+    else:
+        result = Value(kind: Type, tpKind: UserType, t: Dictionary, name: n, prototype: p)
+        TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
-    newType(parseEnum[ValueKind](t.capitalizeAscii()))
+    try:
+        newType(parseEnum[ValueKind](t.capitalizeAscii()))
+    except ValueError as e:
+        newUserType(t)
 
 proc newChar*(c: Rune): Value {.inline.} =
     Value(kind: Char, c: c)
@@ -411,7 +425,11 @@ proc copyValue*(v: Value): Value {.inline.} =
             if v.iKind == NormalInteger: result = newInteger(v.i)
             else: result = newInteger(v.bi)
         of Floating:    result = newFloating(v.f)
-        of Type:        result = newType(v.t)
+        of Type:        
+            if v.tpKind==BuiltinType:
+                result = newType(v.t)
+            else:
+                result = newUserType(v.name, v.prototype)
         of Char:        result = newChar(v.c)
 
         of String:      result = newString(v.s)
@@ -1110,7 +1128,11 @@ proc `$`*(v: Value): string {.inline.} =
             if v.iKind==NormalInteger: return $(v.i)
             else: return $(v.bi)
         of Floating     : return $(v.f)
-        of Type         : return ":" & ($v.t).toLowerAscii()
+        of Type         : 
+            if v.tpKind==BuiltinType:
+                return ":" & ($v.t).toLowerAscii()
+            else:
+                return ":" & v.name
         of Char         : return $(v.c)
         of String,
            Word, 
@@ -1223,8 +1245,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         else:           stdout.write fmt("<{v.m}> :{($(v.kind)).toLowerAscii()}")
 
     proc dumpBlockStart(v: Value) =
-        if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}\n")
-        else:           stdout.write fmt("[ :{($(v.kind)).toLowerAscii()}\n")
+        var tp = ($(v.kind)).toLowerAscii()
+        if not v.custom.isNil(): tp = v.custom.name
+        if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
+        else:           stdout.write fmt("[ :{tp}\n")
 
     proc dumpBlockEnd() =
         for i in 0..level-1: stdout.write "\t"
@@ -1240,7 +1264,11 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             if v.iKind==NormalInteger: dumpPrimitive($(v.i), v)
             else: dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
-        of Type         : dumpPrimitive(($(v.t)).toLowerAscii(), v)
+        of Type         : 
+            if v.tpKind==BuiltinType:
+                dumpPrimitive(($(v.t)).toLowerAscii(), v)
+            else:
+                dumpPrimitive(v.name, v)
         of Char         : dumpPrimitive($(v.c), v)
         of String       : dumpPrimitive(v.s, v)
         
@@ -1487,6 +1515,6 @@ proc hash*(v: Value): Hash {.inline.}=
 
         of Bytecode:
             result = cast[Hash](unsafeAddr v)
-            
+
         of Nothing      : result = 0
         of ANY          : result = 0
