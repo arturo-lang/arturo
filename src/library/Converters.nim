@@ -131,9 +131,7 @@ proc defineSymbols*() =
             "prototype" : {Block},
             "methods"   : {Block}
         },
-        attrs       = {
-            "inherit"   : ({Type},"inherit properties of given type")
-        },
+        attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
         """:
