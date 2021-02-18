@@ -133,9 +133,24 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
-        # TODO(Converters\define) add example for documentation 
-        #  labels: documentation,easy,library
         example     = """
+            define :person [name surname][
+                sayHello: function [][
+                    print ["Hello" this\name]
+                ]
+            ]
+
+            do [
+                a: to :person ["John" "Doe"]
+                print a
+                ; [name:John surname:Doe]
+
+                print ["Your surname is:" a\surname]
+                ; Doe
+
+                sayHello a
+                ; Hello John
+            ]
         """:
             ##########################################################
             x.prototype = y
