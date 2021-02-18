@@ -16,7 +16,6 @@ define :person [                            ; define a new custom type "Person"
     ]
 ]
 
-
 do [
     a: to :person ["John" "Doe"]                    ; let's create 2 "Person"s
     b: to :person ["Jane" "Doe" ]                   ; and another one
