@@ -18,7 +18,7 @@ define :person [                            ; define a new custom type "Person"
 
 do [
     a: to :person ["John" "Doe"]                    ; let's create 2 "Person"s
-    b: to :person ["Jane" "Doe" ]                   ; and another one
+    b: to :person ["Jane" "Doe"]                    ; and another one
     
     sayHello a                                      ; call inner method
     sayHello b
@@ -34,7 +34,6 @@ do [
 
     changeSurname b "Jones"                         ; call state-modifying method
 
-    ; inspect final objects' state
-    print a
+    print a                                         ; inspect final objects' state
     print b
 ]
