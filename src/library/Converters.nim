@@ -151,7 +151,6 @@ proc defineSymbols*() =
                 ]),1)
                 Syms[k] = v
                 Arities[k] = v.params.a.len
-            # x.prototype = newDictionary(execBlock(y,dictionary=true))
 
     builtin "dictionary",
         alias       = sharp, 
