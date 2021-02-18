@@ -416,7 +416,10 @@ proc defineSymbols*() =
             is? :integer "boom"       ; => false
         """:
             ##########################################################
-            stack.push(newBoolean(x.t == y.kind))
+            if y.custom.isNil():
+                stack.push(newBoolean(x.t == y.kind))
+            else:
+                stack.push(newBoolean(x.name == y.custom.name))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -662,7 +665,10 @@ proc defineSymbols*() =
             print type "hello world"  ; :string
         """:
             ##########################################################
-            stack.push(newType(x.kind))
+            if x.custom.isNil():
+                stack.push(newType(x.kind))
+            else:
+                stack.push(x.custom)
 
     builtin "type?",
         alias       = unaliased, 
