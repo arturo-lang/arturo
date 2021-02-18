@@ -122,6 +122,35 @@ proc defineSymbols*() =
             else:
                 stack.push(x)
 
+    builtin "define",
+        alias       = dollar, 
+        rule        = PrefixPrecedence,
+        description = "define new type with given characteristics",
+        args        = {
+            "name"      : {Type},
+            "prototype" : {Block}
+        },
+        attrs       = {
+            "inherit"   : ({Type},"inherit properties of given type")
+        },
+        returns     = {Nothing},
+        example     = """
+        """:
+            ##########################################################
+            echo "define new type: " & $(x) & " with prototype: " & $(y)
+            # var imports = VNULL
+            # if (let aImport = popAttr("import"); aImport != VNULL):
+            #     var ret = initOrderedTable[string,Value]()
+            #     for item in aImport.a:
+            #         ret[item.s] = Syms[item.s]
+            #     imports = newDictionary(ret)
+
+            # var exports = VNULL
+            # if (let aExport = popAttr("export"); aExport != VNULL):
+            #     exports = aExport
+
+            # stack.push(newFunction(x,y,imports,exports))
+
     builtin "dictionary",
         alias       = sharp, 
         rule        = PrefixPrecedence,
