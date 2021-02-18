@@ -493,6 +493,11 @@ proc defineSymbols*() =
 
                                     var res = newDictionary(dict)
                                     res.custom = x
+
+                                    # TODO(Converters\to) Add support for custom initializer for user-defined types/objects
+                                    #  If one of the defined methods is an `init` (or something like that), call it after (or before?) setting the appropriate fields
+                                    #  labels: enhancement,language,library
+
                                     stack.push(res)
 
                             of Bytecode:
