@@ -103,16 +103,32 @@ Define new type with given characteristics
        <ins>prototype</ins> <i>:block</i>
        <ins>methods</ins> <i>:block</i>
 </pre>
-#### Attributes
-
-|Attribute|Type|Description|
-|---|---|---|
-|inherit|<i>:type</i>|inherit properties of given type|
 
 #### Returns
 
 - *:nothing*
 
+#### Examples
+
+```red
+define :person [name surname][
+    sayHello: function [][
+        print ["Hello" this\name]
+    ]
+]
+
+do [
+    a: to :person ["John" "Doe"]
+    print a
+    ; [name:John surname:Doe]
+
+    print ["Your surname is:" a\surname]
+    ; Doe
+
+    sayHello a
+    ; Hello John
+]
+```
 
 ## dictionary
 
