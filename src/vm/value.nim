@@ -120,6 +120,10 @@ type
         UserFunction
         BuiltinFunction
 
+    TypeKind* = enum
+        UserType
+        BuiltinType
+
     DatabaseKind* = enum
         SqliteDatabase
         MysqlDatabase
@@ -148,7 +152,15 @@ type
                     of NormalInteger:   i*  : int
                     of BigInteger:      bi* : Int    
             of Floating:    f*  : float
-            of Type:        t*  : ValueKind
+            of Type:        
+                t*  : ValueKind
+                case tpKind*: TypeKind:
+                    of UserType:
+                        name*       : string
+                        prototype*  : Value
+                    of BuiltinType:
+                        discard
+
             of Char:        c*  : Rune
             of String,
                Word,
@@ -194,11 +206,6 @@ type
             of Bytecode:
                 consts*: ValueArray
                 instrs*: ByteArray
-
-            of Custom:
-                name*       : string
-                inherits*   : Value
-                conditions* : Value
 
 #=======================================
 # Constants
