@@ -1373,7 +1373,11 @@ proc codify*(v: Value): string {.inline.} =
             if v.iKind==NormalInteger: result = $(v.i)
             else: result = $(v.bi)
         of Floating     : result = $(v.f)
-        of Type         : result = ":" & ($(v.t)).toLowerAscii()
+        of Type         : 
+            if v.tpKind==BuiltinType:
+                result = ":" & ($v.t).toLowerAscii()
+            else:
+                result = ":" & v.name
         of Char         : result = "`" & $(v.c) & "`"
         of String       : result = "\"" & v.s & "\""
         of Word         : result = v.s
