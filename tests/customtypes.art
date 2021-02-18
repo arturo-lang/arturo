@@ -1,0 +1,41 @@
+;------------------------------------
+; Objects and prototypes
+; in Arturo
+;------------------------------------
+
+define :person [                            ; define a new custom type "Person"
+    name                                    ; with fields: name, surname
+    surname
+][ 
+    sayHello: function [][                  ; and an inner method: sayHello
+        print ["Hello" this\name]
+    ]
+
+    changeSurname: function [newSurname][
+        this\surname: upper newSurname
+    ]
+]
+
+
+do [
+    a: to :person ["John" "Doe"]                    ; let's create 2 "Person"s
+    b: to :person ["Jane" "Doe" ]                   ; and another one
+    
+    sayHello a                                      ; call inner method
+    sayHello b
+
+    print ["The first person's name is:" a\name]    ; access inner field directly
+    print ["The second person's name is:" b\name]
+
+    a\name: "Bob"                                   ; change inner field
+    sayHello a                                      ; and verify persistence
+
+    print type a                                    ; verify object type
+    print is? :person a                             ; and again with `is?`
+
+    changeSurname b "Jones"                         ; call state-modifying method
+
+    ; inspect final objects' state
+    print a
+    print b
+]
