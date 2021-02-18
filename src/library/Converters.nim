@@ -508,14 +508,16 @@ proc defineSymbols*() =
                                     var dict = initOrderedTable[string,Value]()
 
                                     for k,v in pairs(y.d):
-                                        dict[k] = v
+                                        for item in x.prototype.a:
+                                            if item.s == k:
+                                                dict[k] = v
 
                                     var res = newDictionary(dict)
                                     res.custom = x
                                     stack.push(res)
                             else:
                                 showConversionError()
-                                
+
                     of Symbol:
                         case tp:
                             of String:
