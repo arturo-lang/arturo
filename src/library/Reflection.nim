@@ -416,7 +416,10 @@ proc defineSymbols*() =
             is? :integer "boom"       ; => false
         """:
             ##########################################################
-            stack.push(newBoolean(x.t == y.kind))
+            if y.custom.isNil():
+                stack.push(newBoolean(x.t == y.kind))
+            else:
+                stack.push(newBoolean(x.name == y.custom.name))
 
     builtin "floating?",
         alias       = unaliased, 
