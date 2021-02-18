@@ -37,3 +37,20 @@ do [
     print a                                         ; inspect final objects' state
     print b
 ]
+
+define :car [brand model year][
+    calculateAge: function [][
+        return 2021 - this\year
+    ]
+]
+
+do [
+    c: to :car #[brand: "Ford" model: "Mustang" year: 1967]
+    d: to :car #[brand: "Nissan" model: "Sunny" year: 1991]
+
+    print c
+    print d
+
+    print ["Car C is a" c\brand "and it's" calculateAge c "years old"]
+    print ["Car D is a" d\brand "and it's" calculateAge d "years old"]
+]
