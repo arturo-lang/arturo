@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, sugar, unicode
+import sequtils, strformat, unicode
 import extras/bignum
 
 import helpers/datasource as DatasourceHelper
