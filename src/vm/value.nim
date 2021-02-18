@@ -310,7 +310,7 @@ proc newUserType*(n: string, p: Value = VNULL): Value {.inline.} =
 proc newType*(t: string): Value {.inline.} =
     try:
         newType(parseEnum[ValueKind](t.capitalizeAscii()))
-    except ValueError as e:
+    except ValueError:
         newUserType(t)
 
 proc newChar*(c: Rune): Value {.inline.} =
