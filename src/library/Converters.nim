@@ -133,6 +133,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
+        # TODO(Converters\define) add example for documentation 
+        #  labels: documentation,easy,library
         example     = """
         """:
             ##########################################################
