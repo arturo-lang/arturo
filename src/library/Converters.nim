@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, unicode
+import sequtils, strformat, sugar, unicode
 import extras/bignum
 
 import helpers/datasource as DatasourceHelper
@@ -127,8 +127,9 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "define new type with given characteristics",
         args        = {
-            "name"      : {Type},
-            "prototype" : {Block}
+            "type"      : {Type},
+            "prototype" : {Block},
+            "methods"   : {Block}
         },
         attrs       = {
             "inherit"   : ({Type},"inherit properties of given type")
@@ -137,7 +138,20 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            x.prototype = newDictionary(execBlock(y,dictionary=true))
+            x.prototype = y
+            let methods = execBlock(z,dictionary=true)
+            for k,v in pairs(methods):
+                v.params.a.insert(newWord("this"),0)
+                v.main.a.insert(newWord("ensure"),0)
+                v.main.a.insert(newBlock(@[
+                    newUserType(x.name),
+                    newSymbol(equal),
+                    newWord("type"),
+                    newWord("this")
+                ]),1)
+                Syms[k] = v
+                Arities[k] = v.params.a.len
+            # x.prototype = newDictionary(execBlock(y,dictionary=true))
 
     builtin "dictionary",
         alias       = sharp, 
@@ -468,15 +482,17 @@ proc defineSymbols*() =
                                     discard execBlock(y)
 
                                     let arr: ValueArray = sTopsFrom(stop)
-                                    var dict = copyValue(x.prototype)
+                                    var dict = initOrderedTable[string,Value]()
                                     SP = stop
 
                                     var i = 0
-                                    for k in keys(dict.d):
-                                        dict.d[k] = arr[i]
+                                    for k in x.prototype.a:
+                                        dict[k.s] = arr[i]
                                         i += 1
-                                    dict.custom = x
-                                    stack.push(dict)
+
+                                    var res = newDictionary(dict)
+                                    res.custom = x
+                                    stack.push(res)
 
                             of Bytecode:
                                 stack.push(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
