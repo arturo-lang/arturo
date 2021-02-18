@@ -329,7 +329,7 @@ proc defineSymbols*() =
             ##########################################################
             let tp = x.t
             
-            if y.kind == tp:
+            if y.kind == tp and y.kind!=Dictionary:
                 stack.push y
             else:
                 case y.kind:
@@ -485,7 +485,8 @@ proc defineSymbols*() =
                                     SP = stop
 
                                     var i = 0
-                                    for k in x.prototype.a:
+                                    while i<arr.len and i<x.prototype.a.len:
+                                        let k = x.prototype.a[i]
                                         dict[k.s] = arr[i]
                                         i += 1
 
@@ -498,6 +499,23 @@ proc defineSymbols*() =
                             else:
                                 discard
 
+                    of Dictionary:
+                        case tp:
+                            of Dictionary:
+                                if x.tpKind==BuiltinType:
+                                    stack.push(y)
+                                else:
+                                    var dict = initOrderedTable[string,Value]()
+
+                                    for k,v in pairs(y.d):
+                                        dict[k] = v
+
+                                    var res = newDictionary(dict)
+                                    res.custom = x
+                                    stack.push(res)
+                            else:
+                                showConversionError()
+                                
                     of Symbol:
                         case tp:
                             of String:
@@ -507,20 +525,19 @@ proc defineSymbols*() =
                             else:
                                 showConversionError()
 
-                    of Dictionary,
-                        Function,
-                        Database,
-                        Nothing,
-                        Any,
-                        Inline,
-                        Label,
-                        Attribute,
-                        AttributeLabel,
-                        Path,
-                        PathLabel,
-                        Date,
-                        Bytecode,
-                        Binary: discard
+                    of Function,
+                       Database,
+                       Nothing,
+                       Any,
+                       Inline,
+                       Label,
+                       Attribute,
+                       AttributeLabel,
+                       Path,
+                       PathLabel,
+                       Date,
+                       Bytecode,
+                       Binary: discard
 
 #=======================================
 # Add Library
