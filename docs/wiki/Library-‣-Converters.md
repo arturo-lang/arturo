@@ -5,6 +5,7 @@
 <!--ts-->
    * [array](#array)
    * [as](#as)
+   * [define](#define)
    * [dictionary](#dictionary)
    * [from](#from)
    * [function](#function)
@@ -88,6 +89,30 @@ print as.hex 123              ; 7b
 print as.ascii "thís ìß ñot à tést"
 ; this iss not a test
 ```
+
+## define
+
+#### Description
+
+Define new type with given characteristics
+
+#### Usage
+
+<pre>
+<b>define</b> <ins>type</ins> <i>:type</i>
+       <ins>prototype</ins> <i>:block</i>
+       <ins>methods</ins> <i>:block</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|inherit|<i>:type</i>|inherit properties of given type|
+
+#### Returns
+
+- *:nothing*
+
 
 ## dictionary
 
