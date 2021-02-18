@@ -122,6 +122,37 @@ proc defineSymbols*() =
             else:
                 stack.push(x)
 
+    builtin "define",
+        alias       = dollar, 
+        rule        = PrefixPrecedence,
+        description = "define new type with given characteristics",
+        args        = {
+            "type"      : {Type},
+            "prototype" : {Block},
+            "methods"   : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+        """:
+            ##########################################################
+            x.prototype = y
+            let methods = execBlock(z,dictionary=true)
+            for k,v in pairs(methods):
+                # add a `this` first parameter
+                v.params.a.insert(newWord("this"),0)
+                # add as first command in block: 
+                # ensure [:TYPE = type this]
+                v.main.a.insert(newWord("ensure"),0)
+                v.main.a.insert(newBlock(@[
+                    newUserType(x.name),
+                    newSymbol(equal),
+                    newWord("type"),
+                    newWord("this")
+                ]),1)
+                Syms[k] = v
+                Arities[k] = v.params.a.len
+
     builtin "dictionary",
         alias       = sharp, 
         rule        = PrefixPrecedence,
@@ -299,7 +330,7 @@ proc defineSymbols*() =
             ##########################################################
             let tp = x.t
             
-            if y.kind == tp:
+            if y.kind == tp and y.kind!=Dictionary:
                 stack.push y
             else:
                 case y.kind:
@@ -431,24 +462,67 @@ proc defineSymbols*() =
                     of Block:
                         case tp:
                             of Dictionary:
-                                let stop = SP
-                                discard execBlock(y)
+                                if x.tpKind==BuiltinType:
+                                    let stop = SP
+                                    discard execBlock(y)
 
-                                let arr: ValueArray = sTopsFrom(stop)
-                                var dict: ValueDict = initOrderedTable[string,Value]()
-                                SP = stop
+                                    let arr: ValueArray = sTopsFrom(stop)
+                                    var dict: ValueDict = initOrderedTable[string,Value]()
+                                    SP = stop
 
-                                var i = 0
-                                while i<arr.len:
-                                    if i+1<arr.len:
-                                        dict[$(arr[i])] = arr[i+1]
-                                    i += 2
+                                    var i = 0
+                                    while i<arr.len:
+                                        if i+1<arr.len:
+                                            dict[$(arr[i])] = arr[i+1]
+                                        i += 2
 
-                                stack.push(newDictionary(dict))
+                                    stack.push(newDictionary(dict))
+                                else:
+                                    let stop = SP
+                                    discard execBlock(y)
+
+                                    let arr: ValueArray = sTopsFrom(stop)
+                                    var dict = initOrderedTable[string,Value]()
+                                    SP = stop
+
+                                    var i = 0
+                                    while i<arr.len and i<x.prototype.a.len:
+                                        let k = x.prototype.a[i]
+                                        dict[k.s] = arr[i]
+                                        i += 1
+
+                                    var res = newDictionary(dict)
+                                    res.custom = x
+
+                                    # TODO(Converters\to) Add support for custom initializer for user-defined types/objects
+                                    #  If one of the defined methods is an `init` (or something like that), call it after (or before?) setting the appropriate fields
+                                    #  labels: enhancement,language,library
+
+                                    stack.push(res)
+
                             of Bytecode:
                                 stack.push(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
                             else:
                                 discard
+
+                    of Dictionary:
+                        case tp:
+                            of Dictionary:
+                                if x.tpKind==BuiltinType:
+                                    stack.push(y)
+                                else:
+                                    var dict = initOrderedTable[string,Value]()
+
+                                    for k,v in pairs(y.d):
+                                        for item in x.prototype.a:
+                                            if item.s == k:
+                                                dict[k] = v
+
+                                    var res = newDictionary(dict)
+                                    res.custom = x
+                                    stack.push(res)
+                            else:
+                                showConversionError()
 
                     of Symbol:
                         case tp:
@@ -459,21 +533,19 @@ proc defineSymbols*() =
                             else:
                                 showConversionError()
 
-                    of Dictionary,
-                        Function,
-                        Database,
-                        Nothing,
-                        Any,
-                        Inline,
-                        Label,
-                        Attribute,
-                        AttributeLabel,
-                        Path,
-                        PathLabel,
-                        Date,
-                        Bytecode,
-                        Custom,
-                        Binary: discard
+                    of Function,
+                       Database,
+                       Nothing,
+                       Any,
+                       Inline,
+                       Label,
+                       Attribute,
+                       AttributeLabel,
+                       Path,
+                       PathLabel,
+                       Date,
+                       Bytecode,
+                       Binary: discard
 
 #=======================================
 # Add Library

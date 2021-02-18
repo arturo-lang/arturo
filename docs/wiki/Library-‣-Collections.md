@@ -369,7 +369,7 @@ Get collection's item by given index
 
 <pre>
 <b>get</b> <ins>collection</ins> <i>:string</i> <i>:date</i> <i>:dictionary</i> <i>:block</i>
-    <ins>index</ins> <i>:integer</i> <i>:string</i> <i>:literal</i>
+    <ins>index</ins> <i>:any</i>
 </pre>
 
 #### Returns
@@ -529,7 +529,7 @@ Check if dictionary contains given key
 
 <pre>
 <b>key?</b> <ins>collection</ins> <i>:dictionary</i>
-     <ins>key</ins> <i>:string</i> <i>:literal</i>
+     <ins>key</ins> <i>:any</i>
 </pre>
 
 #### Returns
@@ -820,7 +820,7 @@ Set collection's item at index to given value
 
 <pre>
 <b>set</b> <ins>collection</ins> <i>:string</i> <i>:dictionary</i> <i>:block</i>
-    <ins>index</ins> <i>:integer</i> <i>:string</i> <i>:literal</i>
+    <ins>index</ins> <i>:any</i>
     <ins>value</ins> <i>:any</i>
 </pre>
 
