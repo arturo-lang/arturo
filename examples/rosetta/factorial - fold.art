@@ -1,0 +1,7 @@
+factorial: $[n][
+    fold.seed:1 1..n [a,b][a*b]
+]
+
+loop 1..19 [x][
+	print ["Factorial of" x "=" factorial x]
+]
