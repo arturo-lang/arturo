@@ -7,4 +7,4 @@ loop 0..9 'i ->
 print ""
 
 loop 0..9 'i ->
-    print ["Prime factors of F(" i ") =" factors.prime fermatSet \ i]    
+    print ["Prime factors of F(" i ") =" factors.prime fermatSet \ i]
