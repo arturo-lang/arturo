@@ -1107,6 +1107,58 @@ proc defineSymbols*() =
                     stack.push(newBlock(ret))
                 else: stack.push(x)
 
+    builtin "squeeze",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "reduce adjacent elements in given collection",
+        args        = {
+            "collection"    : {String,Block,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {String,Block,Nothing},
+        # TODO(Collections\squeeze) add example for documentation 
+        #  labels: documentation,easy,library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Literal:
+                if Syms[x.s].kind==String:
+                    var i = 0
+                    var ret = ""
+                    while i<Syms[x.s].s.len:
+                        ret &= $(Syms[x.s].s[i])
+                        while (i+1<Syms[x.s].s.len and Syms[x.s].s[i+1]==x.s[i]):
+                            i += 1
+                        i += 1
+                    Syms[x.s] = newString(ret)
+                elif Syms[x.s].kind==Block:
+                    var i = 0
+                    var ret: ValueArray = @[]
+                    while i<Syms[x.s].a.len:
+                        ret.add(Syms[x.s].a[i])
+                        while (i+1<Syms[x.s].a.len and Syms[x.s].a[i+1]==Syms[x.s].a[i]):
+                            i += 1
+                        i += 1
+                    Syms[x.s] = newBlock(ret)
+            else:
+                if x.kind==String:
+                    var i = 0
+                    var ret = ""
+                    while i<x.s.len:
+                        ret &= $(x.s[i])
+                        while (i+1<x.s.len and x.s[i+1]==x.s[i]):
+                            i += 1
+                        i += 1
+                    stack.push(newString(ret))
+                elif x.kind==Block:
+                    var i = 0
+                    var ret: ValueArray = @[]
+                    while i<x.a.len:
+                        ret.add(x.a[i])
+                        while (i+1<x.a.len and x.a[i+1]==x.a[i]):
+                            i += 1
+                        i += 1
+                    stack.push(newBlock(ret))
 
     builtin "take",
         alias       = unaliased, 
