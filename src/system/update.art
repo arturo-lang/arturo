@@ -7,22 +7,51 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 print color.green "- Checking Arturo repository..."
-execute "git clone https://github.com/arturo-lang/arturo.git"
-print [
-	color.green "- Latest version found:" 
-	strip read "arturo/version/version" 
-	"( build" strip read "arturo/version/build" ")"
-]
+data: read.json "https://api.github.com/repos/arturo-lang/nightly/releases/latest"
+
+print [color.green "- Latest version found:" data\body]
 
 confirm: input "  ** Are you sure you want to install it? [y/n]: "
-
 if? "y"=strip lower confirm [
-	print color.green 	"- Installing... (Please wait)"
-	execute 			"cd arturo && ./install"
+	print color.green "- Downloading new version..."
+
+	asset: ø
+	case [sys\os]
+		when? [="macosx"]-> asset: 2
+		when? [="linux"]-> asset: 0
+		else [
+			panic ~{your operating system (|sys\os|) doesn't support self-updates}
+		]
+
+	download.as:"art.tar.gz"  (data\assets \ asset) \ "browser_download_url"
+	
+	print color.green "- Extracting..."
+	execute "tar xvfz art.tar.gz -C ~/.arturo/bin"
 
 	print color.green 	"- Cleaning up..."
-	execute 			"rm -rf arturo"
+	execute 			"rm -rf art.tar.gz"
 
-	print color.green 	"- Done. Enjoy! :)"
+	print color.green 	"- Done. :)"
 ]
-else -> print "- Terminating..."
+
+;print data\body
+
+; execute "git clone https://github.com/arturo-lang/arturo.git"
+; print [
+; 	color.green "- Latest version found:" 
+; 	strip read "arturo/version/version" 
+; 	"( build" strip read "arturo/version/build" ")"
+; ]
+
+; confirm: input "  ** Are you sure you want to install it? [y/n]: "
+
+; if? "y"=strip lower confirm [
+; 	print color.green 	"- Installing... (Please wait)"
+; 	execute 			"cd arturo && ./install"
+
+; 	print color.green 	"- Cleaning up..."
+; 	execute 			"rm -rf arturo"
+
+; 	print color.green 	"- Done. Enjoy! :)"
+; ]
+; else -> print "- Terminating..."
