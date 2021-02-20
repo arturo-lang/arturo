@@ -5,4 +5,4 @@ meaningOfLife: function [][
 ]
 
 if standalone? ->
-    print ~"Main: The meaning of life is |meaningOfLife|"
+    print ~"Library: The meaning of life is |meaningOfLife|"
