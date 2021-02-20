@@ -1,0 +1,23 @@
+quickselect: function [a k][
+    arr: new a
+    while ø [
+        indx: random 0 (size arr)-1
+        pivot: arr \ indx
+        remove 'arr .index: indx ø
+        left: select arr 'item -> item<pivot
+        right: select arr 'item -> item>pivot
+
+        case [k]
+            when? [= size left]-> return pivot
+            when? [< size left]-> arr: new left
+            else [
+                k: (k - size left) - 1
+                arr: new right
+            ]
+    ]
+]
+
+v: [9 8 7 6 5 0 1 2 3 4]
+
+print map 0..(size v)-1 'i ->
+    quickselect v i
