@@ -37,7 +37,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get the absolute value for given integer",
         args        = {
-            "value" : {Integer}
+            "value" : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Integer},
@@ -46,10 +46,13 @@ proc defineSymbols*() =
             print abs 6-7     ; 1
         """:
             ##########################################################
-            if x.iKind==NormalInteger: 
-                stack.push(newInteger(abs(x.i)))
+            if x.kind==Integer:
+                if x.iKind==NormalInteger: 
+                    stack.push(newInteger(abs(x.i)))
+                else:
+                    stack.push(newInteger(abs(x.bi)))
             else:
-                stack.push(newInteger(abs(x.bi)))
+                stack.push(newFloating(abs(x.f)))
 
     builtin "acos",
         alias       = unaliased, 
