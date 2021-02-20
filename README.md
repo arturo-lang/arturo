@@ -32,7 +32,7 @@
 The Language 
 ------------------------------
 
-Arturo is a modern programming language, vaguely inspired by various other ones - including but not limited to Logo, Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl, and Lisp.
+Arturo is an independently-developed, modern programming language, vaguely related to various other ones - including but not limited to Logo, Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl, and Lisp.
 
 The language has been designed following some very simple and straightforward principles:
 
@@ -41,12 +41,13 @@ The language has been designed following some very simple and straightforward pr
 - No reserved words or keywords - look for them as hard as you can; there are absolutely none
 
 ```red
-print "Hello world!"
+factorial: function [n][
+	if? n > 0 -> n * factorial n-1
+	else 	  -> 1
+] 
 
-loop 1..10 'x [
-    if? even? x -> print [x "is even"]
-    else        -> print [x "is odd"]
-]
+loop 1..19 [x]->
+	print ["Factorial of" x "=" factorial x]
 ```
 
 Simple, isn't it?
@@ -205,7 +206,7 @@ To get an initial idea of the project, here's a brief guide to where is what:
 
 The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
 
-The main goals are: performance, energy-efficiency, and portability. (With that exact order)
+The main goals are: expressiveness, brevity, performance and portability. (With that exact order)
 
 #### General schema
 
