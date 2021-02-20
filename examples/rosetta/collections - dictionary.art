@@ -1,0 +1,13 @@
+; initialize dictionary
+dict: #[
+	name: "john"
+	surname: "doe"
+	age: 34
+	preferredFood: ["fruit" "pizza"]
+]
+ 
+; add an element to the dictionary
+dict\country: "Spain"
+ 
+; print it
+print dict
