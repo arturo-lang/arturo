@@ -1,4 +1,4 @@
-factorial: $[n][
+factorial: function [n][
 	if? n > 0 -> n * factorial n-1
 	else 	  -> 1
 ] 
