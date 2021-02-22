@@ -33,6 +33,7 @@
    * [slice](#slice)
    * [sort](#sort)
    * [split](#split)
+   * [squeeze](#squeeze)
    * [take](#take)
    * [unique](#unique)
    * [values](#values)
@@ -1000,6 +1001,25 @@ arr: 1..9
 split.at:3 'arr
 ; => [ [1 2 3 4] [5 6 7 8 9] ]
 ```
+
+## squeeze
+
+#### Description
+
+Reduce adjacent elements in given collection
+
+#### Usage
+
+<pre>
+<b>squeeze</b> <ins>collection</ins> <i>:string</i> <i>:literal</i> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:string*
+- *:block*
+- *:nothing*
+
 
 ## take
 

@@ -58,7 +58,7 @@ Get the absolute value for given integer
 #### Usage
 
 <pre>
-<b>abs</b> <ins>value</ins> <i>:integer</i>
+<b>abs</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
 </pre>
 
 #### Returns
