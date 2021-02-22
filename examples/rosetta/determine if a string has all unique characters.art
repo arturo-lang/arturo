@@ -1,0 +1,33 @@
+strings: [
+    "", ".", "abcABC", "XYZ ZYX",
+    "1234567890ABCDEFGHIJKLMN0PQRSTUVWXYZ",
+    "01234567890ABCDEFGHIJKLMN0PQRSTUVWXYZ0X",
+    "hétérogénéité",
+    "🎆🎃🎇🎈", "😍😀🙌💃😍🙌", "🐠🐟🐡🦈🐬🐳🐋🐡"
+]
+
+loop strings 'str [
+    chars: split str
+    prints [as.code str ~"(size |size str|):"]
+    
+    if? chars = unique chars ->
+        print "has no duplicates."
+    else [
+        seen: #[]
+        done: false
+
+        i: 0
+        while [and? i<size chars
+                    not? done][
+            ch: chars \ i
+            if? not? key? seen ch [
+                set seen ch i
+            ]
+            else [
+                print ~"has duplicate char `|ch|` on |get seen ch| and |i|"
+                done: true
+            ]
+            i: i+1
+        ]
+    ]
+]
