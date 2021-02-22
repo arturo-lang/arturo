@@ -1,0 +1,1 @@
+Terminal handle unicode and U+25B3 is: △
