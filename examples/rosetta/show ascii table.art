@@ -1,0 +1,10 @@
+loop 32..127 'num [
+    k: ø
+    case [num]
+        when? [=32]  -> k: "␠"
+        when? [=127] -> k: "␡"
+        else         -> k: to :string to :char num
+
+    prints pad ~"|num|: |k|" 10
+    if 1 = num%6 -> print ""
+]
