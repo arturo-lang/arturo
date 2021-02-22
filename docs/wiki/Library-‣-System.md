@@ -4,6 +4,7 @@
 
 <!--ts-->
    * [ensure](#ensure)
+   * [env](#env)
    * [execute](#execute)
    * [exit](#exit)
    * [list](#list)
@@ -39,6 +40,23 @@ ensure [num > 0]
 
 print "good, the number is positive indeed. let's continue..."
 ```
+
+## env
+
+#### Description
+
+Get environment variables
+
+#### Usage
+
+<pre>
+<b>env</b> 
+</pre>
+
+#### Returns
+
+- *:dictionary*
+
 
 ## execute
 
