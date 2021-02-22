@@ -55,6 +55,25 @@ proc defineSymbols*() =
 
                 quit(1)  
 
+    builtin "env",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get environment variables",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        # TODO(System\env) add example for documentation 
+        #  labels: documentation,easy,library
+        example     = """
+        """:
+            ##########################################################
+            var res: ValueDict = initOrderedTable[string,Value]()
+
+            for k,v in envPairs():
+                res[k] = newString(v)
+
+            stack.push(newDictionary(res)) 
+
     builtin "execute",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
