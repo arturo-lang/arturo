@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import algorithm, rdstdin
+import algorithm, rdstdin, terminal
 
 when not defined(windows):
     import linenoise
@@ -48,6 +48,54 @@ proc defineSymbols*() =
                     clearScreen()
                 else:
                     discard
+    
+    builtin "cursor",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "turn cursor visibility on/off",
+        args        = {
+            "visible"   : {Boolean}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            cursor false    ; (hides the cursor)
+            cursor true     ; (shows the cursor)
+        """:
+            ##########################################################
+            if x.b:
+                stdout.showCursor()
+            else:
+                stdout.hideCursor()
+
+    builtin "goto",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "move cursor to given coordinates",
+        args        = {
+            "x"     : {Null,Integer},
+            "y"     : {Null,Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            goto 10 15      ; (move cursor to column 10, line 15)
+            goto 10 ø       ; (move cursor to column 10, same line)
+        """:
+            ##########################################################
+            if x.kind==Null:
+                if y.kind==Null:
+                    discard
+                else:
+                    when defined(windows):
+                        stdout.setCursorYPos(y.i)
+                    else:
+                        discard
+            else:
+                if y.kind==Null:
+                    stdout.setCursorXPos(x.i)
+                else:
+                    stdout.setCursorPos(x.i, y.i)
 
     builtin "input",
         alias       = unaliased, 
@@ -134,6 +182,26 @@ proc defineSymbols*() =
             else:
                 stdout.write($(x))
                 stdout.flushFile()
+
+    builtin "terminal",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get info about terminal",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        # TODO(Io\terminal) add example for documentation 
+        #  labels: documentation,easy,library
+        example     = """
+        """:
+            ##########################################################
+            let size = terminalSize()
+            var ret = {
+                "width": newInteger(size[0]),
+                "height": newInteger(size[1])
+            }.toOrderedTable()
+
+            stack.push(newDictionary(ret))
 
 #=======================================
 # Add Library
