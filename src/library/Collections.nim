@@ -995,6 +995,9 @@ proc defineSymbols*() =
                         else:
                             Syms[x.s].a.sort(order = sortOrdering)
 
+    # TODO(Collections\split) Add better support for unicode strings
+    #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
+    #  labels: library,bug
     builtin "split",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -1049,7 +1052,7 @@ proc defineSymbols*() =
 
                         Syms[x.s] = newStringBlock(ret)
                     else:
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.map(proc (x:char):string = $(x)))
+                        Syms[x.s] = newStringBlock(toSeq(runes(x.s)).map((x)=>$(x)))
                 else:
                     if (let aAt = popAttr("at"); aAt != VNULL):
                         Syms[x.s] = newBlock(@[newBlock(Syms[x.s].a[0..aAt.i]), newBlock(Syms[x.s].a[aAt.i..^1])])
@@ -1087,7 +1090,7 @@ proc defineSymbols*() =
 
                     stack.push(newStringBlock(ret))
                 else:
-                    stack.push(newStringBlock(x.s.map(proc (x:char):string = $(x))))
+                    stack.push(newStringBlock(toSeq(runes(x.s)).map((x)=>$(x))))
             else:
                 if (let aAt = popAttr("at"); aAt != VNULL):
                     stack.push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(x.a[aAt.i..^1])]))
