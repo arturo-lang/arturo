@@ -1,0 +1,12 @@
+dotProduct: function [a,b][
+    [ensure equal? size a size b]
+
+    result: 0
+    loop 0..(size a)-1 'i [
+        result: result + (a \ i) * (b \ i)
+    ]
+    return result
+]
+
+print dotProduct @[1, 3, neg 5] @[4, neg 2, neg 1]
+print dotProduct [1 2 3] [4 5 6]
