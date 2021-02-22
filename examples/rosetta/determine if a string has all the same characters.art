@@ -5,7 +5,7 @@ strings: [
 
 allSameChars?: function [str][
     if empty? str -> return ø
-    current: get str 0
+    current: first str
     loop.with:'i str 'ch [
         if ch <> current -> return i
     ]
@@ -14,7 +14,7 @@ allSameChars?: function [str][
 
 loop strings 's [
     prints [as.code s ~"(size |size s|):"]
-    asc: allSameChars? s
-    if? null? asc -> print "all the same."
-    else -> print ~"first different char `|get s asc|` at position |asc|."
+    firstNotSame: allSameChars? s
+    if? null? firstNotSame -> print "all the same."
+    else -> print ~"first different char `|get s firstNotSame|` at position |firstNotSame|."
 ]
