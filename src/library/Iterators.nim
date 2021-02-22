@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sugar
+import algorithm, sequtils, sugar, unicode
 
 import vm/[common, eval, exec, globals, stack, value]
 
@@ -241,7 +241,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
-            "collection"    : {Integer,Block,Inline,Dictionary},
+            "collection"    : {Integer,String,Block,Inline,Dictionary},
             "params"        : {Literal,Block},
             "action"        : {Block}
         },
@@ -323,6 +323,28 @@ proc defineSymbols*() =
                         checkForBreak()
                     if not forever:
                         keepGoing = false
+            elif x.kind==String:
+                var arr: seq[Value] = toSeq(runes(x.s)).map((x)=> newChar(x))
+
+                var keepGoing = true
+                while keepGoing:
+                    var indx = 0
+                    var run = 0
+                    while indx+args.len<=arr.len:
+                        for item in arr[indx..indx+args.len-1].reversed:
+                            stack.push(item)
+
+                        if withIndex:
+                            stack.push(newInteger(run))
+
+                        discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+
+                        checkForBreak()
+                        run += 1
+                        indx += args.len
+
+                        if not forever:
+                            keepGoing = false
             else:
                 var arr: seq[Value]
                 if x.kind==Integer:
