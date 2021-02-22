@@ -1,0 +1,24 @@
+parseFasta: function [data][
+    result: #[]
+    current: ø
+    loop split.lines data 'line [
+        if? `>` = first line [
+            current: slice line 1 (size line)-1
+            set result current ""
+        ]
+        else ->
+            set result current (get result current)++line
+    ]
+    return result
+]
+
+text: {
+    >Rosetta_Example_1
+    THERECANBENOSPACE
+    >Rosetta_Example_2
+    THERECANBESEVERAL
+    LINESBUTTHEYALLMUST
+    BECONCATENATED    
+}
+
+inspect.muted parseFasta text
