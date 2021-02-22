@@ -189,7 +189,7 @@ proc defineSymbols*() =
         description = "get info about terminal",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Nothing},
+        returns     = {Dictionary},
         # TODO(Io\terminal) add example for documentation 
         #  labels: documentation,easy,library
         example     = """
