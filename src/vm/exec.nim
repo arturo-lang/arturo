@@ -91,7 +91,6 @@ proc execBlock*(
 
             if imports!=VNULL:
                 savedSyms = Syms
-                dump(imports)
                 for k,v in pairs(imports.d):
                     Syms[k] = v
 
