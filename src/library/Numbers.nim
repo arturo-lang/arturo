@@ -766,7 +766,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Integer,Floating}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "integer"   : ({Boolean},"get the integer square root")
+        },
         returns     = {Floating},
         example     = """
             print sqrt 4            ; 2.0
@@ -774,7 +776,13 @@ proc defineSymbols*() =
             print sqrt 1.45         ; 1.20415945787923
         """:
             ##########################################################
-            stack.push(newFloating(sqrt(asFloat(x))))
+            if (popAttr("integer") != VNULL):
+                if x.iKind == NormalInteger:
+                    stack.push(newInteger(isqrt(x.i)))
+                else:
+                    stack.push(newInteger(isqrt(x.bi)))
+            else:
+                stack.push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = unaliased, 
