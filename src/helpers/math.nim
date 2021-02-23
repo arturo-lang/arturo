@@ -170,3 +170,23 @@ proc factors*(n: Int): seq[Int] =
     res.add(n)
 
     result = res
+
+proc isqrt*[T: SomeSignedInt | Int](x: T): T =
+    when T is Int:
+        result = newInt()
+        var q = newInt(1)
+    else:
+        result = 0
+        var q = T(1)
+ 
+    while q <= x:
+        q = q shl 2
+ 
+    var z = x
+    while q > 1:
+        q = q shr 2
+        let t = z - result - q
+        result = result shr 1
+        if t >= 0:
+            z = t
+            result += q
