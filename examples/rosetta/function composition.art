@@ -1,0 +1,8 @@
+compose: function [f,g] ->
+    return function [x].import:[f,g][
+        call f @[call g @[x]]
+    ]
+
+sincos: compose 'sin 'cos
+
+print call 'sincos [0.5]
