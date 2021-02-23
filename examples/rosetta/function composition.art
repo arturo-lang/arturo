@@ -3,6 +3,6 @@ compose: function [f,g] ->
         call f @[call g @[x]]
     ]
 
-sincos: compose 'sin 'cos
+splitupper: compose 'split 'upper
 
-print call 'sincos [0.5]
+print call 'splitupper ["done"]
