@@ -1,0 +1,8 @@
+commatize: function [x][
+    reverse join.with:"," map split.every: 3 split reverse to :string x => join
+]
+
+print map 0..65 => [sqrt.integer &]
+ 
+loop range 1 .step: 2 72 'n ->
+    print [n "\t" commatize sqrt.integer 7^n]
