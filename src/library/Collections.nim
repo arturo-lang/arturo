@@ -289,7 +289,7 @@ proc defineSymbols*() =
                     Syms[x.s].d[k] = v
             else:
                 var res = copyValue(x)
-                for k,v in y.d:
+                for k,v in pairs(y.d):
                     res.d[k] = v
 
                 stack.push(res)
