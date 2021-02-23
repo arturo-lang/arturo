@@ -52,6 +52,7 @@ type
 proc init*(w: Webview): cint {.importc: "webview_init", header: "webview.h".}
 proc loop*(w: Webview; blocking: cint): cint {.importc: "webview_loop", header: "webview.h".}
 proc eval*(w: Webview; js: cstring): cint {.importc: "webview_eval", header: "webview.h".}
+proc getEval*(w: Webview; js: cstring): cstring {.importc: "webview_eval_get", header: "webview.h".}
 proc injectCss*(w: Webview; css: cstring): cint {.importc: "webview_inject_css", header: "webview.h".}
 proc setTitle*(w: Webview; title: cstring) {.importc: "webview_set_title", header: "webview.h".}
 proc setColor*(w: Webview; r,g,b,a: uint8) {.importc: "webview_set_color", header: "webview.h".}

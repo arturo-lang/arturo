@@ -96,6 +96,25 @@ proc defineSymbols*() =
                                     debug=true,
                                     cb=nil)
 
+                builtin "_webEval",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Get whatever",
+                    args        = {
+                        "valueA": {String}
+                    },
+                    attrs       = NoAttrs,
+                    returns     = {Integer,Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        # echo "_webEval called with: " & $(x)
+                        let query = "JSON.stringify(eval(\"" & x.s & "\"))"
+                        # echo "exec query: "  & query
+                        var ret: Value = newString($(wv.getEval(query)))
+                        stack.push(ret)
+
+
                 for key,binding in y.d:
                     let meth = key
 
