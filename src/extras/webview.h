@@ -446,6 +446,22 @@ WEBVIEW_API int webview_eval(struct webview *w, const char *js) {
   return 0;
 }
 
+// TODO(webview) Fix webview_eval_get for windows
+//  The current implementation just just a copy-paste of `webview_eval`, without returning anything
+//  labels: 3rdparty,library,bug,critical
+WEBVIEW_API const char* webview_eval_get(struct webview *w, const char *js) {
+  while (w->priv.ready == 0) {
+    g_main_context_iteration(NULL, TRUE);
+  }
+  w->priv.js_busy = 1;
+  webkit_web_view_run_javascript(WEBKIT_WEB_VIEW(w->priv.webview), js, NULL,
+                                 webview_eval_finished, w);
+  while (w->priv.js_busy) {
+    g_main_context_iteration(NULL, TRUE);
+  }
+  return "";
+}
+
 static gboolean webview_dispatch_wrapper(gpointer userdata) {
   struct webview *w = (struct webview *)userdata;
   for (;;) {
@@ -1357,6 +1373,73 @@ WEBVIEW_API int webview_eval(struct webview *w, const char *js) {
   htmlDoc2->lpVtbl->Release(htmlDoc2);
   docDispatch->lpVtbl->Release(docDispatch);
   return 0;
+}
+// TODO(webview) Fix webview_eval_get for windows
+//  The current implementation just just a copy-paste of `webview_eval`, without returning anything
+//  labels: 3rdparty,library,bug,critical
+WEBVIEW_API const char* webview_eval_get(struct webview *w, const char *js) {
+  IWebBrowser2 *webBrowser2;
+  IHTMLDocument2 *htmlDoc2;
+  IDispatch *docDispatch;
+  IDispatch *scriptDispatch;
+  if ((*w->priv.browser)
+          ->lpVtbl->QueryInterface((*w->priv.browser),
+                                   iid_unref(&IID_IWebBrowser2),
+                                   (void **)&webBrowser2) != S_OK) {
+    return -1;
+  }
+
+  if (webBrowser2->lpVtbl->get_Document(webBrowser2, &docDispatch) != S_OK) {
+    return -1;
+  }
+  if (docDispatch->lpVtbl->QueryInterface(docDispatch,
+                                          iid_unref(&IID_IHTMLDocument2),
+                                          (void **)&htmlDoc2) != S_OK) {
+    return -1;
+  }
+  if (htmlDoc2->lpVtbl->get_Script(htmlDoc2, &scriptDispatch) != S_OK) {
+    return -1;
+  }
+  DISPID dispid;
+  BSTR evalStr = SysAllocString(L"eval");
+  if (scriptDispatch->lpVtbl->GetIDsOfNames(
+          scriptDispatch, iid_unref(&IID_NULL), &evalStr, 1,
+          LOCALE_SYSTEM_DEFAULT, &dispid) != S_OK) {
+    SysFreeString(evalStr);
+    return -1;
+  }
+  SysFreeString(evalStr);
+
+  DISPPARAMS params;
+  VARIANT arg;
+  VARIANT result;
+  EXCEPINFO excepInfo;
+  UINT nArgErr = (UINT)-1;
+  params.cArgs = 1;
+  params.cNamedArgs = 0;
+  params.rgvarg = &arg;
+  arg.vt = VT_BSTR;
+  static const char *prologue = "(function(){";
+  static const char *epilogue = ";})();";
+  int n = strlen(prologue) + strlen(epilogue) + strlen(js) + 1;
+  char *eval = (char *)malloc(n);
+  snprintf(eval, n, "%s%s%s", prologue, js, epilogue);
+  wchar_t *buf = webview_to_utf16(eval);
+  if (buf == NULL) {
+    return -1;
+  }
+  arg.bstrVal = SysAllocString(buf);
+  if (scriptDispatch->lpVtbl->Invoke(
+          scriptDispatch, dispid, iid_unref(&IID_NULL), 0, DISPATCH_METHOD,
+          &params, &result, &excepInfo, &nArgErr) != S_OK) {
+    return -1;
+  }
+  SysFreeString(arg.bstrVal);
+  free(eval);
+  scriptDispatch->lpVtbl->Release(scriptDispatch);
+  htmlDoc2->lpVtbl->Release(htmlDoc2);
+  docDispatch->lpVtbl->Release(docDispatch);
+  return "";
 }
 
 WEBVIEW_API void webview_dispatch(struct webview *w, webview_dispatch_fn fn,
