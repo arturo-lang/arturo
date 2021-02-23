@@ -4,8 +4,8 @@ max64bit: 9223372036854775806
 print type max32bit
 print type max64bit
 
-print max32bit + 2
-print max64bit + 2
+print max32bit + 1
+print max64bit + 1
 
 print max32bit * 2
 print max64bit * 2
