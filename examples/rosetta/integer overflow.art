@@ -1,11 +1,11 @@
-max32bit: 2147483646
-max64bit: 9223372036854775806
+big32bit: 2147483646
+big64bit: 9223372036854775808
 
-print type max32bit
-print type max64bit
+print type big32bit
+print type big64bit
 
-print max32bit + 1
-print max64bit + 1
+print big32bit + 1
+print big64bit + 1
 
-print max32bit * 2
-print max64bit * 2
+print big32bit * 2
+print big64bit * 2
