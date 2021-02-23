@@ -1,0 +1,4 @@
+details: #[name: "Rocket Skates" price: 12.75 colour: 'yellow]
+newDetails: extend details #[price: 15.25 colour: 'red year: 1974]
+
+print newDetails
