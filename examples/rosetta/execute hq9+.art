@@ -1,0 +1,16 @@
+hq9: function [source][
+    acc: 0
+    loop split source 'ch [
+        case [(lower ch)=]
+            when? ["h"]-> print "Hello, world!"
+            when? ["q"]-> print source
+            when? ["9"]-> print "99 bottles here ..."
+            when? ["+"]-> acc: acc+1
+            else       []
+
+    ]
+    return acc
+]
+
+acc: hq9 {+qhp;+9Q}
+print ["accumulator:" acc]
