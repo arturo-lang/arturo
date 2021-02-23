@@ -1,0 +1,2 @@
+1 9 10 18 19 27 28 36 37 45 46 54 55 63 64 72 73 81 82 90 91 99 
+Trying 22 numbers instead of 99 numbers saves 77.77777777777777 %
