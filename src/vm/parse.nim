@@ -451,7 +451,11 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of Colon:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    addChild(topBlock,newSymbol(colon))
+                    if p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        addChild(topBlock,newSymbol(doublecolon))
+                    else:
+                        addChild(topBlock,newSymbol(colon))
                 else:
                     addChild(topBlock, newType(p.value))
             of PermittedNumbers_Start:
