@@ -487,6 +487,13 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 parseLiteral(p)
                 if p.value == Empty: 
                     p.status = emptyLiteralError
+                    for z in (p.bufpos-20)..(p.bufpos+20):
+                        if z==p.bufpos:
+                            stdout.write("***")
+                        stdout.write(p.buf[z])
+                        if z==p.bufpos:
+                            stdout.write("***")
+                    stdout.flushFile()
                     return nil
                 else:
                     addChild(topBlock, newLiteral(p.value))
