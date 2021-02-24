@@ -76,6 +76,7 @@ type
         ellipsis        # ..
         dotslash        # ./
         colon           # :
+        doublecolon     # ::
 
         slashedzero     # ø
 
@@ -1185,6 +1186,7 @@ proc `$`*(v: Value): string {.inline.} =
                 of ellipsis         : return ".."
                 of dotslash         : return "./"
                 of colon            : return ":"
+                of doublecolon      : return "::"
 
                 of slashedzero      : return "ø"
 
@@ -1427,6 +1429,7 @@ proc codify*(v: Value): string {.inline.} =
                 of ellipsis         : result = ".."
                 of dotslash         : result = "./"
                 of colon            : result = ":"
+                of doublecolon      : result = "::"
 
                 of slashedzero      : result = "ø"
 

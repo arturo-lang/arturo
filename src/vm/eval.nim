@@ -347,6 +347,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Symbol: 
                 case node.m:
+                    of doublecolon      :
+                        inc(i)
+                        var subblock: seq[Value] = @[]
+                        while i < n.a.len:
+                            let subnode = n.a[i]
+                            subblock.add(subnode)
+                            inc(i)
+                        addTerminalValue(false):
+                            addConst(consts, newBlock(subblock), opPush)
+                            
                     of arrowright       : 
                         var subargStack: seq[int] = @[]
                         var ended = false
