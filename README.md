@@ -17,6 +17,7 @@
       * [Docker](#docker)
       * [Online](#online)
    * [Editors & IDEs](#editors--ides)
+      * [Fonts](#fonts)
    * [Showcase](#showcase)
    * [Contributing](#contributing)
       * [Roadmap](#roadmap)
@@ -137,6 +138,10 @@ https://github.com/arturo-lang/art-sublimetext-package
 
 - **Vim / Neovim**: (Thanks @xigoi :-))   
 https://github.com/xigoi/vim-arturo
+
+### Fonts
+
+The font you use is a matter of personal taste. However, if you still want to know the "official" preference and make Arturo's symbols *shine*, then I'd strongly recommend you use [Fira Code](https://github.com/tonsky/FiraCode) with ligatures turned on. ;-)
 
 Showcase
 ------------------------------
