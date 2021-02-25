@@ -47,15 +47,17 @@ template loadByIndex(idx: int):untyped =
     if item.isNil: panic "symbol not found: " & symIndx
     stack.push(Syms[symIndx])
 
-template callByIndex(idx: int):untyped =
-    let symIndx = cnst[idx].s
-
+template callByName*(symIndx: string):untyped =
     let fun = Syms.getOrDefault(symIndx)
     if fun.isNil: panic "symbol not found: " & symIndx
     if fun.fnKind==UserFunction:
-        discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+        discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports, exportable=fun.exportable)
     else:
         fun.action()
+
+template callByIndex(idx: int):untyped =
+    let symIndx = cnst[idx].s
+    callByName(symIndx)
 
 template fetchAttributeByIndex(idx: int):untyped =
     let attr = cnst[idx]
@@ -76,7 +78,8 @@ proc execBlock*(
     isFuncBlock     : bool = false, 
     #isBreakable     : bool = false,
     imports         : Value = nil,
-    exports         : Value = nil
+    exports         : Value = nil,
+    exportable      : bool = false
 ): ValueDict =
     var newSyms: ValueDict
     let savedArities = Arities
@@ -123,9 +126,12 @@ proc execBlock*(
 
                 Arities = savedArities
                 if not exports.isNil():
-                    for k in exports.a:
-                        if newSyms.hasKey(k.s):
-                            Syms[k.s] = newSyms[k.s]
+                    if exportable:
+                        Syms = newSyms
+                    else:
+                        for k in exports.a:
+                            if newSyms.hasKey(k.s):
+                                Syms[k.s] = newSyms[k.s]
                 else:
                     # for k, v in pairs(newSyms):
                     #     if v.kind==Function and Syms.hasKey(k):
