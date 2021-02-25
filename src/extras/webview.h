@@ -1848,7 +1848,7 @@ WEBVIEW_API id webview_eval_get(struct webview *w, const char *js) {
   NSString *nsJS = [NSString stringWithUTF8String:js];
   //NSString* got = [[w->priv.webview windowScriptObject] callWebScriptMethod:@"fetch" withArguments:@[nsJs]];
   NSString* got = [[w->priv.webview windowScriptObject] evaluateWebScript:nsJS];
-  NSLog(@"Obj-C Got : %@",got);
+  //NSLog(@"Obj-C Got : %@",got);
   return [got UTF8String];
 }
 

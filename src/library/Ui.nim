@@ -17,8 +17,8 @@
 #=======================================
 
 import os
-import extras/webview
 
+import helpers/json as JsonHelper
 import helpers/url as UrlHelper
 import helpers/webview as WebviewHelper
 
@@ -38,15 +38,16 @@ proc defineSymbols*() =
     builtin "webview",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "show webview window with given url or html and dictionary of callback functions",
+        description = "show webview window with given url or html",
         args        = {
-            "content"   : {String,Literal},
-            "callbacks" : {Dictionary}
+            "content"   : {String,Literal}
         },
         attrs       = {
             "title"     : ({String},"set window title"),
             "width"     : ({Integer},"set window width"),
-            "height"    : ({Integer},"set window height")
+            "height"    : ({Integer},"set window height"),
+            "fixed"     : ({Boolean},"window shouldn't be resizable"),
+            "debug"     : ({Boolean},"add inspector console")
         },
         returns     = {String,Nothing},
         example     = """
@@ -68,6 +69,8 @@ proc defineSymbols*() =
             var title = "Arturo"
             var width = 640
             var height = 480
+            var fixed = (popAttr("fixed")!= VNULL)
+            var withDebug = (popAttr("debug")!=VNULL)
 
             if (let aTitle = popAttr("title"); aTitle != VNULL):
                 title = aTitle.s
@@ -84,17 +87,20 @@ proc defineSymbols*() =
                 targetUrl = joinPath(TmpDir,"artview.html")
                 writeFile(targetUrl, x.s)
 
-            # discard webview(title.cstring, targetUrl.cstring, width.cint, height.cint, 1.cint)
-
             when not defined(MINI):
 
-                let wv = newWebview(title=title, 
-                                    url=targetUrl, 
-                                    width=width, 
-                                height=height, 
-                                resizable=true, 
-                                    debug=true,
-                                    cb=nil)
+                let wv = createWebview(
+                    title       = title, 
+                    url         = targetUrl, 
+                    width       = width, 
+                    height      = height, 
+                    resizable   = not fixed, 
+                    debug       = withDebug,
+                    handler     = proc (w: Webview, arg: cstring) =
+                        let got = valueFromJson($arg)
+                        stack.push(got.d["args"])
+                        callByName(got.d["method"].s)
+                )
 
                 builtin "_webEval",
                     alias       = unaliased, 
@@ -108,49 +114,13 @@ proc defineSymbols*() =
                     example     = """
                     """:
                         ##########################################################
-                        # echo "_webEval called with: " & $(x)
                         let query = "JSON.stringify(eval(\"" & x.s & "\"))"
-                        # echo "exec query: "  & query
+                        echo "exec query: "  & query
                         var ret: Value = newString($(wv.getEval(query)))
                         stack.push(ret)
 
-
-                for key,binding in y.d:
-                    let meth = key
-
-                    wv.bindMethod("webview", meth, proc (param: Value): string =
-                        # echo "calling method: " & meth
-                        # echo " - with argument: " & $(param)
-                        # echo " - for parameter: " & $(binding.params.a[0])
-
-                        var args: ValueArray = @[binding.params.a[0]]
-                        stack.push(param)
-                        discard execBlock(binding.main, execInParent=true, args=args)
-                        let got = stack.pop().s
-                        #echo " - got: " & $(got)
-
-                        discard wv.eval(got)
-                    )
-
-                # proc wvCallback (param: seq[string]): string =
-                #     echo "wvCallback :: " & param
-                #     echo "executing something..."
-                #     discard wv.eval("console.log('execd in JS');")
-                #     echo "returning value..."
-                #     return "returned value"
-
-                # wv.bindProc("webview","run",wvCallback)
-
                 wv.run()
                 wv.exit()
-
-                # # showWebview(title=title, 
-                # #               url=targetUrl, 
-                # #             width=width, 
-                # #            height=height, 
-                # #         resizable=true, 
-                # #             debug=false,
-                # #          bindings=y.d)
 
 #=======================================
 # Add Library
