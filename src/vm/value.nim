@@ -186,6 +186,7 @@ type
                         main*   : Value
                         imports*: Value
                         exports*: Value
+                        exportable*: bool
                     of BuiltinFunction:
                         fname*  : string
                         alias*  : SymbolKind
@@ -377,8 +378,8 @@ proc newBinary*(n: ByteArray = @[]): Value {.inline.} =
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL): Value {.inline.} =
-    Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports)
+proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool): Value {.inline.} =
+    Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable)
 
 proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
     Value(
@@ -453,7 +454,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Dictionary:  result = newDictionary(v.d)
 
-        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports)
+        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable)
 
         of Database:    
             if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)

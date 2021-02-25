@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import json, os, sequtils, sugar
+import os, sequtils, sugar
 import extras/miniz
 
 import helpers/csv as CsvHelper
@@ -105,7 +105,7 @@ proc defineSymbols*() =
                 if (popAttr("lines") != VNULL):
                     stack.push(newStringBlock(src.splitLines()))
                 elif (popAttr("json") != VNULL):
-                    stack.push(parseJsonNode(parseJson(src)))
+                    stack.push(valueFromJson(src))
                 elif (popAttr("csv") != VNULL):
                     stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
                 elif (popAttr("toml") != VNULL):
@@ -168,7 +168,7 @@ proc defineSymbols*() =
                     f.close()
                 else:
                     if (popAttr("json") != VNULL):
-                        let rez = json.pretty(generateJsonNode(y), indent=4)
+                        let rez = jsonFromValue(y)
                         if x.kind==String:
                             writeFile(x.s, rez)
                         else:

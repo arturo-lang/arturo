@@ -16,7 +16,7 @@ import tables, unicode
 import vm/value
 
 #=======================================
-# Methods
+# Helpers
 #=======================================
 
 proc generateJsonNode*(n: Value): JsonNode =
@@ -72,3 +72,13 @@ proc parseJsonNode*(n: JsonNode): Value =
                 ret[k] = parseJsonNode(v)
 
             result = newDictionary(ret)
+
+#=======================================
+# Methods
+#=======================================
+
+proc valueFromJson*(src: string): Value =
+    parseJsonNode(parseJson(src))
+
+proc jsonFromValue*(val: Value): string =
+    json.pretty(generateJsonNode(val), indent=4)

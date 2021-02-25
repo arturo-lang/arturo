@@ -273,8 +273,9 @@ proc defineSymbols*() =
             "body"      : {Block}
         },
         attrs       = {
-            "import": ({Block},"import/embed given list of symbols from current environment"),
-            "export": ({Block},"export given symbols to parent")
+            "import"    : ({Block},"import/embed given list of symbols from current environment"),
+            "export"    : ({Block},"export given symbols to parent"),
+            "exportable": ({Boolean},"export all symbols to parent")
         },
         returns     = {Function},
         example     = """
@@ -308,11 +309,13 @@ proc defineSymbols*() =
                     ret[item.s] = Syms[item.s]
                 imports = newDictionary(ret)
 
+            var exportable = (popAttr("exportable")!=VNULL)
+
             var exports = VNULL
             if (let aExport = popAttr("export"); aExport != VNULL):
                 exports = aExport
 
-            stack.push(newFunction(x,y,imports,exports))
+            stack.push(newFunction(x,y,imports,exports,exportable))
 
     builtin "to",
         alias       = unaliased, 
