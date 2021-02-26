@@ -434,7 +434,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Binary : discard
 
             of Dictionary,
-               Function: discard
+               Function: 
+                   addTerminalValue(false):
+                        addConst(consts, node, opPush)
 
             of Inline: 
                 addTerminalValue(false):
