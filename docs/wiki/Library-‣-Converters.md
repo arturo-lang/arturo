@@ -10,6 +10,7 @@
    * [from](#from)
    * [function](#function)
    * [to](#to)
+   * [with](#with)
 <!--te-->
 
 ---
@@ -226,6 +227,7 @@ Create function with given arguments and body
 |---|---|---|
 |import|<i>:block</i>|import/embed given list of symbols from current environment|
 |export|<i>:block</i>|export given symbols to parent|
+|exportable|<i>:boolean</i>|export all symbols to parent|
 
 #### Returns
 
@@ -296,3 +298,20 @@ to :string :word              ; "word"
 
 to :block "one two three"     ; [one two three]
 ```
+
+## with
+
+#### Description
+
+Create closure-style block by embedding given words
+
+#### Usage
+
+<pre>
+<b>with</b> <ins>embed</ins> <i>:literal</i> <i>:block</i>
+     <ins>body</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:block*
