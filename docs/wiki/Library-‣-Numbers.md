@@ -956,6 +956,11 @@ Get square root of given value
 <pre>
 <b>sqrt</b> <ins>value</ins> <i>:integer</i> <i>:floating</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|integer|<i>:boolean</i>|get the integer square root|
 
 #### Returns
 

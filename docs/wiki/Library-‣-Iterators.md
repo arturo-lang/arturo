@@ -130,7 +130,7 @@ Loop through collection, using given iterator and block
 #### Usage
 
 <pre>
-<b>loop</b> <ins>collection</ins> <i>:integer</i> <i>:dictionary</i> <i>:inline</i> <i>:block</i>
+<b>loop</b> <ins>collection</ins> <i>:integer</i> <i>:string</i> <i>:dictionary</i> <i>:inline</i> <i>:block</i>
      <ins>params</ins> <i>:literal</i> <i>:block</i>
      <ins>action</ins> <i>:block</i>
 </pre>

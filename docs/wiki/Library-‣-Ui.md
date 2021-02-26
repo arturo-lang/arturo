@@ -13,13 +13,12 @@
 
 #### Description
 
-Show webview window with given url or html and dictionary of callback functions
+Show webview window with given url or html source
 
 #### Usage
 
 <pre>
 <b>webview</b> <ins>content</ins> <i>:string</i> <i>:literal</i>
-        <ins>callbacks</ins> <i>:dictionary</i>
 </pre>
 #### Attributes
 
@@ -28,6 +27,8 @@ Show webview window with given url or html and dictionary of callback functions
 |title|<i>:string</i>|set window title|
 |width|<i>:integer</i>|set window width|
 |height|<i>:integer</i>|set window height|
+|fixed|<i>:boolean</i>|window shouldn't be resizable|
+|debug|<i>:boolean</i>|add inspector console|
 
 #### Returns
 
