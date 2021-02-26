@@ -194,7 +194,9 @@ proc defineSymbols*() =
         alias       = thickarrowleft, 
         rule        = PrefixPrecedence,
         description = "duplicate the top of the stack and convert non-returning call to a do-return call",
-        args        = NoArgs,
+        args        = {
+            "value" : {Any}
+        },
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
@@ -210,7 +212,8 @@ proc defineSymbols*() =
             print b         ; 3
         """:
             ##########################################################
-            stack.push(sTop())
+            stack.push(x)
+            stack.push(x)
 
     builtin "else",
         alias       = unaliased, 
@@ -255,9 +258,9 @@ proc defineSymbols*() =
     builtin "if",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "perform action, if given condition is true",
+        description = "perform action, if given condition is not false or null",
         args        = {
-            "condition" : {Boolean},
+            "condition" : {Any},
             "action"    : {Block}
         },
         attrs       = NoAttrs,
@@ -269,14 +272,16 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             ##########################################################
-            if x.b: discard execBlock(y)
+            let condition = not (x.kind==Null or (x.kind==Boolean and x.b==false))
+            if condition: 
+                discard execBlock(y)
 
     builtin "if?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "perform action, if given condition is true and return condition result",
+        description = "perform action, if given condition is not false or null and return condition result",
         args        = {
-            "condition" : {Boolean},
+            "condition" : {Any},
             "action"    : {Block}
         },
         attrs       = NoAttrs,
@@ -300,11 +305,12 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            if x.b: 
+            let condition = not (x.kind==Null or (x.kind==Boolean and x.b==false))
+            if condition: 
                 discard execBlock(y)
                 # if vmReturn:
                 #     return ReturnResult
-            stack.push(x)
+            stack.push(newBoolean(condition))
 
     # TODO(Core\let) Do we really need an alias for that?
     #  Currently, the alias is `:` - acting as an infix operator. But this could lead to confusion with existing `label:` or `path\label:`.
@@ -478,7 +484,7 @@ proc defineSymbols*() =
     builtin "until",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "execute action until the given condition is true",
+        description = "execute action until the given condition is not false or null",
         args        = {
             "action"    : {Block},
             "condition" : {Block}
@@ -510,7 +516,9 @@ proc defineSymbols*() =
             while true:
                 discard execBlock(VNULL, evaluated=preevaledX)
                 discard execBlock(VNULL, evaluated=preevaledY)
-                if stack.pop().b:
+                let popped = stack.pop()
+                let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
+                if condition:
                     break
 
     builtin "var",
@@ -577,7 +585,7 @@ proc defineSymbols*() =
     builtin "while",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "execute action while the given condition is true",
+        description = "execute action while the given condition is is not false or null",
         args        = {
             "condition" : {Block,Null},
             "action"    : {Block}
@@ -616,13 +624,15 @@ proc defineSymbols*() =
                 let preevaledY = doEval(y)
 
                 discard execBlock(VNULL, evaluated=preevaledX)
+                var popped = stack.pop()
 
-                while stack.pop().b:
+                while not (popped.kind==Null or (popped.kind==Boolean and popped.b==false)):
                     if execInParent:
                         discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
                     else:
                         discard execBlock(VNULL, evaluated=preevaledY)
                     discard execBlock(VNULL, evaluated=preevaledX)
+                    popped = stack.pop()
             else:
                 let preevaledY = doEval(y)
                 while true:
