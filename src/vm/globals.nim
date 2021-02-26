@@ -45,3 +45,13 @@ var
 
     # libraries 
     Libraries*  : seq[Library]
+
+#=======================================
+# Methods
+#=======================================
+
+proc setValue*(s: string, v: Value) {.inline.} =
+    Syms[s] = v
+
+proc getValue*(s: string): Value {.inline.} =
+    Syms.getOrDefault(s, default=VNOTHING)
