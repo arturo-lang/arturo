@@ -567,6 +567,32 @@ proc defineSymbols*() =
                        Bytecode,
                        Binary: discard
 
+    builtin "with",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "create closure-style block by embedding given words",
+        args        = {
+            "embed" : {Literal, Block},
+            "body"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        # TODO(Converters\with) add example for documentation 
+        #  labels: documentation,easy,library
+        example     = """
+        """:
+            ##########################################################
+            var blk: ValueArray = y.a
+            if x.kind == Literal:
+                blk.insert(Syms[x.s])
+                blk.insert(newLabel(x.s))
+            else:
+                for item in x.a:
+                    blk.insert(Syms[item.s])
+                    blk.insert(newLabel(item.s))
+
+            stack.push(newBlock(blk))
+
 #=======================================
 # Add Library
 #=======================================
