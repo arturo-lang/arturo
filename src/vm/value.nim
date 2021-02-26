@@ -242,6 +242,8 @@ let VFALSE* = Value(kind: Boolean, b: false)
 
 let VNULL* = Value(kind: Null)
 
+let VNOTHING* = Value(kind: Nothing)
+
 var 
     TypeLookup = initOrderedTable[string,Value]()
 
@@ -254,6 +256,9 @@ proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
 
 proc newNull*(): Value {.inline.} =
     VNULL
+
+proc newNothing*(): Value {.inline.} =
+    VNOTHING
 
 proc newBoolean*(b: bool): Value {.inline.} =
     if b: VTRUE
