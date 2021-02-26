@@ -1,3 +1,7 @@
+; TODO(Tests\scopes) verify & update unit tests
+;  tests need to be verified + add more for `with` and `.import` (if it stays in)
+;  labels: easy, unit-test
+
 ; NORMAL FUNCTION CALL
 ; from the inside we can access the outer variable
 ; but not modify it
