@@ -38,7 +38,7 @@ proc defineSymbols*() =
     builtin "webview",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "show webview window with given url or html",
+        description = "show webview window with given url or html source",
         args        = {
             "content"   : {String,Literal}
         },
@@ -102,7 +102,7 @@ proc defineSymbols*() =
                         callByName(got.d["method"].s)
                 )
 
-                builtin "_webEval",
+                builtin "eval",
                     alias       = unaliased, 
                     rule        = PrefixPrecedence,
                     description = "Get whatever",
@@ -115,7 +115,6 @@ proc defineSymbols*() =
                     """:
                         ##########################################################
                         let query = "JSON.stringify(eval(\"" & x.s & "\"))"
-                        echo "exec query: "  & query
                         var ret: Value = newString($(wv.getEval(query)))
                         stack.push(ret)
 
