@@ -45,7 +45,7 @@ proc defineSymbols*() =
             add 'a 1           ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) += y
+            if x.kind==Literal  : getValue(x.s) += y
             else                : stack.push(x+y)
 
     builtin "dec",
@@ -64,7 +64,7 @@ proc defineSymbols*() =
             dec 'a             ; a: 3
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) -= I1
+            if x.kind==Literal  : getValue(x.s) -= I1
             else                : stack.push(x-I1)
         
     builtin "div",
@@ -85,7 +85,7 @@ proc defineSymbols*() =
             div 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) /= y
+            if x.kind==Literal  : getValue(x.s) /= y
             else                : stack.push(x/y)
 
     builtin "fdiv",
@@ -105,7 +105,7 @@ proc defineSymbols*() =
             fdiv 'a 3          ; a: 2.0
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) //= y
+            if x.kind==Literal  : getValue(x.s) //= y
             else                : stack.push(x//y)
 
     builtin "inc",
@@ -124,7 +124,7 @@ proc defineSymbols*() =
             inc 'a             ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) += I1
+            if x.kind==Literal  : getValue(x.s) += I1
             else                : stack.push(x+I1)
 
     builtin "mod",
@@ -145,7 +145,7 @@ proc defineSymbols*() =
             mod 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) %= y
+            if x.kind==Literal  : getValue(x.s) %= y
             else                : stack.push(x%y)
 
     builtin "mul",
@@ -166,7 +166,7 @@ proc defineSymbols*() =
             mul 'a 2           ; a: 10
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) *= y
+            if x.kind==Literal  : getValue(x.s) *= y
             else                : stack.push(x*y)
 
     # TODO(Arithmetic\neg) Add alias `_`?
@@ -188,7 +188,7 @@ proc defineSymbols*() =
             neg 'a             ; a: -5
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) *= I1M
+            if x.kind==Literal  : getValue(x.s) *= I1M
             else                : stack.push(x * I1M)
 
     builtin "pow",
@@ -209,7 +209,7 @@ proc defineSymbols*() =
             pow 'a 2           ; a: 25
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) ^= y
+            if x.kind==Literal  : getValue(x.s) ^= y
             else                : stack.push(x^y)
 
     builtin "sub",
@@ -230,7 +230,7 @@ proc defineSymbols*() =
             sub 'a 2           ; a: 5
         """:
             ##########################################################
-            if x.kind==Literal  : inPlace(x.s) -= y
+            if x.kind==Literal  : getValue(x.s) -= y
             else                : stack.push(x-y)
 
 #=======================================
