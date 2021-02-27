@@ -40,8 +40,12 @@ var
 template panic*(context: string, error: string): untyped =
     raise VMError(name: context, msg:error)
 
-proc showVMErrors*(e: VMError) =
-    let header = e.name
+proc showVMErrors*(e: ref Exception) =
+    var header = e.name
+
+    if $(header) notin [RuntimeError, ParseError]:
+        header = RuntimeError
+
     let marker = ">>"
     let separator = "|"
     let indent = repeat(" ", header.len + marker.len + 2)
@@ -50,7 +54,7 @@ proc showVMErrors*(e: VMError) =
 
     let errMsg = message.split(";").map((x)=>strutils.strip(x)).join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
-    emptyStack()
+    # emptyStack()
 
 # proc showVMErrors*() =
 #     if vmPanic:
