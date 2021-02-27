@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import re, sequtils, sets
+import sequtils, sets
 import strformat, strutils, sugar
 import nre except toSeq
 
