@@ -59,7 +59,9 @@ while [true] .import [
 		]
 		inp: inp ++ input ".. " ++ indent
 	]
-	do.import inp
+
+	try.verbose.import to :block inp
+
 	StackSize: size stack
 	
 	if StackSize > 0 		-> Got: pop 1
