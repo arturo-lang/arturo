@@ -83,6 +83,7 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
         let parsed = doParse(move code, isFile)
         let evaled = parsed.doEval()
         discard doExec(evaled)
-    except VMError as e:
+    except:
+        let e = getCurrentException()
         showVMErrors(e)
     
