@@ -77,7 +77,8 @@ proc execBlock*(
     #isBreakable     : bool = false,
     imports         : Value = nil,
     exports         : Value = nil,
-    exportable      : bool = false
+    exportable      : bool = false,
+    inTryBlock      : bool = false
 ): ValueDict =
     var newSyms: ValueDict
     let savedArities = Arities
@@ -142,13 +143,14 @@ proc execBlock*(
                         Arities.del(arg.s)
 
             else:
-                if execInParent:
-                    Syms=newSyms
-                else:
-                    Arities = savedArities
-                    for k, v in pairs(newSyms):
-                        if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
-                            Syms[k] = newSyms[k]
+                if not inTryBlock or (inTryBlock and getCurrentException().isNil()):
+                    if execInParent:
+                        Syms=newSyms
+                    else:
+                        Arities = savedArities
+                        for k, v in pairs(newSyms):
+                            if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
+                                Syms[k] = newSyms[k]
 
     return Syms
 
