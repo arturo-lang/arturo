@@ -20,7 +20,7 @@ isqrt: function [x][
     return r
 ]
 
-print map 0..65 => [isqrt]
+print map 0..65 => isqrt
  
 loop range 1 .step: 2 72 'n ->
     print [n "\t" commatize isqrt 7^n]
