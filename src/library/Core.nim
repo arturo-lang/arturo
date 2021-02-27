@@ -455,8 +455,9 @@ proc defineSymbols*() =
             let verbose = (popAttr("verbose")!=VNULL)
             let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x, execInParent=execInParent)
-            except VMError as e:
+                discard execBlock(x, execInParent=execInParent, inTryBlock=true)
+            except:
+                let e = getCurrentException()
                 if verbose:
                     showVMErrors(e)
 
@@ -487,9 +488,10 @@ proc defineSymbols*() =
             let verbose = (popAttr("verbose")!=VNULL)
             let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x, execInParent=execInParent)
+                discard execBlock(x, execInParent=execInParent, inTryBlock=true)
                 stack.push(VTRUE)
-            except VMError as e:
+            except:
+                let e = getCurrentException()
                 if verbose:
                     showVMErrors(e)
                 stack.push(VFALSE)
