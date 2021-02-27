@@ -44,7 +44,7 @@ proc defineSymbols*() =
             and 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] &&= y
+            if x.kind==Literal : getValue(x.s) &&= y
             else               : stack.push(x && y)
 
 
@@ -65,7 +65,7 @@ proc defineSymbols*() =
             nand 'a 3          ; a: -3
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] &&= y; !!= Syms[x.s]
+            if x.kind==Literal : getValue(x.s) &&= y; !!= getValue(x.s, safe=false)
             else               : stack.push(!! (x && y))
 
     builtin "nor",
@@ -85,7 +85,7 @@ proc defineSymbols*() =
             nor 'a 3           ; a: -4
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ||= y; !!= Syms[x.s]
+            if x.kind==Literal : getValue(x.s) ||= y; !!= getValue(x.s)
             else               : stack.push(!! (x || y))
 
     builtin "not",
@@ -104,7 +104,7 @@ proc defineSymbols*() =
             not 'a             ; a: -124
         """:
             ##########################################################
-            if x.kind==Literal : !!= Syms[x.s] 
+            if x.kind==Literal : !!= getValue(x.s) 
             else               : stack.push(!! x)
 
     builtin "or",
@@ -124,7 +124,7 @@ proc defineSymbols*() =
             or 'a 3            ; a: 3
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ||= y
+            if x.kind==Literal : getValue(x.s) ||= y
             else               : stack.push(x || y)
 
     builtin "shl",
@@ -147,10 +147,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : 
-                let valBefore = Syms[x.s]
-                Syms[x.s] <<= y
-                if Syms[x.s] < valBefore and (popAttr("safe")!=VNULL):
-                    Syms[x.s] = newBigInteger(valBefore.i) << y
+                let valBefore = getValue(x.s)
+                getValue(x.s) <<= y
+                if getValue(x.s, safe=false) < valBefore and (popAttr("safe")!=VNULL):
+                    setValue(x.s, newBigInteger(valBefore.i) << y)
                     
             else               : 
                 var res = x << y
@@ -175,7 +175,7 @@ proc defineSymbols*() =
             shr 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] >>= y
+            if x.kind==Literal : getValue(x.s) >>= y
             else               : stack.push(x >> y)
 
     builtin "xnor",
@@ -195,7 +195,7 @@ proc defineSymbols*() =
             xnor 'a 3          ; a: -2
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ^^= y; !!= Syms[x.s]
+            if x.kind==Literal : getValue(x.s) ^^= y; !!= getValue(x.s, safe=false)
             else               : stack.push(!! (x ^^ y))
         
     builtin "xor",
@@ -215,7 +215,7 @@ proc defineSymbols*() =
             xor 'a 3           ; a: 1
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ^^= y
+            if x.kind==Literal : getValue(x.s) ^^= y
             else               : stack.push(x ^^ y)
 
 #=======================================
