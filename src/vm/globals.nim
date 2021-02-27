@@ -70,3 +70,8 @@ proc getValue*(s: string): Value {.inline.} =
     result = Syms.getOrDefault(s)
     if result.isNil:
         RuntimeError_SymbolNotFound(s, suggestAlternative(s))
+
+template inPlace*(s: string): untyped =
+    if not Syms.hasKey(s):
+        RuntimeError_SymbolNotFound(s, suggestAlternative(s))
+    Syms[s]
