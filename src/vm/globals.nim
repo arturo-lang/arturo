@@ -10,9 +10,9 @@
 # Libraries
 #=======================================
 
-import tables
+import std/editdistance, tables
 
-import vm/value
+import vm/[errors,value]
 
 #=======================================
 # Types
@@ -50,8 +50,23 @@ var
 # Methods
 #=======================================
 
+proc suggestAlternative*(s: string): string {.inline.} =
+    var minLevenshtein = 100
+    result = ""
+    for k,v in pairs(Syms):
+        let ed = editDistance(s,k)
+        if ed < minLevenshtein:
+            minLevenshtein = ed
+            result = k
+
+#=======================================
+# Methods
+#=======================================
+
 proc setValue*(s: string, v: Value) {.inline.} =
     Syms[s] = v
 
 proc getValue*(s: string): Value {.inline.} =
-    Syms.getOrDefault(s, default=VNOTHING)
+    result = Syms.getOrDefault(s)
+    if result.isNil:
+        RuntimeError_SymbolNotFound(s, suggestAlternative(s))
