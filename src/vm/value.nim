@@ -295,6 +295,9 @@ proc newInteger*(i: string): Value {.inline.} =
         # value out of range
         newInteger(newInt(i))
 
+proc newBigInteger*(i: int): Value {.inline.} =
+    result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
+
 proc newFloating*(f: float): Value {.inline.} =
     Value(kind: Floating, f: f)
 
