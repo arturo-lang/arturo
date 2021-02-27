@@ -438,7 +438,9 @@ proc defineSymbols*() =
         args        = {
             "action": {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "verbose"   : ({Boolean},"print all error messages as usual")
+        },
         returns     = {Nothing},
         example     = """
             try [
@@ -449,10 +451,12 @@ proc defineSymbols*() =
             ; we catch the exception but do nothing with it
         """:
             ##########################################################
+            let verbose = (popAttr("verbose")!=VNULL)
             try:
                 discard execBlock(x)
-            except:
-                discard
+            except VMError as e:
+                if verbose:
+                    showVMErrors(e)
 
     builtin "try?",
         alias       = unaliased, 
@@ -461,7 +465,9 @@ proc defineSymbols*() =
         args        = {
             "action": {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "verbose"   : ({Boolean},"print all error messages as usual")
+        },
         returns     = {Boolean},
         example     = """
             try? [
@@ -475,10 +481,13 @@ proc defineSymbols*() =
             ; something went terribly wrong...
         """:
             ##########################################################
+            let verbose = (popAttr("verbose")!=VNULL)
             try:
                 discard execBlock(x)
                 stack.push(VTRUE)
-            except:
+            except VMError as e:
+                if verbose:
+                    showVMErrors(e)
                 stack.push(VFALSE)
 
     builtin "until",
