@@ -43,13 +43,11 @@ template storeByIndex(idx: int):untyped =
 
 template loadByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
-    let item = Syms.getOrDefault(symIndx)
-    if item.isNil: panic "symbol not found: " & symIndx
-    stack.push(Syms[symIndx])
+    let item = getValue(symIndx)
+    stack.push(item)
 
 template callByName*(symIndx: string):untyped =
-    let fun = Syms.getOrDefault(symIndx)
-    if fun.isNil: panic "symbol not found: " & symIndx
+    let fun = getValue(symIndx)
     if fun.fnKind==UserFunction:
         discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports, exportable=fun.exportable)
     else:
