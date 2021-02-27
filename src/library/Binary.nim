@@ -135,7 +135,9 @@ proc defineSymbols*() =
             "value" : {Integer,Literal},
             "bits"  : {Integer}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "safe"  : ({Boolean},"check for overflows")
+        },
         returns     = {Integer,Nothing},
         example     = """
             print shl 2 3      ; 16
@@ -144,8 +146,17 @@ proc defineSymbols*() =
             shl 'a 3           ; a: 16
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] <<= y
-            else               : stack.push(x << y)
+            if x.kind==Literal : 
+                let valBefore = Syms[x.s]
+                Syms[x.s] <<= y
+                if Syms[x.s] < valBefore and (popAttr("safe")!=VNULL):
+                    Syms[x.s] = newBigInteger(valBefore.i) << y
+                    
+            else               : 
+                var res = x << y
+                if res < x and (popAttr("safe")!=VNULL):
+                    res = newBigInteger(x.i) << y
+                stack.push(res)
 
     builtin "shr",
         alias       = unaliased, 
