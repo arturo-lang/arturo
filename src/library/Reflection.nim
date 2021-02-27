@@ -343,9 +343,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("get") != VNULL):
-                stack.push(newDictionary(getInfo(x.s, Syms[x.s])))
+                stack.push(newDictionary(getInfo(x.s, getValue(x.s))))
             else:
-                printInfo(x.s, Syms[x.s])
+                printInfo(x.s, getValue(x.s))
 
     builtin "inline?",
         alias       = unaliased, 
