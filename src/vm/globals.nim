@@ -66,12 +66,8 @@ proc suggestAlternative*(s: string): string {.inline.} =
 proc setValue*(s: string, v: Value) {.inline.} =
     Syms[s] = v
 
-proc getValue*(s: string): Value {.inline.} =
-    result = Syms.getOrDefault(s)
-    if result.isNil:
-        RuntimeError_SymbolNotFound(s, suggestAlternative(s))
-
-template inPlace*(s: string): untyped =
-    if not Syms.hasKey(s):
-        RuntimeError_SymbolNotFound(s, suggestAlternative(s))
+template getValue*(s: string, safe: bool = true): untyped =
+    when safe:
+        if not Syms.hasKey(s):
+            RuntimeError_SymbolNotFound(s, suggestAlternative(s))
     Syms[s]
