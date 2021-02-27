@@ -51,7 +51,7 @@ proc defineSymbols*() =
                 vmPanic = true
                 vmError = "Assertion failed: " & x.codify()
                         
-                showVMErrors()
+                # TODO Fix showVMErrors()
 
                 quit(1)  
 
@@ -166,7 +166,7 @@ proc defineSymbols*() =
             vmPanic = true
             vmError = x.s
 
-            showVMErrors()
+            # TODO Fix showVMErrors()
 
             if (let aCode = popAttr("code"); aCode != VNULL):
                 quit(aCode.i)
