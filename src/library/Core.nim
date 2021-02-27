@@ -439,6 +439,7 @@ proc defineSymbols*() =
             "action": {Block}
         },
         attrs       = {
+            "import"    : ({Boolean},"execute at root level"),
             "verbose"   : ({Boolean},"print all error messages as usual")
         },
         returns     = {Nothing},
@@ -452,8 +453,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let verbose = (popAttr("verbose")!=VNULL)
+            let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x)
+                discard execBlock(x, execInParent=execInParent)
             except VMError as e:
                 if verbose:
                     showVMErrors(e)
@@ -466,6 +468,7 @@ proc defineSymbols*() =
             "action": {Block}
         },
         attrs       = {
+            "import"    : ({Boolean},"execute at root level"),
             "verbose"   : ({Boolean},"print all error messages as usual")
         },
         returns     = {Boolean},
@@ -482,8 +485,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let verbose = (popAttr("verbose")!=VNULL)
+            let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x)
+                discard execBlock(x, execInParent=execInParent)
                 stack.push(VTRUE)
             except VMError as e:
                 if verbose:
