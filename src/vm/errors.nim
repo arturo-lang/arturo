@@ -10,13 +10,21 @@
 # Libraries
 #=======================================
 
-import sequtils, sets, strformat, strutils, sugar
+import re, sequtils, sets
+import strformat, strutils, sugar
+import nre except toSeq
 
 import helpers/colors as ColorsHelper
 
 import vm/[stack, value]
 
-type ReturnTriggered* = object of Defect
+const
+    RuntimeError = "Runtime Error"
+    ParseError   = "Parse Error"
+
+type 
+    ReturnTriggered* = object of Defect
+    VMError* = ref object of Defect
 
 var
     vmPanic* = false
@@ -29,17 +37,27 @@ var
 # Helpers
 #=======================================
 
-template panic*(error: string): untyped =
-    vmPanic = true
-    vmError = error
-    return
+template panic*(context: string, error: string): untyped =
+    raise VMError(name: context, msg:error)
 
-proc showVMErrors*() =
-    if vmPanic:
-        let errMsg = vmError.split(";").map((x)=>strutils.strip(x)).join(fmt("\n         {bold(redColor)}|{resetColor} "))
-        echo fmt("{bold(redColor)}>> Error |{resetColor} {errMsg}")
-        emptyStack()
-        vmPanic = false
+proc showVMErrors*(e: VMError) =
+    let header = e.name
+    let marker = ">>"
+    let separator = "|"
+    let indent = repeat(" ", header.len + marker.len + 2)
+
+    var message = e.msg.replace(nre.re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+
+    let errMsg = message.split(";").map((x)=>strutils.strip(x)).join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
+    echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
+    emptyStack()
+
+# proc showVMErrors*() =
+#     if vmPanic:
+#         let errMsg = vmError.split(";").map((x)=>strutils.strip(x)).join(fmt("\n         {bold(redColor)}|{resetColor} "))
+#         echo fmt("{bold(redColor)}>> Error |{resetColor} {errMsg}")
+#         emptyStack()
+#         vmPanic = false
 
 #=======================================
 # Templates
@@ -51,8 +69,14 @@ template showConversionError*():untyped =
 template invalidConversionError*(origin: string):untyped =
     echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
 
+template RuntimeError_SymbolNotFound*(sym: string, alter: string):untyped =
+    panic RuntimeError,
+          "symbol not found: " & sym & ";" & 
+          "perhaps you meant _" & alter & "_ ?"
+
 template RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
-    panic "cannot perform '" & (static functionName) & "';" & 
+    panic RuntimeError,
+          "cannot perform _" & (static functionName) & "_;" & 
           "not enough parameters: " & $(static functionArity) & " required"
 
 template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
@@ -66,7 +90,8 @@ template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, 
     when argumentPos==2:
         let ordinalPos = "third"
 
-    panic "cannot perform '" & (static functionName) & "' -> " & actualStr & ";" &
+    panic RuntimeError,
+          "cannot perform _" & (static functionName) & "_ -> " & actualStr & ";" &
           "incorrect argument type for " & ordinalPos & " parameter;" &
           "accepts " & acceptedStr
 
