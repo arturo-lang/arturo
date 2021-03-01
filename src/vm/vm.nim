@@ -12,7 +12,18 @@
 
 import os, random, strutils, tables
 
-import vm/[globals, env, errors, eval, exec, globals, parse, stack, value, version]
+import vm/[
+    bytecode, 
+    env, 
+    errors, 
+    eval, 
+    exec, 
+    globals, 
+    parse, 
+    stack, 
+    value, 
+    version
+]
 
 import library/Arithmetic   as ArithmeticLib
 import library/Binary       as BinaryLib
@@ -51,6 +62,13 @@ proc initialize*() =
 
     # attributes
     createAttrsStack()
+
+    # opstack
+    if DoDebug:
+        OpStack[0] = opNop
+        OpStack[1] = opNop
+        OpStack[2] = opNop
+        OpStack[3] = opNop
     
     # random number generator
     randomize()
