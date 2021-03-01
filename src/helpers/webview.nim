@@ -28,11 +28,7 @@ when not defined(MINI):
 # Libraries
 #=======================================
 
-import std/json, os, osproc, strutils, tables
-
-when not defined(MINI):
-    import helpers/json as jsonHelper
-    import vm/value
+import os, osproc, strutils
 
 #=======================================
 # Types
