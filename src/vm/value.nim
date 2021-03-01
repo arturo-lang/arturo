@@ -248,8 +248,13 @@ let VNULL* = Value(kind: Null)
 
 let VNOTHING* = Value(kind: Nothing)
 
+#=======================================
+# Variables
+#=======================================
+
 var 
     TypeLookup = initOrderedTable[string,Value]()
+    DoDebug* = false
 
 #=======================================
 # Helpers
