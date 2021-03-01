@@ -43,11 +43,11 @@ template storeByIndex(idx: int):untyped =
 
 template loadByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
-    let item = getValue(symIndx)
+    let item = GetSym(symIndx)
     stack.push(item)
 
 template callByName*(symIndx: string):untyped =
-    let fun = getValue(symIndx)
+    let fun = GetSym(symIndx)
     if fun.fnKind==UserFunction:
         discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports, exportable=fun.exportable)
     else:
