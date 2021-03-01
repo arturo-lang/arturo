@@ -435,7 +435,6 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of EOF:
                 if level!=0:
                     SyntaxError_MissingClosingBracket("...")
-                    return nil
                 else:
                     break
             of Quote:
