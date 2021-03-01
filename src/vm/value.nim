@@ -181,7 +181,7 @@ type
             of Inline,
                Block:       
                    a*   : ValueArray
-                   refs*: IntArray
+                   #refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Function:    
                 case fnKind*: FunctionKind:
@@ -419,11 +419,11 @@ proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
 proc newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
     Value(kind: Bytecode, consts: c, instrs: i)
 
-proc newInline*(a: ValueArray = @[], refs: seq[int] = @[]): Value {.inline.} = 
-    Value(kind: Inline, a: a, refs: refs)
+proc newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
+    Value(kind: Inline, a: a)#, refs: refs)
 
-proc newBlock*(a: ValueArray = @[], refs: seq[int] = @[]): Value {.inline.} =
-    Value(kind: Block, a: a, refs: refs)
+proc newBlock*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
+    Value(kind: Block, a: a)#, refs: refs)
 
 proc newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
