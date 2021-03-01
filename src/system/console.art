@@ -60,7 +60,7 @@ while [true] .import [
 		inp: inp ++ input ".. " ++ indent
 	]
 
-	try.verbose.import [
+	try?.verbose.import [
 		try.verbose.import to :block inp
 
 		StackSize: size stack
@@ -68,6 +68,9 @@ while [true] .import [
 		if StackSize > 0 		-> Got: pop 1
 		if Got <> null 			-> print color.gray ~"=> |Got|"
 
+		print ""
+	]
+	else [
 		print ""
 	]
 ]
