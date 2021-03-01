@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import lexbase, sequtils, streams, strutils, unicode
+import lexbase, os, sequtils
+import streams, strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug as debugHelper
@@ -586,6 +587,9 @@ proc doParse*(input: string, isFile: bool = true): Value =
     # open stream
 
     if isFile:
+        if not fileExists(input):
+            CompilerError_ScriptNotExists(input)
+
         var stream = newFileStream(input)
         lexbase.open(p, stream)
     else:
