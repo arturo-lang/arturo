@@ -46,7 +46,7 @@ template panic*(context: string, error: string): untyped =
 proc showVMErrors*(e: ref Exception) =
     var header = e.name
 
-    if $(header) notin [RuntimeError, SyntaxError]:
+    if $(header) notin [RuntimeError, SyntaxError, CompilerError]:
         header = RuntimeError
 
     let marker = ">>"
