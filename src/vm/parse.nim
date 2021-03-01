@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import lexbase, streams, strformat, strutils, unicode
+import lexbase, streams, strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug as debugHelper
@@ -22,21 +22,10 @@ import vm/[errors, value]
 #=======================================
 
 type
-    ParserStatus* = enum
-        allOK
-        invalidTokenError
-        missingClosingBracketError
-        unterminatedStringError
-        unrecognizedEscapeSequence
-        newlineInQuotedString
-        emptyLiteralError
-        emptyDatatypeError
-
     Parser* = object of BaseLexer
         value*: string
         values*: ValueArray
         symbol*: SymbolKind
-        status*: ParserStatus
 
 #=======================================
 # Constants
@@ -74,17 +63,6 @@ const
     PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
 
     Empty                       = ""
-
-    ParserStatusString: array[ParserStatus, string] = [
-        "No error.",
-        "Invalid token found.",
-        "Missing closing bracket.",
-        "Unterminated string.",
-        "Unrecognized escape sequence.",
-        "Newline in quoted string.",
-        "Empty literal.",
-        "Empty datatype."
-    ]
 
 #=======================================
 # Helpers
@@ -193,11 +171,9 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                p.status = newlineInQuotedString
-                return
+                SyntaxError_NewlineInQuotedString("...")
             of LF:
-                p.status = newlineInQuotedString
-                return
+                SyntaxError_NewlineInQuotedString("...")
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -364,7 +340,6 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     isSymbol = false
                     p.bufpos = pos+1
                     parseMultilineString(p)
-                    if p.status != allOK: return nil
                     addChild(topBlock, newString(p.value))
                 else:
                     p.symbol = doubleminus
@@ -431,19 +406,13 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
 
         case p.buf[p.bufpos]
             of EOF:
-                if level!=0:
-                    SyntaxError_MissingClosingBracket("...")
-                else:
-                    break
+                if level!=0: SyntaxError_MissingClosingBracket("...")
+                break
             of Quote:
                 parseString(p)
-                if p.status != allOK: return nil
-
                 addChild(topBlock, newString(p.value))
             of BackTick:
                 parseString(p, stopper=BackTick)
-                if p.status != allOK: return nil
-
                 addChild(topBlock, newChar(p.value))
             of Colon:
                 parseLiteral(p)
@@ -505,32 +474,25 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of LBracket:
                 inc(p.bufpos)
                 var subblock = parseBlock(p,level+1)
-
-                if p.status!=allOK: return nil
-                else: addChild(topBlock, subblock)
+                addChild(topBlock, subblock)
             of RBracket:
                 inc(p.bufpos)
                 break
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isDeferred=false)
-                
-                if p.status!=allOK: return nil
-                else: addChild(topBlock, subblock)
+                addChild(topBlock, subblock)
             of RParen:
                 inc(p.bufpos)
                 break
             of LCurly:
                 parseCurlyString(p)
-                if p.status != allOK: return nil
-
                 addChild(topBlock, newString(p.value,strip=true))
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
                 if p.buf[p.bufpos+1]==chr(171): # got «
                     parseFullLineString(p)
-                    if p.status != allOK: return nil
                     addChild(topBlock, newString(unicode.strip(p.value)))
                 else:
                     inc(p.bufpos)
@@ -610,7 +572,6 @@ proc doParse*(input: string, isFile: bool = true): Value =
     # initialize
 
     p.value = ""
-    p.status = allOK
 
     # do parse
     
