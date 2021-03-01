@@ -113,7 +113,7 @@ proc defineSymbols*() =
                 stack.push(convertToAscii(x.s))
             elif (popAttr("agnostic") != VNULL):
                 let res = x.a.map(proc(v:Value):Value =
-                    if v.kind == Word and not Syms.hasKey(v.s): newLiteral(v.s)
+                    if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
                 stack.push(newBlock(res))
@@ -167,7 +167,7 @@ proc defineSymbols*() =
                     newWord("type"),
                     newWord("this")
                 ]),1)
-                Syms[k] = v
+                SetSym(k, v)
                 Arities[k] = v.params.a.len
 
     builtin "dictionary",
@@ -223,7 +223,7 @@ proc defineSymbols*() =
 
             if (let aWith = popAttr("with"); aWith != VNULL):
                 for x in aWith.a:
-                    dict[x.s] = Syms[x.s]
+                    dict[x.s] = GetSym(x.s)
                     
             stack.push(newDictionary(dict))
 
@@ -306,7 +306,7 @@ proc defineSymbols*() =
             if (let aImport = popAttr("import"); aImport != VNULL):
                 var ret = initOrderedTable[string,Value]()
                 for item in aImport.a:
-                    ret[item.s] = Syms[item.s]
+                    ret[item.s] = GetSym(item.s)
                 imports = newDictionary(ret)
 
             var exportable = (popAttr("exportable")!=VNULL)
@@ -584,11 +584,11 @@ proc defineSymbols*() =
             ##########################################################
             var blk: ValueArray = y.a
             if x.kind == Literal:
-                blk.insert(Syms[x.s])
+                blk.insert(GetSym(x.s))
                 blk.insert(newLabel(x.s))
             else:
                 for item in x.a:
-                    blk.insert(Syms[item.s])
+                    blk.insert(GetSym(item.s))
                     blk.insert(newLabel(item.s))
 
             stack.push(newBlock(blk))

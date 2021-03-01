@@ -82,7 +82,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s.capitalize()))
-            else: Syms[x.s].s = Syms[x.s].s.capitalize()
+            else: InPlace.s = InPlaced.s.capitalize()
 
     builtin "color",
         alias       = unaliased, 
@@ -170,7 +170,7 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("path") != VNULL):
                 if x.kind==Literal:
-                    Syms[x.s] = newString(joinPath(Syms[x.s].a.map(proc (v:Value):string = v.s)))
+                    SetInPlace(newString(joinPath(InPlace.a.map(proc (v:Value):string = v.s))))
                 else:
                     stack.push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
             else:
@@ -179,7 +179,7 @@ proc defineSymbols*() =
                     sep = aWith.s
 
                 if x.kind==Literal:
-                    Syms[x.s] = newString(Syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
+                    SetInPlace(newString(InPlace.a.map(proc (v:Value):string = v.s).join(sep)))
                 else:
                     stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
 
@@ -216,7 +216,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s.toLower()))
-            else: Syms[x.s].s = Syms[x.s].s.toLower()
+            else: InPlace.s = InPlaced.s.toLower()
 
     builtin "lower?",
         alias       = unaliased, 
@@ -308,13 +308,13 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("right") != VNULL):
                 if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
-                else: Syms[x.s].s = unicode.alignLeft(Syms[x.s].s, y.i)
+                else: InPlace.s = unicode.alignLeft(InPlaced.s, y.i)
             elif (popAttr("center") != VNULL): # PENDING unicode support
                 if x.kind==String: stack.push(newString(center(x.s, y.i)))
-                else: Syms[x.s].s = center(Syms[x.s].s, y.i)
+                else: InPlace.s = center(InPlaced.s, y.i)
             else:
                 if x.kind==String: stack.push(newString(unicode.align(x.s, y.i)))
-                else: Syms[x.s].s = unicode.align(Syms[x.s].s, y.i)
+                else: InPlace.s = unicode.align(InPlaced.s, y.i)
 
     builtin "prefix",
         alias       = unaliased, 
@@ -334,7 +334,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(y.s & x.s))
-            else: Syms[x.s] = newString(y.s & Syms[x.s].s)
+            else: SetInPlace(newString(y.s & InPlace.s))
 
     builtin "prefix?",
         alias       = unaliased, 
@@ -410,8 +410,9 @@ proc defineSymbols*() =
                         ))
                     stack.push(res)
                 elif x.kind==Literal:
-                    while (contains(Syms[x.s].s, rgx)):
-                        Syms[x.s].s = Syms[x.s].s.replace(rgx,
+                    discard InPlace
+                    while (contains(InPlaced.s, rgx)):
+                        InPlaced.s = InPlaced.s.replace(rgx,
                             proc (match: RegexMatch): string =
                                 var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
@@ -439,8 +440,9 @@ proc defineSymbols*() =
                             ))
                     stack.push(res)
                 elif x.kind==Literal:
-                    while (contains(Syms[x.s].s, rgx)):
-                        Syms[x.s].s = Syms[x.s].s.replace(rgx,
+                    discard InPlace
+                    while (contains(InPlaced.s, rgx)):
+                        InPlaced.s = InPlaced.s.replace(rgx,
                             proc (match: RegexMatch): string =
                                 discard execBlock(doParse(match.captures[0], isFile=false))
                                 $(stack.pop())
@@ -468,10 +470,10 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("regex") != VNULL):
                 if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
-                else: Syms[x.s].s = Syms[x.s].s.replace(re.re(y.s), z.s)
+                else: InPlace.s = InPlaced.s.replace(re.re(y.s), z.s)
             else:
                 if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
-                else: Syms[x.s].s = Syms[x.s].s.replace(y.s, z.s)
+                else: InPlace.s = InPlaced.s.replace(y.s, z.s)
 
     builtin "strip",
         alias       = unaliased, 
@@ -505,7 +507,7 @@ proc defineSymbols*() =
                 trailing = true
 
             if x.kind==String: stack.push(newString(strutils.strip(x.s, leading, trailing)))
-            else: Syms[x.s].s = strutils.strip(Syms[x.s].s, leading, trailing) 
+            else: InPlace.s = strutils.strip(InPlaced.s, leading, trailing) 
 
     builtin "suffix",
         alias       = unaliased, 
@@ -525,7 +527,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s & y.s))
-            else: Syms[x.s] = newString(Syms[x.s].s & y.s)
+            else: SetInPlace(newString(InPlace.s & y.s))
 
     builtin "suffix?",
         alias       = unaliased, 
@@ -584,10 +586,10 @@ proc defineSymbols*() =
 
             if (popAttr("preserve")!=VNULL):
                 if x.kind==String: stack.push(newString(truncatePreserving(x.s, y.i, with)))
-                else: Syms[x.s].s = truncatePreserving(Syms[x.s].s, y.i, with)
+                else: InPlace.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
                 if x.kind==String: stack.push(newString(truncate(x.s, y.i, with)))
-                else: Syms[x.s].s = truncate(Syms[x.s].s, y.i, with)
+                else: InPlace.s = truncate(InPlaced.s, y.i, with)
 
     builtin "upper",
         alias       = unaliased, 
@@ -606,7 +608,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String: stack.push(newString(x.s.toUpper()))
-            else: Syms[x.s].s = Syms[x.s].s.toUpper()
+            else: InPlace.s = InPlaced.s.toUpper()
 
     builtin "upper?",
         alias       = unaliased, 

@@ -98,8 +98,8 @@ proc defineSymbols*() =
                     debug       = withDebug,
                     handler     = proc (w: Webview, arg: cstring) =
                         let got = valueFromJson($arg)
-                        stack.push(got.d["args"])
-                        callByName(got.d["method"].s)
+                        stack.push(GetKey(got.d, "args"))
+                        callByName(GetKey(got.d, "method").s)
                 )
 
                 builtin "eval",

@@ -56,12 +56,12 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("symmetric")!=VNULL):
                 if x.kind==Literal:
-                    Syms[x.s] = newBlock(toSeq(symmetricDifference(toHashSet(Syms[x.s].a), toHashSet(y.a))))
+                    SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(InPlace.a), toHashSet(y.a)))))
                 else:
                     stack.push(newBlock(toSeq(symmetricDifference(toHashSet(x.a), toHashSet(y.a)))))
             else:
                 if x.kind==Literal:
-                    Syms[x.s] = newBlock(toSeq(difference(toHashSet(Syms[x.s].a), toHashSet(y.a))))
+                    SetInPlace(newBlock(toSeq(difference(toHashSet(InPlace.a), toHashSet(y.a)))))
                 else:
                     stack.push(newBlock(toSeq(difference(toHashSet(x.a), toHashSet(y.a)))))
 
@@ -86,7 +86,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                Syms[x.s] = newBlock(toSeq(intersection(toHashSet(Syms[x.s].a), toHashSet(y.a))))
+                SetInPlace(newBlock(toSeq(intersection(toHashSet(InPlace.a), toHashSet(y.a)))))
             else:
                 stack.push(newBlock(toSeq(intersection(toHashSet(x.a), toHashSet(y.a)))))
 
@@ -215,7 +215,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                Syms[x.s] = newBlock(toSeq(union(toHashSet(Syms[x.s].a), toHashSet(y.a))))
+                SetInPlace(newBlock(toSeq(union(toHashSet(InPlace.a), toHashSet(y.a)))))
             else:
                 stack.push(newBlock(toSeq(union(toHashSet(x.a), toHashSet(y.a)))))
 
