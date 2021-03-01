@@ -65,6 +65,14 @@ const
     Empty                       = ""
 
 #=======================================
+# Templates
+#=======================================
+
+template AddToken*(token: untyped): untyped =
+    addChild(topBlock, token)
+    topBlock.refs.add(p.lineNumber)
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -358,7 +366,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     isSymbol = false
                     p.bufpos = pos+1
                     parseMultilineString(p)
-                    addChild(topBlock, newString(p.value))
+                    AddToken newString(p.value)
                 else:
                     p.symbol = doubleminus
             else: p.symbol = minus
@@ -385,7 +393,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     if isSymbol:
         inc(pos)
         p.bufpos = pos
-        addChild(topBlock, newSymbol(p.symbol))
+        AddToken newSymbol(p.symbol)
 
 template parsePath(p: var Parser, root: Value) =
     p.values = @[root]
@@ -429,96 +437,96 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 break
             of Quote:
                 parseString(p)
-                addChild(topBlock, newString(p.value))
+                AddToken newString(p.value)
             of BackTick:
                 parseString(p, stopper=BackTick)
-                addChild(topBlock, newChar(p.value))
+                AddToken newChar(p.value)
             of Colon:
                 parseLiteral(p)
                 if p.value == Empty: 
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
-                        addChild(topBlock,newSymbol(doublecolon))
+                        AddToken newSymbol(doublecolon)
                     else:
-                        addChild(topBlock,newSymbol(colon))
+                        AddToken newSymbol(colon)
                 else:
-                    addChild(topBlock, newType(p.value))
+                    AddToken newType(p.value)
             of PermittedNumbers_Start:
                 parseNumber(p)
-                if Dot in p.value: addChild(topBlock, newFloating(p.value))
-                else: addChild(topBlock, newInteger(p.value))
+                if Dot in p.value: AddToken newFloating(p.value)
+                else: AddToken newInteger(p.value)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
                 parseIdentifier(p)
                 if p.buf[p.bufpos] == Colon:
                     inc(p.bufpos)
-                    addChild(topBlock, newLabel(p.value))
+                    AddToken newLabel(p.value)
                 elif p.buf[p.bufpos] == Backslash:
                     if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or 
                        (p.buf[p.bufpos+1] in PermittedNumbers_Start):
                         parsePath(p, newWord(p.value))
                         if p.buf[p.bufpos]==Colon:
                             inc(p.bufpos)
-                            addChild(topBlock, newPathLabel(p.values))
+                            AddToken newPathLabel(p.values)
                         else:
-                            addChild(topBlock, newPath(p.values))
+                            AddToken newPath(p.values)
                     else:
                         inc(p.bufpos)
-                        addChild(topBlock,newSymbol(backslash))
+                        AddToken newSymbol(backslash)
                 else:
-                    addChild(topBlock, newWord(p.value))
+                    AddToken newWord(p.value)
             of Tick:
                 parseLiteral(p)
                 if p.value == Empty: 
                     SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos))
                 else:
-                    addChild(topBlock, newLiteral(p.value))
+                    AddToken newLiteral(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos)
                     inc(p.bufpos)
-                    addChild(topBlock, newSymbol(ellipsis))
+                    AddToken newSymbol(ellipsis)
                 elif p.buf[p.bufpos+1] == '/':
                     inc(p.bufpos)
                     inc(p.bufpos)
-                    addChild(topBlock, newSymbol(dotslash))
+                    AddToken newSymbol(dotslash)
                 else:
                     parseLiteral(p)
                     if p.buf[p.bufpos] == Colon:
                         inc(p.bufpos)
-                        addChild(topBlock, newAttributeLabel(p.value))
+                        AddToken newAttributeLabel(p.value)
                     else:
-                        addChild(topBlock, newAttribute(p.value))
+                        AddToken newAttribute(p.value)
             of LBracket:
                 inc(p.bufpos)
                 var subblock = parseBlock(p,level+1)
-                addChild(topBlock, subblock)
+                AddToken subblock
             of RBracket:
                 inc(p.bufpos)
                 break
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isDeferred=false)
-                addChild(topBlock, subblock)
+                AddToken subblock
             of RParen:
                 inc(p.bufpos)
                 break
             of LCurly:
                 parseCurlyString(p)
-                addChild(topBlock, newString(p.value,strip=true))
+                AddToken newString(p.value,strip=true)
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
                 if p.buf[p.bufpos+1]==chr(171): # got «
                     parseFullLineString(p)
-                    addChild(topBlock, newString(unicode.strip(p.value)))
+                    AddToken newString(unicode.strip(p.value))
                 else:
                     inc(p.bufpos)
 
             of chr(195):
                 if p.buf[p.bufpos+1]==chr(184):
-                    addChild(topBlock, newSymbol(slashedzero))
+                    AddToken newSymbol(slashedzero)
                     inc(p.bufpos)
                     inc(p.bufpos)
                 else:
