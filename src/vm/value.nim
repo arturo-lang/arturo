@@ -31,6 +31,8 @@ type
     Byte = byte
     ByteArray*  = seq[Byte]
 
+    IntArray*   = seq[int]
+
     BuiltinAction = proc ()
 
     SymbolKind* = enum
@@ -179,7 +181,7 @@ type
             of Inline,
                Block:       
                    a*   : ValueArray
-                   refs*: seq[int]
+                   refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Function:    
                 case fnKind*: FunctionKind:
