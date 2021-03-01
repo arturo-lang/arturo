@@ -62,13 +62,6 @@ proc showVMErrors*(e: ref Exception) =
     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
     # emptyStack()
 
-# proc showVMErrors*() =
-#     if vmPanic:
-#         let errMsg = vmError.split(";").map((x)=>strutils.strip(x)).join(fmt("\n         {bold(redColor)}|{resetColor} "))
-#         echo fmt("{bold(redColor)}>> Error |{resetColor} {errMsg}")
-#         emptyStack()
-#         vmPanic = false
-
 #=======================================
 # Templates
 #=======================================
