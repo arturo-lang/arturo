@@ -75,7 +75,7 @@ proc defineSymbols*() =
             var fun: Value
 
             if x.kind==Literal or x.kind==String:
-                fun = Syms[x.s]
+                fun = InPlace
             else:
                 fun = x
 
@@ -159,16 +159,15 @@ proc defineSymbols*() =
                 # discard executeBlock(x)
                 if execInParent:
                     discard execBlock(x, execInParent=true)
-                    showVMErrors()
+                    # TODO Fix showVMErrors()
                 else:
                     discard execBlock(x)
             elif x.kind==Bytecode:
-                let trans = (x.consts, x.instrs)
                 if execInParent:
-                    discard execBlock(x, evaluated=trans, execInParent=true)
-                    showVMErrors()
+                    discard execBlock(x, evaluated=(x.consts, x.instrs), execInParent=true)
+                    # TODO Fix showVMErrors()
                 else:
-                    discard execBlock(x, evaluated=trans)
+                    discard execBlock(x, evaluated=(x.consts, x.instrs))
                 
             else: # string
                 let (src, tp) = getSource(x.s)
@@ -181,7 +180,7 @@ proc defineSymbols*() =
 
                     if not isNil(parsed):
                         discard execBlock(parsed, execInParent=true)
-                        showVMErrors()
+                        # TODO Fix showVMErrors()
                 else:
                     let parsed = doParse(src, isFile=false)
                     if not isNil(parsed):
@@ -253,7 +252,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             for k,v in pairs(Syms):
-                Syms[k] = v
+                SetSym(k, v)
 
     builtin "if",
         alias       = unaliased, 
@@ -330,7 +329,7 @@ proc defineSymbols*() =
             print x           ; 10
         """:
             ##########################################################
-            Syms[x.s] = y
+            SetInPlace(y)
 
     builtin "new",
         alias       = unaliased, 
@@ -438,7 +437,10 @@ proc defineSymbols*() =
         args        = {
             "action": {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "import"    : ({Boolean},"execute at root level"),
+            "verbose"   : ({Boolean},"print all error messages as usual")
+        },
         returns     = {Nothing},
         example     = """
             try [
@@ -449,10 +451,14 @@ proc defineSymbols*() =
             ; we catch the exception but do nothing with it
         """:
             ##########################################################
+            let verbose = (popAttr("verbose")!=VNULL)
+            let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x)
+                discard execBlock(x, execInParent=execInParent, inTryBlock=true)
             except:
-                discard
+                let e = getCurrentException()
+                if verbose:
+                    showVMErrors(e)
 
     builtin "try?",
         alias       = unaliased, 
@@ -461,7 +467,10 @@ proc defineSymbols*() =
         args        = {
             "action": {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "import"    : ({Boolean},"execute at root level"),
+            "verbose"   : ({Boolean},"print all error messages as usual")
+        },
         returns     = {Boolean},
         example     = """
             try? [
@@ -475,10 +484,15 @@ proc defineSymbols*() =
             ; something went terribly wrong...
         """:
             ##########################################################
+            let verbose = (popAttr("verbose")!=VNULL)
+            let execInParent = (popAttr("import")!=VNULL)
             try:
-                discard execBlock(x)
+                discard execBlock(x, execInParent=execInParent, inTryBlock=true)
                 stack.push(VTRUE)
             except:
+                let e = getCurrentException()
+                if verbose:
+                    showVMErrors(e)
                 stack.push(VFALSE)
 
     builtin "until",
@@ -541,7 +555,7 @@ proc defineSymbols*() =
             print g 10              ; 12
         """:
             ##########################################################
-            stack.push(Syms[x.s])
+            stack.push(InPlace)
 
     builtin "when?",
         alias       = unaliased, 

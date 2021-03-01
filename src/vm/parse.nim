@@ -10,33 +10,22 @@
 # Libraries
 #=======================================
 
-import lexbase, streams, strformat, strutils, unicode
+import lexbase, sequtils, streams, strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug as debugHelper
 
-import vm/value
+import vm/[errors, value]
 
 #=======================================
 # Types
 #=======================================
 
 type
-    ParserStatus* = enum
-        allOK
-        invalidTokenError
-        missingClosingBracketError
-        unterminatedStringError
-        unrecognizedEscapeSequence
-        newlineInQuotedString
-        emptyLiteralError
-        emptyDatatypeError
-
     Parser* = object of BaseLexer
         value*: string
         values*: ValueArray
         symbol*: SymbolKind
-        status*: ParserStatus
 
 #=======================================
 # Constants
@@ -75,20 +64,40 @@ const
 
     Empty                       = ""
 
-    ParserStatusString: array[ParserStatus, string] = [
-        "No error.",
-        "Invalid token found.",
-        "Missing closing bracket.",
-        "Unterminated string.",
-        "Unrecognized escape sequence.",
-        "Newline in quoted string.",
-        "Empty literal.",
-        "Empty datatype."
-    ]
+#=======================================
+# Templates
+#=======================================
+
+template AddToken*(token: untyped): untyped =
+    addChild(topBlock, token)
+    #topBlock.refs.add(p.lineNumber)
 
 #=======================================
 # Helpers
 #=======================================
+
+## Error reporting
+
+proc getContext*(p: var Parser, curPos: int): string =
+    var startPos = curPos-15
+    var endPos = curPos+15
+
+    if startPos < 0: startPos = 0
+
+    result = ""
+
+    var i = startPos
+    while i<endPos and p.buf[i]!=EOF:
+        result &= p.buf[i]
+        i += 1
+
+    if p.buf[i]!=EOF:
+        result &= "..."
+
+    result = join(toSeq(splitLines(result))," ")
+    result &= ";" & repeat("~%",6 + curPos-startPos) & "_^_"
+
+## Lexer/parser
 
 template skip(p: var Parser) =
   var pos = p.bufpos
@@ -117,8 +126,6 @@ template skip(p: var Parser) =
             # if p.buf[pos] == Tab:
             #     echo "next one is tab!"
         of '#':
-            # echo "found sharp @ " & $(pos)
-            # echo "char @+1: " & $(p.buf[pos+1])
             if p.buf[pos+1]=='!':
                 inc(pos)
                 while true:
@@ -147,8 +154,7 @@ template parseString(p: var Parser, stopper: char = Quote) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
             of stopper:
                 inc(pos)
                 break
@@ -187,17 +193,16 @@ template parseString(p: var Parser, stopper: char = Quote) =
                             add(p.value, '\v')
                             inc(pos, 2)
                         else:
-                            p.status = unrecognizedEscapeSequence
-                            return
+                            add(p.value, "\\")
+                            add(p.value, p.buf[pos+1])
+                            inc(pos, 2)
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                p.status = newlineInQuotedString
-                return
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
             of LF:
-                p.status = newlineInQuotedString
-                return
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -209,8 +214,7 @@ template parseMultilineString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("multiline", p.lineNumber, getContext(p, p.bufpos))
             of Dash:
                 if p.buf[pos+1]==Dash and p.buf[pos+2]==Dash:
                     inc(pos,3)
@@ -249,8 +253,7 @@ template parseCurlyString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("curly", p.lineNumber, getContext(p, p.bufpos))
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -312,9 +315,6 @@ template parseIdentifier(p: var Parser) =
 
 template parseNumber(p: var Parser) =
     var pos = p.bufpos
-    # if p.buf[pos] == Minus:
-    #     add(p.value, Minus)
-    #     inc(pos)
     while p.buf[pos] in Digits:
         add(p.value, p.buf[pos])
         inc(pos)
@@ -366,8 +366,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     isSymbol = false
                     p.bufpos = pos+1
                     parseMultilineString(p)
-                    if p.status != allOK: return nil
-                    addChild(topBlock, newString(p.value))
+                    AddToken newString(p.value)
                 else:
                     p.symbol = doubleminus
             else: p.symbol = minus
@@ -394,7 +393,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     if isSymbol:
         inc(pos)
         p.bufpos = pos
-        addChild(topBlock, newSymbol(p.symbol))
+        AddToken newSymbol(p.symbol)
 
 template parsePath(p: var Parser, root: Value) =
     p.values = @[root]
@@ -426,6 +425,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
     var topBlock: Value
     if isDeferred: topBlock = newBlock()
     else: topBlock = newInline()
+    let initial = p.bufpos-1
 
     while true:
         setLen(p.value, 0)
@@ -433,122 +433,100 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
 
         case p.buf[p.bufpos]
             of EOF:
-                if level!=0:
-                    p.status = missingClosingBracketError
-                    return nil
-                else:
-                    break
+                if level!=0: SyntaxError_MissingClosingBracket(p.lineNumber, getContext(p, initial))
+                break
             of Quote:
                 parseString(p)
-                if p.status != allOK: return nil
-
-                addChild(topBlock, newString(p.value))
+                AddToken newString(p.value)
             of BackTick:
                 parseString(p, stopper=BackTick)
-                if p.status != allOK: return nil
-
-                addChild(topBlock, newChar(p.value))
+                AddToken newChar(p.value)
             of Colon:
                 parseLiteral(p)
                 if p.value == Empty: 
                     if p.buf[p.bufpos]==Colon:
                         inc(p.bufpos)
-                        addChild(topBlock,newSymbol(doublecolon))
+                        AddToken newSymbol(doublecolon)
                     else:
-                        addChild(topBlock,newSymbol(colon))
+                        AddToken newSymbol(colon)
                 else:
-                    addChild(topBlock, newType(p.value))
+                    AddToken newType(p.value)
             of PermittedNumbers_Start:
                 parseNumber(p)
-                if Dot in p.value: addChild(topBlock, newFloating(p.value))
-                else: addChild(topBlock, newInteger(p.value))
+                if Dot in p.value: AddToken newFloating(p.value)
+                else: AddToken newInteger(p.value)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
                 parseIdentifier(p)
                 if p.buf[p.bufpos] == Colon:
                     inc(p.bufpos)
-                    addChild(topBlock, newLabel(p.value))
+                    AddToken newLabel(p.value)
                 elif p.buf[p.bufpos] == Backslash:
                     if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or 
                        (p.buf[p.bufpos+1] in PermittedNumbers_Start):
                         parsePath(p, newWord(p.value))
                         if p.buf[p.bufpos]==Colon:
                             inc(p.bufpos)
-                            addChild(topBlock, newPathLabel(p.values))
+                            AddToken newPathLabel(p.values)
                         else:
-                            addChild(topBlock, newPath(p.values))
+                            AddToken newPath(p.values)
                     else:
                         inc(p.bufpos)
-                        addChild(topBlock,newSymbol(backslash))
+                        AddToken newSymbol(backslash)
                 else:
-                    addChild(topBlock, newWord(p.value))
+                    AddToken newWord(p.value)
             of Tick:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    p.status = emptyLiteralError
-                    for z in (p.bufpos-20)..(p.bufpos+20):
-                        if z==p.bufpos:
-                            stdout.write("***")
-                        stdout.write(p.buf[z])
-                        if z==p.bufpos:
-                            stdout.write("***")
-                    stdout.flushFile()
-                    return nil
+                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos))
                 else:
-                    addChild(topBlock, newLiteral(p.value))
+                    AddToken newLiteral(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos)
                     inc(p.bufpos)
-                    addChild(topBlock, newSymbol(ellipsis))
+                    AddToken newSymbol(ellipsis)
                 elif p.buf[p.bufpos+1] == '/':
                     inc(p.bufpos)
                     inc(p.bufpos)
-                    addChild(topBlock, newSymbol(dotslash))
+                    AddToken newSymbol(dotslash)
                 else:
                     parseLiteral(p)
                     if p.buf[p.bufpos] == Colon:
                         inc(p.bufpos)
-                        addChild(topBlock, newAttributeLabel(p.value))
+                        AddToken newAttributeLabel(p.value)
                     else:
-                        addChild(topBlock, newAttribute(p.value))
+                        AddToken newAttribute(p.value)
             of LBracket:
                 inc(p.bufpos)
                 var subblock = parseBlock(p,level+1)
-
-                if p.status!=allOK: return nil
-                else: addChild(topBlock, subblock)
+                AddToken subblock
             of RBracket:
                 inc(p.bufpos)
                 break
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isDeferred=false)
-                
-                if p.status!=allOK: return nil
-                else: addChild(topBlock, subblock)
+                AddToken subblock
             of RParen:
                 inc(p.bufpos)
                 break
             of LCurly:
                 parseCurlyString(p)
-                if p.status != allOK: return nil
-
-                addChild(topBlock, newString(p.value,strip=true))
+                AddToken newString(p.value,strip=true)
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
                 if p.buf[p.bufpos+1]==chr(171): # got «
                     parseFullLineString(p)
-                    if p.status != allOK: return nil
-                    addChild(topBlock, newString(unicode.strip(p.value)))
+                    AddToken newString(unicode.strip(p.value))
                 else:
                     inc(p.bufpos)
 
             of chr(195):
                 if p.buf[p.bufpos+1]==chr(184):
-                    addChild(topBlock, newSymbol(slashedzero))
+                    AddToken newSymbol(slashedzero)
                     inc(p.bufpos)
                     inc(p.bufpos)
                 else:
@@ -621,20 +599,13 @@ proc doParse*(input: string, isFile: bool = true): Value =
     # initialize
 
     p.value = ""
-    p.status = allOK
 
     # do parse
     
     let rootBlock = parseBlock(p, 0)
 
     # if everything went fine, return result
-
-    if p.status==allOK:
-        when defined(VERBOSE):
-            showDebugHeader("Parse")
-            rootBlock.dump(0,false)
+    when defined(VERBOSE):
+        rootBlock.dump(0,false)
             
-        return rootBlock
-    else:
-        echo fmt("Error: {ParserStatusString[p.status]}")
-        return nil
+    return rootBlock

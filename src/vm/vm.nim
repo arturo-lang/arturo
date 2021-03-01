@@ -79,9 +79,11 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
 
     setupLibrary()
 
-    let parsed = doParse(move code, isFile)
-    let evaled = parsed.doEval()
-    discard doExec(evaled)
-    
-    showVMErrors()
+    try:
+        let parsed = doParse(move code, isFile)
+        let evaled = parsed.doEval()
+        discard doExec(evaled)
+    except:
+        let e = getCurrentException()
+        showVMErrors(e)
     
