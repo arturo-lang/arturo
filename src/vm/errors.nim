@@ -19,8 +19,9 @@ import helpers/colors as ColorsHelper
 import vm/[stack, value]
 
 const
-    RuntimeError* = "Runtime"
-    SyntaxError*  = "Syntax"
+    RuntimeError*   = "Runtime"
+    SyntaxError*    = "Syntax"
+    CompilerError*  = "Compiler"
 
     Alternative*  = "perhaps you meant"
 
@@ -65,6 +66,13 @@ proc showVMErrors*(e: ref Exception) =
 #=======================================
 # Templates
 #=======================================
+
+## Compiler errors
+
+template CompilerError_ScriptNotExists*(name: string): untyped =
+    panic CompilerError,
+          "given script path doesn't exist:" & ";" &
+          name
 
 ## Syntax errors
 
