@@ -19,8 +19,8 @@ import helpers/colors as ColorsHelper
 import vm/[stack, value]
 
 const
-    RuntimeError = "Runtime Error"
-    ParseError   = "Parse Error"
+    RuntimeError* = "Runtime Error"
+    SyntaxError*  = "Syntax Error"
 
 type 
     ReturnTriggered* = object of Defect
@@ -43,7 +43,7 @@ template panic*(context: string, error: string): untyped =
 proc showVMErrors*(e: ref Exception) =
     var header = e.name
 
-    if $(header) notin [RuntimeError, ParseError]:
+    if $(header) notin [RuntimeError, SyntaxError]:
         header = RuntimeError
 
     let marker = ">>"
@@ -70,8 +70,13 @@ proc showVMErrors*(e: ref Exception) =
 template showConversionError*():untyped =
     echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
 
-template invalidConversionError*(origin: string):untyped =
+template invalidConversionError*(origin: string): untyped =
     echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
+
+template SyntaxError_MissingClosingBracket*(context: string): untyped =
+    panic SyntaxError,
+          "missing closing bracket" & ";" & 
+          "near: " & context
 
 template RuntimeError_OutOfBounds*(indx: int, maxRange: int):untyped =
     panic RuntimeError,
