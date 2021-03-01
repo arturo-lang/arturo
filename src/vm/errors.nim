@@ -19,8 +19,8 @@ import helpers/colors as ColorsHelper
 import vm/[stack, value]
 
 const
-    RuntimeError* = "Runtime Error"
-    SyntaxError*  = "Syntax Error"
+    RuntimeError* = "Runtime"
+    SyntaxError*  = "Syntax"
 
 type 
     ReturnTriggered* = object of Defect
@@ -52,7 +52,11 @@ proc showVMErrors*(e: ref Exception) =
 
     var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
 
-    let errMsg = message.split(";").map((x)=>strutils.strip(x)).join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
+    let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," "))
+    let alignedError = alignLeft("Error", header.len)
+    var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
+    if errMsgParts.len > 1:
+        errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
     # emptyStack()
 
@@ -69,28 +73,32 @@ proc showVMErrors*(e: ref Exception) =
 
 ## Syntax errors
 
-template SyntaxError_MissingClosingBracket*(context: string): untyped =
+template SyntaxError_MissingClosingBracket*(lineno: int, context: string): untyped =
     panic SyntaxError,
-          "missing closing bracket" & ";" & 
+          "missing closing bracket" & ";;" & 
+          "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_UnterminatedString*(strtype: string, context: string): untyped =
+template SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string): untyped =
     var strt = strtype
     if strt!="": strt &= " "
     panic SyntaxError,
-          "unterminated " & strt & "string;" & 
+          "unterminated " & strt & "string;;" & 
+          "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_NewlineInQuotedString*(context: string): untyped =
+template SyntaxError_NewlineInQuotedString*(lineno: int, context: string): untyped =
     panic SyntaxError,
           "newline in quoted string;" & 
           "for multiline strings, you could use either:;" &
-          "curly blocks _{..}_ or _triple \"-\"_ templates;" &
+          "curly blocks _{..}_ or _triple \"-\"_ templates;;" &
+          "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_EmptyLiteral*(context: string): untyped =
+template SyntaxError_EmptyLiteral*(lineno: int, context: string): untyped =
     panic SyntaxError,
-          "empty literal value;" & 
+          "empty literal value;;" & 
+          "line: " & $(lineno) & ";" &
           "near: " & context
 
 ## Runtime errors
