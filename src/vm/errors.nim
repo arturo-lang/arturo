@@ -10,9 +10,9 @@
 # Libraries
 #=======================================
 
-import sequtils, sets
+import re, sequtils, sets
 import strformat, strutils, sugar
-import nre except toSeq
+#import nre except toSeq
 
 import helpers/colors as ColorsHelper
 
@@ -50,7 +50,7 @@ proc showVMErrors*(e: ref Exception) =
     let separator = "|"
     let indent = repeat(" ", header.len + marker.len + 2)
 
-    var message = e.msg.replace(nre.re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+    var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
 
     let errMsg = message.split(";").map((x)=>strutils.strip(x)).join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
@@ -79,6 +79,13 @@ template SyntaxError_UnterminatedString*(strtype: string, context: string): unty
     if strt!="": strt &= " "
     panic SyntaxError,
           "unterminated " & strt & "string;" & 
+          "near: " & context
+
+template SyntaxError_NewlineInQuotedString*(context: string): untyped =
+    panic SyntaxError,
+          "newline in quoted string;" & 
+          "for multiline strings, you could use either:;" &
+          "curly blocks _{..}_ or _triple \"-\"_ templates;" &
           "near: " & context
 
 template SyntaxError_EmptyLiteral*(context: string): untyped =
