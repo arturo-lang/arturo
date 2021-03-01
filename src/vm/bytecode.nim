@@ -206,9 +206,11 @@ type
         opJumpIfNot     = 0x99
         opRet           = 0x9A
         opEnd           = 0x9B
+
+        opNop           = 0x9C
         
         # reserved
-        opRsrv0         = 0x9C
+
         opRsrv1         = 0x9D
         opRsrv2         = 0x9E
         opRsrv3         = 0x9F
