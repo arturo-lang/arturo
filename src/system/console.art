@@ -60,12 +60,14 @@ while [true] .import [
 		inp: inp ++ input ".. " ++ indent
 	]
 
-	try.verbose.import to :block inp
+	try.verbose.import [
+		try.verbose.import to :block inp
 
-	StackSize: size stack
-	
-	if StackSize > 0 		-> Got: pop 1
-	if Got <> null 			-> print color.gray ~"=> |Got|"
+		StackSize: size stack
+		
+		if StackSize > 0 		-> Got: pop 1
+		if Got <> null 			-> print color.gray ~"=> |Got|"
 
-	print ""
+		print ""
+	]
 ]
