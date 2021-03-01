@@ -70,7 +70,26 @@ const
 
 ## Error reporting
 
+proc getContext*(p: var Parser, curPos: int): string =
+    var startPos = curPos-15
+    var endPos = curPos+15
 
+    if startPos < 0: startPos = 0
+
+    result = ""
+
+    var i = startPos
+    while i<endPos and p.buf[i]!=EOF:
+        if p.buf[i] in [CR, LF, '\n']:
+            result &= " "
+        else:
+            result &= p.buf[i]
+        i += 1
+
+    if p.buf[i]!=EOF:
+        result &= "..."
+
+    result &= ";" & repeat("~%",6 + curPos-startPos) & "_^_"
 
 ## Lexer/parser
 
@@ -129,7 +148,7 @@ template parseString(p: var Parser, stopper: char = Quote) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("","...")
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
             of stopper:
                 inc(pos)
                 break
@@ -175,9 +194,9 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                SyntaxError_NewlineInQuotedString("...")
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
             of LF:
-                SyntaxError_NewlineInQuotedString("...")
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -189,7 +208,7 @@ template parseMultilineString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("multiline","...")
+                SyntaxError_UnterminatedString("multiline", p.lineNumber, getContext(p, p.bufpos))
             of Dash:
                 if p.buf[pos+1]==Dash and p.buf[pos+2]==Dash:
                     inc(pos,3)
@@ -228,7 +247,7 @@ template parseCurlyString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("curly","...")
+                SyntaxError_UnterminatedString("curly", p.lineNumber, getContext(p, p.bufpos))
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -400,6 +419,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
     var topBlock: Value
     if isDeferred: topBlock = newBlock()
     else: topBlock = newInline()
+    let initial = p.bufpos-1
 
     while true:
         setLen(p.value, 0)
@@ -407,7 +427,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
 
         case p.buf[p.bufpos]
             of EOF:
-                if level!=0: SyntaxError_MissingClosingBracket("...")
+                if level!=0: SyntaxError_MissingClosingBracket(p.lineNumber, getContext(p, initial))
                 break
             of Quote:
                 parseString(p)
@@ -453,7 +473,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of Tick:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    SyntaxError_EmptyLiteral("...")
+                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos))
                 else:
                     addChild(topBlock, newLiteral(p.value))
             of Dot:
