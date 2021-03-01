@@ -16,7 +16,7 @@ import strformat, strutils, sugar
 
 import helpers/colors as ColorsHelper
 
-import vm/[stack, value]
+import vm/[bytecode, stack, value]
 
 const
     RuntimeError*   = "Runtime"
@@ -35,13 +35,55 @@ var
     vmReturn* = false
     vmBreak* = false
     vmContinue* = false
+    # opstack
+    OpStack*    : array[4,OpCode]
+    ConstStack* : ValueArray
 
 #=======================================
 # Helpers
 #=======================================
 
-template panic*(context: string, error: string): untyped =
-    raise VMError(name: context, msg:error)
+proc getOpStack*(): string =
+    if DoDebug:
+        try:
+            var ret = ";;"
+            ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
+            ret &= (fg(grayColor)).replace(";","%&") & "bytecode stack trace:;" & resetColor
+            ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
+            for i in countdown(3,0):
+                let op = (OpCode)(OpStack[i])
+                if op!=opNop:
+                    ret &= (fg(grayColor)).replace(";","%&") & "\b>T@B" & ($(op)).replace("op","").toUpperAscii()
+                    case op:
+                        of opConstI0..opConstI10:
+                            ret &= " (" & $(ConstStack[(int)(op)-(int)opConstI0]) & ")"
+                        of opPush0..opPush30:
+                            ret &= " (" & $(ConstStack[(int)(op)-(int)opPush0]) & ")"
+                        of opStore0..opStore30:
+                            ret &= " (" & $(ConstStack[(int)(op)-(int)opStore0]) & ")"
+                        of opLoad0..opLoad30:
+                            ret &= " (" & $(ConstStack[(int)(op)-(int)opLoad0]) & ")"
+                        of opCall0..opCall30: 
+                            ret &= " (" & $(ConstStack[(int)(op)-(int)opCall0]) & ")"
+                        else:
+                            discard
+                    
+                    ret &= resetColor
+                        
+                if i!=0:
+                    ret &= ";"
+
+            ret
+        except:
+            ""
+    else:
+        ""
+
+proc panic*(context: string, error: string) =
+    var errorMsg = error
+    if $(context) notin [SyntaxError,CompilerError]:
+        errorMsg &= getOpStack()
+    raise VMError(name: context, msg:move errorMsg)
 
 proc showVMErrors*(e: ref Exception) =
     var header = e.name
@@ -55,7 +97,7 @@ proc showVMErrors*(e: ref Exception) =
 
     var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
 
-    let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," "))
+    let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
     let alignedError = align("error", header.len)
     var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
     if errMsgParts.len > 1:
