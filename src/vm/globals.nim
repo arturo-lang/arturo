@@ -50,10 +50,10 @@ var
 # Methods
 #=======================================
 
-proc suggestAlternative*(s: string): string {.inline.} =
+proc suggestAlternative*(s: string, reference: ValueDict = Syms): string {.inline.} =
     var minLevenshtein = 100
     result = ""
-    for k,v in pairs(Syms):
+    for k,v in pairs(reference):
         let ed = editDistance(s,k)
         if ed < minLevenshtein:
             minLevenshtein = ed
@@ -63,11 +63,40 @@ proc suggestAlternative*(s: string): string {.inline.} =
 # Methods
 #=======================================
 
-proc setValue*(s: string, v: Value) {.inline.} =
-    Syms[s] = v
+template GetKey*(dict: ValueDict, key: string): untyped =
+    if not dict.hasKey(key):
+        RuntimeError_KeyNotFound(key, suggestAlternative(key, reference=dict))
+    dict[key]
 
-template getValue*(s: string, safe: bool = true): untyped =
-    when safe:
+template GetArrayIndex*(arr: ValueArray, indx: int): untyped =
+    if indx < 0 or indx > (arr.len)-1:
+        RuntimeError_OutOfBounds(indx, arr.len-1)
+    arr[indx]
+
+template SetArrayIndex*(arr: ValueArray, indx: int, v: Value): untyped =
+    if indx < 0 or indx > (arr.len)-1:
+        RuntimeError_OutOfBounds(indx, arr.len-1)
+    arr[indx] = v
+
+template InPlace*(): untyped =
+    if not Syms.hasKey(x.s):
+        RuntimeError_SymbolNotFound(x.s, suggestAlternative(x.s))
+    Syms[x.s]
+
+template InPlaced*(): untyped =
+    Syms[x.s]
+
+template SetInPlace*(v: Value): untyped =
+    Syms[x.s] = v
+
+template SymExists*(s: string): untyped =
+    Syms.hasKey(s)
+
+template GetSym*(s: string, unsafe: bool = false): untyped =
+    when not unsafe:
         if not Syms.hasKey(s):
             RuntimeError_SymbolNotFound(s, suggestAlternative(s))
     Syms[s]
+
+template SetSym*(s: string, v: Value): untyped =
+    Syms[s] = v
