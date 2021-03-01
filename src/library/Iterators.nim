@@ -325,7 +325,7 @@ proc defineSymbols*() =
                     if not forever:
                         keepGoing = false
             elif x.kind==String:
-                var arr: seq[Value] = toSeq(runes(x.s)).map((x)=> newChar(x))
+                var arr: seq[Value] = toSeq(runes(x.s)).map((x) => newChar(x))
 
                 var keepGoing = true
                 while keepGoing:
