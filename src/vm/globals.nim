@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import std/editdistance, tables
+import std/editdistance, sequtils, tables
 
 import vm/[errors,value]
 
@@ -50,14 +50,18 @@ var
 # Methods
 #=======================================
 
-proc suggestAlternative*(s: string, reference: ValueDict = Syms): string {.inline.} =
+proc suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
     var minLevenshtein = 100
-    result = ""
+    var levs = initOrderedTable[string,int]()
+
     for k,v in pairs(reference):
-        let ed = editDistance(s,k)
-        if ed < minLevenshtein:
-            minLevenshtein = ed
-            result = k
+        levs[k] = editDistance(s,k)
+
+    proc cmper (x, y: (string, int)): int {.closure.} = cmp(x[1], y[1])
+    levs.sort(cmper)
+
+    if levs.len > 3: result = toSeq(levs.keys)[0..2]
+    else: result = toSeq(levs.keys)
 
 #=======================================
 # Methods
