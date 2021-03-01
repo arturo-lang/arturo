@@ -68,6 +68,12 @@ const
 # Helpers
 #=======================================
 
+## Error reporting
+
+
+
+## Lexer/parser
+
 template skip(p: var Parser) =
   var pos = p.bufpos
   while true:
@@ -95,8 +101,6 @@ template skip(p: var Parser) =
             # if p.buf[pos] == Tab:
             #     echo "next one is tab!"
         of '#':
-            # echo "found sharp @ " & $(pos)
-            # echo "char @+1: " & $(p.buf[pos+1])
             if p.buf[pos+1]=='!':
                 inc(pos)
                 while true:
@@ -286,9 +290,6 @@ template parseIdentifier(p: var Parser) =
 
 template parseNumber(p: var Parser) =
     var pos = p.bufpos
-    # if p.buf[pos] == Minus:
-    #     add(p.value, Minus)
-    #     inc(pos)
     while p.buf[pos] in Digits:
         add(p.value, p.buf[pos])
         inc(pos)
