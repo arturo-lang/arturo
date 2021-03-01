@@ -61,22 +61,22 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
+                if InPlace.kind==String:
                     if y.kind==String:
-                        Syms[x.s].s &= y.s
+                        InPlaced.s &= y.s
                     elif y.kind==Char:
-                        Syms[x.s].s &= $(y.c)
-                elif Syms[x.s].kind==Char:
+                        InPlaced.s &= $(y.c)
+                elif InPlaced.kind==Char:
                     if y.kind==String:
-                        Syms[x.s] = newString($(Syms[x.s].c) & y.s)
+                        SetInPlace(newString($(InPlaced.c) & y.s))
                     elif y.kind==Char:
-                        Syms[x.s] = newString($(Syms[x.s].c) & $(y.c))
+                        SetInPlace(newString($(InPlaced.c) & $(y.c)))
                 else:
                     if y.kind==Block:
                         for item in y.a:
-                            Syms[x.s].a.add(item)
+                            InPlaced.a.add(item)
                     else:
-                        Syms[x.s].a.add(y)
+                        InPlaced.a.add(y)
             else:
                 if x.kind==String:
                     if y.kind==String:
@@ -119,10 +119,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s = Syms[x.s].s[0..^2]
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s].a = Syms[x.s].a[0..^2]
+                if InPlace.kind==String:
+                    InPlaced.s = InPlaced.s[0..^2]
+                elif InPlaced.kind==Block:
+                    InPlaced.a = InPlaced.a[0..^2]
             else:
                 if x.kind==String:
                     stack.push(newString(x.s[0..^2]))
@@ -210,10 +210,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s = Syms[x.s].s[y.i..^1]
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s].a = Syms[x.s].a[y.i..^1]
+                if InPlace.kind==String:
+                    InPlaced.s = InPlaced.s[y.i..^1]
+                elif InPlaced.kind==Block:
+                    InPlaced.a = InPlaced.a[y.i..^1]
             else:
                 if x.kind==String:
                     stack.push(newString(x.s[y.i..^1]))
@@ -237,10 +237,10 @@ proc defineSymbols*() =
             empty 'str            ; str: ""
         """:
             ##########################################################
-            case Syms[x.s].kind:
-                of String: Syms[x.s].s = ""
-                of Block: Syms[x.s].a = @[]
-                of Dictionary: Syms[x.s].d = initOrderedTable[string,Value]()
+            case InPlace.kind:
+                of String: InPlaced.s = ""
+                of Block: InPlaced.a = @[]
+                of Dictionary: InPlaced.d = initOrderedTable[string,Value]()
                 else: discard
 
     builtin "empty?",
@@ -285,8 +285,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
+                discard InPlace
                 for k,v in pairs(y.d):
-                    Syms[x.s].d[k] = v
+                    InPlaced.d[k] = v
             else:
                 var res = copyValue(x)
                 for k,v in pairs(y.d):
@@ -348,7 +349,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                Syms[x.s] = Syms[x.s].flattened(once = popAttr("once")!=VNULL)
+                InPlace = InPlaced.flattened(once = popAttr("once")!=VNULL)
             else:
                 stack.push(x.flattened(once = popAttr("once")!=VNULL))
 
@@ -389,15 +390,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             case x.kind:
-                of Block: stack.push(x.a[y.i])
+                of Block: stack.push(GetArrayIndex(x.a, y.i))
                 of Dictionary: 
                     if y.kind==String:
-                        stack.push(x.d[y.s])
+                        stack.push(GetKey(x.d, y.s))
                     else:
-                        stack.push(x.d[$(y)])
+                        stack.push(GetKey(x.d, $(y)))
                 of String: stack.push(newChar(x.s.runeAtPos(y.i)))
                 of Date: 
-                    stack.push(x.e[y.s])
+                    stack.push(GetKey(x.e, y.s))
                 else: discard
 
     builtin "in?",
@@ -513,11 +514,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                case Syms[x.s].kind:
-                    of String: Syms[x.s].s.insert(z.s, y.i)
-                    of Block: Syms[x.s].a.insert(z, y.i)
+                case InPlace.kind:
+                    of String: InPlaced.s.insert(z.s, y.i)
+                    of Block: InPlaced.a.insert(z, y.i)
                     of Dictionary:
-                        Syms[x.s].d[y.s] = z
+                        InPlaced.d[y.s] = z
                     else: discard
             else:
                 case x.kind:
@@ -712,24 +713,24 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
+                if InPlace.kind==String:
                     if (popAttr("once") != VNULL):
-                        Syms[x.s] = newString(Syms[x.s].s.removeFirst(y.s))
+                        SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
                     else:
-                        Syms[x.s] = newString(Syms[x.s].s.replace(y.s))
-                elif Syms[x.s].kind==Block: 
+                        SetInPlace(newString(InPlaced.s.replace(y.s)))
+                elif InPlaced.kind==Block: 
                     if (popAttr("once") != VNULL):
-                        Syms[x.s] = newBlock(Syms[x.s].a.removeFirst(y))
+                        SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
                     elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                        Syms[x.s] = newBlock(Syms[x.s].a.removeByIndex(aIndex.i))
+                        SetInPlace(newBlock(InPlaced.a.removeByIndex(aIndex.i)))
                     else:
-                        Syms[x.s] = newBlock(Syms[x.s].a.removeAll(y))
-                elif Syms[x.s].kind==Dictionary:
+                        SetInPlace(newBlock(InPlaced.a.removeAll(y)))
+                elif InPlaced.kind==Dictionary:
                     let key = (popAttr("key") != VNULL)
                     if (popAttr("once") != VNULL):
-                        Syms[x.s] = newDictionary(Syms[x.s].d.removeFirst(y, key))
+                        SetInPlace(newDictionary(InPlaced.d.removeFirst(y, key)))
                     else:
-                        Syms[x.s] = newDictionary(Syms[x.s].d.removeAll(y, key))
+                        SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
             else:
                 if x.kind==String:
                     if (popAttr("once") != VNULL):
@@ -775,12 +776,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s] = newString(Syms[x.s].s.repeat(y.i))
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s] = newBlock(Syms[x.s].a.cycle(y.i))
+                if InPlace.kind==String:
+                    SetInPlace(newString(InPlaced.s.repeat(y.i)))
+                elif InPlaced.kind==Block:
+                    SetInPlace(newBlock(InPlaced.a.cycle(y.i)))
                 else:
-                    Syms[x.s] = newBlock(Syms[x.s].repeat(y.i))
+                    SetInPlace(newBlock(InPlaced.repeat(y.i)))
             else:
                 if x.kind==String:
                     stack.push(newString(x.s.repeat(y.i)))
@@ -817,10 +818,10 @@ proc defineSymbols*() =
                     result[s.high - i] = c
 
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s.reverse()
+                if InPlace.kind==String:
+                    InPlaced.s.reverse()
                 else:
-                    Syms[x.s].a.reverse()
+                    InPlaced.a.reverse()
             else:
                 if x.kind==Block: stack.push(newBlock(x.a.reversed))
                 elif x.kind==String: stack.push(newString(x.s.reversed))
@@ -867,7 +868,7 @@ proc defineSymbols*() =
             ##########################################################
             case x.kind:
                 of Block: 
-                    x.a[y.i] = z
+                    SetArrayIndex(x.a, y.i, z)
                 of Dictionary:
                     if y.kind==String:
                         x.d[y.s] = z
@@ -893,7 +894,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                Syms[x.s].a.shuffle()
+                InPlace.a.shuffle()
             else:
                 stack.push(newBlock(x.a.dup(shuffle)))
 
@@ -985,15 +986,15 @@ proc defineSymbols*() =
                         
             else: 
                 if (let aAs = popAttr("as"); aAs != VNULL):
-                    Syms[x.s].a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
+                    InPlace.a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
                 else:
                     if (popAttr("sensitive")!=VNULL):
-                        Syms[x.s].a.unisort("en", sensitive=true, order = sortOrdering)
+                        InPlace.a.unisort("en", sensitive=true, order = sortOrdering)
                     else:
-                        if Syms[x.s].a[0].kind==String:
-                            Syms[x.s].a.unisort("en", order = sortOrdering)
+                        if InPlace.a[0].kind==String:
+                            InPlaced.a.unisort("en", order = sortOrdering)
                         else:
-                            Syms[x.s].a.sort(order = sortOrdering)
+                            InPlaced.a.sort(order = sortOrdering)
 
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
@@ -1030,42 +1031,42 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
+                if InPlace.kind==String:
                     if (popAttr("words") != VNULL):
-                        Syms[x.s] = newStringBlock(strutils.splitWhitespace(Syms[x.s].s))
+                        SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
                     elif (popAttr("lines") != VNULL):
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.splitLines())
+                        SetInPlace(newStringBlock(InPlaced.s.splitLines()))
                     elif (let aBy = popAttr("by"); aBy != VNULL):
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.split(aBy.s))
+                        SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.split(nre.re(aRegex.s)))
+                        SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
-                        Syms[x.s] = newStringBlock(@[Syms[x.s].s[0..aAt.i-1], Syms[x.s].s[aAt.i..^1]])
+                        SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1], InPlaced.s[aAt.i..^1]]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
                         var ret: seq[string] = @[]
-                        var length = Syms[x.s].s.len
+                        var length = InPlaced.s.len
                         var i = 0
 
                         while i<length:
-                            ret.add(Syms[x.s].s[i..i+aEvery.i-1])
+                            ret.add(InPlaced.s[i..i+aEvery.i-1])
                             i += aEvery.i
 
-                        Syms[x.s] = newStringBlock(ret)
+                        SetInPlace(newStringBlock(ret))
                     else:
-                        Syms[x.s] = newStringBlock(toSeq(runes(x.s)).map((x) => $(x)))
+                        SetInPlace(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
                 else:
                     if (let aAt = popAttr("at"); aAt != VNULL):
-                        Syms[x.s] = newBlock(@[newBlock(Syms[x.s].a[0..aAt.i]), newBlock(Syms[x.s].a[aAt.i..^1])])
+                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]), newBlock(InPlaced.a[aAt.i..^1])]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
                         var ret: ValueArray = @[]
-                        var length = Syms[x.s].a.len
+                        var length = InPlaced.a.len
                         var i = 0
 
                         while i<length:
-                            ret.add(Syms[x.s].a[i..i+aEvery.i-1])
+                            ret.add(InPlaced.a[i..i+aEvery.i-1])
                             i += aEvery.i
 
-                        Syms[x.s] = newBlock(ret)
+                        SetInPlace(newBlock(ret))
                     else: discard
 
             elif x.kind==String:
@@ -1125,24 +1126,24 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
+                if InPlace.kind==String:
                     var i = 0
                     var ret = ""
-                    while i<Syms[x.s].s.len:
-                        ret &= $(Syms[x.s].s[i])
-                        while (i+1<Syms[x.s].s.len and Syms[x.s].s[i+1]==x.s[i]):
+                    while i<InPlaced.s.len:
+                        ret &= $(InPlaced.s[i])
+                        while (i+1<InPlaced.s.len and InPlaced.s[i+1]==x.s[i]):
                             i += 1
                         i += 1
-                    Syms[x.s] = newString(ret)
-                elif Syms[x.s].kind==Block:
+                    SetInPlace(newString(ret))
+                elif InPlaced.kind==Block:
                     var i = 0
                     var ret: ValueArray = @[]
-                    while i<Syms[x.s].a.len:
-                        ret.add(Syms[x.s].a[i])
-                        while (i+1<Syms[x.s].a.len and Syms[x.s].a[i+1]==Syms[x.s].a[i]):
+                    while i<InPlaced.a.len:
+                        ret.add(InPlaced.a[i])
+                        while (i+1<InPlaced.a.len and InPlaced.a[i+1]==InPlaced.a[i]):
                             i += 1
                         i += 1
-                    Syms[x.s] = newBlock(ret)
+                    SetInPlace(newBlock(ret))
             else:
                 if x.kind==String:
                     var i = 0
@@ -1182,10 +1183,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s = Syms[x.s].s[0..y.i-1]
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s].a = Syms[x.s].a[0..y.i-1]
+                if InPlace.kind==String:
+                    InPlaced.s = InPlaced.s[0..y.i-1]
+                elif InPlaced.kind==Block:
+                    InPlaced.a = InPlaced.a[0..y.i-1]
             else:
                 if x.kind==String:
                     stack.push(newString(x.s[0..y.i-1]))
@@ -1211,7 +1212,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
-            else: Syms[x.s].a = Syms[x.s].a.deduplicate()
+            else: InPlace.a = InPlaced.a.deduplicate()
 
     builtin "values",
         alias       = unaliased, 

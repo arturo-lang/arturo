@@ -43,13 +43,11 @@ template storeByIndex(idx: int):untyped =
 
 template loadByIndex(idx: int):untyped =
     let symIndx = cnst[idx].s
-    let item = Syms.getOrDefault(symIndx)
-    if item.isNil: panic "symbol not found: " & symIndx
-    stack.push(Syms[symIndx])
+    let item = GetSym(symIndx)
+    stack.push(item)
 
 template callByName*(symIndx: string):untyped =
-    let fun = Syms.getOrDefault(symIndx)
-    if fun.isNil: panic "symbol not found: " & symIndx
+    let fun = GetSym(symIndx)
     if fun.fnKind==UserFunction:
         discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports, exportable=fun.exportable)
     else:
@@ -79,7 +77,8 @@ proc execBlock*(
     #isBreakable     : bool = false,
     imports         : Value = nil,
     exports         : Value = nil,
-    exportable      : bool = false
+    exportable      : bool = false,
+    inTryBlock      : bool = false
 ): ValueDict =
     var newSyms: ValueDict
     let savedArities = Arities
@@ -144,13 +143,14 @@ proc execBlock*(
                         Arities.del(arg.s)
 
             else:
-                if execInParent:
-                    Syms=newSyms
-                else:
-                    Arities = savedArities
-                    for k, v in pairs(newSyms):
-                        if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
-                            Syms[k] = newSyms[k]
+                if not inTryBlock or (inTryBlock and getCurrentException().isNil()):
+                    if execInParent:
+                        Syms=newSyms
+                    else:
+                        Arities = savedArities
+                        for k, v in pairs(newSyms):
+                            if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
+                                Syms[k] = newSyms[k]
 
     return Syms
 

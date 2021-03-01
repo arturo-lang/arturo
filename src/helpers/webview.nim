@@ -28,11 +28,7 @@ when not defined(MINI):
 # Libraries
 #=======================================
 
-import std/json, os, osproc, strutils, tables
-
-when not defined(MINI):
-    import helpers/json as jsonHelper
-    import vm/value
+import os, osproc, strutils
 
 #=======================================
 # Types
@@ -73,7 +69,7 @@ when not defined(MINI):
     proc setColor*(w: Webview; r,g,b,a: uint8) {.importc: "webview_set_color", header: "webview.h".}
     proc setFullscreen*(w: Webview; fullscreen: cint) {.importc: "webview_set_fullscreen", header: "webview.h".}
     proc dialog*(w: Webview; dlgtype: DialogType; flags: cint; title: cstring; arg: cstring; result: cstring; resultsz: csize_t) {.importc: "webview_dialog", header: "webview.h".}
-    proc dispatch(w: Webview; fn: pointer; arg: pointer) {.importc: "webview_dispatch", header: "webview.h".}
+    #proc dispatch(w: Webview; fn: pointer; arg: pointer) {.importc: "webview_dispatch", header: "webview.h".}
     proc terminate*(w: Webview) {.importc: "webview_terminate", header: "webview.h".}
     proc exit*(w: Webview) {.importc: "webview_exit", header: "webview.h".}
     proc debug*(format: cstring) {.varargs, importc: "webview_debug", header: "webview.h".}

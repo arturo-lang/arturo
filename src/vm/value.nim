@@ -31,6 +31,8 @@ type
     Byte = byte
     ByteArray*  = seq[Byte]
 
+    IntArray*   = seq[int]
+
     BuiltinAction = proc ()
 
     SymbolKind* = enum
@@ -177,7 +179,9 @@ type
                 eobj*  : DateTime
             of Binary:      n*  : ByteArray
             of Inline,
-               Block:       a*  : ValueArray
+               Block:       
+                   a*   : ValueArray
+                   #refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Function:    
                 case fnKind*: FunctionKind:
@@ -415,11 +419,11 @@ proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
 proc newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
     Value(kind: Bytecode, consts: c, instrs: i)
 
-proc newInline*(a: ValueArray = @[]): Value {.inline.} = 
-    Value(kind: Inline, a: a)
+proc newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
+    Value(kind: Inline, a: a)#, refs: refs)
 
-proc newBlock*(a: ValueArray = @[]): Value {.inline.} =
-    Value(kind: Block, a: a)
+proc newBlock*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
+    Value(kind: Block, a: a)#, refs: refs)
 
 proc newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))

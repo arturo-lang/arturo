@@ -343,9 +343,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("get") != VNULL):
-                stack.push(newDictionary(getInfo(x.s, Syms[x.s])))
+                stack.push(newDictionary(getInfo(x.s, InPlace)))
             else:
-                printInfo(x.s, Syms[x.s])
+                printInfo(x.s, InPlace)
 
     builtin "inline?",
         alias       = unaliased, 
@@ -555,7 +555,7 @@ proc defineSymbols*() =
             print set? 'zoom          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(Syms.hasKey(x.s)))
+            stack.push(newBoolean(SymExists(x.s)))
 
     builtin "stack",
         alias       = unaliased, 

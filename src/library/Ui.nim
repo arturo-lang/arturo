@@ -69,7 +69,7 @@ proc defineSymbols*() =
             var title = "Arturo"
             var width = 640
             var height = 480
-            var fixed = (popAttr("fixed")!= VNULL)
+            var fixed = (popAttr("fixed")!=VNULL)
             var withDebug = (popAttr("debug")!=VNULL)
 
             if (let aTitle = popAttr("title"); aTitle != VNULL):
@@ -98,8 +98,8 @@ proc defineSymbols*() =
                     debug       = withDebug,
                     handler     = proc (w: Webview, arg: cstring) =
                         let got = valueFromJson($arg)
-                        stack.push(got.d["args"])
-                        callByName(got.d["method"].s)
+                        stack.push(GetKey(got.d, "args"))
+                        callByName(GetKey(got.d, "method").s)
                 )
 
                 builtin "eval",
