@@ -606,7 +606,6 @@ proc doParse*(input: string, isFile: bool = true): Value =
 
     # if everything went fine, return result
     when defined(VERBOSE):
-        showDebugHeader("Parse")
         rootBlock.dump(0,false)
             
     return rootBlock
