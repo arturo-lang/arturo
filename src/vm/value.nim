@@ -1365,7 +1365,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 dump(v.params, level+1, false, muted=muted)
                 dump(v.main, level+1, true, muted=muted)
             else:
-                stdout.write "<function>(builtin)"
+                for i in 0..level: stdout.write "\t"
+                stdout.write "(builtin)"
 
             stdout.write "\n"
 
