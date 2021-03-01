@@ -22,6 +22,8 @@ const
     RuntimeError* = "Runtime"
     SyntaxError*  = "Syntax"
 
+    Alternative*  = "perhaps you meant"
+
 type 
     ReturnTriggered* = object of Defect
     VMError* = ref object of Defect
@@ -53,7 +55,7 @@ proc showVMErrors*(e: ref Exception) =
     var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
 
     let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," "))
-    let alignedError = alignLeft("Error", header.len)
+    let alignedError = align("error", header.len)
     var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
     if errMsgParts.len > 1:
         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
@@ -108,15 +110,17 @@ template RuntimeError_OutOfBounds*(indx: int, maxRange: int):untyped =
           "array index out of bounds: " & $(indx) & ";" & 
           "valid range: 0.." & $(maxRange)
 
-template RuntimeError_SymbolNotFound*(sym: string, alter: string):untyped =
+template RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]):untyped =
+    let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "symbol not found: " & sym & ";" & 
-          "perhaps you meant _" & alter & "_ ?"
+          "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
-template RuntimeError_KeyNotFound*(sym: string, alter: string):untyped =
+template RuntimeError_KeyNotFound*(sym: string, alter: seq[string]):untyped =
+    let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "dictionary key not found: " & sym & ";" & 
-          "perhaps you meant _" & alter & "_ ?"
+          "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
 template RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
     panic RuntimeError,
