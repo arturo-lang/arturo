@@ -69,7 +69,7 @@ proc defineSymbols*() =
             var title = "Arturo"
             var width = 640
             var height = 480
-            var fixed = (popAttr("fixed")!= VNULL)
+            var fixed = (popAttr("fixed")!=VNULL)
             var withDebug = (popAttr("debug")!=VNULL)
 
             if (let aTitle = popAttr("title"); aTitle != VNULL):
