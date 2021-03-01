@@ -75,7 +75,7 @@ proc defineSymbols*() =
             var fun: Value
 
             if x.kind==Literal or x.kind==String:
-                fun = getValue(x.s)
+                fun = InPlace
             else:
                 fun = x
 
@@ -253,7 +253,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             for k,v in pairs(Syms):
-                setValue(k, v)
+                SetSym(k, v)
 
     builtin "if",
         alias       = unaliased, 
@@ -330,7 +330,7 @@ proc defineSymbols*() =
             print x           ; 10
         """:
             ##########################################################
-            setValue(x.s, y)
+            SetInPlace(y)
 
     builtin "new",
         alias       = unaliased, 
@@ -556,7 +556,7 @@ proc defineSymbols*() =
             print g 10              ; 12
         """:
             ##########################################################
-            stack.push(getValue(x.s))
+            stack.push(InPlace)
 
     builtin "when?",
         alias       = unaliased, 

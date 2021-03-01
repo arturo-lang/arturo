@@ -50,12 +50,12 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("url")!=VNULL):
                 if x.kind==Literal:
-                    Syms[x.s].s = Syms[x.s].s.decodeUrl()
+                    InPlace.s = InPlaced.s.decodeUrl()
                 else:
                     stack.push(newString(x.s.decodeUrl()))
             else:
                 if x.kind==Literal:
-                    Syms[x.s].s = Syms[x.s].s.decode()
+                    InPlace.s = InPlaced.s.decode()
                 else:
                     stack.push(newString(x.s.decode()))
 
@@ -80,12 +80,12 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("url")!=VNULL):
                 if x.kind==Literal:
-                    Syms[x.s].s = Syms[x.s].s.encodeUrl()
+                    InPlace.s = InPlaced.s.encodeUrl()
                 else:
                     stack.push(newString(x.s.encodeUrl()))
             else:
                 if x.kind==Literal:
-                    Syms[x.s].s = Syms[x.s].s.encode()
+                    InPlace.s = InPlaced.s.encode()
                 else:
                     stack.push(newString(x.s.encode()))
 
@@ -110,12 +110,12 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("sha") != VNULL):
                 if x.kind==Literal:
-                    Syms[x.s] = newString(($(secureHash(Syms[x.s].s))).toLowerAscii())
+                    SetInPlace(newString(($(secureHash(InPlace.s))).toLowerAscii()))
                 else:
                     stack.push(newString(($(secureHash(x.s))).toLowerAscii()))
             else:
                 if x.kind==Literal:
-                    Syms[x.s] = newString(($(toMD5(Syms[x.s].s))).toLowerAscii())
+                    SetInPlace(newString(($(toMD5(InPlace.s))).toLowerAscii()))
                 else:
                     stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
 

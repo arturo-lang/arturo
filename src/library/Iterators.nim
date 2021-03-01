@@ -106,13 +106,14 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in Syms[x.s].a:
+                discard InPlace
+                for i,item in InPlaced.a:
                     stack.push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
                     if not stack.pop().b:
                         res.add(item)
 
-                Syms[x.s].a = res
+                InPlaced.a = res
             else:
                 for item in x.a:
                     stack.push(item)
@@ -155,7 +156,7 @@ proc defineSymbols*() =
 
             var seed = I0
             if x.kind==Literal:
-                if Syms[x.s].a[0].kind == String:
+                if InPlace.a[0].kind == String:
                     seed = newString("")
             else:
                 if x.a[0].kind == String:
@@ -166,7 +167,7 @@ proc defineSymbols*() =
 
             let doRightFold = (popAttr("right")!=VNULL)
 
-            if (x.kind==Literal and Syms[x.s].a.len==0):
+            if (x.kind==Literal and InPlace.a.len==0):
                 discard
             elif (x.kind!=Literal and x.a.len==0):
                 stack.push(x)
@@ -176,8 +177,8 @@ proc defineSymbols*() =
 
                     if x.kind == Literal:
                         var res: Value = seed
-                        for i in countdown(Syms[x.s].a.len-1,0):
-                            let a = Syms[x.s].a[i]
+                        for i in countdown(InPlaced.a.len-1,0):
+                            let a = InPlaced.a[i]
                             let b = res
 
                             stack.push(b)
@@ -187,7 +188,7 @@ proc defineSymbols*() =
 
                             res = stack.pop()
 
-                        Syms[x.s] = res
+                        SetInPlace(res)
 
                     else:
                         var res: Value = seed
@@ -219,7 +220,7 @@ proc defineSymbols*() =
 
                             res = stack.pop()
 
-                        Syms[x.s] = res
+                        SetInPlace(res)
 
                     else:
                         var res: Value = seed
@@ -405,10 +406,11 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in Syms[x.s].a:
+                discard InPlace
+                for i,item in InPlaced.a:
                     stack.push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    Syms[x.s].a[i] = stack.pop()
+                    InPlaced.a[i] = stack.pop()
             else:
                 for item in x.a:
                     stack.push(item)
@@ -450,13 +452,14 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in Syms[x.s].a:
+                discard InPlace
+                for i,item in InPlaced.a:
                     stack.push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
                     if stack.pop().b:
                         res.add(item)
 
-                Syms[x.s].a = res
+                InPlaced.a = res
             else:
                 for item in x.a:
                     stack.push(item)
