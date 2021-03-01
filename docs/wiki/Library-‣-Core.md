@@ -169,7 +169,7 @@ Duplicate the top of the stack and convert non-returning call to a do-return cal
 #### Usage
 
 <pre>
-<b>dup</b> 
+<b>dup</b> <ins>value</ins> <i>:any</i>
 </pre>
 
 #### Returns
@@ -242,12 +242,12 @@ Make all symbols within current context global
 
 #### Description
 
-Perform action, if given condition is true
+Perform action, if given condition is not false or null
 
 #### Usage
 
 <pre>
-<b>if</b> <ins>condition</ins> <i>:boolean</i>
+<b>if</b> <ins>condition</ins> <i>:any</i>
    <ins>action</ins> <i>:block</i>
 </pre>
 
@@ -268,12 +268,12 @@ if x=2 -> print "yes, that's right!"
 
 #### Description
 
-Perform action, if given condition is true and return condition result
+Perform action, if given condition is not false or null and return condition result
 
 #### Usage
 
 <pre>
-<b>if?</b> <ins>condition</ins> <i>:boolean</i>
+<b>if?</b> <ins>condition</ins> <i>:any</i>
     <ins>action</ins> <i>:block</i>
 </pre>
 
@@ -433,6 +433,12 @@ Perform action and catch possible errors
 <pre>
 <b>try</b> <ins>action</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|import|<i>:boolean</i>|execute at root level|
+|verbose|<i>:boolean</i>|print all error messages as usual|
 
 #### Returns
 
@@ -460,6 +466,12 @@ Perform action, catch possible errors and return status
 <pre>
 <b>try?</b> <ins>action</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|import|<i>:boolean</i>|execute at root level|
+|verbose|<i>:boolean</i>|print all error messages as usual|
 
 #### Returns
 
@@ -483,7 +495,7 @@ else [
 
 #### Description
 
-Execute action until the given condition is true
+Execute action until the given condition is not false or null
 
 #### Usage
 
@@ -577,7 +589,7 @@ case [a]
 
 #### Description
 
-Execute action while the given condition is true
+Execute action while the given condition is is not false or null
 
 #### Usage
 
