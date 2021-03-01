@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import lexbase, streams, strutils, unicode
+import lexbase, sequtils, streams, strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug as debugHelper
@@ -80,15 +80,13 @@ proc getContext*(p: var Parser, curPos: int): string =
 
     var i = startPos
     while i<endPos and p.buf[i]!=EOF:
-        if p.buf[i] in [CR, LF, '\n']:
-            result &= " "
-        else:
-            result &= p.buf[i]
+        result &= p.buf[i]
         i += 1
 
     if p.buf[i]!=EOF:
         result &= "..."
 
+    result = join(toSeq(splitLines(result))," ")
     result &= ";" & repeat("~%",6 + curPos-startPos) & "_^_"
 
 ## Lexer/parser
