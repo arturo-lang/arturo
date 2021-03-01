@@ -15,7 +15,7 @@ import lexbase, streams, strformat, strutils, unicode
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug as debugHelper
 
-import vm/value
+import vm/[errors, value]
 
 #=======================================
 # Types
@@ -434,7 +434,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
         case p.buf[p.bufpos]
             of EOF:
                 if level!=0:
-                    p.status = missingClosingBracketError
+                    SyntaxError_MissingClosingBracket("...")
                     return nil
                 else:
                     break
@@ -628,13 +628,8 @@ proc doParse*(input: string, isFile: bool = true): Value =
     let rootBlock = parseBlock(p, 0)
 
     # if everything went fine, return result
-
-    if p.status==allOK:
-        when defined(VERBOSE):
-            showDebugHeader("Parse")
-            rootBlock.dump(0,false)
+    when defined(VERBOSE):
+        showDebugHeader("Parse")
+        rootBlock.dump(0,false)
             
-        return rootBlock
-    else:
-        echo fmt("Error: {ParserStatusString[p.status]}")
-        return nil
+    return rootBlock
