@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import math, tables
+import algorithm, math, tables
 
 when defined(VERBOSE):
     import strformat
@@ -344,10 +344,12 @@ proc printSyms*(vv:ValueDict, message: string)=
     echo "----------------------------"
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
-    #Syms.printSyms("In doExec")
     when defined(VERBOSE):
         if depth==0:
             showDebugHeader("VM")
+
+    if DoDebug:
+        ConstStack = input[0]
 
     let cnst = input[0]
     let it = input[1]
@@ -370,6 +372,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             break
 
         op = (OpCode)(it[i])
+
+        if DoDebug:
+            OpStack.rotateLeft(1)
+            OpStack[0] = op
 
         when defined(VERBOSE):
             echo fmt("exec: {op}")
@@ -440,8 +446,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opRet                : discard    
             of opEnd                : break 
 
+            of opNop                : discard
+
             # reserved
-            of opRsrv0..opRsrv3     : discard
+            of opRsrv1..opRsrv3     : discard
 
             # [0xA0-AF] #
             # arithmetic & logical operators
@@ -493,18 +501,4 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
     let newSyms = Syms
     Syms = oldSyms
 
-    #newSyms.printSyms("newSyms")
-    #Syms.printSyms("oldSyms -> Syms")
     return newSyms
-
-    # var newSyms: ValueDict = initOrderedTable[string,Value]()
-
-    # for k,v in pairs(Syms):
-    #     if not oldSyms.hasKey(k) or oldSyms[k]!=Syms[k]:
-    #         echo "new: " & k & " = " & $(v)
-    #         newSyms[k] = v
-
-    # echo "-------"
-
-    # return newSyms
-    
