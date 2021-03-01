@@ -51,7 +51,6 @@ var
 #=======================================
 
 proc suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
-    var minLevenshtein = 100
     var levs = initOrderedTable[string,int]()
 
     for k,v in pairs(reference):
