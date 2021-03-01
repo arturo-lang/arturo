@@ -67,16 +67,26 @@ proc showVMErrors*(e: ref Exception) =
 # Templates
 #=======================================
 
-template showConversionError*():untyped =
-    echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
-
-template invalidConversionError*(origin: string): untyped =
-    echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
+## Syntax errors
 
 template SyntaxError_MissingClosingBracket*(context: string): untyped =
     panic SyntaxError,
           "missing closing bracket" & ";" & 
           "near: " & context
+
+template SyntaxError_UnterminatedString*(strtype: string, context: string): untyped =
+    var strt = strtype
+    if strt!="": strt &= " "
+    panic SyntaxError,
+          "unterminated " & strt & "string;" & 
+          "near: " & context
+
+template SyntaxError_EmptyLiteral*(context: string): untyped =
+    panic SyntaxError,
+          "empty literal value;" & 
+          "near: " & context
+
+## Runtime errors
 
 template RuntimeError_OutOfBounds*(indx: int, maxRange: int):untyped =
     panic RuntimeError,
@@ -114,3 +124,10 @@ template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, 
           "incorrect argument type for " & ordinalPos & " parameter;" &
           "accepts " & acceptedStr
 
+## Misc errors
+
+template showConversionError*():untyped =
+    echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
+
+template invalidConversionError*(origin: string): untyped =
+    echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
