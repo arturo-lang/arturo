@@ -147,8 +147,7 @@ template parseString(p: var Parser, stopper: char = Quote) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("","...")
             of stopper:
                 inc(pos)
                 break
@@ -187,8 +186,9 @@ template parseString(p: var Parser, stopper: char = Quote) =
                             add(p.value, '\v')
                             inc(pos, 2)
                         else:
-                            p.status = unrecognizedEscapeSequence
-                            return
+                            add(p.value, "\\")
+                            add(p.value, p.buf[pos+1])
+                            inc(pos, 2)
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
@@ -209,8 +209,7 @@ template parseMultilineString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("multiline","...")
             of Dash:
                 if p.buf[pos+1]==Dash and p.buf[pos+2]==Dash:
                     inc(pos,3)
@@ -249,8 +248,7 @@ template parseCurlyString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("curly","...")
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -485,15 +483,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of Tick:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    p.status = emptyLiteralError
-                    for z in (p.bufpos-20)..(p.bufpos+20):
-                        if z==p.bufpos:
-                            stdout.write("***")
-                        stdout.write(p.buf[z])
-                        if z==p.bufpos:
-                            stdout.write("***")
-                    stdout.flushFile()
-                    return nil
+                    SyntaxError_EmptyLiteral("...")
                 else:
                     addChild(topBlock, newLiteral(p.value))
             of Dot:
