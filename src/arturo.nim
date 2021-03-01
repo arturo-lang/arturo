@@ -56,6 +56,7 @@ Options:
         uninstall <name>    Uninstall module by name
         update              Update all local modules
 
+  -d --debug                Show debugging information
   -h --help                 Show this help screen
   -v --version              Show current version
 """
@@ -108,6 +109,8 @@ when isMainModule:
                         of "m", "module":
                             action = evalCode
                             code = runModule
+                        of "d","debug":
+                            DoDebug = true
                         of "h","help":
                             action = showHelp
                         of "v","version":
