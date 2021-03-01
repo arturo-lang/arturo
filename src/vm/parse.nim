@@ -70,7 +70,7 @@ const
 
 template AddToken*(token: untyped): untyped =
     addChild(topBlock, token)
-    topBlock.refs.add(p.lineNumber)
+    #topBlock.refs.add(p.lineNumber)
 
 #=======================================
 # Helpers
