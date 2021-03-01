@@ -73,9 +73,19 @@ template showConversionError*():untyped =
 template invalidConversionError*(origin: string):untyped =
     echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
 
+template RuntimeError_OutOfBounds*(indx: int, maxRange: int):untyped =
+    panic RuntimeError,
+          "array index out of bounds: " & $(indx) & ";" & 
+          "valid range: 0.." & $(maxRange)
+
 template RuntimeError_SymbolNotFound*(sym: string, alter: string):untyped =
     panic RuntimeError,
           "symbol not found: " & sym & ";" & 
+          "perhaps you meant _" & alter & "_ ?"
+
+template RuntimeError_KeyNotFound*(sym: string, alter: string):untyped =
+    panic RuntimeError,
+          "dictionary key not found: " & sym & ";" & 
           "perhaps you meant _" & alter & "_ ?"
 
 template RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
