@@ -72,7 +72,7 @@ proc showVMErrors*(e: ref Exception) =
 template CompilerError_ScriptNotExists*(name: string): untyped =
     panic CompilerError,
           "given script path doesn't exist:" & ";" &
-          name
+          "_" & name & "_"
 
 ## Syntax errors
 
