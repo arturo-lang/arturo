@@ -77,15 +77,26 @@ when not defined(windows):
         hints = hintsTable
 
         proc completionsCback(buf: cstring; lc: ptr LinenoiseCompletions) {.cdecl.} =
-            for item in completions.map((x) => x.s).filter((x) => x.startsWith($(buf))):
-                linenoiseAddCompletion(lc, item.cstring)
+            var token = $(buf)
+            var copied = strip($(buf))
+            let tokenParts = splitWhitespace(token)
+            if tokenParts.len >= 1:
+                token = tokenParts[^1]
+                copied.removeSuffix(token)
+                for item in completions.map((x) => x.s).filter((x) => x.startsWith(token)):
+                    linenoiseAddCompletion(lc, (copied & item).cstring)
 
 
         proc hintsCback(buf: cstring; color: var cint; bold: var cint): cstring {.cdecl.} =
-            if hints.hasKey($(buf)):
-                color = 35
-                bold = 0
-                return " " & hints[$(buf)].s
+            var token = $(buf)
+            let tokenParts = splitWhitespace(token)
+            if tokenParts.len >= 1:
+                token = tokenParts[^1]
+                if hints.hasKey(token):
+                    color = 35
+                    bold = 0
+                    var pre: string = " "
+                    return " " & hints[token].s
             return nil
             
         if not ReplInitialized:
