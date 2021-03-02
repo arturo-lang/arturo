@@ -10,7 +10,7 @@
    * [The Language](#the-language)
    * [Installation](#installation)
       * [Manually](#manually)
-        * [What you'll need first](#what-you-ll-need-first)
+        * [What you'll need first](#what-youll-need-first)
         * [Build & Install Arturo](#build--install-arturo)
       * [Pre-built binaries](#pre-built-binaries)
       * [Alternative ways](#alternative-ways)
@@ -66,7 +66,7 @@ Installation
 
 If you want to have the latest cutting-edge version of Arturo, the easiest and most bulletproof way is to build it yourself.
 
-#### What'll you need first
+#### What you'll need first
 
 * [Nim compiler](https://nim-lang.org/)<br> 
   if you don't have it installed, all it'll take is 2 simple commands:
