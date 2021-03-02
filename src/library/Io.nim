@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import algorithm, linenoise, rdstdin, terminal
+import algorithm, rdstdin, terminal
 
 when not defined(windows):
     import linenoise
