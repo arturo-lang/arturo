@@ -8,7 +8,7 @@
 
 ;; initialize environment
 
-completions: sort keys symbols
+completions: map sort keys symbols => [& ++ " "]
 hints: #[]
 
 loop symbols [k,v][
