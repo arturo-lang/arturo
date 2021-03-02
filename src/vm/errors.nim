@@ -36,7 +36,7 @@ var
     vmBreak* = false
     vmContinue* = false
     # opstack
-    OpStack*    : array[4,OpCode]
+    OpStack*    : array[5,OpCode]
     ConstStack* : ValueArray
 
 #=======================================
@@ -50,21 +50,31 @@ proc getOpStack*(): string =
             ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
             ret &= (fg(grayColor)).replace(";","%&") & "bytecode stack trace:;" & resetColor
             ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
-            for i in countdown(3,0):
+            for i in countdown(4,0):
                 let op = (OpCode)(OpStack[i])
-                if op!=opNop:
+                if op!=opNop :
                     ret &= (fg(grayColor)).replace(";","%&") & "\b>T@B" & ($(op)).replace("op","").toUpperAscii()
                     case op:
                         of opConstI0..opConstI10:
-                            ret &= " (" & $(ConstStack[(int)(op)-(int)opConstI0]) & ")"
+                            let indx = (int)(op)-(int)opConstI0
+                            if indx>=0 and indx<ConstStack.len:
+                                ret &= " (" & $(ConstStack[indx]) & ")"
                         of opPush0..opPush30:
-                            ret &= " (" & $(ConstStack[(int)(op)-(int)opPush0]) & ")"
+                            let indx = (int)(op)-(int)opPush0
+                            if indx>=0 and indx<ConstStack.len:
+                                ret &= " (" & $(ConstStack[indx]) & ")"
                         of opStore0..opStore30:
-                            ret &= " (" & $(ConstStack[(int)(op)-(int)opStore0]) & ")"
+                            let indx = (int)(op)-(int)opStore0
+                            if indx>=0 and indx<ConstStack.len:
+                                ret &= " (" & $(ConstStack[indx]) & ")"
                         of opLoad0..opLoad30:
-                            ret &= " (" & $(ConstStack[(int)(op)-(int)opLoad0]) & ")"
+                            let indx = (int)(op)-(int)opLoad0
+                            if indx>=0 and indx<ConstStack.len:
+                                ret &= " (" & $(ConstStack[indx]) & ")"
                         of opCall0..opCall30: 
-                            ret &= " (" & $(ConstStack[(int)(op)-(int)opCall0]) & ")"
+                            let indx = (int)(op)-(int)opCall0
+                            if indx>=0 and indx<ConstStack.len:
+                                ret &= " (" & $(ConstStack[indx]) & ")"
                         else:
                             discard
                     
