@@ -95,6 +95,14 @@ Print prompt and get user input
 <pre>
 <b>input</b> <ins>prompt</ins> <i>:string</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|repl|<i>:boolean</i>|get input as if in a REPL|
+|history|<i>:string</i>|set path for saving history|
+|complete|<i>:block</i>|use given array for auto-completions|
+|hint|<i>:dictionary</i>|use given dictionary for typing hints|
 
 #### Returns
 
