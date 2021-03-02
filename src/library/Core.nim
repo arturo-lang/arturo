@@ -159,13 +159,11 @@ proc defineSymbols*() =
                 # discard executeBlock(x)
                 if execInParent:
                     discard execBlock(x, execInParent=true)
-                    # TODO Fix showVMErrors()
                 else:
                     discard execBlock(x)
             elif x.kind==Bytecode:
                 if execInParent:
                     discard execBlock(x, evaluated=(x.consts, x.instrs), execInParent=true)
-                    # TODO Fix showVMErrors()
                 else:
                     discard execBlock(x, evaluated=(x.consts, x.instrs))
                 
@@ -180,7 +178,6 @@ proc defineSymbols*() =
 
                     if not isNil(parsed):
                         discard execBlock(parsed, execInParent=true)
-                        # TODO Fix showVMErrors()
                 else:
                     let parsed = doParse(src, isFile=false)
                     if not isNil(parsed):
