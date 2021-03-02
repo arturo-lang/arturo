@@ -20,6 +20,7 @@ import vm/[bytecode, stack, value]
 
 const
     RuntimeError*   = "Runtime"
+    AssertionError* = "Assertion"
     SyntaxError*    = "Syntax"
     CompilerError*  = "Compiler"
 
@@ -91,14 +92,14 @@ proc getOpStack*(): string =
 
 proc panic*(context: string, error: string) =
     var errorMsg = error
-    if $(context) notin [SyntaxError,CompilerError]:
+    if $(context) notin [AssertionError, SyntaxError, CompilerError]:
         errorMsg &= getOpStack()
     raise VMError(name: context, msg:move errorMsg)
 
 proc showVMErrors*(e: ref Exception) =
     var header = e.name
 
-    if $(header) notin [RuntimeError, SyntaxError, CompilerError]:
+    if $(header) notin [RuntimeError, AssertionError, SyntaxError, CompilerError]:
         header = RuntimeError
 
     let marker = ">>"
@@ -156,20 +157,26 @@ template SyntaxError_EmptyLiteral*(lineno: int, context: string): untyped =
           "line: " & $(lineno) & ";" &
           "near: " & context
 
+## Assertion errors
+
+template AssertionError_AssertionFailed*(context: string): untyped =
+    panic AssertionError,
+          context
+
 ## Runtime errors
 
-template RuntimeError_OutOfBounds*(indx: int, maxRange: int):untyped =
+template RuntimeError_OutOfBounds*(indx: int, maxRange: int): untyped =
     panic RuntimeError,
           "array index out of bounds: " & $(indx) & ";" & 
           "valid range: 0.." & $(maxRange)
 
-template RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]):untyped =
+template RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]): untyped =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "symbol not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
-template RuntimeError_KeyNotFound*(sym: string, alter: seq[string]):untyped =
+template RuntimeError_KeyNotFound*(sym: string, alter: seq[string]): untyped =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "dictionary key not found: " & sym & ";" & 
