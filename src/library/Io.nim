@@ -16,10 +16,12 @@
 # Libraries
 #=======================================
 
-import algorithm, rdstdin, terminal
+import algorithm, linenoise, rdstdin, terminal
 
 when not defined(windows):
     import linenoise
+
+import helpers/repl as ReplHelper
 
 import vm/[common, eval, exec, globals, stack, value]
 
@@ -104,7 +106,12 @@ proc defineSymbols*() =
         args        = {
             "prompt": {String}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "repl"      : ({Boolean},"get input as if in a REPL"),
+            "history"   : ({String},"set path for saving history"),
+            "complete"  : ({Block},"use given array for auto-completions"),
+            "hint"      : ({Dictionary},"use given dictionary for typing hints")
+        },
         returns     = {String},
         example     = """
             name: input "What is your name? "
@@ -114,7 +121,26 @@ proc defineSymbols*() =
             ; Hello Bob!
         """:
             ##########################################################
-            stack.push(newString(readLineFromStdin(x.s)))
+            if (popAttr("repl")!=VNULL):
+                when defined(windows):
+                    stack.push(newString(readLineFromStdin(x.s)))
+                else:
+                    var historyPath: string = ""
+                    var completionsArray: ValueArray = @[]
+                    var hintsTable: ValueDict = initOrderedTable[string,Value]()
+
+                    if (let aHistory = popAttr("history"); aHistory != VNULL):
+                        historyPath = aHistory.s
+
+                    if (let aComplete = popAttr("complete"); aComplete != VNULL):
+                        completionsArray = aComplete.a
+
+                    if (let aHint = popAttr("hint"); aHint != VNULL):
+                        hintsTable = aHint.d
+
+                    stack.push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
+            else:
+                stack.push(newString(readLineFromStdin(x.s)))
 
 
     builtin "print",
