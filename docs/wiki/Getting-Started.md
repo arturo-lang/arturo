@@ -14,7 +14,7 @@ Pick the one that suits you best and you are ready to go :)
 ---
 
 ### Manually
-
+ 
 > 💡  Arturo should compile practically everywhere: Windows, Linux, BSD, Mac OS - [even Android](https://github.com/arturo-lang/arturo/issues/65#issuecomment-770723447). If you encounter an issue, or your OS is not supported, drop me a line!
 
 If you want to have the latest cutting-edge version of Arturo, the easiest and most bulletproof way is to build it yourself.
