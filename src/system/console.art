@@ -6,6 +6,18 @@
 ;; @file: system/console.art
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; initialize environment
+
+completions: sort keys symbols
+hints: #[]
+
+loop symbols [k,v][
+	if function? var k ->
+		set hints k (join.with:" " keys get info.get k 'args)
+]
+
+historyPath: join.path @[path\home ".arturo" "history.lst"]
+
 ;; helpers & templates
 
 LongHeader: {
@@ -39,8 +51,9 @@ print join @[
 	orange " for info about a specific symbol or built-in function" BR
 	orange "# Type " 
 	orangeBold "help"
-	orange " to get a list of all available functions with a short description" BR
-	orange "# For multi-line input, just add a blank space at the end of a line" BR BR
+	orange " to get a list of all available functions with a short description" BR BR
+	orange "# For multi-line input, just add a blank space at the end of a line" BR
+	orange "# Use TAB for auto-completion, UP for navigating history" BR BR
 	orange "# Launching interactive console - rock on! 🤘" BR
 ]
 
@@ -52,7 +65,12 @@ while [true] .import [
 
 	indent: ""
 	
-	inp: input "$> " 
+	inp: input .repl
+			   .history: historyPath 
+			   .complete: completions
+			   .hint: hints 
+			   "$> " 
+
 	while [suffix? inp " "][
 		if suffix? strip inp "[" [
 			indent: indent ++ "\t"
