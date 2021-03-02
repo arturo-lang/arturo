@@ -22,6 +22,7 @@ const
     RuntimeError*   = "Runtime"
     AssertionError* = "Assertion"
     SyntaxError*    = "Syntax"
+    ProgramError*   = "Program"
     CompilerError*  = "Compiler"
 
     Alternative*  = "perhaps you meant"
@@ -99,7 +100,7 @@ proc panic*(context: string, error: string) =
 proc showVMErrors*(e: ref Exception) =
     var header = e.name
 
-    if $(header) notin [RuntimeError, AssertionError, SyntaxError, CompilerError]:
+    if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
         header = RuntimeError
 
     let marker = ">>"
