@@ -48,12 +48,7 @@ proc defineSymbols*() =
             ##########################################################
             discard execBlock(x)
             if not stack.pop().b:
-                vmPanic = true
-                vmError = "Assertion failed: " & x.codify()
-                        
-                # TODO Fix showVMErrors()
-
-                quit(1)  
+                AssertionError_AssertionFailed(x.codify())
 
     builtin "env",
         alias       = unaliased, 
