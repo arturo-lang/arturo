@@ -8,16 +8,17 @@
 
 <!--ts-->
    * [The Language](#the-language)
-   * [Documentation](#documentation)
-   * [Trying it out](#trying-it-out)
-      * [Homebrew](#homebrew)
+   * [Installation](#installation)
       * [Manually](#manually)
-        * [Prerequisites](#prerequisites)
+        * [What you'll need first](#what-you-ll-need-first)
         * [Build & Install Arturo](#build--install-arturo)
-      * [Docker](#docker)
-      * [Online](#online)
+      * [Pre-built binaries](#pre-built-binaries)
+      * [Alternative ways](#alternative-ways)
+	* [Docker](#docker)
+        * [Homebrew](#homebrew)
    * [Editors & IDEs](#editors--ides)
       * [Fonts](#fonts)
+   * [Documentation](#documentation)
    * [Showcase](#showcase)
    * [Contributing](#contributing)
       * [Roadmap](#roadmap)
@@ -55,61 +56,57 @@ Simple, isn't it?
 
 > 💡  For more - working - examples, just have a look into the /examples folder
 
-Documentation
+
+Installation
 ------------------------------
-
-For more information about the language and access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
-
-|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
-|-------------------------|-------------------|-------------------|-------------------------|
-|    **[Getting Started](https://github.com/arturo-lang/arturo/wiki/Getting-Started)**   | **[Language Reference](https://github.com/arturo-lang/arturo/wiki/Language)**   |    **[Command Line](https://github.com/arturo-lang/arturo/wiki/Command-Line)**   |    **[Library Reference](https://github.com/arturo-lang/arturo/wiki/Library)**    |
-
-
-Trying it out
-------------------------------
-
-### Homebrew
-
-On OSX, you can easily install it using [Homebrew](https://brew.sh/) as well:
-
-```bash
-brew install arturo
-```
 
 ### Manually
 
 > 💡  Arturo should compile practically everywhere: Windows, Linux, BSD, Mac OS - [even Android](https://github.com/arturo-lang/arturo/issues/65#issuecomment-770723447). If you encounter an issue, or your OS is not supported, drop me a line!
 
-#### Prerequisites
+If you want to have the latest cutting-edge version of Arturo, the easiest and most bulletproof way is to build it yourself.
+
+#### What'll you need first
 
 * [Nim compiler](https://nim-lang.org/)<br> 
   if you don't have it installed, all it'll take is 2 simple commands:
 
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
       choosenim stable
-* Dependencies (for Linux):
+* Dependencies (*only* for Linux):
    - gtk+-3.0 *(\* needed only for non-mini builds)*
    - webkit2gtk-4.0 *(\* needed only for non-mini builds)*
    - libgmp-dev
 
 #### Build & Install Arturo
 
-**a) via the main build script** (*recommended)
+What you need to do in order to build Arturo and install it is clone this repo and run the installation script.
 
-    ./install
+All the process in a nutshell:
 
-The binary will be automatically installed in `~/.arturo/bin`
+```bash
+git clone https://github.com/arturo-lang/arturo.git
+cd arturo
+./install
+```
+
+After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the aforementioned path is in your `$PATH` as per the installation script instructions.
 
 > 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./install mini`
 
+### Pre-built binaries
 
-**b) via Nimble**
+Arturo also comes with its own pre-built binaries (for now, for Linux and macOS). All you have to do is download one of them and run it - that's it!
 
-    nimble install -Y
+For stable versions, you may check out one of the "official" releases.
 
-The compiler will be built and installed automatically in your `$HOME/.nimble/bin`. (So, make sure the folder is in your `$PATH` variable!)
+For being as up-to-date as possible, head over to the Nightlies repo and simply download the latest release.
 
-### Docker
+### Alternative ways
+
+#### Docker
+
+Although it won't cut it, if what you need is the real-deal compiler for everyday use, if you just need a taste of it, the Docker image will absolutely do.
 
 Just use the existing docker image:
 
@@ -118,13 +115,15 @@ Just use the existing docker image:
 or (to run a specific local script):
 
 	docker run -it -v $(pwd):/home arturolang/arturo <yourscript.art>
-	
-### Online
 
-► ~[arturo-lang.io](http://arturo-lang.io/)~ (Temporarily in maintenance)
+#### Homebrew
 
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/demo.gif"/>
-    
+If you are on macOS, you can easily install Arturo using [Homebrew](https://brew.sh/) as well - although I cannot guarantee it will be the latest version:
+
+```bash
+brew install arturo
+```
+
 Editors & IDEs
 ------------------------------
 
@@ -142,6 +141,15 @@ https://github.com/xigoi/vim-arturo
 ### Fonts
 
 The font you use is a matter of personal taste. However, if you still want to know the "official" preference and make Arturo's symbols *shine*, then I'd strongly recommend you use [Fira Code](https://github.com/tonsky/FiraCode) with ligatures turned on. ;-)
+
+Documentation
+------------------------------
+
+For more information about the language and access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
+
+|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
+|-------------------------|-------------------|-------------------|-------------------------|
+|    **[Getting Started](https://github.com/arturo-lang/arturo/wiki/Getting-Started)**   | **[Language Reference](https://github.com/arturo-lang/arturo/wiki/Language)**   |    **[Command Line](https://github.com/arturo-lang/arturo/wiki/Command-Line)**   |    **[Library Reference](https://github.com/arturo-lang/arturo/wiki/Library)**    |
 
 Showcase
 ------------------------------
