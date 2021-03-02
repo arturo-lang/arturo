@@ -216,9 +216,9 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Dictionary},
-        # TODO(Io\terminal) add example for documentation 
-        #  labels: documentation,easy,library
         example     = """
+            print terminal      ; [width:107 height:34]
+            terminal\width      ; => 107
         """:
             ##########################################################
             let size = terminalSize()
