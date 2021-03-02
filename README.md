@@ -98,9 +98,9 @@ After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the afor
 
 Arturo also comes with its own pre-built binaries (for now, for Linux and macOS). All you have to do is download one of them and run it - that's it!
 
-For stable versions, you may check out one of the "official" releases.
+For stable versions, you may check out one of the ["official" releases](https://github.com/arturo-lang/arturo/releases/tag/v0.9.7).
 
-For being as up-to-date as possible, head over to the Nightlies repo and simply download the latest release.
+For being as up-to-date as possible, head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases/tag/tag-2021-03-02) and simply download the latest release.
 
 ### Alternative ways
 
