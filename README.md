@@ -8,6 +8,7 @@
 
 <!--ts-->
    * [The Language](#the-language)
+   * [Documentation](#documentation)
    * [Installation](#installation)
       * [Manually](#manually)
         * [What you'll need first](#what-youll-need-first)
@@ -18,7 +19,6 @@
         * [Homebrew](#homebrew)
    * [Editors & IDEs](#editors--ides)
       * [Fonts](#fonts)
-   * [Documentation](#documentation)
    * [Showcase](#showcase)
    * [Contributing](#contributing)
       * [Roadmap](#roadmap)
@@ -56,6 +56,14 @@ Simple, isn't it?
 
 > 💡  For more - working - examples, just have a look into the /examples folder
 
+Documentation
+------------------------------
+
+For more information about the language and access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
+
+|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
+|-------------------------|-------------------|-------------------|-------------------------|
+|    **[Getting Started](https://github.com/arturo-lang/arturo/wiki/Getting-Started)**   | **[Language Reference](https://github.com/arturo-lang/arturo/wiki/Language)**   |    **[Command Line](https://github.com/arturo-lang/arturo/wiki/Command-Line)**   |    **[Library Reference](https://github.com/arturo-lang/arturo/wiki/Library)**    |
 
 Installation
 ------------------------------
@@ -141,15 +149,6 @@ https://github.com/xigoi/vim-arturo
 ### Fonts
 
 The font you use is a matter of personal taste. However, if you still want to know the "official" preference and make Arturo's symbols *shine*, then I'd strongly recommend you use [Fira Code](https://github.com/tonsky/FiraCode) with ligatures turned on. ;-)
-
-Documentation
-------------------------------
-
-For more information about the language and access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
-
-|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
-|-------------------------|-------------------|-------------------|-------------------------|
-|    **[Getting Started](https://github.com/arturo-lang/arturo/wiki/Getting-Started)**   | **[Language Reference](https://github.com/arturo-lang/arturo/wiki/Language)**   |    **[Command Line](https://github.com/arturo-lang/arturo/wiki/Command-Line)**   |    **[Library Reference](https://github.com/arturo-lang/arturo/wiki/Library)**    |
 
 Showcase
 ------------------------------
