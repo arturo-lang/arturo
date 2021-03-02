@@ -14,7 +14,7 @@
         * [Build & Install Arturo](#build--install-arturo)
       * [Pre-built binaries](#pre-built-binaries)
       * [Alternative ways](#alternative-ways)
-	* [Docker](#docker)
+        * [Docker](#docker)
         * [Homebrew](#homebrew)
    * [Editors & IDEs](#editors--ides)
       * [Fonts](#fonts)
