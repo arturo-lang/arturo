@@ -33,8 +33,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Ui"
 
-    # TODO(Ui\webview) Needs cleanup
-    #  labels: library,enhancement,cleanup
     builtin "webview",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
