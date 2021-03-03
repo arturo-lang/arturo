@@ -181,3 +181,10 @@ Get info about terminal
 #### Returns
 
 - *:dictionary*
+
+#### Examples
+
+```red
+print terminal      ; [width:107 height:34]
+terminal\width      ; => 107
+```
