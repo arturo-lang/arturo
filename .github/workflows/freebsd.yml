@@ -22,12 +22,12 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
-    - name: Setup enviro
+    - name: Setup environment & Build Arturo
       id: test
       uses: vmactions/freebsd-vm@v0.1.2
       with:
         usesh: true
-        prepare: pkg install -y nim
+        prepare: pkg install -y nim bash
         run: |
           ./install mini
           bin/arturo tools/tester.art
