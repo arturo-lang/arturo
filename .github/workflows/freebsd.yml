@@ -47,10 +47,10 @@ jobs:
             arturo tools/tester.art
       
       - name: Upload Artifacts
-          uses: 'actions/upload-artifact@v2'
-          with:
-            name: "arturo-${{matrix.version}}-freebsd"
-            path: bin/arturo
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: "arturo-${{matrix.version}}-freebsd"
+          path: bin/arturo
 
 # steps:
 #   - name: "Cancel similar actions in progress"
