@@ -73,5 +73,5 @@ jobs:
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-          name: "arturo-mini-${{matrix.os}}"
+          name: "arturo-${{matrix.version}}-${{matrix.os}}"
           path: bin/arturo.exe
