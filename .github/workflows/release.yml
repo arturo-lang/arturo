@@ -7,14 +7,15 @@ on:
 
 env:
   app-name: arturo
-
+ 
 defaults:
   run:
     shell: bash -l {0}
 
 jobs:
-  package:
-    name: "Package"
+  
+  unix:
+    name: "Package *nix"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -75,11 +76,134 @@ jobs:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
 
+  freebsd:
+    name: "Package FreeBSD"
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        os:
+          - freebsd-latest
+        version:
+          - mini
+
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: "Get version"
+        uses: pCYSl5EDgo/cat@master
+        id: versionNumber
+        with:
+          path: version/version
+          trim: true
+
+      - name: Setup environment & Build Arturo
+        id: test
+        uses: vmactions/freebsd-vm@v0.1.2
+        with:
+          usesh: true
+          prepare: pkg install -y nim gmp bash databases/sqlite3
+          run: |
+            ./install mini
+            export PATH="$HOME/.arturo/bin:$PATH"
+            arturo tools/tester.art
+
+      - name: Create artifact
+        run: |
+          install -m 0755 ./bin/${{ env.app-name }} .
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.version}}.tar.gz ${{ env.app-name }} README.md LICENSE
+
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v1'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.version}}.tar.gz
+
+  windows:
+    name: "Package Windows"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-latest
+        version:
+          - mini
+
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: "Get version"
+        uses: pCYSl5EDgo/cat@master
+        id: versionNumber
+        with:
+          path: version/version
+          trim: true
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: 'git base-devel'
+
+      - name: Install dependencies + Build Arturo
+        shell: msys2 {0}
+        run: |
+          pacman --noconfirm -S p7zip
+          pacman --noconfirm -S mingw-w64-x86_64-gcc
+          mkdir dist
+          mkdir nim
+          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
+          curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
+          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
+          7z x dist/mingw64.zip -odist
+          7z x dist/dlls.zip -obin
+          7z x dist/nim.zip -onim
+          
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          export PATH="${{ github.workspace }}/bin":$PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
+          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
+          ls -la nim/nim-1.4.0
+          ls -la nim/nim-1.4.0/bin 
+          echo "$GITHUB_PATH"
+          
+          echo "Running nim"
+          nim --version
+
+          nimble build -Y "-d:MINI"
+
+      - name: Create artifact
+        run: |
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz bin/${{ env.app-name }}.exe README.md LICENSE
+
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v1'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
+
   upload:
     name: "Upload"
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [package]
+    needs: 
+      - unix
+      - freebsd
+      - unix
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
@@ -114,6 +238,7 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body: |
+            Official Release
             ${{ github.ref }}
           draft: false
           prerelease: false
