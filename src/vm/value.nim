@@ -1477,11 +1477,10 @@ proc codify*(v: Value): string {.inline.} =
             result &= "]"
 
         of Function:
-            result = "function ["
+            result = "function "
             result &= codify(v.params)
-            result &= "]["
+            result &= " "
             result &= codify(v.main)
-            result &= "]"
         else:
             result = ""
 
