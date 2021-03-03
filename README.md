@@ -10,6 +10,7 @@
    * [The Language](#the-language)
    * [Documentation](#documentation)
    * [Installation](#installation)
+      * [The easy way](#the-easy-way)
       * [Manually](#manually)
         * [What you'll need first](#what-youll-need-first)
         * [Build & Install Arturo](#build--install-arturo)
@@ -67,6 +68,17 @@ For more information about the language and access to the official Reference, pl
 
 Installation
 ------------------------------
+
+### The easy way
+
+```bash
+curl -sSL https://get.arturo-lang.io | sh
+```
+
+Copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
+To get the most recent (nightly) build, just use: `curl -sSL https://get.arturo-lang.io/latest | sh`
+
+*If there is any issue with the installation, just let me know and I'll try to fix it. In this case, try one of the methods below.*
 
 ### Manually
 
