@@ -6,10 +6,7 @@
 # distribution, for details about the copyright.
 #
 
-# TODO(Bignum) Include path needed for other OSes?
-#  labels: 3rd-party
 {.passl: "-lgmp".}
-
 
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
