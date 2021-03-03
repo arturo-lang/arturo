@@ -132,14 +132,22 @@ animate_progress(){
 
 verifyOS(){
     case "$OSTYPE" in
-        linux*)   currentOS="linux" ;;
-        darwin*)  currentOS="macos" ;; 
-        cygwin*)  currentOS="windows" ;;
-        msys*)    currentOS="windows" ;;
-        solaris*) currentOS="solaris" ;;
-        freebsd*) currentOS="freebsd" ;;
-        bsd*)     currentOS="bsd" ;;
-        *)        currentOS="unknown" ;;
+        linux*)     currentOS="Linux" ;;
+        linux-gnu*) currentOS="Linux" ;;
+        darwin*)    currentOS="macOS" ;; 
+        cygwin*)    currentOS="Windows" ;;
+        msys*)      currentOS="Windows" ;;
+        solaris*)   currentOS="Solaris" ;;
+        freebsd*)   currentOS="FreeBSD" ;;
+        bsd*)       currentOS="BSD" ;;
+        *)         
+            if [ `uname` = "Linux" ]; then 
+                currentOS="Linux"
+            elif [ `uname` = "FreeBSD" ]; then
+                currentOS="FreeBSD"
+            else
+                currentOS="Unknown ($OSTYPE / `uname`)"
+            fi ;;
     esac
 
     info "os: $currentOS"
