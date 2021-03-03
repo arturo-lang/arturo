@@ -1120,9 +1120,15 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {String,Block,Nothing},
-        # TODO(Collections\squeeze) add example for documentation 
-        #  labels: documentation,easy,library
         example     = """
+            print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
+            ; 1 2 3 4 2 3 4 5 6 7 
+
+            arr: [4 2 1 1 3 6 6]
+            squeeze 'arr            ; a: [4 2 1 3 6]
+
+            print squeeze hello world";
+            ; helo world
         """:
             ##########################################################
             if x.kind==Literal:
