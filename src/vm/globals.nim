@@ -12,7 +12,7 @@
 
 import std/editdistance, sequtils, tables
 
-import vm/[bytecode, errors, value]
+import vm/[errors, value]
 
 #=======================================
 # Types
