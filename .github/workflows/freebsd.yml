@@ -21,6 +21,8 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
+        os:
+          - freebsd-latest
         version:
           - mini
     name: Build & Test
