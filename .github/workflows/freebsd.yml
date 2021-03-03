@@ -27,7 +27,7 @@ jobs:
       uses: vmactions/freebsd-vm@v0.1.2
       with:
         usesh: true
-        prepare: pkg install -y nim bash
+        prepare: pkg install -y nim gmp bash
         run: |
           ./install mini
           bin/arturo tools/tester.art
