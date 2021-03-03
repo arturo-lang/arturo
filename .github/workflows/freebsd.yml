@@ -30,7 +30,8 @@ jobs:
         prepare: pkg install -y nim gmp bash databases/sqlite3
         run: |
           ./install mini
-          bin/arturo tools/tester.art
+          export PATH="$HOME/.arturo/bin:$PATH"
+          arturo tools/tester.art
 
 # steps:
 #   - name: "Cancel similar actions in progress"
