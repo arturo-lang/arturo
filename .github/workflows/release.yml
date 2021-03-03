@@ -118,13 +118,13 @@ jobs:
       - name: Create artifact
         run: |
           install -m 0755 ./bin/${{ env.app-name }} .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.version}}.tar.gz ${{ env.app-name }} README.md LICENSE
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-FreeBSD-${{matrix.version}}.tar.gz ${{ env.app-name }} README.md LICENSE
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
         with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.version}}.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.version}}.tar.gz
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-FreeBSD-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-FreeBSD-${{matrix.version}}.tar.gz
 
   windows:
     name: "Package Windows"
