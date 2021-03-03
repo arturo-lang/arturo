@@ -577,9 +577,17 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Block},
-        # TODO(Converters\with) add example for documentation 
-        #  labels: documentation,easy,library
         example     = """
+            f: function [x][ 
+                with [x][ 
+                    "the multiple of" x "is" 2*x 
+                ] 
+            ]
+
+            multiplier: f 10
+
+            print multiplier
+            ; the multiple of 10 is 20 
         """:
             ##########################################################
             var blk: ValueArray = y.a
