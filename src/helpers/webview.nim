@@ -17,6 +17,10 @@ when not defined(MINI):
         {.passC: "-DWEBVIEW_GTK=1 " &
         staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
         {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
+    elif defined(freebsd):
+        {.passC: "-DWEBVIEW_GTK=1 " &
+        staticExec"pkgconf --cflags gtk3 webkit2-gtk3".}
+        {.passL: staticExec"pkgconf --libs gtk3 webkit2-gtk3".}
     elif defined(windows):
         {.passC: "-DWEBVIEW_WINAPI=1".}
         {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
