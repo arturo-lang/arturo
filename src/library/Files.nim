@@ -16,15 +16,19 @@
 # Libraries
 #=======================================
 
-import os, sequtils, sugar
-import extras/miniz
+import os, sequtils
+
+when not defined(MINI):
+    import sugar
+    import extras/miniz
+    
+    import helpers/markdown as MarkdownHelper
+    import helpers/toml as TomlHelper
 
 import helpers/csv as CsvHelper
 import helpers/datasource as DatasourceHelper
 import helpers/html as HtmlHelper
 import helpers/json as JsonHelper
-import helpers/markdown as MarkdownHelper
-import helpers/toml as TomlHelper
 
 import vm/[common, globals, stack, value]
 
@@ -66,15 +70,27 @@ proc defineSymbols*() =
         args        = {
             "file"  : {String}
         },
-        attrs       = {
-            "lines"         : ({Boolean},"read file lines into block"),
-            "json"          : ({Boolean},"read Json into value"),
-            "csv"           : ({Boolean},"read CSV file into a block of rows"),
-            "withHeaders"   : ({Boolean},"read CSV headers"),
-            "html"          : ({Boolean},"read HTML file into node dictionary"),
-            "markdown"      : ({Boolean},"read Markdown and convert to HTML"),
-            "binary"        : ({Boolean},"read as binary")
-        },
+        attrs       = 
+            when not defined(MINI): 
+                {
+                    "lines"         : ({Boolean},"read file lines into block"),
+                    "json"          : ({Boolean},"read Json into value"),
+                    "csv"           : ({Boolean},"read CSV file into a block of rows"),
+                    "withHeaders"   : ({Boolean},"read CSV headers"),
+                    "html"          : ({Boolean},"read HTML file into node dictionary"),
+                    "markdown"      : ({Boolean},"read Markdown and convert to HTML"),
+                    "toml"          : ({Boolean},"read TOML into value"),
+                    "binary"        : ({Boolean},"read as binary")
+                }
+            else:
+                {
+                    "lines"         : ({Boolean},"read file lines into block"),
+                    "json"          : ({Boolean},"read Json into value"),
+                    "csv"           : ({Boolean},"read CSV file into a block of rows"),
+                    "withHeaders"   : ({Boolean},"read CSV headers"),
+                    "html"          : ({Boolean},"read HTML file into node dictionary"),
+                    "binary"        : ({Boolean},"read as binary")
+                },
         returns     = {String,Block,Binary},
         example     = """
             ; reading a simple local file
@@ -108,32 +124,35 @@ proc defineSymbols*() =
                     stack.push(valueFromJson(src))
                 elif (popAttr("csv") != VNULL):
                     stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
-                elif (popAttr("toml") != VNULL):
-                    stack.push(parseTomlString(src))
                 elif (popAttr("html") != VNULL):
                     stack.push(parseHtmlInput(src))
-                elif (popAttr("markdown") != VNULL):
-                    stack.push(parseMarkdownInput(src))
+                else:
+                    when not defined(MINI):
+                        if (popAttr("toml") != VNULL):
+                            stack.push(parseTomlString(src))
+                        elif (popAttr("markdown") != VNULL):
+                            stack.push(parseMarkdownInput(src))
+                    else:
+                        stack.push(newString(src))
                 # elif attrs.hasKey("xml"):
                 #     stack.push(parseXmlNode(parseXml(action(x.s))))
-                else:
-                    stack.push(newString(src))
-
-    builtin "unzip",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "unzip given archive to destination",
-        args        = {
-            "destination"   : {String},
-            "original"      : {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            unzip "folder" "archive.zip"
-        """:
-            ##########################################################
-            miniz.unzip(y.s, x.s)
+                    
+    when not defined(MINI):
+        builtin "unzip",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "unzip given archive to destination",
+            args        = {
+                "destination"   : {String},
+                "original"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+                unzip "folder" "archive.zip"
+            """:
+                ##########################################################
+                miniz.unzip(y.s, x.s)
 
     builtin "write",
         alias       = doublearrowright, 
@@ -176,22 +195,23 @@ proc defineSymbols*() =
                     else:
                         writeFile(x.s, y.s)
 
-    builtin "zip",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "zip given files to file at destination",
-        args        = {
-            "destination"   : {String},
-            "files"         : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            zip "dest.zip" ["file1.txt" "img.png"]
-        """:
-            ##########################################################
-            let files: seq[string] = y.a.map((z)=>z.s)
-            miniz.zip(files, x.s)
+    when not defined(MINI):
+        builtin "zip",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "zip given files to file at destination",
+            args        = {
+                "destination"   : {String},
+                "files"         : {Block}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+                zip "dest.zip" ["file1.txt" "img.png"]
+            """:
+                ##########################################################
+                let files: seq[string] = y.a.map((z)=>z.s)
+                miniz.zip(files, x.s)
 
 #=======================================
 # Add Library
