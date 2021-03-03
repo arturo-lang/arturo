@@ -235,22 +235,6 @@ proc defineSymbols*() =
             let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if not y.b: discard execBlock(x)
 
-    # TODO(Core\globalize) Do we really need this functionality?
-    #  Already there are other options like the `.import` attribute
-    #  labels: library,open discussion
-    builtin "globalize",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "make all symbols within current context global",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-        """:
-            ##########################################################
-            for k,v in pairs(Syms):
-                SetSym(k, v)
-
     builtin "if",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
