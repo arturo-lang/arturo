@@ -95,7 +95,6 @@ when not defined(windows):
                 if hints.hasKey(token):
                     color = 35
                     bold = 0
-                    var pre: string = " "
                     return " " & hints[token].s
             return nil
             
