@@ -19,19 +19,38 @@ defaults:
 jobs:  
   freebsd:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        version:
+          - mini
     name: Build & Test
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup environment & Build Arturo
-      id: test
-      uses: vmactions/freebsd-vm@v0.1.2
-      with:
-        usesh: true
-        prepare: pkg install -y nim gmp bash databases/sqlite3
-        run: |
-          ./install mini
-          export PATH="$HOME/.arturo/bin:$PATH"
-          arturo tools/tester.art
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Setup environment & Build Arturo
+        id: test
+        uses: vmactions/freebsd-vm@v0.1.2
+        with:
+          usesh: true
+          prepare: pkg install -y nim gmp bash databases/sqlite3
+          run: |
+            ./install mini
+            export PATH="$HOME/.arturo/bin:$PATH"
+            arturo tools/tester.art
+      
+      - name: Upload Artifacts
+          uses: 'actions/upload-artifact@v2'
+          with:
+            name: "arturo-${{matrix.version}}-freebsd"
+            path: bin/arturo
 
 # steps:
 #   - name: "Cancel similar actions in progress"
