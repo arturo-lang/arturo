@@ -113,7 +113,6 @@ jobs:
           run: |
             ./install mini
             export PATH="$HOME/.arturo/bin:$PATH"
-            arturo tools/tester.art
 
       - name: Create artifact
         run: |
