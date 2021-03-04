@@ -476,6 +476,64 @@ proc defineSymbols*() =
                     showVMErrors(e)
                 stack.push(VFALSE)
 
+    builtin "unless",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is false or null",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            x: 2
+            
+            unless x=1 -> print "yep, x is not 1!"
+            ; yep, x is not 1!
+        """:
+            ##########################################################
+            let condition = x.kind==Null or (x.kind==Boolean and x.b==false)
+            if condition: 
+                discard execBlock(y)
+
+    builtin "unless?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "perform action, if given condition is false or null and return condition result",
+        args        = {
+            "condition" : {Any},
+            "action"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Boolean},
+        example     = """
+            x: 2
+            
+            result: unless? x=1 -> print "yep, x is not 1!"
+            ; yep, x is not 1!
+            
+            print result
+            ; true
+            
+            z: 1
+            
+            unless? x>z [
+                print "yep, x was not greater than z"
+            ]
+            else [
+                print "x was greater than z"
+            ]
+            ; x was greater than z
+        """:
+            ##########################################################
+            let condition = x.kind==Null or (x.kind==Boolean and x.b==false)
+            if condition: 
+                discard execBlock(y)
+                # if vmReturn:
+                #     return ReturnResult
+            stack.push(newBoolean(condition))
+
     builtin "until",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
