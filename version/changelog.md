@@ -1,8 +1,3 @@
-v0.9.7.2+
-========
-
-- Fixed packager script
-
 v0.9.7.2
 ========
 
@@ -14,6 +9,7 @@ v0.9.7.2
 - Vast improvement of error reporting, avoiding crashes and with much more helpful error messages
 - Greatly enhanced REPL - with saveable/restorable history, tab-completions and as-you-type hints
 - Updated workflows: added support for Windows & FreeBSD pre-built binaries in Releases & Nightly builds (mini versions)
+- Fixed packager script
 - Codebase cleanup
 - Numerous minor fixes & additions
 
@@ -21,6 +17,7 @@ v0.9.7.2
 
 - Collections: added `squeeze`
 - Converters: added `with`
+- Core: added `unless`, `unless?`
 - Io: added `cursor`, `goto`, `terminal`
 - Sets (new): `intersect`, `union`, `difference`, `subset?`, `superset?`
 - System: added `env`
