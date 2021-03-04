@@ -12,6 +12,21 @@ completions: map sort keys symbols => [& ++ " "]
 hints: #[]
 
 loop symbols [k,v][
+	if function? var k [
+		ats: keys get info.get k 'attrs
+
+		if not? empty? ats [
+			'completions ++ map ats 'at [
+				if? :boolean = first get get get info.get k 'attrs at 'types ->
+					join @[k "." at " "]
+				else ->
+					join @[k "." at ": "]
+			]
+		]
+	]
+]
+
+loop symbols [k,v][
 	if function? var k ->
 		set hints k (join.with:" " keys get info.get k 'args)
 ]
@@ -25,7 +40,7 @@ LongHeader: {
 	|sys\copyright| |sys\author|
 }
 
-buildNo: ~{b/|sys\build|}
+buildNo: (~{b/|sys\build|}) ++ " "
 if 2>sys\build -> buildNo: ""
 
 Details: {
