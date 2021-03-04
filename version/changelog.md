@@ -1,4 +1,9 @@
-v0.9.7+
+v0.9.7.2+
+========
+
+- Fixed packager script
+
+v0.9.7.2
 ========
 
 - Better handling of function arity and function calls
