@@ -202,7 +202,7 @@ jobs:
     needs: 
       - unix
       - freebsd
-      - unix
+      - windows
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
