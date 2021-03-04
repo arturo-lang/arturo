@@ -105,4 +105,5 @@ proc run*(code: var string, args: ValueArray, isFile: bool) =
     except:
         let e = getCurrentException()
         showVMErrors(e)
+        quit(1)
     
