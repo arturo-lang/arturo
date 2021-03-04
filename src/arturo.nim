@@ -10,7 +10,12 @@
 # Libraries
 #=======================================
 
-import parseopt, segFaults, tables
+import parseopt, segFaults
+
+when defined(PORTABLE):
+    import os, sequtils
+else:
+    import tables
 
 when defined(PROFILE):
     import nimprof
