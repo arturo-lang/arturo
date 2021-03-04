@@ -315,3 +315,18 @@ Create closure-style block by embedding given words
 #### Returns
 
 - *:block*
+
+#### Examples
+
+```red
+f: function [x][ 
+    with [x][ 
+        "the multiple of" x "is" 2*x 
+    ] 
+]
+
+multiplier: f 10
+
+print multiplier
+; the multiple of 10 is 20
+```
