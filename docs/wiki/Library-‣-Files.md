@@ -65,6 +65,7 @@ Read file from given path
 |withHeaders|<i>:boolean</i>|read CSV headers|
 |html|<i>:boolean</i>|read HTML file into node dictionary|
 |markdown|<i>:boolean</i>|read Markdown and convert to HTML|
+|toml|<i>:boolean</i>|read TOML into value|
 |binary|<i>:boolean</i>|read as binary|
 
 #### Returns
