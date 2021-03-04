@@ -132,8 +132,11 @@ proc defineSymbols*() =
                             stack.push(parseTomlString(src))
                         elif (popAttr("markdown") != VNULL):
                             stack.push(parseMarkdownInput(src))
+                        else:
+                            stack.push(newString(src))
                     else:
                         stack.push(newString(src))
+                        
                 # elif attrs.hasKey("xml"):
                 #     stack.push(parseXmlNode(parseXml(action(x.s))))
                     
