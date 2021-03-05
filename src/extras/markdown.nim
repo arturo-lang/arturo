@@ -62,7 +62,7 @@
 ##
 ## Finally, All Token types support conversion to HTML strings with the special $ proc,
 ##
-
+{.push hints:off.}
 import re
 from sequtils import map, keepIf, anyIt
 from sugar import `->`, `=>`
@@ -2531,3 +2531,4 @@ when isMainModule:
       config=readCLIOptions()
     )
   )
+{.push hints:on.}
