@@ -108,14 +108,17 @@ proc defineSymbols*() =
     builtin "list",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get files with given pattern",
+        description = "get files in given path",
         args        = {
-            "pattern"   : {String}
+            "path"  : {String}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "recursive" : ({Boolean}, "perform recursive search"),
+            "relative"  : ({Boolean}, "get relative paths"),
+        },
         returns     = {Block},
         example     = """
-            loop list "*" 'file [
+            loop list "." 'file [
             ___print file
             ]
             
@@ -124,7 +127,17 @@ proc defineSymbols*() =
             ; data.txt
         """:
             ##########################################################
-            var contents: seq[string] = toSeq(walkPattern(x.s))
+            let recursive = (popAttr("recursive") != VNULL)
+            let relative = (popAttr("relative") != VNULL)
+            let path = x.s
+
+            var contents: seq[string]
+
+            if recursive:
+                contents = toSeq(walkDirRec(path, relative = relative))
+            else:
+                contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
+
             stack.push(newStringBlock(contents))
 
     builtin "panic",
