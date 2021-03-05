@@ -108,40 +108,24 @@ proc defineSymbols*() =
     builtin "list",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get files at given path",
+        description = "get files with given pattern",
         args        = {
-            "path"  : {String}
+            "pattern"   : {String}
         },
-        attrs       = {
-            "select"    : ({String},"select files satisfying given pattern"),
-            "relative"  : ({Boolean},"get relative paths")
-        },
+        attrs       = NoAttrs,
         returns     = {Block},
         example     = """
-            loop list "." 'file [
+            loop list "*" 'file [
             ___print file
             ]
             
             ; ./tests
             ; ./var
             ; ./data.txt
-            
-            loop list.relative "tests" 'file [
-            ___print file
-            ]
-            
-            ; test1.art
-            ; test2.art
-            ; test3.art
         """:
             ##########################################################
-            let findRelative = (popAttr("relative") != VNULL)
-            let contents = toSeq(walkDir(x.s, relative=findRelative))
-
-            if (let aSelect = popAttr("select"); aSelect != VNULL):
-                stack.push(newStringBlock((contents.map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
-            else:
-                stack.push(newStringBlock(contents.map((x)=>x[1])))
+            var contents: seq[string] = toSeq(walkPattern(x.s))
+            stack.push(newStringBlock(contents))
 
     builtin "panic",
         alias       = unaliased, 
