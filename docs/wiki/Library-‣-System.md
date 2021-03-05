@@ -112,13 +112,19 @@ exit.with: 3      ; (terminates the program with code 3)
 
 #### Description
 
-Get files with given pattern
+Get files in given path
 
 #### Usage
 
 <pre>
-<b>list</b> <ins>pattern</ins> <i>:string</i>
+<b>list</b> <ins>path</ins> <i>:string</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|recursive|<i>:boolean</i>|perform recursive search|
+|relative|<i>:boolean</i>|get relative paths|
 
 #### Returns
 
@@ -127,7 +133,7 @@ Get files with given pattern
 #### Examples
 
 ```red
-loop list "*" 'file [
+loop list "." 'file [
    print file
 ]
 
