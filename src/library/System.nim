@@ -119,9 +119,9 @@ proc defineSymbols*() =
             ___print file
             ]
             
-            ; ./tests
-            ; ./var
-            ; ./data.txt
+            ; tests
+            ; var
+            ; data.txt
         """:
             ##########################################################
             var contents: seq[string] = toSeq(walkPattern(x.s))
