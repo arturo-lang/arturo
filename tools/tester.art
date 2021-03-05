@@ -8,8 +8,7 @@
 
 runSet: function [title,location][
     print color.bold.cyan ~"\n> |title|"
-
-    tests: sort list.select:".res" relative location
+    tests: sort list~"|relative location|/*.res"
     success: 0
 
     loop tests 'test [
