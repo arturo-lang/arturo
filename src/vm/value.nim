@@ -1386,11 +1386,17 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
     if not isLast:
         stdout.write "\n"
 
-proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false): string {.inline.} =
+# TODO Fix pretty-printing for unwrapped blocks
+#  Indentation is not working right for inner dictionaries and blocks
+#  Check: `print as.pretty.code.unwrapped info.get 'get`
+proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false): string {.inline.} =
     result = ""
 
     if pretty:
-        for i in 0..level-1: result &= "\t"
+        if isKeyVal:
+            result &= " "
+        else:
+            for i in 0..level-1: result &= "\t"
 
     case v.kind:
         of Null         : result &= "null"
@@ -1409,7 +1415,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Char         : result &= "`" & $(v.c) & "`"
         of String       : 
             if countLines(v.s)>1 or v.s.contains("\""):
-                result &= "{" & v.s & "}"
+                var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("\t",level+1))
+                result &= "{\n" & repeat("\t",level+1) & splitl & "\n" & repeat("\t",level) & "}"
             else:
                 result &= "\"" & v.s & "\""
         of Word         : result &= v.s
@@ -1501,13 +1508,16 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
                 for k,v in pairs(v.d):
                     if pretty:
-                        if not (unwrapped and level==0):
+                        if not (unwrapped):
                             for i in 0..level: result &= "\t"
+                        else:
+                            for i in 0..level-1: result &= "\t"
                         result &= k & ":"
                     else:
                         result &= k & ": "
 
-                    result &= codify(v,pretty,unwrapped,level+1, false) 
+                    result &= codify(v,pretty,unwrapped,level+1, false, isKeyVal=true) 
+
                     if not pretty:
                         result &= " "
 
