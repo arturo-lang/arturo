@@ -22,6 +22,7 @@ import nre except toSeq
 
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
+import helpers/templates as TemplatesHelper
 
 import vm/[common, exec, globals, parse, stack, value]
 
@@ -394,7 +395,6 @@ proc defineSymbols*() =
 
             if (popAttr("template") != VNULL):
                 rgx = nre.re"\<\|(.+)\|\>"
-
             if (let aWith = popAttr("with"); aWith != VNULL):
                 if x.kind==String:
                     var res = newString(x.s)
