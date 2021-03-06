@@ -1418,7 +1418,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("\t",level+1))
                 result &= "{\n" & repeat("\t",level+1) & splitl & "\n" & repeat("\t",level) & "}"
             else:
-                result &= "\"" & v.s & "\""
+                result &= escape(v.s)
         of Word         : result &= v.s
         of Literal      : result &= "'" & v.s
         of Label        : result &= v.s & ":"
