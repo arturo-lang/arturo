@@ -66,7 +66,7 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
             if spl.match(Embeddable).isNone:
                 # if it's not an embedded tag,
                 # added as a string - split by lines
-                blk.add(codify(newString(spl)))
+                blk.add(codify(newString(spl), safeStrings=true))
                 let stripped = spl.strip(chars={' '})
                 if stripped != "" and (stripped[^1] in {'\r','\n'}):
                         blk.add("\"\\n\"")
