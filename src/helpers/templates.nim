@@ -23,19 +23,16 @@ var
     Interpolated    = nre.re"\|([^\|]+)\|"
     Embeddable      = nre.re"(\<\|.*?\|\>)"
 
-
-    EmbedTag        = nre.re"\<\|(.*?)\|\>"
-
 #=======================================
 # Helpers
 #=======================================
 
 proc renderInterpolated(s: string, recursive: bool, useReference: bool, reference: ValueDict): string =
     result = s
-    
+
     var keepGoing = true
     if recursive: 
-        keepGoing = result.match(Interpolated).isSome
+        keepGoing = result.find(Interpolated).isSome
 
     while keepGoing:
         result = result.replace(Interpolated, proc (match: RegexMatch): string =
@@ -45,7 +42,7 @@ proc renderInterpolated(s: string, recursive: bool, useReference: bool, referenc
 
         # if recursive, check if there's still more embedded tags
         # otherwise, break out of the loop
-        if recursive: keepGoing = result.match(Interpolated).isSome
+        if recursive: keepGoing = result.find(Interpolated).isSome
         else: keepGoing = false
 
 proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: ValueDict): string =
@@ -53,7 +50,7 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
 
     var keepGoing = true
     if recursive: 
-        keepGoing = result.match(Embeddable).isSome
+        keepGoing = result.find(Embeddable).isSome
 
     while keepGoing:
         # split input by tags
@@ -97,7 +94,7 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
 
         # if recursive, check if there's still more embedded tags
         # otherwise, break out of the loop
-        if recursive: keepGoing = result.match(Embeddable).isSome
+        if recursive: keepGoing = result.find(Embeddable).isSome
         else: keepGoing = false
 
 #=======================================
