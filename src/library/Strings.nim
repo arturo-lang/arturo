@@ -395,6 +395,12 @@ proc defineSymbols*() =
 
             if (popAttr("template") != VNULL):
                 rgx = nre.re"\<\|(.+)\|\>"
+                echo "rendering string!"
+                echo "|" & renderString(x.s, useEngine=true) & "|"
+            else:
+                echo "rendering string!"
+                echo "|" & renderString(x.s) & "|"
+                
             if (let aWith = popAttr("with"); aWith != VNULL):
                 if x.kind==String:
                     var res = newString(x.s)
