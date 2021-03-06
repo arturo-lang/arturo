@@ -371,7 +371,6 @@ proc defineSymbols*() =
         },
         attrs       = {
             "single"    : ({Boolean},"don't render recursively"),
-            "with"      : ({Dictionary},"use given dictionary for reference"),
             "template"  : ({Boolean},"render as a template")
         },
         returns     = {String,Nothing},
