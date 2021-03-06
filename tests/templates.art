@@ -11,7 +11,7 @@ print render.template "x: <|:x|>"
 
 print render.template {
     rendering the template
-    x => <|:x|>
+    x: <|:x|>
     <| if? x>1 [ |> 
         Yep, x is greater than 1 
     <|] else [ |> 
