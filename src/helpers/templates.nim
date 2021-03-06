@@ -56,15 +56,19 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
         # split input by tags
         var splitted = result.split(Embeddable)
 
-        var blk: ValueArray = @[]
+        var blk: seq[string] = @[]
 
         # go through the token one-by-one
         for i,spl in splitted:
 
             if spl.match(Embeddable).isNone:
                 # if it's not an embedded tag,
-                # added as a string
-                blk.add(newString(spl))
+                # added as a string - split by lines
+                let lines = toSeq(splitLines(spl))
+                for i,line in lines:
+                    blk.add(codify(newString(line)))
+                    if i != lines.len-1:
+                        blk.add("\"\\n\"")
             else:
                 # otherwise, clean it up
                 var parseable = spl.strip(chars = {'<', '>', '|'})
@@ -75,17 +79,17 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
 
                 # if it's a <|: something |> tag, stringify it
                 if output:
-                    blk.add(newWord("to"))
-                    blk.add(newType("string"))
+                    blk.add("to")
+                    blk.add(":string")
 
-                # finally, parse it as a code block
-                # and insert its sub-tokens one-by-one
-                for item in doParse(parseable, isFile=false).a:
-                    blk.add(item)
+                blk.add(parseable)
+
+        let subscript = blk.join(" ")
+        let parsed = doParse(subscript, isFile=false)
 
         # execute/reduce ('array') the resulting block
         let stop = SP
-        discard execBlock(newBlock(blk))
+        discard execBlock(parsed)
         let arr: ValueArray = sTopsFrom(stop)
         SP = stop
 
