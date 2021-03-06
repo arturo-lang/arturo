@@ -24,11 +24,12 @@ unique 'modules
 inspect functions
 
 loop functions [modl,lst][
-    target: relative join.path @["sitepages" lower modl]
+    target: relative join.path @["../../webize/artdoc/pages/library" lower modl]
     write.directory target ø
 
     loop lst 'func [
-        funcInfo: as.code info.get func
+        funcInfo: strip as.pretty.code.unwrapped info.get func
+        print join.path @[target ~"|func|.art"]
         write join.path @[target ~"|func|.art"] funcInfo
     ]
 ]
