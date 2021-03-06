@@ -539,7 +539,7 @@ Check if string ends with given suffix
 ```red
 suffix? "hello" "lo"          ; => true
 suffix? "boom" "lo"           ; => false
-```
+``` 
 
 ## truncate
 
