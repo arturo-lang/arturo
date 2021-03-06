@@ -1389,7 +1389,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 # TODO Fix pretty-printing for unwrapped blocks
 #  Indentation is not working right for inner dictionaries and blocks
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
-proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false): string {.inline.} =
+proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
     if pretty:
@@ -1414,11 +1414,14 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= ":" & v.name
         of Char         : result &= "`" & $(v.c) & "`"
         of String       : 
-            if countLines(v.s)>1 or v.s.contains("\""):
-                var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("\t",level+1))
-                result &= "{\n" & repeat("\t",level+1) & splitl & "\n" & repeat("\t",level) & "}"
+            if safeStrings:
+                result &= "{~" & v.s & "~}"
             else:
-                result &= escape(v.s)
+                if countLines(v.s)>1 or v.s.contains("\""):
+                    var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("\t",level+1))
+                    result &= "{\n" & repeat("\t",level+1) & splitl & "\n" & repeat("\t",level) & "}"
+                else:
+                    result &= escape(v.s)
         of Word         : result &= v.s
         of Literal      : result &= "'" & v.s
         of Label        : result &= v.s & ":"
@@ -1483,7 +1486,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             
             var parts: seq[string] = @[]
             for i,child in v.a:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1)))
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
 
             result &= parts.join(" ")
 
@@ -1516,7 +1519,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     else:
                         result &= k & ": "
 
-                    result &= codify(v,pretty,unwrapped,level+1, false, isKeyVal=true) 
+                    result &= codify(v,pretty,unwrapped,level+1, false, isKeyVal=true, safeStrings=safeStrings) 
 
                     if not pretty:
                         result &= " "
@@ -1529,9 +1532,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
         of Function:
             result &= "function "
-            result &= codify(v.params,pretty,unwrapped,level+1, false)
+            result &= codify(v.params,pretty,unwrapped,level+1, false, safeStrings=safeStrings)
             result &= " "
-            result &= codify(v.main,pretty,unwrapped,level+1, true)
+            result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
 
         else:
             result &= ""

@@ -246,11 +246,14 @@ template parseMultilineString(p: var Parser) =
 template parseCurlyString(p: var Parser) =
     var pos = p.bufpos + 1
     var curliesExpected = 1
+    var safeString = false
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
             inc(pos)
-
+    elif p.buf[pos]=='~':
+        inc(pos)
+        safeString = true
     while true:
         case p.buf[pos]:
             of EOF: 
@@ -260,11 +263,14 @@ template parseCurlyString(p: var Parser) =
                 add(p.value, p.buf[pos])
                 inc(pos)
             of RCurly:
-                if curliesExpected==1:
-                    inc(pos)
-                    break
+                if not safeString:
+                    if curliesExpected==1:
+                        inc(pos)
+                        break
+                    else:
+                        curliesExpected -= 1
+                        add(p.value, p.buf[pos])
                 else:
-                    curliesExpected -= 1
                     add(p.value, p.buf[pos])
                 inc(pos)
             of CR:
@@ -281,6 +287,18 @@ template parseCurlyString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
+            of '~':
+                if safeString:
+                    if p.buf[pos+1]==RCurly:
+                        inc(pos)
+                        inc(pos)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
