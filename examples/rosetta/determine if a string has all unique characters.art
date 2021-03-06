@@ -8,7 +8,7 @@ strings: [
 
 loop strings 'str [
     chars: split str
-    prints [as.code str ~"(size |size str|):"]
+    prints ["\"" ++ str ++ "\"" ~"(size |size str|):"]
     
     if? chars = unique chars ->
         print "has no duplicates."
