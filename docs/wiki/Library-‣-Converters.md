@@ -75,6 +75,8 @@ Format given value as implied type
 |ascii|<i>:boolean</i>|transliterate string to ASCII|
 |agnostic|<i>:boolean</i>|convert words in block to literals, if not in context|
 |code|<i>:boolean</i>|convert value to valid Arturo code|
+|pretty|<i>:boolean</i>|prettify generated code|
+|unwrapped|<i>:boolean</i>|omit external block notation|
 
 #### Returns
 
