@@ -90,7 +90,9 @@ proc defineSymbols*() =
             "octal"     : ({Boolean},"format integer as octal"),
             "ascii"     : ({Boolean},"transliterate string to ASCII"),
             "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
-            "code"      : ({Boolean},"convert value to valid Arturo code")
+            "code"      : ({Boolean},"convert value to valid Arturo code"),
+            "pretty"    : ({Boolean},"prettify generated code"),
+            "unwrapped" : ({Boolean},"omit external block notation")
 
         },
         returns     = {Any},
@@ -118,7 +120,7 @@ proc defineSymbols*() =
                 )
                 stack.push(newBlock(res))
             elif (popAttr("code") != VNULL):
-                stack.push(newString(codify(x)))
+                stack.push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL))))
             else:
                 stack.push(x)
 
