@@ -45,6 +45,8 @@ proc renderInterpolated(s: string, recursive: bool, useReference: bool, referenc
         if recursive: keepGoing = result.find(Interpolated).isSome
         else: keepGoing = false
 
+# TODO renderTemplate does not respect newlines in multi-line input
+#  check `templates.art` for the inconsistency
 proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: ValueDict): string =
     result = s
 
@@ -64,10 +66,9 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
             if spl.match(Embeddable).isNone:
                 # if it's not an embedded tag,
                 # added as a string - split by lines
-                let lines = toSeq(splitLines(spl))
-                for i,line in lines:
-                    blk.add(codify(newString(line)))
-                    if i != lines.len-1:
+                blk.add(codify(newString(spl)))
+                let stripped = spl.strip(chars={' '})
+                if stripped != "" and (stripped[^1] in {'\r','\n'}):
                         blk.add("\"\\n\"")
             else:
                 # otherwise, clean it up
