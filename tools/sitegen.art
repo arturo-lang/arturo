@@ -1,0 +1,34 @@
+#!/usr/bin/env arturo
+
+modules: []
+functions: #[]
+
+; get modules and functions
+
+loop symbols [sym][
+    inf: info.get sym
+
+    if key? inf 'module [
+        fun: inf\name
+        lib: inf\module
+        append 'modules lib
+        if not? key? functions lib [
+            set functions lib []
+        ]
+        set functions lib append (get functions lib) fun
+    ]
+]
+
+unique 'modules
+
+inspect functions
+
+loop functions [modl,lst][
+    target: relative join.path @["sitepages" lower modl]
+    write.directory target ø
+
+    loop lst 'func [
+        funcInfo: as.code info.get func
+        write join.path @[target ~"|func|.art"] funcInfo
+    ]
+]
