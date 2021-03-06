@@ -348,7 +348,9 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '&'  : p.symbol = ampersand
         of '*'  : p.symbol = asterisk
         of '_'  : p.symbol = underscore
-        of '|'  : p.symbol = pipe
+        of '|'  : 
+            if p.buf[pos+1]=='|': inc(pos); p.symbol = doublepipe
+            else: p.symbol = pipe
         of '/'  : 
             if p.buf[pos+1]=='/': inc(pos); p.symbol = doubleslash
             else: p.symbol = slash
