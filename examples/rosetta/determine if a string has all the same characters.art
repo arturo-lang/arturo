@@ -13,7 +13,7 @@ allSameChars?: function [str][
 ]
 
 loop strings 's [
-    prints [as.code s ~"(size |size s|):"]
+    prints ["\"" ++ s ++ "\"" ~"(size |size s|):"]
     firstNotSame: allSameChars? s
     if? null? firstNotSame -> print "all the same."
     else -> print ~"first different char `|get s firstNotSame|` at position |firstNotSame|."
