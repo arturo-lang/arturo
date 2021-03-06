@@ -79,6 +79,7 @@ type
         dotslash        # ./
         colon           # :
         doublecolon     # ::
+        doublepipe      # ||
 
         slashedzero     # ø
 
@@ -1205,6 +1206,7 @@ proc `$`*(v: Value): string {.inline.} =
                 of dotslash         : return "./"
                 of colon            : return ":"
                 of doublecolon      : return "::"
+                of doublepipe       : return "||"
 
                 of slashedzero      : return "ø"
 
@@ -1384,105 +1386,149 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
     if not isLast:
         stdout.write "\n"
 
-proc codify*(v: Value): string {.inline.} =
+proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false): string {.inline.} =
+    result = ""
+
+    if pretty:
+        for i in 0..level-1: result &= "\t"
+
     case v.kind:
-        of Null         : result = "null"
+        of Null         : result &= "null"
         of Boolean      : 
-            if v.b: result = "true"
-            else: result = "false"
+            if v.b: result &= "true"
+            else:   result &= "false"
         of Integer      :
-            if v.iKind==NormalInteger: result = $(v.i)
-            else: result = $(v.bi)
-        of Floating     : result = $(v.f)
+            if v.iKind==NormalInteger: result &= $(v.i)
+            else: result &= $(v.bi)
+        of Floating     : result &= $(v.f)
         of Type         : 
             if v.tpKind==BuiltinType:
-                result = ":" & ($v.t).toLowerAscii()
+                result &= ":" & ($v.t).toLowerAscii()
             else:
-                result = ":" & v.name
-        of Char         : result = "`" & $(v.c) & "`"
-        of String       : result = "\"" & v.s & "\""
-        of Word         : result = v.s
-        of Literal      : result = "'" & v.s
-        of Label        : result = v.s & ":"
-        of Attribute         : result = "." & v.r
-        of AttributeLabel    : result = "." & v.r & ":"
+                result &= ":" & v.name
+        of Char         : result &= "`" & $(v.c) & "`"
+        of String       : 
+            if countLines(v.s)>1 or v.s.contains("\""):
+                result &= "{" & v.s & "}"
+            else:
+                result &= "\"" & v.s & "\""
+        of Word         : result &= v.s
+        of Literal      : result &= "'" & v.s
+        of Label        : result &= v.s & ":"
+        of Attribute         : result &= "." & v.r
+        of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       : 
             case v.m:
-                of thickarrowleft   : result = "<="
-                of thickarrowright  : result = "=>"
-                of arrowleft        : result = "<-"
-                of arrowright       : result = "->"
-                of doublearrowleft  : result = "<<"
-                of doublearrowright : result = ">>"
+                of thickarrowleft   : result &= "<="
+                of thickarrowright  : result &= "=>"
+                of arrowleft        : result &= "<-"
+                of arrowright       : result &= "->"
+                of doublearrowleft  : result &= "<<"
+                of doublearrowright : result &= ">>"
 
-                of equalless        : result = "=<"
-                of greaterequal     : result = ">="
-                of lessgreater      : result = "<>"
+                of equalless        : result &= "=<"
+                of greaterequal     : result &= ">="
+                of lessgreater      : result &= "<>"
 
-                of lesscolon        : result = "<:"
-                of minuscolon       : result = "-:"
+                of lesscolon        : result &= "<:"
+                of minuscolon       : result &= "-:"
 
-                of tilde            : result = "~"
-                of exclamation      : result = "!"
-                of at               : result = "@"
-                of sharp            : result = "#"
-                of dollar           : result = "$"
-                of percent          : result = "%"
-                of caret            : result = "^"
-                of ampersand        : result = "&"
-                of asterisk         : result = "*"
-                of minus            : result = "-"
-                of doubleminus      : result = "--"
-                of underscore       : result = "_"
-                of equal            : result = "="
-                of plus             : result = "+"
-                of doubleplus       : result = "++"
-                of lessthan         : result = "<"
-                of greaterthan      : result = ">"
-                of slash            : result = "/"
-                of doubleslash      : result = "//"
-                of backslash        : result = "\\"
-                of doublebackslash  : result = "\\\\"
-                of pipe             : result = "|"
+                of tilde            : result &= "~"
+                of exclamation      : result &= "!"
+                of at               : result &= "@"
+                of sharp            : result &= "#"
+                of dollar           : result &= "$"
+                of percent          : result &= "%"
+                of caret            : result &= "^"
+                of ampersand        : result &= "&"
+                of asterisk         : result &= "*"
+                of minus            : result &= "-"
+                of doubleminus      : result &= "--"
+                of underscore       : result &= "_"
+                of equal            : result &= "="
+                of plus             : result &= "+"
+                of doubleplus       : result &= "++"
+                of lessthan         : result &= "<"
+                of greaterthan      : result &= ">"
+                of slash            : result &= "/"
+                of doubleslash      : result &= "//"
+                of backslash        : result &= "\\"
+                of doublebackslash  : result &= "\\\\"
+                of pipe             : result &= "|"
 
-                of ellipsis         : result = ".."
-                of dotslash         : result = "./"
-                of colon            : result = ":"
-                of doublecolon      : result = "::"
+                of ellipsis         : result &= ".."
+                of dotslash         : result &= "./"
+                of colon            : result &= ":"
+                of doublecolon      : result &= "::"
+                of doublepipe       : result &= "||"
 
-                of slashedzero      : result = "ø"
+                of slashedzero      : result &= "ø"
 
                 of unaliased             : discard
 
         of Inline, Block:
-            if v.kind==Inline: result = "("
-            else: result = "["
+            if not (pretty and unwrapped and level==0):
+                if v.kind==Inline: result &= "("
+                else: result &= "["
+
+            if pretty:
+                result &= "\n"
             
             var parts: seq[string] = @[]
             for i,child in v.a:
-                parts.add(codify(child))
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1)))
 
             result &= parts.join(" ")
 
-            if v.kind==Inline: result &= ")"
-            else: result &= "]"
+            if pretty:
+                result &= "\n"
+                for i in 0..level-1: result &= "\t"
+
+            if not (pretty and unwrapped and level==0):
+                if v.kind==Inline: result &= ")"
+                else: result &= "]"
 
         of Dictionary:
-            result = "#["
+            if not (pretty and unwrapped and level==0):
+                result &= "#["
 
-            for k,v in pairs(v.d):
-                result &= k & ": "
-                result &= codify(v) & " "
+            if pretty:
+                result &= "\n"
 
-            result &= "]"
+            let keys = toSeq(v.d.keys)
+
+            if keys.len > 0:
+
+                for k,v in pairs(v.d):
+                    if pretty:
+                        if not (unwrapped and level==0):
+                            for i in 0..level: result &= "\t"
+                        result &= k & ":"
+                    else:
+                        result &= k & ": "
+
+                    result &= codify(v,pretty,unwrapped,level+1, false) 
+                    if not pretty:
+                        result &= " "
+
+            if pretty:
+                for i in 0..level-1: result &= "\t"
+            
+            if not (pretty and unwrapped and level==0):
+                result &= "]"
 
         of Function:
-            result = "function "
-            result &= codify(v.params)
+            result &= "function "
+            result &= codify(v.params,pretty,unwrapped,level+1, false)
             result &= " "
-            result &= codify(v.main)
+            result &= codify(v.main,pretty,unwrapped,level+1, true)
+
         else:
-            result = ""
+            result &= ""
+    
+    if pretty:
+        if not isLast:
+            result &= "\n"
 
 # TODO(Value\hash) Verify hashing is done right
 #  labels: vm,unit-test
