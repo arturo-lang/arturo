@@ -28,7 +28,12 @@ loop functions [modl,lst][
     write.directory target ø
 
     loop lst 'func [
-        funcInfo: strip as.pretty.code.unwrapped info.get func
+        funcInfo:  info.get func
+        attributes: funcInfo\attrs
+        funcInfo: remove.key funcInfo 'attrs
+        funcInfo\attributes: attributes
+        funcInfo: strip as.pretty.code.unwrapped funcInfo
+        
         print join.path @[target ~"|func|.art"]
         write join.path @[target ~"|func|.art"] funcInfo
     ]
