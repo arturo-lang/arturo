@@ -141,7 +141,7 @@ proc defineSymbols*() =
             "seed"  : ({Any},"use specific seed value"),
             "right" : ({Boolean},"perform right folding")
         },
-        returns     = {Block,Nothing},
+        returns     = {Block,Null,Nothing},
         example     = """
             fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
@@ -161,9 +161,19 @@ proc defineSymbols*() =
 
             var seed = I0
             if x.kind==Literal:
-                if InPlace.a[0].kind == String:
+                # check if empty
+                if InPlaced.a.len==0: 
+                    stack.push(VNULL)
+                    return
+
+                if InPlaced.a[0].kind == String:
                     seed = newString("")
             else:
+                # check if empty
+                if InPlaced.a.len==0: 
+                    stack.push(VNULL)
+                    return
+                
                 if x.a[0].kind == String:
                     seed = newString("")
 
