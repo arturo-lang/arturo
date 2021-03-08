@@ -47,6 +47,11 @@ proc defineSymbols*() =
             ##########################################################
             var allOK = true
 
+            # check if empty
+            if x.a.len==0: 
+                stack.push(newBoolean(false))
+                return
+
             for item in x.a:
                 if item!=VTRUE:
                     allOK = false
