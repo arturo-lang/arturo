@@ -16,7 +16,8 @@
 # Libraries
 #=======================================
 
-import algorithm, random, sequtils, strutils, sugar, unicode
+import algorithm, os, random, sequtils
+import strutils, sugar, unicode
 import nre except toSeq
 
 import helpers/arrays as arraysHelper  
@@ -1012,7 +1013,8 @@ proc defineSymbols*() =
             "by"        : ({String},"split using given separator"),
             "regex"     : ({Boolean},"match against a regular expression"),
             "at"        : ({Integer},"split collection at given position"),
-            "every"     : ({Integer},"split collection every <n> elements")
+            "every"     : ({Integer},"split collection every <n> elements"),
+            "path"      : ({Boolean},"split path components in string")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1036,6 +1038,8 @@ proc defineSymbols*() =
                         SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
                     elif (popAttr("lines") != VNULL):
                         SetInPlace(newStringBlock(InPlaced.s.splitLines()))
+                    elif (popAttr("path") != VNULL):
+                        SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
                     elif (let aBy = popAttr("by"); aBy != VNULL):
                         SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
@@ -1074,6 +1078,8 @@ proc defineSymbols*() =
                     stack.push(newStringBlock(strutils.splitWhitespace(x.s)))
                 elif (popAttr("lines") != VNULL):
                     stack.push(newStringBlock(x.s.splitLines()))
+                elif (popAttr("path") != VNULL):
+                    stack.push(newStringBlock(x.s.split(DirSep)))
                 elif (let aBy = popAttr("by"); aBy != VNULL):
                     stack.push(newStringBlock(x.s.split(aBy.s)))
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):
