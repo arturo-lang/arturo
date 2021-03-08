@@ -1,0 +1,13 @@
+loop [1 2 3] 'x [
+    print x
+]
+
+loop.with: 'i ["zero" "one" "two" "three"] [x][
+    print [i "=>" x]
+]
+
+print "before empty loop"
+loop [] 'x [
+    print x
+]
+print "after empty loop"
