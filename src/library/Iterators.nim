@@ -511,6 +511,11 @@ proc defineSymbols*() =
             if y.kind==Literal: args = @[y]
             else: args = y.a
 
+            # check if empty
+            if x.a.len==0: 
+                stack.push(newBoolean(false))
+                return
+
             let preevaled = doEval(z)
             var one = false
 
