@@ -1140,6 +1140,14 @@ proc `>=`*(x: Value, y: Value): bool =
 proc `!=`*(x: Value, y: Value): bool =
     not (x == y)
 
+proc cmp*(x: Value, y: Value): int =
+    if x < y:
+        return -1
+    elif x > y:
+        return 1
+    else:
+        return 0
+
 proc `$`*(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
