@@ -49,8 +49,11 @@ loop functions [modl,lst][
     loop lst 'func [
         funcInfo:  info.get func
         attributes: funcInfo\attrs
+        arguments: funcInfo\args
         funcInfo: remove.key funcInfo 'attrs
+        funcInfo: remove.key funcInfo 'args
         funcInfo\attributes: attributes
+        funcInfo\arguments: arguments
         funcInfo\related: get relatedFuncs func
         funcInfo: strip as.pretty.code.unwrapped funcInfo
 
