@@ -181,7 +181,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Block},"embed given symbols"),
-            "raw"   : ({Boolean},"create dictionary from raw block")
+            "raw"   : ({Boolean},"create dictionary from raw block"),
+            "data"  : ({Boolean},"parse input as data")
         },
         returns     = {Dictionary},
         example     = """
@@ -205,29 +206,42 @@ proc defineSymbols*() =
             ##########################################################
             var dict: ValueDict
 
-            if x.kind==Block:
-                #dict = execDictionary(x)
-                if (popAttr("raw") != VNULL):
-                    dict = initOrderedTable[string,Value]()
-                    var idx = 0
-                    while idx < x.a.len:
-                        dict[x.a[idx].s] = x.a[idx+1]
-                        idx += 2
-                else:
-                    dict = execBlock(x,dictionary=true)
-            elif x.kind==String:
-                let (src, tp) = getSource(x.s)
+            if (popAttr("data") != VNULL):
+                if x.kind==Block:
+                    stack.push(parseData(x))
+                elif x.kind==String:
+                    let (src, tp) = getSource(x.s)
 
-                if tp!=TextData:
-                    dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
-                else:
-                    echo "file does not exist"
+                    if tp!=TextData:
+                        dict = parseData(doParse(src, isFile=false)).d
+                    else:
+                        echo "file does not exist"
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
-                for x in aWith.a:
-                    dict[x.s] = GetSym(x.s)
-                    
-            stack.push(newDictionary(dict))
+                    stack.push(newDictionary(dict))
+            else:
+                if x.kind==Block:
+                    #dict = execDictionary(x)
+                    if (popAttr("raw") != VNULL):
+                        dict = initOrderedTable[string,Value]()
+                        var idx = 0
+                        while idx < x.a.len:
+                            dict[x.a[idx].s] = x.a[idx+1]
+                            idx += 2
+                    else:
+                        dict = execBlock(x,dictionary=true)
+                elif x.kind==String:
+                    let (src, tp) = getSource(x.s)
+
+                    if tp!=TextData:
+                        dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
+                    else:
+                        echo "file does not exist"
+
+                if (let aWith = popAttr("with"); aWith != VNULL):
+                    for x in aWith.a:
+                        dict[x.s] = GetSym(x.s)
+                        
+                stack.push(newDictionary(dict))
 
     builtin "from",
         alias       = unaliased, 
