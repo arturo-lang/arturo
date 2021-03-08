@@ -315,6 +315,9 @@ proc defineSymbols*() =
             let preevaled = doEval(z)
 
             if x.kind==Dictionary:
+                # check if empty
+                if x.d.len==0: return
+
                 var keepGoing = true
                 while keepGoing:
                     for k,v in pairs(x.d):
@@ -326,6 +329,9 @@ proc defineSymbols*() =
                         keepGoing = false
             elif x.kind==String:
                 var arr: seq[Value] = toSeq(runes(x.s)).map((x) => newChar(x))
+
+                # check if empty
+                if arr.len==0: return
 
                 var keepGoing = true
                 while keepGoing:
@@ -352,6 +358,9 @@ proc defineSymbols*() =
                     arr = (toSeq(1..x.i)).map((x) => newInteger(x))
                 else:
                     arr = x.a
+
+                # check if empty
+                if arr.len==0: return
 
                 var keepGoing = true
                 while keepGoing:
