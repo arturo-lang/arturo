@@ -170,10 +170,10 @@ proc defineSymbols*() =
                     seed = newString("")
             else:
                 # check if empty
-                if InPlaced.a.len==0: 
+                if x.a.len==0: 
                     stack.push(VNULL)
                     return
-                
+
                 if x.a[0].kind == String:
                     seed = newString("")
 
