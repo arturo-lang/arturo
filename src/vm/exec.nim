@@ -65,6 +65,11 @@ template fetchAttributeByIndex(idx: int):untyped =
 
 ####
 
+proc parseData*(
+    blk             : Value
+): Value =
+    newDictionary(evalData(blk))
+
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 

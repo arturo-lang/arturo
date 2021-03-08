@@ -461,6 +461,39 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         else:
             for b in currentCommand.reversed: it.add(b)
 
+proc evalData*(blk: Value): ValueDict =
+    result = initOrderedTable[string,Value]()
+    
+    var i = 0
+    while i < blk.a.len:
+        let node = blk.a[i]
+
+        case node.kind:
+            of Label: 
+                if i+1 < blk.a.len:
+                    i += 1
+                    let val = blk.a[i]
+                    case val.kind:
+                        of Literal, Word, String:
+                            result[node.s] = newString(val.s)
+                        of Symbol:
+                            if val.m == sharp:
+                                if i+1 < blk.a.len and blk.a[i+1].kind==Block:
+                                    i += 1
+                                    let dval = blk.a[i]
+                                    result[node.s] = newDictionary(evalData(dval))
+                                else:
+                                    result[node.s] = val
+                            else:
+                                result[node.s] = val
+                        else:
+                            result[node.s] = val
+                else:
+                    break
+            else:
+                discard
+        i += 1
+
 proc doEval*(root: Value, isDictionary=false): Translation = 
     var cnsts: ValueArray = @[]
     var newit: ByteArray = @[]
