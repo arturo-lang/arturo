@@ -45,12 +45,12 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
-            var allOK = true
-
             # check if empty
             if x.a.len==0: 
                 stack.push(newBoolean(false))
                 return
+
+            var allOK = true
 
             for item in x.a:
                 if item!=VTRUE:
@@ -102,6 +102,11 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
+            # check if empty
+            if x.a.len==0: 
+                stack.push(newBoolean(false))
+                return
+            
             var anyOK = false
             for item in x.a:
                 if item==VTRUE:
