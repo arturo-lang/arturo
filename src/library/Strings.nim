@@ -319,12 +319,12 @@ proc defineSymbols*() =
     builtin "outdent",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "outdent each line of given text",
+        description = "outdent each line of given text, by using minimum shared indentation",
         args        = {
             "text"  : {String,Literal}
         },
         attrs       = {
-            "n"     : ({Integer},"unpad by given number of spaces (default: minimum shared indentation)"),
+            "n"     : ({Integer},"unpad by given number of spaces"),
             "with"  : ({String},"use given padding")
         },
         returns     = {String,Nothing},
