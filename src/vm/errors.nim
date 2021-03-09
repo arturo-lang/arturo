@@ -166,7 +166,7 @@ template AssertionError_AssertionFailed*(context: string): untyped =
 
 ## Runtime errors
 
-template RuntimeError_OutOfBounds*(indx: int, maxRange: int): untyped =
+proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
           "array index out of bounds: " & $(indx) & ";" & 
           "valid range: 0.." & $(maxRange)
