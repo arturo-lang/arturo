@@ -152,7 +152,7 @@ template SyntaxError_NewlineInQuotedString*(lineno: int, context: string): untyp
           "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_EmptyLiteral*(lineno: int, context: string): untyped =
+proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
     panic SyntaxError,
           "empty literal value;;" & 
           "line: " & $(lineno) & ";" &
