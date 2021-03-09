@@ -183,10 +183,10 @@ template RuntimeError_KeyNotFound*(sym: string, alter: seq[string]): untyped =
           "dictionary key not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
-template RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
+proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
     panic RuntimeError,
-          "cannot perform _" & (static functionName) & "_;" & 
-          "not enough parameters: " & $(static functionArity) & " required"
+          "cannot perform _" & (functionName) & "_;" & 
+          "not enough parameters: " & $(functionArity) & " required"
 
 template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
     let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
