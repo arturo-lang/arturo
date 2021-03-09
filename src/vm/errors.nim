@@ -118,12 +118,12 @@ proc showVMErrors*(e: ref Exception) =
     # emptyStack()
 
 #=======================================
-# Templates
+# Methods
 #=======================================
 
 ## Compiler errors
 
-template CompilerError_ScriptNotExists*(name: string): untyped =
+proc CompilerError_ScriptNotExists*(name: string) =
     panic CompilerError,
           "given script path doesn't exist:" & ";" &
           "_" & name & "_"
