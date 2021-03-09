@@ -145,6 +145,37 @@ proc defineSymbols*() =
 
             stack.push(newString(finalColor & x.s & resetColor))
 
+    builtin "indent",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "indent each line of given text",
+        args        = {
+            "text"  : {String,Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer},"pad by given number of spaces (default: 4)"),
+            "with"  : ({String},"use given padding")
+        },
+        returns     = {String,Nothing},
+        # TODO(Strings\indent) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            var count = 4
+            var padding = " "
+
+            if (let aN = popAttr("n"); aN != VNULL):
+                count = aN.i
+
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.s
+
+            if x.kind==Literal:
+                SetInPlace(newString(indent(InPlace.s, count, padding)))
+            else:
+                stack.push(newString(indent(x.s, count, padding)))            
+
     builtin "join",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -284,6 +315,42 @@ proc defineSymbols*() =
                 stack.push(VTRUE)
             except ValueError:
                 stack.push(VFALSE)
+
+    builtin "outdent",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "outdent each line of given text",
+        args        = {
+            "text"  : {String,Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer},"unpad by given number of spaces (default: minimum shared indentation)"),
+            "with"  : ({String},"use given padding")
+        },
+        returns     = {String,Nothing},
+        # TODO(Strings\outdent) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            var count = 0
+            if x.kind==Literal:
+                count = indentation(InPlace.s)
+            else:
+                count = indentation(x.s)
+
+            var padding = " "
+
+            if (let aN = popAttr("n"); aN != VNULL):
+                count = aN.i
+
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.s
+
+            if x.kind==Literal:
+                SetInPlace(newString(unindent(InPlaced.s, count, padding)))
+            else:
+                stack.push(newString(unindent(x.s, count, padding))) 
 
     builtin "pad",
         alias       = unaliased, 
