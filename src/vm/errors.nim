@@ -136,7 +136,7 @@ template SyntaxError_MissingClosingBracket*(lineno: int, context: string): untyp
           "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string): untyped =
+proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string): untyped =
     var strt = strtype
     if strt!="": strt &= " "
     panic SyntaxError,
