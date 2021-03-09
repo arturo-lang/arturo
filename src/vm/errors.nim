@@ -206,7 +206,7 @@ template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, 
 
 ## Misc errors
 
-proc showConversionError*() =
+template showConversionError*():untyped =
     echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
 
 template invalidConversionError*(origin: string): untyped =
