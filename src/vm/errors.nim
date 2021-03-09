@@ -91,6 +91,22 @@ proc getOpStack*(): string =
     else:
         ""
 
+proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
+    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+
+    var ordinalPos: string = ""
+    if argumentPos==0:
+        ordinalPos = "first"
+    elif argumentPos==1:
+        ordinalPos = "second"
+    elif argumentPos==2:
+        ordinalPos = "third"
+
+    return "cannot perform _" & functionName & "_ -> " & actualStr & ";" &
+           "incorrect argument type for " & ordinalPos & " parameter;" &
+           "accepts " & acceptedStr
+
 proc panic*(context: string, error: string) =
     var errorMsg = error
     if $(context) notin [AssertionError, SyntaxError, CompilerError]:
@@ -118,25 +134,25 @@ proc showVMErrors*(e: ref Exception) =
     # emptyStack()
 
 #=======================================
-# Templates
+# Methods
 #=======================================
 
 ## Compiler errors
 
-template CompilerError_ScriptNotExists*(name: string): untyped =
+proc CompilerError_ScriptNotExists*(name: string) =
     panic CompilerError,
           "given script path doesn't exist:" & ";" &
           "_" & name & "_"
 
 ## Syntax errors
 
-template SyntaxError_MissingClosingBracket*(lineno: int, context: string): untyped =
+proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
     panic SyntaxError,
           "missing closing bracket" & ";;" & 
           "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string): untyped =
+proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
     if strt!="": strt &= " "
     panic SyntaxError,
@@ -144,7 +160,7 @@ template SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: 
           "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_NewlineInQuotedString*(lineno: int, context: string): untyped =
+proc SyntaxError_NewlineInQuotedString*(lineno: int, context: string) =
     panic SyntaxError,
           "newline in quoted string;" & 
           "for multiline strings, you could use either:;" &
@@ -152,7 +168,7 @@ template SyntaxError_NewlineInQuotedString*(lineno: int, context: string): untyp
           "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_EmptyLiteral*(lineno: int, context: string): untyped =
+proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
     panic SyntaxError,
           "empty literal value;;" & 
           "line: " & $(lineno) & ";" &
@@ -160,54 +176,48 @@ template SyntaxError_EmptyLiteral*(lineno: int, context: string): untyped =
 
 ## Assertion errors
 
-template AssertionError_AssertionFailed*(context: string): untyped =
+proc AssertionError_AssertionFailed*(context: string) =
     panic AssertionError,
           context
 
 ## Runtime errors
 
-template RuntimeError_OutOfBounds*(indx: int, maxRange: int): untyped =
+proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
           "array index out of bounds: " & $(indx) & ";" & 
           "valid range: 0.." & $(maxRange)
 
-template RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]): untyped =
+proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "symbol not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
-template RuntimeError_KeyNotFound*(sym: string, alter: seq[string]): untyped =
+proc RuntimeError_KeyNotFound*(sym: string, alter: seq[string]) =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "dictionary key not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
-template RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
+proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic RuntimeError,
-          "cannot perform _" & (static functionName) & "_;" & 
-          "not enough parameters: " & $(static functionArity) & " required"
+          "cannot perform _" & (functionName) & "_;" & 
+          "not enough parameters: " & $(functionArity) & " required"
 
 template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
-    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
-    let acceptedStr = toSeq((expected[argumentPos][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+    let expectedValues = toSeq((expected[argumentPos][1]).items)
     
-    when argumentPos==0:
-        let ordinalPos = "first"
-    when argumentPos==1:
-        let ordinalPos = "second"
-    when argumentPos==2:
-        let ordinalPos = "third"
-
-    panic RuntimeError,
-          "cannot perform _" & (static functionName) & "_ -> " & actualStr & ";" &
-          "incorrect argument type for " & ordinalPos & " parameter;" &
-          "accepts " & acceptedStr
+    panic RuntimeError, 
+          getWrongArgumentTypeErrorMsg(functionName, argumentPos, expectedValues)
 
 ## Misc errors
 
+# TODO Convert `showConversionError` to RuntimeError exception 
+#  labels: error handling, enhancement
 template showConversionError*():untyped =
     echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
 
+# TODO Convert `invalidConversionError` to RuntimeError exception 
+#  labels: error handling, enhancement
 template invalidConversionError*(origin: string): untyped =
     echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
