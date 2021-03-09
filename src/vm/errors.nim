@@ -130,13 +130,13 @@ template CompilerError_ScriptNotExists*(name: string): untyped =
 
 ## Syntax errors
 
-template SyntaxError_MissingClosingBracket*(lineno: int, context: string): untyped =
+proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
     panic SyntaxError,
           "missing closing bracket" & ";;" & 
           "line: " & $(lineno) & ";" &
           "near: " & context
 
-proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string): untyped =
+proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
     if strt!="": strt &= " "
     panic SyntaxError,
