@@ -248,7 +248,7 @@ template parseCurlyString(p: var Parser) =
         while p.buf[pos] in Letters:
             inc(pos)
 
-    elif p.buf[pos]==':':
+    if p.buf[pos]==':':
         inc(pos)
         safeString = true
     while true:
@@ -299,8 +299,12 @@ template parseCurlyString(p: var Parser) =
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
-
     p.bufpos = pos
+
+    if safeString:
+        AddToken newString(p.value)
+    else:
+        AddToken newString(p.value, dedented=true)
 
 template parseFullLineString(p: var Parser) =
     var pos = p.bufpos + 2
@@ -532,7 +536,6 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 break
             of LCurly:
                 parseCurlyString(p)
-                AddToken newString(p.value)
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
