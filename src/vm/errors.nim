@@ -177,7 +177,7 @@ proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
           "symbol not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
-template RuntimeError_KeyNotFound*(sym: string, alter: seq[string]): untyped =
+proc RuntimeError_KeyNotFound*(sym: string, alter: seq[string]) =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "dictionary key not found: " & sym & ";" & 
