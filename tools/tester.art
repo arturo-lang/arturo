@@ -38,8 +38,9 @@ runSet: function [title,location][
         ******************************
     }
 
-    if success < size tests 
-        -> panic.code: 1 "testing failed"
+    if success < size tests [ 
+        panic.code: 1 "testing failed"
+    ]
 ]
 
 print color.bold {
