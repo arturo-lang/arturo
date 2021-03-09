@@ -251,7 +251,8 @@ template parseCurlyString(p: var Parser) =
         inc(pos)
         while p.buf[pos] in Letters:
             inc(pos)
-    elif p.buf[pos]=='~':
+            
+    elif p.buf[pos]==':':
         inc(pos)
         safeString = true
     while true:
@@ -287,7 +288,7 @@ template parseCurlyString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
-            of '~':
+            of ':':
                 if safeString:
                     if p.buf[pos+1]==RCurly:
                         inc(pos)
