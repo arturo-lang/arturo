@@ -13,5 +13,4 @@ print render.template {
 rendering the template
 x: <|:x|>
 <| if? x>1 [ |>Yep, x is greater than 1
-<|] else [ |>Nope it's not.<|]|>
-}
+<|] else [ |>Nope it's not.<|]|>}
