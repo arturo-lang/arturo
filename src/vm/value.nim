@@ -342,11 +342,9 @@ proc newChar*(c: char): Value {.inline.} =
 proc newChar*(c: string): Value {.inline.} =
     Value(kind: Char, c: c.runeAt(0))
 
-proc newString*(s: string, strip: bool = false): Value {.inline.} =
-    if not strip:
-        Value(kind: String, s: s)
-    else:
-        Value(kind: String, s: unicode.strip(s).split("\n").map((x)=>unicode.strip(x)).join("\n"))
+proc newString*(s: string, dedented: bool = false): Value {.inline.} =
+    if not dedented: Value(kind: String, s: s)
+    else: Value(kind: String, s: dedent(s))
 
 proc newWord*(w: string): Value {.inline.} =
     Value(kind: Word, s: w)
