@@ -212,17 +212,11 @@ template parseString(p: var Parser, stopper: char = Quote) =
 
 template parseMultilineString(p: var Parser) =
     var pos = p.bufpos + 1
+    while p.buf[pos]==Dash:
+        inc(pos)
+    
     while true:
         case p.buf[pos]:
-            of EOF: 
-                SyntaxError_UnterminatedString("multiline", p.lineNumber, getContext(p, p.bufpos))
-            of Dash:
-                if p.buf[pos+1]==Dash and p.buf[pos+2]==Dash:
-                    inc(pos,3)
-                    break
-                else:
-                    inc(pos)
-                    add(p.value, '-')
             of CR:
                 pos = lexbase.handleCR(p, pos)
                 when not defined(windows):
@@ -237,6 +231,8 @@ template parseMultilineString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
+            of EOF:
+                break
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -388,7 +384,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     isSymbol = false
                     p.bufpos = pos+1
                     parseMultilineString(p)
-                    AddToken newString(p.value)
+                    AddToken newString(p.value, dedented=true)
                 else:
                     p.symbol = doubleminus
             else: p.symbol = minus
