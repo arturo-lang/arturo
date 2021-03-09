@@ -91,6 +91,22 @@ proc getOpStack*(): string =
     else:
         ""
 
+proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
+    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+
+    var ordinalPos: string = ""
+    if argumentPos==0:
+        ordinalPos = "first"
+    elif argumentPos==1:
+        ordinalPos = "second"
+    elif argumentPos==2:
+        ordinalPos = "third"
+
+    return "cannot perform _" & functionName & "_ -> " & actualStr & ";" &
+           "incorrect argument type for " & ordinalPos & " parameter;" &
+           "accepts " & acceptedStr
+
 proc panic*(context: string, error: string) =
     var errorMsg = error
     if $(context) notin [AssertionError, SyntaxError, CompilerError]:
@@ -189,20 +205,10 @@ proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
           "not enough parameters: " & $(functionArity) & " required"
 
 template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
-    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
-    let acceptedStr = toSeq((expected[argumentPos][1]).items).map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+    let expectedValues = toSeq((expected[argumentPos][1]).items)
     
-    when argumentPos==0:
-        let ordinalPos = "first"
-    when argumentPos==1:
-        let ordinalPos = "second"
-    when argumentPos==2:
-        let ordinalPos = "third"
-
-    panic RuntimeError,
-          "cannot perform _" & (static functionName) & "_ -> " & actualStr & ";" &
-          "incorrect argument type for " & ordinalPos & " parameter;" &
-          "accepts " & acceptedStr
+    panic RuntimeError, 
+          getWrongArgumentTypeErrorMsg(functionName, argumentPos, expectedValues)
 
 ## Misc errors
 
