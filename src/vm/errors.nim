@@ -160,7 +160,7 @@ template SyntaxError_EmptyLiteral*(lineno: int, context: string): untyped =
 
 ## Assertion errors
 
-template AssertionError_AssertionFailed*(context: string): untyped =
+proc AssertionError_AssertionFailed*(context: string) =
     panic AssertionError,
           context
 
