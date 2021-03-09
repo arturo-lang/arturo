@@ -10,7 +10,8 @@ print render.template "x: <|:x|>"
 ; more advanced test
 
 print render.template {
-rendering the template
-x: <|:x|>
-<| if? x>1 [ |>Yep, x is greater than 1
-<|] else [ |>Nope it's not.<|]|>}
+    rendering the template
+    x: <|:x|>
+    <| if? x>1 [ |>Yep, x is greater than 1
+    <|] else [ |>Nope it's not.<|]|>
+}
