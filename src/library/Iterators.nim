@@ -58,6 +58,11 @@ proc defineSymbols*() =
             if y.kind==Literal: args = @[y]
             else: args = y.a
 
+            # check if empty
+            if x.a.len==0: 
+                stack.push(newBoolean(false))
+                return
+
             let preevaled = doEval(z)
             var all = true
 
@@ -136,7 +141,7 @@ proc defineSymbols*() =
             "seed"  : ({Any},"use specific seed value"),
             "right" : ({Boolean},"perform right folding")
         },
-        returns     = {Block,Nothing},
+        returns     = {Block,Null,Nothing},
         example     = """
             fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
@@ -156,9 +161,19 @@ proc defineSymbols*() =
 
             var seed = I0
             if x.kind==Literal:
-                if InPlace.a[0].kind == String:
+                # check if empty
+                if InPlaced.a.len==0: 
+                    stack.push(VNULL)
+                    return
+
+                if InPlaced.a[0].kind == String:
                     seed = newString("")
             else:
+                # check if empty
+                if x.a.len==0: 
+                    stack.push(VNULL)
+                    return
+
                 if x.a[0].kind == String:
                     seed = newString("")
 
@@ -315,6 +330,9 @@ proc defineSymbols*() =
             let preevaled = doEval(z)
 
             if x.kind==Dictionary:
+                # check if empty
+                if x.d.len==0: return
+
                 var keepGoing = true
                 while keepGoing:
                     for k,v in pairs(x.d):
@@ -326,6 +344,9 @@ proc defineSymbols*() =
                         keepGoing = false
             elif x.kind==String:
                 var arr: seq[Value] = toSeq(runes(x.s)).map((x) => newChar(x))
+
+                # check if empty
+                if arr.len==0: return
 
                 var keepGoing = true
                 while keepGoing:
@@ -352,6 +373,9 @@ proc defineSymbols*() =
                     arr = (toSeq(1..x.i)).map((x) => newInteger(x))
                 else:
                     arr = x.a
+
+                # check if empty
+                if arr.len==0: return
 
                 var keepGoing = true
                 while keepGoing:
@@ -496,6 +520,11 @@ proc defineSymbols*() =
 
             if y.kind==Literal: args = @[y]
             else: args = y.a
+
+            # check if empty
+            if x.a.len==0: 
+                stack.push(newBoolean(false))
+                return
 
             let preevaled = doEval(z)
             var one = false
