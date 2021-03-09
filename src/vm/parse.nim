@@ -251,7 +251,7 @@ template parseCurlyString(p: var Parser) =
         inc(pos)
         while p.buf[pos] in Letters:
             inc(pos)
-            
+
     elif p.buf[pos]==':':
         inc(pos)
         safeString = true
@@ -536,7 +536,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 break
             of LCurly:
                 parseCurlyString(p)
-                AddToken newString(p.value,strip=true)
+                AddToken newString(p.value)
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
