@@ -344,7 +344,7 @@ proc newChar*(c: string): Value {.inline.} =
 
 proc newString*(s: string, dedented: bool = false): Value {.inline.} =
     if not dedented: Value(kind: String, s: s)
-    else: Value(kind: String, s: dedent(s))
+    else: Value(kind: String, s: dedent(unicode.strip(s)))
 
 proc newWord*(w: string): Value {.inline.} =
     Value(kind: Word, s: w)
