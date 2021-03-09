@@ -88,7 +88,6 @@ proc defineSymbols*() =
                     "json"          : ({Boolean},"read Json into value"),
                     "csv"           : ({Boolean},"read CSV file into a block of rows"),
                     "withHeaders"   : ({Boolean},"read CSV headers"),
-                    "html"          : ({Boolean},"read HTML file into node dictionary"),
                     "binary"        : ({Boolean},"read as binary")
                 },
         returns     = {String,Block,Binary},
@@ -124,14 +123,14 @@ proc defineSymbols*() =
                     stack.push(valueFromJson(src))
                 elif (popAttr("csv") != VNULL):
                     stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
-                elif (popAttr("html") != VNULL):
-                    stack.push(parseHtmlInput(src))
                 else:
                     when not defined(MINI):
                         if (popAttr("toml") != VNULL):
                             stack.push(parseTomlString(src))
                         elif (popAttr("markdown") != VNULL):
                             stack.push(parseMarkdownInput(src))
+                        elif (popAttr("html") != VNULL):
+                            stack.push(parseHtmlInput(src))
                         else:
                             stack.push(newString(src))
                     else:
