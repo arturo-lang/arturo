@@ -81,7 +81,7 @@ while [true] .import [
 	;push null
 	Got: null
 
-	indent: ""
+	indentation: ""
 	
 	inp: input .repl
 			   .history: historyPath 
@@ -91,9 +91,9 @@ while [true] .import [
 
 	while [suffix? inp " "][
 		if suffix? strip inp "[" [
-			indent: indent ++ "\t"
+			indentation: indentation ++ "\t"
 		]
-		inp: inp ++ input ".. " ++ indent
+		inp: inp ++ input ".. " ++ indentation
 	]
 
 	try?.verbose.import [
