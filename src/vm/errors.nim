@@ -206,8 +206,12 @@ template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, 
 
 ## Misc errors
 
+# TODO Convert `showConversionError` to RuntimeError exception 
+#  labels: error handling, enhancement
 template showConversionError*():untyped =
     echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
 
+# TODO Convert `invalidConversionError` to RuntimeError exception 
+#  labels: error handling, enhancement
 template invalidConversionError*(origin: string): untyped =
     echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
