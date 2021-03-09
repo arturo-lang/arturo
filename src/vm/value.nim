@@ -1421,7 +1421,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Char         : result &= "`" & $(v.c) & "`"
         of String       : 
             if safeStrings:
-                result &= "{~" & v.s & "~}"
+                result &= "{:" & v.s & ":}"
             else:
                 if countLines(v.s)>1 or v.s.contains("\""):
                     var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat("\t",level+1))
