@@ -12,7 +12,7 @@ parseFasta: function [data][
     return result
 ]
 
-text: {
+text: strip outdent {
     >Rosetta_Example_1
     THERECANBENOSPACE
     >Rosetta_Example_2
