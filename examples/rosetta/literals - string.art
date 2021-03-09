@@ -2,10 +2,23 @@ str: "Hello world"
 
 print [str "->" type str]
 
-multiline: {
-This
-is a multi-line
-string
+fullLineStr: « This is a full-line string
+
+print [fullLineStr "->" type fullLineStr]
+
+multiline: strip outdent {
+    This
+    is a multi-line
+    string
 }
 
 print [multiline "->" type multiline]
+
+safer: strip outdent {:
+    This is 
+    yet another
+    multi-line
+    string
+:}
+
+print [safer "->" type safer]
