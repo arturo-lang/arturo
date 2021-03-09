@@ -1,6 +1,10 @@
 3rd-party:
   - src/extras/*
 
+documentation:
+  - examples/*
+  - docs/*
+
 evaluator:
   - src/translator/eval.nim
 
@@ -26,6 +30,9 @@ repl:
 
 unit-test:
   - tests/*
+
+error handling: 
+  - src/vm/errors.nim
 
 vm:
   - src/vm/*
