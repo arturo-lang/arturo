@@ -144,7 +144,7 @@ template SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: 
           "line: " & $(lineno) & ";" &
           "near: " & context
 
-template SyntaxError_NewlineInQuotedString*(lineno: int, context: string): untyped =
+proc SyntaxError_NewlineInQuotedString*(lineno: int, context: string) =
     panic SyntaxError,
           "newline in quoted string;" & 
           "for multiline strings, you could use either:;" &
