@@ -183,7 +183,7 @@ template RuntimeError_KeyNotFound*(sym: string, alter: seq[string]): untyped =
           "dictionary key not found: " & sym & ";" & 
           "perhaps you meant... " & alter.map((x) => "_" & x & "_ ?").join(sep)
 
-proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int): untyped =
+proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
     panic RuntimeError,
           "cannot perform _" & (functionName) & "_;" & 
           "not enough parameters: " & $(functionArity) & " required"
