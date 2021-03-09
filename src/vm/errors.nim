@@ -171,7 +171,7 @@ template RuntimeError_OutOfBounds*(indx: int, maxRange: int): untyped =
           "array index out of bounds: " & $(indx) & ";" & 
           "valid range: 0.." & $(maxRange)
 
-template RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]): untyped =
+proc RuntimeError_SymbolNotFound*(sym: string, alter: seq[string]) =
     let sep = ";" & repeat("~%",Alternative.len - 2) & "or... "
     panic RuntimeError,
           "symbol not found: " & sym & ";" & 
