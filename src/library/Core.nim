@@ -46,8 +46,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            vmBreak = true
-            #return Syms
+            raise BreakTriggered()
 
     # TODO(Core\call) Needs fix
     #  The function seems to be working fine with function 'literals but not with function values passed directly
@@ -122,8 +121,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            vmContinue = true
-            #return Syms
+            raise ContinueTriggered()
 
     builtin "do",
         alias       = unaliased, 
