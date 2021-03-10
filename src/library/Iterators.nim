@@ -113,18 +113,22 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 discard InPlace
                 for i,item in InPlaced.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if not stack.pop().b:
-                        res.add(item)
+                    handleBranching:
+                        stack.push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    do:
+                        if not stack.pop().b:
+                            res.add(item)
 
                 InPlaced.a = res
             else:
                 for item in x.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if not stack.pop().b:
-                        res.add(item)
+                    handleBranching:
+                        stack.push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    do:
+                        if not stack.pop().b:
+                            res.add(item)
 
                 stack.push(newBlock(res))
 
@@ -336,9 +340,12 @@ proc defineSymbols*() =
                 var keepGoing = true
                 while keepGoing:
                     for k,v in pairs(x.d):
-                        stack.push(v)
-                        stack.push(newString(k))
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        handleBranching:
+                            stack.push(v)
+                            stack.push(newString(k))
+                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        do:
+                            discard
                     if not forever:
                         keepGoing = false
             elif x.kind==String:
@@ -352,19 +359,20 @@ proc defineSymbols*() =
                     var indx = 0
                     var run = 0
                     while indx+args.len<=arr.len:
-                        for item in arr[indx..indx+args.len-1].reversed:
-                            stack.push(item)
+                        handleBranching:
+                            for item in arr[indx..indx+args.len-1].reversed:
+                                stack.push(item)
 
-                        if withIndex:
-                            stack.push(newInteger(run))
+                            if withIndex:
+                                stack.push(newInteger(run))
 
-                        discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                            discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                        do:
+                            run += 1
+                            indx += args.len
 
-                        run += 1
-                        indx += args.len
-
-                        if not forever:
-                            keepGoing = false
+                            if not forever:
+                                keepGoing = false
             else:
                 var arr: seq[Value]
                 if x.kind==Integer:
@@ -430,14 +438,18 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 discard InPlace
                 for i,item in InPlaced.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    InPlaced.a[i] = stack.pop()
+                    handleBranching:
+                        stack.push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    do:
+                        InPlaced.a[i] = stack.pop()
             else:
                 for item in x.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    res.add(stack.pop())
+                    handleBranching:
+                        stack.push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    do:
+                        res.add(stack.pop())
                 
                 stack.push(newBlock(res))
 
@@ -476,18 +488,22 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 discard InPlace
                 for i,item in InPlaced.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if stack.pop().b:
-                        res.add(item)
+                    handleBranching:
+                        stack.push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    do:
+                        if stack.pop().b:
+                            res.add(item)
 
                 InPlaced.a = res
             else:
                 for item in x.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if stack.pop().b:
-                        res.add(item)
+                    handleBranching:
+                        stack.push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    do:
+                        if stack.pop().b:
+                            res.add(item)
 
                 stack.push(newBlock(res))
 
