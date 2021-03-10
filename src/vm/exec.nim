@@ -180,13 +180,13 @@ proc execBlock*(
 template execInternal*(path: string): untyped =
     execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
 
-template checkForBreak*(): untyped =
-    if vmBreak:
-        vmBreak = false
-        break
+# template checkForBreak*(): untyped =
+#     if vmBreak:
+#         vmBreak = false
+#         break
 
-    if vmContinue:
-        vmContinue = false
+#     if vmContinue:
+#         vmContinue = false
 
 #=======================================
 # Methods
