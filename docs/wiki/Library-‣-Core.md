@@ -45,6 +45,23 @@ Break out of current block or loop
 
 - *:block*
 
+#### Examples
+
+```red
+loop 1..5 'x [
+    print ["x:" x]
+    if x=3 -> break
+    print "after check"
+]
+print "after loop"
+
+; x: 1
+; after check
+; x: 2
+; after check
+; x: 3
+; after loop
+```
 
 ## call
 
@@ -117,6 +134,27 @@ Immediately continue with next iteration
 
 - *:block*
 
+#### Examples
+
+```red
+loop 1..5 'x [
+    print ["x:" x]
+    if x=3 -> continue
+    print "after check"
+]
+print "after loop"
+
+; x: 1 
+; after check
+; x: 2 
+; after check
+; x: 3 
+; x: 4 
+; after check
+; x: 5 
+; after check
+; after loop
+```
 
 ## do
 
