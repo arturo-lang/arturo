@@ -162,6 +162,18 @@ proc execBlock*(
 template execInternal*(path: string): untyped =
     execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
 
+template handleBranching*(tryDoing, finalize: untyped): untyped =
+    try:
+        tryDoing
+    except BreakTriggered as e:
+        return
+    except ContinueTriggered as e:
+        discard
+    except Defect as e:
+        raise e 
+    finally:
+        finalize
+        
 #=======================================
 # Methods
 #=======================================
