@@ -1,0 +1,44 @@
+enpiped: function [str][
+    "|" ++ str ++ "|"
+]
+
+a: "Hello world"
+print enpiped a
+
+b: « Hello world
+print enpiped b
+
+c: {
+    Hello 
+    world
+}
+
+print enpiped c
+
+d: {:
+    Hello
+    world
+:}
+
+print enpiped d
+
+e: {!md
+    # Hello world!
+}
+
+print enpiped e
+
+f: ««
+This
+    is
+        a very
+    safe
+string»»
+
+print enpiped f
+
+print
+---------------
+This is a very long string
+    until the end of the
+        file

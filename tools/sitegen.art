@@ -2,10 +2,12 @@
 
 modules: []
 functions: #[]
+relatedFuncs: #[]
 
 ; get modules and functions
 
 loop symbols [sym][
+    print ["processing:" sym]
     inf: info.get sym
 
     if key? inf 'module [
@@ -16,8 +18,25 @@ loop symbols [sym][
             set functions lib []
         ]
         set functions lib append (get functions lib) fun
+
+
+        levD: 100
+        related: new #[]
+        loop symbols [sym2][
+            inf2: info.get sym2
+
+            if and? key? inf2 'module
+                    inf <> inf2 [
+                set related new ~"|capitalize lib|/|sym2|"  levenshtein inf\description inf2\description
+            ]
+        ]
+        ;inspect sort.values related
+        set relatedFuncs sym first.n: 4 keys sort.values related
+        ; inspect relatedFuncs
     ]
 ]
+
+inspect relatedFuncs
 
 unique 'modules
 
@@ -28,7 +47,18 @@ loop functions [modl,lst][
     write.directory target ø
 
     loop lst 'func [
-        funcInfo: strip as.pretty.code.unwrapped info.get func
+        funcInfo:  info.get func
+        attributes: funcInfo\attrs
+        arguments: funcInfo\args
+        funcInfo: remove.key funcInfo 'attrs
+        funcInfo: remove.key funcInfo 'args
+        funcInfo\attributes: attributes
+        funcInfo\arguments: arguments
+        funcInfo\related: get relatedFuncs func
+        funcInfo: strip as.pretty.code.unwrapped funcInfo
+
+        inspect funcInfo
+        
         print join.path @[target ~"|func|.art"]
         write join.path @[target ~"|func|.art"] funcInfo
     ]

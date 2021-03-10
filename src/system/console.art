@@ -12,23 +12,23 @@ completions: map sort keys symbols => [& ++ " "]
 hints: #[]
 
 loop symbols [k,v][
-	if function? var k [
-		ats: keys get info.get k 'attrs
+    if function? var k [
+        ats: keys get info.get k 'attrs
 
-		if not? empty? ats [
-			'completions ++ map ats 'at [
-				if? :boolean = first get get get info.get k 'attrs at 'types ->
-					join @[k "." at " "]
-				else ->
-					join @[k "." at ": "]
-			]
-		]
-	]
+        if not? empty? ats [
+            'completions ++ map ats 'at [
+                if? :boolean = first get get get info.get k 'attrs at 'types ->
+                    join @[k "." at " "]
+                else ->
+                    join @[k "." at ": "]
+            ]
+        ]
+    ]
 ]
 
 loop symbols [k,v][
-	if function? var k ->
-		set hints k (join.with:" " keys get info.get k 'args)
+    if function? var k ->
+        set hints k (join.with:" " keys get info.get k 'args)
 ]
 
 historyPath: join.path @[path\home ".arturo" "history.lst"]
@@ -36,77 +36,77 @@ historyPath: join.path @[path\home ".arturo" "history.lst"]
 ;; helpers & templates
 
 LongHeader: {
-	|color.green.bold "Arturo"|  
-	|sys\copyright| |sys\author|
+    |color.green.bold "Arturo"|  
+    |sys\copyright| |sys\author|
 }
 
 buildNo: (~{b/|sys\build|}) ++ " "
 if 2>sys\build -> buildNo: ""
 
 Details: {
-	# v/|sys\version| |buildNo|@ |sys\buildDate| 
-	# arch: |sys\cpu|/|sys\os|
+    # v/|sys\version| |buildNo|@ |sys\buildDate| 
+    # arch: |sys\cpu|/|sys\os|
 }
 
 BR: "\n"
 
 orange: $[x][
-	color.rgb:208 x
+    color.rgb:208 x
 ]
 
 orangeBold: $[x][
-	color.bold.rgb:208 x
+    color.bold.rgb:208 x
 ]
 
 ;; print header
 
 clear
 print join @[
-	~LongHeader BR BR
-	color.gray ~Details BR BR
-	orange "# Type " 
-	orangeBold "info 'symbol"
-	orange " for info about a specific symbol or built-in function" BR
-	orange "# Type " 
-	orangeBold "help"
-	orange " to get a list of all available functions with a short description" BR BR
-	orange "# For multi-line input, just add a blank space at the end of a line" BR
-	orange "# Use TAB for auto-completion, UP for navigating history" BR BR
-	orange "# Launching interactive console - rock on! 🤘" BR
+    ~LongHeader BR BR
+    color.gray ~Details BR BR
+    orange "# Type " 
+    orangeBold "info 'symbol"
+    orange " for info about a specific symbol or built-in function" BR
+    orange "# Type " 
+    orangeBold "help"
+    orange " to get a list of all available functions with a short description" BR BR
+    orange "# For multi-line input, just add a blank space at the end of a line" BR
+    orange "# Use TAB for auto-completion, UP for navigating history" BR BR
+    orange "# Launching interactive console - rock on! 🤘" BR
 ]
 
 ;; start the REPL
 
 while [true] .import [
-	;push null
-	Got: null
+    ;push null
+    Got: null
 
-	indent: ""
-	
-	inp: input .repl
-			   .history: historyPath 
-			   .complete: completions
-			   .hint: hints 
-			   "$> " 
+    indentation: ""
+    
+    inp: input .repl
+               .history: historyPath 
+               .complete: completions
+               .hint: hints 
+               "$> " 
 
-	while [suffix? inp " "][
-		if suffix? strip inp "[" [
-			indent: indent ++ "\t"
-		]
-		inp: inp ++ input ".. " ++ indent
-	]
+    while [suffix? inp " "][
+        if suffix? strip inp "[" [
+            indentation: indentation ++ "\t"
+        ]
+        inp: inp ++ input ".. " ++ indentation
+    ]
 
-	try?.verbose.import [
-		try.verbose.import to :block inp
+    try?.verbose.import [
+        try.verbose.import to :block inp
 
-		StackSize: size stack
-		
-		if StackSize > 0 		-> Got: pop 1
-		if Got <> null 			-> print color.gray ~"=> |Got|"
+        StackSize: size stack
+        
+        if StackSize > 0 		-> Got: pop 1
+        if Got <> null 			-> print color.gray ~"=> |Got|"
 
-		print ""
-	]
-	else [
-		print ""
-	]
+        print ""
+    ]
+    else [
+        print ""
+    ]
 ]
