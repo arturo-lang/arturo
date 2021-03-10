@@ -156,9 +156,18 @@ proc defineSymbols*() =
             "with"  : ({String},"use given padding")
         },
         returns     = {String,Nothing},
-        # TODO(Strings\indent) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            str: "one\ntwo\nthree"
+
+            print indent str
+            ;     one
+            ;     two
+            ;     three
+
+            print indent .n:10 .with:"#" str
+            ; ##########one
+            ; ##########two
+            ; ##########three
         """:
             ##########################################################
             var count = 4
@@ -327,9 +336,25 @@ proc defineSymbols*() =
             "with"  : ({String},"use given padding")
         },
         returns     = {String,Nothing},
-        # TODO(Strings\outdent) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print outdent {:
+                one
+                    two
+                    three
+            :}
+            ; one
+            ;     two
+            ;     three
+
+            print outdent.n:1 {:
+                one
+                    two
+                    three
+            :}
+            ;  one
+            ;      two
+            ;      three
+
         """:
             ##########################################################
             var count = 0
