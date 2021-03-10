@@ -18,7 +18,7 @@
 
 import algorithm, sequtils, sugar, unicode
 
-import vm/[common, eval, exec, globals, stack, value]
+import vm/[common, errors, eval, exec, globals, stack, value]
 
 #=======================================
 # Methods
@@ -382,20 +382,28 @@ proc defineSymbols*() =
                     var indx = 0
                     var run = 0
                     while indx+args.len<=arr.len:
-                        for item in arr[indx..indx+args.len-1].reversed:
-                            stack.push(item)
+                        try:
+                            for item in arr[indx..indx+args.len-1].reversed:
+                                stack.push(item)
 
-                        if withIndex:
-                            stack.push(newInteger(run))
+                            if withIndex:
+                                stack.push(newInteger(run))
 
-                        discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+                            discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+                        except BreakTriggered as e:
+                            return
+                        except ContinueTriggered as e:
+                            discard
+                        except Defect as e:
+                            raise e    
 
-                        #checkForBreak()
-                        run += 1
-                        indx += args.len
+                        finally:
+                            #checkForBreak()
+                            run += 1
+                            indx += args.len
 
-                        if not forever:
-                            keepGoing = false
+                            if not forever:
+                                keepGoing = false
 
     builtin "map",
         alias       = unaliased, 
