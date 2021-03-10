@@ -62,3 +62,23 @@ continue: after test
 continue: x: 5 
 continue: after test
 continue: after loop
+nested break: before loop 1
+nested break: x: 1 
+nested break: before loop 2
+nested break: y: 0 
+nested break: after test
+nested break: y: 1 
+nested break: after loop 2
+nested break: x: 2 
+nested break: before loop 2
+nested break: y: 0 
+nested break: after test
+nested break: y: 1 
+nested break: after loop 2
+nested break: x: 3 
+nested break: before loop 2
+nested break: y: 0 
+nested break: after test
+nested break: y: 1 
+nested break: after loop 2
+nested break: after loop 1
