@@ -166,10 +166,10 @@ Showcase
 ------------------------------
 
 <p align="center">
-	<a href="https://github.com/arturo-lang/grafito"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png"></a>    
+	<a href="https://github.com/arturo-lang/aguila"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png"></a>    
 </p>
 <p align="center">
-	<a href="https://github.com/arturo-lang/grafito"><b>Modern cross-platform webview-based desktop apps<br>without HTML/CSS/JS</b></a>
+	<a href="https://github.com/arturo-lang/aguila"><b>Modern cross-platform webview-based desktop apps<br>without HTML/CSS/JS</b></a>
 </p>
 
 ---
