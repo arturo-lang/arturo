@@ -16,15 +16,14 @@
 # Libraries
 #=======================================
 
-import algorithm, re, std/editdistance, os
-import sequtils, strutils, sugar, unicode
-import nre except toSeq
+import re, std/editdistance, os
+import sequtils, strutils, unicode
 
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
 import helpers/templates as TemplatesHelper
 
-import vm/[common, exec, globals, parse, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods
