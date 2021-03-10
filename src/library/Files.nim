@@ -22,12 +22,12 @@ when not defined(MINI):
     import sugar
     import extras/miniz
     
+    import helpers/html as HtmlHelper
     import helpers/markdown as MarkdownHelper
     import helpers/toml as TomlHelper
 
 import helpers/csv as CsvHelper
 import helpers/datasource as DatasourceHelper
-import helpers/html as HtmlHelper
 import helpers/json as JsonHelper
 
 import vm/[common, globals, stack, value]
