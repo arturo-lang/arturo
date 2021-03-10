@@ -74,9 +74,9 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
                 # otherwise, clean it up
                 var parseable = spl.strip(chars = {'<', '>', '|'})
                 var output = false
-                if parseable[0] == ':': 
+                if parseable[0] == '=': 
                     output = true
-                    parseable = parseable.strip(chars = {':'})
+                    parseable = parseable.strip(chars = {'='})
 
                 # if it's a <|: something |> tag, stringify it
                 if output:
