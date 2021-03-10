@@ -68,3 +68,25 @@ loop [1 3 5 7] 'j [
     print ["h" j "=" h j]
     print "after calling h"
 ]
+
+; SIMPLE BREAK 
+; FROM LOOP
+
+print "break: before loop"
+loop 1..5 'x [
+    print ["break: x:" x]
+    if x=3 -> break
+    print "break: after test"
+]
+print "break: after loop"
+
+; SIMPLE CONTINUE
+; IN LOOP
+
+print "continue: before loop"
+loop 1..5 'x [
+    print ["continue: x:" x]
+    if x=3 -> continue
+    print "continue: after test"
+]
+print "continue: after loop"
