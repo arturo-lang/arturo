@@ -375,7 +375,7 @@ proc defineSymbols*() =
                             of Boolean: stack.push VFALSE
                             of Integer: stack.push I0
                             of String: stack.push newString("null")
-                            else: showConversionError()
+                            else: RuntimeError_CannotConvert(x,y)
 
                     of Boolean:
                         case tp:
@@ -388,7 +388,7 @@ proc defineSymbols*() =
                             of String:
                                 if y.b: stack.push newString("true")
                                 else: stack.push newString("false")
-                            else: showConversionError()
+                            else: RuntimeError_CannotConvert(x,y)
 
                     of Integer:
                         case tp:
@@ -404,7 +404,7 @@ proc defineSymbols*() =
                                 for i,ch in str:
                                     ret[i] = (byte)(ord(ch))
                                 stack.push newBinary(ret)
-                            else: showConversionError()
+                            else: RuntimeError_CannotConvert(x,y)
 
                     of Floating:
                         case tp:
@@ -418,11 +418,11 @@ proc defineSymbols*() =
                                 for i,ch in str:
                                     ret[i] = (byte)(ord(ch))
                                 stack.push newBinary(ret)
-                            else: showConversionError()
+                            else: RuntimeError_CannotConvert(x,y)
 
                     of Type:
                         if tp==String: stack.push newString(($(y.t)).toLowerAscii())
-                        else: showConversionError()
+                        else: RuntimeError_CannotConvert(x,y)
 
                     of Char:
                         case tp:
@@ -430,34 +430,34 @@ proc defineSymbols*() =
                             of Floating: stack.push newFloating((float)ord(y.c))
                             of String: stack.push newString($(y.c))
                             of Binary: stack.push newBinary(@[(byte)(ord(y.c))])
-                            else: showConversionError()
+                            else: RuntimeError_CannotConvert(x,y)
 
                     of String:
                         case tp:
                             of Boolean: 
                                 if y.s=="true": stack.push VTRUE
                                 elif y.s=="false": stack.push VFALSE
-                                else: invalidConversionError(y.s)
+                                else: RuntimeError_ConversionFailed(x,y)
                             of Integer:
                                 try:
                                     stack.push newInteger(y.s)
                                 except ValueError:
-                                    invalidConversionError(y.s)
+                                    RuntimeError_ConversionFailed(x,y)
                             of Floating:
                                 try:
                                     stack.push newFloating(parseFloat(y.s))
                                 except ValueError:
-                                    invalidConversionError(y.s)
+                                    RuntimeError_ConversionFailed(x,y)
                             of Type:
                                 try:
                                     stack.push newType(y.s)
                                 except ValueError:
-                                    invalidConversionError(y.s)
+                                    RuntimeError_ConversionFailed(x,y)
                             of Char:
                                 if y.s.runeLen() == 1:
                                     stack.push newChar(y.s)
                                 else:
-                                    invalidConversionError(y.s)
+                                    RuntimeError_ConversionFailed(x,y)
                             of Word:
                                 stack.push newWord(y.s)
                             of Literal:
@@ -472,7 +472,7 @@ proc defineSymbols*() =
                                 try:
                                     stack.push newSymbol(y.s)
                                 except ValueError:
-                                    invalidConversionError(y.s)
+                                    RuntimeError_ConversionFailed(x,y)
                             of Binary:
                                 var ret: ByteArray = newSeq[byte](y.s.len)
                                 for i,ch in y.s:
@@ -481,7 +481,7 @@ proc defineSymbols*() =
                             of Block:
                                 stack.push doParse(y.s, isFile=false)
                             else:
-                                showConversionError()
+                                RuntimeError_CannotConvert(x,y)
 
                     of Literal, 
                         Word:
@@ -493,7 +493,7 @@ proc defineSymbols*() =
                             of Word:
                                 stack.push newWord(y.s)
                             else:
-                                showConversionError()
+                                RuntimeError_CannotConvert(x,y)
 
                     of Block:
                         case tp:
@@ -558,7 +558,7 @@ proc defineSymbols*() =
                                     res.custom = x
                                     stack.push(res)
                             else:
-                                showConversionError()
+                                RuntimeError_CannotConvert(x,y)
 
                     of Symbol:
                         case tp:
@@ -567,7 +567,7 @@ proc defineSymbols*() =
                             of Literal:
                                 stack.push newLiteral($(y))
                             else:
-                                showConversionError()
+                                RuntimeError_CannotConvert(x,y)
 
                     of Function,
                        Database,
