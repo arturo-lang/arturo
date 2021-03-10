@@ -159,34 +159,20 @@ proc execBlock*(
 
     return Syms
 
-    #         # #-----------------------------
-    #         # # break / continue
-    #         # #-----------------------------
-    #         # if vmBreak or vmContinue:
-    #         #     when not isBreakable:
-    #         #         return
-                    
-    #         # #-----------------------------
-    #         # # return
-    #         # #-----------------------------
-    #         # if vmReturn:
-    #         #     when not isFuncBlock:
-    #         #         return
-    #         #     else:
-    #         #         vmReturn = false
-                    
-    #         return subSyms
-
 template execInternal*(path: string): untyped =
     execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
 
-template checkForBreak*(): untyped =
-    if vmBreak:
-        vmBreak = false
-        break
-
-    if vmContinue:
-        vmContinue = false
+template handleBranching*(tryDoing, finalize: untyped): untyped =
+    try:
+        tryDoing
+    except BreakTriggered as e:
+        return
+    except ContinueTriggered as e:
+        discard
+    except Defect as e:
+        raise e 
+    finally:
+        finalize
 
 #=======================================
 # Methods
