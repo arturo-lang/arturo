@@ -173,7 +173,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
         raise e 
     finally:
         finalize
-        
+
 #=======================================
 # Methods
 #=======================================

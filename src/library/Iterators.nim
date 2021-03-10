@@ -67,13 +67,16 @@ proc defineSymbols*() =
             var all = true
 
             for item in x.a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                let popped = stack.pop()
-                if popped.kind==Boolean and not popped.b:
-                    stack.push(newBoolean(false))
-                    all = false
-                    break
+                handleBranching:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    let popped = stack.pop()
+                    if popped.kind==Boolean and not popped.b:
+                        stack.push(newBoolean(false))
+                        all = false
+                        break
+                do:
+                    discard
 
             if all:
                 stack.push(newBoolean(true))
@@ -116,9 +119,10 @@ proc defineSymbols*() =
                     handleBranching:
                         stack.push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    do:
                         if not stack.pop().b:
                             res.add(item)
+                    do:
+                        discard
 
                 InPlaced.a = res
             else:
@@ -126,9 +130,10 @@ proc defineSymbols*() =
                     handleBranching:
                         stack.push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    do:
                         if not stack.pop().b:
                             res.add(item)
+                    do:
+                        discard
 
                 stack.push(newBlock(res))
 
@@ -205,8 +210,9 @@ proc defineSymbols*() =
                                 stack.push(a)
 
                                 discard execBlock(VNULL, evaluated=preevaled, args=args)
-                            do:
                                 res = stack.pop()
+                            do:
+                                discard
 
                         SetInPlace(res)
 
@@ -221,8 +227,9 @@ proc defineSymbols*() =
                                 stack.push(a)
 
                                 discard execBlock(VNULL, evaluated=preevaled, args=args)
-                            do:
                                 res = stack.pop()
+                            do:
+                                discard
 
                         stack.push(res)
                 else:
@@ -239,8 +246,9 @@ proc defineSymbols*() =
                                 stack.push(a)
 
                                 discard execBlock(VNULL, evaluated=preevaled, args=args)
-                            do:
                                 res = stack.pop()
+                            do:
+                                discard
 
                         SetInPlace(res)
 
@@ -255,8 +263,9 @@ proc defineSymbols*() =
                                 stack.push(a)
 
                                 discard execBlock(VNULL, evaluated=preevaled, args=args)
-                            do:
                                 res = stack.pop()
+                            do:
+                                discard
 
                         stack.push(res)
 
@@ -445,15 +454,17 @@ proc defineSymbols*() =
                     handleBranching:
                         stack.push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    do:
                         InPlaced.a[i] = stack.pop()
+                    do:
+                        discard
             else:
                 for item in x.a:
                     handleBranching:
                         stack.push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    do:
                         res.add(stack.pop())
+                    do:
+                        discard
                 
                 stack.push(newBlock(res))
 
@@ -495,9 +506,10 @@ proc defineSymbols*() =
                     handleBranching:
                         stack.push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    do:
                         if stack.pop().b:
                             res.add(item)
+                    do:
+                        discard
 
                 InPlaced.a = res
             else:
@@ -505,9 +517,10 @@ proc defineSymbols*() =
                     handleBranching:
                         stack.push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    do:
                         if stack.pop().b:
                             res.add(item)
+                    do:
+                        discard
 
                 stack.push(newBlock(res))
 
@@ -548,13 +561,16 @@ proc defineSymbols*() =
             var one = false
 
             for item in x.a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                let popped = stack.pop()
-                if popped.kind==Boolean and popped.b:
-                    stack.push(newBoolean(true))
-                    one = true
-                    break
+                handleBranching:
+                    stack.push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    let popped = stack.pop()
+                    if popped.kind==Boolean and popped.b:
+                        stack.push(newBoolean(true))
+                        one = true
+                        break
+                do:
+                    discard
 
             if not one:
                 stack.push(newBoolean(false))

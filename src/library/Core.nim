@@ -568,11 +568,12 @@ proc defineSymbols*() =
                 handleBranching:
                     discard execBlock(VNULL, evaluated=preevaledX)
                     discard execBlock(VNULL, evaluated=preevaledY)
-                do:
                     let popped = stack.pop()
                     let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
                     if condition:
                         break
+                do:
+                    discard
 
     builtin "var",
         alias       = unaliased, 
@@ -686,8 +687,9 @@ proc defineSymbols*() =
                         else:
                             discard execBlock(VNULL, evaluated=preevaledY)
                         discard execBlock(VNULL, evaluated=preevaledX)
-                    do:
                         popped = stack.pop()
+                    do:
+                        discard
             else:
                 let preevaledY = doEval(y)
                 while true:
