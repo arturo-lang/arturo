@@ -197,30 +197,32 @@ proc defineSymbols*() =
                     if x.kind == Literal:
                         var res: Value = seed
                         for i in countdown(InPlaced.a.len-1,0):
-                            let a = InPlaced.a[i]
-                            let b = res
+                            handleBranching:
+                                let a = InPlaced.a[i]
+                                let b = res
 
-                            stack.push(b)
-                            stack.push(a)
+                                stack.push(b)
+                                stack.push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                            res = stack.pop()
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                            do:
+                                res = stack.pop()
 
                         SetInPlace(res)
 
                     else:
                         var res: Value = seed
                         for i in countdown(x.a.len-1,0):
-                            let a = x.a[i]
-                            let b = res
+                            handleBranching:
+                                let a = x.a[i]
+                                let b = res
 
-                            stack.push(b)
-                            stack.push(a)
+                                stack.push(b)
+                                stack.push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                            res = stack.pop()
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                            do:
+                                res = stack.pop()
 
                         stack.push(res)
                 else:
@@ -229,30 +231,32 @@ proc defineSymbols*() =
                     if x.kind == Literal:
                         var res: Value = seed
                         for i in x.a:
-                            let a = res
-                            let b = i
+                            handleBranching:
+                                let a = res
+                                let b = i
 
-                            stack.push(b)
-                            stack.push(a)
+                                stack.push(b)
+                                stack.push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                            res = stack.pop()
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                            do:
+                                res = stack.pop()
 
                         SetInPlace(res)
 
                     else:
                         var res: Value = seed
                         for i in x.a:
-                            let a = res
-                            let b = i
+                            handleBranching:
+                                let a = res
+                                let b = i
 
-                            stack.push(b)
-                            stack.push(a)
+                                stack.push(b)
+                                stack.push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
-
-                            res = stack.pop()
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                            do:
+                                res = stack.pop()
 
                         stack.push(res)
 
