@@ -4,14 +4,14 @@ x: 2
 print ~"x: |x|"
 print render "x: |x|"
 
-print ~.template "x: <|:x|>"
-print render.template "x: <|:x|>"
+print ~.template "x: <|= x |>"
+print render.template "x: <|= x |>"
 
 ; more advanced test
 
 print render.template {
     rendering the template
-    x: <|:x|>
+    x: <|= x |>
     <| if? x>1 [ |>Yep, x is greater than 1
     <|] else [ |>Nope it's not.<|]|>
 }
