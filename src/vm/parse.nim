@@ -242,7 +242,7 @@ template parseMultilineString(p: var Parser) =
 template parseCurlyString(p: var Parser) =
     var pos = p.bufpos + 1
     var curliesExpected = 1
-    var safeString = false
+    var verbatimString = false
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
@@ -250,7 +250,7 @@ template parseCurlyString(p: var Parser) =
 
     if p.buf[pos]==':':
         inc(pos)
-        safeString = true
+        verbatimString = true
     while true:
         case p.buf[pos]:
             of EOF: 
@@ -260,7 +260,7 @@ template parseCurlyString(p: var Parser) =
                 add(p.value, p.buf[pos])
                 inc(pos)
             of RCurly:
-                if not safeString:
+                if not verbatimString:
                     if curliesExpected==1:
                         inc(pos)
                         break
@@ -285,7 +285,7 @@ template parseCurlyString(p: var Parser) =
                 else:
                     add(p.value, LF)
             of ':':
-                if safeString:
+                if verbatimString:
                     if p.buf[pos+1]==RCurly:
                         inc(pos)
                         inc(pos)
@@ -301,7 +301,7 @@ template parseCurlyString(p: var Parser) =
                 inc(pos)
     p.bufpos = pos
 
-    if safeString:
+    if verbatimString:
         AddToken newString(p.value)
     else:
         AddToken newString(p.value, dedented=true)
@@ -318,6 +318,45 @@ template parseFullLineString(p: var Parser) =
             of LF:
                 pos = lexbase.handleLF(p, pos)
                 break
+            else:
+                add(p.value, p.buf[pos])
+                inc(pos)
+
+    p.bufpos = pos
+
+template parseSafeString(p: var Parser) =
+    var pos = p.bufpos + 4
+    while true:
+        case p.buf[pos]:
+            of EOF: 
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
+                break
+            of CR:
+                pos = lexbase.handleCR(p, pos)
+                when not defined(windows):
+                    add(p.value, LF)
+                else:    
+                    add(p.value, CR)
+                    add(p.value, LF)
+            of LF:
+                pos = lexbase.handleLF(p, pos)
+                when defined(windows):
+                    add(p.value, CR)
+                    add(p.value, LF)
+                else:
+                    add(p.value, LF)
+            of chr(194):
+                if p.buf[pos+1]==chr(187): # got »
+                    if p.buf[pos+2]==chr(194) and p.buf[pos+3]==chr(187):
+                        inc(pos,4)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        add(p.value, p.buf[pos+1])
+                        inc(pos,2)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -540,8 +579,12 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 inc(p.bufpos)
             of chr(194):
                 if p.buf[p.bufpos+1]==chr(171): # got «
-                    parseFullLineString(p)
-                    AddToken newString(unicode.strip(p.value))
+                    if p.buf[p.bufpos+2]==chr(194) and p.buf[p.bufpos+3]==chr(171):
+                        parseSafeString(p)
+                        AddToken newString(p.value)
+                    else:
+                        parseFullLineString(p)
+                        AddToken newString(unicode.strip(p.value))
                 else:
                     inc(p.bufpos)
 
