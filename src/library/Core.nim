@@ -406,7 +406,7 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(x)
             #echo "emitting: ReturnTriggered"
-            raise ReturnTriggered.newException("return")
+            raise ReturnTriggered()
             # vmReturn = true
             # # return ReturnResult
             # #return Syms
