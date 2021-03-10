@@ -565,12 +565,14 @@ proc defineSymbols*() =
             let preevaledY = doEval(y)
 
             while true:
-                discard execBlock(VNULL, evaluated=preevaledX)
-                discard execBlock(VNULL, evaluated=preevaledY)
-                let popped = stack.pop()
-                let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
-                if condition:
-                    break
+                handleBranching:
+                    discard execBlock(VNULL, evaluated=preevaledX)
+                    discard execBlock(VNULL, evaluated=preevaledY)
+                do:
+                    let popped = stack.pop()
+                    let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
+                    if condition:
+                        break
 
     builtin "var",
         alias       = unaliased, 
@@ -678,19 +680,24 @@ proc defineSymbols*() =
                 var popped = stack.pop()
 
                 while not (popped.kind==Null or (popped.kind==Boolean and popped.b==false)):
-                    if execInParent:
-                        discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
-                    else:
-                        discard execBlock(VNULL, evaluated=preevaledY)
-                    discard execBlock(VNULL, evaluated=preevaledX)
-                    popped = stack.pop()
+                    handleBranching:
+                        if execInParent:
+                            discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
+                        else:
+                            discard execBlock(VNULL, evaluated=preevaledY)
+                        discard execBlock(VNULL, evaluated=preevaledX)
+                    do:
+                        popped = stack.pop()
             else:
                 let preevaledY = doEval(y)
                 while true:
-                    if execInParent:
-                        discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
-                    else:
-                        discard execBlock(VNULL, evaluated=preevaledY)
+                    handleBranching:
+                        if execInParent:
+                            discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
+                        else:
+                            discard execBlock(VNULL, evaluated=preevaledY)
+                    do:
+                        discard
 
 #=======================================
 # Add Library
