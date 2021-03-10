@@ -29,6 +29,8 @@ const
 
 type 
     ReturnTriggered* = ref object of Defect
+    BreakTriggered* = ref object of Defect
+    ContinueTriggered* = ref object of Defect
     VMError* = ref object of Defect
 
 var
