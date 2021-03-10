@@ -15,6 +15,7 @@ import strformat, strutils, sugar
 #import nre except toSeq
 
 import helpers/colors as ColorsHelper
+import helpers/strings as StringsHelper
 
 import vm/[bytecode, stack, value]
 
@@ -212,14 +213,15 @@ template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, 
     panic RuntimeError, 
           getWrongArgumentTypeErrorMsg(functionName, argumentPos, expectedValues)
 
-## Misc errors
+proc RuntimeError_CannotConvert*(x, y: Value) =
+    panic RuntimeError,
+          "cannot convert argument: " & truncate(codify(y),20) & ";" &
+          "from :" & ($(y.kind)).toLowerAscii() & ";" &
+          "to   :" & ($(x.t)).toLowerAscii()
 
-# TODO Convert `showConversionError` to RuntimeError exception 
-#  labels: error handling, enhancement
-template showConversionError*():untyped =
-    echo "cannot convert argument of type :" & ($(y.kind)).toLowerAscii() & " to :" & ($(x.t)).toLowerAscii()
+proc RuntimeError_ConversionFailed*(x, y: Value) =
+    panic RuntimeError,
+          "conversion failed: " & truncate(codify(y),20) & ";" &
+          "from :" & ($(y.kind)).toLowerAscii() & ";" &
+          "to   :" & ($(x.t)).toLowerAscii()
 
-# TODO Convert `invalidConversionError` to RuntimeError exception 
-#  labels: error handling, enhancement
-template invalidConversionError*(origin: string): untyped =
-    echo "cannot convert " & origin & " to :" & ($(x.t)).toLowerAscii()
