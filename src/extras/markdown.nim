@@ -100,7 +100,7 @@ template re(data: string, flags: set[RegexFlag]): Regex =
     precompiledExp.mgetOrPut(tmpName, re.re(tmpName, flags))
 
 type
-  MarkdownError* = object of Exception ## The error object for markdown parsing and rendering.
+  MarkdownError* = object of Defect    ## The error object for markdown parsing and rendering.
                                        ## Usually, you should not see MarkdownError raising in your application
                                        ## unless it's documented. Otherwise, please report it as an issue.
                                        ##
