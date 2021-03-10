@@ -380,7 +380,7 @@ proc defineSymbols*() =
                     var indx = 0
                     var run = 0
                     while indx+args.len<=arr.len:
-                        try:
+                        handleBranching:
                             for item in arr[indx..indx+args.len-1].reversed:
                                 stack.push(item)
 
@@ -388,14 +388,7 @@ proc defineSymbols*() =
                                 stack.push(newInteger(run))
 
                             discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
-                        except BreakTriggered as e:
-                            return
-                        except ContinueTriggered as e:
-                            discard
-                        except Defect as e:
-                            raise e    
-
-                        finally:
+                        do:
                             run += 1
                             indx += args.len
 
