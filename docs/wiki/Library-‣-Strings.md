@@ -6,12 +6,14 @@
    * [ascii?](#ascii?)
    * [capitalize](#capitalize)
    * [color](#color)
+   * [indent](#indent)
    * [join](#join)
    * [levenshtein](#levenshtein)
    * [lower](#lower)
    * [lower?](#lower?)
    * [match](#match)
    * [numeric?](#numeric?)
+   * [outdent](#outdent)
    * [pad](#pad)
    * [prefix](#prefix)
    * [prefix?](#prefix?)
@@ -119,6 +121,30 @@ Get colored version of given string
 print color.green "Hello!"                ; Hello! (in green)
 print color.red.bold "Some text"          ; Some text (in red/bold)
 ```
+
+## indent
+
+#### Description
+
+Indent each line of given text
+
+#### Usage
+
+<pre>
+<b>indent</b> <ins>text</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|n|<i>:integer</i>|pad by given number of spaces (default: 4)|
+|with|<i>:string</i>|use given padding|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
 
 ## join
 
@@ -281,6 +307,30 @@ numeric? "3.14"            ; => true
 numeric? "18966"           ; => true
 numeric? "123xxy"          ; => false
 ```
+
+## outdent
+
+#### Description
+
+Outdent each line of given text, by using minimum shared indentation
+
+#### Usage
+
+<pre>
+<b>outdent</b> <ins>text</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|n|<i>:integer</i>|unpad by given number of spaces|
+|with|<i>:string</i>|use given padding|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
 
 ## pad
 

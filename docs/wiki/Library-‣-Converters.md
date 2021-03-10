@@ -152,6 +152,7 @@ Create dictionary from given block or file, by getting all internal symbols
 |---|---|---|
 |with|<i>:block</i>|embed given symbols|
 |raw|<i>:boolean</i>|create dictionary from raw block|
+|data|<i>:boolean</i>|parse input as data|
 
 #### Returns
 
