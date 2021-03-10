@@ -119,10 +119,10 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         if ts!=":boolean":
-            let len = fmt(".{attr[0]} {fg(grayColor)}{ts}").len
+            let len = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}").len
             if len>maxLen: maxLen = len
         else:
-            let len = fmt(".{attr[0]}").len
+            let len = fmt("{fg(cyanColor)}.{attr[0]}").len
             if len>maxLen: maxLen = len
 
     for attr in attrs:

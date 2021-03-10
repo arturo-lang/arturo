@@ -205,21 +205,14 @@ ch: `a`
 
 A string is nothing but a series of characters, seen as one unit. In Arturo, in order to define a string, there are various ways:
 
-- using double quotes: ```x: "this is a string"```
-- using right *smart-quote* notation ```x: » This is a string``` (in this case, everything following `»` till the end of the line, will be considered a string)
-- using triple-dash blocks for literal, what-you-see-is-what-you-get, multi-line strings:
-  ```red
-  x: 
-  ---
-  this is a very
-  long string
-  that spans more
-  than
-  one
-  line
-  ---
-  ```
-- using curly-brace blocks again for stripped (read as: *spaces at the beginning and end of each line are ignored*) multi-line strings:
+**Single-line strings**
+
+- using double quotes: ```x: "this is a string"``` (with escaped characters)
+- using right *smart-quote* notation ```x: » This is a string``` (in this case, everything following `»` till the end of the line, will be stripped and considered one string)
+
+**Multi-line strings**
+
+- using curly-brace blocks (the result will be stripped and un-indented):
   ```red
   x: {
       this is yet
@@ -231,6 +224,31 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, in 
       one
       line
   }
+  ```
+
+- using verbatim curly-brace blocks (the result will remain exactly as-is):
+  ```red
+  x: {:
+    this is yet
+      another
+      very
+    long string
+    that spans more
+        than
+            one
+            line
+  :}
+  ```
+- using dash notation (where everything after the line, until the end of the file, is a string - stripped and un-indented):
+  ```red
+  x: 
+  ------
+  this is the last very
+  long string
+  that spans more
+  than
+  one
+  line
   ```
 
 > 💡 If you want your string to contain sub-expressions that will be evaluated on-the-fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function `render` (or `~`) to process it accordingly: e.g. 

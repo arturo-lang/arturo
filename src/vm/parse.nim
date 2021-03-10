@@ -212,17 +212,11 @@ template parseString(p: var Parser, stopper: char = Quote) =
 
 template parseMultilineString(p: var Parser) =
     var pos = p.bufpos + 1
+    while p.buf[pos]==Dash:
+        inc(pos)
+    
     while true:
         case p.buf[pos]:
-            of EOF: 
-                SyntaxError_UnterminatedString("multiline", p.lineNumber, getContext(p, p.bufpos))
-            of Dash:
-                if p.buf[pos+1]==Dash and p.buf[pos+2]==Dash:
-                    inc(pos,3)
-                    break
-                else:
-                    inc(pos)
-                    add(p.value, '-')
             of CR:
                 pos = lexbase.handleCR(p, pos)
                 when not defined(windows):
@@ -237,6 +231,8 @@ template parseMultilineString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
+            of EOF:
+                break
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -246,11 +242,15 @@ template parseMultilineString(p: var Parser) =
 template parseCurlyString(p: var Parser) =
     var pos = p.bufpos + 1
     var curliesExpected = 1
+    var verbatimString = false
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
             inc(pos)
 
+    if p.buf[pos]==':':
+        inc(pos)
+        verbatimString = true
     while true:
         case p.buf[pos]:
             of EOF: 
@@ -260,11 +260,14 @@ template parseCurlyString(p: var Parser) =
                 add(p.value, p.buf[pos])
                 inc(pos)
             of RCurly:
-                if curliesExpected==1:
-                    inc(pos)
-                    break
+                if not verbatimString:
+                    if curliesExpected==1:
+                        inc(pos)
+                        break
+                    else:
+                        curliesExpected -= 1
+                        add(p.value, p.buf[pos])
                 else:
-                    curliesExpected -= 1
                     add(p.value, p.buf[pos])
                 inc(pos)
             of CR:
@@ -281,11 +284,27 @@ template parseCurlyString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
+            of ':':
+                if verbatimString:
+                    if p.buf[pos+1]==RCurly:
+                        inc(pos)
+                        inc(pos)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
-
     p.bufpos = pos
+
+    if verbatimString:
+        AddToken newString(p.value)
+    else:
+        AddToken newString(p.value, dedented=true)
 
 template parseFullLineString(p: var Parser) =
     var pos = p.bufpos + 2
@@ -299,6 +318,45 @@ template parseFullLineString(p: var Parser) =
             of LF:
                 pos = lexbase.handleLF(p, pos)
                 break
+            else:
+                add(p.value, p.buf[pos])
+                inc(pos)
+
+    p.bufpos = pos
+
+template parseSafeString(p: var Parser) =
+    var pos = p.bufpos + 4
+    while true:
+        case p.buf[pos]:
+            of EOF: 
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
+                break
+            of CR:
+                pos = lexbase.handleCR(p, pos)
+                when not defined(windows):
+                    add(p.value, LF)
+                else:    
+                    add(p.value, CR)
+                    add(p.value, LF)
+            of LF:
+                pos = lexbase.handleLF(p, pos)
+                when defined(windows):
+                    add(p.value, CR)
+                    add(p.value, LF)
+                else:
+                    add(p.value, LF)
+            of chr(194):
+                if p.buf[pos+1]==chr(187): # got »
+                    if p.buf[pos+2]==chr(194) and p.buf[pos+3]==chr(187):
+                        inc(pos,4)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        add(p.value, p.buf[pos+1])
+                        inc(pos,2)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -369,7 +427,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     isSymbol = false
                     p.bufpos = pos+1
                     parseMultilineString(p)
-                    AddToken newString(p.value)
+                    AddToken newString(p.value, dedented=true)
                 else:
                     p.symbol = doubleminus
             else: p.symbol = minus
@@ -517,13 +575,16 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 break
             of LCurly:
                 parseCurlyString(p)
-                AddToken newString(p.value,strip=true)
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
                 if p.buf[p.bufpos+1]==chr(171): # got «
-                    parseFullLineString(p)
-                    AddToken newString(unicode.strip(p.value))
+                    if p.buf[p.bufpos+2]==chr(194) and p.buf[p.bufpos+3]==chr(171):
+                        parseSafeString(p)
+                        AddToken newString(p.value)
+                    else:
+                        parseFullLineString(p)
+                        AddToken newString(unicode.strip(p.value))
                 else:
                     inc(p.bufpos)
 

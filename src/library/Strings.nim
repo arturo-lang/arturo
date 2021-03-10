@@ -16,14 +16,14 @@
 # Libraries
 #=======================================
 
-import algorithm, re, std/editdistance, os
-import sequtils, strutils, sugar, unicode
-import nre except toSeq
+import re, std/editdistance, os
+import sequtils, strutils, unicode
 
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
+import helpers/templates as TemplatesHelper
 
-import vm/[common, exec, globals, parse, stack, value]
+import vm/[common, globals, stack, value]
 
 #=======================================
 # Methods
@@ -143,6 +143,37 @@ proc defineSymbols*() =
                 finalColor = fg(color)
 
             stack.push(newString(finalColor & x.s & resetColor))
+
+    builtin "indent",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "indent each line of given text",
+        args        = {
+            "text"  : {String,Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer},"pad by given number of spaces (default: 4)"),
+            "with"  : ({String},"use given padding")
+        },
+        returns     = {String,Nothing},
+        # TODO(Strings\indent) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            var count = 4
+            var padding = " "
+
+            if (let aN = popAttr("n"); aN != VNULL):
+                count = aN.i
+
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.s
+
+            if x.kind==Literal:
+                SetInPlace(newString(indent(InPlace.s, count, padding)))
+            else:
+                stack.push(newString(indent(x.s, count, padding)))            
 
     builtin "join",
         alias       = unaliased, 
@@ -284,6 +315,42 @@ proc defineSymbols*() =
             except ValueError:
                 stack.push(VFALSE)
 
+    builtin "outdent",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "outdent each line of given text, by using minimum shared indentation",
+        args        = {
+            "text"  : {String,Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer},"unpad by given number of spaces"),
+            "with"  : ({String},"use given padding")
+        },
+        returns     = {String,Nothing},
+        # TODO(Strings\outdent) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            var count = 0
+            if x.kind==Literal:
+                count = indentation(InPlace.s)
+            else:
+                count = indentation(x.s)
+
+            var padding = " "
+
+            if (let aN = popAttr("n"); aN != VNULL):
+                count = aN.i
+
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.s
+
+            if x.kind==Literal:
+                SetInPlace(newString(unindent(InPlaced.s, count, padding)))
+            else:
+                stack.push(newString(unindent(x.s, count, padding))) 
+
     builtin "pad",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -370,7 +437,6 @@ proc defineSymbols*() =
         },
         attrs       = {
             "single"    : ({Boolean},"don't render recursively"),
-            "with"      : ({Dictionary},"use given dictionary for reference"),
             "template"  : ({Boolean},"render as a template")
         },
         returns     = {String,Nothing},
@@ -390,63 +456,80 @@ proc defineSymbols*() =
             ; Hello, your name is John and you are 34 years old
         """:
             ##########################################################
-            var rgx = nre.re"\|([^\|]+)\|"
+            if x.kind == Literal:
+                InPlaced = newString(renderString(
+                    InPlace.s, 
+                    useEngine=(popAttr("template") != VNULL), 
+                    recursive=(popAttr("single") == VNULL)
+                ))
+            elif x.kind == String:
+                stack.push(newString(renderString(
+                    x.s, 
+                    useEngine=(popAttr("template") != VNULL), 
+                    recursive=(popAttr("single") == VNULL)
+                )))
+            # var rgx = nre.re"\|([^\|]+)\|"
 
-            if (popAttr("template") != VNULL):
-                rgx = nre.re"\<\|(.+)\|\>"
+            # if (popAttr("template") != VNULL):
+            #     rgx = nre.re"\<\|(.+)\|\>"
+            #     echo "rendering string!"
+            #     echo "|" & renderString(x.s, useEngine=true) & "|"
+            # else:
+            #     echo "rendering string!"
+            #     echo "|" & renderString(x.s) & "|"
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
-                if x.kind==String:
-                    var res = newString(x.s)
-                    while (contains(res.s, rgx)):
-                        res = newString(x.s.replace(rgx,
-                            proc (match: RegexMatch): string =
-                                var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
+            # if (let aWith = popAttr("with"); aWith != VNULL):
+            #     if x.kind==String:
+            #         var res = newString(x.s)
+            #         while (contains(res.s, rgx)):
+            #             res = newString(x.s.replace(rgx,
+            #                 proc (match: RegexMatch): string =
+            #                     var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
-                                for v in ((toSeq(values(aWith.d))).reversed):
-                                    stack.push(v)
-                                discard execBlock(doParse(match.captures[0], isFile=false), args=args)
-                                $(stack.pop())
-                        ))
-                    stack.push(res)
-                elif x.kind==Literal:
-                    discard InPlace
-                    while (contains(InPlaced.s, rgx)):
-                        InPlaced.s = InPlaced.s.replace(rgx,
-                            proc (match: RegexMatch): string =
-                                var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
+            #                     for v in ((toSeq(values(aWith.d))).reversed):
+            #                         stack.push(v)
+            #                     discard execBlock(doParse(match.captures[0], isFile=false), args=args)
+            #                     $(stack.pop())
+            #             ))
+            #         stack.push(res)
+            #     elif x.kind==Literal:
+            #         discard InPlace
+            #         while (contains(InPlaced.s, rgx)):
+            #             InPlaced.s = InPlaced.s.replace(rgx,
+            #                 proc (match: RegexMatch): string =
+            #                     var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
 
-                                for v in ((toSeq(values(aWith.d))).reversed):
-                                    stack.push(v)
-                                discard execBlock(doParse(match.captures[0], isFile=false), args=args)
-                                $(stack.pop())
-                        )
+            #                     for v in ((toSeq(values(aWith.d))).reversed):
+            #                         stack.push(v)
+            #                     discard execBlock(doParse(match.captures[0], isFile=false), args=args)
+            #                     $(stack.pop())
+            #             )
 
-            else:
-                if x.kind==String:
-                    var res = newString(x.s)
-                    if (popAttr("single") != VNULL):
-                        res = newString(res.s.replace(rgx,
-                                proc (match: RegexMatch): string =
-                                    discard execBlock(doParse(match.captures[0], isFile=false))
-                                    $(stack.pop())
-                            ))
-                    else:
-                        while (contains(res.s, rgx)):
-                            res = newString(res.s.replace(rgx,
-                                proc (match: RegexMatch): string =
-                                    discard execBlock(doParse(match.captures[0], isFile=false))
-                                    $(stack.pop())
-                            ))
-                    stack.push(res)
-                elif x.kind==Literal:
-                    discard InPlace
-                    while (contains(InPlaced.s, rgx)):
-                        InPlaced.s = InPlaced.s.replace(rgx,
-                            proc (match: RegexMatch): string =
-                                discard execBlock(doParse(match.captures[0], isFile=false))
-                                $(stack.pop())
-                        )
+            # else:
+            #     if x.kind==String:
+            #         var res = newString(x.s)
+            #         if (popAttr("single") != VNULL):
+            #             res = newString(res.s.replace(rgx,
+            #                     proc (match: RegexMatch): string =
+            #                         discard execBlock(doParse(match.captures[0], isFile=false))
+            #                         $(stack.pop())
+            #                 ))
+            #         else:
+            #             while (contains(res.s, rgx)):
+            #                 res = newString(res.s.replace(rgx,
+            #                     proc (match: RegexMatch): string =
+            #                         discard execBlock(doParse(match.captures[0], isFile=false))
+            #                         $(stack.pop())
+            #                 ))
+            #         stack.push(res)
+            #     elif x.kind==Literal:
+            #         discard InPlace
+            #         while (contains(InPlaced.s, rgx)):
+            #             InPlaced.s = InPlaced.s.replace(rgx,
+            #                 proc (match: RegexMatch): string =
+            #                     discard execBlock(doParse(match.captures[0], isFile=false))
+            #                     $(stack.pop())
+            #             )
 
     builtin "replace",
         alias       = unaliased, 

@@ -16,7 +16,8 @@
 # Libraries
 #=======================================
 
-import algorithm, random, sequtils, strutils, sugar, unicode
+import algorithm, os, random, sequtils
+import strutils, sugar, unicode
 import nre except toSeq
 
 import helpers/arrays as arraysHelper  
@@ -947,12 +948,14 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "sort given block in ascending order",
         args        = {
-            "collection"    : {Block,Literal}
+            "collection"    : {Block,Dictionary,Literal}
         },
         attrs       = {
             "as"        : ({Literal},"localized by ISO 639-1 language code"),
             "sensitive" : ({Boolean},"case-sensitive sorting"),
-            "descending": ({Boolean},"sort in ascending order")
+            "descending": ({Boolean},"sort in ascending order"),
+            "values"    : ({Boolean},"sort dictionary by values"),
+            "by"        : ({String,Literal},"sort array of dictionaries by given key")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -972,29 +975,55 @@ proc defineSymbols*() =
                 sortOrdering = SortOrder.Descending
 
             if x.kind==Block: 
-                if (let aAs = popAttr("as"); aAs != VNULL):
-                    stack.push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
+                if (let aBy = popAttr("by"); aBy != VNULL):
+                    var sorted: ValueArray = x.a.sorted(
+                        proc (v1, v2: Value): int = 
+                            cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
+                    stack.push(newBlock(sorted))
                 else:
-                    if (popAttr("sensitive")!=VNULL):
-                        stack.push(newBlock(x.a.unisorted("en", sensitive=true, order = sortOrdering)))
+                    if (let aAs = popAttr("as"); aAs != VNULL):
+                        stack.push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
                     else:
-                        if x.a[0].kind==String:
-                            stack.push(newBlock(x.a.unisorted("en", order = sortOrdering)))
+                        if (popAttr("sensitive")!=VNULL):
+                            stack.push(newBlock(x.a.unisorted("en", sensitive=true, order = sortOrdering)))
                         else:
-                            stack.push(newBlock(x.a.sorted(order = sortOrdering)))
+                            if x.a[0].kind==String:
+                                stack.push(newBlock(x.a.unisorted("en", order = sortOrdering)))
+                            else:
+                                stack.push(newBlock(x.a.sorted(order = sortOrdering)))
 
-                        
-            else: 
-                if (let aAs = popAttr("as"); aAs != VNULL):
-                    InPlace.a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
+            elif x.kind==Dictionary:
+                var sorted = x.d
+                if (popAttr("values") != VNULL):
+                    sorted.sort(proc (x, y: (string, Value)): int = cmp(x[1], y[1]), order=sortOrdering)
                 else:
-                    if (popAttr("sensitive")!=VNULL):
-                        InPlace.a.unisort("en", sensitive=true, order = sortOrdering)
+                    sorted.sort(system.cmp, order=sortOrdering)
+                
+                stack.push(newDictionary(sorted))
+
+            else: 
+                if InPlace.kind==Block:
+                    if (let aBy = popAttr("by"); aBy != VNULL):
+                        InPlace.a.sort(
+                            proc (v1, v2: Value): int = 
+                                cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
                     else:
-                        if InPlace.a[0].kind==String:
-                            InPlaced.a.unisort("en", order = sortOrdering)
+                        if (let aAs = popAttr("as"); aAs != VNULL):
+                            InPlaced.a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
                         else:
-                            InPlaced.a.sort(order = sortOrdering)
+                            if (popAttr("sensitive")!=VNULL):
+                                InPlaced.a.unisort("en", sensitive=true, order = sortOrdering)
+                            else:
+                                if InPlace.a[0].kind==String:
+                                    InPlaced.a.unisort("en", order = sortOrdering)
+                                else:
+                                    InPlaced.a.sort(order = sortOrdering)
+                else:
+                    if (popAttr("values") != VNULL):
+                        InPlaced.d.sort(proc (x, y: (string,Value)): int = cmp(x[1], y[1]), order=sortOrdering)
+                    else:
+                        InPlaced.d.sort(system.cmp, order=sortOrdering)
+
 
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
@@ -1012,7 +1041,8 @@ proc defineSymbols*() =
             "by"        : ({String},"split using given separator"),
             "regex"     : ({Boolean},"match against a regular expression"),
             "at"        : ({Integer},"split collection at given position"),
-            "every"     : ({Integer},"split collection every <n> elements")
+            "every"     : ({Integer},"split collection every <n> elements"),
+            "path"      : ({Boolean},"split path components in string")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1036,6 +1066,8 @@ proc defineSymbols*() =
                         SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
                     elif (popAttr("lines") != VNULL):
                         SetInPlace(newStringBlock(InPlaced.s.splitLines()))
+                    elif (popAttr("path") != VNULL):
+                        SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
                     elif (let aBy = popAttr("by"); aBy != VNULL):
                         SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
@@ -1074,6 +1106,8 @@ proc defineSymbols*() =
                     stack.push(newStringBlock(strutils.splitWhitespace(x.s)))
                 elif (popAttr("lines") != VNULL):
                     stack.push(newStringBlock(x.s.splitLines()))
+                elif (popAttr("path") != VNULL):
+                    stack.push(newStringBlock(x.s.split(DirSep)))
                 elif (let aBy = popAttr("by"); aBy != VNULL):
                     stack.push(newStringBlock(x.s.split(aBy.s)))
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):

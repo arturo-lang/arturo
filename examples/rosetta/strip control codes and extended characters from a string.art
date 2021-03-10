@@ -1,4 +1,4 @@
-str: ---string of ☺☻♥♦⌂, may include control characters and other    ♫☼§►↔◄░▒▓█┌┴┐±÷²¬└┬┘ilk.---
+str: {string of ☺☻♥♦⌂, may include control characters and other    ♫☼§►↔◄░▒▓█┌┴┐±÷²¬└┬┘ilk.}
 
 print "with extended characters"
 print join select split str 'x ->

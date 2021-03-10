@@ -930,7 +930,7 @@ Sort given block in ascending order
 #### Usage
 
 <pre>
-<b>sort</b> <ins>collection</ins> <i>:literal</i> <i>:block</i>
+<b>sort</b> <ins>collection</ins> <i>:literal</i> <i>:dictionary</i> <i>:block</i>
 </pre>
 #### Attributes
 
@@ -939,6 +939,8 @@ Sort given block in ascending order
 |as|<i>:literal</i>|localized by ISO 639-1 language code|
 |sensitive|<i>:boolean</i>|case-sensitive sorting|
 |descending|<i>:boolean</i>|sort in ascending order|
+|values|<i>:boolean</i>|sort dictionary by values|
+|by|<i>:string</i>|sort array of dictionaries by given key|
 
 #### Returns
 
@@ -979,6 +981,7 @@ Split collection to components
 |regex|<i>:boolean</i>|match against a regular expression|
 |at|<i>:integer</i>|split collection at given position|
 |every|<i>:integer</i>|split collection every <n> elements|
+|path|<i>:boolean</i>|split path components in string|
 
 #### Returns
 

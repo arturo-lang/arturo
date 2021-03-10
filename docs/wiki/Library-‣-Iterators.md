@@ -102,6 +102,7 @@ Flatten given collection by eliminating nested blocks
 
 #### Returns
 
+- *:null*
 - *:block*
 - *:nothing*
 
