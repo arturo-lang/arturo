@@ -31,9 +31,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Core"
 
-    # TODO(Core\break) Not working - needs fix
-    #  The implementation was broken after cleaning up the standard library and eval/parse.
-    #  labels: library,bug,critical
     builtin "break",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -41,13 +38,23 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Block},
-        # TODO(Core\break) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            loop 1..5 'x [
+                print ["x:" x]
+                if x=3 -> break
+                print "after check"
+            ]
+            print "after loop"
+
+            ; x: 1
+            ; after check
+            ; x: 2
+            ; after check
+            ; x: 3
+            ; after loop
         """:
             ##########################################################
-            vmBreak = true
-            #return Syms
+            raise BreakTriggered()
 
     # TODO(Core\call) Needs fix
     #  The function seems to be working fine with function 'literals but not with function values passed directly
@@ -107,9 +114,6 @@ proc defineSymbols*() =
             stack.push(x)
             stack.push(newBoolean(false))
 
-    # TODO(Core\continue) Not working - needs fix
-    #  The implementation was broken after cleaning up the standard library and eval/parse.
-    #  labels: library,bug,critical
     builtin "continue",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -117,13 +121,27 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Block},
-        # TODO(Core\continue) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            loop 1..5 'x [
+                print ["x:" x]
+                if x=3 -> continue
+                print "after check"
+            ]
+            print "after loop"
+
+            ; x: 1 
+            ; after check
+            ; x: 2 
+            ; after check
+            ; x: 3 
+            ; x: 4 
+            ; after check
+            ; x: 5 
+            ; after check
+            ; after loop
         """:
             ##########################################################
-            vmContinue = true
-            #return Syms
+            raise ContinueTriggered()
 
     builtin "do",
         alias       = unaliased, 
@@ -406,7 +424,7 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(x)
             #echo "emitting: ReturnTriggered"
-            raise ReturnTriggered.newException("return")
+            raise ReturnTriggered()
             # vmReturn = true
             # # return ReturnResult
             # #return Syms
@@ -567,12 +585,15 @@ proc defineSymbols*() =
             let preevaledY = doEval(y)
 
             while true:
-                discard execBlock(VNULL, evaluated=preevaledX)
-                discard execBlock(VNULL, evaluated=preevaledY)
-                let popped = stack.pop()
-                let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
-                if condition:
-                    break
+                handleBranching:
+                    discard execBlock(VNULL, evaluated=preevaledX)
+                    discard execBlock(VNULL, evaluated=preevaledY)
+                    let popped = stack.pop()
+                    let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
+                    if condition:
+                        break
+                do:
+                    discard
 
     builtin "var",
         alias       = unaliased, 
@@ -680,19 +701,25 @@ proc defineSymbols*() =
                 var popped = stack.pop()
 
                 while not (popped.kind==Null or (popped.kind==Boolean and popped.b==false)):
-                    if execInParent:
-                        discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
-                    else:
-                        discard execBlock(VNULL, evaluated=preevaledY)
-                    discard execBlock(VNULL, evaluated=preevaledX)
-                    popped = stack.pop()
+                    handleBranching:
+                        if execInParent:
+                            discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
+                        else:
+                            discard execBlock(VNULL, evaluated=preevaledY)
+                        discard execBlock(VNULL, evaluated=preevaledX)
+                        popped = stack.pop()
+                    do:
+                        discard
             else:
                 let preevaledY = doEval(y)
                 while true:
-                    if execInParent:
-                        discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
-                    else:
-                        discard execBlock(VNULL, evaluated=preevaledY)
+                    handleBranching:
+                        if execInParent:
+                            discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)
+                        else:
+                            discard execBlock(VNULL, evaluated=preevaledY)
+                    do:
+                        discard
 
 #=======================================
 # Add Library

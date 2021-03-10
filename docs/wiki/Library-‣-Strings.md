@@ -145,6 +145,21 @@ Indent each line of given text
 - *:string*
 - *:nothing*
 
+#### Examples
+
+```red
+str: "one\ntwo\nthree"
+
+print indent str
+;     one
+;     two
+;     three
+
+print indent .n:10 .with:"#" str
+; ##########one
+; ##########two
+; ##########three
+```
 
 ## join
 
@@ -331,6 +346,27 @@ Outdent each line of given text, by using minimum shared indentation
 - *:string*
 - *:nothing*
 
+#### Examples
+
+```red
+print outdent {:
+    one
+        two
+        three
+:}
+; one
+;     two
+;     three
+
+print outdent.n:1 {:
+    one
+        two
+        three
+:}
+;  one
+;      two
+;      three
+```
 
 ## pad
 
