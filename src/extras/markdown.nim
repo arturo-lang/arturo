@@ -772,8 +772,8 @@ method parse*(this: UlParser, doc: string, start: int): ParseResult =
 
   return ParseResult(token: ulToken, pos: pos)
 
-proc parseUnorderedList(doc: string, start: int): ParseResult {.locks: "unknown".} =
-  UlParser().parse(doc, start)
+# proc parseUnorderedList(doc: string, start: int): ParseResult {.locks: "unknown".} =
+#   UlParser().parse(doc, start)
 
 method parse*(this: OlParser, doc: string, start: int): ParseResult =
   var pos = start
