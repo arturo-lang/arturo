@@ -339,7 +339,7 @@ proc defineSymbols*() =
                         stack.push(v)
                         stack.push(newString(k))
                         discard execBlock(VNULL, evaluated=preevaled, args=args)#, isBreakable=true)
-                        checkForBreak()
+                        #checkForBreak()
                     if not forever:
                         keepGoing = false
             elif x.kind==String:
@@ -361,7 +361,7 @@ proc defineSymbols*() =
 
                         discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
 
-                        checkForBreak()
+                        #checkForBreak()
                         run += 1
                         indx += args.len
 
@@ -390,7 +390,7 @@ proc defineSymbols*() =
 
                         discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
 
-                        checkForBreak()
+                        #checkForBreak()
                         run += 1
                         indx += args.len
 
