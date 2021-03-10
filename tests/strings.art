@@ -28,6 +28,15 @@ e: {!md
 
 print enpiped e
 
+f: ««
+This
+    is
+        a very
+    safe
+string»»
+
+print enpiped f
+
 print
 ---------------
 This is a very long string
