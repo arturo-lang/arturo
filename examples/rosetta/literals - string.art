@@ -6,7 +6,7 @@ fullLineStr: « This is a full-line string
 
 print [fullLineStr "->" type fullLineStr]
 
-multiline: strip outdent {
+multiline: {
     This
     is a multi-line
     string
@@ -14,11 +14,11 @@ multiline: strip outdent {
 
 print [multiline "->" type multiline]
 
-safer: strip outdent {:
+verbatim: {:
     This is 
-    yet another
+    a verbatim
     multi-line
     string
 :}
 
-print [safer "->" type safer]
+print [verbatim "->" type verbatim]
