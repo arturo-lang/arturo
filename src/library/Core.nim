@@ -31,9 +31,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Core"
 
-    # TODO(Core\break) Not working - needs fix
-    #  The implementation was broken after cleaning up the standard library and eval/parse.
-    #  labels: library,bug,critical
     builtin "break",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -41,9 +38,20 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Block},
-        # TODO(Core\break) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            loop 1..5 'x [
+                print ["x:" x]
+                if x=3 -> break
+                print "after check"
+            ]
+            print "after loop"
+
+            ; x: 1
+            ; after check
+            ; x: 2
+            ; after check
+            ; x: 3
+            ; after loop
         """:
             ##########################################################
             raise BreakTriggered()
@@ -106,9 +114,6 @@ proc defineSymbols*() =
             stack.push(x)
             stack.push(newBoolean(false))
 
-    # TODO(Core\continue) Not working - needs fix
-    #  The implementation was broken after cleaning up the standard library and eval/parse.
-    #  labels: library,bug,critical
     builtin "continue",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -116,9 +121,24 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Block},
-        # TODO(Core\continue) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            loop 1..5 'x [
+                print ["x:" x]
+                if x=3 -> continue
+                print "after check"
+            ]
+            print "after loop"
+
+            ; x: 1 
+            ; after check
+            ; x: 2 
+            ; after check
+            ; x: 3 
+            ; x: 4 
+            ; after check
+            ; x: 5 
+            ; after check
+            ; after loop
         """:
             ##########################################################
             raise ContinueTriggered()
