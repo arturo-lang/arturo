@@ -482,6 +482,8 @@ proc defineSymbols*() =
                                 stack.push newBinary(ret)
                             of Block:
                                 stack.push doParse(y.s, isFile=false)
+                            # TODO(Converters/to) add example for documentation (:string to :date conversion)
+                            #  labels: library,documentation,easy
                             of Date:
                                 var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                                 if (let aFormat = popAttr("format"); aFormat != VNULL):
@@ -583,6 +585,8 @@ proc defineSymbols*() =
 
                     of Date:
                         case tp:
+                            # TODO(Converters/to) add example for documentation (:date to :string conversion)
+                            #  labels: library,documentation,easy
                             of String:
                                 var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                                 if (let aFormat = popAttr("format"); aFormat != VNULL):
