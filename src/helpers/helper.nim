@@ -44,11 +44,11 @@ template printLine() =
 proc printEmptyLine() = 
     echo "|"
 
-proc getAlias(n: string): string = 
+proc getAlias(n: string): (string,PrecedenceKind) = 
     for k,v in pairs(Aliases):
         if v.name.s==n:
-            return $(newSymbol(k))
-    return ""
+            return ($(newSymbol(k)), v.precedence)
+    return ("", PrefixPrecedence)
 
 proc printOneData(label: string, data: string, color: string = resetColor, colorb: string = resetColor) =
     echo fmt("{initialSep}{initialPadding}{color}{align(label,labelAlignment)}{resetColor}  {colorb}{data}{resetColor}")
@@ -196,8 +196,9 @@ proc getInfo*(n: string, v: Value):ValueDict =
             result["returns"] = newBlock(returns)
 
             let alias = getAlias(n)
-            if alias!="":
-                result["alias"] = newString(alias)
+            if alias[0]!="":
+                result["alias"] = newString(alias[0])
+                result["infix?"] = newBoolean(alias[1]==InfixPrecedence)
 
             result["description"] = newString(v.fdesc)
             result["example"] = newString(v.example)
@@ -225,8 +226,8 @@ proc printInfo*(n: string, v: Value) =
 
     # Print alias if it exists
     let alias = getAlias(n)
-    if alias!="":
-        printOneData("alias",alias)
+    if alias[0]!="":
+        printOneData("alias",alias[0])
 
     # Print separator
     printLine()
