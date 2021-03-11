@@ -430,7 +430,7 @@ proc defineSymbols*() =
             # #return Syms
 
     builtin "switch",
-        alias       = doublequestion, 
+        alias       = question, 
         rule        = InfixPrecedence,
         description = "if condition is not false or null perform given action, otherwise perform alternative action",
         args        = {
