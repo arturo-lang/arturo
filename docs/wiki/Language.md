@@ -137,6 +137,7 @@ Some of the existing *aliases* in the built-in dictionary:
 | `--` | remove |
 | `~` | render |
 | `-` | sub |
+| `?` | switch |
 | `>>` | write |
 
 ### Values

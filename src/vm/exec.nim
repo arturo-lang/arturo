@@ -165,9 +165,9 @@ template execInternal*(path: string): untyped =
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     try:
         tryDoing
-    except BreakTriggered as e:
+    except BreakTriggered:
         return
-    except ContinueTriggered as e:
+    except ContinueTriggered:
         discard
     except Defect as e:
         raise e 

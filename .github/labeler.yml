@@ -6,7 +6,10 @@ documentation:
   - docs/*
 
 evaluator:
-  - src/translator/eval.nim
+  - src/vm/eval.nim
+
+execution:
+  - src/vm/exec.nim
 
 helpers:
   - src/helpers/*
@@ -23,7 +26,7 @@ package-manager:
   - src/system/module.art
 
 parser:
-  - src/translator/parse.nim
+  - src/vm/parse.nim
 
 repl:
   - src/system/console.art
@@ -33,6 +36,9 @@ unit-test:
 
 error handling: 
   - src/vm/errors.nim
+
+values:
+  - src/vm/value.nim
 
 vm:
   - src/vm/*

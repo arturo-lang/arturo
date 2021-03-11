@@ -429,6 +429,31 @@ proc defineSymbols*() =
             # # return ReturnResult
             # #return Syms
 
+    builtin "switch",
+        alias       = question, 
+        rule        = InfixPrecedence,
+        description = "if condition is not false or null perform given action, otherwise perform alternative action",
+        args        = {
+            "condition"     : {Any},
+            "action"        : {Block},
+            "alternative"   : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            x: 2
+            
+            switch x=2 -> print "yes, that's right!"
+                       -> print "nope, that's not right!
+            ; yes, that's right!
+        """:
+            ##########################################################
+            let condition = not (x.kind==Null or (x.kind==Boolean and x.b==false))
+            if condition: 
+                discard execBlock(y)
+            else:
+                discard execBlock(z)
+
     builtin "try",
         alias       = unaliased, 
         rule        = PrefixPrecedence,

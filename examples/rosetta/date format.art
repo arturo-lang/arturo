@@ -1,0 +1,4 @@
+currentTime: now
+
+print to :string.format: "YYYY-MM-dd" currentTime
+print to :string.format: "dddd, MMMM dd, YYYY" currentTime
