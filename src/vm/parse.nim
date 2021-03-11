@@ -58,7 +58,7 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
-    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
     PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
@@ -398,6 +398,9 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     case p.buf[pos]:
         of '~'  : p.symbol = tilde
         of '!'  : p.symbol = exclamation
+        of '?'  : 
+            if p.buf[pos+1]=='?': inc(pos); p.symbol = doublequestion
+            else: p.symbol = question
         of '@'  : p.symbol = at
         of '#'  : p.symbol = sharp
         of '$'  : p.symbol = dollar

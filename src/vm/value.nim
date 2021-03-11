@@ -52,6 +52,8 @@ type
         
         tilde           # ~
         exclamation     # !
+        question        # ?
+        doublequestion  # ??
         at              # @
         sharp           # #
         dollar          # $
@@ -1187,6 +1189,8 @@ proc `$`*(v: Value): string {.inline.} =
 
                 of tilde            : return "~"
                 of exclamation      : return "!"
+                of question         : return "?"
+                of doublequestion   : return "??"
                 of at               : return "@"
                 of sharp            : return "#"
                 of dollar           : return "$"
@@ -1451,6 +1455,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
                 of tilde            : result &= "~"
                 of exclamation      : result &= "!"
+                of question         : result &= "?"
+                of doublequestion   : result &= "??"
                 of at               : result &= "@"
                 of sharp            : result &= "#"
                 of dollar           : result &= "$"
