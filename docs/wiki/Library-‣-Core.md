@@ -16,6 +16,7 @@
    * [new](#new)
    * [pop](#pop)
    * [return](#return)
+   * [switch](#switch)
    * [try](#try)
    * [try?](#try?)
    * [unless](#unless)
@@ -442,6 +443,36 @@ f: function [x][
 
 print f 3         ; 6
 print f 6         ; 10
+```
+
+## switch
+
+**Alias:** `?`
+
+#### Description
+
+If condition is not false or null perform given action, otherwise perform alternative action
+
+#### Usage
+
+<pre>
+<b>switch</b> <ins>condition</ins> <i>:any</i>
+       <ins>action</ins> <i>:block</i>
+       <ins>alternative</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+x: 2
+
+switch x=2 -> print "yes, that's right!"
+           -> print "nope, that's not right!
+; yes, that's right!
 ```
 
 ## try
