@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, unicode
+import sequtils, strformat, times, unicode
 import extras/bignum
 
 import helpers/datasource as DatasourceHelper
@@ -482,6 +482,16 @@ proc defineSymbols*() =
                                 stack.push newBinary(ret)
                             of Block:
                                 stack.push doParse(y.s, isFile=false)
+                            of Date:
+                                var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
+                                if (let aFormat = popAttr("format"); aFormat != VNULL):
+                                    dateFormat = aFormat.s
+                                
+                                let timeFormat = initTimeFormat(dateFormat)
+                                try:
+                                    stack.push newDate(parse(y.s, timeFormat))
+                                except:
+                                    RuntimeError_ConversionFailed(x,y)
                             else:
                                 RuntimeError_CannotConvert(x,y)
 
@@ -571,6 +581,20 @@ proc defineSymbols*() =
                             else:
                                 RuntimeError_CannotConvert(x,y)
 
+                    of Date:
+                        case tp:
+                            of String:
+                                var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
+                                if (let aFormat = popAttr("format"); aFormat != VNULL):
+                                    dateFormat = aFormat.s
+                                
+                                try:
+                                    stack.push newString(format(y.eobj, dateFormat))
+                                except:
+                                    RuntimeError_ConversionFailed(x,y)
+                            else: 
+                                RuntimeError_CannotConvert(x,y)
+
                     of Function,
                        Database,
                        Nothing,
@@ -581,7 +605,6 @@ proc defineSymbols*() =
                        AttributeLabel,
                        Path,
                        PathLabel,
-                       Date,
                        Bytecode,
                        Binary: discard
 
