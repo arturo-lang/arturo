@@ -1,0 +1,22 @@
+oddMagicSquare: function [n][
+    ensure -> and? odd? n
+                   n >= 0
+    
+    map 1..n 'i [
+        map 1..n 'j [
+            (n * ((i + (j - 1) + n / 2) % n)) +
+                      (((i - 2) + 2 * j) % n) + 1
+        ]
+    ]
+]
+
+loop [3 5 7] 'n [
+    print ["Size:" n ", Magic sum:" n*(1+n*n)/2 "\n"]
+    loop oddMagicSquare n 'row [
+        loop row 'item [
+            prints pad to :string item 3
+        ]
+        print ""
+    ]
+    print ""
+]
