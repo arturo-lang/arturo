@@ -274,6 +274,11 @@ Convert value to given type
 <b>to</b> <ins>type</ins> <i>:type</i>
    <ins>value</ins> <i>:any</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|format|<i>:string</i>|use given format (for dates)|
 
 #### Returns
 

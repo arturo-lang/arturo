@@ -1,0 +1,3 @@
+print select 2008..2121 'year [
+    "Sunday" = get to :date.format:"dd-MM-YYYY" ~"25-12-|year|" 'Day
+]

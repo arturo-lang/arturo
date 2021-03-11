@@ -1,0 +1,22 @@
+digitSum: function [v][
+    n: new v
+    result: new 0
+    while [n > 0][
+        'result + n % 10
+        'n / 10
+    ]
+    return result
+]
+
+print digitSum 12345
+
+smith?: function [z][
+    return
+        (prime? z) ? -> false
+                     -> (digitSum z) = sum map factors.prime z 'num [digitSum num]
+]
+benchmark ::
+    loop 1..10000 'x [
+        if smith? x ->
+            prints [x ""]
+    ]

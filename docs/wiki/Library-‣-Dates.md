@@ -3,11 +3,73 @@
 ---
 
 <!--ts-->
+   * [after](#after)
+   * [before](#before)
    * [leap?](#leap?)
    * [now](#now)
 <!--te-->
 
 ---
+
+
+## after
+
+#### Description
+
+Get date after given one using interval
+
+#### Usage
+
+<pre>
+<b>after</b> <ins>date</ins> <i>:literal</i> <i>:date</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|nanoseconds|<i>:integer</i>|add given number of nanoseconds|
+|milliseconds|<i>:integer</i>|add given number of milliseconds|
+|seconds|<i>:integer</i>|add given number of seconds|
+|minutes|<i>:integer</i>|add given number of minutes|
+|hours|<i>:integer</i>|add given number of hours|
+|days|<i>:integer</i>|add given number of days|
+|weeks|<i>:integer</i>|add given number of weeks|
+|months|<i>:integer</i>|add given number of months|
+|years|<i>:integer</i>|add given number of years|
+
+#### Returns
+
+- *:date*
+
+
+## before
+
+#### Description
+
+Get date before given one using interval
+
+#### Usage
+
+<pre>
+<b>before</b> <ins>date</ins> <i>:date</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|nanoseconds|<i>:integer</i>|subtract given number of nanoseconds|
+|milliseconds|<i>:integer</i>|subtract given number of milliseconds|
+|seconds|<i>:integer</i>|subtract given number of seconds|
+|minutes|<i>:integer</i>|subtract given number of minutes|
+|hours|<i>:integer</i>|subtract given number of hours|
+|days|<i>:integer</i>|subtract given number of days|
+|weeks|<i>:integer</i>|subtract given number of weeks|
+|months|<i>:integer</i>|subtract given number of months|
+|years|<i>:integer</i>|subtract given number of years|
+
+#### Returns
+
+- *:date*
 
 
 ## leap?
