@@ -341,7 +341,9 @@ proc defineSymbols*() =
             "type"  : {Type},
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "format": ({String},"use given format (for dates)")
+        },
         returns     = {Any},
         example     = """
             to :string 2020               ; "2020"
