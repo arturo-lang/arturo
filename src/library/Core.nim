@@ -431,7 +431,7 @@ proc defineSymbols*() =
 
     builtin "switch",
         alias       = doublequestion, 
-        rule        = PrefixPrecedence,
+        rule        = InfixPrecedence,
         description = "if condition is not false or null perform given action, otherwise perform alternative action",
         args        = {
             "condition"     : {Any},
