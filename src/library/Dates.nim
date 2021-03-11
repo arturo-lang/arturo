@@ -29,6 +29,38 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Dates"
 
+    builtin "after",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get date by adding given interval",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Date},
+        # TODO(Dates\after) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            discard
+
+    builtin "before",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get date by subtracting given interval",
+        args        = {
+            "date"  : {Date}
+        },
+        attrs       = NoAttrs,
+        returns     = {Date},
+        # TODO(Dates\before) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            discard
+
     builtin "leap?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
