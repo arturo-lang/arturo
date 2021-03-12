@@ -1,0 +1,8 @@
+file: "input.txt"
+docs: "docs"
+
+delete file
+delete.directory file
+
+delete join.path ["/" file]
+delete.directory join.path ["/" docs]
