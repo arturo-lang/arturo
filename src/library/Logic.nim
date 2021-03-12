@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import vm/[common, globals, stack, value]
+import vm/[common, exec, globals, stack, value]
 
 #=======================================
 # Methods
@@ -66,8 +66,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "return the logical AND for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -82,7 +82,32 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             ##########################################################
-            stack.push(newBoolean(x.b and y.b))
+            if x.kind==Boolean and y.kind==Boolean:
+                stack.push(newBoolean(x.b and y.b))
+            else:
+                if x.kind==Block:
+                    if y.kind==Block:
+                        # block block
+                        discard execBlock(x)
+                        if not stack.pop().b:
+                            stack.push(newBoolean(false))
+                            return
+
+                        discard execBlock(y)
+                        stack.push(newBoolean(stack.pop().b))
+                    else:
+                        # block boolean
+                        discard execBlock(x)
+                        stack.push(newBoolean(stack.pop().b and y.b))
+                else:
+                    # boolean block
+                    if not x.b:
+                        stack.push(newBoolean(false))
+                        return
+
+                    discard execBlock(y)
+                    stack.push(newBoolean(stack.pop().b))
+
 
     builtin "any?",
         alias       = unaliased, 
@@ -213,8 +238,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "return the logical OR for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -229,7 +254,31 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             ##########################################################
-            stack.push(newBoolean(x.b or y.b))
+            if x.kind==Boolean and y.kind==Boolean:
+                stack.push(newBoolean(x.b or y.b))
+            else:
+                if x.kind==Block:
+                    if y.kind==Block:
+                        # block block
+                        discard execBlock(x)
+                        if stack.pop().b:
+                            stack.push(newBoolean(true))
+                            return
+
+                        discard execBlock(y)
+                        stack.push(newBoolean(stack.pop().b))
+                    else:
+                        # block boolean
+                        discard execBlock(x)
+                        stack.push(newBoolean(stack.pop().b or y.b))
+                else:
+                    # boolean block
+                    if x.b:
+                        stack.push(newBoolean(true))
+                        return
+
+                    discard execBlock(y)
+                    stack.push(newBoolean(stack.pop().b))
 
     constant "true",
         alias       = unaliased,
@@ -276,10 +325,10 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(newBoolean(not (x.b xor y.b)))
 
-    builtin "xnor?",
+    builtin "xor?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
-        description = "return the logical XNOR for the given values",
+        description = "return the logical XOR for the given values",
         args        = {
             "valueA": {Boolean},
             "valueB": {Boolean}
