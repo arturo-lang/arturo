@@ -85,7 +85,7 @@ proc defineSymbols*() =
             if (let aExternal = popAttr("external"); aExternal != VNULL):
                 let externalLibrary = aExternal.s
 
-                execForeignMethod(externalLibrary, x.s)
+                discard execForeignMethod(externalLibrary, x.s)
 
                 discard y
             else:
