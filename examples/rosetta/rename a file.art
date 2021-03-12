@@ -1,0 +1,13 @@
+fileFrom: "input.txt"
+fileTo:   "output.txt"
+docsFrom: "docs"
+docsTo:   "mydocs"
+
+rename fileFrom fileTo
+rename.directory docsFrom docsTo
+
+rename join.path ["/" fileFrom] 
+       join.path ["/" fileTo]
+
+rename.directory join.path ["/" docsFrom]
+                 join.path ["/" docsTo]
