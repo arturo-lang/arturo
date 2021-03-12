@@ -63,6 +63,7 @@ proc defineSymbols*() =
 
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
+    #  labels: library
     builtin "encode",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
