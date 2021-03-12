@@ -59,6 +59,8 @@ proc defineSymbols*() =
                 else:
                     stack.push(newString(x.s.decode()))
 
+    # TODO(Crypto\encode) Move function to different module?
+    #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
     builtin "encode",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -105,7 +107,7 @@ proc defineSymbols*() =
                     InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                 else:
                     stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
-                    
+
             else:
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.encode()
