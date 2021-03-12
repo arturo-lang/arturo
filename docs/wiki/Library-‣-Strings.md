@@ -6,6 +6,7 @@
    * [ascii?](#ascii?)
    * [capitalize](#capitalize)
    * [color](#color)
+   * [escape](#escape)
    * [indent](#indent)
    * [join](#join)
    * [levenshtein](#levenshtein)
@@ -121,6 +122,32 @@ Get colored version of given string
 print color.green "Hello!"                ; Hello! (in green)
 print color.red.bold "Some text"          ; Some text (in red/bold)
 ```
+
+## escape
+
+#### Description
+
+Escape given string
+
+#### Usage
+
+<pre>
+<b>escape</b> <ins>string</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|json|<i>:boolean</i>|for literal use in JSON strings|
+|regex|<i>:boolean</i>|for literal use in regular expression|
+|shell|<i>:boolean</i>|for use in a shell command|
+|xml|<i>:boolean</i>|for use in an XML document|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
 
 ## indent
 

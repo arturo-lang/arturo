@@ -3,14 +3,64 @@
 ---
 
 <!--ts-->
+   * [copy](#copy)
+   * [delete](#delete)
    * [exists?](#exists?)
+   * [permissions](#permissions)
    * [read](#read)
+   * [rename](#rename)
+   * [symlink](#symlink)
    * [unzip](#unzip)
    * [write](#write)
    * [zip](#zip)
 <!--te-->
 
 ---
+
+
+## copy
+
+#### Description
+
+Copy file at path to given destination
+
+#### Usage
+
+<pre>
+<b>copy</b> <ins>file</ins> <i>:string</i>
+     <ins>destination</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|directory|<i>:boolean</i>|path is a directory|
+
+#### Returns
+
+- *:nothing*
+
+
+## delete
+
+#### Description
+
+Delete file at given path
+
+#### Usage
+
+<pre>
+<b>delete</b> <ins>file</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|directory|<i>:boolean</i>|path is a directory|
+
+#### Returns
+
+- *:nothing*
 
 
 ## exists?
@@ -28,7 +78,7 @@ Check if given file exists
 
 |Attribute|Type|Description|
 |---|---|---|
-|dir|<i>:boolean</i>|check for directory|
+|directory|<i>:boolean</i>|check for directory|
 
 #### Returns
 
@@ -41,6 +91,29 @@ if exists? "somefile.txt" [
     print "file exists!" 
 ]
 ```
+
+## permissions
+
+#### Description
+
+Check permissions of given file
+
+#### Usage
+
+<pre>
+<b>permissions</b> <ins>file</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|set|<i>:dictionary</i>|set using given file permissions|
+
+#### Returns
+
+- *:null*
+- *:dictionary*
+
 
 ## read
 
@@ -89,6 +162,52 @@ data: read.json "mydata.json"
 ; or even convert Markdown to HTML on-the-fly
 html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
 ```
+
+## rename
+
+#### Description
+
+Rename file at path using given new path name
+
+#### Usage
+
+<pre>
+<b>rename</b> <ins>file</ins> <i>:string</i>
+       <ins>name</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|directory|<i>:boolean</i>|path is a directory|
+
+#### Returns
+
+- *:nothing*
+
+
+## symlink
+
+#### Description
+
+Create symbolic link of file to given destination
+
+#### Usage
+
+<pre>
+<b>symlink</b> <ins>file</ins> <i>:string</i>
+        <ins>destination</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|hard|<i>:boolean</i>|create a hard link|
+
+#### Returns
+
+- *:nothing*
+
 
 ## unzip
 

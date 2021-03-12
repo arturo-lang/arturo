@@ -5,6 +5,7 @@
 <!--ts-->
    * [extract](#extract)
    * [module](#module)
+   * [normalize](#normalize)
    * [relative](#relative)
 <!--te-->
 
@@ -96,6 +97,29 @@ print module 'html        ; /usr/local/lib/arturo/html.art
 
 do.import module 'html    ; (imports given module)
 ```
+
+## normalize
+
+#### Description
+
+Get normalized version of given path
+
+#### Usage
+
+<pre>
+<b>normalize</b> <ins>path</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|executable|<i>:boolean</i>|treat path as executable|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
 
 ## relative
 

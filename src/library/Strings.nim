@@ -16,8 +16,8 @@
 # Libraries
 #=======================================
 
-import re, std/editdistance, os
-import sequtils, strutils, unicode
+import json, re, std/editdistance, os
+import sequtils, strutils, unicode, xmltree
 
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
@@ -143,6 +143,48 @@ proc defineSymbols*() =
                 finalColor = fg(color)
 
             stack.push(newString(finalColor & x.s & resetColor))
+
+    builtin "escape",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "escape given string",
+        args        = {
+            "string": {String,Literal}
+        },
+        attrs       = {
+            "json"  : ({Boolean},"for literal use in JSON strings"),
+            "regex" : ({Boolean},"for literal use in regular expression"),
+            "shell" : ({Boolean},"for use in a shell command"),
+            "xml"   : ({Boolean},"for use in an XML document")
+        },
+        returns     = {String,Nothing},
+        # TODO(Strings\escape) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Literal:
+                if (popAttr("json") != VNULL):
+                    SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
+                elif (popAttr("regex") != VNULL):
+                    SetInPlace(newString(escapeRe(InPlace.s)))
+                elif (popAttr("shell") != VNULL):
+                    SetInPlace(newString(quoteShell(InPlace.s)))
+                elif (popAttr("xml") != VNULL):
+                    SetInPlace(newString(xmltree.escape(InPlace.s)))
+                else:
+                    SetInPlace(newString(strutils.escape(InPlace.s)))
+            else:
+                if (popAttr("json") != VNULL):
+                    stack.push(newString(escapeJsonUnquoted(x.s)))
+                elif (popAttr("regex") != VNULL):
+                    stack.push(newString(escapeRe(x.s)))
+                elif (popAttr("shell") != VNULL):
+                    stack.push(newString(quoteShell(x.s)))
+                elif (popAttr("xml") != VNULL):
+                    stack.push(newString(xmltree.escape(x.s)))
+                else:
+                    stack.push(newString(strutils.escape(x.s)))
 
     builtin "indent",
         alias       = unaliased, 

@@ -132,6 +132,35 @@ proc defineSymbols*() =
         """:
             ##########################################################
             stack.push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
+    
+    builtin "normalize",
+        alias       = dotslash, 
+        rule        = PrefixPrecedence,
+        description = "get normalized version of given path",
+        args        = {
+            "path"  : {String,Literal}
+        },
+        attrs       = {
+            "executable"    : ({Boolean},"treat path as executable")
+        },
+        returns     = {String,Nothing},
+        # TODO(Paths\normalize) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("executable") != VNULL):
+                if x.kind==Literal:
+                    InPlace.s.normalizeExe()
+                else:
+                    var ret = x.s
+                    ret.normalizeExe()
+                    stack.push(newString(ret))
+            else:
+                if x.kind==Literal:
+                    InPlace.s.normalizePath()
+                else:
+                    stack.push(newString(normalizedPath(x.s)))
 
     builtin "relative",
         alias       = dotslash, 
