@@ -140,17 +140,27 @@ proc defineSymbols*() =
         args        = {
             "path"  : {Literal,String}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "executable"    : ({Boolean},"treat path as executable")
+        },
         returns     = {String},
         # TODO(Paths\normalize) add example for documentation
         #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
-            if x.kind==Literal:
-                InPlace.s.normalizePath()
+            if (popAttr("executable") != VNULL):
+                if x.kind==Literal:
+                    InPlace.s.normalizeExe()
+                else:
+                    let ret = x.s
+                    ret.normalizeExe()
+                    stack.push(newString(ret))
             else:
-                stack.push(newString(normalizedPath(x.s)))
+                if x.kind==Literal:
+                    InPlace.s.normalizePath()
+                else:
+                    stack.push(newString(normalizedPath(x.s)))
 
     builtin "relative",
         alias       = dotslash, 
