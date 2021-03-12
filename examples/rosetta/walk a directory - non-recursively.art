@@ -1,0 +1,13 @@
+; list all files at current path
+print list "."
+
+; get all files at given path
+; and select only the ones we want
+
+; just select the files with .md extension
+select list "some/path" 
+    => [".md" = extract.extension]
+
+; just select the files that contain "test"
+select list "some/path" 
+    => [in? "test"]
