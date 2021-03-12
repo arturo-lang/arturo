@@ -41,6 +41,34 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Files"
 
+    builtin "copy",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "copy file at path to given destination",
+        args        = {
+            "file"          : {String},
+            "destination"   : {String}
+        },
+        attrs       = {
+            "directory" : ({Boolean},"path is a directory")
+        },
+        returns     = {Boolean},
+        # TODO(Files/copy) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("directory") != VNULL): 
+                try:
+                    copyDirWithPermissions(x.s, y.s)
+                except OSError:
+                    discard
+            else: 
+                try:
+                    copyFileWithPermissions(x.s, y.s)
+                except OSError:
+                    discard
+
     builtin "delete",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -162,7 +190,6 @@ proc defineSymbols*() =
                         
                 # elif attrs.hasKey("xml"):
                 #     stack.push(parseXmlNode(parseXml(action(x.s))))
-                    
     when not defined(MINI):
         builtin "unzip",
             alias       = unaliased, 
