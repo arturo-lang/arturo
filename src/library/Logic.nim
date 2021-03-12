@@ -22,7 +22,7 @@ import vm/[common, exec, globals, stack, value]
 # Methods
 #=======================================
 
-# TODO(Logic) Enable blocks (lazy arguments) for the rest of the functions?
+# TODO(Logic) Enable blocks - lazy arguments - for the rest of the functions?
 #  `and?` and `or?` already work this way. Should the rest of them as well?
 #  Functions that are yet unimplented this way: `nand?`,`nor?`,`xnor?`,`xor?`
 
