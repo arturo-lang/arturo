@@ -198,7 +198,7 @@ type
 
   TextParser* = ref object of Parser
   Text* = ref object of Inline
-    delimiter*: Delimiter
+    delimiter* {.cursor.}: Delimiter
 
   CodeSpanParser* = ref object of Parser
   CodeSpan* = ref object of Inline

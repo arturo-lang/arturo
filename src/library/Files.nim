@@ -58,14 +58,15 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
+            var target = y.s
             if (popAttr("directory") != VNULL): 
                 try:
-                    copyDirWithPermissions(x.s, y.s)
+                    copyDirWithPermissions(x.s, move target)
                 except OSError:
                     discard
             else: 
                 try:
-                    copyFileWithPermissions(x.s, y.s)
+                    copyFileWithPermissions(x.s, move target)
                 except OSError:
                     discard
 
@@ -154,6 +155,7 @@ proc defineSymbols*() =
 
                     stack.push(newDictionary(permsDict))
                 else:
+                    var source = x.s
                     var perms: set[FilePermission]
 
                     if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
@@ -168,7 +170,7 @@ proc defineSymbols*() =
                     if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
                     if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
 
-                    setFilePermissions(x.s, perms)
+                    setFilePermissions(move source, move perms)
 
             except OSError:
                 stack.push(VNULL)
@@ -266,14 +268,16 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
+            var source = x.s
+            var target = y.s
             if (popAttr("directory") != VNULL): 
                 try:
-                    moveDir(x.s, y.s)
+                    moveDir(move source, move target)
                 except OSError:
                     discard
             else: 
                 try:
-                    moveFile(x.s, y.s)
+                    moveFile(move source, move target)
                 except OSError:
                     discard
 
@@ -294,11 +298,13 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
+            var source = x.s
+            var target = y.s
             try:
                 if (popAttr("hard") != VNULL):
-                    createHardlink(x.s, y.s)
+                    createHardlink(move source, move target)
                 else:
-                    createSymlink(x.s, y.s)
+                    createSymlink(move source, move target)
             except OSError:
                 discard
                     
