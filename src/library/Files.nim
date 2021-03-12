@@ -218,6 +218,31 @@ proc defineSymbols*() =
                     moveFile(x.s, y.s)
                 except OSError:
                     discard
+
+    builtin "symlink",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "create symbolic link of file to given destination",
+        args        = {
+            "file"          : {String},
+            "destination"   : {String}
+        },
+        attrs       = {
+            "hard"  : ({Boolean},"create a hard link")
+        },
+        returns     = {Boolean},
+        # TODO(Files/symlink) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            try:
+                if (popAttr("hard") != VNULL):
+                    createHardlink(x.s, y.s)
+                else:
+                    createSymlink(x.s, y.s)
+            except OSError:
+                discard
                     
     when not defined(MINI):
         builtin "unzip",
