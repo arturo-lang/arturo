@@ -41,6 +41,30 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Files"
 
+    builtin "delete",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "delete file at given path",
+        args        = {
+            "file"  : {String}
+        },
+        attrs       = {
+            "directory" : ({Boolean},"path is a directory")
+        },
+        returns     = {Boolean},
+        # TODO(Files/delete) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("directory") != VNULL): 
+                try:
+                    removeDir(x.s)
+                except OSError:
+                    discard
+            else: 
+                discard tryRemoveFile(x.s)
+
     builtin "exists?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -49,7 +73,7 @@ proc defineSymbols*() =
             "file"  : {String}
         },
         attrs       = {
-            "dir"   : ({Boolean},"check for directory")
+            "directory" : ({Boolean},"check for directory")
         },
         returns     = {Boolean},
         example     = """
@@ -58,7 +82,7 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            if (popAttr("dir") != VNULL): 
+            if (popAttr("directory") != VNULL): 
                 stack.push(newBoolean(dirExists(x.s)))
             else: 
                 stack.push(newBoolean(fileExists(x.s)))
