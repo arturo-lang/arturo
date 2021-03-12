@@ -69,7 +69,8 @@ proc defineSymbols*() =
             "params"    : {Block}
         },
         attrs       = {
-            "external"  : ({String},"path to external library")
+            "external"  : ({String},"path to external library"),
+            "expect"    : ({Type},"expect given return type")
         },
         returns     = {Any},
         example     = """
@@ -85,9 +86,11 @@ proc defineSymbols*() =
             if (let aExternal = popAttr("external"); aExternal != VNULL):
                 let externalLibrary = aExternal.s
 
-                discard execForeignMethod(externalLibrary, x.s)
+                var expected = Nothing
+                if (let aExpect = popAttr("expect"); aExpect != VNULL):
+                    expected = aExpect.t
 
-                discard y
+                stack.push(execForeignMethod(externalLibrary, x.s, y.a, expected))
             else:
                 var fun: Value
 
