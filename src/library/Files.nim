@@ -190,6 +190,35 @@ proc defineSymbols*() =
                         
                 # elif attrs.hasKey("xml"):
                 #     stack.push(parseXmlNode(parseXml(action(x.s))))
+
+    builtin "rename",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "rename file at path using given new path name",
+        args        = {
+            "file"  : {String},
+            "name"  : {String}
+        },
+        attrs       = {
+            "directory" : ({Boolean},"path is a directory")
+        },
+        returns     = {Boolean},
+        # TODO(Files/rename) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("directory") != VNULL): 
+                try:
+                    moveDir(x.s, y.s)
+                except OSError:
+                    discard
+            else: 
+                try:
+                    moveFile(x.s, y.s)
+                except OSError:
+                    discard
+                    
     when not defined(MINI):
         builtin "unzip",
             alias       = unaliased, 
