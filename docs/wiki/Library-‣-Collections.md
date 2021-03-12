@@ -700,6 +700,8 @@ Remove value from given collection
 |key|<i>:boolean</i>|remove dictionary key|
 |once|<i>:boolean</i>|remove only first occurence|
 |index|<i>:integer</i>|remove specific index|
+|prefix|<i>:boolean</i>|remove first matching prefix from string|
+|suffix|<i>:boolean</i>|remove first matching suffix from string|
 
 #### Returns
 
