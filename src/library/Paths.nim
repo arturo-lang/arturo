@@ -138,7 +138,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get normalized version of given path",
         args        = {
-            "path"  : {Literal,String}
+            "path"  : {String,Literal}
         },
         attrs       = {
             "executable"    : ({Boolean},"treat path as executable")
