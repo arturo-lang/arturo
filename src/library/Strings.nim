@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import re, std/editdistance, os
+import json, re, std/editdistance, os
 import sequtils, strutils, unicode, xmltree
 
 import helpers/colors as ColorsHelper
@@ -152,6 +152,7 @@ proc defineSymbols*() =
             "string": {String,Literal}
         },
         attrs       = {
+            "json"  : ({Boolean},"for literal use in JSON strings"),
             "regex" : ({Boolean},"for literal use in regular expression"),
             "shell" : ({Boolean},"for use in a shell command"),
             "xml"   : ({Boolean},"for use in an XML document")
@@ -163,7 +164,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if (popAttr("regex") != VNULL):
+                if (popAttr("json") != VNULL):
+                    SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
+                elif (popAttr("regex") != VNULL):
                     SetInPlace(newString(escapeRe(InPlace.s)))
                 elif (popAttr("shell") != VNULL):
                     SetInPlace(newString(quoteShell(InPlace.s)))
@@ -172,10 +175,12 @@ proc defineSymbols*() =
                 else:
                     SetInPlace(newString(strutils.escape(InPlace.s)))
             else:
-                if (popAttr("regex") != VNULL):
+                if (popAttr("json") != VNULL):
+                    stack.push(newString(escapeJsonUnquoted(x.s)))
+                elif (popAttr("regex") != VNULL):
                     stack.push(newString(escapeRe(x.s)))
                 elif (popAttr("shell") != VNULL):
-                    stack.push(newString(quoteShell.escape(x.s)))
+                    stack.push(newString(quoteShell(x.s)))
                 elif (popAttr("xml") != VNULL):
                     stack.push(newString(xmltree.escape(x.s)))
                 else:
