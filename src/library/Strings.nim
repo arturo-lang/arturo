@@ -144,6 +144,25 @@ proc defineSymbols*() =
 
             stack.push(newString(finalColor & x.s & resetColor))
 
+    builtin "escape",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "escape given string",
+        args        = {
+            "string": {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {String,Nothing},
+        # TODO(Strings\escape) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Literal:
+                SetInPlace(newString(escape(InPlace.s)))
+            else:
+                stack.push(newString(escape(x.s)))
+
     builtin "indent",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
