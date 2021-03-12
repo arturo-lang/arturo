@@ -16,7 +16,7 @@
 
 #### Description
 
-Base-64 encode given value
+Encode given value (default: base-64)
 
 #### Usage
 
@@ -48,7 +48,7 @@ print decode.url "http%3A%2F%2Ffoo+bar%2F"
 
 #### Description
 
-Base-64 decode given value
+Decode given value (default: base-64)
 
 #### Usage
 
@@ -60,6 +60,8 @@ Base-64 decode given value
 |Attribute|Type|Description|
 |---|---|---|
 |url|<i>:boolean</i>|encode URL based on RFC3986|
+|from|<i>:string</i>|source character encoding (default: CP1252)|
+|to|<i>:string</i>|target character encoding (default: UTF-8)|
 
 #### Returns
 
