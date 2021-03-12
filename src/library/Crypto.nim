@@ -16,7 +16,9 @@
 # Libraries
 #=======================================
 
-import base64, encodings, md5, std/sha1, uri
+import base64, md5, std/sha1, uri
+when not defined(freebsd):
+    import encodings
 
 import vm/[common, globals, stack, value]
 
@@ -89,24 +91,32 @@ proc defineSymbols*() =
                     stack.push(newString(x.s.encodeUrl()))
 
             elif (let aFrom = popAttr("from"); aFrom != VNULL):
-                var src = aFrom.s
-                var dest = "UTF-8"
-                if (let aTo = popAttr("to"); aTo != VNULL):
-                    dest = aTo.s
+                when not defined(freebsd):
+                    var src = aFrom.s
+                    var dest = "UTF-8"
+                    if (let aTo = popAttr("to"); aTo != VNULL):
+                        dest = aTo.s
 
-                if x.kind==Literal:
-                    InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                    if x.kind==Literal:
+                        InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                    else:
+                        stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
-                    stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
+                    if x.kind==String:
+                        stack.push(newString(x.s))
 
             elif (let aTo = popAttr("to"); aTo != VNULL):
-                var src = "CP1252"
-                var dest = aTo.s
+                when not defined(freebsd):
+                    var src = "CP1252"
+                    var dest = aTo.s
 
-                if x.kind==Literal:
-                    InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                    if x.kind==Literal:
+                        InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                    else:
+                        stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
-                    stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
+                    if x.kind==String:
+                        stack.push(newString(x.s))
 
             else:
                 if x.kind==Literal:
