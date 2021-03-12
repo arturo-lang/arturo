@@ -153,7 +153,7 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     InPlace.s.normalizeExe()
                 else:
-                    let ret = x.s
+                    var ret = x.s
                     ret.normalizeExe()
                     stack.push(newString(ret))
             else:
