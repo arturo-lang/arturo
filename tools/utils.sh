@@ -20,7 +20,7 @@ FLAGS="\
  -d:release\
  -d:danger\
  --panics:off\
- --gc:orc\
+ --gc:arc\
  --checks:off\
  --overflowChecks:on\
  -d:ssl\
