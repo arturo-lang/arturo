@@ -17,7 +17,7 @@
 #=======================================
 
 import re, std/editdistance, os
-import sequtils, strutils, unicode
+import sequtils, strutils, unicode, xmltree
 
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
@@ -151,7 +151,11 @@ proc defineSymbols*() =
         args        = {
             "string": {String,Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "regex" : ({Boolean},"for literal use in regular expression"),
+            "shell" : ({Boolean},"for use in a shell command"),
+            "xml"   : ({Boolean},"for use in an XML document")
+        },
         returns     = {String,Nothing},
         # TODO(Strings\escape) add example for documentation
         #  labels: library,documentation,easy
@@ -159,9 +163,23 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                SetInPlace(newString(escape(InPlace.s)))
+                if (popAttr("regex") != VNULL):
+                    SetInPlace(newString(escapeRe(InPlace.s)))
+                elif (popAttr("shell") != VNULL):
+                    SetInPlace(newString(quoteShell(InPlace.s)))
+                elif (popAttr("xml") != VNULL):
+                    SetInPlace(newString(xmltree.escape(InPlace.s)))
+                else:
+                    SetInPlace(newString(strutils.escape(InPlace.s)))
             else:
-                stack.push(newString(escape(x.s)))
+                if (popAttr("regex") != VNULL):
+                    stack.push(newString(escapeRe(x.s)))
+                elif (popAttr("shell") != VNULL):
+                    stack.push(newString(quoteShell.escape(x.s)))
+                elif (popAttr("xml") != VNULL):
+                    stack.push(newString(xmltree.escape(x.s)))
+                else:
+                    stack.push(newString(strutils.escape(x.s)))
 
     builtin "indent",
         alias       = unaliased, 
