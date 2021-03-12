@@ -94,7 +94,7 @@ proc defineSymbols*() =
                 if (let aTo = popAttr("to"); aTo != VNULL):
                     dest = aTo.s
 
-                if x.kind=Literal:
+                if x.kind==Literal:
                     InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                 else:
                     stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
@@ -103,7 +103,7 @@ proc defineSymbols*() =
                 var src = "CP1252"
                 var dest = aTo.s
 
-                if x.kind=Literal:
+                if x.kind==Literal:
                     InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                 else:
                     stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
