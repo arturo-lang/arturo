@@ -53,6 +53,10 @@ compressBinary(){
 
 installAll(){
     cp $BINARY $TARGET_DIR
+
+    if $RUN_UNIT_TESTS; then
+        ./tools/tester.art
+    fi
 }
 
 ################################################
@@ -73,6 +77,7 @@ MAIN="src/arturo.nim"
 MINI_BUILD=false
 COMPRESS=true
 PRINT_LOG=false
+RUN_UNIT_TESTS=false
 
 if [ "$(whoami)" = "drkameleon" ]; then IS_DEV_BUILD=true
 else IS_DEV_BUILD=false
@@ -90,6 +95,8 @@ do
             PRINT_LOG=true;;
         dev)
             IS_DEV_BUILD=true;;
+        test)
+            RUN_UNIT_TESTS=true;;
         mini)      
             MINI_BUILD=true 
             FLAGS="$FLAGS -d:MINI";;
