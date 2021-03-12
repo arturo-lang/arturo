@@ -41,6 +41,58 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Files"
 
+    builtin "copy",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "copy file at path to given destination",
+        args        = {
+            "file"          : {String},
+            "destination"   : {String}
+        },
+        attrs       = {
+            "directory" : ({Boolean},"path is a directory")
+        },
+        returns     = {Nothing},
+        # TODO(Files/copy) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("directory") != VNULL): 
+                try:
+                    copyDirWithPermissions(x.s, y.s)
+                except OSError:
+                    discard
+            else: 
+                try:
+                    copyFileWithPermissions(x.s, y.s)
+                except OSError:
+                    discard
+
+    builtin "delete",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "delete file at given path",
+        args        = {
+            "file"  : {String}
+        },
+        attrs       = {
+            "directory" : ({Boolean},"path is a directory")
+        },
+        returns     = {Nothing},
+        # TODO(Files/delete) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("directory") != VNULL): 
+                try:
+                    removeDir(x.s)
+                except OSError:
+                    discard
+            else: 
+                discard tryRemoveFile(x.s)
+
     builtin "exists?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -49,7 +101,7 @@ proc defineSymbols*() =
             "file"  : {String}
         },
         attrs       = {
-            "dir"   : ({Boolean},"check for directory")
+            "directory" : ({Boolean},"check for directory")
         },
         returns     = {Boolean},
         example     = """
@@ -58,10 +110,68 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            if (popAttr("dir") != VNULL): 
+            if (popAttr("directory") != VNULL): 
                 stack.push(newBoolean(dirExists(x.s)))
             else: 
                 stack.push(newBoolean(fileExists(x.s)))
+
+    builtin "permissions",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check permissions of given file",
+        args        = {
+            "file"  : {String}
+        },
+        attrs       = {
+            "set"   : ({Dictionary},"set using given file permissions")
+        },
+        returns     = {Dictionary,Null},
+        # TODO(Files/permissions) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            try:
+                if (popAttr("set") != VNULL):
+                    let perms = getFilePermissions(x.s)
+                    var permsDict: ValueDict = {
+                        "user": newDictionary({
+                            "read"      : newBoolean(fpUserRead in perms),
+                            "write"     : newBoolean(fpUserWrite in perms),
+                            "execute"   : newBoolean(fpUserExec in perms)
+                        }.toOrderedTable),
+                        "group": newDictionary({
+                            "read"      : newBoolean(fpGroupRead in perms),
+                            "write"     : newBoolean(fpGroupWrite in perms),
+                            "execute"   : newBoolean(fpGroupExec in perms)
+                        }.toOrderedTable),
+                        "others": newDictionary({
+                            "read"      : newBoolean(fpOthersRead in perms),
+                            "write"     : newBoolean(fpOthersWrite in perms),
+                            "execute"   : newBoolean(fpOthersExec in perms)
+                        }.toOrderedTable)
+                    }.toOrderedTable
+
+                    stack.push(newDictionary(permsDict))
+                else:
+                    var perms: set[FilePermission]
+
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+
+                    setFilePermissions(x.s, perms)
+
+            except OSError:
+                stack.push(VNULL)
 
     builtin "read",
         alias       = doublearrowleft, 
@@ -138,6 +248,59 @@ proc defineSymbols*() =
                         
                 # elif attrs.hasKey("xml"):
                 #     stack.push(parseXmlNode(parseXml(action(x.s))))
+
+    builtin "rename",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "rename file at path using given new path name",
+        args        = {
+            "file"  : {String},
+            "name"  : {String}
+        },
+        attrs       = {
+            "directory" : ({Boolean},"path is a directory")
+        },
+        returns     = {Nothing},
+        # TODO(Files/rename) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("directory") != VNULL): 
+                try:
+                    moveDir(x.s, y.s)
+                except OSError:
+                    discard
+            else: 
+                try:
+                    moveFile(x.s, y.s)
+                except OSError:
+                    discard
+
+    builtin "symlink",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "create symbolic link of file to given destination",
+        args        = {
+            "file"          : {String},
+            "destination"   : {String}
+        },
+        attrs       = {
+            "hard"  : ({Boolean},"create a hard link")
+        },
+        returns     = {Nothing},
+        # TODO(Files/symlink) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            try:
+                if (popAttr("hard") != VNULL):
+                    createHardlink(x.s, y.s)
+                else:
+                    createSymlink(x.s, y.s)
+            except OSError:
+                discard
                     
     when not defined(MINI):
         builtin "unzip",
