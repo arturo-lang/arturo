@@ -52,7 +52,7 @@ proc defineSymbols*() =
         attrs       = {
             "directory" : ({Boolean},"path is a directory")
         },
-        returns     = {Boolean},
+        returns     = {Nothing},
         # TODO(Files/copy) add example for documentation
         #  labels: library,documentation,easy
         example     = """
@@ -79,7 +79,7 @@ proc defineSymbols*() =
         attrs       = {
             "directory" : ({Boolean},"path is a directory")
         },
-        returns     = {Boolean},
+        returns     = {Nothing},
         # TODO(Files/delete) add example for documentation
         #  labels: library,documentation,easy
         example     = """
@@ -114,6 +114,47 @@ proc defineSymbols*() =
                 stack.push(newBoolean(dirExists(x.s)))
             else: 
                 stack.push(newBoolean(fileExists(x.s)))
+
+    builtin "permissions",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check permissions of given file",
+        args        = {
+            "file"  : {String}
+        },
+        attrs       = {
+            "directory" : ({Boolean},"check for directory")
+        },
+        returns     = {Dictionary,Null},
+        # TODO(Files/permissions) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            try:
+                let perms = getFilePermissions(x.s)
+                var permsDict: ValueDict = {
+                    "user": newDictionary({
+                        "read"      : newBoolean(fpUserRead in perms),
+                        "write"     : newBoolean(fpUserWrite in perms),
+                        "execute"   : newBoolean(fpUserExec in perms)
+                    }.toOrderedTable),
+                    "group": newDictionary({
+                        "read"      : newBoolean(fpGroupRead in perms),
+                        "write"     : newBoolean(fpGroupWrite in perms),
+                        "execute"   : newBoolean(fpGroupExec in perms)
+                    }.toOrderedTable),
+                    "others": newDictionary({
+                        "read"      : newBoolean(fpOthersRead in perms),
+                        "write"     : newBoolean(fpOthersWrite in perms),
+                        "execute"   : newBoolean(fpOthersExec in perms)
+                    }.toOrderedTable)
+                }.toOrderedTable
+
+                stack.push(newDictionary(permsDict))
+                
+            except OSError:
+                stack.push(VNULL)
 
     builtin "read",
         alias       = doublearrowleft, 
@@ -202,7 +243,7 @@ proc defineSymbols*() =
         attrs       = {
             "directory" : ({Boolean},"path is a directory")
         },
-        returns     = {Boolean},
+        returns     = {Nothing},
         # TODO(Files/rename) add example for documentation
         #  labels: library,documentation,easy
         example     = """
@@ -230,7 +271,7 @@ proc defineSymbols*() =
         attrs       = {
             "hard"  : ({Boolean},"create a hard link")
         },
-        returns     = {Boolean},
+        returns     = {Nothing},
         # TODO(Files/symlink) add example for documentation
         #  labels: library,documentation,easy
         example     = """
