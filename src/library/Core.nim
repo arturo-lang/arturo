@@ -19,6 +19,7 @@
 import algorithm, sequtils
 
 import helpers/datasource as DatasourceHelper
+import helpers/ffi as FfiHelper
 
 import vm/[common, env, errors, eval, exec, globals, parse, stack, value]
 
@@ -67,7 +68,9 @@ proc defineSymbols*() =
             "function"  : {String,Literal,Function},
             "params"    : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "external"  : ({String},"path to external library")
+        },
         returns     = {Any},
         example     = """
             multiply: function [x y][
@@ -79,20 +82,27 @@ proc defineSymbols*() =
             call $[x][x+2] [5]            ; 7
         """:
             ##########################################################
-            var fun: Value
+            if (let aExternal = popAttr("external"); aExternal != VNULL):
+                let externalLibrary = aExternal.s
 
-            if x.kind==Literal or x.kind==String:
-                fun = InPlace
+                execForeignMethod(externalLibrary, x.s)
+
+                discard y
             else:
-                fun = x
+                var fun: Value
 
-            for v in y.a.reversed:
-                stack.push(v)
+                if x.kind==Literal or x.kind==String:
+                    fun = InPlace
+                else:
+                    fun = x
 
-            if fun.fnKind==UserFunction:
-                discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
-            else:
-                fun.action()
+                for v in y.a.reversed:
+                    stack.push(v)
+
+                if fun.fnKind==UserFunction:
+                    discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                else:
+                    fun.action()
         
     builtin "case",
         alias       = unaliased, 
