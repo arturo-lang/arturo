@@ -123,7 +123,7 @@ proc defineSymbols*() =
             "file"  : {String}
         },
         attrs       = {
-            "directory" : ({Boolean},"check for directory")
+            "set"   : ({Dictionary},"set using given file permissions")
         },
         returns     = {Dictionary,Null},
         # TODO(Files/permissions) add example for documentation
@@ -132,27 +132,44 @@ proc defineSymbols*() =
         """:
             ##########################################################
             try:
-                let perms = getFilePermissions(x.s)
-                var permsDict: ValueDict = {
-                    "user": newDictionary({
-                        "read"      : newBoolean(fpUserRead in perms),
-                        "write"     : newBoolean(fpUserWrite in perms),
-                        "execute"   : newBoolean(fpUserExec in perms)
-                    }.toOrderedTable),
-                    "group": newDictionary({
-                        "read"      : newBoolean(fpGroupRead in perms),
-                        "write"     : newBoolean(fpGroupWrite in perms),
-                        "execute"   : newBoolean(fpGroupExec in perms)
-                    }.toOrderedTable),
-                    "others": newDictionary({
-                        "read"      : newBoolean(fpOthersRead in perms),
-                        "write"     : newBoolean(fpOthersWrite in perms),
-                        "execute"   : newBoolean(fpOthersExec in perms)
-                    }.toOrderedTable)
-                }.toOrderedTable
+                if (popAttr("set") != VNULL):
+                    let perms = getFilePermissions(x.s)
+                    var permsDict: ValueDict = {
+                        "user": newDictionary({
+                            "read"      : newBoolean(fpUserRead in perms),
+                            "write"     : newBoolean(fpUserWrite in perms),
+                            "execute"   : newBoolean(fpUserExec in perms)
+                        }.toOrderedTable),
+                        "group": newDictionary({
+                            "read"      : newBoolean(fpGroupRead in perms),
+                            "write"     : newBoolean(fpGroupWrite in perms),
+                            "execute"   : newBoolean(fpGroupExec in perms)
+                        }.toOrderedTable),
+                        "others": newDictionary({
+                            "read"      : newBoolean(fpOthersRead in perms),
+                            "write"     : newBoolean(fpOthersWrite in perms),
+                            "execute"   : newBoolean(fpOthersExec in perms)
+                        }.toOrderedTable)
+                    }.toOrderedTable
 
-                stack.push(newDictionary(permsDict))
-                
+                    stack.push(newDictionary(permsDict))
+                else:
+                    var perms: set[FilePermission]
+
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+
+                    setFilePermissions(x.s, perms)
+
             except OSError:
                 stack.push(VNULL)
 
