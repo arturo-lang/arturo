@@ -1,6 +1,7 @@
-checkIfExists: function [file][
-    if? exists? file [print [file "exists"]]
-    else [print [file "doesn't exist"]]
+checkIfExists: function [fpath][
+    (or? exists? fpath
+         exists? .directory fpath)? -> print [fpath "exists"]
+                                    -> print [fpath "doesn't exist"]
 ]
  
 checkIfExists "input.txt"
