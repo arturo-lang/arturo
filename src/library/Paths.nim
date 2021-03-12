@@ -143,7 +143,7 @@ proc defineSymbols*() =
         attrs       = {
             "executable"    : ({Boolean},"treat path as executable")
         },
-        returns     = {String},
+        returns     = {String,Nothing},
         # TODO(Paths\normalize) add example for documentation
         #  labels: library,documentation,easy
         example     = """
