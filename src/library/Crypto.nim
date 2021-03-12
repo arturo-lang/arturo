@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import base64, md5, std/sha1, uri
+import base64, encodings, md5, std/sha1, uri
 
 import vm/[common, globals, stack, value]
 
@@ -32,7 +32,7 @@ proc defineSymbols*() =
     builtin "decode",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "base-64 encode given value",
+        description = "encode given value (default: base-64)",
         args        = {
             "value" : {String,Literal}
         },
@@ -62,12 +62,14 @@ proc defineSymbols*() =
     builtin "encode",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "base-64 decode given value",
+        description = "decode given value (default: base-64)",
         args        = {
             "value" : {String,Literal}
         },
         attrs       = {
-            "url"   : ({Boolean},"encode URL based on RFC3986")
+            "url"   : ({Boolean},"encode URL based on RFC3986"),
+            "from"  : ({String},"source character encoding (default: CP1252)"),
+            "to"    : ({String},"target character encoding (default: UTF-8)")
         },
         returns     = {String,Nothing},
         example     = """
@@ -83,6 +85,27 @@ proc defineSymbols*() =
                     InPlace.s = InPlaced.s.encodeUrl()
                 else:
                     stack.push(newString(x.s.encodeUrl()))
+
+            elif (let aFrom = popAttr("from"); aFrom != VNULL):
+                var src = aFrom.s
+                var dest = "UTF-8"
+                if (let aTo = popAttr("to"); aTo != VNULL):
+                    dest = aTo.s
+
+                if x.kind=Literal:
+                    InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                else:
+                    stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
+
+            elif (let aTo = popAttr("to"); aTo != VNULL):
+                var src = "CP1252"
+                var dest = aTo.s
+
+                if x.kind=Literal:
+                    InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
+                else:
+                    stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
+                    
             else:
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.encode()
