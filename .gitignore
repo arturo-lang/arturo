@@ -8,6 +8,7 @@ test2
 test*.nim
 test*.art
 testme*
+*testlib*
 test.js
 old.nim
 tmp*
