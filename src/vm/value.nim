@@ -348,6 +348,9 @@ proc newString*(s: string, dedented: bool = false): Value {.inline.} =
     if not dedented: Value(kind: String, s: s)
     else: Value(kind: String, s: unicode.strip(dedent(s)))
 
+proc newString*(s: cstring, dedented: bool = false): Value {.inline.} =
+    newString($(s), dedented)
+
 proc newWord*(w: string): Value {.inline.} =
     Value(kind: Word, s: w)
 
