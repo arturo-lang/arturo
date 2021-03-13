@@ -1,0 +1,18 @@
+pancakeSort: function [items][
+    arr: new items
+    len: size arr
+    loop (len-1)..1 'endIdx [
+        maxim: max slice arr 0 endIdx
+        maximIdx: index arr maxim
+        if maximIdx=endIdx -> continue
+
+        if maximIdx > 0 [
+            arr: (reverse slice arr 0 maximIdx) ++ slice arr maximIdx+1 (size arr)-1
+        ]
+
+        arr: (reverse slice arr 0 endIdx) ++ slice arr endIdx+1 (size arr)-1
+    ]
+    arr
+]
+
+print pancakeSort [3 1 2 8 5 7 9 4 6]
