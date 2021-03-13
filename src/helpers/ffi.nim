@@ -12,7 +12,7 @@
 
 import dynlib, os, strutils
 
-import vm/[value]
+import vm/[errors, value]
 
 #=======================================
 # Types
@@ -44,17 +44,14 @@ proc loadLibrary*(path: string): LibHandle =
     result = loadLib(path)
 
     if result == nil:
-        echo "Error loading library"
-        quit(QuitFailure)
+        RuntimeError_LibraryNotLoaded(path)
 
 proc unloadLibrary*(lib: LibHandle) =
     unloadLib(lib)
 
 template checkRunner*(r: pointer):untyped =
     if r == nil:
-        echo "Error loading '" & meth & 
-             "' function from library at: " & path
-        quit(QuitFailure)
+        RuntimeError_LibrarySymbolNotFound(resolvedPath, meth)
 
 template callFunc0(t:untyped):untyped =
     let runner = cast[t](lib.symAddr(meth))
@@ -87,78 +84,86 @@ proc boolToInt*(v: Value): int =
 #=======================================
 
 proc execForeignMethod*(path: string, meth: string, params: ValueArray = @[], expected: ValueKind = Nothing): Value =
-    # set result to :null
-    result = VNULL
+    try:
+        # set result to :null
+        result = VNULL
 
-    # load library
-    let lib = loadLibrary(resolveLibrary(path))
+        # load library
+        let resolvedPath = resolveLibrary(path)
+        let lib = loadLibrary(resolvedPath)
 
-    # the variable that will store 
-    # the return value from the function
-    var got: pointer
+        # the variable that will store 
+        # the return value from the function
+        var got: pointer
 
-    # execute given method
-    # depending on the params given
+        # execute given method
+        # depending on the params given
 
-    if params.len==0:
-        got = callFunc0(V_Caller)
-    elif params.len==1:
-        case params[0].kind
-            of Boolean      :   got = callFunc1(I_Caller, boolToInt(params[0]))
-            of Integer      :   got = callFunc1(I_Caller, params[0].i)
-            of Floating     :   got = callFunc1(F_Caller, params[0].f)
-            of String       :   got = callFunc1(S_Caller, cstring(params[0].s))
-            else: discard
-    elif params.len==2:
-        case params[0].kind
-            of Boolean: 
-                case params[1].kind
-                    of Boolean      :   got = callFunc2(II_Caller, boolToInt(params[0]), boolToInt(params[1]))
-                    of Integer      :   got = callFunc2(II_Caller, boolToInt(params[0]), params[1].i)
-                    of Floating     :   got = callFunc2(IF_Caller, boolToInt(params[0]), params[1].f)
-                    of String       :   got = callFunc2(IS_Caller, boolToInt(params[0]), cstring(params[1].s))
-                    else: discard
-            of Integer: 
-                case params[1].kind
-                    of Boolean      :   got = callFunc2(II_Caller, params[0].i, boolToInt(params[1]))
-                    of Integer      :   got = callFunc2(II_Caller, params[0].i, params[1].i)
-                    of Floating     :   got = callFunc2(IF_Caller, params[0].i, params[1].f)
-                    of String       :   got = callFunc2(IS_Caller, params[0].i, cstring(params[1].s))
-                    else: discard
-            of Floating:
-                case params[1].kind
-                    of Boolean      :   got = callFunc2(FI_Caller, params[0].f, boolToInt(params[1]))
-                    of Integer      :   got = callFunc2(FI_Caller, params[0].f, params[1].i)
-                    of Floating     :   got = callFunc2(FF_Caller, params[0].f, params[1].f)
-                    of String       :   got = callFunc2(FS_Caller, params[0].f, cstring(params[1].s))
-                    else: discard
-            of String: 
-                case params[1].kind
-                    of Boolean      :   got = callFunc2(SI_Caller, cstring(params[0].s), boolToInt(params[1]))
-                    of Integer      :   got = callFunc2(SI_Caller, cstring(params[0].s), params[1].i)
-                    of Floating     :   got = callFunc2(SF_Caller, cstring(params[0].s), params[1].f)
-                    of String       :   got = callFunc2(SS_Caller, cstring(params[0].s), cstring(params[1].s))
-                    else: discard
-            else: discard
-    else: discard
-
-    # convert returned value
-    # depending on what's expected
-
-    case expected
-        of Boolean:
-            result = newBoolean(cast[int](got))
-
-        of Integer:
-            result = newInteger(cast[int](got))
-        
-        of Floating:
-            result = newFloating(cast[float](got))
-
-        of String:
-            result = newString(cast[cstring](got))
-
+        if params.len==0:
+            got = callFunc0(V_Caller)
+        elif params.len==1:
+            case params[0].kind
+                of Boolean      :   got = callFunc1(I_Caller, boolToInt(params[0]))
+                of Integer      :   got = callFunc1(I_Caller, params[0].i)
+                of Floating     :   got = callFunc1(F_Caller, params[0].f)
+                of String       :   got = callFunc1(S_Caller, cstring(params[0].s))
+                else: discard
+        elif params.len==2:
+            case params[0].kind
+                of Boolean: 
+                    case params[1].kind
+                        of Boolean      :   got = callFunc2(II_Caller, boolToInt(params[0]), boolToInt(params[1]))
+                        of Integer      :   got = callFunc2(II_Caller, boolToInt(params[0]), params[1].i)
+                        of Floating     :   got = callFunc2(IF_Caller, boolToInt(params[0]), params[1].f)
+                        of String       :   got = callFunc2(IS_Caller, boolToInt(params[0]), cstring(params[1].s))
+                        else: discard
+                of Integer: 
+                    case params[1].kind
+                        of Boolean      :   got = callFunc2(II_Caller, params[0].i, boolToInt(params[1]))
+                        of Integer      :   got = callFunc2(II_Caller, params[0].i, params[1].i)
+                        of Floating     :   got = callFunc2(IF_Caller, params[0].i, params[1].f)
+                        of String       :   got = callFunc2(IS_Caller, params[0].i, cstring(params[1].s))
+                        else: discard
+                of Floating:
+                    case params[1].kind
+                        of Boolean      :   got = callFunc2(FI_Caller, params[0].f, boolToInt(params[1]))
+                        of Integer      :   got = callFunc2(FI_Caller, params[0].f, params[1].i)
+                        of Floating     :   got = callFunc2(FF_Caller, params[0].f, params[1].f)
+                        of String       :   got = callFunc2(FS_Caller, params[0].f, cstring(params[1].s))
+                        else: discard
+                of String: 
+                    case params[1].kind
+                        of Boolean      :   got = callFunc2(SI_Caller, cstring(params[0].s), boolToInt(params[1]))
+                        of Integer      :   got = callFunc2(SI_Caller, cstring(params[0].s), params[1].i)
+                        of Floating     :   got = callFunc2(SF_Caller, cstring(params[0].s), params[1].f)
+                        of String       :   got = callFunc2(SS_Caller, cstring(params[0].s), cstring(params[1].s))
+                        else: discard
+                else: discard
         else: discard
 
-    # unload the library
-    unloadLibrary(lib)
+        # convert returned value
+        # depending on what's expected
+
+        case expected
+            of Boolean:
+                result = newBoolean(cast[int](got))
+
+            of Integer:
+                result = newInteger(cast[int](got))
+            
+            of Floating:
+                result = newFloating(cast[float](got))
+
+            of String:
+                result = newString(cast[cstring](got))
+
+            else: discard
+
+        # unload the library
+        unloadLibrary(lib)
+
+    except VMError as e:
+        raise e
+
+    except:
+        RuntimeError_ErrorLoadingLibrarySymbol(path, meth)
