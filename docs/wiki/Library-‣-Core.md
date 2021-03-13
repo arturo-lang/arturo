@@ -76,6 +76,12 @@ Call function with given list of parameters
 <b>call</b> <ins>function</ins> <i>:string</i> <i>:literal</i> <i>:function</i>
      <ins>params</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|external|<i>:string</i>|path to external library|
+|expect|<i>:type</i>|expect given return type|
 
 #### Returns
 

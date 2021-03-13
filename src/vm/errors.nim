@@ -225,3 +225,17 @@ proc RuntimeError_ConversionFailed*(x, y: Value) =
           "from :" & ($(y.kind)).toLowerAscii() & ";" &
           "to   :" & ($(x.t)).toLowerAscii()
 
+proc RuntimeError_LibraryNotLoaded*(path: string) =
+    panic RuntimeError,
+          "dynamic library could not be loaded:" & ";" &
+          path
+
+proc RuntimeError_LibrarySymbolNotFound*(path: string, sym: string) =
+    panic RuntimeError,
+          "symbol not found: " & sym & ";" & 
+          "in library: " & path
+
+proc RuntimeError_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
+    panic RuntimeError,
+          "error loading symbol: " & sym & ";" & 
+          "from library: " & path
