@@ -390,6 +390,7 @@ proc newDate*(dt: DateTime): Value {.inline.} =
         "nanosecond": newInteger(dt.nanosecond),
         "day"       : newInteger(dt.monthday),
         "Day"       : newString($(dt.weekday)),
+        "days"      : newInteger(dt.yearday),
         "month"     : newInteger(ord(dt.month)),
         "Month"     : newString($(dt.month)),
         "year"      : newInteger(dt.year),
