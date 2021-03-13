@@ -2,7 +2,7 @@ daysBetweenDates: function [startDate, endDate][
     a: to :date.format: "dd/MM/yyyy" startDate
     b: to :date.format: "dd/MM/yyyy" endDate
 
-    return b\days - a\days
+    return abs b\days - a\days
 ]
 
 print [
