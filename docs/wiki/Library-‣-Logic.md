@@ -13,6 +13,7 @@
    * [or?](#or?)
    * [true?](#true?)
    * [xnor?](#xnor?)
+   * [xor?](#xor?)
 <!--te-->
 
 ---
@@ -54,8 +55,8 @@ Return the logical AND for the given values
 #### Usage
 
 <pre>
-<b>and?</b> <ins>valueA</ins> <i>:boolean</i>
-     <ins>valueB</ins> <i>:boolean</i>
+<b>and?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+     <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -221,8 +222,8 @@ Return the logical OR for the given values
 #### Usage
 
 <pre>
-<b>or?</b> <ins>valueA</ins> <i>:boolean</i>
-    <ins>valueB</ins> <i>:boolean</i>
+<b>or?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+    <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -270,6 +271,39 @@ Return the logical XNOR for the given values
 <pre>
 <b>xnor?</b> <ins>valueA</ins> <i>:boolean</i>
       <ins>valueB</ins> <i>:boolean</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+x: 2
+y: 3
+
+if? xnor? x=2 y=3 [
+    print "yep, that's correct!"]
+]
+else [
+    print "nope, that's not correct"
+]
+
+; yep, that's not correct
+```
+
+## xor?
+
+#### Description
+
+Return the logical XOR for the given values
+
+#### Usage
+
+<pre>
+<b>xor?</b> <ins>valueA</ins> <i>:boolean</i>
+     <ins>valueB</ins> <i>:boolean</i>
 </pre>
 
 #### Returns
