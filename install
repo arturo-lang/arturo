@@ -97,6 +97,8 @@ do
             IS_DEV_BUILD=true;;
         test)
             RUN_UNIT_TESTS=true;;
+        release)
+            FLAGS="$FLAGS --passC:'-flto'";;
         mini)      
             MINI_BUILD=true 
             FLAGS="$FLAGS -d:MINI";;
