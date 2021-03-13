@@ -276,6 +276,10 @@ proc newBoolean*(b: bool): Value {.inline.} =
     if b: VTRUE
     else: VFALSE
 
+proc newBoolean*(i: int): Value {.inline.} =
+    if i==0: newBoolean(false)
+    else: newBoolean(true)
+
 proc newInteger*(bi: Int): Value {.inline.} =
     result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
