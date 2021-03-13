@@ -2,7 +2,6 @@
 call.external: "mylib" 'sayHello ["John"]
 
 ; map an external function to a native one
-
 doubleNum: function [num][
     ensure -> integer? num
     call .external: "mylib"
