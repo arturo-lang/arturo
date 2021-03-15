@@ -43,8 +43,8 @@ unique 'modules
 inspect functions
 
 loop functions [modl,lst][
-    target: relative join.path @["../../webize/artdoc/pages/library" lower modl]
-    write.directory target ø
+    target: relative join.path @["../../webize/artdoc/pages/documentation/library" lower modl]
+    ; write.directory target ø
 
     loop lst 'func [
         funcInfo:  info.get func
@@ -55,7 +55,7 @@ loop functions [modl,lst][
         funcInfo\attributes: attributes
         funcInfo\arguments: arguments
         funcInfo\related: get relatedFuncs func
-        funcInfo: strip as.pretty.code.unwrapped funcInfo
+        funcInfo: replace strip as.pretty.code.unwrapped funcInfo "\t" "    "
 
         inspect funcInfo
         
