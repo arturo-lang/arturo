@@ -119,21 +119,24 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         if ts!=":boolean":
-            let len = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}").len
+            let len = fmt(".{attr[0]} {ts}").len
             if len>maxLen: maxLen = len
         else:
-            let len = fmt("{fg(cyanColor)}.{attr[0]}").len
+            let len = fmt(".{attr[0]}").len
             if len>maxLen: maxLen = len
 
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         var leftSide = ""
+        var myLen = maxLen
         if ts!=":boolean":
             leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
+            myLen += len(fmt("{fg(cyanColor)}{fg(grayColor)}"))
         else:
             leftSide = fmt("{fg(cyanColor)}.{attr[0]}")
+            myLen += len(fmt("{fg(cyanColor)}"))
         
-        result.add fmt("{alignLeft(leftSide,maxLen)} {resetColor}-> {attr[1][1]}")
+        result.add fmt("{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}")
 
 #=======================================
 # Methods
