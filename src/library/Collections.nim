@@ -696,7 +696,7 @@ proc defineSymbols*() =
         attrs       = {
             "key"   : ({Boolean},"remove dictionary key"),
             "once"  : ({Boolean},"remove only first occurence"),
-            "index" : ({Integer},"remove specific index"),
+            "index" : ({Boolean},"remove specific index"),
             "prefix": ({Boolean},"remove first matching prefix from string"),
             "suffix": ({Boolean},"remove first matching suffix from string")
         },
@@ -728,8 +728,8 @@ proc defineSymbols*() =
                 elif InPlaced.kind==Block: 
                     if (popAttr("once") != VNULL):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
-                    elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                        SetInPlace(newBlock(InPlaced.a.removeByIndex(aIndex.i)))
+                    elif (popAttr("index") != VNULL):
+                        SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
                         SetInPlace(newBlock(InPlaced.a.removeAll(y)))
                 elif InPlaced.kind==Dictionary:
@@ -755,8 +755,8 @@ proc defineSymbols*() =
                 elif x.kind==Block: 
                     if (popAttr("once") != VNULL):
                         stack.push(newBlock(x.a.removeFirst(y)))
-                    elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                        stack.push(newBlock(x.a.removeByIndex(aIndex.i)))
+                    elif (popAttr("index") != VNULL):
+                        stack.push(newBlock(x.a.removeByIndex(y.i)))
                     else:
                         stack.push(newBlock(x.a.removeAll(y)))
                 elif x.kind==Dictionary:
