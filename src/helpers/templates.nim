@@ -21,7 +21,7 @@ import vm/[exec, parse, stack, value]
 
 var
     Interpolated    = nre.re"\|([^\|]+)\|"
-    Embeddable      = nre.re"(\<\|.*?\|\>)"
+    Embeddable      = nre.re"(?s)(\<\|.*?\|\>)"
 
 #=======================================
 # Helpers
