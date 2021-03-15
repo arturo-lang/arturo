@@ -1,0 +1,17 @@
+sorted?: function [arr][
+    previous: first arr
+
+    loop slice arr 1 (size arr)-1 'item [
+        if not? item > previous -> return false
+        previous: item
+    ]
+    return true
+]
+
+permutationSort: function [items][
+    loop permutate items 'perm [
+        if sorted? perm -> return perm
+    ]
+]
+
+print permutationSort [3 1 2 8 5 7 9 4 6]
