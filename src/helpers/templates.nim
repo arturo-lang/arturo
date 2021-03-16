@@ -45,8 +45,6 @@ proc renderInterpolated(s: string, recursive: bool, useReference: bool, referenc
         if recursive: keepGoing = result.find(Interpolated).isSome
         else: keepGoing = false
 
-# TODO renderTemplate does not respect newlines in multi-line input
-#  check `templates.art` for the inconsistency
 proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: ValueDict): string =
     result = s
 
