@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strutils, tables
+import re, sequtils, strutils, tables
 import nre except toSeq
 
 import vm/[exec, parse, stack, value]
@@ -21,7 +21,7 @@ import vm/[exec, parse, stack, value]
 
 var
     Interpolated    = nre.re"\|([^\|]+)\|"
-    Embeddable      = nre.re"(?s)(\<\|.*?\|\>)"
+    Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
 #=======================================
 # Helpers
@@ -52,7 +52,7 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
 
     var keepGoing = true
     if recursive: 
-        keepGoing = result.find(Embeddable).isSome
+        keepGoing = result.contains(Embeddable)
 
     while keepGoing:
 
@@ -88,8 +88,15 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
 
         # let subscript = blk.join(" ")
         # let parsed = doParse(subscript, isFile=false)
+        result = "««" & result.replace("<||=","<|| to :string ")
+                              .replace("||>","««")
+                              .replace("<||","»»") & "»»"
 
-        let parsed = doParseTemplate(result)
+        # result = re.replace(re.replace(result, re.re"<\|=","<|to :string"),
+        #                                        re.re"\|>(.*?)<\|","««$1»»")
+
+        #echo result
+        let parsed = doParse(result, isFile=false)
 
         # execute/reduce ('array') the resulting block
         let stop = SP
@@ -102,7 +109,7 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
 
         # if recursive, check if there's still more embedded tags
         # otherwise, break out of the loop
-        if recursive: keepGoing = result.find(Embeddable).isSome
+        if recursive: keepGoing = result.contains(Embeddable)
         else: keepGoing = false
 
 #=======================================
