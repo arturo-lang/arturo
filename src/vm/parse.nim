@@ -647,6 +647,9 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
+proc doParseTemplate*(input: string): Value =
+    discard
+
 proc doParse*(input: string, isFile: bool = true): Value =
     var p: Parser
 
