@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strutils, tables
+import re, strutils, tables
 import nre except toSeq
 
 import vm/[exec, parse, stack, value]
@@ -21,7 +21,7 @@ import vm/[exec, parse, stack, value]
 
 var
     Interpolated    = nre.re"\|([^\|]+)\|"
-    Embeddable      = nre.re"(?s)(\<\|.*?\|\>)"
+    Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
 #=======================================
 # Helpers
@@ -45,48 +45,21 @@ proc renderInterpolated(s: string, recursive: bool, useReference: bool, referenc
         if recursive: keepGoing = result.find(Interpolated).isSome
         else: keepGoing = false
 
-# TODO renderTemplate does not respect newlines in multi-line input
-#  check `templates.art` for the inconsistency
 proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: ValueDict): string =
     result = s
 
     var keepGoing = true
     if recursive: 
-        keepGoing = result.find(Embeddable).isSome
+        keepGoing = result.contains(Embeddable)
 
     while keepGoing:
-        # split input by tags
-        var splitted = result.split(Embeddable)
+        # make necessary substitutions
+        result = "««" & result.replace("<||=","<|| to :string ")
+                              .replace("||>","««")
+                              .replace("<||","»»") & "»»"
 
-        var blk: seq[string] = @[]
-
-        # go through the token one-by-one
-        for i,spl in splitted:
-
-            if spl.match(Embeddable).isNone:
-                # if it's not an embedded tag,
-                # added as a string - split by lines
-                blk.add(codify(newString(spl), safeStrings=true))
-                # let stripped = spl.strip()
-                # if stripped != "" and (stripped[^1] in {'\r','\n'}):
-                #         blk.add("\"\\n\"")
-            else:
-                # otherwise, clean it up
-                var parseable = spl.strip(chars = {'<', '>', '|'})
-                var output = false
-                if parseable[0] == '=': 
-                    output = true
-                    parseable = parseable.strip(chars = {'='})
-
-                # if it's a <|: something |> tag, stringify it
-                if output:
-                    blk.add("to")
-                    blk.add(":string")
-
-                blk.add(parseable)
-
-        let subscript = blk.join(" ")
-        let parsed = doParse(subscript, isFile=false)
+        # parse string template
+        let parsed = doParse(result, isFile=false)
 
         # execute/reduce ('array') the resulting block
         let stop = SP
@@ -95,11 +68,13 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
         SP = stop
 
         # and join the different strings
-        result = arr.map(proc (v:Value):string = v.s).join()
+        result = ""
+        for i, v in arr:
+            add(result, v.s)
 
         # if recursive, check if there's still more embedded tags
         # otherwise, break out of the loop
-        if recursive: keepGoing = result.find(Embeddable).isSome
+        if recursive: keepGoing = result.contains(Embeddable)
         else: keepGoing = false
 
 #=======================================
