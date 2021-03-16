@@ -1,0 +1,4 @@
+loop ["FC-A1-3E" "FC:FB:FB:01:FA:21" "BC:5F:F4"] 'mac [
+    print [mac "=>" read ~"http://api.macvendors.com/|mac|"]
+    pause 1500
+]
