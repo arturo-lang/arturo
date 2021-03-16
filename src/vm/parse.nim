@@ -66,6 +66,12 @@ const
     Empty                       = ""
 
 #=======================================
+# Forward declarations
+#=======================================
+
+proc doParse*(input: string, isFile: bool = true): Value
+
+#=======================================
 # Templates
 #=======================================
 
@@ -677,5 +683,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
     # if everything went fine, return result
     when defined(VERBOSE):
         rootBlock.dump(0,false)
+
+    lexbase.close(p)
             
     return rootBlock
