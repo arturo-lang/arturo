@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import re, sequtils, strutils, tables
+import re, strutils, tables
 import nre except toSeq
 
 import vm/[exec, parse, stack, value]
