@@ -70,7 +70,9 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
         SP = stop
 
         # and join the different strings
-        result = arr.map(proc (v:Value):string = v.s).join()
+        result = ""
+        for i, v in arr:
+            add(result, v.s)
 
         # if recursive, check if there's still more embedded tags
         # otherwise, break out of the loop
