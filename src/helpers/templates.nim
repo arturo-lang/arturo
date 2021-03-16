@@ -54,9 +54,10 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
 
     while keepGoing:
         # make necessary substitutions
-        result = "««" & result.replace("<||=","<|| to :string ")
-                              .replace("||>","««")
-                              .replace("<||","»»") & "»»"
+        result = "««" & result.replace("<||=","<|| to :string ").multiReplace(
+            ("||>","««"),
+            ("<||","»»")
+        ) & "»»"
 
         # parse string template
         let parsed = doParse(result, isFile=false)
