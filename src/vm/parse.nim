@@ -66,6 +66,12 @@ const
     Empty                       = ""
 
 #=======================================
+# Forward declarations
+#=======================================
+
+proc doParse*(input: string, isFile: bool = true): Value
+
+#=======================================
 # Templates
 #=======================================
 
@@ -648,7 +654,88 @@ when defined(PYTHONIC):
         lines.join("\n")
 
 proc doParseTemplate*(input: string): Value =
-    discard
+    var ret: ValueArray = @[]
+    var currentString = ""
+    var currentCode = ""
+    var t: BaseLexer
+
+    lexbase.open(t, newStringStream(input))
+
+    while true:
+        case t.buf[t.bufpos]
+            of '<':
+                if t.buf[t.bufpos+1]=='|':
+                    ret.add(newString(currentString))
+                    currentString = ""
+
+                    if t.buf[t.bufpos+2]=='=':
+                        currentCode = "to :string ("
+                        inc(t.bufpos,3)
+                    else:
+                        inc(t.bufpos,2)
+                    
+                    
+                    while true:
+                        case t.buf[t.bufpos]
+                            of '|':
+                                if t.buf[t.bufpos+1]=='>':
+                                    add(currentCode, ')')
+                                    let parsed = doParse(currentCode, isFile=false)
+                                    for i in parsed.a:
+                                        ret.add(i)
+                                    currentCode = ""
+                                    inc(t.bufpos)
+                                    break
+                                else:
+                                    add(currentCode, t.buf[t.bufpos])
+                            of CR:
+                                t.bufpos = lexbase.handleCR(t, t.bufpos)
+                                when not defined(windows):
+                                    add(currentCode, LF)
+                                else:    
+                                    add(currentCode, CR)
+                                    add(currentCode, LF)
+                            of LF:
+                                t.bufpos = lexbase.handleLF(t, t.bufpos)
+                                when defined(windows):
+                                    add(currentCode, CR)
+                                    add(currentCode, LF)
+                                else:
+                                    add(currentCode, LF)
+                            of EOF: 
+                                SyntaxError_UnterminatedString("", t.lineNumber, "<template>")
+                            else:
+                                add(currentCode, t.buf[t.bufpos])
+
+                        inc(t.bufpos)
+
+                else:
+                    add(currentString, t.buf[t.bufpos])
+            of CR:
+                t.bufpos = lexbase.handleCR(t, t.bufpos)
+                when not defined(windows):
+                    add(currentString, LF)
+                else:    
+                    add(currentString, CR)
+                    add(currentString, LF)
+            of LF:
+                t.bufpos = lexbase.handleLF(t, t.bufpos)
+                when defined(windows):
+                    add(currentString, CR)
+                    add(currentString, LF)
+                else:
+                    add(currentString, LF)
+            of EOF: break
+            else:
+                add(currentString, t.buf[t.bufpos])
+
+        inc(t.bufpos)
+
+    lexbase.close(t)
+
+    result = newBlock(ret)
+
+    dump(result)
 
 proc doParse*(input: string, isFile: bool = true): Value =
     var p: Parser
