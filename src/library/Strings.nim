@@ -492,6 +492,9 @@ proc defineSymbols*() =
             else:
                 stack.push(newBoolean(x.s.startsWith(y.s)))
 
+    # TODO(Strings\render) added `.sanitize` attribute?
+    #  Could help in case we need even more template safety: in the bizarre case that the delimiters already exist in the template, but not as template tags.
+    #  labels: library,enhancement
     builtin "render",
         alias       = tilde, 
         rule        = PrefixPrecedence,
