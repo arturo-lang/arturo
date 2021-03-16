@@ -55,38 +55,41 @@ proc renderTemplate(s: string, recursive: bool, useReference: bool, reference: V
         keepGoing = result.find(Embeddable).isSome
 
     while keepGoing:
-        # split input by tags
-        var splitted = result.split(Embeddable)
 
-        var blk: seq[string] = @[]
+        # # split input by tags
+        # var splitted = result.split(Embeddable)
 
-        # go through the token one-by-one
-        for i,spl in splitted:
+        # var blk: seq[string] = @[]
 
-            if spl.match(Embeddable).isNone:
-                # if it's not an embedded tag,
-                # added as a string - split by lines
-                blk.add(codify(newString(spl), safeStrings=true))
-                # let stripped = spl.strip()
-                # if stripped != "" and (stripped[^1] in {'\r','\n'}):
-                #         blk.add("\"\\n\"")
-            else:
-                # otherwise, clean it up
-                var parseable = spl.strip(chars = {'<', '>', '|'})
-                var output = false
-                if parseable[0] == '=': 
-                    output = true
-                    parseable = parseable.strip(chars = {'='})
+        # # go through the token one-by-one
+        # for i,spl in splitted:
 
-                # if it's a <|: something |> tag, stringify it
-                if output:
-                    blk.add("to")
-                    blk.add(":string")
+        #     if spl.match(Embeddable).isNone:
+        #         # if it's not an embedded tag,
+        #         # added as a string - split by lines
+        #         blk.add(codify(newString(spl), safeStrings=true))
+        #         # let stripped = spl.strip()
+        #         # if stripped != "" and (stripped[^1] in {'\r','\n'}):
+        #         #         blk.add("\"\\n\"")
+        #     else:
+        #         # otherwise, clean it up
+        #         var parseable = spl.strip(chars = {'<', '>', '|'})
+        #         var output = false
+        #         if parseable[0] == '=': 
+        #             output = true
+        #             parseable = parseable.strip(chars = {'='})
 
-                blk.add(parseable)
+        #         # if it's a <|: something |> tag, stringify it
+        #         if output:
+        #             blk.add("to")
+        #             blk.add(":string")
 
-        let subscript = blk.join(" ")
-        let parsed = doParse(subscript, isFile=false)
+        #         blk.add(parseable)
+
+        # let subscript = blk.join(" ")
+        # let parsed = doParse(subscript, isFile=false)
+
+        let parsed = doParseTemplate(result)
 
         # execute/reduce ('array') the resulting block
         let stop = SP
