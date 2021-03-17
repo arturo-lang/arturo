@@ -1,0 +1,36 @@
+; the strings
+
+ones: ["zero" "one" "two" "three" "four" "five" "six" "seven" "eight" "nine" "ten" "eleven" "twelve"
+       "thirteen" "fourteen" "fifteen" "sixteen" "seventeen" "eighteen" "nineteen"]
+tens: [null null "twenty" "thirty" "forty" "fifty" "sixty" "seventy" "eighty" "ninety"]
+
+; the converter function
+
+numberToEnglish: function [n][
+    if? contains? 0..19 n [
+        return ones \ n
+    ]
+    else [
+        if? contains? 20..99 n [
+            if? 0=n%10  -> return tens \ n/10
+            else        -> return (tens \ n/10) ++ "" ++ ones \ n%10
+        ]
+        else [
+            if? contains? 100..999 n [
+                if? 0=n%100 -> return (ones \ n/100) ++ "hundred"
+                else        [
+                    initial: (ones \ n/100)
+                    subnum: numberToEnglish n%100
+                    return initial ++ "hundredand" ++ subnum
+                ]
+            ]
+            else [
+                if n=1000 -> return "onethousand"
+            ]
+        ]
+    ]
+]
+
+lengths: map 1..1000 'num -> size numberToEnglish num
+
+print ["Total of letters used to write numbers from 1 to 1000:" sum lengths]

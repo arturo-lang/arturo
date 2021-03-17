@@ -1,0 +1,15 @@
+gridSize: 20
+grid: map map 0..gridSize 'x [0] 'y [map 0..gridSize 'z [0]]
+
+loop 0..gridSize-1 'i [
+	set get grid i gridSize 1
+	set get grid gridSize i 1
+]
+
+loop (gridSize-1)..0 'i [
+	loop (gridSize-1)..0 'j [
+		set get grid i j (get get grid i+1 j) + (get get grid i j+1)
+	]
+]
+
+print ~"In a |gridSize|x|gridSize| grid, there are |grid\0\0| possible paths"
