@@ -1,0 +1,6 @@
+a: new 0
+while [a<5000001][
+	inc 'a
+]
+
+print a

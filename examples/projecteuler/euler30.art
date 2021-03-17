@@ -1,0 +1,12 @@
+sumFifthPowers: function[x][
+	sum map split to :string x 'y [(to :integer y)^5]
+]
+
+found: []
+loop 2..355000 'i [
+	if i = sumFifthPowers i [
+		'found ++ i
+	]
+]
+
+print ["Sum:" sum found]

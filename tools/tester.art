@@ -49,7 +49,7 @@ print color.bold {
     |============================================
 }
 
-runSet "Unit Tests" "../tests/unittest"
+runSet "Unit Tests" "../tests/unittests"
 runSet "Examples" "../examples/rosetta"
 
 exit

@@ -1,7 +1,7 @@
 sums: []
 loop 1..99 'a [
 	loop 1..99 'b [
-		'sums ++ sum map split to :string a^b 'x [to :integer x]
+		'sums ++ sum map split to :string a^b => [to :integer]
 	]
 ]
 

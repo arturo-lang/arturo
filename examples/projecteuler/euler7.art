@@ -1,0 +1,12 @@
+nthPrime: function [n][
+	i: new 1
+	x: 1
+
+	while [i<>n][
+		x: x + 2
+		if prime? x -> inc 'i
+	]
+	return x
+]
+
+print nthPrime 10001
