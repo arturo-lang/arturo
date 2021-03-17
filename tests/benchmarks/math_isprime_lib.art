@@ -1,0 +1,7 @@
+maxLimit: 10000
+
+i: new 0
+while [i<maxLimit][
+	print prime? i
+	inc 'i
+]
