@@ -3,7 +3,7 @@ fib: function [n][
 	else [
 		prev: 0, f: 1
 
-		repeat n [
+		loop n 'x [
 			tmp: prev, prev: f, f: f + tmp
 		]
 		return f
@@ -13,6 +13,7 @@ fib: function [n][
 i: 0
 num: 0
 until [
+	print num
 	i: i+1
 	num: fib i
 ][1000 = size to :string num]
