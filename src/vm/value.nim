@@ -13,7 +13,8 @@
 import hashes, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
-import db_sqlite as sqlite
+when not defined(NOSQLITE):
+    import db_sqlite as sqlite
 #import db_mysql as mysql
 
 import extras/bignum
@@ -209,7 +210,11 @@ type
 
             of Database:
                 case dbKind*: DatabaseKind:
-                    of SqliteDatabase: sqlitedb*: sqlite.DbConn
+                    of SqliteDatabase: 
+                        when not defined(NOSQLITE):
+                            sqlitedb*: sqlite.DbConn
+                        else:
+                            discard
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
             of Bytecode:
@@ -424,8 +429,9 @@ proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, d
         action  : act
     )
 
-proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
-    Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
+when not defined(NOSQLITE):
+    proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
+        Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
 
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
@@ -483,8 +489,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable)
 
         of Database:    
-            if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
-            #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
+            when not defined(NOSQLITE):
+                if v.dbKind == SqliteDatabase: result = newDatabase(v.sqlitedb)
+                #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
         else: discard
 
@@ -1049,9 +1056,9 @@ proc `==`*(x: Value, y: Value): bool =
                     return x.fname == y.fname
             of Database:
                 if x.dbKind != y.dbKind: return false
-
-                if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
-                #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
+                when not defined(NOSQLITE):
+                    if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
+                    #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
             of Date:
                 return x.eobj == y.eobj
             else:
@@ -1257,8 +1264,9 @@ proc `$`*(v: Value): string {.inline.} =
                 result &= "<function:builtin>" 
 
         of Database:
-            if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
-            #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+            when not defined(NOSQLITE):
+                if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
+                #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
 
         of Bytecode:
             result = "<bytecode>"
@@ -1393,8 +1401,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             dumpBlockEnd()
 
         of Database     :
-            if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
-            #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+            when not defined(NOSQLITE):
+                if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
+                #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
         
         of Bytecode     : stdout.write("<bytecode>")
 
@@ -1614,8 +1623,9 @@ proc hash*(v: Value): Hash {.inline.}=
             # result = hash(v.params) !& hash(v.main)
             # result = !$ result
         of Database:
-            if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
-            #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
+            when not defined(NOSQLITE):
+                if v.dbKind==SqliteDatabase: result = cast[Hash](cast[ByteAddress](v.sqlitedb))
+                #elif v.dbKind==MysqlDatabase: result = cast[Hash](cast[ByteAddress](v.mysqldb))
 
         of Bytecode:
             result = cast[Hash](unsafeAddr v)
