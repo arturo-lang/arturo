@@ -104,6 +104,8 @@ do
             FLAGS="$FLAGS -d:MINI";;
         nosqlite)
             FLAGS="$FLAGS -d:NOSQLITE";;
+        nogmp)
+            FLAGS="$FLAGS -d:NOGMP";;
         verbose) 	
             CONFIG="verbose $CONFIG"
             FLAGS="$FLAGS -d:VERBOSE";;
