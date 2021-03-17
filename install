@@ -102,6 +102,8 @@ do
         mini)      
             MINI_BUILD=true 
             FLAGS="$FLAGS -d:MINI";;
+        nosqlite)
+            FLAGS="$FLAGS -d:NOSQLITE";;
         verbose) 	
             CONFIG="verbose $CONFIG"
             FLAGS="$FLAGS -d:VERBOSE";;
