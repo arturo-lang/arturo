@@ -2548,6 +2548,17 @@ proc exp*(z, x: Int, y: culong, m: Int): Int =
   result = z
   mpz_powm_ui(z[], x[], y, m[])
 
+proc exp*(z, x, y, m: Int): Int =
+  ## Sets `z` to (`x` raised to `y`) modulo `m` and returns `z`.
+  ## If `m` == 0, z = x^y.
+  result = z
+  mpz_powm(z[], x[], y[], m[])
+
+proc exp*(x: Int, y: Int, m: Int): Int =
+  ## Returns (`x` raised to `y`) modulo `m`.
+  ## If `m` == 0, z = x^y.
+  newInt().exp(x, y, m)
+
 proc exp*(x: Int, y: culong, m: Int): Int =
   ## Returns (`x` raised to `y`) modulo `m`.
   ## If `m` == 0, z = x^y.
