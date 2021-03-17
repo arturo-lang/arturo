@@ -25,6 +25,7 @@
    * [gamma](#gamma)
    * [gcd](#gcd)
    * [ln](#ln)
+   * [hypot](#hypot)
    * [log](#log)
    * [median](#median)
    * [negative?](#negative?)
@@ -580,6 +581,24 @@ print ln 1.0            ; 0.0
 print ln 0              ; -inf
 print ln neg 7.0        ; nan
 ```
+
+## hypot
+
+#### Description
+
+Calculate the hypotenuse of a right-angle triangle with given base and height
+
+#### Usage
+
+<pre>
+<b>hypot</b> <ins>base</ins> <i>:integer</i> <i>:floating</i>
+      <ins>height</ins> <i>:integer</i> <i>:floating</i>
+</pre>
+
+#### Returns
+
+- *:floating*
+
 
 ## log
 
