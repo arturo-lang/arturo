@@ -190,3 +190,14 @@ proc isqrt*[T: SomeSignedInt | Int](x: T): T =
         if t >= 0:
             z = t
             result += q
+
+proc powmod*(x: Value, y: Value, z: Value): Value =
+    var X : Value = x
+    var Z : Value = z
+    if x.iKind==NormalInteger: X = newBigInteger(x.i)
+    if z.iKind==NormalInteger: Z = newBigInteger(y.i)
+
+    if y.iKind==NormalInteger:
+        newInteger(exp(x.bi, (culong)(y.i), z.bi))
+    else:
+        newInteger(exp(x.bi, y.bi, z.bi))
