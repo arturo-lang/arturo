@@ -30,6 +30,7 @@
    * [negative?](#negative?)
    * [odd?](#odd?)
    * [positive?](#positive?)
+   * [powmod](#powmod)
    * [prime?](#prime?)
    * [product](#product)
    * [random](#random)
@@ -704,6 +705,26 @@ Check if given number is positive
 positive? 5       ; => true
 positive? 6-7     ; => false
 ```
+
+## powmod
+
+#### Description
+
+Modular exponentation: calculate the result of (base^exponent) % divider
+
+#### Usage
+
+<pre>
+<b>powmod</b> <ins>base</ins> <i>:integer</i>
+       <ins>exponent</ins> <i>:integer</i>
+       <ins>divider</ins> <i>:integer</i>
+</pre>
+
+#### Returns
+
+- *:null*
+- *:integer*
+
 
 ## prime?
 
