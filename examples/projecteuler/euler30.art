@@ -5,7 +5,6 @@ sumFifthPowers: function[x][
 found: []
 loop 2..355000 'i [
 	if i = sumFifthPowers i [
-		print i
 		'found ++ i
 	]
 ]
