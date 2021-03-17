@@ -1,0 +1,65 @@
+#!/usr/bin/env arturo
+;==========================================
+; Tester
+;
+; @file: tools/tester.art
+; @author: drkameleon
+;==========================================
+
+langs: #[
+    Arturo:     #[ext:".art" bin:"arturo"]
+    Ruby:       #[ext:".rb"  bin:"ruby"]
+    Python:     #[ext:".py"  bin:"python"]
+    Python3:    #[ext:".py3" bin:"python3"]
+    Lua:        #[ext:".lua" bin:"lua"]
+    Rebol3:     #[ext:".r"   bin:"r3"]
+    Tcl:        #[ext:".tcl" bin:"tclsh"]
+]
+
+padding: 15
+bigPadding: 36
+
+printHeader: function [][
+    print ""
+    
+    loop 1 + size keys langs 'l [
+        if? l=1 -> prints pad.right "------------------------------------|" bigPadding
+        else -> prints pad.right "---------------|" padding+1
+    ]
+    print "" prints pad.right "" bigPadding
+    loop keys langs 'lang -> prints "|" ++ pad.center lang padding
+    print "|"
+
+    loop 1 + size keys langs 'l [
+        if? l=1 -> prints pad.right "====================================|" bigPadding
+        else -> prints pad.right "===============|" padding+1
+    ]
+    print ""
+]
+
+runBenchmark: function [bench][
+    dir: extract.directory bench
+    name: extract.filename bench 
+    prints color.bold.cyan pad.right ~{ |replace name "_" " "|} bigPadding
+    loop langs [lang,data][
+        script: join.path @[dir name++data\ext]
+
+        if? exists? script [
+            result: strip execute ~{/usr/bin/time -lp |data\bin| |script| 2>&1}
+        ]
+        else [
+            prints "|" ++ color.red pad.center "-" padding
+        ]
+    ]
+    print "|"
+]
+
+printHeader
+
+loop select list relative "../tests/benchmarks" => [".art" = extract.extension] 'b [
+    runBenchmark b
+]
+
+print "\n"
+
+exit
