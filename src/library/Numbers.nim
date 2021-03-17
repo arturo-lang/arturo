@@ -560,6 +560,24 @@ proc defineSymbols*() =
                 stack.push(newBoolean(positive(x.bi)))
             else:
                 stack.push(newBoolean(x > I0))
+    
+    builtin "powmod",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "modular exponentation: calculate the result of (base^exponent) % divider",
+        args        = {
+            "base"      : {Integer},
+            "exponent"  : {Integer},
+            "divider"   : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer,Null},
+        # TODO(Numbers\powmod) add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(powmod(x, y, z))
         
     builtin "prime?",
         alias       = unaliased, 
