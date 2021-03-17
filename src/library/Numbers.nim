@@ -453,6 +453,23 @@ proc defineSymbols*() =
             ##########################################################
             stack.push(newFloating(ln(asFloat(x))))
 
+    builtin "hypot",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the hypotenuse of a right-angle triangle with given base and height",
+        args        = {
+            "base"  : {Integer,Floating},
+            "height": {Integer,Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\hypot add example for documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            stack.push(newFloating(hypot(asFloat(x), asFloat(y))))
+
     builtin "log",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
