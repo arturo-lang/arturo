@@ -1,0 +1,17 @@
+modInverse: function [a,b][
+    if b = 1 -> return 1
+
+    b0: b   x0: 0   x1: 1
+    z: a
+
+    while [z > 1][
+        q: z / b        t: b
+        b: z % b        z: t
+        t: x0           x0: x1 - q * x0
+        x1: t
+    ]
+    (x1 < 0) ? -> x1 + b0 
+               -> x1
+]
+
+print modInverse 42 2017
