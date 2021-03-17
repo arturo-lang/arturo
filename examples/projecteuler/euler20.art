@@ -1,0 +1,4 @@
+factorial: $[n]-> product 1..n
+digitSum:  $[x]-> sum map split to :string x => [to :integer]
+
+print digitSum factorial 100
