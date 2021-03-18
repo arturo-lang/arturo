@@ -155,9 +155,9 @@ proc defineSymbols*() =
             panic.code:1 "something went terribly wrong. quitting..."
         """:
             ##########################################################
-            vmPanic = true
-            vmError = x.s
-
+            # vmPanic = true
+            # vmError = x.s
+            discard x
             # TODO Fix showVMErrors()
 
             if (let aCode = popAttr("code"); aCode != VNULL):
