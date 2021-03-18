@@ -14,6 +14,7 @@ import strutils, sets, tables
 export strutils, tables
 
 import vm/[errors, stack, value]
+export stack, value
 
 #=======================================
 # Constants
