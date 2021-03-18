@@ -46,7 +46,6 @@ jobs:
           echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        if: matrix.version == 'full'
         run: |
           sudo apt-get update
           sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
