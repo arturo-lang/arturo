@@ -21,7 +21,8 @@ import sequtils
 when not defined(NOSQLITE):
     import helpers/database as DatabaseHelper
 
-import vm/[common, globals, stack, value]
+import vm/lib
+import vm/[globals]
 
 #=======================================
 # Methods
@@ -77,13 +78,13 @@ proc defineSymbols*() =
                 if x.dbKind == SqliteDatabase:
                     if y.kind == String:
                         if (let got = execSqliteDb(x.sqlitedb, y.s); got[0]==ValidQueryResult):
-                            stack.push(newBlock(got[1]))
+                            push(newBlock(got[1]))
                     else:
                         if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = v.s)); got[0]==ValidQueryResult):
-                            stack.push(newBlock(got[1]))
+                            push(newBlock(got[1]))
                     
                     if (popAttr("id") != VNULL):
-                        stack.push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
+                        push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
 
                 # elif x.dbKind == MysqlDatabase:
                 #     execMysqlDb(x.mysqldb, y.s)
@@ -112,9 +113,9 @@ proc defineSymbols*() =
                 let dbName = x.s
 
                 if dbKind == SqliteDatabase:
-                    stack.push(newDatabase(openSqliteDb(dbName)))
+                    push(newDatabase(openSqliteDb(dbName)))
                 # elif dbKind == MysqlDatabase:
-                #     stack.push(newDatabase(openMysqlDb(dbName)))
+                #     push(newDatabase(openMysqlDb(dbName)))
 
 #=======================================
 # Add Library

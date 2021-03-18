@@ -23,7 +23,8 @@ import nre except toSeq
 import helpers/arrays as arraysHelper  
 import helpers/unisort as unisortHelper 
 
-import vm/[common, globals, stack, value]
+import vm/lib
+import vm/[globals]
 
 #=======================================
 # Methods
@@ -81,14 +82,14 @@ proc defineSymbols*() =
             else:
                 if x.kind==String:
                     if y.kind==String:
-                        stack.push(newString(x.s & y.s))
+                        push(newString(x.s & y.s))
                     elif y.kind==Char:
-                        stack.push(newString(x.s & $(y.c)))  
+                        push(newString(x.s & $(y.c)))  
                 elif x.kind==Char:
                     if y.kind==String:
-                        stack.push(newString($(x.c) & y.s))
+                        push(newString($(x.c) & y.s))
                     elif y.kind==Char:
-                        stack.push(newString($(x.c) & $(y.c)))          
+                        push(newString($(x.c) & $(y.c)))          
                 else:
                     var ret = newBlock(x.a)
 
@@ -98,7 +99,7 @@ proc defineSymbols*() =
                     else:
                         ret.a.add(y)
                         
-                    stack.push(ret)
+                    push(ret)
 
     builtin "chop",
         alias       = unaliased, 
@@ -126,9 +127,9 @@ proc defineSymbols*() =
                     InPlaced.a = InPlaced.a[0..^2]
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s[0..^2]))
+                    push(newString(x.s[0..^2]))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a[0..^2]))
+                    push(newBlock(x.a[0..^2]))
 
     builtin "combine",
         alias       = unaliased, 
@@ -145,7 +146,7 @@ proc defineSymbols*() =
             ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
             ##########################################################
-            stack.push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
+            push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
 
     builtin "contains?",
         alias       = unaliased, 
@@ -181,14 +182,14 @@ proc defineSymbols*() =
             case x.kind:
                 of String:
                     if (popAttr("regex") != VNULL):
-                        stack.push(newBoolean(nre.contains(x.s, nre.re(y.s))))
+                        push(newBoolean(nre.contains(x.s, nre.re(y.s))))
                     else:
-                        stack.push(newBoolean(y.s in x.s))
+                        push(newBoolean(y.s in x.s))
                 of Block:
-                    stack.push(newBoolean(y in x.a))
+                    push(newBoolean(y in x.a))
                 of Dictionary: 
                     let values = toSeq(x.d.values)
-                    stack.push(newBoolean(y in values))
+                    push(newBoolean(y in values))
                 else:
                     discard
 
@@ -217,9 +218,9 @@ proc defineSymbols*() =
                     InPlaced.a = InPlaced.a[y.i..^1]
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s[y.i..^1]))
+                    push(newString(x.s[y.i..^1]))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a[y.i..^1]))
+                    push(newBlock(x.a[y.i..^1]))
 
     builtin "empty",
         alias       = unaliased, 
@@ -262,10 +263,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             case x.kind:
-                of Null: stack.push(VTRUE)
-                of String: stack.push(newBoolean(x.s==""))
-                of Block: stack.push(newBoolean(x.a.len==0))
-                of Dictionary: stack.push(newBoolean(x.d.len==0))
+                of Null: push(VTRUE)
+                of String: push(newBoolean(x.s==""))
+                of Block: push(newBoolean(x.a.len==0))
+                of Dictionary: push(newBoolean(x.d.len==0))
                 else: discard
 
     builtin "extend",
@@ -294,7 +295,7 @@ proc defineSymbols*() =
                 for k,v in pairs(y.d):
                     res.d[k] = v
 
-                stack.push(res)
+                push(res)
 
     builtin "first",
         alias       = unaliased, 
@@ -315,11 +316,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (let aN = popAttr("n"); aN != VNULL):
-                if x.kind==String: stack.push(newString(x.s[0..aN.i-1]))
-                else: stack.push(newBlock(x.a[0..aN.i-1]))
+                if x.kind==String: push(newString(x.s[0..aN.i-1]))
+                else: push(newBlock(x.a[0..aN.i-1]))
             else:
-                if x.kind==String: stack.push(newChar(x.s.runeAt(0)))
-                else: stack.push(x.a[0])
+                if x.kind==String: push(newChar(x.s.runeAt(0)))
+                else: push(x.a[0])
 
     builtin "flatten",
         alias       = unaliased, 
@@ -352,7 +353,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 InPlace = InPlaced.flattened(once = popAttr("once")!=VNULL)
             else:
-                stack.push(x.flattened(once = popAttr("once")!=VNULL))
+                push(x.flattened(once = popAttr("once")!=VNULL))
 
     builtin "get",
         alias       = backslash, 
@@ -391,15 +392,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             case x.kind:
-                of Block: stack.push(GetArrayIndex(x.a, y.i))
+                of Block: push(GetArrayIndex(x.a, y.i))
                 of Dictionary: 
                     if y.kind==String:
-                        stack.push(GetKey(x.d, y.s))
+                        push(GetKey(x.d, y.s))
                     else:
-                        stack.push(GetKey(x.d, $(y)))
-                of String: stack.push(newChar(x.s.runeAtPos(y.i)))
+                        push(GetKey(x.d, $(y)))
+                of String: push(newChar(x.s.runeAtPos(y.i)))
                 of Date: 
-                    stack.push(GetKey(x.e, y.s))
+                    push(GetKey(x.e, y.s))
                 else: discard
 
     builtin "in?",
@@ -436,14 +437,14 @@ proc defineSymbols*() =
             case y.kind:
                 of String:
                     if (popAttr("regex") != VNULL):
-                        stack.push(newBoolean(nre.contains(y.s, nre.re(x.s))))
+                        push(newBoolean(nre.contains(y.s, nre.re(x.s))))
                     else:
-                        stack.push(newBoolean(x.s in y.s))
+                        push(newBoolean(x.s in y.s))
                 of Block:
-                    stack.push(newBoolean(x in y.a))
+                    push(newBoolean(x in y.a))
                 of Dictionary: 
                     let values = toSeq(y.d.values)
-                    stack.push(newBoolean(x in values))
+                    push(newBoolean(x in values))
                 else:
                     discard
 
@@ -470,22 +471,22 @@ proc defineSymbols*() =
             case x.kind:
                 of String:
                     let indx = x.s.find(y.s)
-                    if indx != -1: stack.push(newInteger(indx))
-                    else: stack.push(VNULL)
+                    if indx != -1: push(newInteger(indx))
+                    else: push(VNULL)
                 of Block:
                     let indx = x.a.find(y)
-                    if indx != -1: stack.push(newInteger(indx))
-                    else: stack.push(VNULL)
+                    if indx != -1: push(newInteger(indx))
+                    else: push(VNULL)
                 of Dictionary:
                     var found = false
                     for k,v in pairs(x.d):
                         if v==y:
-                            stack.push(newString(k))
+                            push(newString(k))
                             found=true
                             break
 
                     if not found:
-                        stack.push(VNULL)
+                        push(VNULL)
                 else: discard
 
     builtin "insert",
@@ -526,15 +527,15 @@ proc defineSymbols*() =
                     of String: 
                         var copied = x.s
                         copied.insert(z.s, y.i)
-                        stack.push(newString(copied))
+                        push(newString(copied))
                     of Block: 
                         var copied = x.a
                         copied.insert(z, y.i)
-                        stack.push(newBlock(copied))
+                        push(newBlock(copied))
                     of Dictionary:
                         var copied = x.d
                         copied[y.s] = z
-                        stack.push(newDictionary(copied))
+                        push(newDictionary(copied))
                     else: discard
 
     builtin "key?",
@@ -565,7 +566,7 @@ proc defineSymbols*() =
                 needle = y.s
             else:
                 needle = $(y)
-            stack.push(newBoolean(x.d.hasKey(needle)))
+            push(newBoolean(x.d.hasKey(needle)))
 
     builtin "keys",
         alias       = unaliased, 
@@ -587,7 +588,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let s = toSeq(x.d.keys)
-            stack.push(newStringBlock(s))
+            push(newStringBlock(s))
 
     builtin "last",
         alias       = unaliased, 
@@ -608,12 +609,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (let aN = getAttr("n"); aN != VNULL):
-                if x.kind==String: stack.push(newString(x.s[x.s.len-aN.i..^1]))
-                else: stack.push(newBlock(x.a[x.a.len-aN.i..^1]))
+                if x.kind==String: push(newString(x.s[x.s.len-aN.i..^1]))
+                else: push(newBlock(x.a[x.a.len-aN.i..^1]))
             else:
                 if x.kind==String: 
-                    stack.push(newChar(toRunes(x.s)[^1]))
-                else: stack.push(x.a[x.a.len-1])
+                    push(newChar(toRunes(x.s)[^1]))
+                else: push(x.a[x.a.len-1])
 
     builtin "max",
         alias       = unaliased, 
@@ -628,7 +629,7 @@ proc defineSymbols*() =
             print max [4 2 8 5 1 9]       ; 9
         """:
             ##########################################################
-            if x.a.len==0: stack.push(VNULL)
+            if x.a.len==0: push(VNULL)
             else:
                 var maxElement = x.a[0]
                 var i = 1
@@ -637,7 +638,7 @@ proc defineSymbols*() =
                         maxElement = x.a[i]
                     inc(i)
 
-                stack.push(maxElement)
+                push(maxElement)
 
     builtin "min",
         alias       = unaliased, 
@@ -652,7 +653,7 @@ proc defineSymbols*() =
             print min [4 2 8 5 1 9]       ; 1
         """:
             ##########################################################
-            if x.a.len==0: stack.push(VNULL)
+            if x.a.len==0: push(VNULL)
             else:
                 var minElement = x.a[0]
                 var i = 1
@@ -661,7 +662,7 @@ proc defineSymbols*() =
                         minElement = x.a[i]
                     inc(i)
                     
-                stack.push(minElement)
+                push(minElement)
 
     builtin "permutate",
         alias       = unaliased, 
@@ -683,7 +684,7 @@ proc defineSymbols*() =
                 ret.add(newBlock(s))
             )
 
-            stack.push(newBlock(ret))
+            push(newBlock(ret))
 
     builtin "remove",
         alias       = doubleminus, 
@@ -741,30 +742,30 @@ proc defineSymbols*() =
             else:
                 if x.kind==String:
                     if (popAttr("once") != VNULL):
-                        stack.push(newString(x.s.removeFirst(y.s)))
+                        push(newString(x.s.removeFirst(y.s)))
                     elif (popAttr("prefix") != VNULL):
                         var ret = x.s
                         ret.removePrefix(y.s)
-                        stack.push(newString(ret))
+                        push(newString(ret))
                     elif (popAttr("suffix") != VNULL):
                         var ret = x.s
                         ret.removeSuffix(y.s)
-                        stack.push(newString(ret))
+                        push(newString(ret))
                     else:
-                        stack.push(newString(x.s.replace(y.s)))
+                        push(newString(x.s.replace(y.s)))
                 elif x.kind==Block: 
                     if (popAttr("once") != VNULL):
-                        stack.push(newBlock(x.a.removeFirst(y)))
+                        push(newBlock(x.a.removeFirst(y)))
                     elif (popAttr("index") != VNULL):
-                        stack.push(newBlock(x.a.removeByIndex(y.i)))
+                        push(newBlock(x.a.removeByIndex(y.i)))
                     else:
-                        stack.push(newBlock(x.a.removeAll(y)))
+                        push(newBlock(x.a.removeAll(y)))
                 elif x.kind==Dictionary:
                     let key = (popAttr("key") != VNULL)
                     if (popAttr("once") != VNULL):
-                        stack.push(newDictionary(x.d.removeFirst(y, key)))
+                        push(newDictionary(x.d.removeFirst(y, key)))
                     else:
-                        stack.push(newDictionary(x.d.removeAll(y, key)))
+                        push(newDictionary(x.d.removeAll(y, key)))
 
     builtin "repeat",
         alias       = unaliased, 
@@ -799,11 +800,11 @@ proc defineSymbols*() =
                     SetInPlace(newBlock(InPlaced.repeat(y.i)))
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s.repeat(y.i)))
+                    push(newString(x.s.repeat(y.i)))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a.cycle(y.i)))
+                    push(newBlock(x.a.cycle(y.i)))
                 else:
-                    stack.push(newBlock(x.repeat(y.i)))
+                    push(newBlock(x.repeat(y.i)))
 
     builtin "reverse",
         alias       = unaliased, 
@@ -838,8 +839,8 @@ proc defineSymbols*() =
                 else:
                     InPlaced.a.reverse()
             else:
-                if x.kind==Block: stack.push(newBlock(x.a.reversed))
-                elif x.kind==String: stack.push(newString(x.s.reversed))
+                if x.kind==Block: push(newBlock(x.a.reversed))
+                elif x.kind==String: push(newString(x.s.reversed))
 
     builtin "sample",
         alias       = unaliased, 
@@ -856,7 +857,7 @@ proc defineSymbols*() =
             ; apple
         """:
             ##########################################################
-            stack.push(sample(x.a))
+            push(sample(x.a))
 
     builtin "set",
         alias       = unaliased, 
@@ -911,7 +912,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 InPlace.a.shuffle()
             else:
-                stack.push(newBlock(x.a.dup(shuffle)))
+                push(newBlock(x.a.dup(shuffle)))
 
     builtin "size",
         alias       = unaliased, 
@@ -930,11 +931,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String:
-                stack.push(newInteger(runeLen(x.s)))
+                push(newInteger(runeLen(x.s)))
             elif x.kind==Dictionary:
-                stack.push(newInteger(x.d.len))
+                push(newInteger(x.d.len))
             else:
-                stack.push(newInteger(x.a.len))
+                push(newInteger(x.a.len))
             
     builtin "slice",
         alias       = unaliased, 
@@ -953,9 +954,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String:
-                stack.push(newString(x.s.runeSubStr(y.i,z.i-y.i+1)))
+                push(newString(x.s.runeSubStr(y.i,z.i-y.i+1)))
             else:
-                stack.push(newBlock(x.a[y.i..z.i]))
+                push(newBlock(x.a[y.i..z.i]))
 
     builtin "sort",
         alias       = unaliased, 
@@ -993,18 +994,18 @@ proc defineSymbols*() =
                     var sorted: ValueArray = x.a.sorted(
                         proc (v1, v2: Value): int = 
                             cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
-                    stack.push(newBlock(sorted))
+                    push(newBlock(sorted))
                 else:
                     if (let aAs = popAttr("as"); aAs != VNULL):
-                        stack.push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
+                        push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
                     else:
                         if (popAttr("sensitive")!=VNULL):
-                            stack.push(newBlock(x.a.unisorted("en", sensitive=true, order = sortOrdering)))
+                            push(newBlock(x.a.unisorted("en", sensitive=true, order = sortOrdering)))
                         else:
                             if x.a[0].kind==String:
-                                stack.push(newBlock(x.a.unisorted("en", order = sortOrdering)))
+                                push(newBlock(x.a.unisorted("en", order = sortOrdering)))
                             else:
-                                stack.push(newBlock(x.a.sorted(order = sortOrdering)))
+                                push(newBlock(x.a.sorted(order = sortOrdering)))
 
             elif x.kind==Dictionary:
                 var sorted = x.d
@@ -1013,7 +1014,7 @@ proc defineSymbols*() =
                 else:
                     sorted.sort(system.cmp, order=sortOrdering)
                 
-                stack.push(newDictionary(sorted))
+                push(newDictionary(sorted))
 
             else: 
                 if InPlace.kind==Block:
@@ -1117,17 +1118,17 @@ proc defineSymbols*() =
 
             elif x.kind==String:
                 if (popAttr("words") != VNULL):
-                    stack.push(newStringBlock(strutils.splitWhitespace(x.s)))
+                    push(newStringBlock(strutils.splitWhitespace(x.s)))
                 elif (popAttr("lines") != VNULL):
-                    stack.push(newStringBlock(x.s.splitLines()))
+                    push(newStringBlock(x.s.splitLines()))
                 elif (popAttr("path") != VNULL):
-                    stack.push(newStringBlock(x.s.split(DirSep)))
+                    push(newStringBlock(x.s.split(DirSep)))
                 elif (let aBy = popAttr("by"); aBy != VNULL):
-                    stack.push(newStringBlock(x.s.split(aBy.s)))
+                    push(newStringBlock(x.s.split(aBy.s)))
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                    stack.push(newStringBlock(x.s.split(nre.re(aRegex.s))))
+                    push(newStringBlock(x.s.split(nre.re(aRegex.s))))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
-                    stack.push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
+                    push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
                     var ret: seq[string] = @[]
                     var length = x.s.len
@@ -1137,12 +1138,12 @@ proc defineSymbols*() =
                         ret.add(x.s[i..i+aEvery.i-1])
                         i += aEvery.i
 
-                    stack.push(newStringBlock(ret))
+                    push(newStringBlock(ret))
                 else:
-                    stack.push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
+                    push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
             else:
                 if (let aAt = popAttr("at"); aAt != VNULL):
-                    stack.push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(x.a[aAt.i..^1])]))
+                    push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(x.a[aAt.i..^1])]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
                     var ret: ValueArray = @[]
                     var length = x.a.len
@@ -1156,8 +1157,8 @@ proc defineSymbols*() =
 
                         i += aEvery.i
 
-                    stack.push(newBlock(ret))
-                else: stack.push(x)
+                    push(newBlock(ret))
+                else: push(x)
 
     builtin "squeeze",
         alias       = unaliased, 
@@ -1207,7 +1208,7 @@ proc defineSymbols*() =
                         while (i+1<x.s.len and x.s[i+1]==x.s[i]):
                             i += 1
                         i += 1
-                    stack.push(newString(ret))
+                    push(newString(ret))
                 elif x.kind==Block:
                     var i = 0
                     var ret: ValueArray = @[]
@@ -1216,7 +1217,7 @@ proc defineSymbols*() =
                         while (i+1<x.a.len and x.a[i+1]==x.a[i]):
                             i += 1
                         i += 1
-                    stack.push(newBlock(ret))
+                    push(newBlock(ret))
 
     builtin "take",
         alias       = unaliased, 
@@ -1243,9 +1244,9 @@ proc defineSymbols*() =
                     InPlaced.a = InPlaced.a[0..y.i-1]
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s[0..y.i-1]))
+                    push(newString(x.s[0..y.i-1]))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a[0..y.i-1]))
+                    push(newBlock(x.a[0..y.i-1]))
 
     builtin "unique",
         alias       = unaliased, 
@@ -1265,7 +1266,7 @@ proc defineSymbols*() =
             print arr                     ; 1 2 4 3
         """:
             ##########################################################
-            if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
+            if x.kind==Block: push(newBlock(x.a.deduplicate()))
             else: InPlace.a = InPlaced.a.deduplicate()
 
     builtin "values",
@@ -1288,7 +1289,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let s = toSeq(x.d.values)
-            stack.push(newBlock(s))
+            push(newBlock(s))
 
 #=======================================
 # Add Library

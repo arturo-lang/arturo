@@ -23,7 +23,8 @@ when not defined(NOGMP):
 import helpers/datasource as DatasourceHelper
 import helpers/strings as StringsHelper
 
-import vm/[common, errors, exec, globals, parse, stack, value]
+import vm/lib
+import vm/[errors, exec, globals, parse]
 
 #=======================================
 # Methods
@@ -76,7 +77,7 @@ proc defineSymbols*() =
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
-            stack.push(newBlock(arr))
+            push(newBlock(arr))
 
     builtin "as",
         alias       = unaliased, 
@@ -121,27 +122,27 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("binary") != VNULL):
-                stack.push(newString(fmt"{x.i:b}"))
+                push(newString(fmt"{x.i:b}"))
             elif (popAttr("hex") != VNULL):
-                stack.push(newString(fmt"{x.i:x}"))
+                push(newString(fmt"{x.i:x}"))
             elif (popAttr("octal") != VNULL):
-                stack.push(newString(fmt"{x.i:o}"))
+                push(newString(fmt"{x.i:o}"))
             elif (popAttr("agnostic") != VNULL):
                 let res = x.a.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
-                stack.push(newBlock(res))
+                push(newBlock(res))
             elif (popAttr("code") != VNULL):
-                stack.push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL))))
+                push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL))))
             else:
                 when not defined(NOASCIIDECODE):
                     if (popAttr("ascii") != VNULL):
-                        stack.push(newString(convertToAscii(x.s)))
+                        push(newString(convertToAscii(x.s)))
                     else:
-                        stack.push(x)
+                        push(x)
                 else:
-                    stack.push(x)
+                    push(x)
 
     builtin "define",
         alias       = dollar, 
@@ -227,7 +228,7 @@ proc defineSymbols*() =
 
             if (popAttr("data") != VNULL):
                 if x.kind==Block:
-                    stack.push(parseData(x))
+                    push(parseData(x))
                 elif x.kind==String:
                     let (src, tp) = getSource(x.s)
 
@@ -236,7 +237,7 @@ proc defineSymbols*() =
                     else:
                         echo "file does not exist"
 
-                    stack.push(newDictionary(dict))
+                    push(newDictionary(dict))
             else:
                 if x.kind==Block:
                     #dict = execDictionary(x)
@@ -260,7 +261,7 @@ proc defineSymbols*() =
                     for x in aWith.a:
                         dict[x.s] = GetSym(x.s)
                         
-                stack.push(newDictionary(dict))
+                push(newDictionary(dict))
 
     builtin "from",
         alias       = unaliased, 
@@ -283,21 +284,21 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("binary") != VNULL):
                 try:
-                    stack.push(newInteger(parseBinInt(x.s)))
+                    push(newInteger(parseBinInt(x.s)))
                 except ValueError:
-                    stack.push(VNULL)
+                    push(VNULL)
             elif (popAttr("hex") != VNULL):
                 try:
-                    stack.push(newInteger(parseHexInt(x.s)))
+                    push(newInteger(parseHexInt(x.s)))
                 except ValueError:
-                    stack.push(VNULL)
+                    push(VNULL)
             elif (popAttr("octal") != VNULL):
                 try:
-                    stack.push(newInteger(parseOctInt(x.s)))
+                    push(newInteger(parseOctInt(x.s)))
                 except ValueError:
-                    stack.push(VNULL)
+                    push(VNULL)
             else:
-                stack.push(x)
+                push(x)
 
     builtin "function",
         alias       = dollar, 
@@ -350,7 +351,7 @@ proc defineSymbols*() =
             if (let aExport = popAttr("export"); aExport != VNULL):
                 exports = aExport
 
-            stack.push(newFunction(x,y,imports,exports,exportable))
+            push(newFunction(x,y,imports,exports,exportable))
 
     builtin "to",
         alias       = unaliased, 
@@ -388,121 +389,121 @@ proc defineSymbols*() =
             let tp = x.t
             
             if y.kind == tp and y.kind!=Dictionary:
-                stack.push y
+                push y
             else:
                 case y.kind:
                     of Null:
                         case tp:
-                            of Boolean: stack.push VFALSE
-                            of Integer: stack.push I0
-                            of String: stack.push newString("null")
+                            of Boolean: push VFALSE
+                            of Integer: push I0
+                            of String: push newString("null")
                             else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Boolean:
                         case tp:
                             of Integer:
-                                if y.b: stack.push I1
-                                else: stack.push I0
+                                if y.b: push I1
+                                else: push I0
                             of Floating:
-                                if y.b: stack.push F1
-                                else: stack.push F0
+                                if y.b: push F1
+                                else: push F0
                             of String:
-                                if y.b: stack.push newString("true")
-                                else: stack.push newString("false")
+                                if y.b: push newString("true")
+                                else: push newString("false")
                             else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Integer:
                         case tp:
-                            of Boolean: stack.push newBoolean(y.i!=0)
-                            of Floating: stack.push newFloating((float)y.i)
-                            of Char: stack.push newChar(chr(y.i))
+                            of Boolean: push newBoolean(y.i!=0)
+                            of Floating: push newFloating((float)y.i)
+                            of Char: push newChar(chr(y.i))
                             of String: 
-                                if y.iKind==NormalInteger: stack.push newString($(y.i))
+                                if y.iKind==NormalInteger: push newString($(y.i))
                                 else:
                                     when not defined(NOGMP): 
-                                        stack.push newString($(y.bi))
+                                        push newString($(y.bi))
                             of Binary:
                                 let str = $(y.i)
                                 var ret: ByteArray = newSeq[byte](str.len)
                                 for i,ch in str:
                                     ret[i] = (byte)(ord(ch))
-                                stack.push newBinary(ret)
+                                push newBinary(ret)
                             else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Floating:
                         case tp:
-                            of Boolean: stack.push newBoolean(y.f!=0.0)
-                            of Integer: stack.push newInteger((int)y.f)
-                            of Char: stack.push newChar(chr((int)y.f))
-                            of String: stack.push newString($(y.f))
+                            of Boolean: push newBoolean(y.f!=0.0)
+                            of Integer: push newInteger((int)y.f)
+                            of Char: push newChar(chr((int)y.f))
+                            of String: push newString($(y.f))
                             of Binary:
                                 let str = $(y.f)
                                 var ret: ByteArray = newSeq[byte](str.len)
                                 for i,ch in str:
                                     ret[i] = (byte)(ord(ch))
-                                stack.push newBinary(ret)
+                                push newBinary(ret)
                             else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Type:
-                        if tp==String: stack.push newString(($(y.t)).toLowerAscii())
+                        if tp==String: push newString(($(y.t)).toLowerAscii())
                         else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Char:
                         case tp:
-                            of Integer: stack.push newInteger(ord(y.c))
-                            of Floating: stack.push newFloating((float)ord(y.c))
-                            of String: stack.push newString($(y.c))
-                            of Binary: stack.push newBinary(@[(byte)(ord(y.c))])
+                            of Integer: push newInteger(ord(y.c))
+                            of Floating: push newFloating((float)ord(y.c))
+                            of String: push newString($(y.c))
+                            of Binary: push newBinary(@[(byte)(ord(y.c))])
                             else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of String:
                         case tp:
                             of Boolean: 
-                                if y.s=="true": stack.push VTRUE
-                                elif y.s=="false": stack.push VFALSE
+                                if y.s=="true": push VTRUE
+                                elif y.s=="false": push VFALSE
                                 else: RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Integer:
                                 try:
-                                    stack.push newInteger(y.s)
+                                    push newInteger(y.s)
                                 except ValueError:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Floating:
                                 try:
-                                    stack.push newFloating(parseFloat(y.s))
+                                    push newFloating(parseFloat(y.s))
                                 except ValueError:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Type:
                                 try:
-                                    stack.push newType(y.s)
+                                    push newType(y.s)
                                 except ValueError:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Char:
                                 if y.s.runeLen() == 1:
-                                    stack.push newChar(y.s)
+                                    push newChar(y.s)
                                 else:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Word:
-                                stack.push newWord(y.s)
+                                push newWord(y.s)
                             of Literal:
-                                stack.push newLiteral(y.s)
+                                push newLiteral(y.s)
                             of Label:
-                                stack.push newLabel(y.s)
+                                push newLabel(y.s)
                             of Attribute:
-                                stack.push newAttribute(y.s)
+                                push newAttribute(y.s)
                             of AttributeLabel:
-                                stack.push newAttributeLabel(y.s)
+                                push newAttributeLabel(y.s)
                             of Symbol:
                                 try:
-                                    stack.push newSymbol(y.s)
+                                    push newSymbol(y.s)
                                 except ValueError:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Binary:
                                 var ret: ByteArray = newSeq[byte](y.s.len)
                                 for i,ch in y.s:
                                     ret[i] = (byte)(ord(ch))
-                                stack.push newBinary(ret)
+                                push newBinary(ret)
                             of Block:
-                                stack.push doParse(y.s, isFile=false)
+                                push doParse(y.s, isFile=false)
                             # TODO(Converters/to) add example for documentation (:string to :date conversion)
                             #  labels: library,documentation,easy
                             of Date:
@@ -512,7 +513,7 @@ proc defineSymbols*() =
                                 
                                 let timeFormat = initTimeFormat(dateFormat)
                                 try:
-                                    stack.push newDate(parse(y.s, timeFormat))
+                                    push newDate(parse(y.s, timeFormat))
                                 except:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             else:
@@ -522,11 +523,11 @@ proc defineSymbols*() =
                         Word:
                         case tp:
                             of String: 
-                                stack.push newString(y.s)
+                                push newString(y.s)
                             of Literal:
-                                stack.push newLiteral(y.s)
+                                push newLiteral(y.s)
                             of Word:
-                                stack.push newWord(y.s)
+                                push newWord(y.s)
                             else:
                                 RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
@@ -547,7 +548,7 @@ proc defineSymbols*() =
                                             dict[$(arr[i])] = arr[i+1]
                                         i += 2
 
-                                    stack.push(newDictionary(dict))
+                                    push(newDictionary(dict))
                                 else:
                                     let stop = SP
                                     discard execBlock(y)
@@ -569,10 +570,10 @@ proc defineSymbols*() =
                                     #  If one of the defined methods is an `init` (or something like that), call it after (or before?) setting the appropriate fields
                                     #  labels: enhancement,language,library
 
-                                    stack.push(res)
+                                    push(res)
 
                             of Bytecode:
-                                stack.push(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
+                                push(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
                             else:
                                 discard
 
@@ -580,7 +581,7 @@ proc defineSymbols*() =
                         case tp:
                             of Dictionary:
                                 if x.tpKind==BuiltinType:
-                                    stack.push(y)
+                                    push(y)
                                 else:
                                     var dict = initOrderedTable[string,Value]()
 
@@ -591,16 +592,16 @@ proc defineSymbols*() =
 
                                     var res = newDictionary(dict)
                                     res.custom = x
-                                    stack.push(res)
+                                    push(res)
                             else:
                                 RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Symbol:
                         case tp:
                             of String:
-                                stack.push newString($(y))
+                                push newString($(y))
                             of Literal:
-                                stack.push newLiteral($(y))
+                                push newLiteral($(y))
                             else:
                                 RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
@@ -614,7 +615,7 @@ proc defineSymbols*() =
                                     dateFormat = aFormat.s
                                 
                                 try:
-                                    stack.push newString(format(y.eobj, dateFormat))
+                                    push newString(format(y.eobj, dateFormat))
                                 except:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             else: 
@@ -665,7 +666,7 @@ proc defineSymbols*() =
                     blk.insert(GetSym(item.s))
                     blk.insert(newLabel(item.s))
 
-            stack.push(newBlock(blk))
+            push(newBlock(blk))
 
 #=======================================
 # Add Library

@@ -18,7 +18,8 @@
 
 import times
 
-import vm/[common, globals, stack, value]
+import vm/lib
+import vm/[globals]
 
 #=======================================
 # Methods
@@ -82,7 +83,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newDate(InPlace.eobj + ti))
             else:
-                stack.push(newDate(x.eobj + ti))
+                push(newDate(x.eobj + ti))
 
     builtin "before",
         alias       = unaliased, 
@@ -137,7 +138,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newDate(InPlace.eobj - ti))
             else:
-                stack.push(newDate(x.eobj - ti))
+                push(newDate(x.eobj - ti))
 
     builtin "leap?",
         alias       = unaliased, 
@@ -156,9 +157,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer:
-                stack.push(newBoolean(isLeapYear(x.i)))
+                push(newBoolean(isLeapYear(x.i)))
             else:
-                stack.push(newBoolean(isLeapYear(x.e["year"].i)))
+                push(newBoolean(isLeapYear(x.e["year"].i)))
 
     builtin "now",
         alias       = unaliased, 
@@ -189,7 +190,7 @@ proc defineSymbols*() =
             print now\year      ; 2020
         """:
             ##########################################################
-            stack.push(newDate(now()))
+            push(newDate(now()))
 
 #=======================================
 # Add Library
