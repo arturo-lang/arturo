@@ -22,7 +22,7 @@ when not defined(NOGMP):
 
 import helpers/colors as ColorsHelper
 
-import vm/errorstype
+import vm/errors
 
 #=======================================
 # Types
@@ -274,10 +274,6 @@ var
 #=======================================
 # Helpers
 #=======================================
-
-proc RuntimeError_IntegerOverflow*() =
-    panic RuntimeError,
-          "integer overflow"
 
 ## forward declarations
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
