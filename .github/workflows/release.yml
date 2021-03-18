@@ -76,6 +76,69 @@ jobs:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
 
+  raspberry:
+    name: "Package Raspberry"
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        os: 
+          - linux
+        arch:
+          - arm
+          - arm64
+        version:
+          - mini
+
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: "Get version"
+        uses: pCYSl5EDgo/cat@master
+        id: versionNumber
+        with:
+          path: version/version
+          trim: true
+
+      - name: Install Nim
+        run: |
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
+
+      - name: Verify dependecies
+        run: |
+          nim --version
+
+      - name: Build Arturo
+        run: |
+          export MACOSX_DEPLOYMENT_TARGET=10.10
+          ./install ${{ matrix.version }} nosqlite nogmp ${{ matrix.arch }} log
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          file bin/arturo
+
+      - name: Create artifact
+        run: |
+          install -m 0755 ./bin/${{ env.app-name }} .
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.arch}}-${{matrix.version}}.tar.gz ${{ env.app-name }} README.md LICENSE
+
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v1'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.arch}}-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{matrix.os}}-${{matrix.arch}}-${{matrix.version}}.tar.gz
+
   freebsd:
     name: "Package FreeBSD"
     runs-on: macos-latest
@@ -201,6 +264,7 @@ jobs:
     if: ${{ always() }}
     needs: 
       - unix
+      - raspberry
       - freebsd
       - windows
     steps:
