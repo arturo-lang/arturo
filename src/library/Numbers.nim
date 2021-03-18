@@ -17,7 +17,9 @@
 #=======================================
 
 import math, random, sequtils, sugar
-import extras/bignum
+
+when not defined(NOGMP):
+    import extras/bignum
 
 import helpers/math as MathHelper
 
@@ -50,7 +52,8 @@ proc defineSymbols*() =
                 if x.iKind==NormalInteger: 
                     stack.push(newInteger(abs(x.i)))
                 else:
-                    stack.push(newInteger(abs(x.bi)))
+                    when not defined(NOGMP):
+                        stack.push(newInteger(abs(x.bi)))
             else:
                 stack.push(newFloating(abs(x.f)))
 
@@ -364,10 +367,11 @@ proc defineSymbols*() =
                 else:
                     stack.push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
-                if prime:
-                    stack.push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
-                else:
-                    stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
+                when not defined(NOGMP):
+                    if prime:
+                        stack.push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
+                    else:
+                        stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
     builtin "floor",
         alias       = unaliased, 
@@ -424,14 +428,16 @@ proc defineSymbols*() =
             while i<x.a.len:
                 if current.iKind==NormalInteger:
                     if x.a[i].iKind==BigInteger:
-                        current = newInteger(gcd(current.i, x.a[i].bi))
+                        when not defined(NOGMP):
+                            current = newInteger(gcd(current.i, x.a[i].bi))
                     else:
                         current = newInteger(gcd(current.i, x.a[i].i))
                 else:
-                    if x.a[i].iKind==BigInteger:
-                        current = newInteger(gcd(current.bi, x.a[i].bi))
-                    else:
-                        current = newInteger(gcd(current.bi, x.a[i].i))
+                    when not defined(NOGMP):
+                        if x.a[i].iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, x.a[i].bi))
+                        else:
+                            current = newInteger(gcd(current.bi, x.a[i].i))
                 inc(i)
 
             stack.push(current)
@@ -532,7 +538,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                stack.push(newBoolean(negative(x.bi)))
+                when not defined(NOGMP):
+                    stack.push(newBoolean(negative(x.bi)))
             else:
                 stack.push(newBoolean(x < I0))
 
@@ -574,27 +581,29 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                stack.push(newBoolean(positive(x.bi)))
+                when not defined(NOGMP):
+                    stack.push(newBoolean(positive(x.bi)))
             else:
                 stack.push(newBoolean(x > I0))
     
-    builtin "powmod",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "modular exponentation: calculate the result of (base^exponent) % divider",
-        args        = {
-            "base"      : {Integer},
-            "exponent"  : {Integer},
-            "divider"   : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Integer,Null},
-        # TODO(Numbers\powmod) add example for documentation
-        #  labels: library,documentation,easy
-        example     = """
-        """:
-            ##########################################################
-            stack.push(powmod(x, y, z))
+    when not defined(NOGMP):
+        builtin "powmod",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "modular exponentation: calculate the result of (base^exponent) % divider",
+            args        = {
+                "base"      : {Integer},
+                "exponent"  : {Integer},
+                "divider"   : {Integer}
+            },
+            attrs       = NoAttrs,
+            returns     = {Integer,Null},
+            # TODO(Numbers\powmod) add example for documentation
+            #  labels: library,documentation,easy
+            example     = """
+            """:
+                ##########################################################
+                stack.push(powmod(x, y, z))
         
     builtin "prime?",
         alias       = unaliased, 
@@ -621,7 +630,8 @@ proc defineSymbols*() =
             if x.iKind==NormalInteger:
                 stack.push(newBoolean(isPrime(x.i.uint64)))
             else:
-                stack.push(newBoolean(probablyPrime(x.bi,25)>0))
+                when not defined(NOGMP):
+                    stack.push(newBoolean(probablyPrime(x.bi,25)>0))
 
     builtin "product",
         alias       = unaliased, 
@@ -801,9 +811,13 @@ proc defineSymbols*() =
         args        = {
             "value" : {Integer,Floating}
         },
-        attrs       = {
-            "integer"   : ({Boolean},"get the integer square root")
-        },
+        attrs       = 
+        when not defined(NOGMP):
+            {
+                "integer"   : ({Boolean},"get the integer square root")
+            }
+        else:
+            NoAttrs,
         returns     = {Floating},
         example     = """
             print sqrt 4            ; 2.0
@@ -812,10 +826,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("integer") != VNULL):
-                if x.iKind == NormalInteger:
-                    stack.push(newInteger(isqrt(x.i)))
-                else:
-                    stack.push(newInteger(isqrt(x.bi)))
+                when not defined(NOGMP):
+                    if x.iKind == NormalInteger:
+                        stack.push(newInteger(isqrt(x.i)))
+                    else:
+                        stack.push(newInteger(isqrt(x.bi)))
             else:
                 stack.push(newFloating(sqrt(asFloat(x))))
 
@@ -892,7 +907,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                stack.push(newBoolean(isZero(x.bi)))
+                when not defined(NOGMP):
+                    stack.push(newBoolean(isZero(x.bi)))
             else:
                 stack.push(newBoolean(x == I0))
 

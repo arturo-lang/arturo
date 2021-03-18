@@ -17,7 +17,8 @@
 #=======================================
 
 import sequtils, strformat, times, unicode
-import extras/bignum
+when not defined(NOGMP):
+    import extras/bignum
 
 import helpers/datasource as DatasourceHelper
 import helpers/strings as StringsHelper
@@ -112,7 +113,7 @@ proc defineSymbols*() =
             elif (popAttr("octal") != VNULL):
                 stack.push(newString(fmt"{x.i:o}"))
             elif (popAttr("ascii") != VNULL):
-                stack.push(convertToAscii(x.s))
+                stack.push(newString(convertToAscii(x.s)))
             elif (popAttr("agnostic") != VNULL):
                 let res = x.a.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
@@ -377,7 +378,7 @@ proc defineSymbols*() =
                             of Boolean: stack.push VFALSE
                             of Integer: stack.push I0
                             of String: stack.push newString("null")
-                            else: RuntimeError_CannotConvert(x,y)
+                            else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Boolean:
                         case tp:
@@ -390,7 +391,7 @@ proc defineSymbols*() =
                             of String:
                                 if y.b: stack.push newString("true")
                                 else: stack.push newString("false")
-                            else: RuntimeError_CannotConvert(x,y)
+                            else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Integer:
                         case tp:
@@ -399,14 +400,16 @@ proc defineSymbols*() =
                             of Char: stack.push newChar(chr(y.i))
                             of String: 
                                 if y.iKind==NormalInteger: stack.push newString($(y.i))
-                                else: stack.push newString($(y.bi))
+                                else:
+                                    when not defined(NOGMP): 
+                                        stack.push newString($(y.bi))
                             of Binary:
                                 let str = $(y.i)
                                 var ret: ByteArray = newSeq[byte](str.len)
                                 for i,ch in str:
                                     ret[i] = (byte)(ord(ch))
                                 stack.push newBinary(ret)
-                            else: RuntimeError_CannotConvert(x,y)
+                            else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Floating:
                         case tp:
@@ -420,11 +423,11 @@ proc defineSymbols*() =
                                 for i,ch in str:
                                     ret[i] = (byte)(ord(ch))
                                 stack.push newBinary(ret)
-                            else: RuntimeError_CannotConvert(x,y)
+                            else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Type:
                         if tp==String: stack.push newString(($(y.t)).toLowerAscii())
-                        else: RuntimeError_CannotConvert(x,y)
+                        else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Char:
                         case tp:
@@ -432,34 +435,34 @@ proc defineSymbols*() =
                             of Floating: stack.push newFloating((float)ord(y.c))
                             of String: stack.push newString($(y.c))
                             of Binary: stack.push newBinary(@[(byte)(ord(y.c))])
-                            else: RuntimeError_CannotConvert(x,y)
+                            else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of String:
                         case tp:
                             of Boolean: 
                                 if y.s=="true": stack.push VTRUE
                                 elif y.s=="false": stack.push VFALSE
-                                else: RuntimeError_ConversionFailed(x,y)
+                                else: RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Integer:
                                 try:
                                     stack.push newInteger(y.s)
                                 except ValueError:
-                                    RuntimeError_ConversionFailed(x,y)
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Floating:
                                 try:
                                     stack.push newFloating(parseFloat(y.s))
                                 except ValueError:
-                                    RuntimeError_ConversionFailed(x,y)
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Type:
                                 try:
                                     stack.push newType(y.s)
                                 except ValueError:
-                                    RuntimeError_ConversionFailed(x,y)
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Char:
                                 if y.s.runeLen() == 1:
                                     stack.push newChar(y.s)
                                 else:
-                                    RuntimeError_ConversionFailed(x,y)
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Word:
                                 stack.push newWord(y.s)
                             of Literal:
@@ -474,7 +477,7 @@ proc defineSymbols*() =
                                 try:
                                     stack.push newSymbol(y.s)
                                 except ValueError:
-                                    RuntimeError_ConversionFailed(x,y)
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Binary:
                                 var ret: ByteArray = newSeq[byte](y.s.len)
                                 for i,ch in y.s:
@@ -493,9 +496,9 @@ proc defineSymbols*() =
                                 try:
                                     stack.push newDate(parse(y.s, timeFormat))
                                 except:
-                                    RuntimeError_ConversionFailed(x,y)
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             else:
-                                RuntimeError_CannotConvert(x,y)
+                                RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Literal, 
                         Word:
@@ -507,7 +510,7 @@ proc defineSymbols*() =
                             of Word:
                                 stack.push newWord(y.s)
                             else:
-                                RuntimeError_CannotConvert(x,y)
+                                RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Block:
                         case tp:
@@ -572,7 +575,7 @@ proc defineSymbols*() =
                                     res.custom = x
                                     stack.push(res)
                             else:
-                                RuntimeError_CannotConvert(x,y)
+                                RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Symbol:
                         case tp:
@@ -581,7 +584,7 @@ proc defineSymbols*() =
                             of Literal:
                                 stack.push newLiteral($(y))
                             else:
-                                RuntimeError_CannotConvert(x,y)
+                                RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Date:
                         case tp:
@@ -595,9 +598,9 @@ proc defineSymbols*() =
                                 try:
                                     stack.push newString(format(y.eobj, dateFormat))
                                 except:
-                                    RuntimeError_ConversionFailed(x,y)
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             else: 
-                                RuntimeError_CannotConvert(x,y)
+                                RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
                     of Function,
                        Database,

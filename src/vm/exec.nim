@@ -192,8 +192,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         if depth==0:
             showDebugHeader("VM")
 
-    if DoDebug:
-        ConstStack = input[0]
+    #if DoDebug:
+    #    ConstStack = input[0]
 
     let cnst = input[0]
     let it = input[1]
@@ -217,9 +217,9 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
         op = (OpCode)(it[i])
 
-        if DoDebug:
-            OpStack.rotateLeft(1)
-            OpStack[0] = op
+        # if DoDebug:
+        #     OpStack.rotateLeft(1)
+        #     OpStack[0] = op
 
         when defined(VERBOSE):
             echo fmt("exec: {op}")

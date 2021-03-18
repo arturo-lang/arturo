@@ -11,7 +11,8 @@
 #=======================================
 
 import bitops, std/math, sequtils, sugar
-import extras/bignum
+when not defined(NOGMP):
+    import extras/bignum
 
 import vm/value
 
@@ -85,41 +86,42 @@ proc isPrime*[T: SomeInteger](n: T): bool =
     let witnesses = selectWitnesses(n)
     miller_rabin_test(n, witnesses)
 
-proc pollardG*(n: var Int, m: Int) {.inline.} =
-    discard mul(n,n,n)
-    discard add(n,n,1)
-    discard `mod`(n,n,m)
+when not defined(NOGMP):
+    proc pollardG*(n: var Int, m: Int) {.inline.} =
+        discard mul(n,n,n)
+        discard add(n,n,1)
+        discard `mod`(n,n,m)
 
-proc pollardRho*(n: Int): Int =
-    var x = newInt(2)
-    var y = newInt(2)
-    var d = newInt(1)
-    var z = newInt(1)
+    proc pollardRho*(n: Int): Int =
+        var x = newInt(2)
+        var y = newInt(2)
+        var d = newInt(1)
+        var z = newInt(1)
 
-    var count = 0
-    var t = newInt(0)
+        var count = 0
+        var t = newInt(0)
 
-    while true:
-        pollardG(x,n)
-        pollardG(y,n)
-        pollardG(y,n)
+        while true:
+            pollardG(x,n)
+            pollardG(y,n)
+            pollardG(y,n)
 
-        discard abs(t,sub(t,x,y))
-        discard `mod`(t,t,n)
-        discard mul(z,z,t)
+            discard abs(t,sub(t,x,y))
+            discard `mod`(t,t,n)
+            discard mul(z,z,t)
 
-        inc(count)
-        if count==100:
-            discard gcd(d,z,n)
-            if cmp(d,1)!=0:
-                break
-            discard set(z,1)
-            count = 0
+            inc(count)
+            if count==100:
+                discard gcd(d,z,n)
+                if cmp(d,1)!=0:
+                    break
+                discard set(z,1)
+                count = 0
 
-    if cmp(d,n)==0:
-        return newInt(0)
-    else:
-        return d
+        if cmp(d,n)==0:
+            return newInt(0)
+        else:
+            return d
 
 proc factors*(n: int): seq[int] =
     var res: seq[int] = @[]
@@ -137,67 +139,68 @@ proc factors*(n: int): seq[int] =
 proc primeFactors*(n: int): seq[int] =   
     factors(n).filter((x)=>isPrime(x.uint64)) 
 
-proc primeFactors*(num: Int): seq[Int] =
-    result = @[]
-    var n = num
+when not defined(NOGMP):
+    proc primeFactors*(num: Int): seq[Int] =
+        result = @[]
+        var n = num
 
-    if n.probablyPrime(10)!=0:
-        result.add(n)
+        if n.probablyPrime(10)!=0:
+            result.add(n)
 
-    let factor1 = pollardRho(num)
-    if factor1==0:
-        return @[]
+        let factor1 = pollardRho(num)
+        if factor1==0:
+            return @[]
 
-    if factor1.probablyPrime(10)==0:
-        return @[]
+        if factor1.probablyPrime(10)==0:
+            return @[]
 
-    let factor2 = n div factor1
-    if factor2.probablyPrime(10)==0:
-        return @[factor1]
+        let factor2 = n div factor1
+        if factor2.probablyPrime(10)==0:
+            return @[factor1]
 
-    result.add(factor1)
-    result.add(factor2)
+        result.add(factor1)
+        result.add(factor2)
 
-proc factors*(n: Int): seq[Int] =
-    var res: seq[Int] = @[]
+    proc factors*(n: Int): seq[Int] =
+        var res: seq[Int] = @[]
 
-    var i = newInt(1)
-    while i < n-1:
-        if n mod i == 0:
-            res.add(i)
-        i += 1
+        var i = newInt(1)
+        while i < n-1:
+            if n mod i == 0:
+                res.add(i)
+            i += 1
 
-    res.add(n)
+        res.add(n)
 
-    result = res
+        result = res
 
-proc isqrt*[T: SomeSignedInt | Int](x: T): T =
-    when T is Int:
-        result = newInt()
-        var q = newInt(1)
-    else:
-        result = 0
-        var q = T(1)
- 
-    while q <= x:
-        q = q shl 2
- 
-    var z = x
-    while q > 1:
-        q = q shr 2
-        let t = z - result - q
-        result = result shr 1
-        if t >= 0:
-            z = t
-            result += q
+    proc isqrt*[T: SomeSignedInt | Int](x: T): T =
+        when T is Int:
+            result = newInt()
+            var q = newInt(1)
+        else:
+            result = 0
+            var q = T(1)
+    
+        while q <= x:
+            q = q shl 2
+    
+        var z = x
+        while q > 1:
+            q = q shr 2
+            let t = z - result - q
+            result = result shr 1
+            if t >= 0:
+                z = t
+                result += q
 
-proc powmod*(x: Value, y: Value, z: Value): Value =
-    var X : Value = x
-    var Z : Value = z
-    if x.iKind==NormalInteger: X = newBigInteger(x.i)
-    if z.iKind==NormalInteger: Z = newBigInteger(y.i)
+    proc powmod*(x: Value, y: Value, z: Value): Value =
+        var X : Value = x
+        var Z : Value = z
+        if x.iKind==NormalInteger: X = newBigInteger(x.i)
+        if z.iKind==NormalInteger: Z = newBigInteger(y.i)
 
-    if y.iKind==NormalInteger:
-        newInteger(exp(x.bi, (culong)(y.i), z.bi))
-    else:
-        newInteger(exp(x.bi, y.bi, z.bi))
+        if y.iKind==NormalInteger:
+            newInteger(exp(x.bi, (culong)(y.i), z.bi))
+        else:
+            newInteger(exp(x.bi, y.bi, z.bi))

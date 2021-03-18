@@ -17,22 +17,12 @@ import strformat, strutils, sugar
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
 
-import vm/[bytecode, stack, value]
+import vm/bytecode
+import vm/value
+import vm/errorstype
+import vm/stack
 
-const
-    RuntimeError*   = "Runtime"
-    AssertionError* = "Assertion"
-    SyntaxError*    = "Syntax"
-    ProgramError*   = "Program"
-    CompilerError*  = "Compiler"
-
-    Alternative*  = "perhaps you meant"
-
-type 
-    ReturnTriggered* = ref object of Defect
-    BreakTriggered* = ref object of Defect
-    ContinueTriggered* = ref object of Defect
-    VMError* = ref object of Defect
+export errorstype
 
 var
     vmPanic* = false
@@ -42,57 +32,59 @@ var
     vmContinue* = false
     # opstack
     OpStack*    : array[5,OpCode]
-    ConstStack* : ValueArray
+    #ConstStack* : ValueArray
 
 #=======================================
 # Helpers
 #=======================================
 
 proc getOpStack*(): string =
-    if DoDebug:
-        try:
-            var ret = ";;"
-            ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
-            ret &= (fg(grayColor)).replace(";","%&") & "bytecode stack trace:;" & resetColor
-            ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
-            for i in countdown(4,0):
-                let op = (OpCode)(OpStack[i])
-                if op!=opNop :
-                    ret &= (fg(grayColor)).replace(";","%&") & "\b>T@B" & ($(op)).replace("op","").toUpperAscii()
-                    case op:
-                        of opConstI0..opConstI10:
-                            let indx = (int)(op)-(int)opConstI0
-                            if indx>=0 and indx<ConstStack.len:
-                                ret &= " (" & $(ConstStack[indx]) & ")"
-                        of opPush0..opPush30:
-                            let indx = (int)(op)-(int)opPush0
-                            if indx>=0 and indx<ConstStack.len:
-                                ret &= " (" & $(ConstStack[indx]) & ")"
-                        of opStore0..opStore30:
-                            let indx = (int)(op)-(int)opStore0
-                            if indx>=0 and indx<ConstStack.len:
-                                ret &= " (" & $(ConstStack[indx]) & ")"
-                        of opLoad0..opLoad30:
-                            let indx = (int)(op)-(int)opLoad0
-                            if indx>=0 and indx<ConstStack.len:
-                                ret &= " (" & $(ConstStack[indx]) & ")"
-                        of opCall0..opCall30: 
-                            let indx = (int)(op)-(int)opCall0
-                            if indx>=0 and indx<ConstStack.len:
-                                ret &= " (" & $(ConstStack[indx]) & ")"
-                        else:
-                            discard
+    return ""
+    #if DoDebug:
+    ""
+    # try:
+    #     var ret = ";;"
+    #     ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
+    #     ret &= (fg(grayColor)).replace(";","%&") & "bytecode stack trace:;" & resetColor
+    #     ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
+    #     for i in countdown(4,0):
+    #         let op = (OpCode)(OpStack[i])
+    #         if op!=opNop :
+    #             ret &= (fg(grayColor)).replace(";","%&") & "\b>T@B" & ($(op)).replace("op","").toUpperAscii()
+    #             case op:
+    #                 of opConstI0..opConstI10:
+    #                     let indx = (int)(op)-(int)opConstI0
+    #                     if indx>=0 and indx<ConstStack.len:
+    #                         ret &= " (" & $(ConstStack[indx]) & ")"
+    #                 of opPush0..opPush30:
+    #                     let indx = (int)(op)-(int)opPush0
+    #                     if indx>=0 and indx<ConstStack.len:
+    #                         ret &= " (" & $(ConstStack[indx]) & ")"
+    #                 of opStore0..opStore30:
+    #                     let indx = (int)(op)-(int)opStore0
+    #                     if indx>=0 and indx<ConstStack.len:
+    #                         ret &= " (" & $(ConstStack[indx]) & ")"
+    #                 of opLoad0..opLoad30:
+    #                     let indx = (int)(op)-(int)opLoad0
+    #                     if indx>=0 and indx<ConstStack.len:
+    #                         ret &= " (" & $(ConstStack[indx]) & ")"
+    #                 of opCall0..opCall30: 
+    #                     let indx = (int)(op)-(int)opCall0
+    #                     if indx>=0 and indx<ConstStack.len:
+    #                         ret &= " (" & $(ConstStack[indx]) & ")"
+    #                 else:
+    #                     discard
+                
+    #             ret &= resetColor
                     
-                    ret &= resetColor
-                        
-                if i!=0:
-                    ret &= ";"
+    #         if i!=0:
+    #             ret &= ";"
 
-            ret
-        except:
-            ""
-    else:
-        ""
+    #     ret
+    # except:
+    #     ""
+    #else:
+    #""
 
 proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
     let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
@@ -110,16 +102,10 @@ proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expec
            "incorrect argument type for " & ordinalPos & " parameter;" &
            "accepts " & acceptedStr
 
-proc panic*(context: string, error: string) =
-    var errorMsg = error
-    if $(context) notin [AssertionError, SyntaxError, CompilerError]:
-        errorMsg &= getOpStack()
-    raise VMError(name: context, msg:move errorMsg)
-
 proc showVMErrors*(e: ref Exception) =
     var header = e.name
 
-    if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
+    if $(header) notin [RuntimeError, errorstype.AssertionError, SyntaxError, ProgramError, CompilerError]:
         header = RuntimeError
 
     let marker = ">>"
@@ -180,7 +166,7 @@ proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
 ## Assertion errors
 
 proc AssertionError_AssertionFailed*(context: string) =
-    panic AssertionError,
+    panic errorstype.AssertionError,
           context
 
 ## Runtime errors
@@ -207,23 +193,25 @@ proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
           "cannot perform _" & (functionName) & "_;" & 
           "not enough parameters: " & $(functionArity) & " required"
 
+# TODO: Convert WrongArgumentType error template to proc
+#  produces to much string data
 template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
     let expectedValues = toSeq((expected[argumentPos][1]).items)
-    
+
     panic RuntimeError, 
           getWrongArgumentTypeErrorMsg(functionName, argumentPos, expectedValues)
 
-proc RuntimeError_CannotConvert*(x, y: Value) =
+proc RuntimeError_CannotConvert*(arg,fromType,toType: string) =
     panic RuntimeError,
-          "cannot convert argument: " & truncate(codify(y),20) & ";" &
-          "from :" & ($(y.kind)).toLowerAscii() & ";" &
-          "to   :" & ($(x.t)).toLowerAscii()
+          "cannot convert argument: " & truncate(arg,20) & ";" &
+          "from :" & (fromType).toLowerAscii() & ";" &
+          "to   :" & (toType).toLowerAscii()
 
-proc RuntimeError_ConversionFailed*(x, y: Value) =
+proc RuntimeError_ConversionFailed*(arg,fromType,toType: string) =
     panic RuntimeError,
-          "conversion failed: " & truncate(codify(y),20) & ";" &
-          "from :" & ($(y.kind)).toLowerAscii() & ";" &
-          "to   :" & ($(x.t)).toLowerAscii()
+          "conversion failed: " & truncate(arg,20) & ";" &
+          "from :" & (fromType).toLowerAscii() & ";" &
+          "to   :" & (toType).toLowerAscii()
 
 proc RuntimeError_LibraryNotLoaded*(path: string) =
     panic RuntimeError,
