@@ -152,7 +152,7 @@ if $IS_DEV_BUILD; then
     awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
     git commit -m 'build update' version/build
 
-    FLAGS="$FLAGS -d:DEV"
+    FLAGS="$FLAGS -d:DEV --hints:on"
 fi
 
 ################################################
