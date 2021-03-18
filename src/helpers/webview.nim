@@ -10,9 +10,10 @@
 # Command-line arguments
 #=======================================
 
-when not defined(MINI):
+when not defined(NOWEBVIEW):
     {.passC: "-DWEBVIEW_STATIC -DWEBVIEW_IMPLEMENTATION".}
     {.passC: "-I" & currentSourcePath().substr(0, high(currentSourcePath()) - 4) .}
+
     when defined(linux):
         {.passC: "-DWEBVIEW_GTK=1 " &
         staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
@@ -38,7 +39,7 @@ import os, osproc, strutils
 # Types
 #=======================================
 
-when not defined(MINI):
+when not defined(NOWEBVIEW):
 
     type
         WebviewPrivObj  {.importc: "struct webview_priv", header: "webview.h", bycopy.} = object
@@ -63,7 +64,7 @@ when not defined(MINI):
 # C Imports
 #=======================================
 
-when not defined(MINI):
+when not defined(NOWEBVIEW):
     proc init*(w: Webview): cint {.importc: "webview_init", header: "webview.h".}
     proc loop*(w: Webview; blocking: cint): cint {.importc: "webview_loop", header: "webview.h".}
     proc eval*(w: Webview; js: cstring): cint {.importc: "webview_eval", header: "webview.h".}
@@ -108,7 +109,7 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
     if execCmd(command) != 0:
         echo "could not open a Chrome window"
 
-when not defined(MINI):
+when not defined(NOWEBVIEW):
     proc generalExternalInvokeCallback(w: Webview, arg: cstring) {.exportc.} =
         echo "generalExternalInvoke: " & $(arg)
         # var handled = false

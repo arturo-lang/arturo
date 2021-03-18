@@ -18,7 +18,7 @@
 
 import os, sequtils
 
-when not defined(MINI):
+when not defined(NOPARSERS):
     import sugar
     import extras/miniz
     
@@ -183,7 +183,7 @@ proc defineSymbols*() =
             "file"  : {String}
         },
         attrs       = 
-            when not defined(MINI): 
+            when not defined(NOPARSERS): 
                 {
                     "lines"         : ({Boolean},"read file lines into block"),
                     "json"          : ({Boolean},"read Json into value"),
@@ -236,7 +236,7 @@ proc defineSymbols*() =
                 elif (popAttr("csv") != VNULL):
                     stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
                 else:
-                    when not defined(MINI):
+                    when not defined(NOPARSERS):
                         if (popAttr("toml") != VNULL):
                             stack.push(parseTomlString(src))
                         elif (popAttr("markdown") != VNULL):
@@ -308,7 +308,7 @@ proc defineSymbols*() =
             except OSError:
                 discard
                     
-    when not defined(MINI):
+    when not defined(NOUNZIP):
         builtin "unzip",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -366,7 +366,7 @@ proc defineSymbols*() =
                     else:
                         writeFile(x.s, y.s)
 
-    when not defined(MINI):
+    when not defined(NOUNZIP):
         builtin "zip",
             alias       = unaliased, 
             rule        = PrefixPrecedence,

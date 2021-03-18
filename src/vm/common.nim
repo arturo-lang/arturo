@@ -36,7 +36,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
     else:                               
         const argsLen = static args.len
 
-    when defined(MINI):
+    when defined(NOEXAMPLES):
         const cleanExample = ""
     else:
         const cleanExample = replace(strutils.strip(example),"\n            ","\n")
