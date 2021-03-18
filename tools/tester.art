@@ -6,6 +6,9 @@
 ; @author: drkameleon
 ;==========================================
 
+errorMargin: 0
+if 1 = size arg -> errorMargin: to :integer first arg
+
 runSet: function [title,location][
     print color.bold.cyan ~"\n> |title|"
     tests: sort select list relative location => [in? ".res"]
@@ -38,7 +41,7 @@ runSet: function [title,location][
         ******************************
     }
 
-    if success < size tests [ 
+    if success < (size tests)-errorMargin [ 
         panic.code: 1 "testing failed"
     ]
 ]
