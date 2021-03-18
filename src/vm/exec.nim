@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import algorithm, math, tables
+import math, tables
 
 when defined(VERBOSE):
     import strformat
@@ -212,8 +212,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             Syms[symIndx] = stack.pop()
 
     while true:
-        if vmBreak:
-            break
+        # if vmBreak:
+        #     break
 
         op = (OpCode)(it[i])
 
