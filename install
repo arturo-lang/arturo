@@ -101,11 +101,22 @@ do
             FLAGS="$FLAGS --passC:'-flto'";;
         mini)      
             MINI_BUILD=true 
-            FLAGS="$FLAGS -d:MINI";;
-        nosqlite)
-            FLAGS="$FLAGS -d:NOSQLITE";;
-        nogmp)
-            FLAGS="$FLAGS -d:NOGMP";;
+            FLAGS="$FLAGS -d:NOASCIIDECODE \
+                          -d:NOEXAMPLES \
+                          -d:NOGMP \
+                          -d:NOPARSERS \
+                          -d:NOSQLITE \
+                          -d:NOUNZIP \
+                          -d:NOWEBVIEW";;
+
+        noasciidecode)  FLAGS="$FLAGS -d:NOASCIIDECODE";;
+        noexamples)     FLAGS="$FLAGS -d:NOEXAMPLES";;
+        nogmp)          FLAGS="$FLAGS -d:NOGMP";;
+        noparsers)      FLAGS="$FLAGS -d:NOPARSERS";;
+        nosqlite)       FLAGS="$FLAGS -d:NOSQLITE";;
+        nounzip)        FLAGS="$FLAGS -d:NOUNZIP";;
+        nowebview)      FLAGS="$FLAGS -d:NOWEBVIEW";;
+        
         arm)
             FLAGS="$FLAGS --cpu:arm";;
         arm64)

@@ -45,9 +45,7 @@ import library/Reflection   as ReflectionLib
 import library/Sets         as SetsLib
 import library/Strings      as StringsLib
 import library/System       as SystemLib
-
-when not defined(MINI):
-    import library/Ui           as UiLib
+import library/Ui           as UiLib
 
 #=======================================
 # Helpers

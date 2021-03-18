@@ -85,17 +85,31 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = {
-            "binary"    : ({Boolean},"format integer as binary"),
-            "hex"       : ({Boolean},"format integer as hexadecimal"),
-            "octal"     : ({Boolean},"format integer as octal"),
-            "ascii"     : ({Boolean},"transliterate string to ASCII"),
-            "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
-            "code"      : ({Boolean},"convert value to valid Arturo code"),
-            "pretty"    : ({Boolean},"prettify generated code"),
-            "unwrapped" : ({Boolean},"omit external block notation")
+        attrs       = 
+        when not defined(NOASCIIDECODE):
+            {
+                "binary"    : ({Boolean},"format integer as binary"),
+                "hex"       : ({Boolean},"format integer as hexadecimal"),
+                "octal"     : ({Boolean},"format integer as octal"),
+                "ascii"     : ({Boolean},"transliterate string to ASCII"),
+                "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
+                "code"      : ({Boolean},"convert value to valid Arturo code"),
+                "pretty"    : ({Boolean},"prettify generated code"),
+                "unwrapped" : ({Boolean},"omit external block notation")
 
-        },
+            }
+        else:
+            {
+                "binary"    : ({Boolean},"format integer as binary"),
+                "hex"       : ({Boolean},"format integer as hexadecimal"),
+                "octal"     : ({Boolean},"format integer as octal"),
+                "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
+                "code"      : ({Boolean},"convert value to valid Arturo code"),
+                "pretty"    : ({Boolean},"prettify generated code"),
+                "unwrapped" : ({Boolean},"omit external block notation")
+
+            }
+        ,
         returns     = {Any},
         example     = """
             print as.binary 123           ; 1111011
@@ -112,8 +126,6 @@ proc defineSymbols*() =
                 stack.push(newString(fmt"{x.i:x}"))
             elif (popAttr("octal") != VNULL):
                 stack.push(newString(fmt"{x.i:o}"))
-            elif (popAttr("ascii") != VNULL):
-                stack.push(newString(convertToAscii(x.s)))
             elif (popAttr("agnostic") != VNULL):
                 let res = x.a.map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
@@ -123,7 +135,13 @@ proc defineSymbols*() =
             elif (popAttr("code") != VNULL):
                 stack.push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL))))
             else:
-                stack.push(x)
+                when not defined(NOASCIIDECODE):
+                    if (popAttr("ascii") != VNULL):
+                        stack.push(newString(convertToAscii(x.s)))
+                    else:
+                        stack.push(x)
+                else:
+                    stack.push(x)
 
     builtin "define",
         alias       = dollar, 
