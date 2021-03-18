@@ -13,7 +13,6 @@
 import os, random, strutils, tables
 
 import vm/[
-    bytecode, 
     env, 
     errors, 
     eval, 
