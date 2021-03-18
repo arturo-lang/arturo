@@ -7,6 +7,39 @@
 ######################################################
 
 #=======================================
+# Types
+#=======================================
+
+type 
+    ReturnTriggered* = ref object of Defect
+    BreakTriggered* = ref object of Defect
+    ContinueTriggered* = ref object of Defect
+    VMError* = ref object of Defect
+
+#=======================================
+# Constants
+#=======================================
+
+const
+    RuntimeError*   = "Runtime"
+    AssertionError* = "Assertion"
+    SyntaxError*    = "Syntax"
+    ProgramError*   = "Program"
+    CompilerError*  = "Compiler"
+
+    Alternative*  = "perhaps you meant"
+
+#=======================================
+# Methods
+#=======================================
+
+proc panic*(context: string, error: string) =
+    var errorMsg = error
+    # if $(context) notin [AssertionError, SyntaxError, CompilerError]:
+    #    errorMsg &= getOpStack()
+    raise VMError(name: context, msg:move errorMsg)
+
+#=======================================
 # Libraries
 #=======================================
 
@@ -17,95 +50,26 @@ import strformat, strutils, sugar
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
 
-import vm/bytecode
-import vm/value
-import vm/errorstype
-import vm/stack
+# import vm/bytecode
+# import vm/value
+# ##import vm/panic
+# import vm/stack
 
-export errorstype
+# #export panic
 
-var
-    vmPanic* = false
-    vmError* = ""
-    vmReturn* = false
-    vmBreak* = false
-    vmContinue* = false
-    # opstack
-    OpStack*    : array[5,OpCode]
-    #ConstStack* : ValueArray
+# var
+#     # opstack
+#     OpStack*    : array[5,OpCode]
+#     #ConstStack* : ValueArray
 
 #=======================================
 # Helpers
 #=======================================
 
-proc getOpStack*(): string =
-    return ""
-    #if DoDebug:
-    ""
-    # try:
-    #     var ret = ";;"
-    #     ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
-    #     ret &= (fg(grayColor)).replace(";","%&") & "bytecode stack trace:;" & resetColor
-    #     ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
-    #     for i in countdown(4,0):
-    #         let op = (OpCode)(OpStack[i])
-    #         if op!=opNop :
-    #             ret &= (fg(grayColor)).replace(";","%&") & "\b>T@B" & ($(op)).replace("op","").toUpperAscii()
-    #             case op:
-    #                 of opConstI0..opConstI10:
-    #                     let indx = (int)(op)-(int)opConstI0
-    #                     if indx>=0 and indx<ConstStack.len:
-    #                         ret &= " (" & $(ConstStack[indx]) & ")"
-    #                 of opPush0..opPush30:
-    #                     let indx = (int)(op)-(int)opPush0
-    #                     if indx>=0 and indx<ConstStack.len:
-    #                         ret &= " (" & $(ConstStack[indx]) & ")"
-    #                 of opStore0..opStore30:
-    #                     let indx = (int)(op)-(int)opStore0
-    #                     if indx>=0 and indx<ConstStack.len:
-    #                         ret &= " (" & $(ConstStack[indx]) & ")"
-    #                 of opLoad0..opLoad30:
-    #                     let indx = (int)(op)-(int)opLoad0
-    #                     if indx>=0 and indx<ConstStack.len:
-    #                         ret &= " (" & $(ConstStack[indx]) & ")"
-    #                 of opCall0..opCall30: 
-    #                     let indx = (int)(op)-(int)opCall0
-    #                     if indx>=0 and indx<ConstStack.len:
-    #                         ret &= " (" & $(ConstStack[indx]) & ")"
-    #                 else:
-    #                     discard
-                
-    #             ret &= resetColor
-                    
-    #         if i!=0:
-    #             ret &= ";"
-
-    #     ret
-    # except:
-    #     ""
-    #else:
-    #""
-
-proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
-    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-
-    var ordinalPos: string = ""
-    if argumentPos==0:
-        ordinalPos = "first"
-    elif argumentPos==1:
-        ordinalPos = "second"
-    elif argumentPos==2:
-        ordinalPos = "third"
-
-    return "cannot perform _" & functionName & "_ -> " & actualStr & ";" &
-           "incorrect argument type for " & ordinalPos & " parameter;" &
-           "accepts " & acceptedStr
-
 proc showVMErrors*(e: ref Exception) =
     var header = e.name
 
-    if $(header) notin [RuntimeError, errorstype.AssertionError, SyntaxError, ProgramError, CompilerError]:
+    if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
         header = RuntimeError
 
     let marker = ">>"
@@ -166,10 +130,14 @@ proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
 ## Assertion errors
 
 proc AssertionError_AssertionFailed*(context: string) =
-    panic errorstype.AssertionError,
+    panic AssertionError,
           context
 
 ## Runtime errors
+
+proc RuntimeError_IntegerOverflow*() =
+    panic RuntimeError,
+          "integer overflow"
 
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,
@@ -193,8 +161,6 @@ proc RuntimeError_NotEnoughArguments*(functionName:string, functionArity: int) =
           "cannot perform _" & (functionName) & "_;" & 
           "not enough parameters: " & $(functionArity) & " required"
 
-# TODO: Convert WrongArgumentType error template to proc
-#  produces to much string data
 template RuntimeError_WrongArgumentType*(functionName:string, argumentPos: int, expected: untyped): untyped =
     let expectedValues = toSeq((expected[argumentPos][1]).items)
 
@@ -227,3 +193,46 @@ proc RuntimeError_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
     panic RuntimeError,
           "error loading symbol: " & sym & ";" & 
           "from library: " & path
+
+# proc getOpStack*(): string =
+#     try:
+#         var ret = ";;"
+#         ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
+#         ret &= (fg(grayColor)).replace(";","%&") & "bytecode stack trace:;" & resetColor
+#         ret &= (fg(grayColor)).replace(";","%&") & "\b------------------------------;" & resetColor
+#         for i in countdown(4,0):
+#             let op = (OpCode)(OpStack[i])
+#             if op!=opNop :
+#                 ret &= (fg(grayColor)).replace(";","%&") & "\b>T@B" & ($(op)).replace("op","").toUpperAscii()
+#                 case op:
+#                     of opConstI0..opConstI10:
+#                         let indx = (int)(op)-(int)opConstI0
+#                         if indx>=0 and indx<ConstStack.len:
+#                             ret &= " (" & $(ConstStack[indx]) & ")"
+#                     of opPush0..opPush30:
+#                         let indx = (int)(op)-(int)opPush0
+#                         if indx>=0 and indx<ConstStack.len:
+#                             ret &= " (" & $(ConstStack[indx]) & ")"
+#                     of opStore0..opStore30:
+#                         let indx = (int)(op)-(int)opStore0
+#                         if indx>=0 and indx<ConstStack.len:
+#                             ret &= " (" & $(ConstStack[indx]) & ")"
+#                     of opLoad0..opLoad30:
+#                         let indx = (int)(op)-(int)opLoad0
+#                         if indx>=0 and indx<ConstStack.len:
+#                             ret &= " (" & $(ConstStack[indx]) & ")"
+#                     of opCall0..opCall30: 
+#                         let indx = (int)(op)-(int)opCall0
+#                         if indx>=0 and indx<ConstStack.len:
+#                             ret &= " (" & $(ConstStack[indx]) & ")"
+#                     else:
+#                         discard
+                
+#                 ret &= resetColor
+                    
+#             if i!=0:
+#                 ret &= ";"
+
+#         ret
+#     except:
+#         ""
