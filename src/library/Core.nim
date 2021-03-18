@@ -21,7 +21,8 @@ import algorithm, sequtils
 import helpers/datasource as DatasourceHelper
 import helpers/ffi as FfiHelper
 
-import vm/[common, env, errors, eval, exec, globals, parse, stack, value]
+import vm/lib
+import vm/[env, errors, eval, exec, globals, parse]
 
 #=======================================
 # Methods
@@ -90,7 +91,7 @@ proc defineSymbols*() =
                 if (let aExpect = popAttr("expect"); aExpect != VNULL):
                     expected = aExpect.t
 
-                stack.push(execForeignMethod(externalLibrary, x.s, y.a, expected))
+                push(execForeignMethod(externalLibrary, x.s, y.a, expected))
             else:
                 var fun: Value
 
@@ -100,7 +101,7 @@ proc defineSymbols*() =
                     fun = x
 
                 for v in y.a.reversed:
-                    stack.push(v)
+                    push(v)
 
                 if fun.fnKind==UserFunction:
                     discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
@@ -124,8 +125,8 @@ proc defineSymbols*() =
                 else       -> print "a is greater than 2"
         """:
             ##########################################################
-            stack.push(x)
-            stack.push(newBoolean(false))
+            push(x)
+            push(newBoolean(false))
 
     builtin "continue",
         alias       = unaliased, 
@@ -239,8 +240,8 @@ proc defineSymbols*() =
             print b         ; 3
         """:
             ##########################################################
-            stack.push(x)
-            stack.push(x)
+            push(x)
+            push(x)
 
     builtin "else",
         alias       = unaliased, 
@@ -263,7 +264,7 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            let y = stack.pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
+            let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
             if not y.b: discard execBlock(x)
 
     builtin "if",
@@ -321,7 +322,7 @@ proc defineSymbols*() =
                 discard execBlock(y)
                 # if vmReturn:
                 #     return ReturnResult
-            stack.push(newBoolean(condition))
+            push(newBoolean(condition))
 
     # TODO(Core\let) Do we really need an alias for that?
     #  Currently, the alias is `:` - acting as an infix operator. But this could lead to confusion with existing `label:` or `path\label:`.
@@ -364,7 +365,7 @@ proc defineSymbols*() =
             print c                 ; Hello
         """:
             ##########################################################
-            stack.push(copyValue(x))
+            push(copyValue(x))
 
     constant "null",
         alias       = slashedzero,
@@ -398,21 +399,21 @@ proc defineSymbols*() =
             let doDiscard = (popAttr("discard") != VNULL)
 
             if x.i==1:
-                if doDiscard: discard stack.pop()
+                if doDiscard: discard pop()
                 else: discard
             else:
                 if doDiscard: 
                     var i = 0
                     while i<x.i:
-                        discard stack.pop()
+                        discard pop()
                         i+=1
                 else:
                     var res: ValueArray = @[]
                     var i = 0
                     while i<x.i:
-                        res.add stack.pop()
+                        res.add pop()
                         i+=1
-                    stack.push(newBlock(res))
+                    push(newBlock(res))
 
     builtin "return",
         alias       = unaliased, 
@@ -435,7 +436,7 @@ proc defineSymbols*() =
             print f 6         ; 10
         """:
             ##########################################################
-            stack.push(x)
+            push(x)
             #echo "emitting: ReturnTriggered"
             raise ReturnTriggered()
             # vmReturn = true
@@ -525,12 +526,12 @@ proc defineSymbols*() =
             let execInParent = (popAttr("import")!=VNULL)
             try:
                 discard execBlock(x, execInParent=execInParent, inTryBlock=true)
-                stack.push(VTRUE)
+                push(VTRUE)
             except:
                 let e = getCurrentException()
                 if verbose:
                     showVMErrors(e)
-                stack.push(VFALSE)
+                push(VFALSE)
 
     builtin "unless",
         alias       = unaliased, 
@@ -588,7 +589,7 @@ proc defineSymbols*() =
                 discard execBlock(y)
                 # if vmReturn:
                 #     return ReturnResult
-            stack.push(newBoolean(condition))
+            push(newBoolean(condition))
 
     builtin "until",
         alias       = unaliased, 
@@ -626,7 +627,7 @@ proc defineSymbols*() =
                 handleBranching:
                     discard execBlock(VNULL, evaluated=preevaledX)
                     discard execBlock(VNULL, evaluated=preevaledY)
-                    let popped = stack.pop()
+                    let popped = pop()
                     let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
                     if condition:
                         break
@@ -653,7 +654,7 @@ proc defineSymbols*() =
             print g 10              ; 12
         """:
             ##########################################################
-            stack.push(InPlace)
+            push(InPlace)
 
     builtin "when?",
         alias       = unaliased, 
@@ -675,7 +676,7 @@ proc defineSymbols*() =
             ##########################################################
             let z = pop()
             if not z.b:
-                let top = stack.sTop()
+                let top = sTop()
 
                 var newb: Value = newBlock()
                 for old in top.a:
@@ -685,7 +686,7 @@ proc defineSymbols*() =
 
                 discard execBlock(newb)
 
-                let res = stack.sTop()
+                let res = sTop()
                 if res.b: 
                     discard execBlock(y)
                     discard pop()
@@ -736,7 +737,7 @@ proc defineSymbols*() =
                 let preevaledY = doEval(y)
 
                 discard execBlock(VNULL, evaluated=preevaledX)
-                var popped = stack.pop()
+                var popped = pop()
 
                 while not (popped.kind==Null or (popped.kind==Boolean and popped.b==false)):
                     handleBranching:
@@ -745,7 +746,7 @@ proc defineSymbols*() =
                         else:
                             discard execBlock(VNULL, evaluated=preevaledY)
                         discard execBlock(VNULL, evaluated=preevaledX)
-                        popped = stack.pop()
+                        popped = pop()
                     do:
                         discard
             else:

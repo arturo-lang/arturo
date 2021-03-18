@@ -23,7 +23,8 @@ import nre except toSeq
 import helpers/colors as ColorsHelper
 import helpers/webview as WebviewHelper
 
-import vm/[common, env, exec, globals, stack, value]
+import vm/lib
+import vm/[env, exec, globals]
 
 #=======================================
 # Methods
@@ -179,17 +180,17 @@ proc defineSymbols*() =
                                     args.add(newString(d[0]))
 
                                 for d in (toSeq(decodeData(req.body))).reversed:
-                                    stack.push(newString(d[1]))
+                                    push(newString(d[1]))
 
                             for capture in (toSeq(pairs(captures))).reversed:
-                                stack.push(newString(capture[1]))
+                                push(newString(capture[1]))
 
                             try:
                                 discard execBlock(routes.d[k], execInParent=true, args=args)
                             except:
                                 let e = getCurrentException()
                                 echo "Something went wrong." & e.msg
-                            body = stack.pop().s
+                            body = pop().s
                             routeFound = k
                             break
 

@@ -18,7 +18,8 @@
 
 import sequtils, std/sets
 
-import vm/[common, globals, stack, value]
+import vm/lib
+import vm/[globals]
 
 #=======================================
 # Methods
@@ -58,12 +59,12 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     SetInPlace(newBlock(toSeq(symmetricDifference(toHashSet(InPlace.a), toHashSet(y.a)))))
                 else:
-                    stack.push(newBlock(toSeq(symmetricDifference(toHashSet(x.a), toHashSet(y.a)))))
+                    push(newBlock(toSeq(symmetricDifference(toHashSet(x.a), toHashSet(y.a)))))
             else:
                 if x.kind==Literal:
                     SetInPlace(newBlock(toSeq(difference(toHashSet(InPlace.a), toHashSet(y.a)))))
                 else:
-                    stack.push(newBlock(toSeq(difference(toHashSet(x.a), toHashSet(y.a)))))
+                    push(newBlock(toSeq(difference(toHashSet(x.a), toHashSet(y.a)))))
 
     builtin "intersection",
         alias       = unaliased, 
@@ -88,7 +89,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newBlock(toSeq(intersection(toHashSet(InPlace.a), toHashSet(y.a)))))
             else:
-                stack.push(newBlock(toSeq(intersection(toHashSet(x.a), toHashSet(y.a)))))
+                push(newBlock(toSeq(intersection(toHashSet(x.a), toHashSet(y.a)))))
 
     builtin "subset?",
         alias       = unaliased, 
@@ -121,7 +122,7 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("proper")!=VNULL):
                 if x == y: 
-                    stack.push(newBoolean(false))
+                    push(newBoolean(false))
                 else:
                     var contains = true
                     for item in x.a:
@@ -129,10 +130,10 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    stack.push(newBoolean(contains))
+                    push(newBoolean(contains))
             else:
                 if x == y:
-                    stack.push(newBoolean(true))
+                    push(newBoolean(true))
                 else:
                     var contains = true
                     for item in x.a:
@@ -140,7 +141,7 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    stack.push(newBoolean(contains))
+                    push(newBoolean(contains))
 
     builtin "superset?",
         alias       = unaliased, 
@@ -173,7 +174,7 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("proper")!=VNULL):
                 if x == y: 
-                    stack.push(newBoolean(false))
+                    push(newBoolean(false))
                 else:
                     var contains = true
                     for item in y.a:
@@ -181,10 +182,10 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    stack.push(newBoolean(contains))
+                    push(newBoolean(contains))
             else:
                 if x == y:
-                    stack.push(newBoolean(true))
+                    push(newBoolean(true))
                 else:
                     var contains = true
                     for item in y.a:
@@ -192,7 +193,7 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    stack.push(newBoolean(contains))
+                    push(newBoolean(contains))
 
     builtin "union",
         alias       = unaliased, 
@@ -217,7 +218,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newBlock(toSeq(union(toHashSet(InPlace.a), toHashSet(y.a)))))
             else:
-                stack.push(newBlock(toSeq(union(toHashSet(x.a), toHashSet(y.a)))))
+                push(newBlock(toSeq(union(toHashSet(x.a), toHashSet(y.a)))))
 
 #=======================================
 # Add Library

@@ -16,7 +16,8 @@
 # Libraries
 #=======================================
 
-import vm/[common, globals, stack, value]
+import vm/lib
+import vm/[globals]
 
 #=======================================
 # Methods
@@ -45,7 +46,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : InPlace &&= y
-            else               : stack.push(x && y)
+            else               : push(x && y)
 
 
     builtin "nand",
@@ -66,7 +67,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : InPlace &&= y; !!= InPlaced
-            else               : stack.push(!! (x && y))
+            else               : push(!! (x && y))
 
     builtin "nor",
         alias       = unaliased, 
@@ -86,7 +87,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : InPlace ||= y; !!= InPlaced
-            else               : stack.push(!! (x || y))
+            else               : push(!! (x || y))
 
     builtin "not",
         alias       = unaliased, 
@@ -105,7 +106,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : !!= InPlace 
-            else               : stack.push(!! x)
+            else               : push(!! x)
 
     builtin "or",
         alias       = unaliased, 
@@ -125,7 +126,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : InPlace ||= y
-            else               : stack.push(x || y)
+            else               : push(x || y)
 
     builtin "shl",
         alias       = unaliased, 
@@ -156,7 +157,7 @@ proc defineSymbols*() =
                 var res = x << y
                 if res < x and (popAttr("safe")!=VNULL):
                     res = newBigInteger(x.i) << y
-                stack.push(res)
+                push(res)
 
     builtin "shr",
         alias       = unaliased, 
@@ -176,7 +177,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : InPlace >>= y
-            else               : stack.push(x >> y)
+            else               : push(x >> y)
 
     builtin "xnor",
         alias       = unaliased, 
@@ -196,7 +197,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : InPlace ^^= y; !!= InPlaced
-            else               : stack.push(!! (x ^^ y))
+            else               : push(!! (x ^^ y))
         
     builtin "xor",
         alias       = unaliased, 
@@ -216,7 +217,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal : InPlace ^^= y
-            else               : stack.push(x ^^ y)
+            else               : push(x ^^ y)
 
 #=======================================
 # Add Library

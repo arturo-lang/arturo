@@ -25,7 +25,8 @@ when not defined(NOWEBVIEW):
     import helpers/url as UrlHelper
     import helpers/webview as WebviewHelper
 
-    import vm/[common, env, exec, stack, value]
+    import vm/lib
+    import vm/[env, exec]
 
 #=======================================
 # Methods
@@ -99,7 +100,7 @@ proc defineSymbols*() =
                     debug       = withDebug,
                     handler     = proc (w: Webview, arg: cstring) =
                         let got = valueFromJson($arg)
-                        stack.push(GetKey(got.d, "args"))
+                        push(GetKey(got.d, "args"))
                         callByName(GetKey(got.d, "method").s)
                 )
 
@@ -117,7 +118,7 @@ proc defineSymbols*() =
                         ##########################################################
                         let query = "JSON.stringify(eval(\"" & x.s & "\"))"
                         var ret: Value = newString($(wv.getEval(query)))
-                        stack.push(ret)
+                        push(ret)
 
                 wv.run()
                 wv.exit()
