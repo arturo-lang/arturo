@@ -63,13 +63,13 @@ proc initialize*() =
     # attributes
     createAttrsStack()
 
-    # opstack
-    if DoDebug:
-        OpStack[0] = opNop
-        OpStack[1] = opNop
-        OpStack[2] = opNop
-        OpStack[3] = opNop
-        OpStack[4] = opNop
+    # # opstack
+    # if DoDebug:
+    #     OpStack[0] = opNop
+    #     OpStack[1] = opNop
+    #     OpStack[2] = opNop
+    #     OpStack[3] = opNop
+    #     OpStack[4] = opNop
     
     # random number generator
     randomize()

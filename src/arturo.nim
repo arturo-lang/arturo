@@ -115,7 +115,8 @@ when isMainModule:
                             action = evalCode
                             code = runModule
                         of "d","debug":
-                            DoDebug = true
+                            # DoDebug = true
+                            discard
                         of "h","help":
                             action = showHelp
                         of "v","version":
