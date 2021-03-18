@@ -6,9 +6,15 @@
 # @file: vm/errors.nim
 ######################################################
 
-# var
-#     OpStack*    : array[5,OpCode]
-#     ConstStack* : ValueArray
+#=======================================
+# Libraries
+#=======================================
+
+import re, sequtils
+import strformat, strutils, sugar
+
+import helpers/colors as ColorsHelper
+import helpers/strings as StringsHelper
 
 #=======================================
 # Types
@@ -34,7 +40,7 @@ const
     Alternative*  = "perhaps you meant"
 
 #=======================================
-# Methods
+# Main
 #=======================================
 
 proc panic*(context: string, error: string) =
@@ -42,29 +48,6 @@ proc panic*(context: string, error: string) =
     # if $(context) notin [AssertionError, SyntaxError, CompilerError]:
     #    errorMsg &= getOpStack()
     raise VMError(name: context, msg:move errorMsg)
-
-#=======================================
-# Libraries
-#=======================================
-
-import re, sequtils, sets
-import strformat, strutils, sugar
-#import nre except toSeq
-
-import helpers/colors as ColorsHelper
-import helpers/strings as StringsHelper
-
-# import vm/bytecode
-# import vm/value
-# ##import vm/panic
-# import vm/stack
-
-# #export panic
-
-# var
-#     # opstack
-#     OpStack*    : array[5,OpCode]
-#     #ConstStack* : ValueArray
 
 #=======================================
 # Helpers
@@ -88,7 +71,6 @@ proc showVMErrors*(e: ref Exception) =
     if errMsgParts.len > 1:
         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
     echo fmt("{bold(redColor)}{marker} {header} {separator}{resetColor} {errMsg}")
-    # emptyStack()
 
 #=======================================
 # Methods
@@ -198,6 +180,11 @@ proc RuntimeError_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
           "error loading symbol: " & sym & ";" & 
           "from library: " & path
 
+# TODO Re-establish stack trace debug reports
+
+# var
+#     OpStack*    : array[5,OpCode]
+#     ConstStack* : ValueArray
 # proc getOpStack*(): string =
 #     try:
 #         var ret = ";;"
