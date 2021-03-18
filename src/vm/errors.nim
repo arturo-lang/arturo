@@ -16,15 +16,14 @@ import strformat, strutils, sugar
 import helpers/colors as ColorsHelper
 import helpers/strings as StringsHelper
 
+import vm/types
+
 #=======================================
 # Types
 #=======================================
 
-type 
-    ReturnTriggered* = ref object of Defect
-    BreakTriggered* = ref object of Defect
-    ContinueTriggered* = ref object of Defect
-    VMError* = ref object of Defect
+# type 
+    
 
 #=======================================
 # Constants

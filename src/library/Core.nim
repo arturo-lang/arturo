@@ -22,7 +22,7 @@ import helpers/datasource as DatasourceHelper
 import helpers/ffi as FfiHelper
 
 import vm/lib
-import vm/[env, errors, eval, exec, globals, parse]
+import vm/[env, errors, eval, exec, globals, parse, types]
 
 #=======================================
 # Methods
