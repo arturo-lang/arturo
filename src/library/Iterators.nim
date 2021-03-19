@@ -19,7 +19,7 @@
 import algorithm, sequtils, sugar, unicode
 
 import vm/lib
-import vm/[errors, eval, exec, globals]
+import vm/[errors, eval, exec]
 
 #=======================================
 # Methods

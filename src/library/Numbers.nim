@@ -24,7 +24,6 @@ when not defined(NOGMP):
 import helpers/math as MathHelper
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods

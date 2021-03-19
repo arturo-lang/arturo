@@ -24,7 +24,7 @@ import helpers/colors as ColorsHelper
 import helpers/webview as WebviewHelper
 
 import vm/lib
-import vm/[env, exec, globals]
+import vm/[env, exec]
 
 #=======================================
 # Methods

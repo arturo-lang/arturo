@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import vm/globals
+import vm/lib
 
 when not defined(NOWEBVIEW):
     import os
@@ -25,7 +25,6 @@ when not defined(NOWEBVIEW):
     import helpers/url as UrlHelper
     import helpers/webview as WebviewHelper
 
-    import vm/lib
     import vm/[env, exec]
 
 #=======================================

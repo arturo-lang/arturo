@@ -19,7 +19,7 @@
 import os, osproc, sequtils, sugar
 
 import vm/lib
-import vm/[errors, exec, globals]
+import vm/[errors, exec]
 
 #=======================================
 # Methods

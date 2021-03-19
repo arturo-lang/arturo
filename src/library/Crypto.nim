@@ -21,7 +21,6 @@ when not defined(freebsd):
     import encodings
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods

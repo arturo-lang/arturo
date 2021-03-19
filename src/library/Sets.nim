@@ -19,7 +19,6 @@
 import sequtils, std/sets
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods

@@ -22,7 +22,7 @@ import helpers/path as PathHelper
 import helpers/url as UrlHelper
 
 import vm/lib
-import vm/[env, globals]
+import vm/[env]
 
 #=======================================
 # Methods
