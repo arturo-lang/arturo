@@ -272,12 +272,15 @@ var
     #DoDebug* = false
 
 #=======================================
-# Helpers
+# Forward declarations
 #=======================================
 
-
-## forward declarations
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
+proc `$`*(v: Value): string {.inline.}
+
+#=======================================
+# Helpers
+#=======================================
 
 proc newNull*(): Value {.inline.} =
     VNULL
@@ -322,11 +325,10 @@ proc newInteger*(i: string): Value {.inline.} =
     try:
         return newInteger(parseInt(i))
     except ValueError as e:
-        # value out of range
         when not defined(NOGMP):
             return newInteger(newInt(i))
         else:
-            raise e
+            RuntimeError_IntegerOverflow(i)
 
 proc newBigInteger*(i: int): Value {.inline.} =
     when not defined(NOGMP):
@@ -556,7 +558,7 @@ proc `+`*(x: Value, y: Value): Value =
                         when not defined(NOGMP):
                             return newInteger(newInt(x.i)+y.i)
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("add " & $(x) & " " & $(y), operation=true)
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -586,7 +588,7 @@ proc `+=`*(x: var Value, y: Value) =
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i)+y.i)
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("add " & $(x) & " " & $(y), operation=true)
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -616,7 +618,7 @@ proc `-`*(x: Value, y: Value): Value =
                         when not defined(NOGMP):
                             return newInteger(newInt(x.i)-y.i)
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("sub " & $(x) & " " & $(y), operation=true)
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -646,7 +648,7 @@ proc `-=`*(x: var Value, y: Value) =
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i)-y.i)
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("sub " & $(x) & " " & $(y), operation=true)
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -676,7 +678,7 @@ proc `*`*(x: Value, y: Value): Value =
                         when not defined(NOGMP):
                             return newInteger(newInt(x.i)*y.i)
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("mul " & $(x) & " " & $(y), operation=true)
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -706,7 +708,7 @@ proc `*=`*(x: var Value, y: Value) =
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i)*y.i)
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("mul " & $(x) & " " & $(y), operation=true)
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -760,7 +762,7 @@ proc `/=`*(x: var Value, y: Value) =
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i) div y.i)
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("div " & $(x) & " " & $(y), operation=true)
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -848,7 +850,7 @@ proc `^`*(x: Value, y: Value): Value =
                         when not defined(NOGMP):
                             return newInteger(pow(x.i,(culong)(y.i)))
                         else:
-                            raise e
+                            RuntimeError_IntegerOverflow("pow " & $(x) & " " & $(y), operation=true)
             else:
                 if y.iKind==BigInteger:
                     discard
