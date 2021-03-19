@@ -250,4 +250,4 @@ loop split.lines pre 'p [
 execute "rm src/arturo.dot"
 execute "rm src/arturo.png"
 
-write relative "../src/arturo.dot" pre
+write relative "arturo.dot" pre
