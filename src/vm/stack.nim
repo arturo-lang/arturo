@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, strutils, tables
+import strformat, tables
 
 import vm/value
 
@@ -97,20 +97,3 @@ when defined(VERBOSE):
     proc printAttrs*() =
         for k,v in pairs(Attrs):
             echo k & " => " & $(v)
-
-
-proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
-    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
-    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
-
-    var ordinalPos: string = ""
-    if argumentPos==0:
-        ordinalPos = "first"
-    elif argumentPos==1:
-        ordinalPos = "second"
-    elif argumentPos==2:
-        ordinalPos = "third"
-
-    return "cannot perform _" & functionName & "_ -> " & actualStr & ";" &
-           "incorrect argument type for " & ordinalPos & " parameter;" &
-           "accepts " & acceptedStr
