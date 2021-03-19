@@ -14,7 +14,7 @@ import algorithm, strformat, strutils, tables
 
 import helpers/debug as DebugHelper
 
-import vm/[globals, types, value]
+import vm/[bytecode, globals, value]
 
 #=======================================
 # Variables

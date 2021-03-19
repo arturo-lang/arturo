@@ -16,7 +16,7 @@ when defined(VERBOSE):
     import strformat
     import helpers/debug as debugHelper
 
-import vm/[errors, eval, globals, parse, stack, types, value]
+import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
 #=======================================
 # Globals
