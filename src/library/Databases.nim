@@ -19,7 +19,7 @@
 import sequtils
 
 when not defined(NOSQLITE):
-    import helpers/database as DatabaseHelper
+    import helpers/database
 
 import vm/lib
 

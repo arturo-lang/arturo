@@ -18,8 +18,8 @@
 
 import algorithm, sequtils
 
-import helpers/datasource as DatasourceHelper
-import helpers/ffi as FfiHelper
+import helpers/datasource
+import helpers/ffi
 
 import vm/lib
 import vm/[env, errors, eval, exec, parse]

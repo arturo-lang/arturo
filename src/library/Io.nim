@@ -21,7 +21,7 @@ import algorithm, rdstdin, terminal
 when not defined(windows):
     import linenoise
 
-import helpers/repl as ReplHelper
+import helpers/repl
 
 import vm/lib
 import vm/[eval, exec]

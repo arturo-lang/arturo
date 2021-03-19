@@ -20,8 +20,8 @@ import sequtils, strformat, times, unicode
 when not defined(NOGMP):
     import extras/bignum
 
-import helpers/datasource as DatasourceHelper
-import helpers/strings as StringsHelper
+import helpers/datasource
+import helpers/strings
 
 import vm/lib
 import vm/[errors, exec, parse]

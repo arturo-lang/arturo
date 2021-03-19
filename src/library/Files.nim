@@ -22,13 +22,13 @@ when not defined(NOPARSERS):
     import sugar
     import extras/miniz
     
-    import helpers/html as HtmlHelper
-    import helpers/markdown as MarkdownHelper
-    import helpers/toml as TomlHelper
+    import helpers/html
+    import helpers/markdown
+    import helpers/toml
 
-import helpers/csv as CsvHelper
-import helpers/datasource as DatasourceHelper
-import helpers/json as JsonHelper
+import helpers/csv
+import helpers/datasource
+import helpers/jsonobject
 
 import vm/lib
 

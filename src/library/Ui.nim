@@ -21,9 +21,9 @@ import vm/lib
 when not defined(NOWEBVIEW):
     import os
 
-    import helpers/json as JsonHelper
-    import helpers/url as UrlHelper
-    import helpers/webview as WebviewHelper
+    import helpers/jsonobject
+    import helpers/url
+    import helpers/webview
 
     import vm/[env, exec]
 

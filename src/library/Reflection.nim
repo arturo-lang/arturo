@@ -16,8 +16,8 @@
 # Libraries
 #=======================================
 
-import helpers/benchmark as benchmarkHelper
-import helpers/helper as helperHelper
+import helpers/benchmark
+import helpers/helper
 
 import vm/lib
 import vm/[env, exec]

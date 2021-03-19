@@ -21,7 +21,7 @@ import math, random, sequtils, sugar
 when not defined(NOGMP):
     import extras/bignum
 
-import helpers/math as MathHelper
+import helpers/maths
 
 import vm/lib
 

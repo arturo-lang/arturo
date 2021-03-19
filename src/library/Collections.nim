@@ -20,8 +20,8 @@ import algorithm, os, random, sequtils
 import strutils, sugar, unicode
 import nre except toSeq
 
-import helpers/arrays as arraysHelper  
-import helpers/unisort as unisortHelper 
+import helpers/arrays
+import helpers/unisort
 
 import vm/lib
 

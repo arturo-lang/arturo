@@ -12,7 +12,7 @@
 
 import dynlib, os, strutils
 
-import vm/[errors, types, value]
+import vm/[errors, value]
 
 #=======================================
 # Types
