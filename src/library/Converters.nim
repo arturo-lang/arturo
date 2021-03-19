@@ -24,7 +24,7 @@ import helpers/datasource as DatasourceHelper
 import helpers/strings as StringsHelper
 
 import vm/lib
-import vm/[errors, exec, globals, parse]
+import vm/[errors, exec, parse]
 
 #=======================================
 # Methods

@@ -24,7 +24,6 @@ import helpers/arrays as arraysHelper
 import helpers/unisort as unisortHelper 
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods

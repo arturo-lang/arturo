@@ -19,7 +19,6 @@
 import times
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods

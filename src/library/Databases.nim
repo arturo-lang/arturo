@@ -22,7 +22,6 @@ when not defined(NOSQLITE):
     import helpers/database as DatabaseHelper
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods

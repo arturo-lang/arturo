@@ -17,7 +17,7 @@
 #=======================================
 
 import vm/lib
-import vm/[exec, globals]
+import vm/[exec]
 
 #=======================================
 # Methods

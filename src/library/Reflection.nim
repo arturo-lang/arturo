@@ -20,7 +20,7 @@ import helpers/benchmark as benchmarkHelper
 import helpers/helper as helperHelper
 
 import vm/lib
-import vm/[env, exec, globals]
+import vm/[env, exec]
 
 #=======================================
 # Methods

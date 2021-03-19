@@ -24,7 +24,7 @@ when not defined(windows):
 import helpers/repl as ReplHelper
 
 import vm/lib
-import vm/[eval, exec, globals]
+import vm/[eval, exec]
 
 #=======================================
 # Methods

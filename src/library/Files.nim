@@ -31,7 +31,6 @@ import helpers/datasource as DatasourceHelper
 import helpers/json as JsonHelper
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods

@@ -24,7 +24,6 @@ import helpers/strings as StringsHelper
 import helpers/templates as TemplatesHelper
 
 import vm/lib
-import vm/[globals]
 
 #=======================================
 # Methods
