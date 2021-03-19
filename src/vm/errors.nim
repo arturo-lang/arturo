@@ -13,8 +13,8 @@
 import re, sequtils
 import strformat, strutils, sugar
 
-import helpers/colors as ColorsHelper
-import helpers/strings as StringsHelper
+import helpers/colors
+import helpers/strings
 
 #=======================================
 # Types

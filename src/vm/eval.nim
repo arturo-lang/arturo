@@ -12,7 +12,7 @@
 
 import algorithm, strformat, strutils, tables
 
-import helpers/debug as DebugHelper
+import helpers/debug
 
 import vm/[bytecode, globals, value]
 

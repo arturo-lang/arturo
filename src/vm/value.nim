@@ -20,7 +20,7 @@ when not defined(NOSQLITE):
 when not defined(NOGMP):
     import extras/bignum
 
-import helpers/colors as ColorsHelper
+import helpers/colors
 
 import vm/errors
 
