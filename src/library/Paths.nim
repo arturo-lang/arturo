@@ -18,8 +18,8 @@
 
 import os
 
-import helpers/path as PathHelper
-import helpers/url as UrlHelper
+import helpers/path
+import helpers/url
 
 import vm/lib
 import vm/[env]

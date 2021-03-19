@@ -13,7 +13,7 @@
 import algorithm, sequtils, sets, strformat
 import strutils, tables
 
-import helpers/colors as ColorsHelper
+import helpers/colors
 
 import vm/[globals, value]
 

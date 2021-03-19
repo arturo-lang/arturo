@@ -19,9 +19,9 @@
 import json, re, std/editdistance, os
 import sequtils, strutils, unicode, xmltree
 
-import helpers/colors as ColorsHelper
-import helpers/strings as StringsHelper
-import helpers/templates as TemplatesHelper
+import helpers/colors
+import helpers/strings
+import helpers/templates
 
 import vm/lib
 

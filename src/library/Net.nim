@@ -20,8 +20,8 @@ import algorithm, asyncdispatch, asynchttpserver
 import cgi, httpclient, os, sequtils, smtp
 import nre except toSeq
 
-import helpers/colors as ColorsHelper
-import helpers/webview as WebviewHelper
+import helpers/colors
+import helpers/webview
 
 import vm/lib
 import vm/[env, exec]
