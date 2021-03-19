@@ -30,8 +30,8 @@ type
     CmdAction = enum
         execFile
         evalCode
-        # readBcode
-        # writeBcode
+        readBcode
+        writeBcode
         showHelp
         showVersion
 
@@ -39,15 +39,15 @@ type
 # Constants
 #=======================================
 
-#   -o --output               Compile script and write bytecode
-#   -i --input                Execute script from bytecode
-
 const helpTxt = """
 
 Usage:
   arturo [options] <path>
 
 Options:
+  -o --output               Compile script and write bytecode
+  -i --input                Execute script from bytecode
+
   -e --evaluate             Evaluate given code
   -c --console              Show repl / interactive console
 
@@ -75,9 +75,9 @@ when isMainModule:
     var token = initOptParser()
 
     var action: CmdAction = evalCode
-    var runConsole  = static readFile("src/system/console.art")
-    var runUpdate   = static readFile("src/system/update.art")
-    var runModule   = static readFile("src/system/module.art")
+    var runConsole  = static readFile("src/scripts/console.art")
+    var runUpdate   = static readFile("src/scripts/update.art")
+    var runModule   = static readFile("src/scripts/module.art")
     var code: string = ""
     var arguments: ValueArray = @[]
 
@@ -102,12 +102,12 @@ when isMainModule:
                         of "e","evaluate":
                             action = evalCode
                             code = token.val
-                        # of "o","output":
-                        #     action = writeBcode
-                        #     code = token.val
-                        # of "i","input":
-                        #     action = readBcode
-                        #     code = token.val
+                        of "o","output":
+                            action = writeBcode
+                            code = token.val
+                        of "i","input":
+                            action = readBcode
+                            code = token.val
                         of "u","update":
                             action = evalCode
                             code = runUpdate
@@ -136,19 +136,19 @@ when isMainModule:
                 else:
                     run(code, arguments, action==execFile)
                     
-            # of writeBcode:
-            #     discard
-            #     # bootup(run=false):
-            #     #     let filename = code
-            #     #     let parsed = doParse(move code, isFile = true)
-            #     #     let evaled = parsed.doEval()
+            of writeBcode:
+                discard
+                # bootup(run=false):
+                #     let filename = code
+                #     let parsed = doParse(move code, isFile = true)
+                #     let evaled = parsed.doEval()
 
-            #     #     discard writeBytecode(evaled, filename & ".bcode")
+                #     discard writeBytecode(evaled, filename & ".bcode")
 
-            # of readBcode:
-            #     discard
-            #     # bootup(run=true):
-            #     #     let evaled = readBytecode(code)
+            of readBcode:
+                discard
+                # bootup(run=true):
+                #     let evaled = readBytecode(code)
 
             of showHelp:
                 echo helpTxt
