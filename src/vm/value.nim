@@ -321,12 +321,12 @@ proc newInteger*(i: int64): Value {.inline.} =
 proc newInteger*(i: string): Value {.inline.} =
     try:
         return newInteger(parseInt(i))
-    except ValueError:
+    except ValueError as e:
         # value out of range
         when not defined(NOGMP):
             return newInteger(newInt(i))
         else:
-            RuntimeError_IntegerOverflow()
+            raise e
 
 proc newBigInteger*(i: int): Value {.inline.} =
     when not defined(NOGMP):
@@ -552,11 +552,11 @@ proc `+`*(x: Value, y: Value): Value =
                 else:
                     try:
                         return newInteger(x.i+y.i)
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             return newInteger(newInt(x.i)+y.i)
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -582,11 +582,11 @@ proc `+=`*(x: var Value, y: Value) =
                 else:
                     try:
                         x.i += y.i
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i)+y.i)
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -612,11 +612,11 @@ proc `-`*(x: Value, y: Value): Value =
                 else:
                     try:
                         return newInteger(x.i-y.i)
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             return newInteger(newInt(x.i)-y.i)
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -642,11 +642,11 @@ proc `-=`*(x: var Value, y: Value) =
                 else:
                     try:
                         x.i -= y.i
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i)-y.i)
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -672,11 +672,11 @@ proc `*`*(x: Value, y: Value): Value =
                 else:
                     try:
                         return newInteger(x.i*y.i)
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             return newInteger(newInt(x.i)*y.i)
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -702,11 +702,11 @@ proc `*=`*(x: var Value, y: Value) =
                 else:
                     try:
                         x.i *= y.i
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i)*y.i)
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -756,11 +756,11 @@ proc `/=`*(x: var Value, y: Value) =
                 else:
                     try:
                         x = newInteger(x.i div y.i)
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             x = newInteger(newInt(x.i) div y.i)
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 when not defined(NOGMP):
                     if y.iKind==BigInteger:
@@ -838,19 +838,21 @@ proc `^`*(x: Value, y: Value): Value =
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
                 if y.iKind==BigInteger:
-                    RuntimeError_IntegerOverflow()
+                    #RuntimeError_IntegerOverflow()
                     #stack.push(newInteger(pow(x.iy.bi))
+                    discard
                 else:
                     try:
                         return newInteger(x.i^y.i)
-                    except OverflowDefect:
+                    except OverflowDefect as e:
                         when not defined(NOGMP):
                             return newInteger(pow(x.i,(culong)(y.i)))
                         else:
-                            RuntimeError_IntegerOverflow()
+                            raise e
             else:
                 if y.iKind==BigInteger:
-                    RuntimeError_IntegerOverflow()
+                    discard
+                    #RuntimeError_IntegerOverflow()
                     #stack.push(newInteger(x.bi div y.bi))
                 else:
                     when not defined(NOGMP):
@@ -985,14 +987,16 @@ proc `>>`*(x: Value, y: Value): Value =
         if x.iKind==NormalInteger:
             if y.iKind==BigInteger:
                 # not valid
-                RuntimeError_IntegerOverflow()
+                discard
+                #RuntimeError_IntegerOverflow()
             else:
                 return newInteger(x.i shr y.i)
         else:
             when not defined(NOGMP):
                 if y.iKind==BigInteger:
                     # not valid
-                    RuntimeError_IntegerOverflow()
+                    discard
+                    #RuntimeError_IntegerOverflow()
                 else:
                     return newInteger(x.bi shr (culong)(y.i))
 
@@ -1003,14 +1007,16 @@ proc `>>=`*(x: var Value, y: Value) =
         if x.iKind==NormalInteger:
             if y.iKind==BigInteger:
                 # not valid
-                RuntimeError_IntegerOverflow()
+                discard
+                #RuntimeError_IntegerOverflow()
             else:
                 x = newInteger(x.i shr y.i)
         else:
             when not defined(NOGMP):
                 if y.iKind==BigInteger:
                     # not valid
-                    RuntimeError_IntegerOverflow()
+                    discard
+                    #RuntimeError_IntegerOverflow()
                 else:
                     x = newInteger(x.bi shr (culong)(y.i))
 
@@ -1021,7 +1027,8 @@ proc `<<`*(x: Value, y: Value): Value =
         if x.iKind==NormalInteger:
             if y.iKind==BigInteger:
                 # not valid
-                RuntimeError_IntegerOverflow()
+                discard
+                #RuntimeError_IntegerOverflow()
             else:
                 # not valid
                 return newInteger(x.i shl y.i)
@@ -1029,7 +1036,8 @@ proc `<<`*(x: Value, y: Value): Value =
             when not defined(NOGMP):
                 if y.iKind==BigInteger:
                     # not valid
-                    RuntimeError_IntegerOverflow()
+                    discard
+                    #RuntimeError_IntegerOverflow()
                 else:
                     return newInteger(x.bi shl (culong)(y.i))
 
@@ -1040,14 +1048,16 @@ proc `<<=`*(x: var Value, y: Value) =
         if x.iKind==NormalInteger:
             if y.iKind==BigInteger:
                 # not valid
-                RuntimeError_IntegerOverflow()
+                discard
+                #RuntimeError_IntegerOverflow()
             else:
                 x = newInteger(x.i shl y.i)
         else:
             when not defined(NOGMP):
                 if y.iKind==BigInteger:
                     # not valid
-                    RuntimeError_IntegerOverflow()
+                    discard
+                    #RuntimeError_IntegerOverflow()
                 else:
                     x = newInteger(x.bi shl (culong)(y.i))
 
