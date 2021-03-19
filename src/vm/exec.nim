@@ -14,7 +14,7 @@ import math, tables
 
 when defined(VERBOSE):
     import strformat
-    import helpers/debug as debugHelper
+    import helpers/debug
 
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
