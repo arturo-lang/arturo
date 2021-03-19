@@ -34,7 +34,6 @@ systemMods: split.lines {
     channels_builtin
     chcks
     collections
-    colors
     comparisons
     compilesettings
     complex
@@ -249,5 +248,6 @@ loop split.lines pre 'p [
 ; print graf
 
 execute "rm src/arturo.dot"
+execute "rm src/arturo.png"
 
 write relative "../src/arturo.dot" pre
