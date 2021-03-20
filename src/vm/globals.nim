@@ -15,21 +15,6 @@ import std/editdistance, sequtils, tables
 import vm/[errors, value]
 
 #=======================================
-# Types
-#=======================================
-
-type
-    Translation* = (ValueArray, ByteArray) # (constants, instructions)
-    Library* = proc()
-
-#=======================================
-# Constants
-#=======================================
-
-const
-    NoTranslation*  = (@[],@[])
-
-#=======================================
 # Globals
 #=======================================
 
@@ -44,7 +29,7 @@ var
     Arities*    : Table[string,int]
 
     # libraries 
-    Libraries*  : seq[Library]
+    Libraries*  : seq[BuiltinAction]
 
 #=======================================
 # Methods
