@@ -19,7 +19,7 @@ when defined(VERBOSE):
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
 #=======================================
-# Globals
+# Forward Declarations
 #=======================================
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict
@@ -73,13 +73,10 @@ proc parseData*(
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
-    #useArgs         : bool = false, 
     args            : ValueArray = NoValues, 
-    #usePreeval      : bool = false, 
     evaluated       : Translation = NoTranslation, 
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
-    #isBreakable     : bool = false,
     imports         : Value = nil,
     exports         : Value = nil,
     exportable      : bool = false,
