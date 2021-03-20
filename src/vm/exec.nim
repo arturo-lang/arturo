@@ -219,7 +219,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         #     OpStack[0] = op
 
         when defined(VERBOSE):
-            echo fmt("exec: {op}")
+            echo "exec: " & $(op)
 
         case op:
             # [0x00-0x0F]
