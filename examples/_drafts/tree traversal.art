@@ -1,0 +1,26 @@
+makeTree: function [nodes][
+    if? integer? nodes -> nodes
+    else [
+        ret: new dictionary.data []
+
+        set ret 'value first nodes
+        (2 =< size nodes) ? -> set ret 'left makeTree nodes\1
+                            -> set ret 'left ø
+
+        (3 = size nodes)  ? -> set ret 'right makeTree nodes\2
+                            -> set ret 'right ø
+        ret
+    ]
+]
+inspect makeTree [1 [2 [4 7] [5]] [3 [6 [8] [9]]]]
+
+; * Tree traversal
+; =           1
+; =          / \
+; =         /   \
+; =        /     \
+; =       2       3
+; =      / \     /
+; =     4   5   6
+; =    /       / \
+; =   7       8   9
