@@ -14,7 +14,7 @@ import lexbase, os, sequtils
 import streams, strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
-    import helpers/debug as debugHelper
+    import helpers/debug
 
 import vm/[errors, value]
 

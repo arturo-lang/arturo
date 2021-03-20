@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-when not defined(MINI):
+when not defined(NOPARSERS):
     when defined(USE_NIM_MARKDOWN):
         import extras/markdown
     else:
@@ -22,7 +22,8 @@ import vm/value
 # Methods
 #=======================================
 
-when not defined(MINI):
+when not defined(NOPARSERS):
+
     proc parseMarkdownInput*(input: string): Value =
         when defined(USE_NIM_MARKDOWN):
             return newString(markdown(input))
@@ -34,7 +35,3 @@ when not defined(MINI):
             freeMarkdownBuffer(ret)
             return newString(str)
 
-else:
-    proc parseMarkdownInput*(input: string): Value =
-        echo "- feature not supported in MINI builds"
-        return VNULL

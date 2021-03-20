@@ -20,11 +20,11 @@ import algorithm, asyncdispatch, asynchttpserver
 import cgi, httpclient, os, sequtils, smtp
 import nre except toSeq
 
-import helpers/colors as ColorsHelper
-when not defined(MINI):
-    import helpers/webview as WebviewHelper
+import helpers/colors
+import helpers/webview
 
-import vm/[common, env, exec, globals, stack, value]
+import vm/lib
+import vm/[env, exec]
 
 #=======================================
 # Methods
@@ -135,9 +135,9 @@ proc defineSymbols*() =
                 if (let aPort = popAttr("port"); aPort != VNULL):
                     port = aPort.i
 
-                when not defined(MINI):
-                    if (let aChrome = popAttr("chrome"); aChrome != VNULL):
-                        openChromeWindow(port)
+            
+                if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+                    openChromeWindow(port)
 
                 var server = newAsyncHttpServer()
 
@@ -180,17 +180,17 @@ proc defineSymbols*() =
                                     args.add(newString(d[0]))
 
                                 for d in (toSeq(decodeData(req.body))).reversed:
-                                    stack.push(newString(d[1]))
+                                    push(newString(d[1]))
 
                             for capture in (toSeq(pairs(captures))).reversed:
-                                stack.push(newString(capture[1]))
+                                push(newString(capture[1]))
 
                             try:
                                 discard execBlock(routes.d[k], execInParent=true, args=args)
                             except:
                                 let e = getCurrentException()
                                 echo "Something went wrong." & e.msg
-                            body = stack.pop().s
+                            body = pop().s
                             routeFound = k
                             break
 

@@ -101,9 +101,27 @@ do
             FLAGS="$FLAGS --passC:'-flto'";;
         mini)      
             MINI_BUILD=true 
-            FLAGS="$FLAGS -d:MINI";;
-        nosqlite)
-            FLAGS="$FLAGS -d:NOSQLITE";;
+            FLAGS="$FLAGS -d:NOASCIIDECODE \
+                          -d:NOEXAMPLES \
+                          -d:NOGMP \
+                          -d:NOPARSERS \
+                          -d:NOSQLITE \
+                          -d:NOUNZIP \
+                          -d:NOWEBVIEW";;
+
+        noasciidecode)  FLAGS="$FLAGS -d:NOASCIIDECODE";;
+        noexamples)     FLAGS="$FLAGS -d:NOEXAMPLES";;
+        nogmp)          FLAGS="$FLAGS -d:NOGMP";;
+        noparsers)      FLAGS="$FLAGS -d:NOPARSERS";;
+        nosqlite)       FLAGS="$FLAGS -d:NOSQLITE";;
+        nounzip)        FLAGS="$FLAGS -d:NOUNZIP";;
+        nowebview)      FLAGS="$FLAGS -d:NOWEBVIEW";;
+        
+        arm)
+            FLAGS="$FLAGS --cpu:arm";;
+        arm64)
+            FLAGS="$FLAGS --cpu:arm64 --gcc.path:/usr/bin"
+            FLAGS="$FLAGS --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc";;
         verbose) 	
             CONFIG="verbose $CONFIG"
             FLAGS="$FLAGS -d:VERBOSE";;
@@ -134,7 +152,7 @@ if $IS_DEV_BUILD; then
     awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
     git commit -m 'build update' version/build
 
-    FLAGS="$FLAGS -d:DEV"
+    FLAGS="$FLAGS -d:DEV --hints:on"
 fi
 
 ################################################

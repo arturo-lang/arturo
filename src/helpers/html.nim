@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-when not defined(MINI):
+when not defined(NOPARSERS):
     import htmlparser
     import strtabs, tables, xmltree
 
@@ -20,7 +20,7 @@ import vm/value
 # Methods
 #=======================================
 
-when not defined(MINI):
+when not defined(NOPARSERS):
     proc parseHtmlNode(node: XmlNode): Value =
         result = newDictionary()
         if node.kind()==xnElement:
@@ -42,8 +42,3 @@ when not defined(MINI):
 
     proc parseHtmlInput*(input: string): Value =
         parseHtmlNode(parseHtml(input)).d["html"]
-
-else:
-    proc parseHtmlInput*(input: string): Value =
-        echo "- feature not supported in MINI builds"
-        return VNULL

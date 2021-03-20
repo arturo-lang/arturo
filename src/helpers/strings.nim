@@ -12,23 +12,17 @@
 
 import strutils, unicode
 
-when not defined(MINI):
+when not defined(NOASCIIDECODE):
     import unidecode
-
-import vm/value
 
 #=======================================
 # Methods
 #=======================================
 
-when not defined(MINI):
-    proc convertToAscii*(input: string): Value =
-        return newString(unidecode(input))
+when not defined(NOASCIIDECODE):
+    proc convertToAscii*(input: string): string =
+        return unidecode(input)
 
-else:
-    proc convertToAscii*(input: string): Value =
-        echo "- feature not supported in MINI builds"
-        return VNULL
 
 proc truncatePreserving*(s: string, at: int, with: string = "..."): string =
     result = s

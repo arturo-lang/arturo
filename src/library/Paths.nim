@@ -18,10 +18,11 @@
 
 import os
 
-import helpers/path as PathHelper
-import helpers/url as UrlHelper
+import helpers/path
+import helpers/url
 
-import vm/[common, env, globals, stack, value]
+import vm/lib
+import vm/[env]
 
 #=======================================
 # Methods
@@ -85,36 +86,36 @@ proc defineSymbols*() =
                 let details = parseUrlComponents(x.s)
 
                 if (popAttr("scheme") != VNULL):
-                    stack.push(details["scheme"])
+                    push(details["scheme"])
                 elif (popAttr("host") != VNULL):
-                    stack.push(details["host"])
+                    push(details["host"])
                 elif (popAttr("port") != VNULL):
-                    stack.push(details["port"])
+                    push(details["port"])
                 elif (popAttr("user") != VNULL):
-                    stack.push(details["user"])
+                    push(details["user"])
                 elif (popAttr("password") != VNULL):
-                    stack.push(details["password"])
+                    push(details["password"])
                 elif (popAttr("path") != VNULL):
-                    stack.push(details["path"])
+                    push(details["path"])
                 elif (popAttr("query") != VNULL):
-                    stack.push(details["query"])
+                    push(details["query"])
                 elif (popAttr("anchor") != VNULL):
-                    stack.push(details["anchor"])
+                    push(details["anchor"])
                 else:
-                    stack.push(newDictionary(details))
+                    push(newDictionary(details))
             else:
                 let details = parsePathComponents(x.s)
 
                 if (popAttr("directory") != VNULL):
-                    stack.push(details["directory"])
+                    push(details["directory"])
                 elif (popAttr("basename") != VNULL):
-                    stack.push(details["basename"])
+                    push(details["basename"])
                 elif (popAttr("filename") != VNULL):
-                    stack.push(details["filename"])
+                    push(details["filename"])
                 elif (popAttr("extension") != VNULL):
-                    stack.push(details["extension"])
+                    push(details["extension"])
                 else:
-                    stack.push(newDictionary(details))
+                    push(newDictionary(details))
 
     builtin "module",
         alias       = unaliased, 
@@ -131,7 +132,7 @@ proc defineSymbols*() =
             do.import module 'html    ; (imports given module)
         """:
             ##########################################################
-            stack.push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
+            push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
     
     builtin "normalize",
         alias       = dotslash, 
@@ -155,12 +156,12 @@ proc defineSymbols*() =
                 else:
                     var ret = x.s
                     ret.normalizeExe()
-                    stack.push(newString(ret))
+                    push(newString(ret))
             else:
                 if x.kind==Literal:
                     InPlace.s.normalizePath()
                 else:
-                    stack.push(newString(normalizedPath(x.s)))
+                    push(newString(normalizedPath(x.s)))
 
     builtin "relative",
         alias       = dotslash, 
@@ -178,7 +179,7 @@ proc defineSymbols*() =
             ; /Users/admin/Desktop/test.txt
         """:
             ##########################################################
-            stack.push(newString(joinPath(env.currentPath(),x.s)))
+            push(newString(joinPath(env.currentPath(),x.s)))
 
 #=======================================
 # Add Library

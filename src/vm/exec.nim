@@ -10,16 +10,16 @@
 # Libraries
 #=======================================
 
-import algorithm, math, tables
+import math, tables
 
 when defined(VERBOSE):
     import strformat
-    import helpers/debug as debugHelper
+    import helpers/debug
 
 import vm/[bytecode, errors, eval, globals, parse, stack, value]
 
 #=======================================
-# Globals
+# Forward Declarations
 #=======================================
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict
@@ -73,13 +73,10 @@ proc parseData*(
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
-    #useArgs         : bool = false, 
     args            : ValueArray = NoValues, 
-    #usePreeval      : bool = false, 
     evaluated       : Translation = NoTranslation, 
     execInParent    : bool = false, 
     isFuncBlock     : bool = false, 
-    #isBreakable     : bool = false,
     imports         : Value = nil,
     exports         : Value = nil,
     exportable      : bool = false,
@@ -192,8 +189,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         if depth==0:
             showDebugHeader("VM")
 
-    if DoDebug:
-        ConstStack = input[0]
+    #if DoDebug:
+    #    ConstStack = input[0]
 
     let cnst = input[0]
     let it = input[1]
@@ -212,14 +209,14 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             Syms[symIndx] = stack.pop()
 
     while true:
-        if vmBreak:
-            break
+        # if vmBreak:
+        #     break
 
         op = (OpCode)(it[i])
 
-        if DoDebug:
-            OpStack.rotateLeft(1)
-            OpStack[0] = op
+        # if DoDebug:
+        #     OpStack.rotateLeft(1)
+        #     OpStack[0] = op
 
         when defined(VERBOSE):
             echo fmt("exec: {op}")

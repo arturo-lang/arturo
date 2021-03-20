@@ -13,9 +13,9 @@
 import algorithm, sequtils, sets, strformat
 import strutils, tables
 
-import helpers/colors as ColorsHelper
+import helpers/colors
 
-import vm/[globals, value]
+import vm/value
 
 #=======================================
 # Constants
@@ -44,8 +44,8 @@ template printLine() =
 proc printEmptyLine() = 
     echo "|"
 
-proc getAlias(n: string): (string,PrecedenceKind) = 
-    for k,v in pairs(Aliases):
+proc getAlias(n: string, aliases: SymbolDict): (string,PrecedenceKind) = 
+    for k,v in pairs(aliases):
         if v.name.s==n:
             return ($(newSymbol(k)), v.precedence)
     return ("", PrefixPrecedence)
@@ -142,16 +142,16 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
 # Methods
 #=======================================
 
-proc printHelp*() =
-    let sorted = toSeq(Syms.keys).sorted
+proc printHelp*(syms: ValueDict) =
+    let sorted = toSeq(syms.keys).sorted
     for key in sorted:
-        let v = Syms[key]
+        let v = syms[key]
         if v.kind==Function and v.fnKind==BuiltinFunction:
             var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
             
             echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.fdesc
 
-proc getInfo*(n: string, v: Value):ValueDict =
+proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result = initOrderedTable[string,Value]()
 
     result["name"] = newString(n)
@@ -198,7 +198,7 @@ proc getInfo*(n: string, v: Value):ValueDict =
                 returns.add(newType(ret))
             result["returns"] = newBlock(returns)
 
-            let alias = getAlias(n)
+            let alias = getAlias(n, aliases)
             if alias[0]!="":
                 result["alias"] = newString(alias[0])
                 result["infix?"] = newBoolean(alias[1]==InfixPrecedence)
@@ -210,7 +210,7 @@ proc getInfo*(n: string, v: Value):ValueDict =
             result["args"] = v.params
 
 
-proc printInfo*(n: string, v: Value) =
+proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
     var typeStr = ":" & ($(v.kind)).toLowerAscii
     # if v.kind==Function and v.fnKind==BuiltinFunction:
@@ -228,7 +228,7 @@ proc printInfo*(n: string, v: Value) =
     printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
 
     # Print alias if it exists
-    let alias = getAlias(n)
+    let alias = getAlias(n, aliases)
     if alias[0]!="":
         printOneData("alias",alias[0])
 

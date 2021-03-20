@@ -16,10 +16,11 @@
 # Libraries
 #=======================================
 
-import helpers/benchmark as benchmarkHelper
-import helpers/helper as helperHelper
+import helpers/benchmark
+import helpers/helper
 
-import vm/[common, env, exec, globals, stack, value]
+import vm/lib
+import vm/[env, exec]
 
 #=======================================
 # Methods
@@ -44,7 +45,7 @@ proc defineSymbols*() =
             for k,v in pairs(Arities):
                 ret[k] = newInteger(v)
 
-            stack.push(newDictionary(ret))
+            push(newDictionary(ret))
             
     builtin "attr",
         alias       = unaliased, 
@@ -72,7 +73,7 @@ proc defineSymbols*() =
             ; 60
         """:
             ##########################################################
-            stack.push(popAttr(x.s))
+            push(popAttr(x.s))
 
     builtin "attr?",
         alias       = unaliased, 
@@ -99,9 +100,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if getAttr(x.s) != VNULL:
-                stack.push(VTRUE)
+                push(VTRUE)
             else:
-                stack.push(VFALSE)
+                push(VFALSE)
 
     builtin "attribute?",
         alias       = unaliased, 
@@ -117,7 +118,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Attribute))
+            push(newBoolean(x.kind==Attribute))
 
     builtin "attributeLabel?",
         alias       = unaliased, 
@@ -133,7 +134,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==AttributeLabel))
+            push(newBoolean(x.kind==AttributeLabel))
 
     builtin "attrs",
         alias       = unaliased, 
@@ -156,7 +157,7 @@ proc defineSymbols*() =
             ; ]
         """:
             ##########################################################
-            stack.push(getAttrsDict())
+            push(getAttrsDict())
 
     builtin "benchmark",
         alias       = unaliased, 
@@ -193,7 +194,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Binary))
+            push(newBoolean(x.kind==Binary))
 
     builtin "block?",
         alias       = unaliased, 
@@ -211,7 +212,7 @@ proc defineSymbols*() =
             print block? 123                ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Block))
+            push(newBoolean(x.kind==Block))
 
     builtin "boolean?",
         alias       = unaliased, 
@@ -229,7 +230,7 @@ proc defineSymbols*() =
             print boolena? 123          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Boolean))
+            push(newBoolean(x.kind==Boolean))
 
     builtin "char?",
         alias       = unaliased, 
@@ -245,7 +246,7 @@ proc defineSymbols*() =
             print char? 123         ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Char))
+            push(newBoolean(x.kind==Char))
 
     builtin "database?",
         alias       = unaliased, 
@@ -261,7 +262,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Database))
+            push(newBoolean(x.kind==Database))
 
     builtin "date?",
         alias       = unaliased, 
@@ -277,7 +278,7 @@ proc defineSymbols*() =
             print date? "hello"         ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Date))
+            push(newBoolean(x.kind==Date))
 
     builtin "dictionary?",
         alias       = unaliased, 
@@ -293,7 +294,7 @@ proc defineSymbols*() =
             print dictionary? 123               ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Dictionary))
+            push(newBoolean(x.kind==Dictionary))
 
     builtin "help",
         alias       = unaliased, 
@@ -312,7 +313,7 @@ proc defineSymbols*() =
             ; ...
         """:
             ##########################################################
-            printHelp()
+            printHelp(Syms)
 
     builtin "info",
         alias       = unaliased, 
@@ -343,9 +344,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("get") != VNULL):
-                stack.push(newDictionary(getInfo(x.s, InPlace)))
+                push(newDictionary(getInfo(x.s, InPlace, Aliases)))
             else:
-                printInfo(x.s, InPlace)
+                printInfo(x.s, InPlace, Aliases)
 
     builtin "inline?",
         alias       = unaliased, 
@@ -361,7 +362,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Inline))
+            push(newBoolean(x.kind==Inline))
 
     builtin "inspect",
         alias       = unaliased, 
@@ -398,7 +399,7 @@ proc defineSymbols*() =
             print integer? "hello"      ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Integer))
+            push(newBoolean(x.kind==Integer))
 
     builtin "is?",
         alias       = unaliased, 
@@ -417,9 +418,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if y.custom.isNil():
-                stack.push(newBoolean(x.t == y.kind))
+                push(newBoolean(x.t == y.kind))
             else:
-                stack.push(newBoolean(x.name == y.custom.name))
+                push(newBoolean(x.name == y.custom.name))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -436,7 +437,7 @@ proc defineSymbols*() =
             print floating? "hello"     ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Floating))
+            push(newBoolean(x.kind==Floating))
 
     builtin "function?",
         alias       = unaliased, 
@@ -454,7 +455,7 @@ proc defineSymbols*() =
             print function? 123             ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Function))
+            push(newBoolean(x.kind==Function))
 
     builtin "label?",
         alias       = unaliased, 
@@ -470,7 +471,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Label))
+            push(newBoolean(x.kind==Label))
 
     builtin "literal?",
         alias       = unaliased, 
@@ -487,7 +488,7 @@ proc defineSymbols*() =
             print literal? 123          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Literal))
+            push(newBoolean(x.kind==Literal))
 
     builtin "null?",
         alias       = unaliased, 
@@ -505,7 +506,7 @@ proc defineSymbols*() =
             print null? 123             ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Null))
+            push(newBoolean(x.kind==Null))
 
     builtin "path?",
         alias       = unaliased, 
@@ -521,7 +522,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Path))
+            push(newBoolean(x.kind==Path))
 
     builtin "pathLabel?",
         alias       = unaliased, 
@@ -537,7 +538,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==PathLabel))
+            push(newBoolean(x.kind==PathLabel))
 
     builtin "set?",
         alias       = unaliased, 
@@ -555,7 +556,7 @@ proc defineSymbols*() =
             print set? 'zoom          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(SymExists(x.s)))
+            push(newBoolean(SymExists(x.s)))
 
     builtin "stack",
         alias       = unaliased, 
@@ -571,7 +572,7 @@ proc defineSymbols*() =
             ; 1 2 3 done
         """:
             ##########################################################
-            stack.push(newBlock(Stack[0..SP-1]))
+            push(newBlock(Stack[0..SP-1]))
 
     builtin "standalone?",
         alias       = unaliased, 
@@ -591,7 +592,7 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            stack.push(newBoolean(PathStack.len == 1))
+            push(newBoolean(PathStack.len == 1))
 
     builtin "string?",
         alias       = unaliased, 
@@ -608,7 +609,7 @@ proc defineSymbols*() =
             print string? 123           ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==String))
+            push(newBoolean(x.kind==String))
 
     builtin "symbol?",
         alias       = unaliased, 
@@ -624,7 +625,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Symbol))
+            push(newBoolean(x.kind==Symbol))
 
     builtin "symbols",
         alias       = unaliased, 
@@ -649,7 +650,7 @@ proc defineSymbols*() =
             for k,v in pairs(Syms):
                 if k[0]!=toUpperAscii(k[0]):
                     symbols[k] = v
-            stack.push(newDictionary(symbols))
+            push(newDictionary(symbols))
 
     builtin "type",
         alias       = unaliased, 
@@ -666,9 +667,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.custom.isNil():
-                stack.push(newType(x.kind))
+                push(newType(x.kind))
             else:
-                stack.push(x.custom)
+                push(x.custom)
 
     builtin "type?",
         alias       = unaliased, 
@@ -685,7 +686,7 @@ proc defineSymbols*() =
             print type? 123             ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Type))
+            push(newBoolean(x.kind==Type))
 
     builtin "word?",
         alias       = unaliased, 
@@ -701,7 +702,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Word))
+            push(newBoolean(x.kind==Word))
 
 #=======================================
 # Add Library

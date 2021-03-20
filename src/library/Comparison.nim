@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import vm/[common, globals, stack, value]
+import vm/lib
 
 #=======================================
 # Methods
@@ -48,7 +48,7 @@ proc defineSymbols*() =
             print 3=3             ; true
         """:
             ##########################################################
-            stack.push(newBoolean(x == y))
+            push(newBoolean(x == y))
 
     builtin "greater?",
         alias       = greaterthan, 
@@ -67,7 +67,7 @@ proc defineSymbols*() =
             print 3>2             ; true
         """:
             ##########################################################
-            stack.push(newBoolean(x > y))
+            push(newBoolean(x > y))
 
     builtin "greaterOrEqual?",
         alias       = greaterequal, 
@@ -86,7 +86,7 @@ proc defineSymbols*() =
             print 2>=2            ; true
         """:
             ##########################################################
-            stack.push(newBoolean(x >= y))
+            push(newBoolean(x >= y))
 
     builtin "less?",
         alias       = lessthan, 
@@ -105,7 +105,7 @@ proc defineSymbols*() =
             print 2<3             ; true
         """:
             ##########################################################
-            stack.push(newBoolean(x < y))
+            push(newBoolean(x < y))
 
     builtin "lessOrEqual?",
         alias       = equalless, 
@@ -124,7 +124,7 @@ proc defineSymbols*() =
             print 2=<3            ; true
         """:
             ##########################################################
-            stack.push(newBoolean(x <= y))
+            push(newBoolean(x <= y))
                 
     builtin "notEqual?",
         alias       = lessgreater, 
@@ -143,7 +143,7 @@ proc defineSymbols*() =
             print 2<>3            ; true
         """:
             ##########################################################
-            stack.push(newBoolean(x != y))
+            push(newBoolean(x != y))
             
 #=======================================
 # Add Library

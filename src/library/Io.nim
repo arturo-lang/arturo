@@ -21,9 +21,10 @@ import algorithm, rdstdin, terminal
 when not defined(windows):
     import linenoise
 
-import helpers/repl as ReplHelper
+import helpers/repl
 
-import vm/[common, eval, exec, globals, stack, value]
+import vm/lib
+import vm/[eval, exec]
 
 #=======================================
 # Methods
@@ -123,7 +124,7 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("repl")!=VNULL):
                 when defined(windows):
-                    stack.push(newString(readLineFromStdin(x.s)))
+                    push(newString(readLineFromStdin(x.s)))
                 else:
                     var historyPath: string = ""
                     var completionsArray: ValueArray = @[]
@@ -138,9 +139,9 @@ proc defineSymbols*() =
                     if (let aHint = popAttr("hint"); aHint != VNULL):
                         hintsTable = aHint.d
 
-                    stack.push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
+                    push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
             else:
-                stack.push(newString(readLineFromStdin(x.s)))
+                push(newString(readLineFromStdin(x.s)))
 
 
     builtin "print",
@@ -163,7 +164,7 @@ proc defineSymbols*() =
 
                 var res: ValueArray = @[]
                 while SP>stop:
-                    res.add(stack.pop())
+                    res.add(pop())
 
                 for r in res.reversed:
                     stdout.write($(r))
@@ -198,7 +199,7 @@ proc defineSymbols*() =
 
                 var res: ValueArray = @[]
                 while SP>stop:
-                    res.add(stack.pop())
+                    res.add(pop())
 
                 for r in res.reversed:
                     stdout.write($(r))
@@ -227,7 +228,7 @@ proc defineSymbols*() =
                 "height": newInteger(size[1])
             }.toOrderedTable()
 
-            stack.push(newDictionary(ret))
+            push(newDictionary(ret))
 
 #=======================================
 # Add Library
