@@ -160,7 +160,7 @@ proc defineSymbols*() =
             if x.kind==Block:
                 let xblock = doEval(x)
                 let stop = SP
-                discard doExec(xblock)#, depth+1)
+                discard doExec(xblock)
 
                 var res: ValueArray = @[]
                 while SP>stop:
