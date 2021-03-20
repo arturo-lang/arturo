@@ -2,7 +2,6 @@
 /bin/arturo*
 /experiments
 /.cache
-.gitattributes
 test
 test2
 test*.nim
