@@ -1,0 +1,36 @@
+subarraySum: function [arr][
+    curr: 0
+    mx: 0
+    fst: size arr
+    lst: 0
+    currFst: 0
+
+    loop.with: 'i arr [e][
+        curr: curr + e
+        if e > curr [
+            curr: e
+            currFst: i
+        ]
+        if curr > mx [
+            mx: curr
+            fst: currFst
+            lst: i
+        ]
+    ]
+    if? lst > fst -> return @[mx, slice arr fst lst]
+    else -> return [0, []]
+]
+
+sequences: @[
+    @[1, 2, 3, 4, 5, neg 8, neg 9, neg 20, 40, 25, neg 5]
+    @[neg 1, neg 2, 3, 5, 6, neg 2, neg 1, 4, neg 4, 2, neg 1]
+    @[neg 1, neg 2, neg 3, neg 4, neg 5]
+    @[]
+]
+
+loop sequences 'seq [
+    print [pad "sequence:" 15 seq]
+    processed: subarraySum seq
+    print [pad "max sum:" 15 first processed]
+    print [pad "subsequence:" 15 last processed "\n"]
+]
