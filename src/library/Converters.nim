@@ -21,7 +21,8 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/datasource
-import helpers/strings
+when not defined(NOASCIIDECODE):
+    import helpers/strings
 
 import vm/lib
 import vm/[errors, exec, parse]
