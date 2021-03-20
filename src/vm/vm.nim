@@ -50,7 +50,11 @@ import library/Ui           as UiLib
 # Helpers
 #=======================================
 
-proc initialize*() =
+proc setupLibrary*() =
+    for importLibrary in Libraries:
+        importLibrary()
+
+template initialize*(args: ValueArray, filename: string, isFile:bool) =
     # function arity
     Arities = initTable[string,int]()
     
@@ -71,36 +75,47 @@ proc initialize*() =
     # random number generator
     randomize()
 
-proc setupLibrary*() =
-    for importLibrary in Libraries:
-        importLibrary()
-
-#=======================================
-# Methods
-#=======================================
-
-proc run*(code: var string, args: ValueArray, isFile: bool) =
-    initialize()
-
+    # environment
     initEnv(
         arguments = args, 
         version = Version,
         build = Build
     )
 
-    if isFile: env.addPath(code)
+    # paths
+    if isFile: env.addPath(filename)
     else: env.addPath(getCurrentDir())
 
     Syms = getEnvDictionary()
 
+    # library
     setupLibrary()
 
+template handleVMErrors*(blk: untyped): untyped =
     try:
-        let parsed = doParse(move code, isFile)
-        let evaled = parsed.doEval()
-        discard doExec(evaled)
+        blk
     except:
         let e = getCurrentException()
         showVMErrors(e)
         quit(1)
+
+#=======================================
+# Methods
+#=======================================
+
+proc runBytecode*(code: Translation, filename: string, args: ValueArray) =
+    initialize(args, filename, isFile=true)
+
+    handleVMErrors:
+        discard doExec(code)
+
+proc run*(code: var string, args: ValueArray, isFile: bool, doExecute: bool = true): Translation =
+    initialize(args, code, isFile=isFile)
+
+    handleVMErrors:
+        let parsed = doParse(move code, isFile)
+        let evaled = parsed.doEval()
+        if doExecute:
+            discard doExec(evaled)
+        return evaled
     
