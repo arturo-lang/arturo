@@ -16,7 +16,8 @@
 # Libraries
 #=======================================
 
-import vm/[common, exec, globals, stack, value]
+import vm/lib
+import vm/[exec]
 
 #=======================================
 # Methods
@@ -52,7 +53,7 @@ proc defineSymbols*() =
             ##########################################################
             # check if empty
             if x.a.len==0: 
-                stack.push(newBoolean(false))
+                push(newBoolean(false))
                 return
 
             var allOK = true
@@ -60,11 +61,11 @@ proc defineSymbols*() =
             for item in x.a:
                 if item!=VTRUE:
                     allOK = false
-                    stack.push(newBoolean(false))
+                    push(newBoolean(false))
                     break
 
             if allOK:
-                stack.push(newBoolean(true))
+                push(newBoolean(true))
 
     builtin "and?",
         alias       = unaliased, 
@@ -88,30 +89,30 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Boolean and y.kind==Boolean:
-                stack.push(newBoolean(x.b and y.b))
+                push(newBoolean(x.b and y.b))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
                         # block block
                         discard execBlock(x)
-                        if not stack.pop().b:
-                            stack.push(newBoolean(false))
+                        if not pop().b:
+                            push(newBoolean(false))
                             return
 
                         discard execBlock(y)
-                        stack.push(newBoolean(stack.pop().b))
+                        push(newBoolean(pop().b))
                     else:
                         # block boolean
                         discard execBlock(x)
-                        stack.push(newBoolean(stack.pop().b and y.b))
+                        push(newBoolean(pop().b and y.b))
                 else:
                     # boolean block
                     if not x.b:
-                        stack.push(newBoolean(false))
+                        push(newBoolean(false))
                         return
 
                     discard execBlock(y)
-                    stack.push(newBoolean(stack.pop().b))
+                    push(newBoolean(pop().b))
 
 
     builtin "any?",
@@ -134,18 +135,18 @@ proc defineSymbols*() =
             ##########################################################
             # check if empty
             if x.a.len==0: 
-                stack.push(newBoolean(false))
+                push(newBoolean(false))
                 return
             
             var anyOK = false
             for item in x.a:
                 if item==VTRUE:
                     anyOK = true
-                    stack.push(newBoolean(true))
+                    push(newBoolean(true))
                     break
                 
             if not anyOK:
-                stack.push(newBoolean(false))
+                push(newBoolean(false))
 
     constant "false",
         alias       = unaliased,
@@ -164,7 +165,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newBoolean(not x.b))
+            push(newBoolean(not x.b))
 
     builtin "nand?",
         alias       = unaliased, 
@@ -190,7 +191,7 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(not (x.b and y.b)))
+            push(newBoolean(not (x.b and y.b)))
 
     builtin "nor?",
         alias       = unaliased, 
@@ -216,7 +217,7 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(not (x.b or y.b)))
+            push(newBoolean(not (x.b or y.b)))
 
     builtin "not?",
         alias       = unaliased, 
@@ -236,7 +237,7 @@ proc defineSymbols*() =
             ; we're still not ready!
         """:
             ##########################################################
-            stack.push(newBoolean(not x.b))
+            push(newBoolean(not x.b))
 
     builtin "or?",
         alias       = unaliased, 
@@ -260,30 +261,30 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Boolean and y.kind==Boolean:
-                stack.push(newBoolean(x.b or y.b))
+                push(newBoolean(x.b or y.b))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
                         # block block
                         discard execBlock(x)
-                        if stack.pop().b:
-                            stack.push(newBoolean(true))
+                        if pop().b:
+                            push(newBoolean(true))
                             return
 
                         discard execBlock(y)
-                        stack.push(newBoolean(stack.pop().b))
+                        push(newBoolean(pop().b))
                     else:
                         # block boolean
                         discard execBlock(x)
-                        stack.push(newBoolean(stack.pop().b or y.b))
+                        push(newBoolean(pop().b or y.b))
                 else:
                     # boolean block
                     if x.b:
-                        stack.push(newBoolean(true))
+                        push(newBoolean(true))
                         return
 
                     discard execBlock(y)
-                    stack.push(newBoolean(stack.pop().b))
+                    push(newBoolean(pop().b))
 
     constant "true",
         alias       = unaliased,
@@ -302,7 +303,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(x)
+            push(x)
 
     builtin "xnor?",
         alias       = unaliased, 
@@ -328,7 +329,7 @@ proc defineSymbols*() =
             ; yep, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(not (x.b xor y.b)))
+            push(newBoolean(not (x.b xor y.b)))
 
     builtin "xor?",
         alias       = unaliased, 
@@ -354,7 +355,7 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(x.b xor y.b))
+            push(newBoolean(x.b xor y.b))
             
 #=======================================
 # Add Library

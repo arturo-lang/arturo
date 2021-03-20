@@ -18,19 +18,19 @@
 
 import os, sequtils
 
-when not defined(MINI):
+when not defined(NOPARSERS):
     import sugar
     import extras/miniz
     
-    import helpers/html as HtmlHelper
-    import helpers/markdown as MarkdownHelper
-    import helpers/toml as TomlHelper
+    import helpers/html
+    import helpers/markdown
+    import helpers/toml
 
-import helpers/csv as CsvHelper
-import helpers/datasource as DatasourceHelper
-import helpers/json as JsonHelper
+import helpers/csv
+import helpers/datasource
+import helpers/jsonobject
 
-import vm/[common, globals, stack, value]
+import vm/lib
 
 #=======================================
 # Methods
@@ -112,9 +112,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("directory") != VNULL): 
-                stack.push(newBoolean(dirExists(x.s)))
+                push(newBoolean(dirExists(x.s)))
             else: 
-                stack.push(newBoolean(fileExists(x.s)))
+                push(newBoolean(fileExists(x.s)))
 
     builtin "permissions",
         alias       = unaliased, 
@@ -153,7 +153,7 @@ proc defineSymbols*() =
                         }.toOrderedTable)
                     }.toOrderedTable
 
-                    stack.push(newDictionary(permsDict))
+                    push(newDictionary(permsDict))
                 else:
                     var source = x.s
                     var perms: set[FilePermission]
@@ -173,7 +173,7 @@ proc defineSymbols*() =
                     setFilePermissions(move source, move perms)
 
             except OSError:
-                stack.push(VNULL)
+                push(VNULL)
 
     builtin "read",
         alias       = doublearrowleft, 
@@ -183,7 +183,7 @@ proc defineSymbols*() =
             "file"  : {String}
         },
         attrs       = 
-            when not defined(MINI): 
+            when not defined(NOPARSERS): 
                 {
                     "lines"         : ({Boolean},"read file lines into block"),
                     "json"          : ({Boolean},"read Json into value"),
@@ -225,31 +225,31 @@ proc defineSymbols*() =
 
                 f.close()
 
-                stack.push(newBinary(b))
+                push(newBinary(b))
             else:
                 let (src, _{.inject.}) = getSource(x.s)
 
                 if (popAttr("lines") != VNULL):
-                    stack.push(newStringBlock(src.splitLines()))
+                    push(newStringBlock(src.splitLines()))
                 elif (popAttr("json") != VNULL):
-                    stack.push(valueFromJson(src))
+                    push(valueFromJson(src))
                 elif (popAttr("csv") != VNULL):
-                    stack.push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
+                    push(parseCsvInput(src, withHeaders=(popAttr("withHeaders")!=VNULL)))
                 else:
-                    when not defined(MINI):
+                    when not defined(NOPARSERS):
                         if (popAttr("toml") != VNULL):
-                            stack.push(parseTomlString(src))
+                            push(parseTomlString(src))
                         elif (popAttr("markdown") != VNULL):
-                            stack.push(parseMarkdownInput(src))
+                            push(parseMarkdownInput(src))
                         elif (popAttr("html") != VNULL):
-                            stack.push(parseHtmlInput(src))
+                            push(parseHtmlInput(src))
                         else:
-                            stack.push(newString(src))
+                            push(newString(src))
                     else:
-                        stack.push(newString(src))
+                        push(newString(src))
                         
                 # elif attrs.hasKey("xml"):
-                #     stack.push(parseXmlNode(parseXml(action(x.s))))
+                #     push(parseXmlNode(parseXml(action(x.s))))
 
     builtin "rename",
         alias       = unaliased, 
@@ -308,7 +308,7 @@ proc defineSymbols*() =
             except OSError:
                 discard
                     
-    when not defined(MINI):
+    when not defined(NOUNZIP):
         builtin "unzip",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -362,11 +362,11 @@ proc defineSymbols*() =
                         if x.kind==String:
                             writeFile(x.s, rez)
                         else:
-                            stack.push(newString(rez))
+                            push(newString(rez))
                     else:
                         writeFile(x.s, y.s)
 
-    when not defined(MINI):
+    when not defined(NOUNZIP):
         builtin "zip",
             alias       = unaliased, 
             rule        = PrefixPrecedence,

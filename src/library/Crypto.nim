@@ -20,7 +20,7 @@ import base64, md5, std/sha1, uri
 when not defined(freebsd):
     import encodings
 
-import vm/[common, globals, stack, value]
+import vm/lib
 
 #=======================================
 # Methods
@@ -54,12 +54,12 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.decodeUrl()
                 else:
-                    stack.push(newString(x.s.decodeUrl()))
+                    push(newString(x.s.decodeUrl()))
             else:
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.decode()
                 else:
-                    stack.push(newString(x.s.decode()))
+                    push(newString(x.s.decode()))
 
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
@@ -89,7 +89,7 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.encodeUrl()
                 else:
-                    stack.push(newString(x.s.encodeUrl()))
+                    push(newString(x.s.encodeUrl()))
 
             elif (let aFrom = popAttr("from"); aFrom != VNULL):
                 when not defined(freebsd):
@@ -101,10 +101,10 @@ proc defineSymbols*() =
                     if x.kind==Literal:
                         InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
-                        stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
+                        push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
                     if x.kind==String:
-                        stack.push(newString(x.s))
+                        push(newString(x.s))
 
             elif (let aTo = popAttr("to"); aTo != VNULL):
                 when not defined(freebsd):
@@ -114,16 +114,16 @@ proc defineSymbols*() =
                     if x.kind==Literal:
                         InPlace.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
                     else:
-                        stack.push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
+                        push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
                 else:
                     if x.kind==String:
-                        stack.push(newString(x.s))
+                        push(newString(x.s))
 
             else:
                 if x.kind==Literal:
                     InPlace.s = InPlaced.s.encode()
                 else:
-                    stack.push(newString(x.s.encode()))
+                    push(newString(x.s.encode()))
 
     builtin "digest",
         alias       = unaliased, 
@@ -148,12 +148,12 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     SetInPlace(newString(($(secureHash(InPlace.s))).toLowerAscii()))
                 else:
-                    stack.push(newString(($(secureHash(x.s))).toLowerAscii()))
+                    push(newString(($(secureHash(x.s))).toLowerAscii()))
             else:
                 if x.kind==Literal:
                     SetInPlace(newString(($(toMD5(InPlace.s))).toLowerAscii()))
                 else:
-                    stack.push(newString(($(toMD5(x.s))).toLowerAscii()))
+                    push(newString(($(toMD5(x.s))).toLowerAscii()))
 
     builtin "hash",
         alias       = unaliased, 
@@ -177,9 +177,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("string") != VNULL):
-                stack.push(newString($(hash(x))))
+                push(newString($(hash(x))))
             else:
-                stack.push(newInteger(hash(x)))
+                push(newInteger(hash(x)))
 
 #=======================================
 # Add Library

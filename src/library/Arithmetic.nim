@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import vm/[common, globals, stack, value]
+import vm/lib
 
 #=======================================
 # Methods
@@ -46,7 +46,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace += y
-            else                : stack.push(x+y)
+            else                : push(x+y)
 
     builtin "dec",
         alias       = unaliased, 
@@ -65,7 +65,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace -= I1
-            else                : stack.push(x-I1)
+            else                : push(x-I1)
         
     builtin "div",
         alias       = slash, 
@@ -86,7 +86,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace /= y
-            else                : stack.push(x/y)
+            else                : push(x/y)
 
     builtin "fdiv",
         alias       = doubleslash, 
@@ -106,7 +106,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace //= y
-            else                : stack.push(x//y)
+            else                : push(x//y)
 
     builtin "inc",
         alias       = unaliased, 
@@ -125,7 +125,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace += I1
-            else                : stack.push(x+I1)
+            else                : push(x+I1)
 
     builtin "mod",
         alias       = percent, 
@@ -146,7 +146,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace %= y
-            else                : stack.push(x%y)
+            else                : push(x%y)
 
     builtin "mul",
         alias       = asterisk, 
@@ -167,7 +167,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace *= y
-            else                : stack.push(x*y)
+            else                : push(x*y)
 
     # TODO(Arithmetic\neg) Add alias `_`?
     #  Current implementation has no alias. Should we add one? (Given that `-` is already reserved for subtraction and the function `sub`)
@@ -189,7 +189,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace *= I1M
-            else                : stack.push(x * I1M)
+            else                : push(x * I1M)
 
     builtin "pow",
         alias       = caret, 
@@ -210,7 +210,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace ^= y
-            else                : stack.push(x^y)
+            else                : push(x^y)
 
     builtin "sub",
         alias       = minus, 
@@ -231,7 +231,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal  : InPlace -= y
-            else                : stack.push(x-y)
+            else                : push(x-y)
 
 #=======================================
 # Add Library

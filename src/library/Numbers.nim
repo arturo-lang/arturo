@@ -17,11 +17,13 @@
 #=======================================
 
 import math, random, sequtils, sugar
-import extras/bignum
 
-import helpers/math as MathHelper
+when not defined(NOGMP):
+    import extras/bignum
 
-import vm/[common, globals, stack, value]
+import helpers/maths
+
+import vm/lib
 
 #=======================================
 # Methods
@@ -48,11 +50,12 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Integer:
                 if x.iKind==NormalInteger: 
-                    stack.push(newInteger(abs(x.i)))
+                    push(newInteger(abs(x.i)))
                 else:
-                    stack.push(newInteger(abs(x.bi)))
+                    when not defined(NOGMP):
+                        push(newInteger(abs(x.bi)))
             else:
-                stack.push(newFloating(abs(x.f)))
+                push(newFloating(abs(x.f)))
 
     builtin "acos",
         alias       = unaliased, 
@@ -69,7 +72,7 @@ proc defineSymbols*() =
             print acos 1.0          ; 0.0
         """:
             ##########################################################
-            stack.push(newFloating(arccos(asFloat(x))))
+            push(newFloating(arccos(asFloat(x))))
 
     builtin "acosh",
         alias       = unaliased, 
@@ -86,7 +89,7 @@ proc defineSymbols*() =
             print acosh 5.0         ; 2.292431669561178
         """:
             ##########################################################
-            stack.push(newFloating(arccosh(asFloat(x))))
+            push(newFloating(arccosh(asFloat(x))))
 
     builtin "asin",
         alias       = unaliased, 
@@ -103,7 +106,7 @@ proc defineSymbols*() =
             print asin 1.0          ; 1.570796326794897
         """:
             ##########################################################
-            stack.push(newFloating(arcsin(asFloat(x))))
+            push(newFloating(arcsin(asFloat(x))))
 
     builtin "asinh",
         alias       = unaliased, 
@@ -120,7 +123,7 @@ proc defineSymbols*() =
             print asinh 1.0         ; 0.881373587019543
         """:
             ##########################################################
-            stack.push(newFloating(arcsinh(asFloat(x))))
+            push(newFloating(arcsinh(asFloat(x))))
 
     builtin "atan",
         alias       = unaliased, 
@@ -137,7 +140,7 @@ proc defineSymbols*() =
             print atan 1.0          ; 0.7853981633974483
         """:
             ##########################################################
-            stack.push(newFloating(arctan(asFloat(x))))
+            push(newFloating(arctan(asFloat(x))))
 
     builtin "atanh",
         alias       = unaliased, 
@@ -154,7 +157,7 @@ proc defineSymbols*() =
             print atanh 1.0         ; inf
         """:
             ##########################################################
-            stack.push(newFloating(arctanh(asFloat(x))))
+            push(newFloating(arctanh(asFloat(x))))
 
     builtin "average",
         alias       = unaliased, 
@@ -177,7 +180,7 @@ proc defineSymbols*() =
 
             res //= newFloating(x.a.len)
 
-            stack.push(res)
+            push(res)
 
     builtin "ceil",
         alias       = unaliased, 
@@ -195,7 +198,7 @@ proc defineSymbols*() =
             print ceil 4            ; 4
         """:
             ##########################################################
-            stack.push(newInteger((int)(ceil(asFloat(x)))))
+            push(newInteger((int)(ceil(asFloat(x)))))
 
     builtin "cos",
         alias       = unaliased, 
@@ -212,7 +215,7 @@ proc defineSymbols*() =
             print cos 1.0           ; 0.5403023058681398
         """:
             ##########################################################
-            stack.push(newFloating(cos(asFloat(x))))
+            push(newFloating(cos(asFloat(x))))
 
     builtin "cosh",
         alias       = unaliased, 
@@ -229,7 +232,7 @@ proc defineSymbols*() =
             print cosh 1.0          ; 1.543080634815244
         """:
             ##########################################################
-            stack.push(newFloating(cosh(asFloat(x))))
+            push(newFloating(cosh(asFloat(x))))
 
     builtin "csec",
         alias       = unaliased, 
@@ -246,7 +249,7 @@ proc defineSymbols*() =
             print csec 1.0          ; 1.188395105778121
         """:
             ##########################################################
-            stack.push(newFloating(csc(asFloat(x))))
+            push(newFloating(csc(asFloat(x))))
 
     builtin "csech",
         alias       = unaliased, 
@@ -263,7 +266,7 @@ proc defineSymbols*() =
             print csech 1.0         ; 0.8509181282393216
         """:
             ##########################################################
-            stack.push(newFloating(csch(asFloat(x))))
+            push(newFloating(csch(asFloat(x))))
 
     builtin "ctan",
         alias       = unaliased, 
@@ -280,7 +283,7 @@ proc defineSymbols*() =
             print ctan 1.0          ; 0.6420926159343308
         """:
             ##########################################################
-            stack.push(newFloating(cot(asFloat(x))))
+            push(newFloating(cot(asFloat(x))))
 
     builtin "ctanh",
         alias       = unaliased, 
@@ -297,7 +300,7 @@ proc defineSymbols*() =
             print ctanh 1.0         ; 1.313035285499331
         """:
             ##########################################################
-            stack.push(newFloating(coth(asFloat(x))))
+            push(newFloating(coth(asFloat(x))))
 
     constant "epsilon",
         alias       = unaliased,
@@ -320,7 +323,7 @@ proc defineSymbols*() =
             print select 1..10 => even?       ; 2 4 6 8 10
         """:
             ##########################################################
-            stack.push(newBoolean(x % I2 == I0))
+            push(newBoolean(x % I2 == I0))
 
     builtin "exp",
         alias       = unaliased, 
@@ -337,7 +340,7 @@ proc defineSymbols*() =
             print exp neg 1.0   ; 0.3678794411714423
         """:
             ##########################################################
-            stack.push(newFloating(exp(asFloat(x))))
+            push(newFloating(exp(asFloat(x))))
 
     builtin "factors",
         alias       = unaliased, 
@@ -360,14 +363,15 @@ proc defineSymbols*() =
 
             if x.iKind==NormalInteger:
                 if prime:
-                    stack.push(newBlock(primeFactors(x.i).map((x)=>newInteger(x))))
+                    push(newBlock(primeFactors(x.i).map((x)=>newInteger(x))))
                 else:
-                    stack.push(newBlock(factors(x.i).map((x)=>newInteger(x))))
+                    push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
-                if prime:
-                    stack.push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
-                else:
-                    stack.push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
+                when not defined(NOGMP):
+                    if prime:
+                        push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
+                    else:
+                        push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
     builtin "floor",
         alias       = unaliased, 
@@ -385,7 +389,7 @@ proc defineSymbols*() =
             print floor 4           ; 4
         """:
             ##########################################################
-            stack.push(newInteger((int)(floor(asFloat(x)))))
+            push(newInteger((int)(floor(asFloat(x)))))
 
     builtin "gamma",
         alias       = unaliased, 
@@ -402,7 +406,7 @@ proc defineSymbols*() =
             print gamma 15          ; 87178291199.99985
         """:
             ##########################################################
-            stack.push(newFloating(gamma(asFloat(x))))
+            push(newFloating(gamma(asFloat(x))))
 
     builtin "gcd",
         alias       = unaliased, 
@@ -424,17 +428,19 @@ proc defineSymbols*() =
             while i<x.a.len:
                 if current.iKind==NormalInteger:
                     if x.a[i].iKind==BigInteger:
-                        current = newInteger(gcd(current.i, x.a[i].bi))
+                        when not defined(NOGMP):
+                            current = newInteger(gcd(current.i, x.a[i].bi))
                     else:
                         current = newInteger(gcd(current.i, x.a[i].i))
                 else:
-                    if x.a[i].iKind==BigInteger:
-                        current = newInteger(gcd(current.bi, x.a[i].bi))
-                    else:
-                        current = newInteger(gcd(current.bi, x.a[i].i))
+                    when not defined(NOGMP):
+                        if x.a[i].iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, x.a[i].bi))
+                        else:
+                            current = newInteger(gcd(current.bi, x.a[i].i))
                 inc(i)
 
-            stack.push(current)
+            push(current)
 
     builtin "ln",
         alias       = unaliased, 
@@ -451,7 +457,7 @@ proc defineSymbols*() =
             print ln neg 7.0        ; nan
         """:
             ##########################################################
-            stack.push(newFloating(ln(asFloat(x))))
+            push(newFloating(ln(asFloat(x))))
 
     builtin "hypot",
         alias       = unaliased, 
@@ -468,7 +474,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            stack.push(newFloating(hypot(asFloat(x), asFloat(y))))
+            push(newFloating(hypot(asFloat(x), asFloat(y))))
 
     builtin "log",
         alias       = unaliased, 
@@ -487,7 +493,7 @@ proc defineSymbols*() =
             print log 100.0 10.0    ; 2.0
         """:
             ##########################################################
-            stack.push(newFloating(log(asFloat(x),asFloat(y))))
+            push(newFloating(log(asFloat(x),asFloat(y))))
 
     builtin "median",
         alias       = unaliased, 
@@ -507,15 +513,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.a.len==0: 
-                stack.push(VNULL)
+                push(VNULL)
             else:
                 let first = x.a[(x.a.len-1) div 2]
                 let second = x.a[((x.a.len-1) div 2)+1]
 
                 if x.a.len mod 2 == 1:
-                    stack.push(first) 
+                    push(first) 
                 else:
-                    stack.push((first + second)//I2)
+                    push((first + second)//I2)
 
     builtin "negative?",
         alias       = unaliased, 
@@ -532,9 +538,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                stack.push(newBoolean(negative(x.bi)))
+                when not defined(NOGMP):
+                    push(newBoolean(negative(x.bi)))
             else:
-                stack.push(newBoolean(x < I0))
+                push(newBoolean(x < I0))
 
     builtin "odd?",
         alias       = unaliased, 
@@ -552,7 +559,7 @@ proc defineSymbols*() =
             print select 1..10 => odd?       ; 1 3 5 7 9
         """:
             ##########################################################
-            stack.push(newBoolean(x % I2 == I1))
+            push(newBoolean(x % I2 == I1))
 
     constant "pi",
         alias       = unaliased,
@@ -574,27 +581,29 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                stack.push(newBoolean(positive(x.bi)))
+                when not defined(NOGMP):
+                    push(newBoolean(positive(x.bi)))
             else:
-                stack.push(newBoolean(x > I0))
+                push(newBoolean(x > I0))
     
-    builtin "powmod",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "modular exponentation: calculate the result of (base^exponent) % divider",
-        args        = {
-            "base"      : {Integer},
-            "exponent"  : {Integer},
-            "divider"   : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Integer,Null},
-        # TODO(Numbers\powmod) add example for documentation
-        #  labels: library,documentation,easy
-        example     = """
-        """:
-            ##########################################################
-            stack.push(powmod(x, y, z))
+    when not defined(NOGMP):
+        builtin "powmod",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "modular exponentation: calculate the result of (base^exponent) % divider",
+            args        = {
+                "base"      : {Integer},
+                "exponent"  : {Integer},
+                "divider"   : {Integer}
+            },
+            attrs       = NoAttrs,
+            returns     = {Integer,Null},
+            # TODO(Numbers\powmod) add example for documentation
+            #  labels: library,documentation,easy
+            example     = """
+            """:
+                ##########################################################
+                push(powmod(x, y, z))
         
     builtin "prime?",
         alias       = unaliased, 
@@ -619,9 +628,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.iKind==NormalInteger:
-                stack.push(newBoolean(isPrime(x.i.uint64)))
+                push(newBoolean(isPrime(x.i.uint64)))
             else:
-                stack.push(newBoolean(probablyPrime(x.bi,25)>0))
+                when not defined(NOGMP):
+                    push(newBoolean(probablyPrime(x.bi,25)>0))
 
     builtin "product",
         alias       = unaliased, 
@@ -645,7 +655,7 @@ proc defineSymbols*() =
                 product *= x.a[i]
                 i += 1
 
-            stack.push(product)
+            push(product)
 
     builtin "random",
         alias       = unaliased, 
@@ -661,7 +671,7 @@ proc defineSymbols*() =
             rnd: random 0 60          ; rnd: (a random number between 0 and 60)
         """:
             ##########################################################
-            stack.push(newInteger(rand(x.i..y.i)))
+            push(newInteger(rand(x.i..y.i)))
 
     builtin "range",
         alias       = ellipsis, 
@@ -697,7 +707,7 @@ proc defineSymbols*() =
                     res.a.add(newInteger(j))
                     j -= step
 
-            stack.push(res)
+            push(res)
 
     builtin "round",
         alias       = unaliased, 
@@ -724,7 +734,7 @@ proc defineSymbols*() =
             if (let aTo = popAttr("to"); aTo != VNULL):
                 places = aTo.i
                 
-            stack.push(newFloating(round(asFloat(x), places)))
+            push(newFloating(round(asFloat(x), places)))
 
     builtin "sec",
         alias       = unaliased, 
@@ -741,7 +751,7 @@ proc defineSymbols*() =
             print sec 1.0           ; 1.850815717680925
         """:
             ##########################################################
-            stack.push(newFloating(sec(asFloat(x))))
+            push(newFloating(sec(asFloat(x))))
 
     builtin "sech",
         alias       = unaliased, 
@@ -758,7 +768,7 @@ proc defineSymbols*() =
             print sech 1.0          ; 0.6480542736638855
         """:
             ##########################################################
-            stack.push(newFloating(sech(asFloat(x))))
+            push(newFloating(sech(asFloat(x))))
 
     builtin "sin",
         alias       = unaliased, 
@@ -775,7 +785,7 @@ proc defineSymbols*() =
             print sin 1.0           ; 0.8414709848078965
         """:
             ##########################################################
-            stack.push(newFloating(sin(asFloat(x))))
+            push(newFloating(sin(asFloat(x))))
 
     builtin "sinh",
         alias       = unaliased, 
@@ -792,7 +802,7 @@ proc defineSymbols*() =
             print sinh 1.0          ; 1.175201193643801
         """:
             ##########################################################
-            stack.push(newFloating(sinh(asFloat(x))))
+            push(newFloating(sinh(asFloat(x))))
 
     builtin "sqrt",
         alias       = unaliased, 
@@ -801,9 +811,13 @@ proc defineSymbols*() =
         args        = {
             "value" : {Integer,Floating}
         },
-        attrs       = {
-            "integer"   : ({Boolean},"get the integer square root")
-        },
+        attrs       = 
+        when not defined(NOGMP):
+            {
+                "integer"   : ({Boolean},"get the integer square root")
+            }
+        else:
+            NoAttrs,
         returns     = {Floating},
         example     = """
             print sqrt 4            ; 2.0
@@ -812,12 +826,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("integer") != VNULL):
-                if x.iKind == NormalInteger:
-                    stack.push(newInteger(isqrt(x.i)))
-                else:
-                    stack.push(newInteger(isqrt(x.bi)))
+                when not defined(NOGMP):
+                    if x.iKind == NormalInteger:
+                        push(newInteger(isqrt(x.i)))
+                    else:
+                        push(newInteger(isqrt(x.bi)))
             else:
-                stack.push(newFloating(sqrt(asFloat(x))))
+                push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = unaliased, 
@@ -841,7 +856,7 @@ proc defineSymbols*() =
                 sum += x.a[i]
                 i += 1
 
-            stack.push(sum)
+            push(sum)
 
     builtin "tan",
         alias       = unaliased, 
@@ -858,7 +873,7 @@ proc defineSymbols*() =
             print tan 1.0           ; 1.557407724654902
         """:
             ##########################################################
-            stack.push(newFloating(tan(asFloat(x))))
+            push(newFloating(tan(asFloat(x))))
 
     builtin "tanh",
         alias       = unaliased, 
@@ -875,7 +890,7 @@ proc defineSymbols*() =
             print tanh 1.0          ; 0.7615941559557649
         """:
             ##########################################################
-            stack.push(newFloating(tanh(asFloat(x))))
+            push(newFloating(tanh(asFloat(x))))
 
     builtin "zero?",
         alias       = unaliased, 
@@ -892,9 +907,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                stack.push(newBoolean(isZero(x.bi)))
+                when not defined(NOGMP):
+                    push(newBoolean(isZero(x.bi)))
             else:
-                stack.push(newBoolean(x == I0))
+                push(newBoolean(x == I0))
 
 #=======================================
 # Add Library

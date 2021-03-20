@@ -10,10 +10,11 @@
 # Libraries
 #=======================================
 
-import strutils, sets, tables
+import sequtils, strutils, sets, tables
 export strutils, tables
 
-import vm/[errors, stack, value]
+import vm/[globals, errors, stack, value]
+export globals, stack, value
 
 #=======================================
 # Constants
@@ -22,6 +23,26 @@ import vm/[errors, stack, value]
 const
     NoArgs*      = static {"" : {Nothing}}
     NoAttrs*     = static {"" : ({Nothing},"")}
+
+#=======================================
+# Helpers
+#=======================================
+
+proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expectedValues: seq[ValueKind]): string =
+    let actualStr = toSeq(0..argumentPos).map(proc(x:int):string = ":" & ($(Stack[SP-1-x].kind)).toLowerAscii()).join(" ")
+    let acceptedStr = expectedValues.map(proc(x:ValueKind):string = ":" & ($(x)).toLowerAscii()).join(" ")
+
+    var ordinalPos: string = ""
+    if argumentPos==0:
+        ordinalPos = "first"
+    elif argumentPos==1:
+        ordinalPos = "second"
+    elif argumentPos==2:
+        ordinalPos = "third"
+
+    return "cannot perform _" & functionName & "_ -> " & actualStr & ";" &
+           "incorrect argument type for " & ordinalPos & " parameter;" &
+           "accepts " & acceptedStr
 
 #=======================================
 # Templates
@@ -36,7 +57,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
     else:                               
         const argsLen = static args.len
 
-    when defined(MINI):
+    when defined(NOEXAMPLES):
         const cleanExample = ""
     else:
         const cleanExample = replace(strutils.strip(example),"\n            ","\n")

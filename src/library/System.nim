@@ -18,7 +18,8 @@
 
 import os, osproc, sequtils, sugar
 
-import vm/[common, errors, exec, globals, stack, value]
+import vm/lib
+import vm/[errors, exec]
 
 #=======================================
 # Methods
@@ -47,7 +48,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             discard execBlock(x)
-            if not stack.pop().b:
+            if not pop().b:
                 AssertionError_AssertionFailed(x.codify())
 
     builtin "env",
@@ -67,7 +68,7 @@ proc defineSymbols*() =
             for k,v in envPairs():
                 res[k] = newString(v)
 
-            stack.push(newDictionary(res)) 
+            push(newDictionary(res)) 
 
     builtin "execute",
         alias       = unaliased, 
@@ -88,7 +89,7 @@ proc defineSymbols*() =
             ##########################################################
             let res = execCmdEx(x.s)
             
-            stack.push(newString(res[0]))
+            push(newString(res[0]))
 
     builtin "exit",
         alias       = unaliased, 
@@ -138,7 +139,7 @@ proc defineSymbols*() =
             else:
                 contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
 
-            stack.push(newStringBlock(contents))
+            push(newStringBlock(contents))
 
     builtin "panic",
         alias       = unaliased, 
@@ -155,9 +156,9 @@ proc defineSymbols*() =
             panic.code:1 "something went terribly wrong. quitting..."
         """:
             ##########################################################
-            vmPanic = true
-            vmError = x.s
-
+            # vmPanic = true
+            # vmError = x.s
+            discard x
             # TODO Fix showVMErrors()
 
             if (let aCode = popAttr("code"); aCode != VNULL):

@@ -15,11 +15,14 @@ import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
-#import db_mysql as mysql
+    #import db_mysql as mysql
 
-import extras/bignum
+when not defined(NOGMP):
+    import extras/bignum
 
-import helpers/colors as ColorsHelper
+import helpers/colors
+
+import vm/errors
 
 #=======================================
 # Types
@@ -29,12 +32,14 @@ type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string,Value]
 
-    Byte = byte
+    Byte* = byte
     ByteArray*  = seq[Byte]
+
+    Translation* = (ValueArray, ByteArray) # (constants, instructions)
 
     IntArray*   = seq[int]
 
-    BuiltinAction = proc ()
+    BuiltinAction* = proc ()
 
     SymbolKind* = enum
         thickarrowleft  # <=
@@ -157,7 +162,11 @@ type
             of Integer:  
                 case iKind*: IntegerKind:
                     of NormalInteger:   i*  : int
-                    of BigInteger:      bi* : Int    
+                    of BigInteger:      
+                        when not defined(NOGMP):
+                            bi* : Int    
+                        else:
+                            discard
             of Floating:    f*  : float
             of Type:        
                 t*  : ValueKind
@@ -213,8 +222,6 @@ type
                     of SqliteDatabase: 
                         when not defined(NOSQLITE):
                             sqlitedb*: sqlite.DbConn
-                        else:
-                            discard
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
             of Bytecode:
@@ -226,7 +233,8 @@ type
 #=======================================
 
 const
-    NoValues* = @[]
+    NoValues*       = @[]
+    NoTranslation*  = (@[],@[])
 
 #=======================================
 # Fixed Values
@@ -262,14 +270,18 @@ let VNOTHING* = Value(kind: Nothing)
 
 var 
     TypeLookup = initOrderedTable[string,Value]()
-    DoDebug* = false
+    #DoDebug* = false
+
+#=======================================
+# Forward Declarations
+#=======================================
+
+proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
+proc `$`*(v: Value): string {.inline.}
 
 #=======================================
 # Helpers
 #=======================================
-
-## forward declarations
-proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
 
 proc newNull*(): Value {.inline.} =
     VNULL
@@ -285,25 +297,11 @@ proc newBoolean*(i: int): Value {.inline.} =
     if i==0: newBoolean(false)
     else: newBoolean(true)
 
-proc newInteger*(bi: Int): Value {.inline.} =
-    result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+when not defined(NOGMP):
+    proc newInteger*(bi: Int): Value {.inline.} =
+        result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 proc newInteger*(i: int): Value {.inline.} =
-    # if i in 0..10:
-    #     case i:
-    #         of 0: result = I0
-    #         of 1: result = I1
-    #         of 2: result = I2
-    #         of 3: result = I3
-    #         of 4: result = I4
-    #         of 5: result = I5
-    #         of 6: result = I6
-    #         of 7: result = I7
-    #         of 8: result = I8
-    #         of 9: result = I9
-    #         of 10: result = I10
-    #         else: discard # shouldn't reach here
-    # else:
     result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
 proc newInteger*(i: int64): Value {.inline.} =
@@ -311,13 +309,16 @@ proc newInteger*(i: int64): Value {.inline.} =
 
 proc newInteger*(i: string): Value {.inline.} =
     try:
-        newInteger(parseInt(i))
+        return newInteger(parseInt(i))
     except ValueError:
-        # value out of range
-        newInteger(newInt(i))
+        when not defined(NOGMP):
+            return newInteger(newInt(i))
+        else:
+            RuntimeError_IntegerParsingOverflow(i)
 
 proc newBigInteger*(i: int): Value {.inline.} =
-    result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
+    when not defined(NOGMP):
+        result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
 proc newFloating*(f: float): Value {.inline.} =
     Value(kind: Floating, f: f)
@@ -457,7 +458,9 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Boolean:     result = newBoolean(v.b)
         of Integer:     
             if v.iKind == NormalInteger: result = newInteger(v.i)
-            else: result = newInteger(v.bi)
+            else:
+                when not defined(NOGMP): 
+                    result = newInteger(v.bi)
         of Floating:    result = newFloating(v.f)
         of Type:        
             if v.tpKind==BuiltinType:
@@ -531,18 +534,23 @@ proc `+`*(x: Value, y: Value): Value =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    return newInteger(x.i+y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         return newInteger(x.i+y.i)
                     except OverflowDefect:
-                        return newInteger(newInt(x.i)+y.i)
-            else:
-                if y.iKind==BigInteger:
-                    return newInteger(x.bi+y.bi)
+                        when not defined(NOGMP):
+                            return newInteger(newInt(x.i)+y.i)
+                        else:
+                            RuntimeError_IntegerOperationOverflow("add", $(x), $(y))
                 else:
-                    return newInteger(x.bi+y.i)
+                    when not defined(NOGMP):
+                        return newInteger(x.i+y.bi)
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        return newInteger(x.bi+y.bi)
+                    else:
+                        return newInteger(x.bi+y.i)
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f+y.f)
@@ -556,18 +564,24 @@ proc `+=`*(x: var Value, y: Value) =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    x = newInteger(x.i+y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         x.i += y.i
                     except OverflowDefect:
-                        x = newInteger(newInt(x.i)+y.i)
-            else:
-                if y.iKind==BigInteger:
-                    x.bi += y.bi
+                        when not defined(NOGMP):
+                            x = newInteger(newInt(x.i)+y.i)
+                        else:
+                            RuntimeError_IntegerOperationOverflow("add", $(x), $(y))
                 else:
-                    x.bi += y.i
+                    when not defined(NOGMP):
+                        x = newInteger(x.i+y.bi)
+                    
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        x.bi += y.bi
+                    else:
+                        x.bi += y.i
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f += y.f
@@ -581,18 +595,24 @@ proc `-`*(x: Value, y: Value): Value =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    return newInteger(x.i-y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         return newInteger(x.i-y.i)
                     except OverflowDefect:
-                        return newInteger(newInt(x.i)-y.i)
-            else:
-                if y.iKind==BigInteger:
-                    return newInteger(x.bi-y.bi)
+                        when not defined(NOGMP):
+                            return newInteger(newInt(x.i)-y.i)
+                        else:
+                            RuntimeError_IntegerOperationOverflow("sub", $(x), $(y))
                 else:
-                    return newInteger(x.bi-y.i)
+                    when not defined(NOGMP):
+                        return newInteger(x.i-y.bi)
+                    
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        return newInteger(x.bi-y.bi)
+                    else:
+                        return newInteger(x.bi-y.i)
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f-y.f)
@@ -606,18 +626,23 @@ proc `-=`*(x: var Value, y: Value) =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    x = newInteger(x.i-y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         x.i -= y.i
                     except OverflowDefect:
-                        x = newInteger(newInt(x.i)-y.i)
-            else:
-                if y.iKind==BigInteger:
-                    x.bi -= y.bi
+                        when not defined(NOGMP):
+                            x = newInteger(newInt(x.i)-y.i)
+                        else:
+                            RuntimeError_IntegerOperationOverflow("sub", $(x), $(y))
                 else:
-                    x.bi -= y.i
+                    when not defined(NOGMP):
+                        x = newInteger(x.i-y.bi)
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        x.bi -= y.bi
+                    else:
+                        x.bi -= y.i
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f -= y.f
@@ -631,18 +656,23 @@ proc `*`*(x: Value, y: Value): Value =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    return newInteger(x.i*y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         return newInteger(x.i*y.i)
                     except OverflowDefect:
-                        return newInteger(newInt(x.i)*y.i)
-            else:
-                if y.iKind==BigInteger:
-                    return newInteger(x.bi*y.bi)
+                        when not defined(NOGMP):
+                            return newInteger(newInt(x.i)*y.i)
+                        else:
+                            RuntimeError_IntegerOperationOverflow("mul", $(x), $(y))
                 else:
-                    return newInteger(x.bi*y.i)
+                    when not defined(NOGMP):
+                        return newInteger(x.i*y.bi)
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        return newInteger(x.bi*y.bi)
+                    else:
+                        return newInteger(x.bi*y.i)
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f*y.f)
@@ -656,18 +686,23 @@ proc `*=`*(x: var Value, y: Value) =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    x = newInteger(x.i*y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         x.i *= y.i
                     except OverflowDefect:
-                        x = newInteger(newInt(x.i)*y.i)
-            else:
-                if y.iKind==BigInteger:
-                    x.bi *= y.bi
+                        when not defined(NOGMP):
+                            x = newInteger(newInt(x.i)*y.i)
+                        else:
+                            RuntimeError_IntegerOperationOverflow("mul", $(x), $(y))
                 else:
-                    x.bi *= y.i
+                    when not defined(NOGMP):
+                        x = newInteger(x.i*y.bi)
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        x.bi *= y.bi
+                    else:
+                        x.bi *= y.i
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f *= y.f
@@ -681,15 +716,17 @@ proc `/`*(x: Value, y: Value): Value =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    return newInteger(x.i div y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     return newInteger(x.i div y.i)
-            else:
-                if y.iKind==BigInteger:
-                    return newInteger(x.bi div y.bi)
                 else:
-                    return newInteger(x.bi div y.i)
+                    when not defined(NOGMP):
+                        return newInteger(x.i div y.bi)
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        return newInteger(x.bi div y.bi)
+                    else:
+                        return newInteger(x.bi div y.i)
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f/y.f)
@@ -703,18 +740,23 @@ proc `/=`*(x: var Value, y: Value) =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    x = newInteger(x.i div y.bi)
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         x = newInteger(x.i div y.i)
                     except OverflowDefect:
-                        x = newInteger(newInt(x.i) div y.i)
-            else:
-                if y.iKind==BigInteger:
-                    x = newInteger(x.bi div y.bi)
+                        when not defined(NOGMP):
+                            x = newInteger(newInt(x.i) div y.i)
+                        else:
+                            RuntimeError_IntegerOperationOverflow("div", $(x), $(y))
                 else:
-                    x = newInteger(x.bi div y.i)
+                    when not defined(NOGMP):
+                        x = newInteger(x.i div y.bi)
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==BigInteger:
+                        x = newInteger(x.bi div y.bi)
+                    else:
+                        x = newInteger(x.bi div y.i)
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
@@ -753,26 +795,34 @@ proc `%`*(x: Value, y: Value): Value =
         return VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                return newInteger(x.i mod y.bi)
-            else:
+            if y.iKind==NormalInteger:
                 return newInteger(x.i mod y.i)
-        else:
-            if y.iKind==BigInteger:
-                return newInteger(x.bi mod y.bi)
             else:
-                return newInteger(x.bi mod y.i)
+                when not defined(NOGMP):
+                    return newInteger(x.i mod y.bi)
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    return newInteger(x.bi mod y.bi)
+                else:
+                    return newInteger(x.bi mod y.i)
 
 proc `%=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==NormalInteger: x.i = x.i mod y.i
-            else: x = newInteger(x.i mod y.bi)
+            if y.iKind==NormalInteger: 
+                x.i = x.i mod y.i
+            else: 
+                when not defined(NOGMP):
+                    x = newInteger(x.i mod y.bi)
         else:
-            if y.iKind==NormalInteger: x = newInteger(x.bi mod y.i)
-            else: x = newInteger(x.bi mod y.bi)
+            when not defined(NOGMP):
+                if y.iKind==NormalInteger: 
+                    x = newInteger(x.bi mod y.i)
+                else: 
+                    x = newInteger(x.bi mod y.bi)
 
 proc `^`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
@@ -780,22 +830,23 @@ proc `^`*(x: Value, y: Value): Value =
     else:
         if x.kind==Integer and y.kind==Integer:
             if x.iKind==NormalInteger:
-                if y.iKind==BigInteger:
-                    echo "ERROR"
-                    return VNULL
-                    #stack.push(newInteger(pow(x.iy.bi))
-                else:
+                if y.iKind==NormalInteger:
                     try:
                         return newInteger(x.i^y.i)
                     except OverflowDefect:
-                        return newInteger(pow(x.i,(culong)(y.i)))
-            else:
-                if y.iKind==BigInteger:
-                    echo "ERROR"
-                    return VNULL
-                    #stack.push(newInteger(x.bi div y.bi))
+                        when not defined(NOGMP):
+                            return newInteger(pow(x.i,(culong)(y.i)))
+                        else:
+                            RuntimeError_IntegerOperationOverflow("pow", $(x), $(y))
                 else:
-                    return newInteger(pow(x.bi,(culong)(y.i)))
+                    when not defined(NOGMP):
+                        RuntimeError_NumberOutOfPermittedRange("pow",$(x), $(y))
+            else:
+                when not defined(NOGMP):
+                    if y.iKind==NormalInteger:
+                        return newInteger(pow(x.bi,(culong)(y.i)))
+                    else:
+                        RuntimeError_NumberOutOfPermittedRange("pow",$(x), $(y))
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(pow(x.f,y.f))
@@ -822,159 +873,171 @@ proc `&&`*(x: Value, y: Value): Value =
         return VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                return newInteger(x.i and y.bi)
-            else:
+            if y.iKind==NormalInteger:
                 return newInteger(x.i and y.i)
-        else:
-            if y.iKind==BigInteger:
-                return newInteger(x.bi and y.bi)
             else:
-                return newInteger(x.bi and y.i)
+                when not defined(NOGMP):
+                    return newInteger(x.i and y.bi)
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    return newInteger(x.bi and y.bi)
+                else:
+                    return newInteger(x.bi and y.i)
 
 proc `&&=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                x = newInteger(x.i and y.bi)
-            else:
+            if y.iKind==NormalInteger:
                 x = newInteger(x.i and y.i)
-        else:
-            if y.iKind==BigInteger:
-                x = newInteger(x.bi and y.bi)
             else:
-                x = newInteger(x.bi and y.i)
+                when not defined(NOGMP):
+                    x = newInteger(x.i and y.bi)
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    x = newInteger(x.bi and y.bi)
+                else:
+                    x = newInteger(x.bi and y.i)
 
 proc `||`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                return newInteger(x.i or y.bi)
-            else:
+            if y.iKind==NormalInteger:
                 return newInteger(x.i or y.i)
-        else:
-            if y.iKind==BigInteger:
-                return newInteger(x.bi or y.bi)
             else:
-                return newInteger(x.bi or y.i)
+                when not defined(NOGMP):
+                    return newInteger(x.i or y.bi)
+                
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    return newInteger(x.bi or y.bi)
+                else:
+                    return newInteger(x.bi or y.i)
 
 proc `||=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                x = newInteger(x.i or y.bi)
-            else:
+            if y.iKind==NormalInteger:
                 x = newInteger(x.i or y.i)
-        else:
-            if y.iKind==BigInteger:
-                x = newInteger(x.bi or y.bi)
             else:
-                x = newInteger(x.bi or y.i)
+                when not defined(NOGMP):
+                    x = newInteger(x.i or y.bi)
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    x = newInteger(x.bi or y.bi)
+                else:
+                    x = newInteger(x.bi or y.i)
 
 proc `^^`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                return newInteger(x.i xor y.bi)
-            else:
+            if y.iKind==NormalInteger:
                 return newInteger(x.i xor y.i)
-        else:
-            if y.iKind==BigInteger:
-                return newInteger(x.bi xor y.bi)
             else:
-                return newInteger(x.bi xor y.i)
+                when not defined(NOGMP):
+                    return newInteger(x.i xor y.bi)
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    return newInteger(x.bi xor y.bi)
+                else:
+                    return newInteger(x.bi xor y.i)
 
 proc `^^=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                x = newInteger(x.i xor y.bi)
-            else:
+            if y.iKind==NormalInteger:
                 x = newInteger(x.i xor y.i)
-        else:
-            if y.iKind==BigInteger:
-                x = newInteger(x.bi xor y.bi)
             else:
-                x = newInteger(x.bi xor y.i)
+                when not defined(NOGMP):
+                    x = newInteger(x.i xor y.bi)
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    x = newInteger(x.bi xor y.bi)
+                else:
+                    x = newInteger(x.bi xor y.i)
 
 proc `>>`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                # not valid
-                return VNULL
-            else:
+            if y.iKind==NormalInteger:
                 return newInteger(x.i shr y.i)
-        else:
-            if y.iKind==BigInteger:
-                # not valid
-                return VNULL
             else:
-                return newInteger(x.bi shr (culong)(y.i))
+                when not defined(NOGMP):
+                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+                else:
+                    return newInteger(x.bi shr (culong)(y.i))
 
 proc `>>=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                # not valid
-                x = VNULL
-            else:
+            if y.iKind==NormalInteger:
                 x = newInteger(x.i shr y.i)
-        else:
-            if y.iKind==BigInteger:
-                # not valid
-                x = VNULL
             else:
-                x = newInteger(x.bi shr (culong)(y.i))
+               when not defined(NOGMP):
+                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    RuntimeError_NumberOutOfPermittedRange("shr",$(x), $(y))
+                else:
+                    x = newInteger(x.bi shr (culong)(y.i))
 
 proc `<<`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
         return VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                # not valid
-                return VNULL
-            else:
-                # not valid
+            if y.iKind==NormalInteger:
                 return newInteger(x.i shl y.i)
-        else:
-            if y.iKind==BigInteger:
-                # not valid
-                return VNULL
             else:
-                return newInteger(x.bi shl (culong)(y.i))
+                when not defined(NOGMP):
+                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+                else:
+                    return newInteger(x.bi shl (culong)(y.i))
 
 proc `<<=`*(x: var Value, y: Value) =
     if not (x.kind==Integer) or not (y.kind==Integer):
         x = VNULL
     else:
         if x.iKind==NormalInteger:
-            if y.iKind==BigInteger:
-                # not valid
-                x = VNULL
-            else:
+            if y.iKind==NormalInteger:
                 x = newInteger(x.i shl y.i)
-        else:
-            if y.iKind==BigInteger:
-                # not valid
-                x = VNULL
             else:
-                x = newInteger(x.bi shl (culong)(y.i))
+                when not defined(NOGMP):
+                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+        else:
+            when not defined(NOGMP):
+                if y.iKind==BigInteger:
+                    RuntimeError_NumberOutOfPermittedRange("shl",$(x), $(y))
+                else:
+                    x = newInteger(x.bi shl (culong)(y.i))
 
 proc `!!`*(x: Value): Value =
     if not (x.kind==Integer):
@@ -983,7 +1046,8 @@ proc `!!`*(x: Value): Value =
         if x.iKind==NormalInteger:
             return newInteger(not x.i)
         else:
-            return newInteger(not x.bi)
+            when not defined(NOGMP):
+                return newInteger(not x.bi)
 
 proc `!!=`*(x: var Value) =
     if not (x.kind==Integer):
@@ -992,7 +1056,8 @@ proc `!!=`*(x: var Value) =
         if x.iKind==NormalInteger:
             x = newInteger(not x.i)
         else:
-            x = newInteger(not x.bi)
+            when not defined(NOGMP):
+                x = newInteger(not x.bi)
 
 proc `==`*(x: Value, y: Value): bool =
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
@@ -1001,22 +1066,27 @@ proc `==`*(x: Value, y: Value): bool =
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
                     return x.i==y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    return x.i==y.bi
+                    when not defined(NOGMP):
+                        return x.i==y.bi
                 elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    return x.bi==y.i
+                    when not defined(NOGMP):
+                        return x.bi==y.i
                 else:
-                    return x.bi==y.bi
+                    when not defined(NOGMP):
+                        return x.bi==y.bi
             else: 
                 if x.iKind==NormalInteger:
                     return (float)(x.i)==y.f
                 else:
-                    return (x.bi)==(int)(y.f)
+                    when not defined(NOGMP):
+                        return (x.bi)==(int)(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f==(float)(y.i)
                 elif y.iKind==BigInteger:
-                    return (int)(x.f)==y.bi        
+                    when not defined(NOGMP):
+                        return (int)(x.f)==y.bi        
             else: return x.f==y.f
     else:
         if x.kind != y.kind: return false
@@ -1071,22 +1141,27 @@ proc `<`*(x: Value, y: Value): bool =
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
                     return x.i<y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    return x.i<y.bi
+                    when not defined(NOGMP):
+                        return x.i<y.bi
                 elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    return x.bi<y.i
+                    when not defined(NOGMP):
+                        return x.bi<y.i
                 else:
-                    return x.bi<y.bi
+                    when not defined(NOGMP):
+                        return x.bi<y.bi
             else: 
                 if x.iKind==NormalInteger:
                     return (float)(x.i)<y.f
                 else:
-                    return (x.bi)<(int)(y.f)
+                    when not defined(NOGMP):
+                        return (x.bi)<(int)(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f<(float)(y.i)
                 elif y.iKind==BigInteger:
-                    return (int)(x.f)<y.bi        
+                    when not defined(NOGMP):
+                        return (int)(x.f)<y.bi        
             else: return x.f<y.f
     else:
         case x.kind:
@@ -1112,22 +1187,27 @@ proc `>`*(x: Value, y: Value): bool =
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
                     return x.i>y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    return x.i>y.bi
+                    when not defined(NOGMP):
+                        return x.i>y.bi
                 elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    return x.bi>y.i
+                    when not defined(NOGMP):
+                        return x.bi>y.i
                 else:
-                    return x.bi>y.bi
+                    when not defined(NOGMP):
+                        return x.bi>y.bi
             else: 
                 if x.iKind==NormalInteger:
                     return (float)(x.i)>y.f
                 else:
-                    return (x.bi)>(int)(y.f)
+                    when not defined(NOGMP):
+                        return (x.bi)>(int)(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f>(float)(y.i)
                 elif y.iKind==BigInteger:
-                    return (int)(x.f)>y.bi        
+                    when not defined(NOGMP):
+                        return (int)(x.f)>y.bi        
             else: return x.f>y.f
     else:
         case x.kind:
@@ -1169,7 +1249,9 @@ proc `$`*(v: Value): string {.inline.} =
         of Boolean      : return $(v.b)
         of Integer      : 
             if v.iKind==NormalInteger: return $(v.i)
-            else: return $(v.bi)
+            else:
+                when not defined(NOGMP): 
+                    return $(v.bi)
         of Floating     : return $(v.f)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1310,7 +1392,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of Boolean      : dumpPrimitive($(v.b), v)
         of Integer      : 
             if v.iKind==NormalInteger: dumpPrimitive($(v.i), v)
-            else: dumpPrimitive($(v.bi), v)
+            else: 
+                when not defined(NOGMP):
+                    dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1432,7 +1516,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             else:   result &= "false"
         of Integer      :
             if v.iKind==NormalInteger: result &= $(v.i)
-            else: result &= $(v.bi)
+            else: 
+                when not defined(NOGMP):
+                    result &= $(v.bi)
         of Floating     : result &= $(v.f)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1580,7 +1666,9 @@ proc hash*(v: Value): Hash {.inline.}=
         of Boolean      : result = cast[Hash](v.b)
         of Integer      : 
             if v.iKind==NormalInteger: result = cast[Hash](v.i)
-            else: result = cast[Hash](v.bi)
+            else: 
+                when not defined(NOGMP):
+                    result = cast[Hash](v.bi)
         of Floating     : result = cast[Hash](v.f)
         of Type         : result = cast[Hash](ord(v.t))
         of Char         : result = cast[Hash](ord(v.c))

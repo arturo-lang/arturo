@@ -18,12 +18,13 @@
 
 import json, re, std/editdistance, os
 import sequtils, strutils, unicode, xmltree
+import nre except toSeq
 
-import helpers/colors as ColorsHelper
-import helpers/strings as StringsHelper
-import helpers/templates as TemplatesHelper
+import helpers/colors
+import helpers/strings
 
-import vm/[common, globals, stack, value]
+import vm/lib
+import vm/[exec, parse]
 
 #=======================================
 # Methods
@@ -53,17 +54,17 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Char:
-                stack.push(newBoolean(ord(x.c)<128))
+                push(newBoolean(ord(x.c)<128))
             else:
                 var allOK = true
                 for ch in runes(x.s):
                     if ord(ch) >= 128:
                         allOK = false
-                        stack.push(VFALSE)
+                        push(VFALSE)
                         break
 
                 if allOK:
-                    stack.push(VTRUE)
+                    push(VTRUE)
 
     builtin "capitalize",
         alias       = unaliased, 
@@ -81,7 +82,7 @@ proc defineSymbols*() =
             capitalize 'str                     ; str: "Hello World"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s.capitalize()))
+            if x.kind==String: push(newString(x.s.capitalize()))
             else: InPlace.s = InPlaced.s.capitalize()
 
     builtin "color",
@@ -142,7 +143,7 @@ proc defineSymbols*() =
             else:
                 finalColor = fg(color)
 
-            stack.push(newString(finalColor & x.s & resetColor))
+            push(newString(finalColor & x.s & resetColor))
 
     builtin "escape",
         alias       = unaliased, 
@@ -167,7 +168,7 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
                 elif (popAttr("regex") != VNULL):
-                    SetInPlace(newString(escapeRe(InPlace.s)))
+                    SetInPlace(newString(re.escapeRe(InPlace.s)))
                 elif (popAttr("shell") != VNULL):
                     SetInPlace(newString(quoteShell(InPlace.s)))
                 elif (popAttr("xml") != VNULL):
@@ -176,15 +177,15 @@ proc defineSymbols*() =
                     SetInPlace(newString(strutils.escape(InPlace.s)))
             else:
                 if (popAttr("json") != VNULL):
-                    stack.push(newString(escapeJsonUnquoted(x.s)))
+                    push(newString(escapeJsonUnquoted(x.s)))
                 elif (popAttr("regex") != VNULL):
-                    stack.push(newString(escapeRe(x.s)))
+                    push(newString(re.escapeRe(x.s)))
                 elif (popAttr("shell") != VNULL):
-                    stack.push(newString(quoteShell(x.s)))
+                    push(newString(quoteShell(x.s)))
                 elif (popAttr("xml") != VNULL):
-                    stack.push(newString(xmltree.escape(x.s)))
+                    push(newString(xmltree.escape(x.s)))
                 else:
-                    stack.push(newString(strutils.escape(x.s)))
+                    push(newString(strutils.escape(x.s)))
 
     builtin "indent",
         alias       = unaliased, 
@@ -224,7 +225,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newString(indent(InPlace.s, count, padding)))
             else:
-                stack.push(newString(indent(x.s, count, padding)))            
+                push(newString(indent(x.s, count, padding)))            
 
     builtin "join",
         alias       = unaliased, 
@@ -254,7 +255,7 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     SetInPlace(newString(joinPath(InPlace.a.map(proc (v:Value):string = v.s))))
                 else:
-                    stack.push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
+                    push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
             else:
                 var sep = ""
                 if (let aWith = popAttr("with"); aWith != VNULL):
@@ -263,7 +264,7 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     SetInPlace(newString(InPlace.a.map(proc (v:Value):string = v.s).join(sep)))
                 else:
-                    stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
+                    push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 
@@ -279,7 +280,7 @@ proc defineSymbols*() =
             print levenshtein "for" "fur"         ; 1
             print levenshtein "one" "one"         ; 0
         """:
-            stack.push(newInteger(editDistance(x.s,y.s)))
+            push(newInteger(editDistance(x.s,y.s)))
 
     builtin "lower",
         alias       = unaliased, 
@@ -297,7 +298,7 @@ proc defineSymbols*() =
             lower 'str                           ; str: "hello world, 你好!"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s.toLower()))
+            if x.kind==String: push(newString(x.s.toLower()))
             else: InPlace.s = InPlaced.s.toLower()
 
     builtin "lower?",
@@ -319,12 +320,12 @@ proc defineSymbols*() =
             var broken = false
             for c in runes(x.s):
                 if not c.isLower():
-                    stack.push(VFALSE)
+                    push(VFALSE)
                     broken = true
                     break
 
             if not broken:
-                stack.push(VTRUE)
+                push(VTRUE)
 
     builtin "match",
         alias       = unaliased, 
@@ -342,7 +343,7 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
-            stack.push(newStringBlock(x.s.findAll(re.re(y.s))))
+            push(newStringBlock(x.s.findAll(re.re(y.s))))
 
     builtin "numeric?",
         alias       = unaliased, 
@@ -362,9 +363,9 @@ proc defineSymbols*() =
             ##########################################################
             try:
                 discard x.s.parseFloat()
-                stack.push(VTRUE)
+                push(VTRUE)
             except ValueError:
-                stack.push(VFALSE)
+                push(VFALSE)
 
     builtin "outdent",
         alias       = unaliased, 
@@ -416,7 +417,7 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newString(unindent(InPlaced.s, count, padding)))
             else:
-                stack.push(newString(unindent(x.s, count, padding))) 
+                push(newString(unindent(x.s, count, padding))) 
 
     builtin "pad",
         alias       = unaliased, 
@@ -441,13 +442,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("right") != VNULL):
-                if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
+                if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i)))
                 else: InPlace.s = unicode.alignLeft(InPlaced.s, y.i)
             elif (popAttr("center") != VNULL): # PENDING unicode support
-                if x.kind==String: stack.push(newString(center(x.s, y.i)))
+                if x.kind==String: push(newString(center(x.s, y.i)))
                 else: InPlace.s = center(InPlaced.s, y.i)
             else:
-                if x.kind==String: stack.push(newString(unicode.align(x.s, y.i)))
+                if x.kind==String: push(newString(unicode.align(x.s, y.i)))
                 else: InPlace.s = unicode.align(InPlaced.s, y.i)
 
     builtin "prefix",
@@ -467,7 +468,7 @@ proc defineSymbols*() =
             prefix 'str                        ; str: "hello"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(y.s & x.s))
+            if x.kind==String: push(newString(y.s & x.s))
             else: SetInPlace(newString(y.s & InPlace.s))
 
     builtin "prefix?",
@@ -488,9 +489,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                stack.push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+                push(newBoolean(re.startsWith(x.s, re.re(y.s))))
             else:
-                stack.push(newBoolean(x.s.startsWith(y.s)))
+                push(newBoolean(x.s.startsWith(y.s)))
 
     # TODO(Strings\render) added `.sanitize` attribute?
     #  Could help in case we need even more template safety: in the bizarre case that the delimiters already exist in the template, but not as template tags.
@@ -523,18 +524,66 @@ proc defineSymbols*() =
             ; Hello, your name is John and you are 34 years old
         """:
             ##########################################################
+            let recursive = not (popAttr("single") != VNULL)
+            var res = ""
             if x.kind == Literal:
-                InPlaced = newString(renderString(
-                    InPlace.s, 
-                    useEngine=(popAttr("template") != VNULL), 
-                    recursive=(popAttr("single") == VNULL)
-                ))
-            elif x.kind == String:
-                stack.push(newString(renderString(
-                    x.s, 
-                    useEngine=(popAttr("template") != VNULL), 
-                    recursive=(popAttr("single") == VNULL)
-                )))
+                res = InPlace.s
+            else:
+                res = x.s
+
+            let Interpolated    = nre.re"\|([^\|]+)\|"
+            let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
+
+            if (popAttr("template") != VNULL):
+                var keepGoing = true
+                if recursive: 
+                    keepGoing = res.contains(Embeddable)
+
+                while keepGoing:
+                    # make necessary substitutions
+                    res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                        ("||>","««"),
+                        ("<||","»»")
+                    ) & "»»"
+
+                    # parse string template
+                    let parsed = doParse(res, isFile=false)
+
+                    # execute/reduce ('array') the resulting block
+                    let stop = SP
+                    discard execBlock(parsed)
+                    let arr: ValueArray = sTopsFrom(stop)
+                    SP = stop
+
+                    # and join the different strings
+                    res = ""
+                    for i, v in arr:
+                        add(res, v.s)
+
+                    # if recursive, check if there's still more embedded tags
+                    # otherwise, break out of the loop
+                    if recursive: keepGoing = res.contains(Embeddable)
+                    else: keepGoing = false
+            else:
+                var keepGoing = true
+                if recursive: 
+                    keepGoing = res.find(Interpolated).isSome
+
+                while keepGoing:
+                    res = res.replace(Interpolated, proc (match: RegexMatch): string =
+                                discard execBlock(doParse(match.captures[0], isFile=false))
+                                $(pop())
+                            )
+
+                    # if recursive, check if there's still more embedded tags
+                    # otherwise, break out of the loop
+                    if recursive: keepGoing = res.find(Interpolated).isSome
+                    else: keepGoing = false
+
+            if x.kind == Literal:
+                InPlaced = newString(res)
+            else:
+                push(newString(res))
 
     builtin "replace",
         alias       = unaliased, 
@@ -557,10 +606,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
+                if x.kind==String: push(newString(x.s.replace(re.re(y.s), z.s)))
                 else: InPlace.s = InPlaced.s.replace(re.re(y.s), z.s)
             else:
-                if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
+                if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
                 else: InPlace.s = InPlaced.s.replace(y.s, z.s)
 
     builtin "strip",
@@ -594,7 +643,7 @@ proc defineSymbols*() =
                 leading = true
                 trailing = true
 
-            if x.kind==String: stack.push(newString(strutils.strip(x.s, leading, trailing)))
+            if x.kind==String: push(newString(strutils.strip(x.s, leading, trailing)))
             else: InPlace.s = strutils.strip(InPlaced.s, leading, trailing) 
 
     builtin "suffix",
@@ -614,7 +663,7 @@ proc defineSymbols*() =
             suffix 'str                        ; str: "hello"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s & y.s))
+            if x.kind==String: push(newString(x.s & y.s))
             else: SetInPlace(newString(InPlace.s & y.s))
 
     builtin "suffix?",
@@ -635,9 +684,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                stack.push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+                push(newBoolean(re.endsWith(x.s, re.re(y.s))))
             else:
-                stack.push(newBoolean(x.s.endsWith(y.s)))
+                push(newBoolean(x.s.endsWith(y.s)))
 
     builtin "truncate",
         alias       = unaliased, 
@@ -673,10 +722,10 @@ proc defineSymbols*() =
                 with = aWith.s
 
             if (popAttr("preserve")!=VNULL):
-                if x.kind==String: stack.push(newString(truncatePreserving(x.s, y.i, with)))
+                if x.kind==String: push(newString(truncatePreserving(x.s, y.i, with)))
                 else: InPlace.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
-                if x.kind==String: stack.push(newString(truncate(x.s, y.i, with)))
+                if x.kind==String: push(newString(truncate(x.s, y.i, with)))
                 else: InPlace.s = truncate(InPlaced.s, y.i, with)
 
     builtin "upper",
@@ -695,7 +744,7 @@ proc defineSymbols*() =
             upper 'str                           ; str: "HELLO WORLD, 你好!"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s.toUpper()))
+            if x.kind==String: push(newString(x.s.toUpper()))
             else: InPlace.s = InPlaced.s.toUpper()
 
     builtin "upper?",
@@ -717,12 +766,12 @@ proc defineSymbols*() =
             var broken = false
             for c in runes(x.s):
                 if not c.isUpper():
-                    stack.push(VFALSE)
+                    push(VFALSE)
                     broken = true
                     break
 
             if not broken:
-                stack.push(VTRUE)
+                push(VTRUE)
 
     builtin "whitespace?",
         alias       = unaliased, 
@@ -739,7 +788,7 @@ proc defineSymbols*() =
             whitespace? "\n \n"           ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
+            push(newBoolean(x.s.isEmptyOrWhitespace()))
 
 #=======================================
 # Add Library

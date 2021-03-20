@@ -12,7 +12,7 @@
 
 import asyncdispatch, httpClient, os
 
-import helpers/url as UrlHelper
+import helpers/url
 
 #=======================================
 # Types

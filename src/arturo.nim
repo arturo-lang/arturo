@@ -20,7 +20,7 @@ else:
 when defined(PROFILE):
     import nimprof
 
-import vm/[version, value, vm]
+import vm/[bytecode, version, value, vm]
 
 #=======================================
 # Types
@@ -30,8 +30,8 @@ type
     CmdAction = enum
         execFile
         evalCode
-        # readBcode
-        # writeBcode
+        readBcode
+        writeBcode
         showHelp
         showVersion
 
@@ -39,17 +39,17 @@ type
 # Constants
 #=======================================
 
-#   -o --output               Compile script and write bytecode
-#   -i --input                Execute script from bytecode
-
 const helpTxt = """
 
 Usage:
   arturo [options] <path>
 
 Options:
+  -c --compile              Compile script and write bytecode
+  -x --execute              Execute script from bytecode
+
   -e --evaluate             Evaluate given code
-  -c --console              Show repl / interactive console
+  -r --repl                 Show repl / interactive console
 
   -u --update               Update to latest version
 
@@ -75,9 +75,9 @@ when isMainModule:
     var token = initOptParser()
 
     var action: CmdAction = evalCode
-    var runConsole  = static readFile("src/system/console.art")
-    var runUpdate   = static readFile("src/system/update.art")
-    var runModule   = static readFile("src/system/module.art")
+    var runConsole  = static readFile("src/scripts/console.art")
+    var runUpdate   = static readFile("src/scripts/update.art")
+    var runModule   = static readFile("src/scripts/module.art")
     var code: string = ""
     var arguments: ValueArray = @[]
 
@@ -96,18 +96,18 @@ when isMainModule:
                         arguments.add(newString(token.key))
                 of cmdShortOption, cmdLongOption:
                     case token.key:
-                        of "c","console":
+                        of "r","repl":
                             action = evalCode
                             code = runConsole
                         of "e","evaluate":
                             action = evalCode
                             code = token.val
-                        # of "o","output":
-                        #     action = writeBcode
-                        #     code = token.val
-                        # of "i","input":
-                        #     action = readBcode
-                        #     code = token.val
+                        of "c","compile":
+                            action = writeBcode
+                            code = token.val
+                        of "x","execute":
+                            action = readBcode
+                            code = token.val
                         of "u","update":
                             action = evalCode
                             code = runUpdate
@@ -115,7 +115,8 @@ when isMainModule:
                             action = evalCode
                             code = runModule
                         of "d","debug":
-                            DoDebug = true
+                            # DoDebug = true
+                            discard
                         of "h","help":
                             action = showHelp
                         of "v","version":
@@ -131,23 +132,17 @@ when isMainModule:
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        run(code, arguments, action==execFile)
+                        discard run(code, arguments, action==execFile)
                 else:
-                    run(code, arguments, action==execFile)
+                    discard run(code, arguments, action==execFile)
                     
-            # of writeBcode:
-            #     discard
-            #     # bootup(run=false):
-            #     #     let filename = code
-            #     #     let parsed = doParse(move code, isFile = true)
-            #     #     let evaled = parsed.doEval()
+            of writeBcode:
+                let filename = code
+                discard writeBytecode(run(code, arguments, isFile=true, doExecute=false), filename & ".bcode")
 
-            #     #     discard writeBytecode(evaled, filename & ".bcode")
-
-            # of readBcode:
-            #     discard
-            #     # bootup(run=true):
-            #     #     let evaled = readBytecode(code)
+            of readBcode:
+                let filename = code
+                runBytecode(readBytecode(code), filename, arguments)
 
             of showHelp:
                 echo helpTxt
@@ -157,4 +152,4 @@ when isMainModule:
         arguments = commandLineParams().map(proc (x:string):Value = newString(x))
         code = static readFile(getEnv("PORTABLE_INPUT"))
 
-        run(code, arguments, isFile=false)
+        discard run(code, arguments, isFile=false)
