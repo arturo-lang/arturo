@@ -10,9 +10,11 @@
 # Libraries
 #=======================================
 
-import algorithm, strformat, strutils, tables
+import algorithm, tables
 
-import helpers/debug
+when defined(VERBOSE):
+    import strformat, strutils
+    import helpers/debug
 
 import vm/[bytecode, globals, value]
 
@@ -27,7 +29,8 @@ var
 # Forward Declarations
 #=======================================
 
-proc dump*(evaled: Translation)
+when defined(VERBOSE):
+    proc dump*(evaled: Translation)
 
 #=======================================
 # Methods
@@ -514,43 +517,44 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 # Inspection
 #=======================================
 
-proc dump*(evaled: Translation) =
-    showDebugHeader("Constants")
+when defined(VERBOSE):
+    proc dump*(evaled: Translation) =
+        showDebugHeader("Constants")
 
-    var i = 0
+        var i = 0
 
-    let consts = evaled[0]
-    let it = evaled[1]
+        let consts = evaled[0]
+        let it = evaled[1]
 
-    while i < consts.len:
-        var cnst = consts[i]
+        while i < consts.len:
+            var cnst = consts[i]
 
-        stdout.write fmt("{i}: ")
-        cnst.dump(0, false)
+            stdout.write fmt("{i}: ")
+            cnst.dump(0, false)
 
-        i += 1
-    
-    showDebugHeader("Instruction Table")
+            i += 1
+        
+        showDebugHeader("Instruction Table")
 
-    i = 0
+        i = 0
 
-    while i < it.len:
-        stdout.write fmt("{i}: ")
-        var instr = (OpCode)(it[i])
+        while i < it.len:
+            stdout.write fmt("{i}: ")
+            var instr = (OpCode)(it[i])
 
-        stdout.write ($instr).replace("op").toLowerAscii()
+            stdout.write ($instr).replace("op").toLowerAscii()
 
-        case instr:
-            of opPush, opStore, opLoad, opCall, opAttr:
-                i += 1
-                let indx = it[i]
-                stdout.write fmt("\t#{indx}\n")
-            # of opExtra:
-            #     i += 1
-            #     let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
-            #     stdout.write fmt("\t%{extra}\n")
-            else:
-                discard
+            case instr:
+                of opPush, opStore, opLoad, opCall, opAttr:
+                    i += 1
+                    let indx = it[i]
+                    stdout.write fmt("\t#{indx}\n")
+                # of opExtra:
+                #     i += 1
+                #     let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
+                #     stdout.write fmt("\t%{extra}\n")
+                else:
+                    discard
 
-        stdout.write "\n"
-        i += 1
+            stdout.write "\n"
+            i += 1
