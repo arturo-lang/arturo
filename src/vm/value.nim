@@ -32,12 +32,14 @@ type
     ValueArray* = seq[Value]
     ValueDict*  = OrderedTable[string,Value]
 
-    Byte = byte
+    Byte* = byte
     ByteArray*  = seq[Byte]
+
+    Translation* = (ValueArray, ByteArray) # (constants, instructions)
 
     IntArray*   = seq[int]
 
-    BuiltinAction = proc ()
+    BuiltinAction* = proc ()
 
     SymbolKind* = enum
         thickarrowleft  # <=
@@ -220,8 +222,6 @@ type
                     of SqliteDatabase: 
                         when not defined(NOSQLITE):
                             sqlitedb*: sqlite.DbConn
-                        else:
-                            discard
                     of MysqlDatabase: discard
                     #mysqldb*: mysql.DbConn
             of Bytecode:
@@ -233,7 +233,8 @@ type
 #=======================================
 
 const
-    NoValues* = @[]
+    NoValues*       = @[]
+    NoTranslation*  = (@[],@[])
 
 #=======================================
 # Fixed Values
@@ -272,7 +273,7 @@ var
     #DoDebug* = false
 
 #=======================================
-# Forward declarations
+# Forward Declarations
 #=======================================
 
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
