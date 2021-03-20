@@ -16,9 +16,9 @@
 # Libraries
 #=======================================
 
-import sequtils
-
 when not defined(NOSQLITE):
+    import sequtils
+    
     import helpers/database
 
 import vm/lib
