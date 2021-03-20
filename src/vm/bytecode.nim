@@ -75,9 +75,9 @@ type
         opPush27        = 0x2B
         opPush28        = 0x2C
         opPush29        = 0x2D
-        opPush30        = 0x2E
 
-        opPush          = 0x2F
+        opPush          = 0x2E
+        opPushX         = 0x2F
 
         # [0x30-0x4F]
         # store variables (from <- stack)
@@ -111,9 +111,9 @@ type
         opStore27       = 0x4B
         opStore28       = 0x4C
         opStore29       = 0x4D
-        opStore30       = 0x4E
 
-        opStore         = 0x4F
+        opStore         = 0x4E
+        opStoreX        = 0x4F
 
         # [0x50-0x6F]
         # load variables (to -> stack)
@@ -147,9 +147,9 @@ type
         opLoad27        = 0x6B
         opLoad28        = 0x6C
         opLoad29        = 0x6D
-        opLoad30        = 0x6E
-
-        opLoad          = 0x6F
+        
+        opLoad          = 0x6E
+        opLoadX         = 0x6F
 
         # [0x70-0x8F]
         # function calls
@@ -183,9 +183,9 @@ type
         opCall27        = 0x8B
         opCall28        = 0x8C
         opCall29        = 0x8D
-        opCall30        = 0x8E
-
-        opCall          = 0x8F
+        
+        opCall          = 0x8E
+        opCallX         = 0x8F
 
         #-----------------------
 

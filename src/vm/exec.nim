@@ -246,23 +246,27 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0x10-0x2F]
             # push values
-            of opPush0..opPush30    : pushByIndex((int)(op)-(int)(opPush0))
+            of opPush0..opPush29    : pushByIndex((int)(op)-(int)(opPush0))
             of opPush               : i += 1; pushByIndex((int)(it[i]))
+            of opPushX              : i += 2; pushByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x30-0x4F]
             # store variables (from <- stack)
-            of opStore0..opStore30  : storeByIndex((int)(op)-(int)(opStore0))
-            of opStore              : i += 1; storeByIndex((int)(it[i]))                
+            of opStore0..opStore29  : storeByIndex((int)(op)-(int)(opStore0))
+            of opStore              : i += 1; storeByIndex((int)(it[i]))   
+            of opStoreX             : i += 2; storeByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i])))              
 
             # [0x50-0x6F]
             # load variables (to -> stack)
-            of opLoad0..opLoad30    : loadByIndex((int)(op)-(int)(opLoad0))
+            of opLoad0..opLoad29    : loadByIndex((int)(op)-(int)(opLoad0))
             of opLoad               : i += 1; loadByIndex((int)(it[i]))
+            of opLoadX              : i += 2; loadByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x70-0x8F]
             # function calls
-            of opCall0..opCall30    : callByIndex((int)(op)-(int)(opCall0))                
+            of opCall0..opCall29    : callByIndex((int)(op)-(int)(opCall0))                
             of opCall               : i += 1; callByIndex((int)(it[i]))
+            of opCallX              : i += 2; callByIndex((int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))) 
 
             # [0x90-9F] #
             # generators
