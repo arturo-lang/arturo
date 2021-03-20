@@ -12,7 +12,7 @@
 
 import hashes, marshal, streams
 
-import vm/[globals, value]
+import vm/value
 
 #=======================================
 # Types 
