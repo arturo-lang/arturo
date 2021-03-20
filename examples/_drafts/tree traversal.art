@@ -1,15 +1,16 @@
+define :node [value, left, right][]
+
 makeTree: function [nodes][
     if? integer? nodes -> nodes
     else [
         ret: new dictionary.data []
 
-        set ret 'value first nodes
-        (2 =< size nodes) ? -> set ret 'left makeTree nodes\1
-                            -> set ret 'left ø
-
-        (3 = size nodes)  ? -> set ret 'right makeTree nodes\2
-                            -> set ret 'right ø
-        ret
+        value: first nodes
+        left: ø, right: ø
+        if 2 =< size nodes -> left: makeTree nodes\1
+        if 3 = size nodes  -> right: makeTree nodes\2
+        
+        to :node [value left right]
     ]
 ]
 inspect makeTree [1 [2 [4 7] [5]] [3 [6 [8] [9]]]]
