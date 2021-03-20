@@ -20,7 +20,7 @@ else:
 when defined(PROFILE):
     import nimprof
 
-import vm/[version, value, vm]
+import vm/[bytecode, version, value, vm]
 
 #=======================================
 # Types
@@ -45,11 +45,11 @@ Usage:
   arturo [options] <path>
 
 Options:
-  -o --output               Compile script and write bytecode
-  -i --input                Execute script from bytecode
+  -c --compile              Compile script and write bytecode
+  -x --execute              Execute script from bytecode
 
   -e --evaluate             Evaluate given code
-  -c --console              Show repl / interactive console
+  -r --repl                 Show repl / interactive console
 
   -u --update               Update to latest version
 
@@ -96,16 +96,16 @@ when isMainModule:
                         arguments.add(newString(token.key))
                 of cmdShortOption, cmdLongOption:
                     case token.key:
-                        of "c","console":
+                        of "r","repl":
                             action = evalCode
                             code = runConsole
                         of "e","evaluate":
                             action = evalCode
                             code = token.val
-                        of "o","output":
+                        of "c","compile":
                             action = writeBcode
                             code = token.val
-                        of "i","input":
+                        of "x","execute":
                             action = readBcode
                             code = token.val
                         of "u","update":
@@ -132,23 +132,17 @@ when isMainModule:
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        run(code, arguments, action==execFile)
+                        discard run(code, arguments, action==execFile)
                 else:
-                    run(code, arguments, action==execFile)
+                    discard run(code, arguments, action==execFile)
                     
             of writeBcode:
-                discard
-                # bootup(run=false):
-                #     let filename = code
-                #     let parsed = doParse(move code, isFile = true)
-                #     let evaled = parsed.doEval()
-
-                #     discard writeBytecode(evaled, filename & ".bcode")
+                let filename = code
+                discard writeBytecode(run(code, arguments, isFile=true, doExecute=false), filename & ".bcode")
 
             of readBcode:
-                discard
-                # bootup(run=true):
-                #     let evaled = readBytecode(code)
+                let filename = code
+                runBytecode(readBytecode(code), filename, arguments)
 
             of showHelp:
                 echo helpTxt
@@ -158,4 +152,4 @@ when isMainModule:
         arguments = commandLineParams().map(proc (x:string):Value = newString(x))
         code = static readFile(getEnv("PORTABLE_INPUT"))
 
-        run(code, arguments, isFile=false)
+        discard run(code, arguments, isFile=false)
