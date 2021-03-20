@@ -313,7 +313,7 @@ proc defineSymbols*() =
             ; ...
         """:
             ##########################################################
-            printHelp()
+            printHelp(Syms)
 
     builtin "info",
         alias       = unaliased, 
@@ -344,9 +344,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("get") != VNULL):
-                push(newDictionary(getInfo(x.s, InPlace)))
+                push(newDictionary(getInfo(x.s, InPlace, Aliases)))
             else:
-                printInfo(x.s, InPlace)
+                printInfo(x.s, InPlace, Aliases)
 
     builtin "inline?",
         alias       = unaliased, 
