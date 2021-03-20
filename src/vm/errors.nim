@@ -121,15 +121,22 @@ proc AssertionError_AssertionFailed*(context: string) =
 
 ## Runtime errors
 
-proc RuntimeError_IntegerOverflow*(context: string, operation: bool = false) =
-    if operation:
-        panic RuntimeError,
-            "number overflow: up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-            "tried: " & truncate(context, 30)
-    else:
-        panic RuntimeError,
-            "number overflow: up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
-            "given: " & truncate(context, 20)
+proc RuntimeError_IntegerParsingOverflow*(number: string) =
+    panic RuntimeError,
+          "number parsing overflow - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
+          "given: " & truncate(number, 20)
+
+proc RuntimeError_IntegerOperationOverflow*(operation: string, argA, argB: string) =
+    panic RuntimeError,
+            "number operation overflow - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
+            "attempted: " & operation & ";" &
+            "with: " & truncate(argA & " " & argB, 30)
+
+proc RuntimeError_NumberOutOfPermittedRange*(operation: string, argA, argB: string) =
+    panic RuntimeError,
+            "number operator out of range - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
+            "attempted: " & operation & ";" &
+            "with: " & truncate(argA & " " & argB, 30)
 
 proc RuntimeError_OutOfBounds*(indx: int, maxRange: int) =
     panic RuntimeError,

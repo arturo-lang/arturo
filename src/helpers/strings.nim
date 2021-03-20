@@ -13,7 +13,6 @@
 import strutils, unicode
 
 when not defined(NOASCIIDECODE):
-
     import unidecode
 
 #=======================================
