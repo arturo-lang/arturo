@@ -1,15 +1,15 @@
 digraph arturo {
-value -> "bignum";
-value -> "colors";
 errors -> "colors";
 errors -> "strings";
+value -> "bignum";
+value -> "colors";
 value -> "errors";
-env -> "value";
-eval -> "debug";
 globals -> "errors";
 globals -> "value";
 bytecode -> "globals";
 bytecode -> "value";
+env -> "value";
+eval -> "debug";
 eval -> "bytecode";
 eval -> "globals";
 eval -> "value";
@@ -156,6 +156,7 @@ Ui -> "webview";
 Ui -> "env";
 Ui -> "exec";
 vm -> "Ui";
+arturo -> "bytecode";
 arturo -> "version";
 arturo -> "value";
 arturo -> "vm";

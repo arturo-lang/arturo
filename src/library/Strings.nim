@@ -18,12 +18,13 @@
 
 import json, re, std/editdistance, os
 import sequtils, strutils, unicode, xmltree
+import nre except toSeq
 
 import helpers/colors
 import helpers/strings
-import helpers/templates
 
 import vm/lib
+import vm/[exec, parse]
 
 #=======================================
 # Methods
@@ -167,7 +168,7 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
                 elif (popAttr("regex") != VNULL):
-                    SetInPlace(newString(escapeRe(InPlace.s)))
+                    SetInPlace(newString(re.escapeRe(InPlace.s)))
                 elif (popAttr("shell") != VNULL):
                     SetInPlace(newString(quoteShell(InPlace.s)))
                 elif (popAttr("xml") != VNULL):
@@ -178,7 +179,7 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     push(newString(escapeJsonUnquoted(x.s)))
                 elif (popAttr("regex") != VNULL):
-                    push(newString(escapeRe(x.s)))
+                    push(newString(re.escapeRe(x.s)))
                 elif (popAttr("shell") != VNULL):
                     push(newString(quoteShell(x.s)))
                 elif (popAttr("xml") != VNULL):
@@ -523,18 +524,66 @@ proc defineSymbols*() =
             ; Hello, your name is John and you are 34 years old
         """:
             ##########################################################
+            let recursive = not (popAttr("single") != VNULL)
+            var res = ""
             if x.kind == Literal:
-                InPlaced = newString(renderString(
-                    InPlace.s, 
-                    useEngine=(popAttr("template") != VNULL), 
-                    recursive=(popAttr("single") == VNULL)
-                ))
-            elif x.kind == String:
-                push(newString(renderString(
-                    x.s, 
-                    useEngine=(popAttr("template") != VNULL), 
-                    recursive=(popAttr("single") == VNULL)
-                )))
+                res = InPlace.s
+            else:
+                res = x.s
+
+            let Interpolated    = nre.re"\|([^\|]+)\|"
+            let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
+
+            if (popAttr("template") != VNULL):
+                var keepGoing = true
+                if recursive: 
+                    keepGoing = res.contains(Embeddable)
+
+                while keepGoing:
+                    # make necessary substitutions
+                    res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                        ("||>","««"),
+                        ("<||","»»")
+                    ) & "»»"
+
+                    # parse string template
+                    let parsed = doParse(res, isFile=false)
+
+                    # execute/reduce ('array') the resulting block
+                    let stop = SP
+                    discard execBlock(parsed)
+                    let arr: ValueArray = sTopsFrom(stop)
+                    SP = stop
+
+                    # and join the different strings
+                    res = ""
+                    for i, v in arr:
+                        add(res, v.s)
+
+                    # if recursive, check if there's still more embedded tags
+                    # otherwise, break out of the loop
+                    if recursive: keepGoing = res.contains(Embeddable)
+                    else: keepGoing = false
+            else:
+                var keepGoing = true
+                if recursive: 
+                    keepGoing = res.find(Interpolated).isSome
+
+                while keepGoing:
+                    res = res.replace(Interpolated, proc (match: RegexMatch): string =
+                                discard execBlock(doParse(match.captures[0], isFile=false))
+                                $(pop())
+                            )
+
+                    # if recursive, check if there's still more embedded tags
+                    # otherwise, break out of the loop
+                    if recursive: keepGoing = res.find(Interpolated).isSome
+                    else: keepGoing = false
+
+            if x.kind == Literal:
+                InPlaced = newString(res)
+            else:
+                push(newString(res))
 
     builtin "replace",
         alias       = unaliased, 
