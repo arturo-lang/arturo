@@ -222,8 +222,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "return the logical NAND for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -241,7 +241,31 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            push(newBoolean(not (x.b or y.b)))
+            if x.kind==Boolean and y.kind==Boolean:
+                push(newBoolean(not(x.b or y.b)))
+            else:
+                if x.kind==Block:
+                    if y.kind==Block:
+                        # block block
+                        discard execBlock(x)
+                        if pop().b:
+                            push(newBoolean(false))
+                            return
+
+                        discard execBlock(y)
+                        push(newBoolean(not pop().b))
+                    else:
+                        # block boolean
+                        discard execBlock(x)
+                        push(newBoolean(not(pop().b or y.b)))
+                else:
+                    # boolean block
+                    if x.b:
+                        push(newBoolean(false))
+                        return
+
+                    discard execBlock(y)
+                    push(newBoolean(not pop().b))
 
     builtin "not?",
         alias       = unaliased, 
