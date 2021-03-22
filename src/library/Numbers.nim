@@ -469,9 +469,12 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\hypot add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print hypot 3 4
+            ; 5.0
+
+            print hypot 4.0 5.0
+            ; 6.403124237432849
         """:
             ##########################################################
             push(newFloating(hypot(asFloat(x), asFloat(y))))
