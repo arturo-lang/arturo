@@ -159,9 +159,23 @@ proc defineSymbols*() =
             "xml"   : ({Boolean},"for use in an XML document")
         },
         returns     = {String,Nothing},
-        # TODO(Strings\escape) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            str: {a long "string" + with \diffe\rent symbols.}
+
+            print escape str
+            ; "a long \"string\" + with \\diffe\\rent symbols."
+
+            print escape.json str
+            ; a long \"string\" + with \\diffe\\rent symbols.
+
+            print escape.regex str
+            ; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
+
+            print escape.shell str
+            ; 'a long "string" + with \diffe\rent symbols.'
+
+            print escape.xml str
+            ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             ##########################################################
             if x.kind==Literal:
@@ -493,9 +507,6 @@ proc defineSymbols*() =
             else:
                 push(newBoolean(x.s.startsWith(y.s)))
 
-    # TODO(Strings\render) added `.sanitize` attribute?
-    #  Could help in case we need even more template safety: in the bizarre case that the delimiters already exist in the template, but not as template tags.
-    #  labels: library,enhancement
     builtin "render",
         alias       = tilde, 
         rule        = PrefixPrecedence,
