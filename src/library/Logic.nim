@@ -272,7 +272,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "return the logical complement of the given value",
         args        = {
-            "value" : {Boolean}
+            "value" : {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -285,7 +285,11 @@ proc defineSymbols*() =
             ; we're still not ready!
         """:
             ##########################################################
-            push(newBoolean(not x.b))
+            if x.kind==Boolean:
+                push(newBoolean(not x.b))
+            else:
+                discard execBlock(x)
+                push(newBoolean(not pop().b))
 
     builtin "or?",
         alias       = unaliased, 
