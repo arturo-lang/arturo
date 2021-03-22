@@ -263,9 +263,9 @@ proc defineSymbols*() =
             "directory" : ({Boolean},"path is a directory")
         },
         returns     = {Nothing},
-        # TODO(Files/rename) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            rename "README.md" "READIT.md"
+            ; file renamed
         """:
             ##########################################################
             var source = x.s
