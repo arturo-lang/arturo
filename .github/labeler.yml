@@ -2,8 +2,10 @@
   - src/extras/*
 
 documentation:
-  - examples/*
+  - examples/projecteuler/*
+  - examples/rosetta/*
   - docs/*
+  - docs/wiki/*
 
 evaluator:
   - src/vm/eval.nim
@@ -32,7 +34,8 @@ repl:
   - src/scripts/console.art
 
 unit-test:
-  - tests/*
+  - tests/benchmarks/*
+  - tests/unittests/*
 
 error handling: 
   - src/vm/errors.nim

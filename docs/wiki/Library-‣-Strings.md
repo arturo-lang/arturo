@@ -148,6 +148,26 @@ Escape given string
 - *:string*
 - *:nothing*
 
+#### Examples
+
+```red
+str: {a long "string" + with \diffe\rent symbols.}
+
+print escape str
+; "a long \"string\" + with \\diffe\\rent symbols."
+
+print escape.json str
+; a long \"string\" + with \\diffe\\rent symbols.
+
+print escape.regex str
+; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
+
+print escape.shell str
+; 'a long "string" + with \diffe\rent symbols.'
+
+print escape.xml str
+; a long &quot;string&quot; + with \diffe\rent symbols.
+```
 
 ## indent
 

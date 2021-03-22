@@ -41,6 +41,15 @@ Get date after given one using interval
 
 - *:date*
 
+#### Examples
+
+```red
+print now
+; 2021-03-22T11:25:30+01:00
+
+print after.weeks:2 now
+; 2021-04-05T11:25:42+02:00
+```
 
 ## before
 
@@ -71,6 +80,18 @@ Get date before given one using interval
 
 - *:date*
 
+#### Examples
+
+```red
+print now
+; 2021-03-22T11:27:00+01:00
+
+print before.weeks:2 now
+; 2021-03-08T11:27:14+01:00
+
+print before.years:1 now
+; 2020-03-22T11:27:23+01:00
+```
 
 ## leap?
 

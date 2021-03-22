@@ -39,16 +39,16 @@ Show webview window with given url or html source
 
 ```red
 webview "Hello world!"
-; (opens a webview windows with "Hello world!")
-
-webview .width:  200 
-        .height: 300
-        .title:  "My webview app"
----
-    <h1>This is my webpage</h1>
-    <p>
-        This is some content
-    </p>
----
-; (opens a webview with given attributes)
+    ; (opens a webview windows with "Hello world!")
+    
+    webview .width:  200 
+            .height: 300
+            .title:  "My webview app"
+    ---
+        <h1>This is my webpage</h1>
+        <p>
+            This is some content
+        </p>
+    ---
+    ; (opens a webview with given attributes)
 ```

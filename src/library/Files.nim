@@ -53,9 +53,12 @@ proc defineSymbols*() =
             "directory" : ({Boolean},"path is a directory")
         },
         returns     = {Nothing},
-        # TODO(Files/copy) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+            ; copied file
+
+            copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+            ; copied whole folder
         """:
             ##########################################################
             var target = y.s
@@ -81,9 +84,9 @@ proc defineSymbols*() =
             "directory" : ({Boolean},"path is a directory")
         },
         returns     = {Nothing},
-        # TODO(Files/delete) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            delete "testscript.art"
+            ; file deleted
         """:
             ##########################################################
             if (popAttr("directory") != VNULL): 
@@ -127,13 +130,49 @@ proc defineSymbols*() =
             "set"   : ({Dictionary},"set using given file permissions")
         },
         returns     = {Dictionary,Null},
-        # TODO(Files/permissions) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            inspect permissions "bin/arturo"
+            ; [ :dictionary
+            ;     user    :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		true :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ;     group   :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		false :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ;     others  :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		false :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ; ]
+
+            permissions.set:#[others:#[write:true]] "bin/arturo"
+            ; gave write permission to 'others'
         """:
             ##########################################################
             try:
                 if (popAttr("set") != VNULL):
+                    var source = x.s
+                    var perms: set[FilePermission]
+
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+
+                    setFilePermissions(move source, move perms)
+                else:
                     let perms = getFilePermissions(x.s)
                     var permsDict: ValueDict = {
                         "user": newDictionary({
@@ -154,23 +193,6 @@ proc defineSymbols*() =
                     }.toOrderedTable
 
                     push(newDictionary(permsDict))
-                else:
-                    var source = x.s
-                    var perms: set[FilePermission]
-
-                    if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
-                    if x.d.hasKey("user") and x.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
-                    if x.d.hasKey("user") and x.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
-
-                    if x.d.hasKey("group") and x.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
-                    if x.d.hasKey("group") and x.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
-                    if x.d.hasKey("group") and x.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
-
-                    if x.d.hasKey("others") and x.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
-                    if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
-                    if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
-
-                    setFilePermissions(move source, move perms)
 
             except OSError:
                 push(VNULL)
@@ -263,9 +285,9 @@ proc defineSymbols*() =
             "directory" : ({Boolean},"path is a directory")
         },
         returns     = {Nothing},
-        # TODO(Files/rename) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            rename "README.md" "READIT.md"
+            ; file renamed
         """:
             ##########################################################
             var source = x.s
@@ -293,9 +315,16 @@ proc defineSymbols*() =
             "hard"  : ({Boolean},"create a hard link")
         },
         returns     = {Nothing},
-        # TODO(Files/symlink) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            symlink relative "arturo/README.md" 
+                    "/Users/drkameleon/Desktop/gotoREADME.md"
+            ; creates a symbolic link to our readme file
+            ; in our desktop
+
+            symlink.hard relative "arturo/README.md" 
+                    "/Users/drkameleon/Desktop/gotoREADME.md"
+            ; hard-links (effectively copies) our readme file
+            ; to our desktop
         """:
             ##########################################################
             var source = x.s
