@@ -324,9 +324,6 @@ proc defineSymbols*() =
                 #     return ReturnResult
             push(newBoolean(condition))
 
-    # TODO(Core\let) Do we really need an alias for that?
-    #  Currently, the alias is `:` - acting as an infix operator. But this could lead to confusion with existing `label:` or `path\label:`.
-    #  labels: library,open discussion
     builtin "let",
         alias       = colon, 
         rule        = InfixPrecedence,
