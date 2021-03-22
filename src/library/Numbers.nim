@@ -598,9 +598,16 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Integer,Null},
-            # TODO(Numbers\powmod) add example for documentation
-            #  labels: library,documentation,easy
             example     = """
+                powmod 1 10 3   ; => 1
+                powmod 3 2 6    ; => 3
+                powmod 5 5 15   ; => 5
+                powmod 2 3 5    ; => 3
+                powmod 2 4 5    ; => 1
+
+                print (powmod 2 168277 673109) = (2 ^ 168277) % 673109
+                ; true
+
             """:
                 ##########################################################
                 push(powmod(x, y, z))
