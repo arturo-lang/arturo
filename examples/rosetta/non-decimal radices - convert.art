@@ -1,0 +1,26 @@
+fromBase: function [x,base][
+    if base=2 [ return from.binary x ]
+    if base=8 [ return from.octal x ]
+    if base=16 [ return from.hex x ]
+
+    return to :integer x
+]
+
+toBase: function [x,base][
+    if base=2 [ return as.binary x ]
+    if base=8 [ return as.octal x ]
+    if base=16 [ return as.hex x ]
+
+    return to :string x
+]
+
+loop 1..20 'i ->
+    print [
+        i "base2:" toBase i 2 "base8:" toBase i 8 "base16:" toBase i 16
+    ]
+
+print ""
+
+print ["101 => from base2:" fromBase "101" 2 "from base8:" fromBase "101" 8 "from base16:" fromBase "101" 16]
+print ["123 => from base8:" fromBase "123" 8 "from base16:" fromBase "123" 16]
+print ["456 => from base8:" fromBase "456" 8 "from base16:" fromBase "456" 16]
