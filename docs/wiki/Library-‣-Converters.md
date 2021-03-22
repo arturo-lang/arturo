@@ -305,6 +305,12 @@ to :string 'symbol            ; "symbol"
 to :string :word              ; "word"
 
 to :block "one two three"     ; [one two three]
+
+to :string .format:"dd/MM/yy" now
+; 22/03/21
+
+to :date .format:"dd/MM/yyyy" "22/03/2021"
+; 2021-03-22T00:00:00+01:00
 ```
 
 ## with

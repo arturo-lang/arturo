@@ -114,12 +114,31 @@ Get normalized version of given path
 |Attribute|Type|Description|
 |---|---|---|
 |executable|<i>:boolean</i>|treat path as executable|
+|tilde|<i>:boolean</i>|expand tildes in path|
 
 #### Returns
 
 - *:string*
 - *:nothing*
 
+#### Examples
+
+```red
+normalize "one/../two/../../three"
+; => ../three
+
+normalize "~/one/../two/../../three"
+; => three
+
+normalize.tilde "~/one/../two/../../three"
+; => /Users/three
+
+normalize.tilde "~/Documents"
+; => /Users/drkameleon/Documents
+
+normalize.executable "myscript"
+; => ./myscript
+```
 
 ## relative
 
