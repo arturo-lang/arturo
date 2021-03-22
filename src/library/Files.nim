@@ -81,9 +81,9 @@ proc defineSymbols*() =
             "directory" : ({Boolean},"path is a directory")
         },
         returns     = {Nothing},
-        # TODO(Files/delete) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            delete "testscript.art"
+            ; file deleted
         """:
             ##########################################################
             if (popAttr("directory") != VNULL): 
