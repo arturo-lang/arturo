@@ -23,11 +23,6 @@ import vm/[exec]
 # Methods
 #=======================================
 
-# TODO(Logic) Enable blocks - lazy arguments - for the rest of the functions?
-#  `and?` and `or?` already work this way. Should the rest of them as well?
-#  Functions that are yet unimplented this way: `nand?`,`nor?`,`xnor?`,`xor?`
-#  labels: library
-
 proc defineSymbols*() =
 
     when defined(VERBOSE):
