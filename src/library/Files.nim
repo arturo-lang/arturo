@@ -53,9 +53,12 @@ proc defineSymbols*() =
             "directory" : ({Boolean},"path is a directory")
         },
         returns     = {Nothing},
-        # TODO(Files/copy) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+            ; copied file
+
+            copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+            ; copied whole folder
         """:
             ##########################################################
             var target = y.s
