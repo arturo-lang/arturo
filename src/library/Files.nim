@@ -130,13 +130,28 @@ proc defineSymbols*() =
             "set"   : ({Dictionary},"set using given file permissions")
         },
         returns     = {Dictionary,Null},
-        # TODO(Files/permissions) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
         """:
             ##########################################################
             try:
                 if (popAttr("set") != VNULL):
+                    var source = x.s
+                    var perms: set[FilePermission]
+
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
+                    if x.d.hasKey("user") and x.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
+                    if x.d.hasKey("group") and x.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
+                    if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+
+                    setFilePermissions(move source, move perms)
+                else:
                     let perms = getFilePermissions(x.s)
                     var permsDict: ValueDict = {
                         "user": newDictionary({
@@ -157,23 +172,6 @@ proc defineSymbols*() =
                     }.toOrderedTable
 
                     push(newDictionary(permsDict))
-                else:
-                    var source = x.s
-                    var perms: set[FilePermission]
-
-                    if x.d.hasKey("user") and x.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
-                    if x.d.hasKey("user") and x.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
-                    if x.d.hasKey("user") and x.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
-
-                    if x.d.hasKey("group") and x.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
-                    if x.d.hasKey("group") and x.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
-                    if x.d.hasKey("group") and x.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
-
-                    if x.d.hasKey("others") and x.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
-                    if x.d.hasKey("others") and x.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
-                    if x.d.hasKey("others") and x.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
-
-                    setFilePermissions(move source, move perms)
 
             except OSError:
                 push(VNULL)
