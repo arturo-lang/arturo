@@ -158,14 +158,16 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("executable") != VNULL):
                 if x.kind==Literal:
-                    InPlace.s.expandTilde().normalizeExe()
+                    InPlace.s = InPlaced.s.expandTilde()
+                    InPlaced.s.normalizeExe()
                 else:
-                    var ret = x.s
-                    ret.expandTilde().normalizeExe()
+                    var ret = x.s.expandTilde()
+                    ret.normalizeExe()
                     push(newString(ret))
             else:
                 if x.kind==Literal:
-                    InPlace.s.expandTilde().normalizePath()
+                    InPlace.s = InPlaced.s.expandTilde()
+                    InPlaced.s.normalizePath()
                 else:
                     push(newString(normalizedPath(x.s.expandTilde())))
 
