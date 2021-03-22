@@ -402,8 +402,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "return the logical XOR for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -421,7 +421,21 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            push(newBoolean(x.b xor y.b))
+            var a: bool
+            var b: bool
+            if x.kind == Boolean: 
+                a = x.b
+            else:
+                discard execBlock(x)
+                a = pop().b
+
+            if y.kind == Boolean: 
+                b = y.b
+            else:
+                discard execBlock(y)
+                b = pop().b
+
+            push(newBoolean(a xor b))
             
 #=======================================
 # Add Library
