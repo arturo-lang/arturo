@@ -21,6 +21,7 @@ import strutils, sugar, unicode
 import nre except toSeq
 
 import helpers/arrays
+import helpers/strings
 import helpers/unisort
 
 import vm/lib
@@ -1052,7 +1053,7 @@ proc defineSymbols*() =
         attrs       = {
             "words"     : ({Boolean},"split string by whitespace"),
             "lines"     : ({Boolean},"split string by lines"),
-            "by"        : ({String},"split using given separator"),
+            "by"        : ({String,Block},"split using given separator"),
             "regex"     : ({Boolean},"match against a regular expression"),
             "at"        : ({Integer},"split collection at given position"),
             "every"     : ({Integer},"split collection every <n> elements"),
@@ -1083,7 +1084,10 @@ proc defineSymbols*() =
                     elif (popAttr("path") != VNULL):
                         SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
                     elif (let aBy = popAttr("by"); aBy != VNULL):
-                        SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
+                        if aBy.kind==String:
+                            SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
+                        else:
+                            SetInPlace(newStringBlock(toSeq(InPlaced.s.tokenize(aBy.a.map((k)=>k.s)))))
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
                         SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
@@ -1123,7 +1127,10 @@ proc defineSymbols*() =
                 elif (popAttr("path") != VNULL):
                     push(newStringBlock(x.s.split(DirSep)))
                 elif (let aBy = popAttr("by"); aBy != VNULL):
-                    push(newStringBlock(x.s.split(aBy.s)))
+                    if aBy.kind==String:
+                        push(newStringBlock(x.s.split(aBy.s)))
+                    else:
+                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):
                     push(newStringBlock(x.s.split(nre.re(aRegex.s))))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
