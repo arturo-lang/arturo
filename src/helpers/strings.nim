@@ -39,3 +39,15 @@ proc truncate*(s: string, at: int, with: string = "..."): string =
     if runeLen(s) > (at + len(with)):
         setLen result, at+1
         result.add with
+
+iterator tokenize*(text: string; sep: openArray[string]): string =
+    var i, lastMatch = 0
+    while i < text.len:
+        for j, s in sep:
+            if text[i..text.high].startsWith s:
+                if i > lastMatch: yield text[lastMatch ..< i]
+                lastMatch = i + s.len
+                i += s.high
+                break
+        inc i
+    if i > lastMatch: yield text[lastMatch ..< i]
