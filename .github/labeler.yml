@@ -2,8 +2,10 @@
   - src/extras/*
 
 documentation:
-  - examples/*
+  - examples/projecteuler/*
+  - examples/rosetta/*
   - docs/*
+  - docs/wiki/*
 
 evaluator:
   - src/vm/eval.nim
