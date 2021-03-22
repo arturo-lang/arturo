@@ -158,16 +158,16 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("executable") != VNULL):
                 if x.kind==Literal:
-                    InPlace.s.normalizeExe()
+                    InPlace.s.expandTilde().normalizeExe()
                 else:
                     var ret = x.s
-                    ret.normalizeExe()
+                    ret.expandTilde().normalizeExe()
                     push(newString(ret))
             else:
                 if x.kind==Literal:
-                    InPlace.s.normalizePath()
+                    InPlace.s.expandTilde().normalizePath()
                 else:
-                    push(newString(normalizedPath(x.s)))
+                    push(newString(normalizedPath(x.s.expandTilde())))
 
     builtin "relative",
         alias       = dotslash, 
