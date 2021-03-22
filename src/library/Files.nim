@@ -131,6 +131,27 @@ proc defineSymbols*() =
         },
         returns     = {Dictionary,Null},
         example     = """
+            inspect permissions "bin/arturo"
+            ; [ :dictionary
+            ;     user    :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		true :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ;     group   :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		false :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ;     others  :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		false :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ; ]
+
+            permissions.set:#[others:#[write:true]] "bin/arturo"
+            ; gave write permission to 'others'
         """:
             ##########################################################
             try:
