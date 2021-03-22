@@ -145,9 +145,15 @@ proc defineSymbols*() =
             "executable"    : ({Boolean},"treat path as executable")
         },
         returns     = {String,Nothing},
-        # TODO(Paths\normalize) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            normalize "one/../two/../../three"
+            ; => ../three
+
+            normalize "~/one/../two/../../three"
+            ; => three
+
+            normalize.executable "myscript"
+            ; => ./myscript          
         """:
             ##########################################################
             if (popAttr("executable") != VNULL):
