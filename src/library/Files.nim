@@ -296,6 +296,13 @@ proc defineSymbols*() =
         example     = """
             symlink relative "arturo/README.md" 
                     "/Users/drkameleon/Desktop/gotoREADME.md"
+            ; creates a symbolic link to our readme file
+            ; in our desktop
+
+            symlink.hard relative "arturo/README.md" 
+                    "/Users/drkameleon/Desktop/gotoREADME.md"
+            ; hard-links (effectively copies) our readme file
+            ; to our desktop
         """:
             ##########################################################
             var source = x.s
