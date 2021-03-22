@@ -40,6 +40,15 @@ Copy file at path to given destination
 
 - *:nothing*
 
+#### Examples
+
+```red
+copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+; copied file
+
+copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+; copied whole folder
+```
 
 ## delete
 
@@ -62,6 +71,12 @@ Delete file at given path
 
 - *:nothing*
 
+#### Examples
+
+```red
+delete "testscript.art"
+; file deleted
+```
 
 ## exists?
 
@@ -114,6 +129,31 @@ Check permissions of given file
 - *:null*
 - *:dictionary*
 
+#### Examples
+
+```red
+inspect permissions "bin/arturo"
+; [ :dictionary
+;     user    :	[ :dictionary
+;         read     :		true :boolean
+;         write    :		true :boolean
+;         execute  :		true :boolean
+;     ]
+;     group   :	[ :dictionary
+;         read     :		true :boolean
+;         write    :		false :boolean
+;         execute  :		true :boolean
+;     ]
+;     others  :	[ :dictionary
+;         read     :		true :boolean
+;         write    :		false :boolean
+;         execute  :		true :boolean
+;     ]
+; ]
+
+permissions.set:#[others:#[write:true]] "bin/arturo"
+; gave write permission to 'others'
+```
 
 ## read
 
@@ -185,6 +225,12 @@ Rename file at path using given new path name
 
 - *:nothing*
 
+#### Examples
+
+```red
+rename "README.md" "READIT.md"
+; file renamed
+```
 
 ## symlink
 
@@ -208,6 +254,19 @@ Create symbolic link of file to given destination
 
 - *:nothing*
 
+#### Examples
+
+```red
+symlink relative "arturo/README.md" 
+        "/Users/drkameleon/Desktop/gotoREADME.md"
+; creates a symbolic link to our readme file
+; in our desktop
+
+symlink.hard relative "arturo/README.md" 
+        "/Users/drkameleon/Desktop/gotoREADME.md"
+; hard-links (effectively copies) our readme file
+; to our desktop
+```
 
 ## unzip
 

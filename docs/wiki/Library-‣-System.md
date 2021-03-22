@@ -57,6 +57,18 @@ Get environment variables
 
 - *:dictionary*
 
+#### Examples
+
+```red
+print env\SHELL
+; /bin/zsh
+
+print env\HOME
+; /Users/drkameleon
+
+print env\PATH
+; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+```
 
 ## execute
 

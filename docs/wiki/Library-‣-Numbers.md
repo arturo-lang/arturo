@@ -599,6 +599,15 @@ Calculate the hypotenuse of a right-angle triangle with given base and height
 
 - *:floating*
 
+#### Examples
+
+```red
+print hypot 3 4
+; 5.0
+
+print hypot 4.0 5.0
+; 6.403124237432849
+```
 
 ## log
 
@@ -744,6 +753,18 @@ Modular exponentation: calculate the result of (base^exponent) % divider
 - *:null*
 - *:integer*
 
+#### Examples
+
+```red
+powmod 1 10 3   ; => 1
+    powmod 3 2 6    ; => 3
+    powmod 5 5 15   ; => 5
+    powmod 2 3 5    ; => 3
+    powmod 2 4 5    ; => 1
+
+    print (powmod 2 168277 673109) = (2 ^ 168277) % 673109
+    ; true
+```
 
 ## prime?
 
