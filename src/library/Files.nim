@@ -293,9 +293,9 @@ proc defineSymbols*() =
             "hard"  : ({Boolean},"create a hard link")
         },
         returns     = {Nothing},
-        # TODO(Files/symlink) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            symlink relative "arturo/README.md" 
+                    "/Users/drkameleon/Desktop/gotoREADME.md"
         """:
             ##########################################################
             var source = x.s
