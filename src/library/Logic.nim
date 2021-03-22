@@ -59,7 +59,14 @@ proc defineSymbols*() =
             var allOK = true
 
             for item in x.a:
-                if item!=VTRUE:
+                var val: Value
+                if item.kind == Block: 
+                    discard execBlock(item)
+                    val = pop()
+                else:
+                    val = item
+
+                if val!=VTRUE:
                     allOK = false
                     push(newBoolean(false))
                     break
@@ -140,7 +147,14 @@ proc defineSymbols*() =
             
             var anyOK = false
             for item in x.a:
-                if item==VTRUE:
+                var val: Value
+                if item.kind == Block: 
+                    discard execBlock(item)
+                    val = pop()
+                else:
+                    val = item
+
+                if val==VTRUE:
                     anyOK = true
                     push(newBoolean(true))
                     break
