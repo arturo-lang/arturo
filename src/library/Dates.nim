@@ -48,9 +48,12 @@ proc defineSymbols*() =
             "years"         : ({Integer},"add given number of years")
         },
         returns     = {Date},
-        # TODO(Dates\after) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            print now
+            ; 2021-03-22T11:25:30+01:00
+
+            print after.weeks:2 now
+            ; 2021-04-05T11:25:42+02:00
         """:
             ##########################################################
             var nanoseconds, milliseconds, seconds,
