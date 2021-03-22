@@ -198,9 +198,9 @@ when not defined(NOGMP):
         var X : Value = x
         var Z : Value = z
         if x.iKind==NormalInteger: X = newBigInteger(x.i)
-        if z.iKind==NormalInteger: Z = newBigInteger(y.i)
+        if z.iKind==NormalInteger: Z = newBigInteger(z.i)
 
         if y.iKind==NormalInteger:
-            newInteger(exp(x.bi, (culong)(y.i), z.bi))
+            newInteger(exp(X.bi, (culong)(y.i), Z.bi))
         else:
-            newInteger(exp(x.bi, y.bi, z.bi))
+            newInteger(exp(X.bi, y.bi, Z.bi))

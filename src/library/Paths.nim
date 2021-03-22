@@ -142,26 +142,50 @@ proc defineSymbols*() =
             "path"  : {String,Literal}
         },
         attrs       = {
-            "executable"    : ({Boolean},"treat path as executable")
+            "executable"    : ({Boolean},"treat path as executable"),
+            "tilde"         : ({Boolean},"expand tildes in path")
         },
         returns     = {String,Nothing},
-        # TODO(Paths\normalize) add example for documentation
-        #  labels: library,documentation,easy
         example     = """
+            normalize "one/../two/../../three"
+            ; => ../three
+
+            normalize "~/one/../two/../../three"
+            ; => three
+
+            normalize.tilde "~/one/../two/../../three"
+            ; => /Users/three
+
+            normalize.tilde "~/Documents"
+            ; => /Users/drkameleon/Documents
+
+            normalize.executable "myscript"
+            ; => ./myscript          
         """:
             ##########################################################
             if (popAttr("executable") != VNULL):
                 if x.kind==Literal:
+                    if (popAttr("tilde") != VNULL):
+                        InPlace.s = InPlaced.s.expandTilde()
                     InPlace.s.normalizeExe()
                 else:
-                    var ret = x.s
+                    var ret: string
+                    if (popAttr("tilde") != VNULL):
+                        ret = x.s.expandTilde()
+                    else:
+                        ret = x.s
                     ret.normalizeExe()
                     push(newString(ret))
             else:
                 if x.kind==Literal:
+                    if (popAttr("tilde") != VNULL):
+                        InPlace.s = InPlaced.s.expandTilde()
                     InPlace.s.normalizePath()
                 else:
-                    push(newString(normalizedPath(x.s)))
+                    if (popAttr("tilde") != VNULL):
+                        push(newString(normalizedPath(x.s.expandTilde())))
+                    else:
+                        push(newString(normalizedPath(x.s)))
 
     builtin "relative",
         alias       = dotslash, 

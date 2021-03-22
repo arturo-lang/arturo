@@ -1,0 +1,24 @@
+zigzag: function [n][
+    result: map 1..n 'x -> map 1..n => 0
+
+    x: 1, y: 1, v: 0, d: 1
+
+    while [v < n^2][
+        if? all? @[1 =< x x =< n 1 =< y y =< n][
+            set get result (y-1) (x-1) v
+            x: x + d, y: y - d, v: v + 1
+        ]
+        else[if? x > n [x: n, y: y + 2, d: neg d]
+            else[if? y > n [x: x + 2, y: n, d: neg d]
+                else[if? x < 1 [x: 1, d: neg d]
+                    else[if y < 1 [y: 1, d: neg d]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    result
+]
+
+zz: zigzag 5
+loop zz 'row -> print map row 'col [pad to :string col 3]

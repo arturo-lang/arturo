@@ -58,9 +58,15 @@ proc defineSymbols*() =
         args        = NoArgs,
         attrs       = NoAttrs,
         returns     = {Dictionary},
-        # TODO(System\env) add example for documentation 
-        #  labels: documentation,easy,library
         example     = """
+            print env\SHELL
+            ; /bin/zsh
+
+            print env\HOME
+            ; /Users/drkameleon
+
+            print env\PATH
+            ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
         """:
             ##########################################################
             var res: ValueDict = initOrderedTable[string,Value]()

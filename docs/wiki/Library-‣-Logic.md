@@ -129,8 +129,8 @@ Return the logical NAND for the given values
 #### Usage
 
 <pre>
-<b>nand?</b> <ins>valueA</ins> <i>:boolean</i>
-      <ins>valueB</ins> <i>:boolean</i>
+<b>nand?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+      <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -162,8 +162,8 @@ Return the logical NAND for the given values
 #### Usage
 
 <pre>
-<b>nor?</b> <ins>valueA</ins> <i>:boolean</i>
-     <ins>valueB</ins> <i>:boolean</i>
+<b>nor?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+     <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -195,7 +195,7 @@ Return the logical complement of the given value
 #### Usage
 
 <pre>
-<b>not?</b> <ins>value</ins> <i>:boolean</i>
+<b>not?</b> <ins>value</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -269,8 +269,8 @@ Return the logical XNOR for the given values
 #### Usage
 
 <pre>
-<b>xnor?</b> <ins>valueA</ins> <i>:boolean</i>
-      <ins>valueB</ins> <i>:boolean</i>
+<b>xnor?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+      <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -302,8 +302,8 @@ Return the logical XOR for the given values
 #### Usage
 
 <pre>
-<b>xor?</b> <ins>valueA</ins> <i>:boolean</i>
-     <ins>valueB</ins> <i>:boolean</i>
+<b>xor?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+     <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
