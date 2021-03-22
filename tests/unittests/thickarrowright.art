@@ -14,11 +14,7 @@ double: function [x][2*x]
 
 print map 1..10 => double
 
-; WITH INLINE
+; WITH BLOCK + REPLACEMENT
 
-print map 1..10 => (5)
-
-; WITH INLINE + REPLACEMENT
-
-print map 1..10 => (_+2)
-print map 5..10 => (_-2)
+print map 1..10 => [&+2]
+print map 5..10 => [&-2]
