@@ -153,6 +153,12 @@ proc defineSymbols*() =
             normalize "~/one/../two/../../three"
             ; => three
 
+            normalize.tilde "~/one/../two/../../three"
+            ; => /Users/three
+
+            normalize.tilde "~/Documents"
+            ; => /Users/drkameleon/Documents
+
             normalize.executable "myscript"
             ; => ./myscript          
         """:
