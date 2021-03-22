@@ -142,7 +142,8 @@ proc defineSymbols*() =
             "path"  : {String,Literal}
         },
         attrs       = {
-            "executable"    : ({Boolean},"treat path as executable")
+            "executable"    : ({Boolean},"treat path as executable"),
+            "tilde"         : ({Boolean},"expand tildes in path")
         },
         returns     = {String,Nothing},
         example     = """
@@ -158,18 +159,27 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("executable") != VNULL):
                 if x.kind==Literal:
-                    InPlace.s = InPlaced.s.expandTilde()
-                    InPlaced.s.normalizeExe()
+                    if (popAttr("tilde") != VNULL):
+                        InPlace.s = InPlaced.s.expandTilde()
+                    InPlace.s.normalizeExe()
                 else:
-                    var ret = x.s.expandTilde()
+                    var ret: string
+                    if (popAttr("tilde") != VNULL):
+                        ret = x.s.expandTilde()
+                    else:
+                        ret = x.s
                     ret.normalizeExe()
                     push(newString(ret))
             else:
                 if x.kind==Literal:
-                    InPlace.s = InPlaced.s.expandTilde()
-                    InPlaced.s.normalizePath()
+                    if (popAttr("tilde") != VNULL):
+                        InPlace.s = InPlaced.s.expandTilde()
+                    InPlace.s.normalizePath()
                 else:
-                    push(newString(normalizedPath(x.s.expandTilde())))
+                    if (popAttr("tilde") != VNULL):
+                        push(newString(normalizedPath(x.s.expandTilde())))
+                    else:
+                        push(newString(normalizedPath(x.s)))
 
     builtin "relative",
         alias       = dotslash, 
