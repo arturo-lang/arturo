@@ -369,8 +369,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(false):
                             addConst(consts, newBlock(subblock), opPush)
 
-                    # TODO(Eval\evalOne) verify thickarrowright works right
-                    #  labels: vm,evaluator,unit-test
                     of thickarrowright  : 
                         # get next node
                         let subnode = n.a[i+1]
