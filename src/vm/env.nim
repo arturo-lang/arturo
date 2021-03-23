@@ -42,17 +42,20 @@ proc parseCmdlineValue*(v: string): Value =
         return doParse(v, isFile=false).a[0]
 
 proc parseCmdlineArguments*(): ValueDict =
-    var p = initOptParser(Arguments.a.map((x)=>x.s))
+    result = initOrderedTable[string,Value]()
     var values: ValueArray = @[]
 
-    result = initOrderedTable[string,Value]()
-    for kind, key, val in p.getopt():
-        case kind
-            of cmdArgument:
-                values.add(parseCmdlineValue(key))
-            of cmdLongOption, cmdShortOption:
-                result[key] = parseCmdlineValue(val)
-            of cmdEnd: assert(false) # cannot happen
+    when not defined(windows):
+        var p = initOptParser(Arguments.a.map((x)=>x.s))
+        for kind, key, val in p.getopt():
+            case kind
+                of cmdArgument:
+                    values.add(parseCmdlineValue(key))
+                of cmdLongOption, cmdShortOption:
+                    result[key] = parseCmdlineValue(val)
+                of cmdEnd: assert(false) # cannot happen
+    else:
+        values = Arguments.a.map((x)=>x.s)
 
     result["values"] = newBlock(values)
 
