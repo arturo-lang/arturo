@@ -79,7 +79,7 @@ when isMainModule:
     var runUpdate   = static readFile("src/scripts/update.art")
     var runModule   = static readFile("src/scripts/module.art")
     var code: string = ""
-    var arguments: ValueArray = @[]
+    var arguments: seq[string] = @[]
 
     when not defined(PORTABLE):
 
@@ -92,8 +92,7 @@ when isMainModule:
                             action = execFile
                         
                         code = token.key
-                    else:
-                        arguments.add(newString(token.key))
+                        break
                 of cmdShortOption, cmdLongOption:
                     case token.key:
                         of "r","repl":
@@ -122,8 +121,11 @@ when isMainModule:
                         of "v","version":
                             action = showVersion
                         else:
-                            echo "error: unrecognized option (" & token.key & ")"
+                            #echo "error: unrecognized option (" & token.key & ")"
+                            discard
                 of cmdEnd: break
+
+        arguments = token.remainingArgs()
 
         case action:
             of execFile, evalCode:
