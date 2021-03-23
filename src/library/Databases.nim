@@ -17,7 +17,7 @@
 #=======================================
 
 when not defined(NOSQLITE):
-    import sequtils
+    import sequtils, sugar
     
     import helpers/database
 
@@ -68,18 +68,23 @@ proc defineSymbols*() =
                 "commands"  : {String,Block}
             },
             attrs       = {
-                "id"    : ({Boolean},"return last INSERT id")
+                "id"    : ({Boolean},"return last INSERT id"),
+                "with"  : ({Block},"use arguments for parametrized statement")
             },
             returns     = {Integer,Block,Null},
             example     = """
             """:
                 ##########################################################
+                var with: seq[string] = @[]
+                if (let aWith = popAttr("with"); aWith != VNULL):
+                    with = aWith.a.map((x) => $(x))
+
                 if x.dbKind == SqliteDatabase:
                     if y.kind == String:
-                        if (let got = execSqliteDb(x.sqlitedb, y.s); got[0]==ValidQueryResult):
+                        if (let got = execSqliteDb(x.sqlitedb, y.s, with); got[0]==ValidQueryResult):
                             push(newBlock(got[1]))
                     else:
-                        if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = v.s)); got[0]==ValidQueryResult):
+                        if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = v.s), with); got[0]==ValidQueryResult):
                             push(newBlock(got[1]))
                     
                     if (popAttr("id") != VNULL):
