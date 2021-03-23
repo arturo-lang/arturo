@@ -20,5 +20,5 @@ text: {
     LINESBUTTHEYALLMUST
     BECONCATENATED    
 }
- 
+
 inspect.muted parseFasta text
