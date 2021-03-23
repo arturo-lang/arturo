@@ -45,6 +45,7 @@ Execute command or block of commands in given database and get returned rows
 |Attribute|Type|Description|
 |---|---|---|
 |id|<i>:boolean</i>|return last INSERT id|
+|with|<i>:block</i>|use arguments for parametrized statement|
 
 #### Returns
 
