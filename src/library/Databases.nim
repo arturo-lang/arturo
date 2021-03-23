@@ -51,6 +51,8 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
+            # TODO(Databases\close) add example for documentation
+            #  labels: library,documentation,easy
             example     = """
             """:
                 ##########################################################
@@ -72,6 +74,8 @@ proc defineSymbols*() =
                 "with"  : ({Block},"use arguments for parametrized statement")
             },
             returns     = {Integer,Block,Null},
+            # TODO(Databases\query) add example for documentation
+            #  labels: library,documentation,easy
             example     = """
             """:
                 ##########################################################
