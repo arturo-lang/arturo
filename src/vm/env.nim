@@ -55,7 +55,7 @@ proc parseCmdlineArguments*(): ValueDict =
                     result[key] = parseCmdlineValue(val)
                 of cmdEnd: assert(false) # cannot happen
     else:
-        values = Arguments.a.map((x)=>x.s)
+        values = Arguments.a
 
     result["values"] = newBlock(values)
 
