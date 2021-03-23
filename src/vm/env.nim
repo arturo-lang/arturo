@@ -10,9 +10,10 @@
 # Libraries
 #=======================================
 
-import os, strutils, tables, times
+import os, parseopt, sequtils, strutils
+import sugar, tables, times
 
-import vm/value
+import vm/[parse,value]
 
 #=======================================
 # Globals
@@ -26,9 +27,34 @@ var
     #--------------------
     # private
     #--------------------
-    Arguments   : ValueArray
+    Arguments   : Value
     Version     : string
     Build       : string
+
+#=======================================
+# Helpers
+#=======================================
+
+proc parseCmdlineValue*(v: string): Value =
+    if v=="" or v=="true" or v=="on": return newBoolean(true)
+    elif v=="false" or v=="off": return newBoolean(false)
+    else:
+        return doParse(v, isFile=false).a[0]
+
+proc parseCmdlineArguments*(): ValueDict =
+    var p = initOptParser(Arguments.a.map((x)=>x.s))
+    var values: ValueArray = @[]
+
+    result = initOrderedTable[string,Value]()
+    for kind, key, val in p.getopt():
+        case kind
+            of cmdArgument:
+                values.add(parseCmdlineValue(key))
+            of cmdLongOption, cmdShortOption:
+                result[key] = parseCmdlineValue(val)
+            of cmdEnd: assert(false) # cannot happen
+
+    result["values"] = newBlock(values)
 
 #=======================================
 # Methods
@@ -50,7 +76,8 @@ proc popPath*(): string =
 proc getEnvDictionary*(): ValueDict =
     result = initOrderedTable[string,Value]()
 
-    result["arg"] = newBlock(Arguments)
+    result["arg"] = Arguments
+    result["args"] = newDictionary(parseCmdlineArguments())
 
     result["sys"] = newDictionary({
         "author"    : newString("Yanis Zafirópulos"),
@@ -68,8 +95,8 @@ proc getEnvDictionary*(): ValueDict =
         "temp"      : newString(TmpDir),
     }.toOrderedTable)
 
-proc initEnv*(arguments: ValueArray, version: string, build: string) =
-    Arguments = arguments
+proc initEnv*(arguments: seq[string], version: string, build: string) =
+    Arguments = newStringBlock(arguments)
     Version = version
     Build = build
 
