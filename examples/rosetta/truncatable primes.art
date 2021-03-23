@@ -1,0 +1,29 @@
+leftTruncatable?: function [n][
+    every? map 0..(size s)-1 'z -> to :integer slice s z (size s)-1
+                                => prime?
+]
+
+rightTruncatable?: function [n][
+    every? map 0..(size s)-1 'z -> to :integer slice s 0 z
+                                => prime?
+]
+
+upperLimit: 999999
+
+loop range upperLimit .step:2 0 'x [
+    s: to :string x
+    if and? not? contains? s "0"
+            leftTruncatable? x [
+        print ["highest left-truncatable:" x]
+        break
+    ]
+]
+
+loop range upperLimit .step:2 0 'x [
+    s: to :string x
+    if and? not? contains? s "0"
+            rightTruncatable? x [
+        print ["highest right-truncatable:" x]
+        break
+    ]
+]
