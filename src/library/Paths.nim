@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import os
+import os, sequtils, sugar
 
 import helpers/path
 import helpers/url

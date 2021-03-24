@@ -16,10 +16,10 @@
 # Libraries
 #=======================================
 
-import os, osproc, sequtils, sugar
+import os, osproc, sequtils
 
 import vm/lib
-import vm/[errors, exec]
+import vm/[errors]
 
 #=======================================
 # Methods
