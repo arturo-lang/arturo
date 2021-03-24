@@ -20,6 +20,8 @@ import base64, md5, std/sha1, uri
 when not defined(freebsd):
     import encodings
 
+import helpers/url
+
 import vm/lib
 
 #=======================================
@@ -72,9 +74,11 @@ proc defineSymbols*() =
             "value" : {String,Literal}
         },
         attrs       = {
-            "url"   : ({Boolean},"encode URL based on RFC3986"),
-            "from"  : ({String},"source character encoding (default: CP1252)"),
-            "to"    : ({String},"target character encoding (default: UTF-8)")
+            "url"       : ({Boolean},"encode URL based on RFC3986"),
+            "spaces"    : ({Boolean},"also encode spaces"),
+            "slashes"   : ({Boolean},"also encode slashes"),
+            "from"      : ({String},"source character encoding (default: CP1252)"),
+            "to"        : ({String},"target character encoding (default: UTF-8)")
         },
         returns     = {String,Nothing},
         example     = """
@@ -86,10 +90,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("url")!=VNULL):
+                let spaces = (popAttr("spaces") != VNULL)
+                let slashes = (popAttr("slashes") != VNULL)
                 if x.kind==Literal:
-                    InPlace.s = InPlaced.s.encodeUrl()
+                    InPlace.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
                 else:
-                    push(newString(x.s.encodeUrl()))
+                    push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
 
             elif (let aFrom = popAttr("from"); aFrom != VNULL):
                 when not defined(freebsd):
