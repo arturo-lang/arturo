@@ -167,8 +167,8 @@ proc defineSymbols*() =
             contains? arr 2             ; => true
             
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             contains? dict "John"       ; => true
@@ -367,8 +367,8 @@ proc defineSymbols*() =
         returns     = {Any},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             print user\name               ; John
@@ -422,8 +422,8 @@ proc defineSymbols*() =
             in? 2 arr             ; => true
             
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             in? "John" dict       ; => true
@@ -508,7 +508,7 @@ proc defineSymbols*() =
             ; hello
             
             dict: #[
-            ____name: John
+                name: John
             ]
             
             insert 'dict 'name "Jane"
@@ -550,13 +550,13 @@ proc defineSymbols*() =
         returns     = {Boolean},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             key? user 'age            ; => false
             if key? user 'name [
-            ____print ["Hello" user\name]
+                print ["Hello" user\name]
             ]
             ; Hello John
         """:
@@ -579,8 +579,8 @@ proc defineSymbols*() =
         returns     = {Block},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             keys user
@@ -872,8 +872,8 @@ proc defineSymbols*() =
         returns     = {Nothing},
         example     = """
             myDict: #[ 
-            ____name: "John"
-            ____age: 34
+                name: "John"
+                age: 34
             ]
             
             set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
@@ -1286,8 +1286,8 @@ proc defineSymbols*() =
         returns     = {Block},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             values user

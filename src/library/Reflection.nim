@@ -58,12 +58,12 @@ proc defineSymbols*() =
         returns     = {Any,Null},
         example     = """
             multiply: function [x][
-            ____if? attr? "with" [ 
-            ________x * attr "with"
-            ____] 
-            ____else [ 
-            ________2*x 
-            ____]
+                if? attr? "with" [ 
+                    x * attr "with"
+                ] 
+                else [ 
+                    2*x 
+                ]
             ]
             
             print multiply 5
@@ -86,12 +86,12 @@ proc defineSymbols*() =
         returns     = {Boolean},
         example     = """
             greet: function [x][
-            ____if? not? attr? 'later [
-            ________print ["Hello" x "!"]
-            ____]
-            ____else [
-            ________print [x "I'm afraid I'll greet you later!"]
-            ____]
+                if? not? attr? 'later [
+                    print ["Hello" x "!"]
+                ]
+                else [
+                    print [x "I'm afraid I'll greet you later!"]
+                ]
             ]
             
             greet.later "John"
@@ -145,15 +145,15 @@ proc defineSymbols*() =
         returns     = {Dictionary},
         example     = """
             greet: function [x][
-            ____print ["Hello" x "!"]
-            ____print attrs
+                print ["Hello" x "!"]
+                print attrs
             ]
             
             greet.later "John"
             
             ; Hello John!
             ; [
-            ;____later:    true
+            ;    later:    true
             ; ]
         """:
             ##########################################################
@@ -170,8 +170,8 @@ proc defineSymbols*() =
         returns     = {Nothing},
         example     = """
             benchmark [ 
-            ____; some process that takes some time
-            ____loop 1..10000 => prime? 
+                ; some process that takes some time
+                loop 1..10000 => prime? 
             ]
             
             ; [benchmark] time: 0.065s
@@ -641,8 +641,8 @@ proc defineSymbols*() =
             print symbols
             
             ; [
-            ;____a: 2
-            ;____b: "hello"
+            ;    a: 2
+            ;    b: "hello"
             ;_]
         """:
             ##########################################################
