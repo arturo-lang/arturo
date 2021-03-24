@@ -86,7 +86,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool) =
     if isFile: env.addPath(filename)
     else: env.addPath(getCurrentDir())
 
-    Syms = getEnvDictionary()
+    Syms = initOrderedTable[string,Value]()
 
     # library
     setupLibrary()

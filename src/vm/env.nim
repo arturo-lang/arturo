@@ -97,9 +97,6 @@ proc addPath*(newPath: string) =
 proc popPath*(): string =
     PathStack.pop()
 
-proc getEnvDictionary*(): ValueDict =
-    result = initOrderedTable[string,Value]()
-
 proc initEnv*(arguments: seq[string], version: string, build: string) =
     Arguments = newStringBlock(arguments)
     Version = version
