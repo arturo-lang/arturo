@@ -15,6 +15,7 @@
    * [if?](#if?)
    * [let](#let)
    * [new](#new)
+   * [null](#null)
    * [pop](#pop)
    * [return](#return)
    * [switch](#switch)
@@ -413,6 +414,16 @@ d: new c        ; make a copy of the older string
 print d                 ; HelloWorld
 print c                 ; Hello
 ```
+
+## null
+
+#### Description
+
+The NULL constant
+
+#### Returns
+
+- *:null*
 
 ## pop
 

@@ -7,6 +7,7 @@
    * [list](#list)
    * [module](#module)
    * [normalize](#normalize)
+   * [path](#path)
    * [relative](#relative)
 <!--te-->
 
@@ -174,6 +175,16 @@ normalize.tilde "~/Documents"
 normalize.executable "myscript"
 ; => ./myscript
 ```
+
+## path
+
+#### Description
+
+Common path constants
+
+#### Returns
+
+- *:dictionary*
 
 ## relative
 

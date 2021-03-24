@@ -18,6 +18,7 @@
    * [csech](#csech)
    * [ctan](#ctan)
    * [ctanh](#ctanh)
+   * [epsilon](#epsilon)
    * [even?](#even?)
    * [exp](#exp)
    * [factors](#factors)
@@ -30,6 +31,7 @@
    * [median](#median)
    * [negative?](#negative?)
    * [odd?](#odd?)
+   * [pi](#pi)
    * [positive?](#positive?)
    * [powmod](#powmod)
    * [prime?](#prime?)
@@ -410,6 +412,16 @@ print ctanh 0.3         ; 3.432738430321741
 print ctanh 1.0         ; 1.313035285499331
 ```
 
+## epsilon
+
+#### Description
+
+The constant e, Euler's number
+
+#### Returns
+
+- *:floating*
+
 ## even?
 
 #### Description
@@ -710,6 +722,16 @@ odd? 3            ; => true
 
 print select 1..10 => odd?       ; 1 3 5 7 9
 ```
+
+## pi
+
+#### Description
+
+The number π, mathematical constant
+
+#### Returns
+
+- *:floating*
 
 ## positive?
 

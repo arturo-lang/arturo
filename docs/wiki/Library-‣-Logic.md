@@ -6,11 +6,13 @@
    * [all?](#all?)
    * [and?](#and?)
    * [any?](#any?)
+   * [false](#false)
    * [false?](#false?)
    * [nand?](#nand?)
    * [nor?](#nor?)
    * [not?](#not?)
    * [or?](#or?)
+   * [true](#true)
    * [true?](#true?)
    * [xnor?](#xnor?)
    * [xor?](#xor?)
@@ -102,6 +104,16 @@ if any? @[false 3=4 2>1]
 print any? @[false false false]
 ; false
 ```
+
+## false
+
+#### Description
+
+The FALSE boolean constant
+
+#### Returns
+
+- *:boolean*
 
 ## false?
 
@@ -242,6 +254,16 @@ if or? x=2 y>5 [
 
 ; yep, that's correct!
 ```
+
+## true
+
+#### Description
+
+The TRUE boolean constant
+
+#### Returns
+
+- *:boolean*
 
 ## true?
 

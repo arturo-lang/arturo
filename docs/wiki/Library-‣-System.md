@@ -3,15 +3,38 @@
 ---
 
 <!--ts-->
+   * [arg](#arg)
+   * [args](#args)
    * [env](#env)
    * [execute](#execute)
    * [exit](#exit)
    * [panic](#panic)
    * [pause](#pause)
+   * [sys](#sys)
 <!--te-->
 
 ---
 
+
+## arg
+
+#### Description
+
+Access command-line arguments as a list
+
+#### Returns
+
+- *:block*
+
+## args
+
+#### Description
+
+A dictionary with all command-line arguments parsed
+
+#### Returns
+
+- *:dictionary*
 
 ## env
 
@@ -144,3 +167,13 @@ pause 1000      ; sleeping for one second
 
 print "done. let's continue..."
 ```
+
+## sys
+
+#### Description
+
+Information about the current system
+
+#### Returns
+
+- *:dictionary*
