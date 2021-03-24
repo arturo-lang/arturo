@@ -10,6 +10,7 @@
    * [do](#do)
    * [dup](#dup)
    * [else](#else)
+   * [ensure](#ensure)
    * [if](#if)
    * [if?](#if?)
    * [let](#let)
@@ -265,6 +266,32 @@ if? x>z [
 else [
     print "nope, x was not greater than z"
 ]
+```
+
+## ensure
+
+#### Description
+
+Assert given condition is true, or exit
+
+#### Usage
+
+<pre>
+<b>ensure</b> <ins>condition</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+num: input "give me a positive number"
+
+ensure [num > 0]
+
+print "good, the number is positive indeed. let's continue..."
 ```
 
 ## if

@@ -3,43 +3,15 @@
 ---
 
 <!--ts-->
-   * [ensure](#ensure)
    * [env](#env)
    * [execute](#execute)
    * [exit](#exit)
-   * [list](#list)
    * [panic](#panic)
    * [pause](#pause)
 <!--te-->
 
 ---
 
-
-## ensure
-
-#### Description
-
-Assert given condition is true, or exit
-
-#### Usage
-
-<pre>
-<b>ensure</b> <ins>condition</ins> <i>:block</i>
-</pre>
-
-#### Returns
-
-- *:nothing*
-
-#### Examples
-
-```red
-num: input "give me a positive number"
-
-ensure [num > 0]
-
-print "good, the number is positive indeed. let's continue..."
-```
 
 ## env
 
@@ -118,40 +90,6 @@ Exit program
 exit              ; (terminates the program)
 
 exit.with: 3      ; (terminates the program with code 3)
-```
-
-## list
-
-#### Description
-
-Get files in given path
-
-#### Usage
-
-<pre>
-<b>list</b> <ins>path</ins> <i>:string</i>
-</pre>
-#### Attributes
-
-|Attribute|Type|Description|
-|---|---|---|
-|recursive|<i>:boolean</i>|perform recursive search|
-|relative|<i>:boolean</i>|get relative paths|
-
-#### Returns
-
-- *:block*
-
-#### Examples
-
-```red
-loop list "." 'file [
-   print file
-]
-
-; tests
-; var
-; data.txt
 ```
 
 ## panic
