@@ -159,7 +159,7 @@ proc defineSymbols*() =
 
     constant "false",
         alias       = unaliased,
-        description = "the FALSE/0 boolean constant":
+        description = "the FALSE boolean constant":
             VFALSE
 
     builtin "false?",
@@ -349,7 +349,7 @@ proc defineSymbols*() =
 
     constant "true",
         alias       = unaliased,
-        description = "the TRUE/1 boolean constant":
+        description = "the TRUE boolean constant":
             VTRUE
 
     builtin "true?",
