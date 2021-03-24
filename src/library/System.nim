@@ -16,10 +16,10 @@
 # Libraries
 #=======================================
 
-import os, osproc, sequtils, sugar
+import os, osproc, sequtils
 
 import vm/lib
-import vm/[errors, exec]
+import vm/[env, errors]
 
 #=======================================
 # Methods
@@ -30,26 +30,15 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: System"
 
-    builtin "ensure",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "assert given condition is true, or exit",
-        args        = {
-            "condition"     : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            num: input "give me a positive number"
+    constant "arg",
+        alias       = unaliased,
+        description = "access command-line arguments as a list":
+            getCmdlineArgumentArray()
 
-            ensure [num > 0]
-
-            print "good, the number is positive indeed. let's continue..."
-        """:
-            ##########################################################
-            discard execBlock(x)
-            if not pop().b:
-                AssertionError_AssertionFailed(x.codify())
+    constant "args",
+        alias       = unaliased,
+        description = "a dictionary with all command-line arguments parsed":
+            newDictionary(parseCmdlineArguments())
 
     builtin "env",
         alias       = unaliased, 
@@ -112,41 +101,6 @@ proc defineSymbols*() =
             ##########################################################
             quit()
 
-    builtin "list",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get files in given path",
-        args        = {
-            "path"  : {String}
-        },
-        attrs       = {
-            "recursive" : ({Boolean}, "perform recursive search"),
-            "relative"  : ({Boolean}, "get relative paths"),
-        },
-        returns     = {Block},
-        example     = """
-            loop list "." 'file [
-            ___print file
-            ]
-            
-            ; tests
-            ; var
-            ; data.txt
-        """:
-            ##########################################################
-            let recursive = (popAttr("recursive") != VNULL)
-            let relative = (popAttr("relative") != VNULL)
-            let path = x.s
-
-            var contents: seq[string]
-
-            if recursive:
-                contents = toSeq(walkDirRec(path, relative = relative))
-            else:
-                contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
-
-            push(newStringBlock(contents))
-
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -190,6 +144,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             sleep(x.i)
+
+    constant "sys",
+        alias       = unaliased,
+        description = "information about the current system":
+            newDictionary(getSystemInfo())
 
 #=======================================
 # Add Library

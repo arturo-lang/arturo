@@ -54,7 +54,7 @@ proc setupLibrary*() =
     for importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: ValueArray, filename: string, isFile:bool) =
+template initialize*(args: seq[string], filename: string, isFile:bool) =
     # function arity
     Arities = initTable[string,int]()
     
@@ -86,7 +86,7 @@ template initialize*(args: ValueArray, filename: string, isFile:bool) =
     if isFile: env.addPath(filename)
     else: env.addPath(getCurrentDir())
 
-    Syms = getEnvDictionary()
+    Syms = initOrderedTable[string,Value]()
 
     # library
     setupLibrary()
@@ -103,13 +103,13 @@ template handleVMErrors*(blk: untyped): untyped =
 # Methods
 #=======================================
 
-proc runBytecode*(code: Translation, filename: string, args: ValueArray) =
+proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
     initialize(args, filename, isFile=true)
 
     handleVMErrors:
         discard doExec(code)
 
-proc run*(code: var string, args: ValueArray, isFile: bool, doExecute: bool = true): Translation =
+proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true): Translation =
     initialize(args, code, isFile=isFile)
 
     handleVMErrors:
