@@ -30,27 +30,6 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: System"
 
-    builtin "ensure",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "assert given condition is true, or exit",
-        args        = {
-            "condition"     : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            num: input "give me a positive number"
-
-            ensure [num > 0]
-
-            print "good, the number is positive indeed. let's continue..."
-        """:
-            ##########################################################
-            discard execBlock(x)
-            if not pop().b:
-                AssertionError_AssertionFailed(x.codify())
-
     builtin "env",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
