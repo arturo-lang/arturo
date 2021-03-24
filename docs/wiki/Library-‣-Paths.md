@@ -4,6 +4,7 @@
 
 <!--ts-->
    * [extract](#extract)
+   * [list](#list)
    * [module](#module)
    * [normalize](#normalize)
    * [relative](#relative)
@@ -71,6 +72,40 @@ print extract.anchor url            ; there
 
 print extract url
 ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
+```
+
+## list
+
+#### Description
+
+Get files in given path
+
+#### Usage
+
+<pre>
+<b>list</b> <ins>path</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|recursive|<i>:boolean</i>|perform recursive search|
+|relative|<i>:boolean</i>|get relative paths|
+
+#### Returns
+
+- *:block*
+
+#### Examples
+
+```red
+loop list "." 'file [
+   print file
+]
+
+; tests
+; var
+; data.txt
 ```
 
 ## module
