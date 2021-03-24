@@ -304,7 +304,7 @@ proc defineSymbols*() =
 
     constant "epsilon",
         alias       = unaliased,
-        description = "The constant e, Euler's number":
+        description = "the constant e, Euler's number":
             newFloating(E)
 
     builtin "even?",
@@ -566,7 +566,7 @@ proc defineSymbols*() =
 
     constant "pi",
         alias       = unaliased,
-        description = "The number π, mathematical constant":
+        description = "the number π, mathematical constant":
             newFloating(PI)
 
     builtin "positive?",
