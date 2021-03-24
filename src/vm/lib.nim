@@ -78,7 +78,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
 
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
     Syms[n] = (v)
-    Syms[n].info = description
+    Syms[n].info = "[" & static (instantiationInfo().filename).replace(".nim") & "] " & description
     when alias != unaliased:
         Aliases[alias] = AliasBinding(
             precedence: PrefixPrecedence,

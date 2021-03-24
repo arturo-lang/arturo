@@ -159,7 +159,11 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["type"] = newType(v.kind)
 
     if v.info!="":
-        result["description"] = newString(v.info)
+        let parts = v.info.split("]")
+        let desc = parts[1].strip()
+        let modl = parts[0].strip().strip(chars={'['})
+        result["description"] = newString(desc)
+        result["module"] = newString(modl)
 
     if v.kind==Function:
         if v.fnKind==BuiltinFunction:
@@ -242,7 +246,9 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
             printOneData("",d)
         printLine()
     elif v.info!="":
-        for d in getShortData(v.info):
+        let parts = v.info.split("]")
+        let desc = parts[1].strip()
+        for d in getShortData(desc):
             printOneData("",d)
         printLine()
         #echo v.info
