@@ -27,7 +27,11 @@ loop symbols [sym][
 
             if and? key? inf2 'module
                     inf <> inf2 [
-                set related new ~"|capitalize lib|/|sym2|"  levenshtein inf\description inf2\description
+                lib2: inf2\module
+                lev: 100
+                levA: (levenshtein sym sym2) * 3
+                levB: levenshtein (inf\description) (inf2\description)
+                set related new ~"|capitalize lib2|/|sym2|" min @[levA levB]
             ]
         ]
         ;inspect sort.values related
@@ -48,13 +52,16 @@ loop functions [modl,lst][
 
     loop lst 'func [
         funcInfo:  info.get func
-        if funcInfo\type = :function [
+        if? funcInfo\type = :function [
             attributes: funcInfo\attrs
             arguments: funcInfo\args
             funcInfo: remove.key funcInfo 'attrs
             funcInfo: remove.key funcInfo 'args
             funcInfo\attributes: attributes
             funcInfo\arguments: arguments
+        ]
+        else [
+            funcInfo\returns: @[funcInfo\type]
         ]
         funcInfo\related: get relatedFuncs func
         funcInfo: replace strip as.pretty.code.unwrapped funcInfo "\t" "    "
