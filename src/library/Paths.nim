@@ -222,6 +222,11 @@ proc defineSymbols*() =
                     else:
                         push(newString(normalizedPath(x.s)))
 
+    constant "path",
+        alias       = unaliased,
+        description = "common path constants":
+            newDictionary(getPathInfo())
+
     builtin "relative",
         alias       = dotslash, 
         rule        = PrefixPrecedence,
