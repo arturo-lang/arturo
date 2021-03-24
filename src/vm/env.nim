@@ -100,11 +100,6 @@ proc popPath*(): string =
 proc getEnvDictionary*(): ValueDict =
     result = initOrderedTable[string,Value]()
 
-    result["arg"] = Arguments
-    result["args"] = newDictionary(parseCmdlineArguments())
-    result["sys"] = newDictionary(getSystemInfo())
-    result["path"] = newDictionary(getPathInfo())
-
 proc initEnv*(arguments: seq[string], version: string, build: string) =
     Arguments = newStringBlock(arguments)
     Version = version
