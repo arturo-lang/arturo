@@ -35,6 +35,9 @@ var
 # Helpers
 #=======================================
 
+proc getCmdlineArgumentArray*(): Value =
+    Arguments
+
 proc parseCmdlineValue*(v: string): Value =
     if v=="" or v=="true" or v=="on": return newBoolean(true)
     elif v=="false" or v=="off": return newBoolean(false)
@@ -59,6 +62,24 @@ proc parseCmdlineArguments*(): ValueDict =
 
     result["values"] = newBlock(values)
 
+proc getSystemInfo*(): ValueDict =
+    {
+        "author"    : newString("Yanis Zafirópulos"),
+        "copyright" : newString("(c) 2019-2021"),
+        "version"   : newString(Version),
+        "build"     : newInteger(parseInt(Build)),
+        "buildDate" : newDate(now()),
+        "cpu"       : newString(hostCPU),
+        "os"        : newString(hostOS)
+    }.toOrderedTable
+
+proc getPathInfo*(): ValueDict =
+    {
+        "current"   : newString(getCurrentDir()),
+        "home"      : newString(HomeDir),
+        "temp"      : newString(TmpDir),
+    }.toOrderedTable
+
 #=======================================
 # Methods
 #=======================================
@@ -81,22 +102,8 @@ proc getEnvDictionary*(): ValueDict =
 
     result["arg"] = Arguments
     result["args"] = newDictionary(parseCmdlineArguments())
-
-    result["sys"] = newDictionary({
-        "author"    : newString("Yanis Zafirópulos"),
-        "copyright" : newString("(c) 2019-2021"),
-        "version"   : newString(Version),
-        "build"     : newInteger(parseInt(Build)),
-        "buildDate" : newDate(now()),
-        "cpu"       : newString(hostCPU),
-        "os"        : newString(hostOS)
-    }.toOrderedTable)
-
-    result["path"] = newDictionary({
-        "current"   : newString(getCurrentDir()),
-        "home"      : newString(HomeDir),
-        "temp"      : newString(TmpDir),
-    }.toOrderedTable)
+    result["sys"] = newDictionary(getSystemInfo())
+    result["path"] = newDictionary(getPathInfo())
 
 proc initEnv*(arguments: seq[string], version: string, build: string) =
     Arguments = newStringBlock(arguments)
