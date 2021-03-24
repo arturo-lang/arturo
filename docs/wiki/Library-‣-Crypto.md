@@ -60,6 +60,8 @@ Decode given value (default: base-64)
 |Attribute|Type|Description|
 |---|---|---|
 |url|<i>:boolean</i>|encode URL based on RFC3986|
+|spaces|<i>:boolean</i>|also encode spaces|
+|slashes|<i>:boolean</i>|also encode slashes|
 |from|<i>:string</i>|source character encoding (default: CP1252)|
 |to|<i>:string</i>|target character encoding (default: UTF-8)|
 
