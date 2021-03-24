@@ -245,7 +245,7 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
         for d in getShortData(v.info):
             printOneData("",d)
         printLine()
-        echo v.info
+        #echo v.info
 
     # If it's a function,
     # print more details
