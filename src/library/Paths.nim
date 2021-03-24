@@ -117,6 +117,41 @@ proc defineSymbols*() =
                 else:
                     push(newDictionary(details))
 
+    builtin "list",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get files in given path",
+        args        = {
+            "path"  : {String}
+        },
+        attrs       = {
+            "recursive" : ({Boolean}, "perform recursive search"),
+            "relative"  : ({Boolean}, "get relative paths"),
+        },
+        returns     = {Block},
+        example     = """
+            loop list "." 'file [
+            ___print file
+            ]
+            
+            ; tests
+            ; var
+            ; data.txt
+        """:
+            ##########################################################
+            let recursive = (popAttr("recursive") != VNULL)
+            let relative = (popAttr("relative") != VNULL)
+            let path = x.s
+
+            var contents: seq[string]
+
+            if recursive:
+                contents = toSeq(walkDirRec(path, relative = relative))
+            else:
+                contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
+
+            push(newStringBlock(contents))
+
     builtin "module",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
