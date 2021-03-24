@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import re, tables, uri
+import re, strutils, tables, uri
 
 import vm/value
 
@@ -36,3 +36,15 @@ proc parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
         "anchor":   newString(res.anchor)
         }.toOrderedTable
         
+func urlencode*(s: string, encodeSpaces = false, encodeSlashes = false): string =
+    result = newStringOfCap(s.len + s.len shr 2)
+    let fromSpace = if encodeSpaces: "%20" else: "+"
+    let fromSlash = if encodeSlashes: "%2F" else: "/"
+    for c in s:
+        case c
+            of 'a'..'z', 'A'..'Z', '0'..'9', '-', '.', '_', '~': add(result, c)
+            of ' ': add(result, fromSpace)
+            of '/': add(result, fromSlash)
+            else:
+                add(result, '%')
+                add(result, toHex(ord(c), 2))
