@@ -19,7 +19,7 @@
 import os, osproc, sequtils
 
 import vm/lib
-import vm/[errors]
+import vm/[env, errors]
 
 #=======================================
 # Methods
@@ -29,6 +29,16 @@ proc defineSymbols*() =
 
     when defined(VERBOSE):
         echo "- Importing: System"
+
+    constant "arg",
+        alias       = unaliased,
+        description = "access command-line arguments as a list":
+            getCmdlineArgumentArray()
+
+    constant "args",
+        alias       = unaliased,
+        description = "a dictionary with all command-line arguments parsed":
+            newDictionary(parseCmdlineArguments())
 
     builtin "env",
         alias       = unaliased, 
@@ -134,6 +144,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             sleep(x.i)
+
+    constant "sys",
+        alias       = unaliased,
+        description = "information about the current system":
+            newDictionary(getSystemInfo())
 
 #=======================================
 # Add Library
