@@ -1,0 +1,81 @@
+name: "split"
+address: "0x10D5A4C78"
+type: :function
+module: "Collections"
+returns: [
+        :block
+         :nothing
+    ]
+description: "split collection to components"
+example: {
+        split "hello"                 ; => [`h` `e` `l` `l` `o`]
+        split.words "hello world"     ; => ["hello" "world"]
+        
+        split.every: 2 "helloworld"
+        ; => ["he" "ll" "ow" "or" "ld"]
+        
+        split.at: 4 "helloworld"
+        ; => ["hell" "oworld"]
+        
+        arr: 1..9
+        split.at:3 'arr
+        ; => [ [1 2 3 4] [5 6 7 8 9] ]
+    }
+attributes: #[
+    words: #[
+        types: [
+                :boolean
+            ]
+        description: "split string by whitespace"
+        ]
+    lines: #[
+        types: [
+                :boolean
+            ]
+        description: "split string by lines"
+        ]
+    by: #[
+        types: [
+                :string
+                 :block
+            ]
+        description: "split using given separator"
+        ]
+    regex: #[
+        types: [
+                :boolean
+            ]
+        description: "match against a regular expression"
+        ]
+    at: #[
+        types: [
+                :integer
+            ]
+        description: "split collection at given position"
+        ]
+    every: #[
+        types: [
+                :integer
+            ]
+        description: "split collection every <n> elements"
+        ]
+    path: #[
+        types: [
+                :boolean
+            ]
+        description: "split path components in string"
+        ]
+    ]
+arguments: #[
+    collection: [
+            :string
+             :literal
+             :block
+        ]
+    ]
+related: [
+        "Binary/shl"
+         "Collections/set"
+         "Collections/slice"
+         "Collections/sort"
+    ]

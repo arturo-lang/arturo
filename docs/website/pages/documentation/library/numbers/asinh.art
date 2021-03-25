@@ -1,0 +1,27 @@
+name: "asinh"
+address: "0x10D5C6A98"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the inverse hyperbolic sine of given angle"
+example: {
+        print asinh 0           ; 0.0
+        print asinh 0.3         ; 0.2956730475634224
+        print asinh 1.0         ; 0.881373587019543
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/acosh"
+         "Numbers/asin"
+         "Numbers/sinh"
+         "Numbers/atanh"
+    ]

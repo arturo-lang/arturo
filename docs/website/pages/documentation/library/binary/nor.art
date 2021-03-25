@@ -1,0 +1,32 @@
+name: "nor"
+address: "0x10D59B5E8"
+type: :function
+module: "Binary"
+returns: [
+        :integer
+         :nothing
+    ]
+description: "calculate the binary NOR for the given values"
+example: {
+        print nor 2 3      ; -4
+        
+        a: 2
+        nor 'a 3           ; a: -4
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :literal
+        ]
+    valueB: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/or"
+         "Binary/xnor"
+         "Binary/xor"
+         "Binary/and"
+    ]

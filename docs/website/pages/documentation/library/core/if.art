@@ -1,0 +1,30 @@
+name: "if"
+address: "0x10D5B4228"
+type: :function
+module: "Core"
+returns: [
+        :nothing
+    ]
+description: "perform action, if given condition is not false or null"
+example: {
+        x: 2
+        
+        if x=2 -> print "yes, that's right!"
+        ; yes, that's right!
+    }
+attributes: #[
+    ]
+arguments: #[
+    condition: [
+            :any
+        ]
+    action: [
+            :block
+        ]
+    ]
+related: [
+        "Core/if?"
+         "Core/unless"
+         "Arithmetic/div"
+         "Arithmetic/inc"
+    ]

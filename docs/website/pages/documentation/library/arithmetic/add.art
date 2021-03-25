@@ -1,0 +1,38 @@
+name: "add"
+address: "0x10D587318"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :nothing
+    ]
+alias: "+"
+infix?: true
+description: "add given values and return result"
+example: {
+        print add 1 2      ; 3
+        print 1 + 3        ; 4
+        
+        a: 4
+        add 'a 1           ; a: 5
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :floating
+             :literal
+        ]
+    valueB: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Binary/and"
+         "Arithmetic/fdiv"
+         "Arithmetic/mod"
+         "Binary/nand"
+    ]

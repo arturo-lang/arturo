@@ -1,0 +1,44 @@
+name: "from"
+address: "0x10D5B34F8"
+type: :function
+module: "Converters"
+returns: [
+        :any
+    ]
+description: "get value from string, using given representation"
+example: {
+        print from.binary "1011"        ; 11
+        print from.octal "1011"         ; 521
+        print from.hex "0xDEADBEEF"     ; 3735928559
+    }
+attributes: #[
+    binary: #[
+        types: [
+                :boolean
+            ]
+        description: "get integer from binary representation"
+        ]
+    hex: #[
+        types: [
+                :boolean
+            ]
+        description: "get integer from hexadecimal representation"
+        ]
+    octal: #[
+        types: [
+                :boolean
+            ]
+        description: "get integer from octal representation"
+        ]
+    ]
+arguments: #[
+    value: [
+            :string
+        ]
+    ]
+related: [
+        "Collections/drop"
+         "Arithmetic/fdiv"
+         "Arithmetic/mod"
+         "Arithmetic/pow"
+    ]

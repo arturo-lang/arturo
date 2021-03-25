@@ -1,0 +1,28 @@
+name: "empty"
+address: "0x10D59E318"
+type: :function
+module: "Collections"
+returns: [
+        :nothing
+    ]
+description: "empty given collection"
+example: {
+        a: [1 2 3]
+        empty 'a              ; a: []
+        
+        str: "some text"
+        empty 'str            ; str: ""
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :literal
+        ]
+    ]
+related: [
+        "Collections/empty?"
+         "Collections/reverse"
+         "Files/copy"
+         "Numbers/exp"
+    ]

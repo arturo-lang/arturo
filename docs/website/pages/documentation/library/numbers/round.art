@@ -1,0 +1,37 @@
+name: "round"
+address: "0x10D5D2A98"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "round given value"
+example: {
+        print round 2.1         ; 2.0
+        print round 2.9         ; 3.0
+        print round 6           ; 6.0
+        
+        print round pi          ; 3.0
+        print round.to:5 pi     ; 3.14159
+        print round.to:2 pi     ; 3.14
+    }
+attributes: #[
+    to: #[
+        types: [
+                :integer
+            ]
+        description: "round to given decimal places"
+        ]
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Arithmetic/mod"
+         "Binary/and"
+         "Binary/nand"
+         "Files/read"
+    ]

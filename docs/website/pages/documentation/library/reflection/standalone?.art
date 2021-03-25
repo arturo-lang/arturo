@@ -1,0 +1,28 @@
+name: "standalone?"
+address: "0x10D5E1B88"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if current script runs from the command-line"
+example: {
+        doSomething: function [x][
+            print ["I'm doing something with" x]
+        ]
+        
+        if standalone? [
+            print "It's running from command line and not included."
+            print "Nothing to do!"
+        ]
+    }
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Reflection/inline?"
+         "Collections/contains?"
+         "Collections/sample"
+         "Iterators/some?"
+    ]

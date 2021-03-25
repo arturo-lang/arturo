@@ -1,0 +1,27 @@
+name: "exp"
+address: "0x10D5CB7C8"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the exponential function for given value"
+example: {
+        print exp 1.0       ; 2.718281828459045
+        print exp 0         ; 1.0
+        print exp neg 1.0   ; 0.3678794411714423
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Core/dup"
+         "Core/pop"
+         "Files/zip"
+         "Iterators/map"
+    ]

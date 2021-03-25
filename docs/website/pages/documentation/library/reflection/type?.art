@@ -1,0 +1,26 @@
+name: "type?"
+address: "0x10D5E9138"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :type"
+example: {
+        print type? :string         ; true
+        print type? "string"        ; false
+        print type? 123             ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/date?"
+         "Reflection/type"
+         "Reflection/char?"
+         "Reflection/label?"
+    ]

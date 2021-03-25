@@ -1,0 +1,47 @@
+name: "append"
+address: "0x10D59BC78"
+type: :function
+module: "Collections"
+returns: [
+        :string
+         :block
+         :nothing
+    ]
+alias: "++"
+infix?: true
+description: "append value to given collection"
+example: {
+        append "hell" "o"         ; => "hello"
+        append [1 2 3] 4          ; => [1 2 3 4]
+        append [1 2 3] [4 5]      ; => [1 2 3 4 5]
+        
+        print "hell" ++ "o!"      ; hello!             
+        print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
+        
+        a: "hell"
+        append 'a "o"
+        print a                   ; hello
+        
+        b: [1 2 3]
+        'b ++ 4
+        print b                   ; [1 2 3 4]
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :char
+             :string
+             :literal
+             :block
+        ]
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Binary/and"
+         "Collections/extend"
+         "Collections/remove"
+         "Databases/open"
+    ]

@@ -1,0 +1,30 @@
+name: "keys"
+address: "0x10D59ED68"
+type: :function
+module: "Collections"
+returns: [
+        :block
+    ]
+description: "get list of keys for given dictionary"
+example: {
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+        
+        keys user
+        => ["name" "surname"]
+    }
+attributes: #[
+    ]
+arguments: #[
+    dictionary: [
+            :dictionary
+        ]
+    ]
+related: [
+        "Collections/key?"
+         "Collections/values"
+         "System/sys"
+         "Arithmetic/dec"
+    ]

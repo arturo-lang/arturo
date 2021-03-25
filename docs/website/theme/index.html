@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Arturo programming language: Simple, expressive & portable programming language for efficient scripting">
+        <meta name="keywords" content="arturo,programming language,scripting language,rebol,red programming language,portable programming language">
+        <link rel="canonical" href="https://arturo-lang.io">
+        <title>Arturo programming language</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+        <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+        <script src="https://kit.fontawesome.com/8bfb2fe6f4.js" crossorigin="anonymous"></script>
+        <style>
+            .tag:not(body).is-stars {
+                background-color:#999;
+                color: #FFF;
+            }
+            .tag:not(body).is-license {
+                background-color: #97ca00;
+                color:#FFF;
+            }
+            .tag:not(body).is-chat {
+                background-color:#ff7d37;
+                color:#FFF;
+            }
+            .tag:not(body).is-build {
+                background-color: #45cb11;
+                color:#FFF;
+            }
+
+            .motto {
+				-webkit-background-clip: text; 
+				-moz-background-clip: text; 
+				background-clip: text; 
+				color: transparent; 
+				text-shadow: rgba(255,255,255,0.5) 0px 3px 3px; 
+				font-size:40px; 
+				font-weight:bold; 
+				color:#DDD;
+                margin-bottom:2em;
+			}
+
+            .tag:not(body){
+                border-radius: 0 !important;
+            }
+
+            .screenshot {
+                box-shadow: 0 0 28px 3px #7a347b; 
+                mix-blend-mode: luminosity; 
+                border-radius: 10px;
+            }
+            .screenshot:hover {
+                mix-blend-mode: normal;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #E6E6E6;
+            }
+
+            .footer {
+                padding-bottom: 3em;
+            }
+
+            .box {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            sup {
+                font-variant: all-small-caps;
+            }
+
+            .table td, .table th {
+                vertical-align: middle;
+            }
+
+            .fab {
+                vertical-align: middle;
+            }
+
+            .first-td {
+                text-align: center !important;
+            }
+        </style>
+        <link rel="apple-touch-icon" sizes="57x57" href="favico/apple-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="favico/apple-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="favico/apple-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="favico/apple-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="favico/apple-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="favico/apple-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="favico/apple-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="favico/apple-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="favico/apple-icon-180x180.png">
+        <link rel="icon" type="image/png" sizes="192x192"  href="favico/android-icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="favico/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="favico/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="favico/favicon-16x16.png">
+        <link rel="manifest" href="/manifest.json">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="favico/ms-icon-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RPNR7PTFYH"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-RPNR7PTFYH');
+        </script>
+    </head>
+    <body>
+        <nav class="navbar is-fixed-top is-boxed" role="navigation" aria-label="main navigation">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="#" style="font-weight:bold; font-size: 1.2em; color: black">
+                    <img src="images/logo.png" width="28" height="28" alt="arturo logo">
+                    &nbsp;&nbsp;Arturo:&nbsp;&nbsp;<span style="color:#999;">[programming language]</span>
+                </a>
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            </div>
+          
+            <div id="navbarMain" class="navbar-menu">
+                <div class="navbar-end">
+                    <a rel="noopener" target="_blank" class="navbar-item is-tab is-warning" href="https://github.com/arturo-lang/arturo/wiki">
+                        <i class="far fa-file-alt"></i>&nbsp;&nbsp;Documentation
+                    </a>
+                    <a rel="noopener" target="_blank" class="navbar-item is-tab " href="https://github.com/arturo-lang/arturo">
+                        <i class="fab fa-github"></i>&nbsp;&nbsp;Source
+                    </a>
+                    <div class="is-divider-vertical"></div>
+                    <a rel="noopener" target="_blank" class="navbar-item is-tab has-text-info" href="https://twitter.com/ArturoLanguage" aria-label="official twitter page">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <section class="hero is-info is-halfheight" style="background: #6a146b">
+            <div class="hero-body">
+                <div class="columns is-desktop is-vcentered">
+                    <div class="column is-6">
+                        <p class="title">
+                            Simple, expressive & portable<br>programming language<br>for efficient scripting
+                        </p>
+                        <br>
+                        <p class="subtitle">
+                            <a data-scroll href="#download" class="button is-white is-outlined is-large"><i class="fas fa-cloud-download-alt"></i>&nbsp;&nbsp;Download</a>
+                        </p>
+                    </div>
+                    <div class="column is-6">
+                        <picture>
+                            <source srcset="images/screenshot.webp" type="image/webp">
+                            <source srcset="images/screenshot.png" type="image/png">
+                            <img class="screenshot" src="images/screenshot.png" alt="arturo code screenshot">
+                        </picture>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="box cta" style="border-radius:0; margin-bottom: 4rem;">
+            <div class="columns is-desktop is-vcentered">
+                <div class="column is-6">
+                    <div class="field is-grouped is-grouped-multiline">
+                        <div class="control">
+                            <a rel="noopener" href="https://github.com/arturo-lang/arturo" target="_blank">
+                                <div class="tags has-addons">
+                                    <span class="tag is-medium is-dark"><i class="far fa-star"></i></span>
+                                    <span class="tag is-medium is-stars"><b id="stargazers"><!-- AUTO-GENERATED / -->224<!-- / AUTO-GENERATED --></b></span>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="control">
+                            <a rel="noopener" href="https://github.com/arturo-lang/arturo/blob/master/LICENSE" target="_blank">
+                                <div class="tags has-addons">
+                                    <span class="tag is-medium is-dark"><b>License</b></span>
+                                    <span class="tag is-medium is-license"><b>MIT</b></span>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="control">
+                            <a rel="noopener" href="https://discord.gg/dzFutAqB" target="_blank">
+                                <div class="tags has-addons">
+                                    <span class="tag is-medium is-dark"><b>Chat</b></span>
+                                    <span class="tag is-medium is-chat"><b>@ Discord</b></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-6 is-hidden-mobile is-hidden-tablet-only is-block-desktop">
+                    <p class="has-text-right is-size-6">
+                        <b>Latest release:</b><br><span class="release-version"><!-- AUTO-GENERATED / -->v0.9.7.2<!-- / AUTO-GENERATED --></span> @ <span id="release-date"><!-- AUTO-GENERATED / -->2021-03-04T07:20:12Z<!-- / AUTO-GENERATED --></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <section class="container">
+            <div class="columns features" style="margin-top:5em">
+                <div class="column is-4">
+                    <div class="card is-shady">
+                        <div class="card-image has-text-centered" style="font-size:5em; padding-top: 0.5em">
+                            <i class="far fa-check-circle"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="content has-text-centered">
+                                <h4>Simple + Expressive</h4>
+                                <p>Arturo starts from a very basic principle: the language you use and its syntax should never get in your way. So, we keep it minimal, easy to the eye and totally flexible. Once you learn your first few commands, you'll be practically all set.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="card is-shady">
+                        <div class="card-image has-text-centered" style="font-size:5em; padding-top: 0.5em">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="content has-text-centered">
+                                <h4>Portable</h4>
+                                <p>Want to ship your scripts anywhere? For any operating system? Without weird dependencies and without asking the user to install an endless list of modules/gems/packages? That's exactly what Arturo was designed for.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="card is-shady">
+                        <div class="card-image has-text-centered" style="font-size:5em; padding-top: 0.5em">
+                            <i class="fas fa-battery-full"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="content has-text-centered">
+                                <h4>Batteries-included</h4>
+                                <p>Don't remember which library to import to get this super-fancy functionality you need? Cannot even get it to install? No worries! Arturo comes with pretty much anything you'll most likely need to get started - included. Yep.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="intro column is-8 is-offset-2  has-text-centered" style="margin-top:4em">
+            <h2 id="download" class="title">Get Arturo</h2><br>
+            <p class="subtitle">Write once. Run everywhere.<br>Arturo's goal is to be able to run on anything you can imagine.</p>
+        </div>
+        <div class="columns" style="margin-top:2em">
+            <div class="column is-6 is-offset-3">
+                <div class="box is-success" style="padding: 2em !important; background: #242424;">
+                    <p class="has-text-centered subtitle is-4" style="color: white; text-shadow: 0 -0.1em 0.2em black;">
+                        curl -sSL https://get.arturo-lang.io | sh
+                    </p>
+                </div>
+                <div class="has-text-centered" style="margin-top:2em; margin-bottom: 4em;">
+                    <p class="is-size-7">Copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.<br>To get the most recent (nightly) build, just use: <code>curl -sSL https://get.arturo-lang.io/latest | sh</code></p>
+                </div>
+            </div>
+        </div>
+        <div class="columns" style="margin-top: 1em; margin-bottom: 4em">
+            <div class="column is-8 is-offset-2">
+                <table class="table is-striped is-hoverable is-fullwidth">
+                    <tbody id="downloads">
+                        <!-- AUTO-GENERATED / -->
+                        <tr><th></th><th></th><th>Version</th><th>Compressed file size</th><th>Link</th></tr><tr><td order="1" class="first-td"><i class="fab fa-2x fa-linux" aria-hidden="true"></i></td><td><b>Linux</b></td><td>v0.9.7.2</td><td>1.79 MB</td><td><a href="https://github.com/arturo-lang/arturo/releases/download/v0.9.7.2/arturo-0.9.7.2-Linux-full.tar.gz"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a></td></tr><tr><td order="1" class="first-td"><i class="fab fa-2x fa-linux" aria-hidden="true"></i></td><td><b>Linux</b></td><td>v0.9.7.2<sup>*MINI</sup></td><td>0.84 MB</td><td><a href="https://github.com/arturo-lang/arturo/releases/download/v0.9.7.2/arturo-0.9.7.2-Linux-mini.tar.gz"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a></td></tr><tr><td order="2" class="first-td"><i class="fab fa-2x fa-apple" aria-hidden="true"></i></td><td><b>macOS</b></td><td>v0.9.7.2</td><td>1.22 MB</td><td><a href="https://github.com/arturo-lang/arturo/releases/download/v0.9.7.2/arturo-0.9.7.2-macOS-full.tar.gz"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a></td></tr><tr><td order="2" class="first-td"><i class="fab fa-2x fa-apple" aria-hidden="true"></i></td><td><b>macOS</b></td><td>v0.9.7.2<sup>*MINI</sup></td><td>0.75 MB</td><td><a href="https://github.com/arturo-lang/arturo/releases/download/v0.9.7.2/arturo-0.9.7.2-macOS-mini.tar.gz"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a></td></tr><tr><td order="3" class="first-td"><i class="fab fa-2x fa-windows" aria-hidden="true"></i></td><td><b>Windows</b></td><td>v0.9.7.2<sup>*MINI</sup></td><td>1.17 MB</td><td><a href="https://github.com/arturo-lang/arturo/releases/download/v0.9.7.2/arturo-0.9.7.2-Windows-mini.tar.gz"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a></td></tr><tr><td order="4" class="first-td"><i class="fab fa-2x fa-freebsd" aria-hidden="true"></i></td><td><b>FreeBSD</b></td><td>v0.9.7.2<sup>*MINI</sup></td><td>0.79 MB</td><td><a href="https://github.com/arturo-lang/arturo/releases/download/v0.9.7.2/arturo-0.9.7.2-FreeBSD-mini.tar.gz"><i class="far fa-arrow-alt-circle-down" aria-hidden="true"></i>&nbsp;&nbsp;Download</a></td></tr><tr><td class="first-td"><i class="fab fa-2x fa-docker" aria-hidden="true"></i></td><td><b>Docker</b></td><td class="release-version">v0.9.7.2</td><td>--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right" aria-hidden="true"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>
+                        <!-- / AUTO-GENERATED -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="has-text-centered" style="margin-top:2em; margin-bottom: 4em;">
+            <p class="is-size-7">*<i>Mini</i> builds offer the same power but with a tiny subset of the built-in libraries removed, so as to allow for even smaller and more portable binaries.<br>If you have problems installing it - or simply because you want to - you can <a href="https://github.com/arturo-lang/arturo/wiki/Getting-Started" target="_blank" rel="noopener">find the complete build & installation instructions here</a>.</p>
+        </div>
+        <div class="has-text-centered">
+            <p class="motto">•&nbsp;&nbsp;CODE IS <span onmouseenter="this.innerHTML='ARTURO'" onmouseout="this.innerHTML='ART'">ART</span>&nbsp;&nbsp;•</p>
+        </div>
+        <footer class="footer">
+            <div class="content has-text-centered">
+                <p>
+                    <strong>Arturo Programming Language</strong><br>Copyright &copy; 2019-2021 Yanis Zafirópulos<br><br>
+                    <small>Source code licensed under <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. Website content licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.</small>
+                </p>
+            </div>
+        </footer>
+        <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15.0.0/dist/smooth-scroll.polyfills.min.js"></script>
+        <script>
+            function ajaxGet(url,action) {
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+                    if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+                        if (xmlhttp.status == 200) {
+                            action(xmlhttp.responseText);
+                        }
+                        else if (xmlhttp.status == 400) {
+                            //console.log('There was an error 400');
+                        }
+                        else {
+                            //console.log('something else other than 200 was returned');
+                        }
+                    }
+                };
+
+                xmlhttp.open("GET", url, true);
+                xmlhttp.send();
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+                if ($navbarBurgers.length > 0) {
+                    $navbarBurgers.forEach( el => {
+                        el.addEventListener('click', () => {
+                            const target = el.dataset.target;
+                            const $target = document.getElementById(target);
+                            el.classList.toggle('is-active');
+                            $target.classList.toggle('is-active');
+                        });
+                    });
+                }
+
+                function setDiv(div,content){
+                    document.getElementById(div).innerHTML = content;
+                }
+
+                function setClass(cl,content){
+                    var elems=document.getElementsByClassName(cl);
+                    for(var i = 0; i < elems.length; i++){
+                        elems[i].innerHTML = content;
+                    }
+                }
+
+                ajaxGet("https://api.github.com/search/repositories?q=arturo-lang/arturo", function (data){
+                    var parsed = JSON.parse(data);
+                    setDiv("stargazers",parsed.items[0].stargazers_count);
+                });
+
+                ajaxGet("https://api.github.com/repos/arturo-lang/arturo/releases", function (data){
+                    var parsed = JSON.parse(data);
+                    console.log(parsed);
+                    var releaseVersion = parsed[0].tag_name;
+                    setClass("release-version", parsed[0].tag_name);
+                    setClass("release-version-mini", `${parsed[0].tag_name}<sup>*MINI</sup>`);
+                    setDiv("release-date", parsed[0].published_at);
+
+                    ajaxGet(parsed[0].assets_url, function (data){
+                        var parsed = JSON.parse(data);
+                        var downloadsTable = `<tr><th></th><th></th><th>Version</th><th>Compressed file size</th><th>Link</th></tr>`;
+                        var downloadItems = [];
+                        for (var i = 0; i < parsed.length; i++){
+                            var elem = parsed[i];
+                            var logo = "";
+                            var os = "";
+                            var order = "";
+                            var version = releaseVersion;
+                            if (elem.name.includes("Linux")) { order = 1; logo = "linux"; os = "Linux"; }
+                            else if (elem.name.includes("macOS")) { order = 2; logo = "apple"; os = "macOS"; }
+                            else if (elem.name.includes("Windows")) { order = 3; logo = "windows"; os = "Windows"; }
+                            else if (elem.name.includes("FreeBSD")) { order = 4; logo = "freebsd"; os = "FreeBSD"; }
+                            if (elem.name.includes("mini")) { version += "<sup>*MINI</sup>"; }
+                            var size = ((elem.size)/(1024*1024)).toFixed(2) + " MB";
+                            var link = elem.browser_download_url;
+
+                            downloadItems.push(`<tr><td order="${order}" class="first-td"><i class="fab fa-2x fa-${logo}"></i></td><td><b>${os}</b></td><td>${version}</td><td>${size}</td><td><a href="${link}"><i class="far fa-arrow-alt-circle-down"></i>&nbsp;&nbsp;Download</a></td></tr>`);
+                        }
+                        downloadItems.sort();
+                        downloadsTable += downloadItems.join("");
+                        downloadsTable += `<tr><td class="first-td"><i class="fab fa-2x fa-docker"></i></td><td><b>Docker</b></td><td class="release-version">${releaseVersion}</td><td>--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
+                        setDiv("downloads",downloadsTable);
+                        console.log(parsed);
+                    });
+                })
+
+            });
+            
+            var scroll = new SmoothScroll('a[href*="#"]');
+        </script>
+    </body>
+</html>

@@ -1,0 +1,51 @@
+name: "normalize"
+address: "0x10D5BB7C8"
+type: :function
+module: "Paths"
+returns: [
+        :string
+         :nothing
+    ]
+description: "get normalized version of given path"
+example: {
+        normalize "one/../two/../../three"
+        ; => ../three
+        
+        normalize "~/one/../two/../../three"
+        ; => three
+        
+        normalize.tilde "~/one/../two/../../three"
+        ; => /Users/three
+        
+        normalize.tilde "~/Documents"
+        ; => /Users/drkameleon/Documents
+        
+        normalize.executable "myscript"
+        ; => ./myscript
+    }
+attributes: #[
+    executable: #[
+        types: [
+                :boolean
+            ]
+        description: "treat path as executable"
+        ]
+    tilde: #[
+        types: [
+                :boolean
+            ]
+        description: "expand tildes in path"
+        ]
+    ]
+arguments: #[
+    path: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Strings/color"
+         "Collections/combine"
+         "Strings/capitalize"
+         "Paths/list"
+    ]

@@ -1,0 +1,54 @@
+name: "get"
+address: "0x10D59E7C8"
+type: :function
+module: "Collections"
+returns: [
+        :any
+    ]
+alias: "\\"
+infix?: true
+description: "get collection\'s item by given index"
+example: {
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+        
+        print user\name               ; John
+        
+        print get user 'surname       ; Doe
+        print user \ 'username        ; Doe
+        
+        arr: ["zero" "one" "two"]
+        
+        print arr\1                   ; one
+        
+        print get arr 2               ; two
+        print arr \ 2                 ; two
+        
+        str: "Hello world!"
+        
+        print str\0                   ; H
+        
+        print get str 1               ; e
+        print str \ 1                 ; e
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :string
+             :date
+             :dictionary
+             :block
+        ]
+    index: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/set"
+         "Core/let"
+         "Arithmetic/dec"
+         "Arithmetic/neg"
+    ]

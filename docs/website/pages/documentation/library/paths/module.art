@@ -1,0 +1,28 @@
+name: "module"
+address: "0x10D5BB6D8"
+type: :function
+module: "Paths"
+returns: [
+        :null
+         :string
+    ]
+description: "get path for given module name"
+example: {
+        print module 'html        ; /usr/local/lib/arturo/html.art
+        
+        do.import module 'html    ; (imports given module)
+    }
+attributes: #[
+    ]
+arguments: #[
+    name: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Arithmetic/mod"
+         "Arithmetic/mul"
+         "Crypto/hash"
+         "Collections/sample"
+    ]

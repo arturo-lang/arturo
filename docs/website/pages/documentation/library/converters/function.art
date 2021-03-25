@@ -1,0 +1,67 @@
+name: "function"
+address: "0x10D5B35E8"
+type: :function
+module: "Converters"
+returns: [
+        :function
+    ]
+alias: "$"
+infix?: false
+description: "create function with given arguments and body"
+example: {
+        f: function [x][ x + 2 ]
+        print f 10                ; 12
+        
+        f: $[x][x+2]
+        print f 10                ; 12
+        
+        multiply: function [x,y][
+            x * y
+        ]
+        print multiply 3 5        ; 15
+        
+        publicF: function .export['x] [z][
+            print ["z =>" z]
+            x: 5
+        ]
+        
+        publicF 10
+        ; z => 10
+        
+        print x
+        ; 5
+    }
+attributes: #[
+    import: #[
+        types: [
+                :block
+            ]
+        description: "import/embed given list of symbols from current environment"
+        ]
+    export: #[
+        types: [
+                :block
+            ]
+        description: "export given symbols to parent"
+        ]
+    exportable: #[
+        types: [
+                :boolean
+            ]
+        description: "export all symbols to parent"
+        ]
+    ]
+arguments: #[
+    arguments: [
+            :block
+        ]
+    body: [
+            :block
+        ]
+    ]
+related: [
+        "Reflection/function?"
+         "Sets/union"
+         "Core/until"
+         "Collections/flatten"
+    ]

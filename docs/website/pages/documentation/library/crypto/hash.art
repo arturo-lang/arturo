@@ -1,0 +1,37 @@
+name: "hash"
+address: "0x10D5AB6D8"
+type: :function
+module: "Crypto"
+returns: [
+        :integer
+         :string
+    ]
+description: "get hash for given value"
+example: {
+        print hash "hello"      ; 613153351
+        print hash [1 2 3]      ; 645676735036410
+        print hash 123          ; 123
+        
+        a: [1 2 3]
+        b: [1 2 3]
+        print (hash a)=(hash b) ; true
+    }
+attributes: #[
+    string: #[
+        types: [
+                :boolean
+            ]
+        description: "get as a string"
+        ]
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/last"
+         "Converters/as"
+         "Core/case"
+         "Numbers/cosh"
+    ]

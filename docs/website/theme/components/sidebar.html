@@ -1,0 +1,29 @@
+<div class="column is-3 p-6 is-hidden-mobile sidebar"><!-- height: 100vh; overflow-y:auto;">-->
+    <aside class="menu" style="margin-top: -0.5em;">
+        <!-- <p class="menu-label">
+            Documentation
+        </p> -->
+        <ul class="menu-list">
+            <li><a href="<||= linkTo {documentation} ||>">Home</a></li>
+            <li><a <||= if contains? pagePath "getting started" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Getting Started} ||>/index.html">Getting Started</a></li>
+            <li><a <||= if contains? pagePath "language" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Language} ||>/index.html">Language</a></li>
+            <li><a <||= if contains? pagePath "command line" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Command Line} ||>/index.html">Command Line</a></li>
+            <li><a <||= if contains? pagePath "library" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Library} ||>/index.html">Library</a>
+                <||= if contains? pagePath lower "library" [||>
+                    <ul style="margin-right:0">
+                        <||= loop sort keys pageTree\documentation\library 'modul [ ||>
+                            <li><a <||= if contains? pagePath lower modul [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|}||>/index.html"><||= capitalize modul ||></a></li>
+                            <||= if contains? pagePath lower modul [||>
+                                <ul style="margin-right:0">
+                                    <||= loop sort keys get pageTree\documentation\library modul 'fun [ ||>
+                                        <li><a <||= if contains? pagePath lower fun [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|/|fun|} ||>/index.html"><||= fun ||></a></li>
+                                    <|| ] ||>
+                                </ul>
+                            <|| ] ||>
+                        <|| ] ||>
+                    </ul>
+                <|| ] ||>
+            </li>
+        </ul>
+      </aside>
+</div>

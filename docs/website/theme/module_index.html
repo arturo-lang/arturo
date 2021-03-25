@@ -1,0 +1,64 @@
+<||= read relative "artdoc/theme/components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+    <||= read relative "artdoc/theme/components/navbar.html" ||>
+        
+        <main>
+            <div class="columns doccols">
+                <!-- SIDEBAR -->
+                <||= read relative "artdoc/theme/components/sidebar.html" ||>
+
+                <!-- MAIN -->
+                <div class="column is-9 p-6 mb-6">
+
+                    <!-- Breadcrumbs -->
+                    <||= read relative "artdoc/theme/components/breadcrumbs.html" ||>
+                    
+                    <!-- Title -->
+                    <div class="level mt-6 is-mobile">
+                        <div class="level-left">
+                            <h2 class="level-item title is-2"><||= capitalize last chop pagePath ||></h2>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <h3 class="subtitle is-4 is-spaced"><||= 
+                        dsc: W\description
+                        set dsc 0 to :char lower to :string dsc\0
+                        dsc 
+                    ||></h3>
+                    
+                    <hr>
+
+                    <h4 class="title is-5 is-spaced">Functions</h4>
+                    
+                    <div class="content">
+                        <ul class="list">
+                            <|| constantCount: 0 ||>
+                            <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace fff "_" "" ||>
+                                <|| if? :function = type var fun [ ||>
+                                    <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|fun|} ||>/index.html"><||= fun ||></a></li>
+                                <|| ] else [ constantCount: constantCount + 1 ] ||>
+                            <||]||>
+                        </ul>
+                    </div>
+
+                    <||= if constantCount > 0 [ ||>
+                        <h4 class="title is-5 is-spaced">Constants</h4>
+                        
+                        <div class="content">
+                            <ul class="list">
+                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fun [||>
+                                    <|| if :function <> type var fun [ ||>
+                                        <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|fun|} ||>/index.html"><||= fun ||></a></li>
+                                    <|| ] ||>
+                                <||]||>
+                            </ul>
+                        </div>
+                    <|| ] ||>
+
+                </div>
+            </div>
+        </main>
+
+<||= read relative "artdoc/theme/components/foot.html" ||>

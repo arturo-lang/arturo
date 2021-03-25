@@ -1,0 +1,48 @@
+name: "indent"
+address: "0x10D5E9B88"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "indent each line of given text"
+example: {
+        str: "one\ntwo\nthree"
+        
+        print indent str
+        ;     one
+        ;     two
+        ;     three
+        
+        print indent .n:10 .with:"#" str
+        ; ##########one
+        ; ##########two
+        ; ##########three
+    }
+attributes: #[
+    n: #[
+        types: [
+                :integer
+            ]
+        description: "pad by given number of spaces (default: 4)"
+        ]
+    with: #[
+        types: [
+                :string
+            ]
+        description: "use given padding"
+        ]
+    ]
+arguments: #[
+    text: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Collections/index"
+         "Collections/insert"
+         "Io/input"
+         "Reflection/inspect"
+    ]

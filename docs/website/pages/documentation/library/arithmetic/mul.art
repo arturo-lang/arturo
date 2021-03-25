@@ -1,0 +1,38 @@
+name: "mul"
+address: "0x10D587C78"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :nothing
+    ]
+alias: "*"
+infix?: true
+description: "calculate the modulo given values and return result"
+example: {
+        print mul 1 2      ; 2
+        print 2 * 3        ; 6
+        
+        a: 5
+        mul 'a 2           ; a: 10
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :floating
+             :literal
+        ]
+    valueB: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Arithmetic/mod"
+         "Arithmetic/pow"
+         "Arithmetic/sub"
+         "Binary/shl"
+    ]

@@ -1,0 +1,25 @@
+name: "cursor"
+address: "0x10D5BFB88"
+type: :function
+module: "Io"
+returns: [
+        :nothing
+    ]
+description: "turn cursor visibility on/off"
+example: {
+        cursor false    ; (hides the cursor)
+        cursor true     ; (shows the cursor)
+    }
+attributes: #[
+    ]
+arguments: #[
+    visible: [
+            :boolean
+        ]
+    ]
+related: [
+        "Strings/color"
+         "Binary/nor"
+         "Binary/or"
+         "Binary/shr"
+    ]

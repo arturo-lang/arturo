@@ -1,0 +1,27 @@
+name: "atan"
+address: "0x10D5C6B88"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the inverse tangent of given angle"
+example: {
+        print atan 0            ; 0.0
+        print atan 0.3          ; 0.2914567944778671
+        print atan 1.0          ; 0.7853981633974483
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/atanh"
+         "Numbers/ctan"
+         "Numbers/tan"
+         "Numbers/asin"
+    ]

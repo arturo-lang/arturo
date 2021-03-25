@@ -1,0 +1,23 @@
+name: "exit"
+address: "0x10D5F0318"
+type: :function
+module: "System"
+returns: [
+        :nothing
+    ]
+description: "exit program"
+example: {
+        exit              ; (terminates the program)
+        
+        exit.with: 3      ; (terminates the program with code 3)
+    }
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Numbers/exp"
+         "Arithmetic/div"
+         "Arithmetic/fdiv"
+         "Binary/not"
+    ]

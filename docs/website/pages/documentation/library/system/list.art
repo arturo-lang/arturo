@@ -1,0 +1,42 @@
+name: "list"
+address: "0x10B6E3408"
+type: :function
+module: "System"
+returns: [
+        :block
+    ]
+description: "get files in given path"
+example: {
+        loop list "." 'file [
+        ___print file
+        ]
+        
+        ; tests
+        ; var
+        ; data.txt
+    }
+attributes: #[
+    recursive: #[
+        types: [
+                :boolean
+            ]
+        description: "perform recursive search"
+        ]
+    relative: #[
+        types: [
+                :boolean
+            ]
+        description: "get relative paths"
+        ]
+    ]
+arguments: #[
+    path: [
+            :string
+        ]
+    ]
+related: [
+        "System/delete"
+         "System/read"
+         "System/type"
+         "System/hash"
+    ]

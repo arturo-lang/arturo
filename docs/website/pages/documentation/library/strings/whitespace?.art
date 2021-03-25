@@ -1,0 +1,26 @@
+name: "whitespace?"
+address: "0x10D5F0048"
+type: :function
+module: "Strings"
+returns: [
+        :boolean
+    ]
+description: "check if given string consists only of whitespace"
+example: {
+        whitespace? "hello"           ; => false
+        whitespace? " "               ; => true
+        whitespace? "\n \n"           ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/pad"
+         "Reflection/literal?"
+         "Strings/lower?"
+         "Core/when?"
+    ]

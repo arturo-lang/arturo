@@ -1,0 +1,31 @@
+name: "let"
+address: "0x10D5B4408"
+type: :function
+module: "Core"
+returns: [
+        :nothing
+    ]
+alias: ":"
+infix?: true
+description: "set symbol to given value"
+example: {
+        let 'x 10         ; x: 10
+        print x           ; 10
+    }
+attributes: #[
+    ]
+arguments: #[
+    symbol: [
+            :string
+             :literal
+        ]
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/get"
+         "Collections/set"
+         "Arithmetic/dec"
+         "Arithmetic/neg"
+    ]

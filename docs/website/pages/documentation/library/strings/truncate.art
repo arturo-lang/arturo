@@ -1,0 +1,53 @@
+name: "truncate"
+address: "0x10D5EDC78"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "truncate string at given length"
+example: {
+        str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
+        
+        truncate str 30
+        ; => "Lorem ipsum dolor sit amet, con..."
+        
+        truncate.preserve str 30
+        ; => "Lorem ipsum dolor sit amet,..."
+        
+        truncate.with:"---" str 30
+        ; => "Lorem ipsum dolor sit amet, con---"
+        
+        truncate.preserve.with:"---" str 30
+        ; => "Lorem ipsum dolor sit amet,---"
+    }
+attributes: #[
+    with: #[
+        types: [
+                :string
+            ]
+        description: "use given filler"
+        ]
+    preserve: #[
+        types: [
+                :boolean
+            ]
+        description: "preserve word boundaries"
+        ]
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    cutoff: [
+            :integer
+        ]
+    ]
+related: [
+        "Files/rename"
+         "Logic/true"
+         "Collections/permutate"
+         "Collections/repeat"
+    ]

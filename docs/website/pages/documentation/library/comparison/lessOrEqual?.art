@@ -1,0 +1,32 @@
+name: "lessOrEqual?"
+address: "0x10D5B09A8"
+type: :function
+module: "Comparison"
+returns: [
+        :boolean
+    ]
+alias: "=<"
+infix?: true
+description: "check if valueA =< valueB (less than or equal)"
+example: {
+        lessOrEqual? 5 2      ; => false
+        lessOrEqual? 5 6-1    ; => true
+        
+        print 2=<3            ; true
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :any
+        ]
+    valueB: [
+            :any
+        ]
+    ]
+related: [
+        "Comparison/greaterOrEqual?"
+         "Comparison/less?"
+         "Comparison/notEqual?"
+         "Comparison/greater?"
+    ]

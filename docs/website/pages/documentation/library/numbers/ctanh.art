@@ -1,0 +1,27 @@
+name: "ctanh"
+address: "0x10D5CB4F8"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the hyperbolic cotangent of given angle"
+example: {
+        print ctanh 0           ; inf
+        print ctanh 0.3         ; 3.432738430321741
+        print ctanh 1.0         ; 1.313035285499331
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/tanh"
+         "Numbers/atanh"
+         "Numbers/ctan"
+         "Numbers/cosh"
+    ]

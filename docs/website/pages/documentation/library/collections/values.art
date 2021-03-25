@@ -1,0 +1,30 @@
+name: "values"
+address: "0x10D5B0138"
+type: :function
+module: "Collections"
+returns: [
+        :block
+    ]
+description: "get list of values for given dictionary"
+example: {
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+        
+        values user
+        => ["John" "Doe"]
+    }
+attributes: #[
+    ]
+arguments: #[
+    dictionary: [
+            :dictionary
+        ]
+    ]
+related: [
+        "Collections/keys"
+         "Logic/false"
+         "Logic/false?"
+         "Collections/take"
+    ]

@@ -1,0 +1,27 @@
+name: "ctan"
+address: "0x10D5CB408"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the cotangent of given angle"
+example: {
+        print ctan 0            ; inf
+        print ctan 0.3          ; 3.232728143765828
+        print ctan 1.0          ; 0.6420926159343308
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/tan"
+         "Numbers/atan"
+         "Numbers/ctanh"
+         "Numbers/cos"
+    ]

@@ -1,0 +1,38 @@
+name: "sub"
+address: "0x10D59B228"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :nothing
+    ]
+alias: "-"
+infix?: true
+description: "subtract given values and return result"
+example: {
+        print sub 2 1      ; 1
+        print 5 - 3        ; 2
+        
+        a: 7
+        sub 'a 2           ; a: 5
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :floating
+             :literal
+        ]
+    valueB: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/sum"
+         "Arithmetic/mul"
+         "Binary/shl"
+         "Binary/shr"
+    ]

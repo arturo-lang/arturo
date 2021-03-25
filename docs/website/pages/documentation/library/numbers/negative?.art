@@ -1,0 +1,26 @@
+name: "negative?"
+address: "0x10D5D2138"
+type: :function
+module: "Numbers"
+returns: [
+        :boolean
+    ]
+description: "check if given number is negative"
+example: {
+        negative? 5       ; => false
+        negative? 6-7     ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    number: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/positive?"
+         "Numbers/even?"
+         "Numbers/zero?"
+         "Numbers/odd?"
+    ]

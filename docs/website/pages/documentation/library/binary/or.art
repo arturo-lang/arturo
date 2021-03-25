@@ -1,0 +1,32 @@
+name: "or"
+address: "0x10D59B7C8"
+type: :function
+module: "Binary"
+returns: [
+        :integer
+         :nothing
+    ]
+description: "calculate the binary OR for the given values"
+example: {
+        print or 2 3       ; 3
+        
+        a: 2
+        or 'a 3            ; a: 3
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :literal
+        ]
+    valueB: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/nor"
+         "Binary/xor"
+         "Binary/xnor"
+         "Binary/and"
+    ]

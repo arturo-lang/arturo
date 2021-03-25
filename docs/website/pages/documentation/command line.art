@@ -1,0 +1,109 @@
+content:{!md
+The command line is where the whole journey starts: whether you want to try out something fast in the REPL, or run a script. Or even install extern packages directly.
+
+---
+
+- [Using the command line](#using-the-command-line)
+   * [Run a script](#run-a-script)
+   * [Start the interactive console](#start-the-interactive-console)
+   * [Working with bytecode](#working-with-bytecode)
+- [Package manager](#package-manager)
+   * [List available modules](#list-available-modules)
+   * [List remote modules](#list-remote-modules)
+   * [Get module info](#get-module-info)
+   * [Install a new module](#install-a-new-module)
+   * [Uninstall a module](#uninistall-an-existing-module)
+   * [Update existing modules](#update-existing-modules)
+
+---
+
+<h3 id="using-the-command-line">Using the command line</h3>
+
+<h4 id="run-a-script">Run a script</h4>
+
+To run an Arturo script, all you have to do is pass the main script's path to Arturo:
+
+    arturo <script>
+
+<h4 id="start-the-interactive-console">Start the interactive console</h4>
+
+To start the interactive console (see: *REPL*), just open up your terminal and type:
+
+    arturo
+
+This is is what Arturo's interactive console looks like:
+
+![REPL](https://github.com/arturo-lang/arturo/wiki/images/repl.png)
+
+Here you may easily try things out and see things first hand. :)
+
+<h4 id="working-with-bytecode">Working with bytecode</h4>
+
+Since Arturo is, internally, a bytecode-based VM, it also allows you to save and read bytecode directly. 
+
+> 💡 Bytecode, also termed portable code or p-code, is a form of instruction set designed for efficient execution by a software interpreter. Unlike human-readable source code, bytecodes are compact numeric codes, constants, and references (normally numeric addresses) that encode the result of compiler parsing and performing semantic analysis of things like type, scope, and nesting depths of program objects.
+
+This way, you will be able to share your code, without sharing your source, or accelerate your script's execution (since when reading a bytecode file in, the initial parsing & evaluation phase has already been completed).
+
+##### To write a bytecode file from a script:
+
+```bash
+arturo -o path/to/your/script.art
+```
+
+This will output a `path/to/your/script.art.bcode` file.
+
+##### To read and execute a bytecode file:
+
+```bash
+arturo -i path/to/your/script.art.bcode
+```
+
+<h3 id="package-manager">Package manager</h3>
+
+Although Arturo's philosophy is batteries-included - so you'll most likely need nothing that is not already included - Arturo also comes with a ready-to-use package manager, to make your life even easier.
+
+<h4 id="list-available-modules">List available modules</h4>
+
+To list all available modules, just type:
+
+    arturo -m list
+
+This will show you all the modules you have installed locally.
+
+It looks like this:
+
+![Module listing](https://github.com/arturo-lang/arturo/wiki/images/module_list.png)
+
+<h4 id="list-remote-modules">List remote modules</h4>
+
+If you want to fetch a list of *all* modules available to download from the [official repository](https://github.com/arturo-lang/art-modules), just type:
+
+    arturo -m remote
+
+<h4 id="get-module-info">Get module info</h4>
+
+Have you spotted a module you like and want to know more about it? That's easy:
+
+    arturo -m info html
+
+<h4 id="install-a-new-module">Install a new module</h4>
+
+When you have finally decided you want to install a module, it's also easy:
+
+    arturo -m install html
+
+<h4 id="uninstall-a-module">Uninstall a module</h4>
+
+In order to uninstall a module you have previously, you just have to type:
+
+    arturo -m uninstall html
+
+<h4 id="update-existing-modules">Update existing modules</h4>
+
+If you want to update all of your local modules, there's no reason to uninstall/re-install anything. Just type:
+
+    arturo -m update
+
+And *all* of your modules will be automatically up-to-date.
+}

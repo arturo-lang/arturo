@@ -1,0 +1,29 @@
+name: "is?"
+address: "0x10D5E1228"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "print full dump of given value to screen"
+example: {
+        is? :string "hello"       ; => true
+        is? :block [1 2 3]        ; => true
+        is? :integer "boom"       ; => false
+    }
+attributes: #[
+    ]
+arguments: #[
+    type: [
+            :type
+        ]
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/inspect"
+         "Collections/in?"
+         "Core/if?"
+         "Arithmetic/inc"
+    ]

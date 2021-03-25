@@ -1,0 +1,27 @@
+name: "cos"
+address: "0x10D5CB048"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the cosine of given angle"
+example: {
+        print cos 0             ; 1.0
+        print cos 0.3           ; 0.955336489125606
+        print cos 1.0           ; 0.5403023058681398
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/sin"
+         "Numbers/acos"
+         "Numbers/cosh"
+         "Numbers/csec"
+    ]

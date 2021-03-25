@@ -1,0 +1,51 @@
+name: "permissions"
+address: "0x10D5BF228"
+type: :function
+module: "Files"
+returns: [
+        :null
+         :dictionary
+    ]
+description: "check permissions of given file"
+example: {
+        inspect permissions "bin/arturo"
+        ; [ :dictionary
+        ;     user    :    [ :dictionary
+        ;         read     :        true :boolean
+        ;         write    :        true :boolean
+        ;         execute  :        true :boolean
+        ;     ]
+        ;     group   :    [ :dictionary
+        ;         read     :        true :boolean
+        ;         write    :        false :boolean
+        ;         execute  :        true :boolean
+        ;     ]
+        ;     others  :    [ :dictionary
+        ;         read     :        true :boolean
+        ;         write    :        false :boolean
+        ;         execute  :        true :boolean
+        ;     ]
+        ; ]
+        
+        permissions.set:#[others:#[write:true]] "bin/arturo"
+        ; gave write permission to 'others'
+    }
+attributes: #[
+    set: #[
+        types: [
+                :dictionary
+            ]
+        description: "set using given file permissions"
+        ]
+    ]
+arguments: #[
+    file: [
+            :string
+        ]
+    ]
+related: [
+        "Numbers/sin"
+         "Numbers/sqrt"
+         "Strings/indent"
+         "Core/let"
+    ]

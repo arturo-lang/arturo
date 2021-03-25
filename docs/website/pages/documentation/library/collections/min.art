@@ -1,0 +1,23 @@
+name: "min"
+address: "0x10D5A4138"
+type: :function
+module: "Collections"
+returns: [
+        :null
+         :any
+    ]
+description: "get minimum element in given collection"
+example: "print min [4 2 8 5 1 9]       ; 1"
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :block
+        ]
+    ]
+related: [
+        "Collections/max"
+         "Numbers/sin"
+         "Arithmetic/div"
+         "Arithmetic/inc"
+    ]

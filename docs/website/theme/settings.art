@@ -1,0 +1,21 @@
+postprocess: #.raw [
+    {!html <h2([^>]+)>}         {!html <h2 $1 class="title is-2 is-spaced mt-6">}
+    {!html <h3([^>]+)>}         {!html <h3 $1 class="title is-3 is-spaced mt-6">}
+    {!html <h4([^>]+)>}         {!html <h4 $1 class="subtitle is-4 is-spaced mt-6">}
+    {!html <p>}                 {!html <p class="pt-1 pb-1">}
+    {!html <table>}             {!html <table class="table is-stripped is-hoverable is-fullwidth">}
+    {!html <ulbd>}              {!html <div class="content"><ul>}
+    {!html </ulbd>}             {!html </ul></div>}
+    {!html <blockquote>}        {!html <div class="content mt-3 mb-3"><blockquote>}
+    {!html </blockquote>}       {!html </blockquote></div>}
+    {!html <code class="language-red">}  {!html <code class="language-arturo">}
+    {!html <pre><code}          {!html <pre class="mt-4 mb-4"><code}
+]
+
+routes: #.raw [
+    {library/index\.art}                    "docpage.html"
+    {library/[^/]+/index\.art}              "module_index.html"
+    {library/[^/]+/[^/]+\.art}              "function.html"
+    {index\.art}                            "index.html"
+    {documentation/[^/]+\.art}              "docpage.html"
+]

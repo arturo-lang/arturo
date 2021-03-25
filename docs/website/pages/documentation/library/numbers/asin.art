@@ -1,0 +1,27 @@
+name: "asin"
+address: "0x10D5C69A8"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the inverse sine of given angle"
+example: {
+        print asin 0            ; 0.0
+        print asin 0.3          ; 0.3046926540153975
+        print asin 1.0          ; 1.570796326794897
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/acos"
+         "Numbers/asinh"
+         "Numbers/sin"
+         "Numbers/atan"
+    ]

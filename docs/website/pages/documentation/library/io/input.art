@@ -1,0 +1,52 @@
+name: "input"
+address: "0x10D5BFD68"
+type: :function
+module: "Io"
+returns: [
+        :string
+    ]
+description: "print prompt and get user input"
+example: {
+        name: input "What is your name? "
+        ; (user enters his name: Bob)
+        
+        print ["Hello" name "!"]
+        ; Hello Bob!
+    }
+attributes: #[
+    repl: #[
+        types: [
+                :boolean
+            ]
+        description: "get input as if in a REPL"
+        ]
+    history: #[
+        types: [
+                :string
+            ]
+        description: "set path for saving history"
+        ]
+    complete: #[
+        types: [
+                :block
+            ]
+        description: "use given array for auto-completions"
+        ]
+    hint: #[
+        types: [
+                :dictionary
+            ]
+        description: "use given dictionary for typing hints"
+        ]
+    ]
+arguments: #[
+    prompt: [
+            :string
+        ]
+    ]
+related: [
+        "Arithmetic/inc"
+         "Binary/not"
+         "Collections/in?"
+         "Collections/index"
+    ]

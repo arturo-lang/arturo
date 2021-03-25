@@ -1,0 +1,28 @@
+name: "levenshtein"
+address: "0x10D5E9D68"
+type: :function
+module: "Strings"
+returns: [
+        :integer
+    ]
+description: "calculate Levenshtein distance between given strings"
+example: {
+        print levenshtein "for" "fur"         ; 1
+        print levenshtein "one" "one"         ; 0
+    }
+attributes: #[
+    ]
+arguments: #[
+    stringA: [
+            :string
+        ]
+    stringB: [
+            :string
+        ]
+    ]
+related: [
+        "Collections/reverse"
+         "Core/ensure"
+         "Files/delete"
+         "Numbers/even?"
+    ]

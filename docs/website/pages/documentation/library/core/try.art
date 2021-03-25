@@ -1,0 +1,41 @@
+name: "try"
+address: "0x10D5B4B88"
+type: :function
+module: "Core"
+returns: [
+        :nothing
+    ]
+description: "perform action and catch possible errors"
+example: {
+        try [
+            ; let's try something dangerous
+            print 10 / 0
+        ]
+        
+        ; we catch the exception but do nothing with it
+    }
+attributes: #[
+    import: #[
+        types: [
+                :boolean
+            ]
+        description: "execute at root level"
+        ]
+    verbose: #[
+        types: [
+                :boolean
+            ]
+        description: "print all error messages as usual"
+        ]
+    ]
+arguments: #[
+    action: [
+            :block
+        ]
+    ]
+related: [
+        "Core/try?"
+         "Binary/or"
+         "Converters/to"
+         "Logic/or?"
+    ]

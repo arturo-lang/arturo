@@ -1,0 +1,28 @@
+<nav class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+        <li><a href="<||= linkTo {/} ||>" style="margin-left:0">Home</a></li>
+        <||= 
+            pathItems: new []
+            pathSoFar: new ["documentation"]
+
+            pageRoute: new pagePath 
+            if "index" = last pageRoute -> pageRoute: chop pageRoute
+            pageRoute: slice pageRoute 1 (size pageRoute)-1
+            loop.with:'pidx pageRoute 'pp [
+                'pathSoFar ++ pp
+                if? pp=last pageRoute [
+                    lastItem: pp 
+                    if not? and? [contains? pageRoute "library"]
+                                 [and? [0 =< pidx-2]["library"= pageRoute \ (pidx-2)]] [
+                        lastItem: join.with:" " map split.words lastItem 'x -> capitalize x
+                    ]
+                    'pathItems ++ ~{<li class="is-active"><a href="#">|lastItem|</a></li>}
+                ] 
+                else [
+                    'pathItems ++ ~{<li><a href="|linkTo join.path pathSoFar|/index.html">|capitalize pp|</a></li>}
+                ] 
+            ]
+            join pathItems
+        ||>
+    </ul>
+</nav>

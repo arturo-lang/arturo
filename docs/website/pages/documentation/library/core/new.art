@@ -1,0 +1,32 @@
+name: "new"
+address: "0x10D5B45E8"
+type: :function
+module: "Core"
+returns: [
+        :any
+    ]
+description: "create new value by cloning given one"
+example: {
+        c: "Hello"
+        d: new c        ; make a copy of the older string
+        
+        ; changing one string in-place
+        ; will change only the string in question
+        
+        'd ++ "World"
+        print d                 ; HelloWorld
+        print c                 ; Hello
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Arithmetic/neg"
+         "Dates/now"
+         "Arithmetic/dec"
+         "Arithmetic/pow"
+    ]

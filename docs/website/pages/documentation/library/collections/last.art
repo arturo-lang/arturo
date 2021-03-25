@@ -1,0 +1,34 @@
+name: "last"
+address: "0x10D59EE58"
+type: :function
+module: "Collections"
+returns: [
+        :any
+    ]
+description: "return the last item of the given collection"
+example: {
+        print last "this is some text"       ; t
+        print last ["one" "two" "three"]     ; three
+        
+        print last.n:2 ["one" "two" "three"] ; two three
+    }
+attributes: #[
+    n: #[
+        types: [
+                :integer
+            ]
+        description: "get last <n> items"
+        ]
+    ]
+arguments: #[
+    collection: [
+            :string
+             :block
+        ]
+    ]
+related: [
+        "Collections/first"
+         "Paths/list"
+         "Converters/as"
+         "Core/case"
+    ]

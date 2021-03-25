@@ -1,0 +1,32 @@
+name: "and"
+address: "0x10D59B408"
+type: :function
+module: "Binary"
+returns: [
+        :integer
+         :nothing
+    ]
+description: "calculate the binary AND for the given values"
+example: {
+        print and 2 3      ; 2
+        
+        a: 2
+        and 'a 3           ; a: 2
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :literal
+        ]
+    valueB: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/nand"
+         "Arithmetic/add"
+         "Binary/nor"
+         "Binary/or"
+    ]

@@ -1,0 +1,29 @@
+name: "benchmark"
+address: "0x10D5E04F8"
+type: :function
+module: "Reflection"
+returns: [
+        :nothing
+    ]
+description: "benchmark given code"
+example: {
+        benchmark [ 
+            ; some process that takes some time
+            loop 1..10000 => prime? 
+        ]
+        
+        ; [benchmark] time: 0.065s
+    }
+attributes: #[
+    ]
+arguments: #[
+    action: [
+            :block
+        ]
+    ]
+related: [
+        "Strings/escape"
+         "Numbers/round"
+         "Collections/empty"
+         "Crypto/hash"
+    ]

@@ -1,0 +1,30 @@
+name: "extend"
+address: "0x10D59E4F8"
+type: :function
+module: "Collections"
+returns: [
+        :dictionary
+    ]
+description: "get new dictionary by merging given ones"
+example: {
+        person: #[ name: "john" surname: "doe" ]
+        
+        print extend person #[ age: 35 ]
+        ; [name:john surname:doe age:35]
+    }
+attributes: #[
+    ]
+arguments: #[
+    parent: [
+            :dictionary
+        ]
+    additional: [
+            :dictionary
+        ]
+    ]
+related: [
+        "Collections/append"
+         "Numbers/even?"
+         "Binary/and"
+         "Binary/nand"
+    ]
