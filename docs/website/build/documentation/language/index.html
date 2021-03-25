@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Arturo programming language: Simple, expressive & portable programming language for efficient scripting">
+        <meta name="keywords" content="arturo,programming language,scripting language,rebol,red programming language,portable programming language">
+        <link rel="canonical" href="https://arturo-lang.io">
+        <title>Arturo programming language</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/themes/prism-okaidia.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@4/distr/fira_code.css">
+        <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
+        <script src="https://kit.fontawesome.com/8bfb2fe6f4.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="../../resources/styles/main.css">
+        <link rel="apple-touch-icon" sizes="57x57" href="favico/apple-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="favico/apple-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="favico/apple-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="favico/apple-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="favico/apple-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="favico/apple-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="favico/apple-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="favico/apple-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="favico/apple-icon-180x180.png">
+        <link rel="icon" type="image/png" sizes="192x192"  href="favico/android-icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="favico/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="favico/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="favico/favicon-16x16.png">
+        <link rel="manifest" href="/manifest.json">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="favico/ms-icon-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RPNR7PTFYH"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-RPNR7PTFYH');
+        </script>
+        <style>
+            /* .columns.is-fullheight {
+                min-height: calc(100vh - ( 3.25rem - .75rem ) );
+                max-height: calc(100vh - ( 3.25rem - .75rem ) );
+                height: calc(100vh - ( 3.25 - .75rem ) );
+                display: flex;
+                flex-direction: row;
+                justify-content: stretch;
+            }
+            .columns.is-fullheight .column {
+                overflow-y: auto
+            } */
+            /* .menu {
+  position: sticky;
+  display: inline-block;
+  vertical-align: top;
+  max-height: 100vh;
+  overflow-y: auto;
+  top: 0;
+  width: 300px;
+  bottom: 0;
+  padding: 30px;
+} */
+        </style>
+    </head>
+    <body data-prismjs-copy-timeout="500">
+        
+    <nav class="navbar is-fixed-top is-boxed" role="navigation" aria-label="main navigation" style="border-bottom:2px solid #6a156b;">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="#" style="font-weight:bold; font-size: 1.2em; color: black">
+            <img src="../../resources/images/logo.png" width="28" height="28" alt="arturo logo">
+            &nbsp;&nbsp;Arturo&nbsp;&nbsp;<span class="logo-secondary">programming language</span>
+        </a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+  
+    <div id="navbarMain" class="navbar-menu">
+        <div class="navbar-end">
+            <a rel="noopener" target="_blank" class="is-active navbar-item is-tab is-warning" href="https://github.com/arturo-lang/arturo/wiki">
+                <!--<i class="far fa-file-alt"></i>&nbsp;&nbsp;-->Documentation
+            </a>
+            <a rel="noopener" target="_blank" class="navbar-item is-tab " href="https://github.com/arturo-lang/arturo">
+                <!--<i class="fab fa-github"></i>&nbsp;&nbsp;-->Source
+            </a>
+            <!-- <div class="is-divider-vertical"></div>
+            <a rel="noopener" target="_blank" class="navbar-item is-tab" href="https://twitter.com/ArturoLanguage" aria-label="official twitter page">
+                <i class="fab fa-twitter"></i>
+            </a> -->
+        </div>
+    </div>
+</nav>
+        
+        <main>
+            <div class="columns doccols"><!--is-gapless" style="height: 100vh; overflow-y:auto;">-->
+                <!-- SIDEBAR -->
+                <div class="column is-3 p-6 is-hidden-mobile sidebar"><!-- height: 100vh; overflow-y:auto;">-->
+    <aside class="menu" style="margin-top: -0.5em;">
+        <!-- <p class="menu-label">
+            Documentation
+        </p> -->
+        <ul class="menu-list">
+            <li><a href="..">Home</a></li>
+            <li><a  href="../Getting%20Started/index.html">Getting Started</a></li>
+            <li><a  class="is-active"  href="../Language/index.html">Language</a></li>
+            <li><a  href="../Command%20Line/index.html">Command Line</a></li>
+            <li><a  href="../Library/index.html">Library</a>
+                
+            </li>
+        </ul>
+      </aside>
+</div>
+
+                <!-- MAIN -->
+                <div class="column is-9 p-6 mb-6">
+
+                    <!-- Breadcrumbs -->
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+        <li><a href="../.." style="margin-left:0">Home</a></li>
+        <li class="is-active"><a href="#">Language</a></li>
+    </ul>
+</nav>
+
+                    <h2  class="title is-2 is-spaced" class="title is-2 is-spaced mt-6"></h2>
+
+                    <!-- content -->
+                    <hr>
+<div class="content"><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-main-components">The main components</a><div class="content"><ul>
+<li><a href="#words">Words</a></li>
+<li><a href="#labels">Labels</a></li>
+<li><a href="#symbols">Symbols</a></li>
+<li><a href="#values">Values</a><div class="content"><ul>
+<li><a href="#null">:null</a></li>
+<li><a href="#boolean">:boolean</a></li>
+<li><a href="#integer">:integer</a></li>
+<li><a href="#floating">:floating</a></li>
+<li><a href="#type">:type</a></li>
+<li><a href="#char">:char</a></li>
+<li><a href="#string">:string</a></li>
+<li><a href="#literal">:literal</a></li>
+<li><a href="#path">:path</a></li>
+<li><a href="#inline">:inline</a></li>
+<li><a href="#block">:block</a></li>
+<li><a href="#dictionary">:dictionary</a></li>
+<li><a href="#function">:function</a></li>
+<li><a href="#date">:date</a></li>
+<li><a href="#binary">:binary</a></li>
+</ul></div>
+</li>
+<li><a href="#attributes">Attributes</a><div class="content"><ul>
+<li><a href="#attr">:attr</a></li>
+<li><a href="#attrLabel">:attrLabel</a></li>
+</ul></div>
+</li>
+</ul></div>
+</li>
+<li><a href="#precedence-and-evaluation">Precedence and evaluation</a><div class="content"><ul>
+<li><a href="#the-right-to-left-rule">The right-to-left rule</a></li>
+</ul></div>
+</li>
+<li><a href="#syntactic-sugar">Syntactic sugar</a><div class="content"><ul>
+<li><a href="#right-arrow-operator">Right-arrow operator: <code>-&gt;</code></a></li>
+<li><a href="#fat-right-arrow-operator">Fat right-arrow operator: <code>=&gt;</code></a></li>
+<li><a href="#pipe-operator">Pipe operator: <code>|</code></a></li>
+</ul></div>
+</li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul></div>
+<hr>
+<p class="pt-1 pb-1"><h2  id="introduction" class="title is-2 is-spaced mt-6">Introduction</h2></p>
+<p class="pt-1 pb-1">Arturo's syntax is probably as easy as it could get. Basically, you could say: <em>there is no syntax</em>.</p>
+<p class="pt-1 pb-1">Let's try to resume some key points of Arturo's no-syntax:</p>
+<div class="content"><ul>
+<li>Code is just a list of <strong>words</strong>, <strong>labels</strong>, <strong>symbols</strong>, <strong>values</strong> and <strong>attributes</strong> (you'll learn what all this is about very soon!)</li>
+<li>Code can be grouped into <strong>blocks</strong> (that is: a <em>list</em> of words, labels, symbols, and values within square brackets: <code>[ ... ]</code></li>
+<li>A block has no meaning until it is given one, or interpreted within some specific context, that is: <code>[ lorem ipsum ]</code> is perfectly valid Arturo code, until you try to &quot;run&quot; it - where the interpreter will complain that it has no idea what <code>lorem</code> and <code>ipsum</code> is. Pretty much like if I tell you a word in Swahili - you'll most likely need a dictionary to figure out what it might mean.</li>
+<li>There are <u>no reserved &quot;keywords&quot;</u>. Every word can be re-defined.</li>
+<li>You can format your code any way you want: no semicolons to add, no obligatory newlines, no commas, no parentheses, no Python-style indentation rules</li>
+<li>Every <strong>function</strong> expects a pre-determined number of arguments. Initially, we check during evaluation, and during runtime we &quot;consume&quot; values until we reach the number of arguments required.</li>
+</ul></div>
+<p class="pt-1 pb-1">As you can see, there is not much to learn from scratch here:</p>
+<p class="pt-1 pb-1">Once you learn what the language <a href="#the-main-components"><strong>main components</strong></a> are &amp; a few details about <strong><a href="#precedence-and-evaluation">precedence and evaluation</a></strong>, then only with the <a href="https://github.com/arturo-lang/arturo/wiki/Library"><strong>Library Reference</strong></a> at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write <em>any</em> program. ;-)</p>
+<p class="pt-1 pb-1">So, let's get to the gist of the matter!</p>
+<p class="pt-1 pb-1"><h2  id="the-main-components" class="title is-2 is-spaced mt-6">The main components</h2></p>
+<p class="pt-1 pb-1"><h3  id="words" class="title is-3 is-spaced mt-6">Words</h3></p>
+<p class="pt-1 pb-1"><em>Words</em> in Arturo are pretty much like words in English: a series of characters separated by <em>spaces</em> or some <a href="#symbols"><em>symbol</em></a>. E.g.: <code>this is a series of words</code> (in this case, <code>this</code>, <code>is</code>, <code>a</code>, <code>series</code>, <code>of</code>, <code>words</code> are all - well... - <em>words</em>.</p>
+<div class="content mt-3 mb-3"><blockquote>
+<p class="pt-1 pb-1">💡 In Arturo, a word can be formed by any letter + the character <code>?</code></p>
+</blockquote></div>
+<p class="pt-1 pb-1">As with a real (spoken) language, every word has a specific meaning. And if you don't know the meaning of a word, you'll have to look it up in the dictionary. That's pretty much the way things work in Arturo as well.</p>
+<p class="pt-1 pb-1">In Arturo, a <em>word</em> may have 3 main different uses:</p>
+<div class="content"><ul>
+<li>refer to a value (that is: a variable, e.g. <code>x + 2</code>)</li>
+<li>refer to an action, which does something (that is: a function, e.g. <code>doSomething</code>) - Arturo comes with close to 150 already defined such words/functions</li>
+<li>refer to nothing (that is: a word without meaning, as in the <code>[lorem ipsum</code>] example above)</li>
+</ul></div>
+<p class="pt-1 pb-1"><h3  id="labels" class="title is-3 is-spaced mt-6">Labels</h3></p>
+<p class="pt-1 pb-1">A label is nothing but Arturo's way of assigning meaning (to be read as: a value) to a word - what you would normally call <em>variable assignment</em> or <em>variable initialization</em>. (In Arturo, these two terms can be used invariably, since there is practically no difference: you can set and re-define a word/variable as many times as you wish).</p>
+<p class="pt-1 pb-1">So, let's say you want to give a new meaning to the word <code>x</code>:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: 2
+</code></pre>
+<p class="pt-1 pb-1">Basically, that was it: from now on, <code>x</code> will mean <code>2</code> (until and if it's changed). So if you follow the above statement with:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print x
+</code></pre>
+<p class="pt-1 pb-1">...Arturo will print <code>2</code> for you.</p>
+<p class="pt-1 pb-1"><h3  id="symbols" class="title is-3 is-spaced mt-6">Symbols</h3></p>
+<p class="pt-1 pb-1">As the mere word says, <em>symbols</em> are used to symbolize something, mainly as an alias to an existing <em>word</em> - although, by convention, as <em>infix</em> operators.</p>
+<p class="pt-1 pb-1">Hence, let's take the function <code>add</code>. This takes two parameters, adds them up, and returns the result.</p>
+<p class="pt-1 pb-1">So, you may write:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print add 2 3
+</code></pre>
+<p class="pt-1 pb-1">and Arturo will print out <code>5</code> for you.</p>
+<p class="pt-1 pb-1">Now, if you don't want to use the <code>add</code> function (and <em>prefix notation</em>, which is the standard for <em>all</em> function calls), there is a <em>symbol-alias</em> for that: <code>+</code></p>
+<p class="pt-1 pb-1">So, you could just as well write:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print 2 + 3
+</code></pre>
+<p class="pt-1 pb-1">Only, this time you're expressing it more like you would in a normal math expression: with <em>infix notation</em>.</p>
+<p class="pt-1 pb-1">Some of the existing <em>aliases</em> in the built-in dictionary:</p>
+<table class="table is-stripped is-hoverable is-fullwidth">
+<tr><th>Symbol</th><th>Aliased word</th></tr>
+<tr><td><code>+</code></td><td>add</td></tr>
+<tr><td><code>++</code></td><td>append</td></tr>
+<tr><td><code>@</code></td><td>array</td></tr>
+<tr><td><code>#</code></td><td>dictionary</td></tr>
+<tr><td><code>/</code></td><td>div</td></tr>
+<tr><td><code>&lt;=</code></td><td>dup</td></tr>
+<tr><td><code>=</code></td><td>equal?</td></tr>
+<tr><td><code>//</code></td><td>fdiv</td></tr>
+<tr><td><code>$</code></td><td>function</td></tr>
+<tr><td><code>\</code></td><td>get</td></tr>
+<tr><td><code>&gt;</code></td><td>greater?</td></tr>
+<tr><td><code>&gt;=</code></td><td>greaterOrEqual?</td></tr>
+<tr><td><code>&lt;</code></td><td>less?</td></tr>
+<tr><td><code>=&lt;</code></td><td>lessOrEqual?</td></tr>
+<tr><td><code>:</code></td><td>let</td></tr>
+<tr><td><code>%</code></td><td>mod</td></tr>
+<tr><td><code>*</code></td><td>mul</td></tr>
+<tr><td><code>&lt;&gt;</code></td><td>notEqual?</td></tr>
+<tr><td><code>^</code></td><td>pow</td></tr>
+<tr><td><code>..</code></td><td>range</td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>read</td></tr>
+<tr><td><code>./</code></td><td>relative</td></tr>
+<tr><td><code>--</code></td><td>remove</td></tr>
+<tr><td><code>~</code></td><td>render</td></tr>
+<tr><td><code>-</code></td><td>sub</td></tr>
+<tr><td><code>?</code></td><td>switch</td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>write</td></tr>
+</table>
+<p class="pt-1 pb-1"><h3  id="values" class="title is-3 is-spaced mt-6">Values</h3></p>
+<p class="pt-1 pb-1">Values are the very core of Arturo and are used to refer to pretty much all the different kinds of data you can have.</p>
+<p class="pt-1 pb-1">We could split them into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.</p>
+<p class="pt-1 pb-1">The complete list follows:</p>
+<p class="pt-1 pb-1"><h4  id="null" class="subtitle is-4 is-spaced mt-6">:null</h4></p>
+<p class="pt-1 pb-1">Null values generally denote <em>nothing</em> and it's mostly used as a return value by functions to inform us that something went wrong. If you want to set it as a  value, you may just use the <em>word</em> <code>null</code>, like:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: null
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="boolean" class="subtitle is-4 is-spaced mt-6">:boolean</h4></p>
+<p class="pt-1 pb-1">Booleans are Arturo's logical values. And they can have a value of either <code>true</code> or <code>false</code></p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: true
+y: false
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="integer" class="subtitle is-4 is-spaced mt-6">:integer</h4></p>
+<p class="pt-1 pb-1">Integers represent positive or negative integers. When they are declared they are comprised only by digits (<code>[0-9]+</code>) and they can be as long as you want - Arturo does support big numbers.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: 2
+y: 876528347613438247982374913423423947329
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="floating" class="subtitle is-4 is-spaced mt-6">:floating</h4></p>
+<p class="pt-1 pb-1">Floating values are basically floating-point numbers, that is: decimals. They begin with an initial all-digit part, followed by a <code>.</code> (dot) and another all-digit part: <code>[0-9]+\.[0-9]+</code></p>
+<pre class="mt-4 mb-4"><code class="language-arturo">pi: 3.14159
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="type" class="subtitle is-4 is-spaced mt-6">:type</h4></p>
+<p class="pt-1 pb-1">Type is a value representing another... type. To specify a type value, the format is a <code>:</code> (colon) followed by a word - the type's name: <code>:\w+</code></p>
+<pre class="mt-4 mb-4"><code class="language-arturo">myType: :integer
+</code></pre>
+<p class="pt-1 pb-1">or</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">if (type x) = :integer [ print &quot;it's an integer!&quot; ]
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="char" class="subtitle is-4 is-spaced mt-6">:char</h4></p>
+<p class="pt-1 pb-1">Characters in Arturo can be declared using backticks:  <code>`\w`</code></p>
+<pre class="mt-4 mb-4"><code class="language-arturo">ch: `a`
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="string" class="subtitle is-4 is-spaced mt-6">:string</h4></p>
+<p class="pt-1 pb-1">A string is nothing but a series of characters, seen as one unit. In Arturo, in order to define a string, there are various ways:</p>
+<p class="pt-1 pb-1"><strong>Single-line strings</strong></p>
+<div class="content"><ul>
+<li>using double quotes: <code>x: &quot;this is a string&quot;</code> (with escaped characters)</li>
+<li>using right <em>smart-quote</em> notation <code>x: » This is a string</code> (in this case, everything following <code>»</code> till the end of the line, will be stripped and considered one string)</li>
+</ul></div>
+<p class="pt-1 pb-1"><strong>Multi-line strings</strong></p>
+<div class="content"><ul>
+<li><p class="pt-1 pb-1">using curly-brace blocks (the result will be stripped and un-indented):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: {
+    this is yet
+    another
+    very
+    long string
+    that spans more
+    than
+    one
+    line
+}
+</code></pre>
+</li>
+<li><p class="pt-1 pb-1">using verbatim curly-brace blocks (the result will remain exactly as-is):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: {:
+  this is yet
+    another
+    very
+  long string
+  that spans more
+      than
+          one
+          line
+:}
+</code></pre>
+</li>
+<li><p class="pt-1 pb-1">using dash notation (where everything after the line, until the end of the file, is a string - stripped and un-indented):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: 
+------
+this is the last very
+long string
+that spans more
+than
+one
+line
+</code></pre>
+</li>
+</ul></div>
+<div class="content mt-3 mb-3"><blockquote>
+<p class="pt-1 pb-1">💡 If you want your string to contain sub-expressions that will be evaluated on-the-fly - that is <em>string interpolation</em> - all you have to do is include your code inside the string within pipe-bars and then call the function <code>render</code> (or <code>~</code>) to process it accordingly: e.g.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: 2
+print ~&quot;my variable is: |x|&quot;
+
+; prints: 
+; my variable is: 2
+</code></pre>
+</blockquote></div>
+<p class="pt-1 pb-1"><h4  id="literal" class="subtitle is-4 is-spaced mt-6">:literal</h4></p>
+<p class="pt-1 pb-1">Literals in Arturo are just a way of referring to the <em>name</em> of a word or symbol. Think of it as the <em>string</em> version of a word, or like Ruby's <em>symbols</em>.</p>
+<p class="pt-1 pb-1">For example, the function <code>info</code> takes as an argument the name of the function for which you want some information. If you wrote like <code>info print</code>, the interpreter would execute the function <code>print</code> and try to... print something (which would not be there). If you wanted to refer to the <em>name</em> of the function -- that is: without actually calling it -- you would precede it with a <code>'</code> (single-quote): <code>'[\w+]</code></p>
+<pre class="mt-4 mb-4"><code class="language-arturo">func: 'print
+info func
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="path" class="subtitle is-4 is-spaced mt-6">:path</h4></p>
+<p class="pt-1 pb-1">Paths in Arturo are a way of defining some hierarchy between values, something along the lines of: <em>parent</em> -&gt; <em>child</em> -&gt; <em>grandchild</em>. For this, in Arturo, we'd use a series of <em>values</em> or <em>words</em> delimited with a <code>\</code> (backslash). You can think of them as <em>indexes</em> in other programming languages.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print user\name
+</code></pre>
+<p class="pt-1 pb-1">or</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: &quot;name&quot;
+print user\(x)
+</code></pre>
+<p class="pt-1 pb-1">or</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">myArray: [&quot;zero&quot; &quot;one&quot; &quot;two&quot; &quot;three&quot;]
+print myArray\1
+
+; prints &quot;one&quot;
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="inline" class="subtitle is-4 is-spaced mt-6">:inline</h4></p>
+<p class="pt-1 pb-1"><em>Inline</em>s in Arturo generally denote a list of words/symbols/values that are grouped and given some type of priority in evaluation. An <em>inline</em> block is denoted by <code>(...)</code> (parentheses).</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print (2+3)*4
+</code></pre>
+<p class="pt-1 pb-1">Please note though that, apart from precedence, <code>:inline</code> is a value type on its own:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">a: [(one) two three]
+print type a\0 			; that is: (one)
+
+; prints :inline
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="block" class="subtitle is-4 is-spaced mt-6">:block</h4></p>
+<p class="pt-1 pb-1">Blocks are a fundamental part of Arturo.</p>
+<p class="pt-1 pb-1">As we've already said, it's just a <code>[...]</code> (square-bracket enclosed) block of words/symbols/values that - in contrast with <em>inline</em> blocks above which are evaluated in-place - are <u>not evaluated</u> until it's necessary.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">myBlock: [one two three]
+anArray: [1 2 3 4 5]
+anotherArray: [&quot;zero&quot; 1 &quot;two&quot; 3 &quot;cuatro&quot;]
+</code></pre>
+<p class="pt-1 pb-1">As you can see, blocks can contain practically anything: any word, any symbol, and any value. Of course, they can contain other blocks too:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: [
+   1 2 [
+       3 4 [
+           5 &quot;six&quot; 7
+       ] 
+       8 
+   ] 
+   9
+]
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="dictionary" class="subtitle is-4 is-spaced mt-6">:dictionary</h4></p>
+<p class="pt-1 pb-1">Dictionaries in Arturo as what in other languages you'd call an <em>associative array</em> or <em>hash table</em>. If you want to create one, just give the <code>dictionary</code> function (or use the <code>#</code> alias) a block, with different labels, and it'll automatically convert it to a dictionary.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">user: #[
+     name: &quot;John&quot;
+     surname: &quot;Doe&quot;
+     age: 34
+]
+</code></pre>
+<p class="pt-1 pb-1">What the <code>#</code> function here does is:</p>
+<div class="content"><ul>
+<li>execute the block</li>
+<li>retrieve only the words/variables defined in there</li>
+<li>return a dictionary with the aforementioned words</li>
+</ul></div>
+<div class="content mt-3 mb-3"><blockquote>
+<p class="pt-1 pb-1">💡 As you can probably assume from the above definition, a dictionary block doesn't necessarily have to contain just labels and word definitions - it may contain whatever you want, even function calls; only it will return you back just a table with the defined words in there</p>
+</blockquote></div>
+<p class="pt-1 pb-1"><h4  id="function" class="subtitle is-4 is-spaced mt-6">:function</h4></p>
+<p class="pt-1 pb-1">Functions are another important value type in Arturo - and yes, you heard right: <em>functions</em> a <em>value</em> too. You can assign them to a word/variable, pass them around, re-define them and whatever you want with them, pretty much as you would do with another value, let's say a number.</p>
+<p class="pt-1 pb-1">To define a function, all you have to do is call the <code>function</code>... function (or use the <code>$</code> alias) followed by two parameters:</p>
+<div class="content"><ul>
+<li>the parameters' names (this can be either a literal, e.g. <code>'x</code> - if it's just one argument - or a block, e.g. <code>[x y]</code>. If you want to use commas, for readability, like <code>[x,y]</code> you are free to do so: Arturo will simply ignore them.</li>
+</ul></div>
+<pre class="mt-4 mb-4"><code class="language-arturo">multiply: function [x y][
+     x * y
+]
+
+print multiply 2 3
+
+; would print 6
+</code></pre>
+<p class="pt-1 pb-1">or</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">addThemUp: $[x,y][x+y]
+
+print addThemUp 2 3
+
+; would print 5
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="date" class="subtitle is-4 is-spaced mt-6">:date</h4></p>
+<p class="pt-1 pb-1">Dates in Arturo are a distinct type of value. If you want to create one, you'll have to use one of the corresponding functions. For example, the function <code>now</code> returns a <code>:date</code> object, representing the current point in time. And it can be handled pretty much like you would handle a <code>:dictionary</code>.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print now
+
+; would print 2020-10-26T10:27:14+01:00
+
+print now\year
+
+; would print 2020
+</code></pre>
+<p class="pt-1 pb-1"><h4  id="binary" class="subtitle is-4 is-spaced mt-6">:binary</h4></p>
+<p class="pt-1 pb-1">Binary values are used to represent <em>binary</em> data, that is: an array of bytes. You cannot define them directly, however, you can sure convert other data to binary.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print to :binary &quot;Hello world!&quot;
+
+; would print 4865 6C6C 6F20 776F 726C 6421
+</code></pre>
+<p class="pt-1 pb-1"><h3  id="attributes" class="title is-3 is-spaced mt-6">Attributes</h3></p>
+<p class="pt-1 pb-1">Another interesting feature of Arturo is what we'll analyze here: attributes.</p>
+<p class="pt-1 pb-1">Basically, <em>attributes</em> are nothing but an easy way of defining optional named parameters for functions - but which can however transcend between different function calls.</p>
+<p class="pt-1 pb-1">There are two types:</p>
+<p class="pt-1 pb-1">a. attributes<br>
+b. attribute labels</p>
+<p class="pt-1 pb-1"><h4  id="attr" class="subtitle is-4 is-spaced mt-6">:attr</h4></p>
+<p class="pt-1 pb-1">Attributes are basically optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a <code>.</code>(dot) followed by a normal word: <code>\.\w+</code></p>
+<p class="pt-1 pb-1">Let's say we used the function <code>split</code>, to split a string into parts:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">split &quot;hello world&quot;
+
+; =&gt; [`h` `e` `l` `l` `o` ` ` `w` `o` `r` `l` `d` ]
+</code></pre>
+<p class="pt-1 pb-1">That does what it says: splits the string into an array of <code>:char</code>s.</p>
+<p class="pt-1 pb-1">What if we want for example to split the string into words? For that, there is the <code>.words</code> attribute for the function <code>split</code>. So:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">split.words &quot;hello world&quot;
+
+; = [&quot;hello&quot; &quot;world&quot;]
+</code></pre>
+<div class="content mt-3 mb-3"><blockquote>
+<p class="pt-1 pb-1">💡 The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine</p>
+</blockquote></div>
+<p class="pt-1 pb-1"><h4  id="attrLabel" class="subtitle is-4 is-spaced mt-6">:attrLabel</h4></p>
+<p class="pt-1 pb-1">Attribute labels are pretty much like simple <em>attributes</em>, only they can also take a value. As it worked with <em>attributes</em>, we'll be using a <code>.</code>(dot) followed by a normal word, but now also followed by a <code>:</code>(colon) -- exactly like with normal <em>labels</em>, as we've seen above.</p>
+<p class="pt-1 pb-1">Here's an example:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">split .every: 2 &quot;hello world&quot;
+
+; =&gt; [&quot;he&quot; &quot;ll&quot; &quot;ow&quot; &quot;or&quot; &quot;ld&quot;]
+</code></pre>
+<p class="pt-1 pb-1"><h2  id="precedence-and-evaluation" class="title is-2 is-spaced mt-6">Precedence and Evaluation</h2></p>
+<p class="pt-1 pb-1">The easiest way to explain precedence rules in Arturo is pretty much like it happened with our introduction: there are <u>no precedence rules</u> whatsoever.</p>
+<p class="pt-1 pb-1">So, in an expression like <code>2 * 3 + 4</code>, if you'd normally expect to get a result of <code>10</code>, you would be wrong: the result is <code>14</code>.</p>
+<p class="pt-1 pb-1">But in order to understand why, you'd have to understand how evaluation in Arturo works.</p>
+<p class="pt-1 pb-1"><h3  id="the-right-to-left-rule" class="title is-3 is-spaced mt-6">The right-to-left rule</h3></p>
+<p class="pt-1 pb-1">The main expression evaluation order of Arturo is <em>right-to-left</em>. But with a tiny asterisk: Your code <em>will</em> be evaluated from left-to-right, it is the expressions passed to your function calls that will be evaluated from right-to-left.</p>
+<p class="pt-1 pb-1">Let's take a very simple example:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print add 1 2 
+print &quot;Done&quot;
+</code></pre>
+<p class="pt-1 pb-1">As you would expect, the first function to be executed is the first <code>print</code> function and then the second one. Nothing new here.</p>
+<p class="pt-1 pb-1">Now let's take the first <code>print</code>. How is it working?</p>
+<p class="pt-1 pb-1">Let's see:</p>
+<div class="content"><ul>
+<li>First, the value <code>2 </code> is pushed onto the stack</li>
+<li>Then, we push the value <code>1	</code></li>
+<li>Then, we execute the function <code>add</code>: it pops two values from the stack, adds them up, and pushes the result (<code>3</code>) back onto the stack</li>
+<li>Finally, we execute the function <code>print</code>: it pops the top value from the stack (<code>3</code>) and prints it.</li>
+</ul></div>
+<p class="pt-1 pb-1">Then, execution would move on and... <code>print &quot;Done.&quot;</code></p>
+<p class="pt-1 pb-1">What you have to understand here is that evaluation within an expression will <em>always</em> be done from right to left, irrespective of what you might know from other languages or math operator precedence. In Arturo, you have to learn <u>no precedence rules</u> at all. You'll just have to remember to always calculate from right to left.</p>
+<p class="pt-1 pb-1">Re-visiting our previous, seemingly paradoxical, example:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">2 * 3 + 4
+</code></pre>
+<div class="content mt-3 mb-3"><blockquote>
+<p class="pt-1 pb-1">💡 Remember: our <code>+</code> and <code>*</code> operators are nothing but simple <em>infix</em> aliases to the functions <code>add</code> and <code>mul</code> respectively -- nothing more!</p>
+</blockquote></div>
+<p class="pt-1 pb-1">This is as if we had written (moving the operators in front):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">* 2 + 3 4
+</code></pre>
+<p class="pt-1 pb-1">which practically means: FIRST add 3 and 4 and THEN take the result and multiply it with 2.</p>
+<p class="pt-1 pb-1">If this is not what intended, then the right way in Arturo would be, either:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">4 + 2 * 3
+</code></pre>
+<p class="pt-1 pb-1">or (giving precedence to the multiplication, artificially, using parentheses):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">(2 * 3) + 4
+</code></pre>
+<p class="pt-1 pb-1"><h2  id="syntactic-sugar" class="title is-2 is-spaced mt-6">Syntactic sugar</h2></p>
+<p class="pt-1 pb-1">As you have hopefully seen so far, Arturo is rather simple, with fairly simple rules and that's pretty much it.</p>
+<p class="pt-1 pb-1">However, we also have some &quot;syntactic sugar&quot;: a fancy way of referring to syntactic constructs, so that something more complicated will look better, or easier-to-write, or more readable.</p>
+<p class="pt-1 pb-1">Here you'll learn about some useful examples of <em>syntactic sugar</em> supported in Arturo.</p>
+<p class="pt-1 pb-1"><h3  id="right-arrow-operator" class="title is-3 is-spaced mt-6">Right-arrow operator: <code>-&gt;</code></h3></p>
+<p class="pt-1 pb-1">The function of the right operator is rather straightforward: basically, it wraps the following <em>terminal</em> value inside a block.</p>
+<p class="pt-1 pb-1">Let's take a simple example.</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: -&gt; 2
+</code></pre>
+<p class="pt-1 pb-1">This is 100% equivalent to:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: [2]
+</code></pre>
+<p class="pt-1 pb-1">You can also use the right-arrow operator to make many common constructs far more readable.</p>
+<p class="pt-1 pb-1">For example:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">if x=2 -&gt; print &quot;x was 2!&quot;
+</code></pre>
+<p class="pt-1 pb-1">is the same as writing:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">if x=2 [ print &quot;x was 2!&quot; ]
+</code></pre>
+<p class="pt-1 pb-1">As you can see, it can be pretty handy. Just remember that <code>-&gt;</code> can wrap only <u>one</u> <em>terminal</em> value.</p>
+<p class="pt-1 pb-1">For example:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: -&gt; 2 3
+</code></pre>
+<p class="pt-1 pb-1">This doesn't result in <code>x: [2 3]</code> but in <code>x: [2] 3</code></p>
+<p class="pt-1 pb-1">Another interesting way of making use of the power of the <em>right-arrow operator</em>:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">loop 1..10 'x -&gt; print x
+</code></pre>
+<p class="pt-1 pb-1">which is the same as writing (only much more elegant):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">loop 1..10 'x [ print x ]
+</code></pre>
+<p class="pt-1 pb-1"><h3  id="fat-right-arrow-operator" class="title is-3 is-spaced mt-6">Fat right-arrow operator: <code>=&gt;</code></h3></p>
+<p class="pt-1 pb-1">The fat right-arrow operator is like a super-charged <em>simple</em> right arrow operator (<code>-&gt;</code>) as described above.</p>
+<p class="pt-1 pb-1">If <code>-&gt;</code> was used to wrap the following terminal into a block, the <code>=&gt;</code> operator does even more.</p>
+<p class="pt-1 pb-1">Let's take this simple example:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: $ =&gt; add
+</code></pre>
+<p class="pt-1 pb-1">This is equivalent to writing:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: $[x,y][add x y]
+</code></pre>
+<p class="pt-1 pb-1">Basically, it reads the following word, and if it's a function, pushes all it's needed arguments as anonymous variables.</p>
+<p class="pt-1 pb-1">The same could work with a block argument, where <code>&amp;</code> can be used as a placeholder for the needed anonymous variables:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">x: $ =&gt; [add &amp; &amp;]
+</code></pre>
+<p class="pt-1 pb-1">(The first <code>&amp;</code> will pop the first argument, and the second the next one - and so on...)</p>
+<hr>
+<p class="pt-1 pb-1">As you can already imagine, this is perfect for easily defining functions or action blocks that take exactly one parameter.</p>
+<p class="pt-1 pb-1">For example, to print an array of the even numbers between 1 and 10:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print select 1..10 'x [even? x]
+</code></pre>
+<p class="pt-1 pb-1">This could be easily written as (using the <code>-&gt;</code> operator):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print select 1..10 'x -&gt; even? x
+</code></pre>
+<p class="pt-1 pb-1">But pushing the limits more, we can also use the <code>=&gt;</code> operator:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print select 1..10 =&gt; even?
+</code></pre>
+<p class="pt-1 pb-1">That's surely much more readable, isn't it?</p>
+<p class="pt-1 pb-1"><h3  id="pipe-operator" class="title is-3 is-spaced mt-6">Pipe operator: <code>|</code></h3></p>
+<div class="content mt-3 mb-3"><blockquote>
+<p class="pt-1 pb-1">⚠️ This is experimental and may still not be stable enough for use in production scripts</p>
+</blockquote></div>
+<p class="pt-1 pb-1">The <em>pipe</em> operator is an easy way of reversing the default <em>prefix</em> notation of function calls and simulating what in OOP languages is called <em>function chain</em>.</p>
+<p class="pt-1 pb-1">Let's take this simple example:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">1..10 | print
+</code></pre>
+<p class="pt-1 pb-1">This equivalent to:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print 1..10
+</code></pre>
+<p class="pt-1 pb-1">Or a bit more elaborate example (using <em>pipes</em> and the <code>=&gt;</code> operator):</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">1..10 | map =&gt; 2*
+      | select =&gt; even?
+      | print
+</code></pre>
+<p class="pt-1 pb-1">which would be like writing:</p>
+<pre class="mt-4 mb-4"><code class="language-arturo">print select map 1..10 'x [2*x] 'x [even? x] 
+</code></pre>
+<hr>
+<p class="pt-1 pb-1"><h2  id="conclusion" class="title is-2 is-spaced mt-6">Conclusion</h2></p>
+<p class="pt-1 pb-1">If you made it till here, then I can assure you: you've already learned more than you need in order to be fully proficient in Arturo.</p>
+<p class="pt-1 pb-1">Just head to the <a href="https://github.com/arturo-lang/arturo/wiki/Library">Library Reference</a> and have a look at the built-in functions (with explanations and example code) and see what's already available for you or - if you want to see the language in action - just browse through the <a href="https://github.com/arturo-lang/arturo/tree/master/examples">examples/</a> folder in the main source repo: there are many many <em>working</em> examples, to get more than just an idea.</p>
+<p class="pt-1 pb-1"><strong>Welcome on board! :)</strong></p>
+
+
+                </div>
+            </div>
+        </main>
+
+<!-- <div class="section">
+    <div class="has-text-centered">
+        <p class="motto">•&nbsp;&nbsp;CODE IS <span onmouseenter="this.innerHTML='ARTURO'" onmouseout="this.innerHTML='ART'">ART</span>&nbsp;&nbsp;•</p>
+    </div>
+</div> -->
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p class="block">
+            <strong>Arturo Programming Language</strong><br>Copyright &copy; 2019-2021 Yanis Zafirópulos<br><br>
+            <small>Website built and generated using Arturo + Webize. Running on <a href="https://m.do.co/c/d9efb97aa0f2" target="_blank">DigitalOcean</a>.</small><br>
+            <small>Source code licensed under <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. Website content licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.</small>
+        </p>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15.0.0/dist/smooth-scroll.polyfills.min.js"></script>
+<script>
+    window.Prism = window.Prism || {};
+    window.Prism.manual = true;
+    window.Prism.languages = window.Prism.languages || {};
+    var _self="undefined"!=typeof window?window:"undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?self:{},Prism=function(e){var t=/\blang(?:uage)?-([\w-]+)\b/i,a=0,n={manual:e.Prism&&e.Prism.manual,disableWorkerMessageHandler:e.Prism&&e.Prism.disableWorkerMessageHandler,util:{encode:function e(t){return t instanceof r?new r(t.type,e(t.content),t.alias):Array.isArray(t)?t.map(e):t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/\u00a0/g," ")},type:function(e){return Object.prototype.toString.call(e).slice(8,-1)},objId:function(e){return e.__id||Object.defineProperty(e,"__id",{value:++a}),e.__id},clone:function e(t,a){var r,s;switch(a=a||{},n.util.type(t)){case"Object":if(s=n.util.objId(t),a[s])return a[s];for(var i in r={},a[s]=r,t)t.hasOwnProperty(i)&&(r[i]=e(t[i],a));return r;case"Array":return s=n.util.objId(t),a[s]?a[s]:(r=[],a[s]=r,t.forEach((function(t,n){r[n]=e(t,a)})),r);default:return t}},getLanguage:function(e){for(;e&&!t.test(e.className);)e=e.parentElement;return e?(e.className.match(t)||[,"none"])[1].toLowerCase():"none"},currentScript:function(){if("undefined"==typeof document)return null;if("currentScript"in document)return document.currentScript;try{throw new Error}catch(n){var e=(/at [^(\r\n]*\((.*):.+:.+\)$/i.exec(n.stack)||[])[1];if(e){var t=document.getElementsByTagName("script");for(var a in t)if(t[a].src==e)return t[a]}return null}},isActive:function(e,t,a){for(var n="no-"+t;e;){var r=e.classList;if(r.contains(t))return!0;if(r.contains(n))return!1;e=e.parentElement}return!!a}},languages:{extend:function(e,t){var a=n.util.clone(n.languages[e]);for(var r in t)a[r]=t[r];return a},insertBefore:function(e,t,a,r){var s=(r=r||n.languages)[e],i={};for(var l in s)if(s.hasOwnProperty(l)){if(l==t)for(var o in a)a.hasOwnProperty(o)&&(i[o]=a[o]);a.hasOwnProperty(l)||(i[l]=s[l])}var u=r[e];return r[e]=i,n.languages.DFS(n.languages,(function(t,a){a===u&&t!=e&&(this[t]=i)})),i},DFS:function e(t,a,r,s){s=s||{};var i=n.util.objId;for(var l in t)if(t.hasOwnProperty(l)){a.call(t,l,t[l],r||l);var o=t[l],u=n.util.type(o);"Object"!==u||s[i(o)]?"Array"!==u||s[i(o)]||(s[i(o)]=!0,e(o,a,l,s)):(s[i(o)]=!0,e(o,a,null,s))}}},plugins:{},highlightAll:function(e,t){n.highlightAllUnder(document,e,t)},highlightAllUnder:function(e,t,a){var r={callback:a,container:e,selector:'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code'};n.hooks.run("before-highlightall",r),r.elements=Array.prototype.slice.apply(r.container.querySelectorAll(r.selector)),n.hooks.run("before-all-elements-highlight",r);for(var s,i=0;s=r.elements[i++];)n.highlightElement(s,!0===t,r.callback)},highlightElement:function(a,r,s){var i=n.util.getLanguage(a),l=n.languages[i];a.className=a.className.replace(t,"").replace(/\s+/g," ")+" language-"+i;var o=a.parentElement;o&&"pre"===o.nodeName.toLowerCase()&&(o.className=o.className.replace(t,"").replace(/\s+/g," ")+" language-"+i);var u={element:a,language:i,grammar:l,code:a.textContent};function g(e){u.highlightedCode=e,n.hooks.run("before-insert",u),u.element.innerHTML=u.highlightedCode,n.hooks.run("after-highlight",u),n.hooks.run("complete",u),s&&s.call(u.element)}if(n.hooks.run("before-sanity-check",u),!u.code)return n.hooks.run("complete",u),void(s&&s.call(u.element));if(n.hooks.run("before-highlight",u),u.grammar)if(r&&e.Worker){var c=new Worker(n.filename);c.onmessage=function(e){g(e.data)},c.postMessage(JSON.stringify({language:u.language,code:u.code,immediateClose:!0}))}else g(n.highlight(u.code,u.grammar,u.language));else g(n.util.encode(u.code))},highlight:function(e,t,a){var s={code:e,grammar:t,language:a};return n.hooks.run("before-tokenize",s),s.tokens=n.tokenize(s.code,s.grammar),n.hooks.run("after-tokenize",s),r.stringify(n.util.encode(s.tokens),s.language)},tokenize:function(e,t){var a=t.rest;if(a){for(var n in a)t[n]=a[n];delete t.rest}var r=new l;return o(r,r.head,e),i(e,r,t,r.head,0),function(e){var t=[],a=e.head.next;for(;a!==e.tail;)t.push(a.value),a=a.next;return t}(r)},hooks:{all:{},add:function(e,t){var a=n.hooks.all;a[e]=a[e]||[],a[e].push(t)},run:function(e,t){var a=n.hooks.all[e];if(a&&a.length)for(var r,s=0;r=a[s++];)r(t)}},Token:r};function r(e,t,a,n){this.type=e,this.content=t,this.alias=a,this.length=0|(n||"").length}function s(e,t,a,n){e.lastIndex=t;var r=e.exec(a);if(r&&n&&r[1]){var s=r[1].length;r.index+=s,r[0]=r[0].slice(s)}return r}function i(e,t,a,l,g,c){for(var d in a)if(a.hasOwnProperty(d)&&a[d]){var p=a[d];p=Array.isArray(p)?p:[p];for(var m=0;m<p.length;++m){if(c&&c.cause==d+","+m)return;var f=p[m],h=f.inside,v=!!f.lookbehind,y=!!f.greedy,b=f.alias;if(y&&!f.pattern.global){var F=f.pattern.toString().match(/[imsuy]*$/)[0];f.pattern=RegExp(f.pattern.source,F+"g")}for(var k=f.pattern||f,x=l.next,w=g;x!==t.tail&&!(c&&w>=c.reach);w+=x.value.length,x=x.next){var A=x.value;if(t.length>e.length)return;if(!(A instanceof r)){var P,$=1;if(y){if(!(P=s(k,w,e,v)))break;var S=P.index,E=P.index+P[0].length,_=w;for(_+=x.value.length;S>=_;)_+=(x=x.next).value.length;if(w=_-=x.value.length,x.value instanceof r)continue;for(var j=x;j!==t.tail&&(_<E||"string"==typeof j.value);j=j.next)$++,_+=j.value.length;$--,A=e.slice(w,_),P.index-=w}else if(!(P=s(k,0,A,v)))continue;S=P.index;var C=P[0],O=A.slice(0,S),z=A.slice(S+C.length),T=w+A.length;c&&T>c.reach&&(c.reach=T);var N=x.prev;O&&(N=o(t,N,O),w+=O.length),u(t,N,$),x=o(t,N,new r(d,h?n.tokenize(C,h):C,b,C)),z&&o(t,x,z),$>1&&i(e,t,a,x.prev,w,{cause:d+","+m,reach:T})}}}}}function l(){var e={value:null,prev:null,next:null},t={value:null,prev:e,next:null};e.next=t,this.head=e,this.tail=t,this.length=0}function o(e,t,a){var n=t.next,r={value:a,prev:t,next:n};return t.next=r,n.prev=r,e.length++,r}function u(e,t,a){for(var n=t.next,r=0;r<a&&n!==e.tail;r++)n=n.next;t.next=n,n.prev=t,e.length-=r}if(e.Prism=n,r.stringify=function e(t,a){if("string"==typeof t)return t;if(Array.isArray(t)){var r="";return t.forEach((function(t){r+=e(t,a)})),r}var s={type:t.type,content:e(t.content,a),tag:"span",classes:["token",t.type],attributes:{},language:a},i=t.alias;i&&(Array.isArray(i)?Array.prototype.push.apply(s.classes,i):s.classes.push(i)),n.hooks.run("wrap",s);var l="";for(var o in s.attributes)l+=" "+o+'="'+(s.attributes[o]||"").replace(/"/g,"&quot;")+'"';return"<"+s.tag+' class="'+s.classes.join(" ")+'"'+l+">"+s.content+"</"+s.tag+">"},!e.document)return e.addEventListener?(n.disableWorkerMessageHandler||e.addEventListener("message",(function(t){var a=JSON.parse(t.data),r=a.language,s=a.code,i=a.immediateClose;e.postMessage(n.highlight(s,n.languages[r],r)),i&&e.close()}),!1),n):n;var g=n.util.currentScript();function c(){n.manual||n.highlightAll()}if(g&&(n.filename=g.src,g.hasAttribute("data-manual")&&(n.manual=!0)),!n.manual){var d=document.readyState;"loading"===d||"interactive"===d&&g&&g.defer?document.addEventListener("DOMContentLoaded",c):window.requestAnimationFrame?window.requestAnimationFrame(c):window.setTimeout(c,16)}return n}(_self);
+    /**
+     * Prism: Lightweight, robust, elegant syntax highlighting
+     *
+     * @license MIT <https://opensource.org/licenses/MIT>
+     * @author Lea Verou <https://lea.verou.me>
+     * @namespace
+     * @public
+     */"undefined"!=typeof module&&module.exports&&(module.exports=Prism),"undefined"!=typeof global&&(global.Prism=Prism),Prism.languages.markup={comment:/<!--[\s\S]*?-->/,prolog:/<\?[\s\S]+?\?>/,doctype:{pattern:/<!DOCTYPE(?:[^>"'[\]]|"[^"]*"|'[^']*')+(?:\[(?:[^<"'\]]|"[^"]*"|'[^']*'|<(?!!--)|<!--(?:[^-]|-(?!->))*-->)*\]\s*)?>/i,greedy:!0,inside:{"internal-subset":{pattern:/(\[)[\s\S]+(?=\]>$)/,lookbehind:!0,greedy:!0,inside:null},string:{pattern:/"[^"]*"|'[^']*'/,greedy:!0},punctuation:/^<!|>$|[[\]]/,"doctype-tag":/^DOCTYPE/,name:/[^\s<>'"]+/}},cdata:/<!\[CDATA\[[\s\S]*?]]>/i,tag:{pattern:/<\/?(?!\d)[^\s>\/=$<%]+(?:\s(?:\s*[^\s>\/=]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s'">=]+(?=[\s>]))|(?=[\s/>])))+)?\s*\/?>/,greedy:!0,inside:{tag:{pattern:/^<\/?[^\s>\/]+/,inside:{punctuation:/^<\/?/,namespace:/^[^\s>\/:]+:/}},"attr-value":{pattern:/=\s*(?:"[^"]*"|'[^']*'|[^\s'">=]+)/,inside:{punctuation:[{pattern:/^=/,alias:"attr-equals"},/"|'/]}},punctuation:/\/?>/,"attr-name":{pattern:/[^\s>\/]+/,inside:{namespace:/^[^\s>\/:]+:/}}}},entity:[{pattern:/&[\da-z]{1,8};/i,alias:"named-entity"},/&#x?[\da-f]{1,8};/i]},Prism.languages.markup.tag.inside["attr-value"].inside.entity=Prism.languages.markup.entity,Prism.languages.markup.doctype.inside["internal-subset"].inside=Prism.languages.markup,Prism.hooks.add("wrap",(function(e){"entity"===e.type&&(e.attributes.title=e.content.replace(/&amp;/,"&"))})),Object.defineProperty(Prism.languages.markup.tag,"addInlined",{value:function(e,t){var a={};a["language-"+t]={pattern:/(^<!\[CDATA\[)[\s\S]+?(?=\]\]>$)/i,lookbehind:!0,inside:Prism.languages[t]},a.cdata=/^<!\[CDATA\[|\]\]>$/i;var n={"included-cdata":{pattern:/<!\[CDATA\[[\s\S]*?\]\]>/i,inside:a}};n["language-"+t]={pattern:/[\s\S]+/,inside:Prism.languages[t]};var r={};r[e]={pattern:RegExp(/(<__[^>]*>)(?:<!\[CDATA\[(?:[^\]]|\](?!\]>))*\]\]>|(?!<!\[CDATA\[)[\s\S])*?(?=<\/__>)/.source.replace(/__/g,(function(){return e})),"i"),lookbehind:!0,greedy:!0,inside:n},Prism.languages.insertBefore("markup","cdata",r)}}),Prism.languages.html=Prism.languages.markup,Prism.languages.mathml=Prism.languages.markup,Prism.languages.svg=Prism.languages.markup,Prism.languages.xml=Prism.languages.extend("markup",{}),Prism.languages.ssml=Prism.languages.xml,Prism.languages.atom=Prism.languages.xml,Prism.languages.rss=Prism.languages.xml,function(e){var t=/("|')(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/;e.languages.css={comment:/\/\*[\s\S]*?\*\//,atrule:{pattern:/@[\w-](?:[^;{\s]|\s+(?![\s{]))*(?:;|(?=\s*\{))/,inside:{rule:/^@[\w-]+/,"selector-function-argument":{pattern:/(\bselector\s*\(\s*(?![\s)]))(?:[^()\s]|\s+(?![\s)])|\((?:[^()]|\([^()]*\))*\))+(?=\s*\))/,lookbehind:!0,alias:"selector"},keyword:{pattern:/(^|[^\w-])(?:and|not|only|or)(?![\w-])/,lookbehind:!0}}},url:{pattern:RegExp("\\burl\\((?:"+t.source+"|"+/(?:[^\\\r\n()"']|\\[\s\S])*/.source+")\\)","i"),greedy:!0,inside:{function:/^url/i,punctuation:/^\(|\)$/,string:{pattern:RegExp("^"+t.source+"$"),alias:"url"}}},selector:RegExp("[^{}\\s](?:[^{};\"'\\s]|\\s+(?![\\s{])|"+t.source+")*(?=\\s*\\{)"),string:{pattern:t,greedy:!0},property:/(?!\s)[-_a-z\xA0-\uFFFF](?:(?!\s)[-\w\xA0-\uFFFF])*(?=\s*:)/i,important:/!important\b/i,function:/[-a-z0-9]+(?=\()/i,punctuation:/[(){};:,]/},e.languages.css.atrule.inside.rest=e.languages.css;var a=e.languages.markup;a&&(a.tag.addInlined("style","css"),e.languages.insertBefore("inside","attr-value",{"style-attr":{pattern:/(^|["'\s])style\s*=\s*(?:"[^"]*"|'[^']*')/i,lookbehind:!0,inside:{"attr-value":{pattern:/=\s*(?:"[^"]*"|'[^']*'|[^\s'">=]+)/,inside:{style:{pattern:/(["'])[\s\S]+(?=["']$)/,lookbehind:!0,alias:"language-css",inside:e.languages.css},punctuation:[{pattern:/^=/,alias:"attr-equals"},/"|'/]}},"attr-name":/^style/i}}},a.tag))}(Prism),Prism.languages.clike={comment:[{pattern:/(^|[^\\])\/\*[\s\S]*?(?:\*\/|$)/,lookbehind:!0,greedy:!0},{pattern:/(^|[^\\:])\/\/.*/,lookbehind:!0,greedy:!0}],string:{pattern:/(["'])(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,greedy:!0},"class-name":{pattern:/(\b(?:class|interface|extends|implements|trait|instanceof|new)\s+|\bcatch\s+\()[\w.\\]+/i,lookbehind:!0,inside:{punctuation:/[.\\]/}},keyword:/\b(?:if|else|while|do|for|return|in|instanceof|function|new|try|throw|catch|finally|null|break|continue)\b/,boolean:/\b(?:true|false)\b/,function:/\w+(?=\()/,number:/\b0x[\da-f]+\b|(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:e[+-]?\d+)?/i,operator:/[<>]=?|[!=]=?=?|--?|\+\+?|&&?|\|\|?|[?*/~^%]/,punctuation:/[{}[\];(),.:]/},Prism.languages.javascript=Prism.languages.extend("clike",{"class-name":[Prism.languages.clike["class-name"],{pattern:/(^|[^$\w\xA0-\uFFFF])(?!\s)[_$A-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\.(?:prototype|constructor))/,lookbehind:!0}],keyword:[{pattern:/((?:^|})\s*)(?:catch|finally)\b/,lookbehind:!0},{pattern:/(^|[^.]|\.\.\.\s*)\b(?:as|async(?=\s*(?:function\b|\(|[$\w\xA0-\uFFFF]|$))|await|break|case|class|const|continue|debugger|default|delete|do|else|enum|export|extends|for|from|function|(?:get|set)(?=\s*[\[$\w\xA0-\uFFFF])|if|implements|import|in|instanceof|interface|let|new|null|of|package|private|protected|public|return|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield)\b/,lookbehind:!0}],function:/#?(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*(?:\.\s*(?:apply|bind|call)\s*)?\()/,number:/\b(?:(?:0[xX](?:[\dA-Fa-f](?:_[\dA-Fa-f])?)+|0[bB](?:[01](?:_[01])?)+|0[oO](?:[0-7](?:_[0-7])?)+)n?|(?:\d(?:_\d)?)+n|NaN|Infinity)\b|(?:\b(?:\d(?:_\d)?)+\.?(?:\d(?:_\d)?)*|\B\.(?:\d(?:_\d)?)+)(?:[Ee][+-]?(?:\d(?:_\d)?)+)?/,operator:/--|\+\+|\*\*=?|=>|&&=?|\|\|=?|[!=]==|<<=?|>>>?=?|[-+*/%&|^!=<>]=?|\.{3}|\?\?=?|\?\.?|[~:]/}),Prism.languages.javascript["class-name"][0].pattern=/(\b(?:class|interface|extends|implements|instanceof|new)\s+)[\w.\\]+/,Prism.languages.insertBefore("javascript","keyword",{regex:{pattern:/((?:^|[^$\w\xA0-\uFFFF."'\])\s]|\b(?:return|yield))\s*)\/(?:\[(?:[^\]\\\r\n]|\\.)*]|\\.|[^/\\\[\r\n])+\/[gimyus]{0,6}(?=(?:\s|\/\*(?:[^*]|\*(?!\/))*\*\/)*(?:$|[\r\n,.;:})\]]|\/\/))/,lookbehind:!0,greedy:!0,inside:{"regex-source":{pattern:/^(\/)[\s\S]+(?=\/[a-z]*$)/,lookbehind:!0,alias:"language-regex",inside:Prism.languages.regex},"regex-flags":/[a-z]+$/,"regex-delimiter":/^\/|\/$/}},"function-variable":{pattern:/#?(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*[=:]\s*(?:async\s*)?(?:\bfunction\b|(?:\((?:[^()]|\([^()]*\))*\)|(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*)\s*=>))/,alias:"function"},parameter:[{pattern:/(function(?:\s+(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*)?\s*\(\s*)(?!\s)(?:[^()\s]|\s+(?![\s)])|\([^()]*\))+(?=\s*\))/,lookbehind:!0,inside:Prism.languages.javascript},{pattern:/(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*=>)/i,inside:Prism.languages.javascript},{pattern:/(\(\s*)(?!\s)(?:[^()\s]|\s+(?![\s)])|\([^()]*\))+(?=\s*\)\s*=>)/,lookbehind:!0,inside:Prism.languages.javascript},{pattern:/((?:\b|\s|^)(?!(?:as|async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|enum|export|extends|finally|for|from|function|get|if|implements|import|in|instanceof|interface|let|new|null|of|package|private|protected|public|return|set|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield)(?![$\w\xA0-\uFFFF]))(?:(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*\s*)\(\s*|\]\s*\(\s*)(?!\s)(?:[^()\s]|\s+(?![\s)])|\([^()]*\))+(?=\s*\)\s*\{)/,lookbehind:!0,inside:Prism.languages.javascript}],constant:/\b[A-Z](?:[A-Z_]|\dx?)*\b/}),Prism.languages.insertBefore("javascript","string",{"template-string":{pattern:/`(?:\\[\s\S]|\${(?:[^{}]|{(?:[^{}]|{[^}]*})*})+}|(?!\${)[^\\`])*`/,greedy:!0,inside:{"template-punctuation":{pattern:/^`|`$/,alias:"string"},interpolation:{pattern:/((?:^|[^\\])(?:\\{2})*)\${(?:[^{}]|{(?:[^{}]|{[^}]*})*})+}/,lookbehind:!0,inside:{"interpolation-punctuation":{pattern:/^\${|}$/,alias:"punctuation"},rest:Prism.languages.javascript}},string:/[\s\S]+/}}}),Prism.languages.markup&&Prism.languages.markup.tag.addInlined("script","javascript"),Prism.languages.js=Prism.languages.javascript,function(){if("undefined"!=typeof self&&self.Prism&&self.document){Element.prototype.matches||(Element.prototype.matches=Element.prototype.msMatchesSelector||Element.prototype.webkitMatchesSelector);var e=window.Prism,t={js:"javascript",py:"python",rb:"ruby",ps1:"powershell",psm1:"powershell",sh:"bash",bat:"batch",h:"c",tex:"latex"},a="data-src-status",n="loading",r="loaded",s='pre[data-src]:not([data-src-status="loaded"]):not([data-src-status="loading"])',i=/\blang(?:uage)?-([\w-]+)\b/i;e.hooks.add("before-highlightall",(function(e){e.selector+=", "+s})),e.hooks.add("before-sanity-check",(function(i){var l=i.element;if(l.matches(s)){i.code="",l.setAttribute(a,n);var u=l.appendChild(document.createElement("CODE"));u.textContent="Loading…";var g=l.getAttribute("data-src"),c=i.language;if("none"===c){var d=(/\.(\w+)$/.exec(g)||[,"none"])[1];c=t[d]||d}o(u,c),o(l,c);var p=e.plugins.autoloader;p&&p.loadLanguages(c);var m=new XMLHttpRequest;m.open("GET",g,!0),m.onreadystatechange=function(){var t,n;4==m.readyState&&(m.status<400&&m.responseText?(l.setAttribute(a,r),u.textContent=m.responseText,e.highlightElement(u)):(l.setAttribute(a,"failed"),m.status>=400?u.textContent=(t=m.status,n=m.statusText,"✖ Error "+t+" while fetching file: "+n):u.textContent="✖ Error: File does not exist or is empty"))},m.send(null)}})),e.plugins.fileHighlight={highlight:function(t){for(var a,n=(t||document).querySelectorAll(s),r=0;a=n[r++];)e.highlightElement(a)}};var l=!1;e.fileHighlight=function(){l||(console.warn("Prism.fileHighlight is deprecated. Use `Prism.plugins.fileHighlight.highlight` instead."),l=!0),e.plugins.fileHighlight.highlight.apply(this,arguments)}}function o(e,t){var a=e.className;a=a.replace(i," ")+" language-"+t,e.className=a.replace(/\s+/g," ").trim()}}();
+    //# sourceMappingURL=/sm/cf645f926d7f3ab451d252499958740691c6b09fc70d703bb996d731009c2c91.map
+    Prism.languages.arturo = {
+            'comment': /;.*/,
+            'character': {
+                pattern: /`.`/,
+                alias: 'function'
+            },
+            'string': {
+                pattern: /"(?:[^"\\]|\\.)*"/,
+                greedy: true,
+                alias: 'function'
+            },
+            'builtin': {
+                pattern: /[\w]+\b\??:/i
+            },
+            'literal': {
+                pattern: /'(?:[\w]+\b\??:?)/,
+                alias: 'boolean'
+            },
+            'type': {
+                pattern: /:(?:[\w]+\b\??:?)/,
+                alias: 'boolean'
+            },
+            'keyword1': {
+                pattern: /(?<!')\b(?:all|and|any|ascii|attr|attribute|attributeLabel|binary|block|boolean|char|contains|database|date|dictionary|empty|equal|even|every|exists|false|floating|function|greater|greaterOrEqual|if|in|inline|integer|is|key|label|leap|less|lessOrEqual|literal|lower|nand|negative|nor|not|notEqual|null|numeric|odd|or|path|pathLabel|positive|prefix|prime|set|some|standalone|string|subset|suffix|superset|symbol|true|try|type|upper|when|whitespace|word|xnor|zero)\?(?!:)/,
+                alias: 'keyword'
+            },
+            'keyword2': {
+                pattern: /(?<!')\b(?:abs|acos|acosh|add|and|append|arg|arity|array|as|asin|asinh|atan|atanh|attr|attrs|average|benchmark|break|builtins1|builtins2|call|capitalize|case|ceil|chop|clear|close|color|combine|continue|cos|cosh|csec|csech|ctan|ctanh|cursor|dec|decode|define|dictionary|difference|digest|div|do|download|drop|dup|else|empty|encode|ensure|env|epsilon|execute|exit|exp|extend|extract|factors|false|fdiv|filter|first|flatten|floor|fold|from|function|gamma|gcd|get|globalize|goto|hash|help|if|inc|index|info|input|insert|inspect|intersection|join|keys|last|let|levenshtein|list|ln|log|loop|lower|mail|map|match|max|median|min|mod|module|mul|nand|neg|new|nor|not|now|null|open|or|pad|panic|path|pause|permutate|pi|pop|pow|prefix|print|prints|product|query|random|range|read|relative|remove|render|repeat|replace|return|reverse|round|sample|sec|sech|select|serve|set|shl|shr|shuffle|sin|sinh|size|slice|sort|split|sqrt|squeeze|stack|strip|sub|suffix|sum|symbols|sys|take|tan|tanh|terminal|to|true|truncate|try|type|union|unique|until|unzip|upper|values|var|webview|while|with|write|xnor|xor|zip)\b(?!:)/,
+                alias: 'keyword'
+            },
+            'sugar': {
+                pattern: /\->|=>|\||\:\:/,
+                alias: 'important'
+            },
+            'symbol': {
+                pattern: /<\:|\-\:|ø|@|#|\+|\||\*|\$|\-|\%|\/|\.\.|\^|~|=|<|>|\\|\-\-\-/
+            }
+        };
+
+        Prism.languages.art = Prism.languages['arturo'];
+        document.addEventListener('DOMContentLoaded', () => {
+            Prism.highlightAll();
+            var scroll = new SmoothScroll('a[href*="#"]',{
+                speed: 200,
+                offset: 90
+            });
+        });
+</script>
+
+<script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15.0.0/dist/smooth-scroll.polyfills.min.js"></script>
+</body>
+</html>

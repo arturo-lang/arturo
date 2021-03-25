@@ -1,0 +1,38 @@
+name: "pow"
+address: "0x10D59B048"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :nothing
+    ]
+alias: "^"
+infix?: true
+description: "calculate the power of given values and return result"
+example: {
+        print pow 2 3      ; 8
+        print 3 ^ 2        ; 9
+        
+        a: 5
+        pow 'a 2           ; a: 25
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :floating
+             :literal
+        ]
+    valueB: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Core/pop"
+         "Dates/now"
+         "Arithmetic/mod"
+         "Arithmetic/mul"
+    ]

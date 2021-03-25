@@ -1,0 +1,47 @@
+name: "call"
+address: "0x10D5B39A8"
+type: :function
+module: "Core"
+returns: [
+        :any
+    ]
+description: "call function with given list of parameters"
+example: {
+        multiply: function [x y][
+            x * y
+        ]
+        
+        call 'multiply [3 5]          ; => 15
+        
+        call $[x][x+2] [5]            ; 7
+    }
+attributes: #[
+    external: #[
+        types: [
+                :string
+            ]
+        description: "path to external library"
+        ]
+    expect: #[
+        types: [
+                :type
+            ]
+        description: "expect given return type"
+        ]
+    ]
+arguments: #[
+    function: [
+            :string
+             :literal
+             :function
+        ]
+    params: [
+            :block
+        ]
+    ]
+related: [
+        "Core/case"
+         "Core/null"
+         "Logic/all?"
+         "Net/mail"
+    ]

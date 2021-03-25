@@ -1,0 +1,32 @@
+name: "xnor"
+address: "0x10D59BA98"
+type: :function
+module: "Binary"
+returns: [
+        :integer
+         :nothing
+    ]
+description: "calculate the binary XNOR for the given values"
+example: {
+        print xnor 2 3     ; -2
+        
+        a: 2
+        xnor 'a 3          ; a: -2
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :literal
+        ]
+    valueB: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/nor"
+         "Binary/xor"
+         "Binary/or"
+         "Binary/and"
+    ]

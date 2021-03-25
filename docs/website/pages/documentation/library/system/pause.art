@@ -1,0 +1,28 @@
+name: "pause"
+address: "0x10D5F07C8"
+type: :function
+module: "System"
+returns: [
+        :nothing
+    ]
+description: "pause program\'s execution~for the given amount of milliseconds"
+example: {
+        print "wait a moment"
+        
+        pause 1000      ; sleeping for one second
+        
+        print "done. let's continue..."
+    }
+attributes: #[
+    ]
+arguments: #[
+    time: [
+            :integer
+        ]
+    ]
+related: [
+        "Core/case"
+         "Logic/false"
+         "Collections/last"
+         "Collections/take"
+    ]

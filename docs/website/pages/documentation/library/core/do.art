@@ -1,0 +1,46 @@
+name: "do"
+address: "0x10D5B3C78"
+type: :function
+module: "Core"
+returns: [
+        :nothing
+         :any
+    ]
+description: "evaluate and execute given code"
+example: {
+        do "print 123"                ; 123
+        
+        do [
+            x: 3
+            print ["x =>" x]          ; x => 3
+        ]
+        
+        do.import [
+            x: 3
+        ]
+        print ["x =>" x]              ; x => 3
+        
+        print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
+        ; 233168
+    }
+attributes: #[
+    import: #[
+        types: [
+                :boolean
+            ]
+        description: "execute at root level"
+        ]
+    ]
+arguments: #[
+    code: [
+            :string
+             :block
+             :bytecode
+        ]
+    ]
+related: [
+        "Converters/to"
+         "Arithmetic/add"
+         "Arithmetic/dec"
+         "Arithmetic/div"
+    ]

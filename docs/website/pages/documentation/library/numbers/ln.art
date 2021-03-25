@@ -1,0 +1,27 @@
+name: "ln"
+address: "0x10D5CBC78"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the natural logarithm of given value"
+example: {
+        print ln 1.0            ; 0.0
+        print ln 0              ; -inf
+        print ln neg 7.0        ; nan
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Arithmetic/inc"
+         "Binary/and"
+         "Binary/or"
+         "Collections/in?"
+    ]

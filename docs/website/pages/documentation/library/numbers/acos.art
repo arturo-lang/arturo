@@ -1,0 +1,27 @@
+name: "acos"
+address: "0x10D5C67C8"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the inverse cosine of given angle"
+example: {
+        print acos 0            ; 1.570796326794897
+        print acos 0.3          ; 1.266103672779499
+        print acos 1.0          ; 0.0
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/asin"
+         "Numbers/acosh"
+         "Numbers/cos"
+         "Converters/as"
+    ]

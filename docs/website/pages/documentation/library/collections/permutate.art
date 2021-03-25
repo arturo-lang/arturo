@@ -1,0 +1,25 @@
+name: "permutate"
+address: "0x10D5A4228"
+type: :function
+module: "Collections"
+returns: [
+        :block
+    ]
+description: "get all possible permutations of the elements in given collection"
+example: {
+        permutate [A B C]
+        ; => [[A B C] [A C B] [C A B] [B A C] [B C A] [C B A]]
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :block
+        ]
+    ]
+related: [
+        "Io/terminal"
+         "Strings/truncate"
+         "Collections/empty"
+         "Collections/empty?"
+    ]

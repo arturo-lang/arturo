@@ -1,0 +1,27 @@
+name: "sech"
+address: "0x10D5D2C78"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the hyperbolic secant of given angle"
+example: {
+        print sech 0            ; 1.0
+        print sech 0.3          ; 0.9566279119002483
+        print sech 1.0          ; 0.6480542736638855
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/csech"
+         "Numbers/sec"
+         "Numbers/sinh"
+         "Numbers/cosh"
+    ]

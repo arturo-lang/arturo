@@ -1,0 +1,14 @@
+name: "false"
+address: "0x10D586E58"
+type: :boolean
+description: "the FALSE boolean constant"
+module: "Logic"
+returns: [
+        :boolean
+    ]
+related: [
+        "Logic/false?"
+         "Logic/true"
+         "Core/case"
+         "Core/else"
+    ]

@@ -1,0 +1,27 @@
+name: "csec"
+address: "0x10D5CB228"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the cosecant of given angle"
+example: {
+        print csec 0            ; inf
+        print csec 0.3          ; 3.383863361824123
+        print csec 1.0          ; 1.188395105778121
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/sec"
+         "Numbers/csech"
+         "Numbers/cos"
+         "Numbers/ctan"
+    ]

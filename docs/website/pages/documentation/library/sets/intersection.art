@@ -1,0 +1,35 @@
+name: "intersection"
+address: "0x10D5E9408"
+type: :function
+module: "Sets"
+returns: [
+        :block
+         :nothing
+    ]
+description: "return the intersection of given sets"
+example: {
+        print intersection [1 2 3 4] [3 4 5 6]
+        ; 3 4
+        
+        a: [1 2 3 4]
+        b: [3 4 5 6]
+        intersection 'a b
+        ; a: [3 4]
+    }
+attributes: #[
+    ]
+arguments: #[
+    setA: [
+            :literal
+             :block
+        ]
+    setB: [
+            :block
+        ]
+    ]
+related: [
+        "Sets/union"
+         "Sets/difference"
+         "Numbers/asin"
+         "Paths/normalize"
+    ]

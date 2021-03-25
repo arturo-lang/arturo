@@ -1,0 +1,28 @@
+name: "ensure"
+address: "0x10B6E3048"
+type: :function
+module: "System"
+returns: [
+        :nothing
+    ]
+description: "assert given condition is true, or exit"
+example: {
+        num: input "give me a positive number"
+        
+        ensure [num > 0]
+        
+        print "good, the number is positive indeed. let's continue..."
+    }
+attributes: #[
+    ]
+arguments: #[
+    condition: [
+            :block
+        ]
+    ]
+related: [
+        "System/shuffle"
+         "System/sort"
+         "System/insert"
+         "System/empty?"
+    ]

@@ -1,0 +1,22 @@
+name: "close"
+address: "0x10D5AB7C8"
+type: :function
+module: "Databases"
+returns: [
+        :nothing
+    ]
+description: "close given database"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    database: [
+            :database
+        ]
+    ]
+related: [
+        "Core/case"
+         "Core/else"
+         "Numbers/cos"
+         "Numbers/cosh"
+    ]

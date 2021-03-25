@@ -1,0 +1,56 @@
+name: "to"
+address: "0x10D5B3228"
+type: :function
+module: "Converters"
+returns: [
+        :any
+    ]
+description: "convert value to given type"
+example: {
+        to :string 2020               ; "2020"
+        to :integer "2020"            ; 2020
+        
+        to :integer `A`               ; 65
+        to :char 65                   ; `A`
+        
+        to :integer 4.3               ; 4
+        to :floating 4                ; 4.0
+        
+        to :boolean 0                 ; false
+        to :boolean 1                 ; true
+        to :boolean "true"            ; true
+        
+        to :literal "symbol"          ; 'symbol
+        to :string 'symbol            ; "symbol"
+        to :string :word              ; "word"
+        
+        to :block "one two three"     ; [one two three]
+        
+        to :string .format:"dd/MM/yy" now
+        ; 22/03/21
+        
+        to :date .format:"dd/MM/yyyy" "22/03/2021"
+        ; 2021-03-22T00:00:00+01:00
+    }
+attributes: #[
+    format: #[
+        types: [
+                :string
+            ]
+        description: "use given format (for dates)"
+        ]
+    ]
+arguments: #[
+    type: [
+            :type
+        ]
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Core/do"
+         "Arithmetic/mod"
+         "Arithmetic/pow"
+         "Binary/nor"
+    ]

@@ -1,0 +1,14 @@
+name: "null"
+address: "0x10D587048"
+type: :null
+description: "the NULL constant"
+module: "Core"
+returns: [
+        :null
+    ]
+related: [
+        "Reflection/null?"
+         "Arithmetic/mul"
+         "Core/call"
+         "Arithmetic/neg"
+    ]

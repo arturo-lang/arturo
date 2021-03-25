@@ -1,0 +1,29 @@
+name: "match"
+address: "0x10D5ED138"
+type: :function
+module: "Strings"
+returns: [
+        :block
+    ]
+description: "get matches within string, using given regular expression"
+example: {
+        print match "hello" "hello"             ; => ["hello"]
+        match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
+        match "this is a string" "[0-9]+"       ; => []
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+        ]
+    regex: [
+            :string
+        ]
+    ]
+related: [
+        "Paths/path"
+         "Collections/max"
+         "Converters/with"
+         "Core/switch"
+    ]

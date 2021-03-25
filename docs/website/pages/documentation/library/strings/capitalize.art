@@ -1,0 +1,29 @@
+name: "capitalize"
+address: "0x10D5E98B8"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "convert given string to capitalized"
+example: {
+        print capitalize "hello World"      ; "Hello World"
+        
+        str: "hello World"
+        capitalize 'str                     ; str: "Hello World"
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Strings/upper"
+         "Strings/lower"
+         "Paths/normalize"
+         "Strings/upper?"
+    ]

@@ -1,0 +1,27 @@
+name: "atanh"
+address: "0x10D5C6C78"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the inverse hyperbolic tangent of given angle"
+example: {
+        print atanh 0           ; 0.0
+        print atanh 0.3         ; 0.3095196042031118
+        print atanh 1.0         ; inf
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/atan"
+         "Numbers/ctanh"
+         "Numbers/tanh"
+         "Numbers/asinh"
+    ]

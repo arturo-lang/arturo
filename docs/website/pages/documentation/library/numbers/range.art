@@ -1,0 +1,36 @@
+name: "range"
+address: "0x10D5D28B8"
+type: :function
+module: "Numbers"
+returns: [
+        :block
+    ]
+alias: ".."
+infix?: true
+description: "get list of numbers in given range (inclusive)"
+example: {
+        print range 1 4       ; 1 2 3 4
+        1..10                 ; [1 2 3 4 5 6 7 8 9 10]
+    }
+attributes: #[
+    step: #[
+        types: [
+                :integer
+            ]
+        description: "use step between range values"
+        ]
+    ]
+arguments: #[
+    from: [
+            :integer
+        ]
+    to: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/and"
+         "Binary/nand"
+         "Collections/take"
+         "Core/case"
+    ]

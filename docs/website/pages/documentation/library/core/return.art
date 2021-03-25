@@ -1,0 +1,32 @@
+name: "return"
+address: "0x10D5B48B8"
+type: :function
+module: "Core"
+returns: [
+        :nothing
+    ]
+description: "return given value from current function"
+example: {
+        f: function [x][ 
+            loop 1..x 'y [ 
+                if y=5 [ return y*2 ] 
+            ] 
+            return x*2
+        ]
+        
+        print f 3         ; 6
+        print f 6         ; 10
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/get"
+         "Collections/remove"
+         "Collections/repeat"
+         "Collections/reverse"
+    ]

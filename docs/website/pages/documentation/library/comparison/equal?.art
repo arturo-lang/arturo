@@ -1,0 +1,32 @@
+name: "equal?"
+address: "0x10D5B0228"
+type: :function
+module: "Comparison"
+returns: [
+        :boolean
+    ]
+alias: "="
+infix?: true
+description: "check if valueA = valueB (equality)"
+example: {
+        equal? 5 2            ; => false
+        equal? 5 6-1          ; => true
+        
+        print 3=3             ; true
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :any
+        ]
+    valueB: [
+            :any
+        ]
+    ]
+related: [
+        "Comparison/less?"
+         "Comparison/notEqual?"
+         "Reflection/null?"
+         "Comparison/greater?"
+    ]

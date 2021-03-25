@@ -1,0 +1,26 @@
+<||= read relative "artdoc/theme/components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+    <||= read relative "artdoc/theme/components/navbar.html" ||>
+        
+        <main>
+            <div class="columns doccols"><!--is-gapless" style="height: 100vh; overflow-y:auto;">-->
+                <!-- SIDEBAR -->
+                <||= read relative "artdoc/theme/components/sidebar.html" ||>
+
+                <!-- MAIN -->
+                <div class="column is-9 p-6 mb-6">
+
+                    <!-- Breadcrumbs -->
+                    <||= read relative "artdoc/theme/components/breadcrumbs.html" ||>
+
+                    <h2 class="title is-2 is-spaced"><||= if? "index" = last pagePath -> "Library" else [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
+
+                    <!-- content -->
+                    <||= replace replace read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>" ||>
+
+                </div>
+            </div>
+        </main>
+
+<||= read relative "artdoc/theme/components/foot.html" ||>

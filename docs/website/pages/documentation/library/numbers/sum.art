@@ -1,0 +1,28 @@
+name: "sum"
+address: "0x10D5BB138"
+type: :function
+module: "Numbers"
+returns: [
+        :integer
+         :floating
+    ]
+description: "calculate the sum of all values in given list"
+example: {
+        print sum [3 4]           ; 7
+        print sum [1 2 4 6]       ; 13
+        
+        print sum 1..10           ; 55
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :block
+        ]
+    ]
+related: [
+        "Arithmetic/sub"
+         "Arithmetic/mul"
+         "Binary/shl"
+         "Binary/shr"
+    ]

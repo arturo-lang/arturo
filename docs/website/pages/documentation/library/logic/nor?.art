@@ -1,0 +1,39 @@
+name: "nor?"
+address: "0x10D5C1D68"
+type: :function
+module: "Logic"
+returns: [
+        :boolean
+    ]
+description: "return the logical NAND for the given values"
+example: {
+        x: 2
+        y: 3
+        
+        if? nor? x>2 y=3 [
+            print "yep, that's correct!"]
+        ]
+        else [
+            print "nope, that's not correct"
+        ]
+        
+        ; nope, that's not correct
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :boolean
+             :block
+        ]
+    valueB: [
+            :boolean
+             :block
+        ]
+    ]
+related: [
+        "Logic/nand?"
+         "Logic/and?"
+         "Binary/nor"
+         "Logic/not?"
+    ]

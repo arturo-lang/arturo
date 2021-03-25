@@ -1,0 +1,14 @@
+name: "sys"
+address: "0x10D5F3A98"
+type: :dictionary
+description: "information about the current system"
+module: "System"
+returns: [
+        :dictionary
+    ]
+related: [
+        "Arithmetic/sub"
+         "Binary/shl"
+         "Binary/shr"
+         "Collections/keys"
+    ]

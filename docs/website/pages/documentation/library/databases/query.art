@@ -1,0 +1,40 @@
+name: "query"
+address: "0x10D5AB8B8"
+type: :function
+module: "Databases"
+returns: [
+        :null
+         :integer
+         :block
+    ]
+description: "execute command or block of commands in given database and get returned rows"
+example: ""
+attributes: #[
+    id: #[
+        types: [
+                :boolean
+            ]
+        description: "return last INSERT id"
+        ]
+    with: #[
+        types: [
+                :block
+            ]
+        description: "use arguments for parametrized statement"
+        ]
+    ]
+arguments: #[
+    database: [
+            :database
+        ]
+    commands: [
+            :string
+             :block
+        ]
+    ]
+related: [
+        "Core/try"
+         "Iterators/every?"
+         "Arithmetic/dec"
+         "Arithmetic/mul"
+    ]

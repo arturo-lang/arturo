@@ -1,0 +1,22 @@
+name: "gcd"
+address: "0x10D5CBB88"
+type: :function
+module: "Numbers"
+returns: [
+        :integer
+    ]
+description: "calculate greatest common divisor for given collection of integers"
+example: "print gcd [48 60 120]         ; 12"
+attributes: #[
+    ]
+arguments: #[
+    numbers: [
+            :block
+        ]
+    ]
+related: [
+        "Arithmetic/add"
+         "Arithmetic/mod"
+         "Binary/and"
+         "Collections/get"
+    ]

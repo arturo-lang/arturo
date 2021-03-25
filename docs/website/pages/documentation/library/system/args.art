@@ -1,0 +1,14 @@
+name: "args"
+address: "0x10D5F05E8"
+type: :dictionary
+description: "a dictionary with all command-line arguments parsed"
+module: "System"
+returns: [
+        :dictionary
+    ]
+related: [
+        "System/arg"
+         "Converters/as"
+         "Numbers/abs"
+         "Numbers/acos"
+    ]

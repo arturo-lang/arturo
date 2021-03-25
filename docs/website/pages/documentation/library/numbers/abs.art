@@ -1,0 +1,26 @@
+name: "abs"
+address: "0x10D5C66D8"
+type: :function
+module: "Numbers"
+returns: [
+        :integer
+    ]
+description: "get the absolute value for given integer"
+example: {
+        print abs 6       ; 6
+        print abs 6-7     ; 1
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Converters/as"
+         "Arithmetic/add"
+         "Binary/and"
+         "Numbers/acos"
+    ]

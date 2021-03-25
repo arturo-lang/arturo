@@ -1,0 +1,31 @@
+name: "factors"
+address: "0x10D5CB8B8"
+type: :function
+module: "Numbers"
+returns: [
+        :block
+    ]
+description: "get list of factors for given integer"
+example: {
+        factors 16          ; => [1 2 4 8 16]
+        factors.prime 16    ; => [2]
+    }
+attributes: #[
+    prime: #[
+        types: [
+                :boolean
+            ]
+        description: "get only prime factors"
+        ]
+    ]
+arguments: #[
+    number: [
+            :integer
+        ]
+    ]
+related: [
+        "Numbers/acos"
+         "Reflection/attrs"
+         "Collections/values"
+         "Dates/after"
+    ]

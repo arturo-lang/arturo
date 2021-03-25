@@ -1,0 +1,25 @@
+name: "integer?"
+address: "0x10D5E1138"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :integer"
+example: {
+        print integer? 123          ; true
+        print integer? "hello"      ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/inline?"
+         "Reflection/date?"
+         "Reflection/literal?"
+         "Reflection/type?"
+    ]

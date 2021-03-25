@@ -1,0 +1,32 @@
+name: "var"
+address: "0x10D5AB138"
+type: :function
+module: "Core"
+returns: [
+        :any
+    ]
+description: "get symbol value by given name"
+example: {
+        a: 2
+        print var 'a            ; a
+        
+        f: function [x][x+2]
+        print f 10              ; 12
+        
+        g: var 'f               
+        print g 10              ; 12
+    }
+attributes: #[
+    ]
+arguments: #[
+    symbol: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Binary/nor"
+         "Binary/or"
+         "Binary/shr"
+         "Binary/xor"
+    ]

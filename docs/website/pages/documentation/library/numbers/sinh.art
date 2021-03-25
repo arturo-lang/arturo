@@ -1,0 +1,27 @@
+name: "sinh"
+address: "0x10D5D2E58"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the hyperbolic sine of given angle"
+example: {
+        print sinh 0            ; 0.0
+        print sinh 0.3          ; 0.3045202934471426
+        print sinh 1.0          ; 1.175201193643801
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/cosh"
+         "Numbers/asinh"
+         "Numbers/sin"
+         "Numbers/sech"
+    ]

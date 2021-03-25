@@ -1,0 +1,199 @@
+a:hover {
+    color: #3273dc;
+    border-bottom:1px solid #3273dc;
+}
+
+nav ul li a {
+    border-bottom: 1px solid white;
+    
+
+    &:hover {
+        color: #3273dc !important;
+    }
+}
+
+.breadcrumb a {
+    padding: 0;
+    margin: 0 .75em;
+}
+a.navbar-item:hover {
+    border-bottom: 0;
+}
+
+.menu ul li a:hover {
+    border-bottom: 0;
+}
+
+.tag:not(body){
+    border-radius: 0 !important;
+    color: #FFF;
+
+    .is-stars   {background-color:#999;}
+    .is-chat    {background-color:#ff7d37;}
+    .is-build   {background-color: #45cb11;}
+}
+
+.screenshot {
+    box-shadow: 0 0 28px 3px #7a347b; 
+    mix-blend-mode: luminosity; 
+    border-radius: 10px;
+
+    &:hover {
+        mix-blend-mode: normal;
+    }
+}
+
+.motto {
+    -webkit-background-clip: text; 
+    -moz-background-clip: text; 
+    background-clip: text; 
+    color: transparent; 
+    text-shadow: rgba(255,255,255,0.5) 0px 3px 3px; 
+    font-size:40px; 
+    font-weight:bold; 
+    color:#DDD;
+    margin-bottom:2em;
+}
+
+.card {
+    box-shadow: none !important;
+    border: 1px solid #E6E6E6;
+}
+
+.footer {
+    padding-bottom: 3em;
+    /*-moz-box-shadow: 0 -5px 6px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 -5px 6px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 -25px 45px #f4f4f4;*/
+    position: relative;
+    border-top: 1px solid #EEE;
+
+    small {
+        color: #BBB;
+
+        a {
+            color: #888;
+
+            &:hover {
+                border-bottom: 1px solid #888;
+            }
+        }
+    }
+}
+
+sup {
+    font-variant: all-small-caps;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.fab {
+    vertical-align: middle;
+}
+
+.first-td {
+    text-align: center !important;
+}
+
+@media screen and (min-width: 1024px){
+.navbar-link.is-active:not(:focus):not(:hover), a.navbar-item.is-active:not(:focus):not(:hover) {
+    background-color:#6a156b; 
+}}
+
+.navbar-item.is-tab.is-active {
+    border-bottom-color:#6a156b;
+    color: white;
+    background-color:#6a156b; 
+}
+
+ .navbar-item.is-tab:focus, .navbar-item.is-tab:hover {
+//     background-color: transparent;
+     border-bottom-color: transparent; /*#6a156b;*/
+}
+
+.navbar-link.is-active, .navbar-link:focus, .navbar-link:focus-within, .navbar-link:hover, a.navbar-item.is-active, a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover {
+    background-color: #fafafa;
+    color: #6a156b;
+}
+
+code { font-family: 'Fira Code', monospace; }
+
+@supports (font-variation-settings: normal) {
+    code { font-family: 'Fira Code VF', monospace; }
+}
+
+.logo-secondary {
+    color: #BBB;
+}
+
+.doccols:last-child{
+    margin-bottom:0;
+}
+
+$sidebarHighlight: #E7E7E7; /*#6a156b;*/
+$sidebarFg: black;
+$sidebarFront: #6a156b;
+$sidebarWhite: white;
+
+.sidebar {
+    background:$sidebarHighlight; 
+    /*background: #F4F4F4; */
+    padding-right:0px !important;
+    /*border-right: 2px solid #6a156b;*/
+    position: sticky;
+    height: calc(100vh - 40px); 
+    overflow-y:auto;
+    top: 40px;
+    bottom: 0;
+
+    // direction:rtl; 
+
+    &::-webkit-scrollbar {
+        width: 2px;
+      }
+       
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      }
+       
+      &::-webkit-scrollbar-thumb {
+        background-color:#6a156b; /* darkgrey;*./
+        outline: 1px solid #6a156b; /*slategrey;*/
+      }
+    
+    //   .menu-list {
+    //     direction:ltr; 
+    //   }
+
+    .menu-list li ul {
+        border-left: 1px solid #bbbbbb;
+    }
+
+    .menu-list a {
+        border-radius: 10px 0px 0px 10px;
+        color: $sidebarFg;
+    
+        &.is-active {
+            /*background-color: #6a156b;*/
+            background-color: $sidebarWhite;
+            color: $sidebarFront;
+            /*font-weight: bold;*/
+        }
+
+        &:not(.is-active):hover {
+            background-color:darken($sidebarHighlight, 2%);
+            color: darken($sidebarFg, 10%);
+        }
+    }
+}
+
+/* .box {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+} */
+
+hr {
+    height: 10px;
+}

@@ -1,0 +1,33 @@
+name: "hypot"
+address: "0x10D5CBD68"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the hypotenuse of a right-angle triangle with given base and height"
+example: {
+        print hypot 3 4
+        ; 5.0
+        
+        print hypot 4.0 5.0
+        ; 6.403124237432849
+    }
+attributes: #[
+    ]
+arguments: #[
+    base: [
+            :integer
+             :floating
+        ]
+    height: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Arithmetic/pow"
+         "Binary/not"
+         "Core/pop"
+         "Io/input"
+    ]
