@@ -67,9 +67,10 @@ sIndex: map select aIndex => [
 ] 'z [
     fun: first map match z {>(.+)<} 'x [replace replace x ">" "" "<" ""]
     ali: get info.get fun 'alias
-    'sTable ++ ("| `" ++ ali ++ "` | " ++ fun ++ " |")
+    ; print ["fun:" fun "ali:" ali]
     ali: replace ali "<" "&lt;"
     ali: replace ali ">" "&gt;"
+    'sTable ++ ("<tr><td><code>" ++ ali ++ "</code></td><td>" ++ fun ++ "</td></tr>")
     replace z ~">|fun|<" ~"><b>|ali|</b><"
 ]
 
