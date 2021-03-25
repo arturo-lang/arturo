@@ -617,8 +617,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                if x.kind==String: push(newString(x.s.replace(re.re(y.s), z.s)))
-                else: InPlace.s = InPlaced.s.replace(re.re(y.s), z.s)
+                if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
+                else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
             else:
                 if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
                 else: InPlace.s = InPlaced.s.replace(y.s, z.s)
