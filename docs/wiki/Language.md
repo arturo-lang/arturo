@@ -110,35 +110,36 @@ Only, this time you're expressing it more like you would in a normal math expres
 
 Some of the existing *aliases* in the built-in dictionary:
 
-|Symbol| Aliased word |
-|--|--|
-| `+` | add |
-| `++` | append |
-| `@` | array |
-| `#` | dictionary |
-| `/` | div |
-| `<=` | dup |
-| `=` | equal? |
-| `//` | fdiv |
-| `$` | function |
-| `\` | get |
-| `>` | greater? |
-| `>=` | greaterOrEqual? |
-| `<` | less? |
-| `=<` | lessOrEqual? |
-| `:` | let |
-| `%` | mod |
-| `*` | mul |
-| `<>` | notEqual? |
-| `^` | pow |
-| `..` | range |
-| `<<` | read |
-| `./` | relative |
-| `--` | remove |
-| `~` | render |
-| `-` | sub |
-| `?` | switch |
-| `>>` | write |
+<table>
+<tr><th>Symbol</th><th>Aliased word</th></tr>
+<tr><td><code>+</code></td><td>add</td></tr>
+<tr><td><code>++</code></td><td>append</td></tr>
+<tr><td><code>@</code></td><td>array</td></tr>
+<tr><td><code>#</code></td><td>dictionary</td></tr>
+<tr><td><code>/</code></td><td>div</td></tr>
+<tr><td><code>&lt;=</code></td><td>dup</td></tr>
+<tr><td><code>=</code></td><td>equal?</td></tr>
+<tr><td><code>//</code></td><td>fdiv</td></tr>
+<tr><td><code>$</code></td><td>function</td></tr>
+<tr><td><code>\</code></td><td>get</td></tr>
+<tr><td><code>&gt;</code></td><td>greater?</td></tr>
+<tr><td><code>&gt;=</code></td><td>greaterOrEqual?</td></tr>
+<tr><td><code>&lt;</code></td><td>less?</td></tr>
+<tr><td><code>=&lt;</code></td><td>lessOrEqual?</td></tr>
+<tr><td><code>:</code></td><td>let</td></tr>
+<tr><td><code>%</code></td><td>mod</td></tr>
+<tr><td><code>*</code></td><td>mul</td></tr>
+<tr><td><code>&lt;&gt;</code></td><td>notEqual?</td></tr>
+<tr><td><code>^</code></td><td>pow</td></tr>
+<tr><td><code>..</code></td><td>range</td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>read</td></tr>
+<tr><td><code>./</code></td><td>relative</td></tr>
+<tr><td><code>--</code></td><td>remove</td></tr>
+<tr><td><code>~</code></td><td>render</td></tr>
+<tr><td><code>-</code></td><td>sub</td></tr>
+<tr><td><code>?</code></td><td>switch</td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>write</td></tr>
+</table>
 
 ### Values
 
