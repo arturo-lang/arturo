@@ -110,9 +110,10 @@ Only, this time you're expressing it more like you would in a normal math expres
 
 Some of the existing *aliases* in the built-in dictionary:
 
-|Symbol| Aliased word |
-|--|--|
+<table>
+<tr><th>Symbol</th><th>Aliased word</th></tr>
 %STABLE%
+</table>
 
 ### Values
 
