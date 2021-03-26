@@ -12,3 +12,4 @@ testme*
 test.js
 old.nim
 tmp*
+.sass-cache
