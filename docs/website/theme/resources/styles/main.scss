@@ -1,3 +1,6 @@
+$main-purple: #6a156b;
+$purple-fade: #580059;
+
 a:hover {
     color: #3273dc;
     border-bottom:1px solid #3273dc;
@@ -24,6 +27,11 @@ nav ul li a {
     }
 }
 
+.hero {
+    background: $purple-fade;
+    background: linear-gradient(0deg, $purple-fade 50%, $main-purple 100%);
+}
+
 .breadcrumb a {
     padding: 0;
     margin: 0 .75em;
@@ -47,7 +55,7 @@ a.navbar-item:hover {
 
 .screenshot {
     // box-shadow: 0 0 28px 3px #7a347b; 
-    mix-blend-mode: lighten; 
+    mix-blend-mode: luminosity; 
     border-radius: 10px;
 
     &:hover {
@@ -89,6 +97,37 @@ a.navbar-item:hover {
     border: 1px solid #E6E6E6;
 }
 
+#at-a-glance {
+    .card-image {
+        font-size:5em;
+    }
+
+    a {
+        .holder {
+            color: #3273dc;
+            border-radius: 5px;
+            border: 1px solid white;;
+        }
+
+        &:hover {
+            .holder {
+                border: 1px solid #3273dc;
+            }
+        }
+    }
+
+    h4.mt-6 {
+        color: #3273dc;
+        margin-top: 0 !important;
+    }
+}
+
+a:hover {
+    .tile.box {
+        border: 1px solid #3273dc;
+    }
+}
+
 .footer {
     padding-bottom: 3em;
     /*-moz-box-shadow: 0 -5px 6px rgba(0, 0, 0, 0.5);
@@ -128,23 +167,23 @@ sup {
 
 @media screen and (min-width: 1024px){
 .navbar-link.is-active:not(:focus):not(:hover), a.navbar-item.is-active:not(:focus):not(:hover) {
-    background-color:#6a156b; 
+    background-color:$main-purple; 
 }}
 
 .navbar-item.is-tab.is-active {
-    border-bottom-color:#6a156b;
+    border-bottom-color:$main-purple;
     color: white;
-    background-color:#6a156b; 
+    background-color:$main-purple; 
 }
 
  .navbar-item.is-tab:focus, .navbar-item.is-tab:hover {
 //     background-color: transparent;
-     border-bottom-color: transparent; /*#6a156b;*/
+     border-bottom-color: transparent; /*$main-purple;*/
 }
 
 .navbar-link.is-active, .navbar-link:focus, .navbar-link:focus-within, .navbar-link:hover, a.navbar-item.is-active, a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover {
     background-color: #fafafa;
-    color: #6a156b;
+    color: $main-purple;
 }
 
 code { font-family: 'Fira Code', monospace; }
@@ -161,16 +200,16 @@ code { font-family: 'Fira Code', monospace; }
     margin-bottom:0;
 }
 
-$sidebarHighlight: #E7E7E7; /*#6a156b;*/
+$sidebarHighlight: #E7E7E7; /*$main-purple;*/
 $sidebarFg: black;
-$sidebarFront: #6a156b;
+$sidebarFront: $main-purple;
 $sidebarWhite: white;
 
 .sidebar {
     background:$sidebarHighlight; 
     /*background: #F4F4F4; */
     padding-right:0px !important;
-    /*border-right: 2px solid #6a156b;*/
+    /*border-right: 2px solid $main-purple;*/
     position: sticky;
     height: calc(100vh - 40px); 
     overflow-y:auto;
@@ -188,8 +227,8 @@ $sidebarWhite: white;
       }
        
       &::-webkit-scrollbar-thumb {
-        background-color:#6a156b; /* darkgrey;*./
-        outline: 1px solid #6a156b; /*slategrey;*/
+        background-color:$main-purple; /* darkgrey;*./
+        outline: 1px solid $main-purple; /*slategrey;*/
       }
     
     //   .menu-list {
@@ -205,7 +244,7 @@ $sidebarWhite: white;
         color: $sidebarFg;
     
         &.is-active {
-            /*background-color: #6a156b;*/
+            /*background-color: $main-purple;*/
             background-color: $sidebarWhite;
             color: $sidebarFront;
             /*font-weight: bold;*/
@@ -225,4 +264,26 @@ $sidebarWhite: white;
 
 hr {
     height: 10px;
+}
+
+a.footer-icon {
+    text-shadow: rgba(255, 255, 255, 0.5) 0px 3px 3px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #DDD;
+
+    &.github:hover {
+        border: 0;
+        color: #302F2F;
+    }
+
+    &.twitter:hover {
+        border: 0;
+        color: #1FA1F1;
+    }
+
+    &.discord:hover {
+        border: 0;
+        color: #6F84D5;
+    }
 }
