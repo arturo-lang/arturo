@@ -1,6 +1,6 @@
 <nav class="navbar is-fixed-top is-boxed" role="navigation" aria-label="main navigation" style="border-bottom:2px solid #6a156b;">
     <div class="navbar-brand">
-        <a class="navbar-item" href="#" style="font-weight:bold; font-size: 1.2em; color: black">
+        <a class="navbar-item" href="<||= linkTo {} ||>/index.html" style="font-weight:bold; font-size: 1.2em; color: black">
             <img src="<||= linkTo {resources/images/logo.png} ||>" width="28" height="28" alt="arturo logo">
             &nbsp;&nbsp;Arturo&nbsp;&nbsp;<span class="logo-secondary">programming language</span>
         </a>
@@ -13,7 +13,7 @@
   
     <div id="navbarMain" class="navbar-menu">
         <div class="navbar-end">
-            <a rel="noopener" target="_blank" class="is-active navbar-item is-tab is-warning" href="https://github.com/arturo-lang/arturo/wiki">
+            <a rel="noopener" target="_blank" class="<||= if contains? pagePath "documentation" [||>is-active<||]||> navbar-item is-tab is-warning" href="<||= linkTo{documentation} ||>/index.html">
                 <!--<i class="far fa-file-alt"></i>&nbsp;&nbsp;-->Documentation
             </a>
             <a rel="noopener" target="_blank" class="navbar-item is-tab " href="https://github.com/arturo-lang/arturo">

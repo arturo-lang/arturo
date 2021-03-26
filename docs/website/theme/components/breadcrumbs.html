@@ -1,6 +1,6 @@
 <nav class="breadcrumb" aria-label="breadcrumbs">
     <ul>
-        <li><a href="<||= linkTo {/} ||>" style="margin-left:0">Home</a></li>
+        <li <||= if all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath][||>class="is-active"<|| ] ||>><a href="<||= linkTo {documentation/} ||>/index.html" style="margin-left:0">Home</a></li>
         <||= 
             pathItems: new []
             pathSoFar: new ["documentation"]

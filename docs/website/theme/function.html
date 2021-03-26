@@ -1,18 +1,18 @@
-<||= read relative "artdoc/theme/components/head.html" ||>
+<||= importPartial "components/head.html" ||>
     <body data-prismjs-copy-timeout="500">
         
-    <||= read relative "artdoc/theme/components/navbar.html" ||>
+    <||= importPartial "components/navbar.html" ||>
         
         <main>
             <div class="columns doccols">
                 <!-- SIDEBAR -->
-                <||= read relative "artdoc/theme/components/sidebar.html" ||>
+                <||= importPartial "components/sidebar.html" ||>
 
                 <!-- MAIN -->
                 <div class="column is-9 p-6 mb-6">
 
                     <!-- Breadcrumbs -->
-                    <||= read relative "artdoc/theme/components/breadcrumbs.html" ||>
+                    <||= importPartial "components/breadcrumbs.html" ||>
                     
                     <!-- Title -->
                     <div class="level mt-6 is-mobile">
@@ -95,4 +95,4 @@
             </div>
         </main>
 
-<||= read relative "artdoc/theme/components/foot.html" ||>
+<||= importPartial "components/foot.html" ||>

@@ -7,6 +7,15 @@ nav ul li a {
   nav ul li a:hover {
     color: #3273dc !important; }
 
+#downloads a {
+  border: 1px solid white;
+  border-radius: 20px;
+  padding: 0.5em; }
+  #downloads a:hover {
+    border: 1px solid #3273dc;
+    border-radius: 20px;
+    padding: 0.5em; }
+
 .breadcrumb a {
   padding: 0;
   margin: 0 .75em; }
@@ -28,11 +37,26 @@ a.navbar-item:hover {
     background-color: #45cb11; }
 
 .screenshot {
-  box-shadow: 0 0 28px 3px #7a347b;
-  mix-blend-mode: luminosity;
+  mix-blend-mode: lighten;
   border-radius: 10px; }
   .screenshot:hover {
     mix-blend-mode: normal; }
+
+.tag:not(body).is-stars {
+  background-color: #999;
+  color: #FFF; }
+
+.tag:not(body).is-license {
+  background-color: #97ca00;
+  color: #FFF; }
+
+.tag:not(body).is-chat {
+  background-color: #ff7d37;
+  color: #FFF; }
+
+.tag:not(body).is-build {
+  background-color: #45cb11;
+  color: #FFF; }
 
 .motto {
   -webkit-background-clip: text;

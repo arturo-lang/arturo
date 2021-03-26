@@ -1,26 +1,36 @@
-<||= read relative "artdoc/theme/components/head.html" ||>
+<||= importPartial "components/head.html" ||>
     <body data-prismjs-copy-timeout="500">
         
-    <||= read relative "artdoc/theme/components/navbar.html" ||>
+    <||= importPartial "components/navbar.html" ||>
         
         <main>
             <div class="columns doccols"><!--is-gapless" style="height: 100vh; overflow-y:auto;">-->
                 <!-- SIDEBAR -->
-                <||= read relative "artdoc/theme/components/sidebar.html" ||>
+                <||= importPartial "components/sidebar.html" ||>
 
                 <!-- MAIN -->
                 <div class="column is-9 p-6 mb-6">
 
                     <!-- Breadcrumbs -->
-                    <||= read relative "artdoc/theme/components/breadcrumbs.html" ||>
+                    <||= importPartial "components/breadcrumbs.html" ||>
 
-                    <h2 class="title is-2 is-spaced"><||= if? "index" = last pagePath -> "Library" else [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
+                    <|| if not? all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath] [ ||>
+                        <h2 class="title is-2 is-spaced"><||= switch contains? pagePath "library" ["Library"] [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
+                    <|| ] ||>
 
-                    <!-- content -->
-                    <||= replace replace read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>" ||>
+                    <|| if? key? W 'modules [ 
+                        moduleList: join.with:"\n" map W\modules 'md [
+                            ~{- [|to :string md|](|linkTo "documentation/library/"++(to :string md)|/index.html)}
+                        ]
+                    ||>
+                        <||= replace replace read.markdown replace replace replace W\content "#" "/" "Library-‣-" "" "%MODULE_LIST%" moduleList "<ul>" "<ulbd>" "</ul>" "</ulbd>" ||>
+                    <|| ] else [ ||>
+                        <!-- content -->
+                        <||= replace replace read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>" ||>
+                    <|| ] ||>
 
                 </div>
             </div>
         </main>
 
-<||= read relative "artdoc/theme/components/foot.html" ||>
+<||= importPartial "components/foot.html" ||>
