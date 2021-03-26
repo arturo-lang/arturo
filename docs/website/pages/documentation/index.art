@@ -1,8 +1,58 @@
+boxes: {:
+<div class="container">
+<div class="tile is-parent">
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="far fa-play-circle"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Getting Started</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="fas fa-laptop-code"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Language</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="fas fa-terminal"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Command Line</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="fas fa-book-open"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Library</span>
+    </p>
+  </footer>
+</div></a>
+
+</div>
+
+</div>
+:}
 content: {!md 
 
 ## Welcome to Arturo!
-
-### The simple, modern and portable<br>interpreted programming language for efficient scripting.
 
 In this section, you will find everything (or - hopefully - mostly everything) you need, in order to get successfully started with Arturo. As you will soon or later realise, Arturo is practically a no-syntax language that is designed to make easier for you, so that you can be productive without bothering too much with the language.
 
@@ -10,13 +60,59 @@ In any case, here's what you can find here...
 
 <h4 class="title is-4 is-spaced mt-6">At a glance</h4>
 
-|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
-|-------------------------|-------------------|-------------------|-------------------------|
-|    **[Getting Started](getting%20started/index.html)**   | **[Language Reference](language/index.html)**   |    **[Command Line](command%20line/index.html)**   |    **[Library Reference](library/index.html)**    |
+<div id="at-a-glance" class="columns">
+
+
+<div class="column is-3">
+  <a href="getting%20started/index.html"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="far fa-play-circle"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h5>Getting Started</h5>
+  </div>
+  </div></a>
+</div>
+
+<div class="column is-3">
+  <a href="language/index.html"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-laptop-code"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h5>Language</h5>
+  </div>
+  </div></a>
+</div>
+
+<div class="column is-3">
+  <a href="command%20line/index.html"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-terminal"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h5>Command Line</h5>
+  </div>
+  </div></a>
+</div>
+
+
+<div class="column is-3">
+  <a href="library/index.html"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-book-open"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h5>Library</h5>
+  </div>
+  </div></a>
+</div>
+
+</div>
 
 <h4 class="title is-4 is-spaced mt-6">Examples</h4>
 
-If you're more of a hands-on coder (trust me, I do undestand you) and want to see the language in action, with real-life code examples, just **[look into the "examples" folder](https://github.com/arturo-lang/arturo/tree/master/examples/)**. There you will find **lots** of *working* (and tested) examples, mostly following questions from Rosetta Code and Project Euler. 
+If you're more of a hands-on coder (trust me, I do undestand you) and want to see the language in action, with real-life code examples, just <a target="_blank" href="https://github.com/arturo-lang/arturo/tree/master/examples/" >look into the "examples" folder</a>. There you will find <i>lots</i> of working (and tested) examples, mostly following questions from Rosetta Code and Project Euler. 
 
 If you want to contribute your own, feel free to submit a pull request and it will be taken care of! ;-)
 }
