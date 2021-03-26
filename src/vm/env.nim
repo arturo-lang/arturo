@@ -42,7 +42,11 @@ proc parseCmdlineValue*(v: string): Value =
     if v=="" or v=="true" or v=="on": return newBoolean(true)
     elif v=="false" or v=="off": return newBoolean(false)
     else:
-        return doParse(v, isFile=false).a[0]
+        try:
+            discard parseFloat(v)
+            return doParse(v, isFile=false).a[0]
+        except:
+            return newString(v)
 
 proc parseCmdlineArguments*(): ValueDict =
     result = initOrderedTable[string,Value]()
