@@ -4,7 +4,7 @@
             Documentation
         </p> -->
         <ul class="menu-list">
-            <li><a href="<||= linkTo {documentation} ||>">Home</a></li>
+            <li><a <||= if all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath] [ ||> class="is-active" <||]||> href="<||= linkTo {documentation} ||>/index.html">Home</a></li>
             <li><a <||= if contains? pagePath "getting started" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Getting Started} ||>/index.html">Getting Started</a></li>
             <li><a <||= if contains? pagePath "language" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Language} ||>/index.html">Language</a></li>
             <li><a <||= if contains? pagePath "command line" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Command Line} ||>/index.html">Command Line</a></li>
