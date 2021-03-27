@@ -35,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "System/delete"
-         "System/read"
-         "System/type"
-         "System/hash"
+        "Files/delete"
+         "Files/read"
+         "Reflection/type"
+         "Crypto/hash"
     ]

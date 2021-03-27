@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "System/shuffle"
-         "System/sort"
-         "System/insert"
-         "System/empty?"
+        "Collections/shuffle"
+         "Collections/sort"
+         "Collections/insert"
+         "Collections/empty?"
     ]

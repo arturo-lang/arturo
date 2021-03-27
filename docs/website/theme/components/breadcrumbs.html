@@ -1,7 +1,7 @@
 <nav class="breadcrumb" aria-label="breadcrumbs">
     <ul>
         <||= if not? all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath][ ||>
-            <li><a href="<||= linkTo {documentation/} ||>/index.html" style="margin-left:0">Home</a></li>
+            <li><a href="<||= linkTo {documentation/} ||>" style="margin-left:0">Home</a></li>
         <|| ] ||>
         <||= 
             pathItems: new []
@@ -21,7 +21,7 @@
                     'pathItems ++ ~{<li class="is-active"><a href="#">|lastItem|</a></li>}
                 ] 
                 else [
-                    'pathItems ++ ~{<li><a href="|linkTo join.path pathSoFar|/index.html">|capitalize pp|</a></li>}
+                    'pathItems ++ ~{<li><a href="|linkTo join.path pathSoFar|">|capitalize pp|</a></li>}
                 ] 
             ]
             join pathItems

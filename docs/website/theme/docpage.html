@@ -20,7 +20,7 @@
 
                     <|| if? key? W 'modules [ 
                         moduleList: join.with:"\n" map W\modules 'md [
-                            ~{- [|to :string md|](|linkTo "documentation/library/"++(to :string md)|/index.html)}
+                            ~{- [|to :string md|](|linkTo "documentation/library/"++(to :string md)|)}
                         ]
                     ||>
                         <||= replace replace read.markdown replace replace replace W\content "#" "/" "Library-‣-" "" "%MODULE_LIST%" moduleList "<ul>" "<ulbd>" "</ul>" "</ulbd>" ||>

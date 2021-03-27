@@ -54,9 +54,9 @@ content: {!md
 
 ## Welcome to Arturo!
 
-In this section, you will find everything (or - hopefully - mostly everything) you need, in order to get successfully started with Arturo. As you will soon or later realise, Arturo is practically a no-syntax language that is designed to make easier for you, so that you can be productive without bothering too much with the language.
+In this section, you will find everything (or - hopefully - mostly everything) you need, in order to get successfully started with Arturo. As you will sooner or later realize, Arturo is practically a no-syntax language, that is: designed to make it easier for you to get the gist of it, so that you can be productive without bothering too much with the language.
 
-In any case, here's what you can find here...
+Here's what you can find here...
 
 <h4 class="title is-4 is-spaced mt-6">At a glance</h4>
 
@@ -64,7 +64,7 @@ In any case, here's what you can find here...
 
 
 <div class="column is-3">
-  <a href="getting%20started/index.html"><div class="holder">
+  <a href="getting-started"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="far fa-play-circle"></i>
   </div>
@@ -75,7 +75,7 @@ In any case, here's what you can find here...
 </div>
 
 <div class="column is-3">
-  <a href="language/index.html"><div class="holder">
+  <a href="language"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-laptop-code"></i>
   </div>
@@ -86,7 +86,7 @@ In any case, here's what you can find here...
 </div>
 
 <div class="column is-3">
-  <a href="command%20line/index.html"><div class="holder">
+  <a href="command-line"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-terminal"></i>
   </div>
@@ -98,7 +98,7 @@ In any case, here's what you can find here...
 
 
 <div class="column is-3">
-  <a href="library/index.html"><div class="holder">
+  <a href="library"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-book-open"></i>
   </div>
@@ -112,7 +112,7 @@ In any case, here's what you can find here...
 
 <h4 class="title is-4 is-spaced mt-6">Examples</h4>
 
-If you're more of a hands-on coder (trust me, I do undestand you) and want to see the language in action, with real-life code examples, just <a target="_blank" href="https://github.com/arturo-lang/arturo/tree/master/examples/" >look into the "examples" folder</a>. There you will find <i>lots</i> of working (and tested) examples, mostly following questions from Rosetta Code and Project Euler. 
+If you're more of a hands-on coder (trust me, I do undestand you) and want to see the language in action, with real-life code examples, just <a target="_blank" rel="noopener" href="https://github.com/arturo-lang/arturo/tree/master/examples/" >look into the "examples" folder</a>. There you will find <i>lots</i> of working (and tested) examples, mostly following questions from Rosetta Code and Project Euler. 
 
 If you want to contribute your own, feel free to submit a pull request and it will be taken care of! ;-)
 }

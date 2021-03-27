@@ -34,11 +34,11 @@ Prism.languages.arturo = {
         alias: 'boolean'
     },
     'keyword1': {
-        pattern: /(?<!')\b(?:all|and|any|ascii|attr|attribute|attributeLabel|binary|block|boolean|char|contains|database|date|dictionary|empty|equal|even|every|exists|false|floating|function|greater|greaterOrEqual|if|in|inline|integer|is|key|label|leap|less|lessOrEqual|literal|lower|nand|negative|nor|not|notEqual|null|numeric|odd|or|path|pathLabel|positive|prefix|prime|set|some|standalone|string|subset|suffix|superset|symbol|true|try|type|upper|when|whitespace|word|xnor|zero)\?(?!:)/,
+        pattern: /(?<!')\b(?:all|and|any|ascii|attr|attribute|attributeLabel|binary|block|boolean|char|contains|database|date|dictionary|empty|equal|even|every|exists|false|floating|function|greater|greaterOrEqual|if|in|inline|integer|is|key|label|leap|less|lessOrEqual|literal|lower|nand|negative|nor|not|notEqual|null|numeric|odd|or|path|pathLabel|positive|prefix|prime|set|some|standalone|string|subset|suffix|superset|symbol|true|try|type|unless|upper|when|whitespace|word|xnor|xor|zero)\?(?!:)/,
         alias: 'keyword'
     },
     'keyword2': {
-        pattern: /(?<!')\b(?:abs|acos|acosh|add|and|append|arg|arity|array|as|asin|asinh|atan|atanh|attr|attrs|average|benchmark|break|builtins1|builtins2|call|capitalize|case|ceil|chop|clear|close|color|combine|continue|cos|cosh|csec|csech|ctan|ctanh|cursor|dec|decode|define|dictionary|difference|digest|div|do|download|drop|dup|else|empty|encode|ensure|env|epsilon|execute|exit|exp|extend|extract|factors|false|fdiv|filter|first|flatten|floor|fold|from|function|gamma|gcd|get|globalize|goto|hash|help|if|inc|index|info|input|insert|inspect|intersection|join|keys|last|let|levenshtein|list|ln|log|loop|lower|mail|map|match|max|median|min|mod|module|mul|nand|neg|new|nor|not|now|null|open|or|pad|panic|path|pause|permutate|pi|pop|pow|prefix|print|prints|product|query|random|range|read|relative|remove|render|repeat|replace|return|reverse|round|sample|sec|sech|select|serve|set|shl|shr|shuffle|sin|sinh|size|slice|sort|split|sqrt|squeeze|stack|strip|sub|suffix|sum|symbols|sys|take|tan|tanh|terminal|to|true|truncate|try|type|union|unique|until|unzip|upper|values|var|webview|while|with|write|xnor|xor|zip)\b(?!:)/,
+        pattern: /(?<!')\b(?:abs|acos|acosh|add|after|and|append|arg|args|arity|array|as|asin|asinh|atan|atanh|attr|attrs|average|before|benchmark|break|builtins1|builtins2|call|capitalize|case|ceil|chop|clear|close|color|combine|continue|copy|cos|cosh|csec|csech|ctan|ctanh|cursor|dec|decode|define|delete|dictionary|difference|digest|div|do|download|drop|dup|else|empty|encode|ensure|env|epsilon|escape|execute|exit|exp|extend|extract|factors|false|fdiv|filter|first|flatten|floor|fold|from|function|gamma|gcd|get|goto|hash|help|hypot|if|inc|indent|index|info|input|insert|inspect|intersection|join|keys|last|let|levenshtein|list|ln|log|loop|lower|mail|map|match|max|median|min|mod|module|mul|nand|neg|new|nor|normalize|not|now|null|open|or|outdent|pad|panic|path|pause|permissions|permutate|pi|pop|pow|powmod|prefix|print|prints|product|query|random|range|read|relative|remove|rename|render|repeat|replace|return|reverse|round|sample|sec|sech|select|serve|set|shl|shr|shuffle|sin|sinh|size|slice|sort|split|sqrt|squeeze|stack|strip|sub|suffix|sum|switch|symbols|symlink|sys|take|tan|tanh|terminal|to|true|truncate|try|type|union|unique|unless|until|unzip|upper|values|var|webview|while|with|write|xnor|xor|zip)\b(?!:)/,
         alias: 'keyword'
     },
     'sugar': {
@@ -79,70 +79,73 @@ function ajaxGet(url,action) {
     xmlhttp.send();
 }
 document.addEventListener('DOMContentLoaded', () => {
-    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-    if ($navbarBurgers.length > 0) {
-        $navbarBurgers.forEach( el => {
-            el.addEventListener('click', () => {
-                const target = el.dataset.target;
-                const $target = document.getElementById(target);
-                el.classList.toggle('is-active');
-                $target.classList.toggle('is-active');
+    var element =  document.getElementById('stargazers');
+    if (typeof(element) != 'undefined' && element != null)
+    {
+        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+        if ($navbarBurgers.length > 0) {
+            $navbarBurgers.forEach( el => {
+                el.addEventListener('click', () => {
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+                });
             });
-        });
-    }
-
-    function setDiv(div,content){
-        document.getElementById(div).innerHTML = content;
-    }
-
-    function setClass(cl,content){
-        var elems=document.getElementsByClassName(cl);
-        for(var i = 0; i < elems.length; i++){
-            elems[i].innerHTML = content;
         }
-    }
 
-    ajaxGet("https://api.github.com/search/repositories?q=arturo-lang/arturo", function (data){
-        var parsed = JSON.parse(data);
-        setDiv("stargazers",parsed.items[0].stargazers_count);
-    });
+        function setDiv(div,content){
+            document.getElementById(div).innerHTML = content;
+        }
 
-    ajaxGet("https://api.github.com/repos/arturo-lang/arturo/releases", function (data){
-        var parsed = JSON.parse(data);
-        console.log(parsed);
-        var releaseVersion = parsed[0].tag_name;
-        setClass("release-version", parsed[0].tag_name);
-        setClass("release-version-mini", `${parsed[0].tag_name}<sup>*MINI</sup>`);
-        setDiv("release-date", parsed[0].published_at);
-
-        ajaxGet(parsed[0].assets_url, function (data){
-            var parsed = JSON.parse(data);
-            var downloadsTable = `<tr><th></th><th></th><th>Version</th><th>Compressed file size</th><th>Link</th></tr>`;
-            var downloadItems = [];
-            for (var i = 0; i < parsed.length; i++){
-                var elem = parsed[i];
-                var logo = "";
-                var os = "";
-                var order = "";
-                var version = releaseVersion;
-                if (elem.name.includes("Linux")) { order = 1; logo = "linux"; os = "Linux"; }
-                else if (elem.name.includes("macOS")) { order = 2; logo = "apple"; os = "macOS"; }
-                else if (elem.name.includes("Windows")) { order = 3; logo = "windows"; os = "Windows"; }
-                else if (elem.name.includes("FreeBSD")) { order = 4; logo = "freebsd"; os = "FreeBSD"; }
-                else if (elem.name.includes("arm-")) { order = 5; logo = "raspberry-pi"; os = "arm"; }
-                else if (elem.name.includes("arm64-")) { order = 6; logo = "raspberry-pi"; os = "arm64"; }
-                if (elem.name.includes("mini")) { version += "<sup>*MINI</sup>"; }
-                var size = ((elem.size)/(1024*1024)).toFixed(2) + " MB";
-                var link = elem.browser_download_url;
-
-                downloadItems.push(`<tr><td order="${order}" class="first-td"><i class="fab fa-2x fa-${logo}"></i></td><td><b>${os}</b></td><td>${version}</td><td>${size}</td><td><a href="${link}"><i class="far fa-arrow-alt-circle-down"></i>&nbsp;&nbsp;Download</a></td></tr>`);
+        function setClass(cl,content){
+            var elems=document.getElementsByClassName(cl);
+            for(var i = 0; i < elems.length; i++){
+                elems[i].innerHTML = content;
             }
-            downloadItems.sort();
-            downloadsTable += downloadItems.join("");
-            downloadsTable += `<tr><td class="first-td"><i class="fab fa-2x fa-docker"></i></td><td><b>Docker</b></td><td class="release-version">${releaseVersion}</td><td>--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
-            setDiv("downloads",downloadsTable);
-            console.log(parsed);
-        });
-    })
+        }
 
+        ajaxGet("https://api.github.com/search/repositories?q=arturo-lang/arturo", function (data){
+            var parsed = JSON.parse(data);
+            setDiv("stargazers",parsed.items[0].stargazers_count);
+        });
+
+        ajaxGet("https://api.github.com/repos/arturo-lang/arturo/releases", function (data){
+            var parsed = JSON.parse(data);
+            console.log(parsed);
+            var releaseVersion = parsed[0].tag_name;
+            setClass("release-version", parsed[0].tag_name);
+            setClass("release-version-mini", `${parsed[0].tag_name}<sup>*MINI</sup>`);
+            setDiv("release-date", parsed[0].published_at);
+
+            ajaxGet(parsed[0].assets_url, function (data){
+                var parsed = JSON.parse(data);
+                var downloadsTable = `<tr><th></th><th></th><th>Version</th><th>Compressed file size</th><th>Link</th></tr>`;
+                var downloadItems = [];
+                for (var i = 0; i < parsed.length; i++){
+                    var elem = parsed[i];
+                    var logo = "";
+                    var os = "";
+                    var order = "";
+                    var version = releaseVersion;
+                    if (elem.name.includes("Linux")) { order = 1; logo = "linux"; os = "Linux"; }
+                    else if (elem.name.includes("macOS")) { order = 2; logo = "apple"; os = "macOS"; }
+                    else if (elem.name.includes("Windows")) { order = 3; logo = "windows"; os = "Windows"; }
+                    else if (elem.name.includes("FreeBSD")) { order = 4; logo = "freebsd"; os = "FreeBSD"; }
+                    else if (elem.name.includes("arm-")) { order = 5; logo = "raspberry-pi"; os = "arm"; }
+                    else if (elem.name.includes("arm64-")) { order = 6; logo = "raspberry-pi"; os = "arm64"; }
+                    if (elem.name.includes("mini")) { version += "<sup>*MINI</sup>"; }
+                    var size = ((elem.size)/(1024*1024)).toFixed(2) + " MB";
+                    var link = elem.browser_download_url;
+
+                    downloadItems.push(`<tr><td order="${order}" class="first-td"><i class="fab fa-2x fa-${logo}"></i></td><td><b>${os}</b></td><td>${version}</td><td>${size}</td><td><a href="${link}"><i class="far fa-arrow-alt-circle-down"></i>&nbsp;&nbsp;Download</a></td></tr>`);
+                }
+                downloadItems.sort();
+                downloadsTable += downloadItems.join("");
+                downloadsTable += `<tr><td class="first-td"><i class="fab fa-2x fa-docker"></i></td><td><b>Docker</b></td><td class="release-version">${releaseVersion}</td><td>--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
+                setDiv("downloads",downloadsTable);
+                console.log(parsed);
+            });
+        })
+    }
 });

@@ -104,22 +104,27 @@ a.navbar-item:hover {
 
     a {
         .holder {
-            color: #3273dc;
+            color: #4a4a4a;
             border-radius: 5px;
-            border: 1px solid white;;
+            border: 1px solid #E6E6E6;
         }
 
         &:hover {
             .holder {
+                color: #3273dc;
                 border: 1px solid #3273dc;
+
+                h5 {
+                    color: #3273dc;
+                }
             }
+
+            // h5 {
+            //     border-bottom: 1px solid #3273dc;
+            // }
         }
     }
 
-    h4.mt-6 {
-        color: #3273dc;
-        margin-top: 0 !important;
-    }
 }
 
 a:hover {
@@ -186,10 +191,14 @@ sup {
     color: $main-purple;
 }
 
-code { font-family: 'Fira Code', monospace; }
+code[class*=language-], pre[class*=language-] { 
+    font-family: 'Fira Code', monospace !important; 
+}
 
 @supports (font-variation-settings: normal) {
-    code { font-family: 'Fira Code VF', monospace; }
+    code[class*=language-], pre[class*=language-] { 
+        font-family: 'Fira Code VF', monospace !important; 
+    }
 }
 
 .logo-secondary {

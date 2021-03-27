@@ -4,19 +4,19 @@
             Documentation
         </p> -->
         <ul class="menu-list">
-            <li><a <||= if all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath] [ ||> class="is-active" <||]||> href="<||= linkTo {documentation} ||>/index.html">Home</a></li>
-            <li><a <||= if contains? pagePath "getting started" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Getting Started} ||>/index.html">Getting Started</a></li>
-            <li><a <||= if contains? pagePath "language" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Language} ||>/index.html">Language</a></li>
-            <li><a <||= if contains? pagePath "command line" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Command Line} ||>/index.html">Command Line</a></li>
-            <li><a <||= if contains? pagePath "library" [||> class="is-active" <||]||> href="<||= linkTo {documentation/Library} ||>/index.html">Library</a>
+            <li><a <||= if all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath] [ ||> class="is-active" <||]||> href="<||= linkTo {documentation} ||>">Home</a></li>
+            <li><a <||= if contains? pagePath "getting started" [||> class="is-active" <||]||> href="<||= linkTo {documentation/getting started} ||>">Getting Started</a></li>
+            <li><a <||= if contains? pagePath "language" [||> class="is-active" <||]||> href="<||= linkTo {documentation/language} ||>">Language</a></li>
+            <li><a <||= if contains? pagePath "command line" [||> class="is-active" <||]||> href="<||= linkTo {documentation/command line} ||>">Command Line</a></li>
+            <li><a <||= if contains? pagePath "library" [||> class="is-active" <||]||> href="<||= linkTo {documentation/library} ||>">Library</a>
                 <||= if contains? pagePath lower "library" [||>
                     <ul style="margin-right:0">
                         <||= loop sort keys pageTree\documentation\library 'modul [ ||>
-                            <li><a <||= if contains? pagePath lower modul [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|}||>/index.html"><||= capitalize modul ||></a></li>
+                            <li><a <||= if contains? pagePath lower modul [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|}||>"><||= capitalize modul ||></a></li>
                             <||= if contains? pagePath lower modul [||>
                                 <ul style="margin-right:0">
                                     <||= loop sort keys get pageTree\documentation\library modul 'fun [ ||>
-                                        <li><a <||= if contains? pagePath lower fun [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|/|fun|} ||>/index.html"><||= fun ||></a></li>
+                                        <li><a <||= if contains? pagePath lower fun [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|/|lower fun|} ||>"><||= fun ||></a></li>
                                     <|| ] ||>
                                 </ul>
                             <|| ] ||>
