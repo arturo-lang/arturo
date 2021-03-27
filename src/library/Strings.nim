@@ -24,7 +24,14 @@ import helpers/colors
 import helpers/strings
 
 import vm/lib
-import vm/[exec, parse]
+import vm/[eval, exec, parse]
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    templateStore = initOrderedTable[string,Translation]()
 
 #=======================================
 # Methods
@@ -551,18 +558,25 @@ proc defineSymbols*() =
                     keepGoing = res.contains(Embeddable)
 
                 while keepGoing:
-                    # make necessary substitutions
-                    res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
-                        ("||>","««"),
-                        ("<||","»»")
-                    ) & "»»"
+                    var evaled: Translation
 
-                    # parse string template
-                    let parsed = doParse(res, isFile=false)
+                    if templateStore.hasKey(res):
+                        evaled = templateStore[res]
+                    else:
+                        let initial = res
+                        # make necessary substitutions
+                        res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                            ("||>","««"),
+                            ("<||","»»")
+                        ) & "»»"
+
+                        # parse string template
+                        evaled = doEval(doParse(res, isFile=false))
+                        templateStore[initial] = evaled
 
                     # execute/reduce ('array') the resulting block
                     let stop = SP
-                    discard execBlock(parsed)
+                    discard execIsolated(evaled)
                     let arr: ValueArray = sTopsFrom(stop)
                     SP = stop
 
