@@ -70,6 +70,9 @@ proc parseData*(
 ): Value =
     newDictionary(evalData(blk))
 
+template execIsolated*(evaled:Translation): untyped =
+    doExec(evaled, 1, NoValues)
+
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
