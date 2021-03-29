@@ -1,0 +1,27 @@
+name: "lower?"
+address: "0x101985048"
+type: :function
+module: "Strings"
+returns: [
+        :boolean
+    ]
+description: "check if given string is lowercase"
+example: {
+        lower? "ñ"               ; => true
+        lower? "X"               ; => false
+        lower? "Hello World"     ; => false
+        lower? "hello"           ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/lower"
+         "Strings/upper?"
+         "Strings/numeric?"
+         "Iterators/some?"
+    ]

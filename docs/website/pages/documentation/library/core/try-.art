@@ -1,0 +1,44 @@
+name: "try?"
+address: "0x10194CC78"
+type: :function
+module: "Core"
+returns: [
+        :boolean
+    ]
+description: "perform action, catch possible errors and return status"
+example: {
+        try? [
+            ; let's try something dangerous
+            print 10 / 0
+        ]
+        else [
+            print "something went terribly wrong..."
+        ]
+        
+        ; something went terribly wrong...
+    }
+attributes: #[
+    import: #[
+        types: [
+                :boolean
+            ]
+        description: "execute at root level"
+        ]
+    verbose: #[
+        types: [
+                :boolean
+            ]
+        description: "print all error messages as usual"
+        ]
+    ]
+arguments: #[
+    action: [
+            :block
+        ]
+    ]
+related: [
+        "Core/try"
+         "Collections/key?"
+         "Logic/any?"
+         "Logic/or?"
+    ]

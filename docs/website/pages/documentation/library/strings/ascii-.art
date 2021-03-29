@@ -1,0 +1,30 @@
+name: "ascii?"
+address: "0x1019817C8"
+type: :function
+module: "Strings"
+returns: [
+        :boolean
+    ]
+description: "check if given character/string is in ASCII"
+example: {
+        ascii? `d`              ; true
+        ascii? `😀`             ; false
+        
+        ascii? "hello world"    ; true
+        ascii? "Hællø wœrld"    ; false
+        ascii? "Γειά!"          ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :char
+             :string
+        ]
+    ]
+related: [
+        "Numbers/asin"
+         "Numbers/asinh"
+         "Collections/in?"
+         "Collections/size"
+    ]

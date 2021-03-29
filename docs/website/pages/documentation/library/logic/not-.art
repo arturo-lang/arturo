@@ -1,0 +1,30 @@
+name: "not?"
+address: "0x101959E58"
+type: :function
+module: "Logic"
+returns: [
+        :boolean
+    ]
+description: "return the logical complement of the given value"
+example: {
+        ready: false
+        if not? ready [
+            print "we're still not ready!"
+        ]
+        
+        ; we're still not ready!
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :boolean
+             :block
+        ]
+    ]
+related: [
+        "Binary/not"
+         "Logic/nor?"
+         "Binary/nor"
+         "Dates/now"
+    ]

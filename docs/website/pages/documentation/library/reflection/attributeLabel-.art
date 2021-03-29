@@ -1,0 +1,25 @@
+name: "attributeLabel?"
+address: "0x101978318"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :attributeLabel"
+example: {
+        attributeLabel? first [.something: x]
+        ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/attribute?"
+         "Reflection/pathLabel?"
+         "Reflection/literal?"
+         "Reflection/database?"
+    ]

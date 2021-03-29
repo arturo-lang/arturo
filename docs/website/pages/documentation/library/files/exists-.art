@@ -1,0 +1,32 @@
+name: "exists?"
+address: "0x101957138"
+type: :function
+module: "Files"
+returns: [
+        :boolean
+    ]
+description: "check if given file exists"
+example: {
+        if exists? "somefile.txt" [ 
+            print "file exists!" 
+        ]
+    }
+attributes: #[
+    directory: #[
+        types: [
+                :boolean
+            ]
+        description: "check for directory"
+        ]
+    ]
+arguments: #[
+    file: [
+            :string
+        ]
+    ]
+related: [
+        "Reflection/attr?"
+         "System/exit"
+         "Numbers/odd?"
+         "Collections/empty?"
+    ]

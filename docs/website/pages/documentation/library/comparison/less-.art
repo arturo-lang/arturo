@@ -1,0 +1,32 @@
+name: "less?"
+address: "0x1019487C8"
+type: :function
+module: "Comparison"
+returns: [
+        :boolean
+    ]
+alias: "<"
+infix?: true
+description: "check if valueA < valueB (less than)"
+example: {
+        less? 5 2             ; => false
+        less? 5 6+1           ; => true
+        
+        print 2<3             ; true
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :any
+        ]
+    valueB: [
+            :any
+        ]
+    ]
+related: [
+        "Core/unless?"
+         "Dates/leap?"
+         "Comparison/greater?"
+         "Collections/key?"
+    ]

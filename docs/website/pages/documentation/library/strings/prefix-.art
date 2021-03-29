@@ -1,0 +1,34 @@
+name: "prefix?"
+address: "0x1019855E8"
+type: :function
+module: "Strings"
+returns: [
+        :boolean
+    ]
+description: "check if string starts with given prefix"
+example: {
+        prefix? "hello" "he"          ; => true
+        prefix? "boom" "he"           ; => false
+    }
+attributes: #[
+    regex: #[
+        types: [
+                :boolean
+            ]
+        description: "match against a regular expression"
+        ]
+    ]
+arguments: #[
+    string: [
+            :string
+        ]
+    prefix: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/prefix"
+         "Strings/suffix?"
+         "Converters/define"
+         "Io/print"
+    ]

@@ -1,0 +1,25 @@
+name: "binary?"
+address: "0x1019785E8"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :binary"
+example: {
+        binary? to :binary "string"
+        ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/char?"
+         "Reflection/block?"
+         "Reflection/date?"
+         "Reflection/dictionary?"
+    ]

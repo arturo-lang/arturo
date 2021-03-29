@@ -1,0 +1,25 @@
+name: "label?"
+address: "0x1019794F8"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :label"
+example: {
+        label? first [something: x]
+        ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/date?"
+         "Reflection/literal?"
+         "Reflection/null?"
+         "Reflection/path?"
+    ]
