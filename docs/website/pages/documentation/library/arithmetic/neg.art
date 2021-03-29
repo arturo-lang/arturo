@@ -1,5 +1,5 @@
 name: "neg"
-address: "0x10D587E58"
+address: "0x102BAAE58"
 type: :function
 module: "Arithmetic"
 returns: [

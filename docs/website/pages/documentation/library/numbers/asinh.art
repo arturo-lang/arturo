@@ -1,5 +1,5 @@
 name: "asinh"
-address: "0x10D5C6A98"
+address: "0x102BEBA98"
 type: :function
 module: "Numbers"
 returns: [

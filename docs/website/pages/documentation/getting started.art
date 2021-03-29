@@ -36,9 +36,10 @@ If you want to have the latest cutting-edge version of Arturo, the easiest and m
 
 * [Nim compiler](https://nim-lang.org/)<br> 
   if you don't have it installed, all it'll take is 2 simple commands:
-
-      curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-      choosenim stable
+  ```bash 
+   curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+   choosenim stable
+  ```
 * Dependencies (*only* for Linux):
    - gtk+-3.0 *(\* needed only for non-mini builds)*
    - webkit2gtk-4.0 *(\* needed only for non-mini builds)*
@@ -76,11 +77,15 @@ Although it won't cut it, if what you need is the real-deal compiler for everyda
 
 Just use the existing docker image:
 
-	docker run -it arturolang/arturo
+```bash
+docker run -it arturolang/arturo
+```
 
 or (to run a specific local script):
 
-	docker run -it -v $(pwd):/home arturolang/arturo <yourscript.art>
+```bash
+docker run -it -v $(pwd):/home arturolang/arturo <yourscript.art>
+```
 
 <h4 id="homebrew">Homebrew</h4>
 

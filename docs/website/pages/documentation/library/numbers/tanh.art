@@ -1,5 +1,5 @@
 name: "tanh"
-address: "0x10D5BB318"
+address: "0x102BE0318"
 type: :function
 module: "Numbers"
 returns: [

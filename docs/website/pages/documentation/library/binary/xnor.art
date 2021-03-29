@@ -1,5 +1,5 @@
 name: "xnor"
-address: "0x10D59BA98"
+address: "0x102BC0A98"
 type: :function
 module: "Binary"
 returns: [

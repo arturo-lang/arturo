@@ -1,5 +1,5 @@
 name: "fdiv"
-address: "0x10D5877C8"
+address: "0x102BAA7C8"
 type: :function
 module: "Arithmetic"
 returns: [

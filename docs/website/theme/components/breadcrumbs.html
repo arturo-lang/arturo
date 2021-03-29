@@ -1,6 +1,6 @@
 <nav class="breadcrumb" aria-label="breadcrumbs">
     <ul>
-        <||= if not? all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath][ ||>
+        <||= if not? all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath][ ||>
             <li><a href="<||= linkTo {documentation/} ||>" style="margin-left:0">Home</a></li>
         <|| ] ||>
         <||= 
@@ -8,7 +8,7 @@
             pathSoFar: new ["documentation"]
 
             pageRoute: new pagePath 
-            if "index" = last pageRoute -> pageRoute: chop pageRoute
+            if "_index" = last pageRoute -> pageRoute: chop pageRoute
             pageRoute: slice pageRoute 1 (size pageRoute)-1
             loop.with:'pidx pageRoute 'pp [
                 'pathSoFar ++ pp

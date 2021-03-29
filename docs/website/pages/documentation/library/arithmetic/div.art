@@ -1,5 +1,5 @@
 name: "div"
-address: "0x10D5875E8"
+address: "0x102BAA5E8"
 type: :function
 module: "Arithmetic"
 returns: [

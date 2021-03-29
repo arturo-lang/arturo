@@ -1,5 +1,5 @@
 name: "powmod"
-address: "0x10D5D24F8"
+address: "0x102BF74F8"
 type: :function
 module: "Numbers"
 returns: [

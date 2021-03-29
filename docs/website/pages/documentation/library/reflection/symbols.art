@@ -1,5 +1,5 @@
 name: "symbols"
-address: "0x10D5E1E58"
+address: "0x102C06E58"
 type: :function
 module: "Reflection"
 returns: [

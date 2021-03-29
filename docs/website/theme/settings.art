@@ -13,10 +13,10 @@ postprocess: #.raw [
 ]
 
 routes: #.raw [
-    {documentation/index\.art}              "docpage.html"
-    {library/index\.art}                    "docpage.html"
-    {library/[^/]+/index\.art}              "module_index.html"
+    {documentation/_index\.art}             "docpage.html"
+    {library/_index\.art}                   "docpage.html"
+    {library/[^/]+/_index\.art}             "module_index.html"
     {library/[^/]+/[^/]+\.art}              "function.html"
-    {index\.art}                            "index.html"
+    {_index\.art}                           "index.html"
     {documentation/[^/]+\.art}              "docpage.html"
 ]
