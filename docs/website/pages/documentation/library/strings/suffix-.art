@@ -1,0 +1,34 @@
+name: "suffix?"
+address: "0x101985B88"
+type: :function
+module: "Strings"
+returns: [
+        :boolean
+    ]
+description: "check if string ends with given suffix"
+example: {
+        suffix? "hello" "lo"          ; => true
+        suffix? "boom" "lo"           ; => false
+    }
+attributes: #[
+    regex: #[
+        types: [
+                :boolean
+            ]
+        description: "match against a regular expression"
+        ]
+    ]
+arguments: #[
+    string: [
+            :string
+        ]
+    suffix: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/suffix"
+         "Strings/prefix?"
+         "Collections/shuffle"
+         "Sets/subset?"
+    ]

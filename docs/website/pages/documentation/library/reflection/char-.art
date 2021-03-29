@@ -1,0 +1,25 @@
+name: "char?"
+address: "0x1019788B8"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :char"
+example: {
+        print char? `a`         ; true
+        print char? 123         ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/binary?"
+         "Reflection/date?"
+         "Reflection/null?"
+         "Reflection/path?"
+    ]

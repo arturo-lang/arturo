@@ -1,0 +1,27 @@
+name: "upper?"
+address: "0x101985E58"
+type: :function
+module: "Strings"
+returns: [
+        :boolean
+    ]
+description: "check if given string is uppercase"
+example: {
+        upper? "Ñ"               ; => true
+        upper? "x"               ; => false
+        upper? "Hello World"     ; => false
+        upper? "HELLO"           ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/lower?"
+         "Strings/upper"
+         "Strings/numeric?"
+         "Collections/append"
+    ]

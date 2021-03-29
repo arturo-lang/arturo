@@ -1,0 +1,27 @@
+name: "even?"
+address: "0x1019636D8"
+type: :function
+module: "Numbers"
+returns: [
+        :boolean
+    ]
+description: "check if given number is even"
+example: {
+        even? 4           ; => true
+        even? 3           ; => false
+        
+        print select 1..10 => even?       ; 2 4 6 8 10
+    }
+attributes: #[
+    ]
+arguments: #[
+    number: [
+            :integer
+        ]
+    ]
+related: [
+        "Numbers/odd?"
+         "Numbers/zero?"
+         "Core/when?"
+         "Iterators/every?"
+    ]

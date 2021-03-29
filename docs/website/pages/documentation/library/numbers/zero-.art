@@ -1,0 +1,26 @@
+name: "zero?"
+address: "0x101953408"
+type: :function
+module: "Numbers"
+returns: [
+        :boolean
+    ]
+description: "check if given number is zero"
+example: {
+        zero? 5-5         ; => true
+        zero? 4           ; => false
+    }
+attributes: #[
+    ]
+arguments: #[
+    number: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Numbers/even?"
+         "Numbers/odd?"
+         "Numbers/negative?"
+         "Numbers/positive?"
+    ]

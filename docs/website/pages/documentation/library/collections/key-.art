@@ -1,0 +1,36 @@
+name: "key?"
+address: "0x101936C78"
+type: :function
+module: "Collections"
+returns: [
+        :boolean
+    ]
+description: "check if dictionary contains given key"
+example: {
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+        
+        key? user 'age            ; => false
+        if key? user 'name [
+            print ["Hello" user\name]
+        ]
+        ; Hello John
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :dictionary
+        ]
+    key: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/keys"
+         "Core/try?"
+         "Logic/any?"
+         "Reflection/set?"
+    ]

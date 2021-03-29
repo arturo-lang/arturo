@@ -1,0 +1,27 @@
+name: "boolean?"
+address: "0x1019787C8"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :boolean"
+example: {
+        print boolean? true         ; true
+        print boolean? false        ; true
+        print boolean? 1=1          ; true
+        print boolena? 123          ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/block?"
+         "Reflection/binary?"
+         "Reflection/char?"
+         "Reflection/date?"
+    ]

@@ -1,0 +1,28 @@
+name: "set?"
+address: "0x1019799A8"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "check if given variable is defined"
+example: {
+        boom: 12
+        print set? 'boom          ; true
+        
+        print set? 'zoom          ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    symbol: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Collections/set"
+         "Collections/get"
+         "Collections/key?"
+         "Core/let"
+    ]
