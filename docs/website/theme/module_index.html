@@ -35,7 +35,7 @@
                     <div class="content">
                         <ul class="list">
                             <|| constantCount: 0 ||>
-                            <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace fff "_" "" ||>
+                            <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
                                 <|| if? :function = type var fun [ ||>
                                     <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
                                 <|| ] else [ constantCount: constantCount + 1 ] ||>
@@ -48,7 +48,7 @@
                         
                         <div class="content">
                             <ul class="list">
-                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fun [||>
+                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
                                     <|| if :function <> type var fun [ ||>
                                         <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
                                     <|| ] ||>

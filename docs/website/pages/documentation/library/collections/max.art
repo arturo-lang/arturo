@@ -1,5 +1,5 @@
 name: "max"
-address: "0x102BC9048"
+address: "0x10193C048"
 type: :function
 module: "Collections"
 returns: [

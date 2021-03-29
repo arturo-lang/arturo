@@ -1,5 +1,5 @@
 name: "strip"
-address: "0x102C129A8"
+address: "0x1019859A8"
 type: :function
 module: "Strings"
 returns: [

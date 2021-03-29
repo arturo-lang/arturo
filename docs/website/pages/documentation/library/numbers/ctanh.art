@@ -1,5 +1,5 @@
 name: "ctanh"
-address: "0x102BF04F8"
+address: "0x1019634F8"
 type: :function
 module: "Numbers"
 returns: [

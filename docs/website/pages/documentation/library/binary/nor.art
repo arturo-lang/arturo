@@ -1,5 +1,5 @@
 name: "nor"
-address: "0x102BC05E8"
+address: "0x1019335E8"
 type: :function
 module: "Binary"
 returns: [

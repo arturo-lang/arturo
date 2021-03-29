@@ -1,5 +1,5 @@
 name: "squeeze"
-address: "0x102BC9D68"
+address: "0x10193CD68"
 type: :function
 module: "Collections"
 returns: [

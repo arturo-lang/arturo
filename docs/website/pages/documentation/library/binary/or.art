@@ -1,5 +1,5 @@
 name: "or"
-address: "0x102BC07C8"
+address: "0x1019337C8"
 type: :function
 module: "Binary"
 returns: [

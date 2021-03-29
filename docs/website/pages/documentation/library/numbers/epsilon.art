@@ -1,5 +1,5 @@
 name: "epsilon"
-address: "0x102BF05E8"
+address: "0x1019635E8"
 type: :floating
 description: "the constant e, Euler\'s number"
 module: "Numbers"

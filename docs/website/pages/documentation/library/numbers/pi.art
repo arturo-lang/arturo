@@ -1,5 +1,5 @@
 name: "pi"
-address: "0x102BF7318"
+address: "0x10196A318"
 type: :floating
 description: "the number \xCF\x80, mathematical constant"
 module: "Numbers"

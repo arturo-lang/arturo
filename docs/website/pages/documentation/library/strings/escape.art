@@ -1,5 +1,5 @@
 name: "escape"
-address: "0x102C0EA98"
+address: "0x101981A98"
 type: :function
 module: "Strings"
 returns: [

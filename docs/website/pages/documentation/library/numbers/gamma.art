@@ -1,5 +1,5 @@
 name: "gamma"
-address: "0x102BF0A98"
+address: "0x101963A98"
 type: :function
 module: "Numbers"
 returns: [

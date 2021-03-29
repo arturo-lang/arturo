@@ -1,5 +1,5 @@
 name: "dec"
-address: "0x102BAA4F8"
+address: "0x10191D4F8"
 type: :function
 module: "Arithmetic"
 returns: [
