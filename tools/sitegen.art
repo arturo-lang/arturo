@@ -47,7 +47,7 @@ unique 'modules
 inspect functions
 
 loop functions [modl,lst][
-    target: relative join.path @["../../webize/artdoc/pages/documentation/library" lower modl]
+    target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
     ; write.directory target ø
 
     loop lst 'func [
@@ -69,6 +69,6 @@ loop functions [modl,lst][
         inspect funcInfo
         
         print join.path @[target ~"|func|.art"]
-        write join.path @[target ~"|func|.art"] funcInfo
+        write join.path @[target ~{|replace func "?" "-"|.art}] funcInfo
     ]
 ]
