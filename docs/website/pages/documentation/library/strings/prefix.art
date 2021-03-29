@@ -1,5 +1,5 @@
 name: "prefix"
-address: "0x102C124F8"
+address: "0x1019854F8"
 type: :function
 module: "Strings"
 returns: [

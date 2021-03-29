@@ -1,5 +1,5 @@
 name: "size"
-address: "0x102BC99A8"
+address: "0x10193C9A8"
 type: :function
 module: "Collections"
 returns: [

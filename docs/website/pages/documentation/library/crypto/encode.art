@@ -1,5 +1,5 @@
 name: "encode"
-address: "0x102BD04F8"
+address: "0x1019434F8"
 type: :function
 module: "Crypto"
 returns: [

@@ -1,5 +1,5 @@
 name: "sec"
-address: "0x102BF7B88"
+address: "0x10196AB88"
 type: :function
 module: "Numbers"
 returns: [

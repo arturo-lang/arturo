@@ -1,5 +1,5 @@
 name: "levenshtein"
-address: "0x102C0ED68"
+address: "0x101981D68"
 type: :function
 module: "Strings"
 returns: [

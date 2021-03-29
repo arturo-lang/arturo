@@ -1,5 +1,5 @@
 name: "product"
-address: "0x102BF76D8"
+address: "0x10196A6D8"
 type: :function
 module: "Numbers"
 returns: [

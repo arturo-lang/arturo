@@ -1,5 +1,5 @@
 name: "true"
-address: "0x102BA9D68"
+address: "0x10191CD68"
 type: :boolean
 description: "the TRUE boolean constant"
 module: "Logic"

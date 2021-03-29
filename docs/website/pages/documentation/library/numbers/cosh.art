@@ -1,5 +1,5 @@
 name: "cosh"
-address: "0x102BF0138"
+address: "0x101963138"
 type: :function
 module: "Numbers"
 returns: [

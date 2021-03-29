@@ -16,7 +16,7 @@
                     lastItem: pp 
                     if not? and? [contains? pageRoute "library"]
                                  [and? [0 =< pidx-2]["library"= pageRoute \ (pidx-2)]] [
-                        lastItem: join.with:" " map split.words lastItem 'x -> capitalize x
+                        lastItem: join.with:" " map split.words lastItem 'x -> capitalize replace x "-" "?"
                     ]
                     'pathItems ++ ~{<li class="is-active"><a href="#">|lastItem|</a></li>}
                 ] 

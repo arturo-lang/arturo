@@ -1,5 +1,5 @@
 name: "random"
-address: "0x102BF77C8"
+address: "0x10196A7C8"
 type: :function
 module: "Numbers"
 returns: [
