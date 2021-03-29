@@ -1,5 +1,5 @@
 name: "hypot"
-address: "0x10D5CBD68"
+address: "0x102BF0D68"
 type: :function
 module: "Numbers"
 returns: [

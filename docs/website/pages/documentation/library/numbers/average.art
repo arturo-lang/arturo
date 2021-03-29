@@ -1,5 +1,5 @@
 name: "average"
-address: "0x10D5C6D68"
+address: "0x102BEBD68"
 type: :function
 module: "Numbers"
 returns: [

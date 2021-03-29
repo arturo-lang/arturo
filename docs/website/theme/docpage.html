@@ -14,7 +14,7 @@
                     <!-- Breadcrumbs -->
                     <||= importPartial "components/breadcrumbs.html" ||>
 
-                    <|| if not? all? @[2 = size pagePath "documentation" = first pagePath  "index" = last pagePath] [ ||>
+                    <|| if not? all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] [ ||>
                         <h2 class="title is-2 is-spaced"><||= switch contains? pagePath "library" ["Library"] [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
                     <|| ] ||>
 

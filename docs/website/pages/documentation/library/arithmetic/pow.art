@@ -1,5 +1,5 @@
 name: "pow"
-address: "0x10D59B048"
+address: "0x102BC0048"
 type: :function
 module: "Arithmetic"
 returns: [

@@ -1,5 +1,5 @@
 name: "color"
-address: "0x10D5E99A8"
+address: "0x102C0E9A8"
 type: :function
 module: "Strings"
 returns: [

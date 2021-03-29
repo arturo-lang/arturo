@@ -1,5 +1,5 @@
 name: "insert"
-address: "0x10D59EB88"
+address: "0x102BC3B88"
 type: :function
 module: "Collections"
 returns: [

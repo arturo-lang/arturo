@@ -1,5 +1,5 @@
 name: "chop"
-address: "0x10D59BE58"
+address: "0x102BC0E58"
 type: :function
 module: "Collections"
 returns: [
