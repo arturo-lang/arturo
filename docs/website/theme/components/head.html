@@ -7,7 +7,8 @@
         <meta name="keywords" content="arturo,programming language,scripting language,rebol,red programming language,portable programming language">
         <link rel="canonical" href="<||= getCanonical "https://arturo-lang.io/" ||>">
         <title>Arturo programming language</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bulma@0.9.1/css/bulma.min.css,npm/prismjs@1.23.0/themes/prism-okaidia.min.css,gh/tonsky/FiraCode@4/distr/fira_code.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bulma@0.9.1/css/bulma.min.css,npm/prismjs@1.23.0/themes/prism-okaidia.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@4/distr/fira_code.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.12/clipboard.min.js"></script>
         <script src="https://kit.fontawesome.com/8bfb2fe6f4.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="<||= linkTo {resources/styles/main.css} ||>">
@@ -51,16 +52,31 @@
 
                 #terminal {
                     padding: 1em;
+                    background: black;
+                    font-family: 'Fira Code', monospace !important;
                 }
 
                 #runbutton {
-                    position: absolute;
+                    /* position: absolute;
                     top: calc(50vh - 70px);
                     left: calc(50vw - 70px);
                     width: 100px;
                     z-index: 5;
                     background: darkorange;
                     height: 100px;
+                    border-radius: 50px;
+                    color: white;
+                    font-size: 3em;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center; */
+                    position: absolute;
+                    top: calc(50vh - 10px);
+                    left: calc(50vw - 50px);
+                    width: 60px;
+                    z-index: 5;
+                    background: darkorange;
+                    height: 60px;
                     border-radius: 50px;
                     color: white;
                     font-size: 3em;
