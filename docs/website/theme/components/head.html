@@ -3,10 +3,30 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="Arturo programming language: Simple, expressive & portable programming language for efficient scripting">
-        <meta name="keywords" content="arturo,programming language,scripting language,rebol,red programming language,portable programming language">
         <link rel="canonical" href="<||= getCanonical "https://arturo-lang.io/" ||>">
-        <title>Arturo programming language</title>
+        <|| 
+            filtered: pagePath -- "_index"
+            docum: ""
+            if? and? 4 = size filtered
+                     contains? filtered "library" [
+                filtered: (map chop filtered => capitalize) ++ replace last filtered "-" "?"
+                docum: W\description
+            ]
+            else [
+                filtered: map filtered => capitalize
+                docum: join.with:" - " filtered
+            ]
+        ||>
+
+        <||= switch 0 = size filtered [ ||>
+            <title>Arturo programming language</title>
+            <meta name="description" content="Arturo programming language: Simple, expressive & portable programming language for efficient scripting">
+            <meta name="keywords" content="arturo,programming language,scripting language,rebol,red,portable programming language">
+        <||] [ ||>
+            <title><|| join.with:" | " filtered ||> - Arturo programming language</title>
+            <meta name="description" content="<|| docum ||> - Arturo programming">
+            <meta name="keywords" content="arturo,programming language,scripting language,<|| join.with:"," filtered ||>">
+        <||] ||>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bulma@0.9.1/css/bulma.min.css,npm/prismjs@1.23.0/themes/prism-okaidia.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@4/distr/fira_code.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.12/clipboard.min.js"></script>
