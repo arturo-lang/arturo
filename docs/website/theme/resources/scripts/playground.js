@@ -8,7 +8,7 @@ function execCode() {
 
     function (result) {
         var got = JSON.parse(result);
-        document.getElementById("terminal").innerHTML = got.text;
+        document.getElementById("terminal_output").innerHTML = got.text;
         window.snippetId = got.code;
         window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `https://arturo-lang.io/playground/?${got.code}`);
     }, {
