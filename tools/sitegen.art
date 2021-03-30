@@ -57,6 +57,7 @@ loop functions [modl,lst][
             arguments: funcInfo\args
             funcInfo: remove.key funcInfo 'attrs
             funcInfo: remove.key funcInfo 'args
+            funcInfo: remove.key funcInfo 'address
             funcInfo\attributes: attributes
             funcInfo\arguments: arguments
         ]
