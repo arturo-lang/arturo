@@ -1,7 +1,13 @@
 postprocess: #.raw [
-    {!html <h2([^>]*)>}         {!html <h2 $1 class="title is-2 is-spaced mt-6">}
-    {!html <h3([^>]*)>}         {!html <h3 $1 class="title is-3 is-spaced mt-6">}
-    {!html <h4([^>]*)>}         {!html <h4 $1 class="subtitle is-4 is-spaced mt-6">}
+    {!html <h2 id="([^"]*)">}   {!html <h2 id="$1" class="title is-2 is-spaced mt-6">}
+    {!html <h2>}                {!html <h2 class="title is-2 is-spaced mt-6">}
+
+    {!html <h3 id="([^"]*)">}   {!html <h3 id="$1" class="title is-3 is-spaced mt-6">}
+    {!html <h3>}                {!html <h3 class="title is-3 is-spaced mt-6">}
+
+    {!html <h4 id="([^"]*)">}   {!html <h4 id="$1" class="subtitle is-4 is-spaced mt-6">}
+    {!html <h4>}                {!html <h4 class="subtitle is-4 is-spaced mt-6">}
+
     {!html <p>}                 {!html <p class="pt-1 pb-1">}
     {!html <table>}             {!html <table class="table is-stripped is-hoverable is-fullwidth">}
     {!html <ulbd>}              {!html <div class="content"><ul>}
