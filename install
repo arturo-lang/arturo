@@ -109,6 +109,9 @@ do
                           -d:NOUNZIP \
                           -d:NOWEBVIEW";;
 
+        safe)
+            FLAGS="$FLAGS -d:SAFE";;
+
         noasciidecode)  FLAGS="$FLAGS -d:NOASCIIDECODE";;
         noexamples)     FLAGS="$FLAGS -d:NOEXAMPLES";;
         nogmp)          FLAGS="$FLAGS -d:NOGMP";;

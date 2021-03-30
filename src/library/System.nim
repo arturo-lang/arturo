@@ -58,6 +58,7 @@ proc defineSymbols*() =
             ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("env")
             var res: ValueDict = initOrderedTable[string,Value]()
 
             for k,v in envPairs():
@@ -82,6 +83,7 @@ proc defineSymbols*() =
             ; => ["tests" "var" "data.txt"]
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
             let res = execCmdEx(x.s)
             
             push(newString(res[0]))

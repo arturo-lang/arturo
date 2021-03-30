@@ -193,6 +193,11 @@ proc RuntimeError_ErrorLoadingLibrarySymbol*(path: string, sym: string) =
           "error loading symbol: " & sym & ";" & 
           "from library: " & path
 
+proc RuntimeError_OperationNotPermitted*(operation: string) =
+    panic RuntimeError,
+          "unsafe operation: " & operation & ";" &
+          "not permitted in online playground"
+
 # TODO Re-establish stack trace debug reports
 
 # var
