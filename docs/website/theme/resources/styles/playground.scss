@@ -1,0 +1,36 @@
+#editor {
+    height: calc(100vh - 40px);
+    font-family: 'Fira Code', monospace !important;
+    text-shadow: 0 1px rgba(0,0,0,.3);
+    line-height: 1.5;
+    font-size: 1em;
+    -webkit-font-smoothing: auto;
+}
+
+#terminal {
+    padding: 1em;
+    background: black;
+    font-family: 'Fira Code', monospace !important;
+    white-space: pre;
+    color: white;
+}
+
+#runbutton {
+    position: absolute;
+    top: calc((100vh - 52px)/2 + 22px);
+    left: calc(50vw - 90px);
+    width: 60px;
+    z-index: 5;
+    background: darkorange;
+    height: 60px;
+    border-radius: 50px;
+    color: white;
+    font-size: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        box-shadow: 0px 0px 6px 3px grey;
+    }
+}

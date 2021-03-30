@@ -38,58 +38,6 @@
         gtag('config', 'G-RPNR7PTFYH');
         </script>
         <||= if contains? pagePath "playground" [||>
-            <style>
-                #editor {
-                    height: calc(100vh - 40px);
-                    /* width: 100%;
-                    margin-top: 14px; */
-                    font-family: 'Fira Code', monospace !important;
-                    text-shadow: 0 1px rgba(0,0,0,.3);
-                    line-height: 1.5;
-                    font-size: 1em;
-                    -webkit-font-smoothing: auto;
-                }
-
-                #terminal {
-                    padding: 1em;
-                    background: black;
-                    font-family: 'Fira Code', monospace !important;
-                    white-space: pre;
-                    color: white;
-                }
-
-                #runbutton {
-                    /* position: absolute;
-                    top: calc(50vh - 70px);
-                    left: calc(50vw - 70px);
-                    width: 100px;
-                    z-index: 5;
-                    background: darkorange;
-                    height: 100px;
-                    border-radius: 50px;
-                    color: white;
-                    font-size: 3em;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center; */
-                    position: absolute;
-                    top: calc(50vh - 10px);
-                    left: calc(50vw - 36px);
-                    width: 60px;
-                    z-index: 5;
-                    background: darkorange;
-                    height: 60px;
-                    border-radius: 50px;
-                    color: white;
-                    font-size: 3em;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                #runbutton:hover {
-                    box-shadow: 0px 0px 6px 3px grey;
-                }
-            </style>
+            <link rel="stylesheet" href="<||= linkTo {resources/styles/playground.css} ||>">
         <|| ] ||>
     </head>
