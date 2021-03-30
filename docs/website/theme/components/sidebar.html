@@ -12,7 +12,7 @@
                 <||= if contains? pagePath lower "library" [||>
                     <ul style="margin-right:0">
                         <||= loop sort keys pageTree\documentation\library 'modul [ ||>
-                            <li><a <||= if contains? pagePath lower modul [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|}||>"><||= capitalize modul ||></a></li>
+                            <li><a <||= if contains? pagePath lower modul [||>class="is-active" <||]||> href="<||= linkTo ~{documentation/library/|modul|}||>"><||= capitalize modul ||></a>
                             <||= if contains? pagePath lower modul [||>
                                 <ul style="margin-right:0">
                                     <||= loop sort keys get pageTree\documentation\library modul 'fun [ ||>
@@ -20,6 +20,7 @@
                                     <|| ] ||>
                                 </ul>
                             <|| ] ||>
+                            </li>
                         <|| ] ||>
                     </ul>
                 <|| ] ||>
