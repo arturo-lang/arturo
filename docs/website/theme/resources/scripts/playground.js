@@ -1,5 +1,6 @@
 window.snippetId = "";
 var editor = ace.edit("editor");
+document.getElementsByTagName("textarea")[0].setAttribute("aria-label", "code snippet");
 editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/arturo"); 
 
