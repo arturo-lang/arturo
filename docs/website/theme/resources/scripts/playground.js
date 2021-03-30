@@ -11,6 +11,8 @@ function execCode() {
         if (editor.getValue()!=previousCode) {
             previousCode = editor.getValue();
             runbutton.innerHTML = `<i class='fas fa-circle-notch fa-spin'></i>`;
+            runbutton.classList.add('working');
+            document.getElementById("terminal_output").innerHTML = "";
             ajaxPost("https://arturo-lang.io/exec.php",
 
             function (result) {
@@ -20,6 +22,7 @@ function execCode() {
                 window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `https://arturo-lang.io/playground/?${got.code}`);
 
                 runbutton.innerHTML = `<i class='far fa-play-circle'></i>`;
+                runbutton.classList.remove('working');
             }, {
                 c:editor.getValue(),
                 i:window.snippetId
@@ -34,6 +37,8 @@ function getSnippet(cd) {
     function (result) {
         var got = JSON.parse(result);
         editor.setValue(got.text);
+        editor.clearSelection();
+        editor.gotoLine(1);
     }, {
         i:cd
     });

@@ -30,7 +30,11 @@
     align-items: center;
     justify-content: center;
 
-    &:hover {
+    .working {
+        background: gray;
+    }
+
+    &:not(.working):hover {
         box-shadow: 0px 0px 6px 3px grey;
     }
 }
