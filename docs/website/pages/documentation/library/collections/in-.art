@@ -1,5 +1,4 @@
 name: "in?"
-address: "0x1019369A8"
 type: :function
 module: "Collections"
 returns: [

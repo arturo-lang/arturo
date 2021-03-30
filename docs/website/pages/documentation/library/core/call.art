@@ -1,5 +1,4 @@
 name: "call"
-address: "0x10194B9A8"
 type: :function
 module: "Core"
 returns: [

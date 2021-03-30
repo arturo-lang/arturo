@@ -1,5 +1,4 @@
 name: "abs"
-address: "0x10195E6D8"
 type: :function
 module: "Numbers"
 returns: [

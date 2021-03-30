@@ -1,5 +1,4 @@
 name: "return"
-address: "0x10194C8B8"
 type: :function
 module: "Core"
 returns: [

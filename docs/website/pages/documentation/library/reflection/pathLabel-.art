@@ -1,5 +1,4 @@
 name: "pathLabel?"
-address: "0x1019798B8"
 type: :function
 module: "Reflection"
 returns: [

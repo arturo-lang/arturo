@@ -1,5 +1,4 @@
 name: "normalize"
-address: "0x1019537C8"
 type: :function
 module: "Paths"
 returns: [

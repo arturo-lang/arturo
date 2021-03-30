@@ -1,5 +1,4 @@
 name: "info"
-address: "0x101978D68"
 type: :function
 module: "Reflection"
 returns: [

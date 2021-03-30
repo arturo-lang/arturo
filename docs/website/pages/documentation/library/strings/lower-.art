@@ -1,5 +1,4 @@
 name: "lower?"
-address: "0x101985048"
 type: :function
 module: "Strings"
 returns: [

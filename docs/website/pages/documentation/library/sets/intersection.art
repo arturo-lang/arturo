@@ -1,5 +1,4 @@
 name: "intersection"
-address: "0x101981408"
 type: :function
 module: "Sets"
 returns: [

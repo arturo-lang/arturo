@@ -1,5 +1,4 @@
 name: "remove"
-address: "0x10193C318"
 type: :function
 module: "Collections"
 returns: [

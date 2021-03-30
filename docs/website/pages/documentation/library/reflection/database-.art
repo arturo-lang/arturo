@@ -1,5 +1,4 @@
 name: "database?"
-address: "0x1019789A8"
 type: :function
 module: "Reflection"
 returns: [

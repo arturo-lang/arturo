@@ -1,5 +1,4 @@
 name: "function"
-address: "0x10194B5E8"
 type: :function
 module: "Converters"
 returns: [

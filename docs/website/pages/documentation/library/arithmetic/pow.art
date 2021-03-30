@@ -1,5 +1,4 @@
 name: "pow"
-address: "0x101933048"
 type: :function
 module: "Arithmetic"
 returns: [

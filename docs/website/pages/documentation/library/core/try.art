@@ -1,5 +1,4 @@
 name: "try"
-address: "0x10194CB88"
 type: :function
 module: "Core"
 returns: [

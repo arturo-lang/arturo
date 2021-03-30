@@ -1,5 +1,4 @@
 name: "standalone?"
-address: "0x101979B88"
 type: :function
 module: "Reflection"
 returns: [

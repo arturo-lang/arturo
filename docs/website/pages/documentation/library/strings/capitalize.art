@@ -1,5 +1,4 @@
 name: "capitalize"
-address: "0x1019818B8"
 type: :function
 module: "Strings"
 returns: [

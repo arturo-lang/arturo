@@ -20,7 +20,7 @@
             <a rel="noopener" class="<||= if contains? pagePath "documentation" [||>is-active<||]||> navbar-item is-tab is-warning" href="<||= linkTo{documentation} ||>">
                 <!--<i class="far fa-file-alt"></i>&nbsp;&nbsp;-->Documentation
             </a>
-            <a rel="noopener" target="_blank" class="navbar-item is-tab " href="https://github.com/arturo-lang/arturo">
+            <a rel="noopener" target="_blank" class="<||= if contains? pagePath "playground" [||>is-active<||]||> navbar-item is-tab " href="https://github.com/arturo-lang/arturo">
                 <!--<i class="fab fa-github"></i>&nbsp;&nbsp;-->Source
             </a>
             <!-- <div class="is-divider-vertical"></div>

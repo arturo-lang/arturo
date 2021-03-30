@@ -1,5 +1,4 @@
 name: "every?"
-address: "0x101959228"
 type: :function
 module: "Iterators"
 returns: [

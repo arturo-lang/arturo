@@ -296,3 +296,46 @@ a.footer-icon {
         color: #6F84D5;
     }
 }
+
+pre[class*=language-] {
+    position: relative;
+    overflow: visible;
+
+    .copy {
+        content: "copy";
+        padding: 2px 10px 0;
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(-10px, -90%);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        color: #CCC;
+        background: #272822;
+        cursor: pointer;
+        /*transition: all 200ms ease;*/
+        font-size: 0.8em;
+
+        &:hover {
+            color: #fff;
+            text-align: center;
+            -webkit-animation: glow 1s ease-in-out infinite alternate;
+            -moz-animation: glow 1s ease-in-out infinite alternate;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+    }
+
+    &:hover .copy {
+        transform: translate(-10px, -100%);
+    }
+}
+
+
+@-webkit-keyframes glow {
+    from {
+    text-shadow: 0 0 10px #fff;
+    }
+    to {
+    text-shadow: 0 0 20px #fff;
+    }
+}

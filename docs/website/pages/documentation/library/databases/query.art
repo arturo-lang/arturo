@@ -1,5 +1,4 @@
 name: "query"
-address: "0x1019438B8"
 type: :function
 module: "Databases"
 returns: [

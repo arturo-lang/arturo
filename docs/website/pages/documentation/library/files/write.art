@@ -1,5 +1,4 @@
 name: "write"
-address: "0x1019577C8"
 type: :function
 module: "Files"
 returns: [

@@ -1,5 +1,4 @@
 name: "pad"
-address: "0x101985408"
 type: :function
 module: "Strings"
 returns: [

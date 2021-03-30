@@ -1,5 +1,4 @@
 name: "now"
-address: "0x101943D68"
 type: :function
 module: "Dates"
 returns: [

@@ -1,5 +1,4 @@
 name: "relative"
-address: "0x101953D68"
 type: :function
 module: "Paths"
 returns: [

@@ -1,5 +1,4 @@
 name: "ascii?"
-address: "0x1019817C8"
 type: :function
 module: "Strings"
 returns: [

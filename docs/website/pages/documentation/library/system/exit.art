@@ -1,5 +1,4 @@
 name: "exit"
-address: "0x1019885E8"
 type: :function
 module: "System"
 returns: [

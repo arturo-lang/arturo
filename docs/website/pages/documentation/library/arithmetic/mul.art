@@ -1,5 +1,4 @@
 name: "mul"
-address: "0x10191DC78"
 type: :function
 module: "Arithmetic"
 returns: [

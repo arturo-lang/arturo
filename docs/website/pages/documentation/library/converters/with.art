@@ -1,5 +1,4 @@
 name: "with"
-address: "0x10194B7C8"
 type: :function
 module: "Converters"
 returns: [

@@ -1,5 +1,4 @@
 name: "benchmark"
-address: "0x1019784F8"
 type: :function
 module: "Reflection"
 returns: [

@@ -1,5 +1,4 @@
 name: "arity"
-address: "0x1019538B8"
 type: :function
 module: "Reflection"
 returns: [

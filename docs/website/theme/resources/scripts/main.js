@@ -305,7 +305,44 @@ function ajaxGet(url,action) {
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
 }
+
+function ajaxPost(url,action,data) {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+            if (xmlhttp.status == 200) {
+                action(xmlhttp.responseText);
+            }
+            else if (xmlhttp.status == 400) {
+                //console.log('There was an error 400');
+            }
+            else {
+                //console.log('something else other than 200 was returned');
+            }
+        }
+    };
+
+    xmlhttp.open("POST", url, true);
+	xmlhttp.setRequestHeader('Content-Type', 'application/json');
+    xmlhttp.send(JSON.stringify(data));
+}
 document.addEventListener('DOMContentLoaded', () => {
+	const clipboard = new Clipboard('.copy', {
+		target: (trigger) => {
+		  return trigger.nextElementSibling;
+		}
+	  });
+	  
+	  //
+	  // do stuff when copy is clicked
+	  clipboard.on('success', (event) => {
+		event.trigger.textContent = 'copied!';
+		setTimeout(() => {
+		  event.clearSelection();
+		  event.trigger.textContent = 'copy';
+		}, 2000);
+	  });
+
     var element =  document.getElementById('stargazers');
     if (typeof(element) != 'undefined' && element != null)
     {

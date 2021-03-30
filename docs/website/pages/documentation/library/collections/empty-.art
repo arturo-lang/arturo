@@ -1,5 +1,4 @@
 name: "empty?"
-address: "0x101936408"
 type: :function
 module: "Collections"
 returns: [

@@ -1,5 +1,4 @@
 name: "define"
-address: "0x10194B138"
 type: :function
 module: "Converters"
 returns: [

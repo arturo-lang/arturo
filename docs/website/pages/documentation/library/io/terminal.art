@@ -1,5 +1,4 @@
 name: "terminal"
-address: "0x101959138"
 type: :function
 module: "Io"
 returns: [

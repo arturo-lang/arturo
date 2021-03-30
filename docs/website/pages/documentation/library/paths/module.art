@@ -1,5 +1,4 @@
 name: "module"
-address: "0x1019536D8"
 type: :function
 module: "Paths"
 returns: [

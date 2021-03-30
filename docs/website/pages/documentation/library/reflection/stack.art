@@ -1,5 +1,4 @@
 name: "stack"
-address: "0x101979A98"
 type: :function
 module: "Reflection"
 returns: [

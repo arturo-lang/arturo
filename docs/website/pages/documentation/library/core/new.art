@@ -1,5 +1,4 @@
 name: "new"
-address: "0x10194C5E8"
 type: :function
 module: "Core"
 returns: [

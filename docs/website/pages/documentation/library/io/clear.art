@@ -1,5 +1,4 @@
 name: "clear"
-address: "0x101957A98"
 type: :function
 module: "Io"
 returns: [

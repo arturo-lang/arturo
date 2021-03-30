@@ -1,5 +1,4 @@
 name: "set"
-address: "0x10193C7C8"
 type: :function
 module: "Collections"
 returns: [

@@ -1,5 +1,4 @@
 name: "atan"
-address: "0x10195EB88"
 type: :function
 module: "Numbers"
 returns: [

@@ -1,5 +1,4 @@
 name: "truncate"
-address: "0x101985C78"
 type: :function
 module: "Strings"
 returns: [

@@ -1,5 +1,4 @@
 name: "case"
-address: "0x10194BA98"
 type: :function
 module: "Core"
 returns: [

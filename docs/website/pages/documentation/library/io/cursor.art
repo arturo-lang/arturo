@@ -1,5 +1,4 @@
 name: "cursor"
-address: "0x101957B88"
 type: :function
 module: "Io"
 returns: [

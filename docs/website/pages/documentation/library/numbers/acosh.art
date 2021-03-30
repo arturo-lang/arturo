@@ -1,5 +1,4 @@
 name: "acosh"
-address: "0x10195E8B8"
 type: :function
 module: "Numbers"
 returns: [

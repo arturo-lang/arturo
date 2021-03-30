@@ -1,5 +1,4 @@
 name: "integer?"
-address: "0x101979138"
 type: :function
 module: "Reflection"
 returns: [

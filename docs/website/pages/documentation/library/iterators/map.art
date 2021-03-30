@@ -1,5 +1,4 @@
 name: "map"
-address: "0x1019595E8"
 type: :function
 module: "Iterators"
 returns: [

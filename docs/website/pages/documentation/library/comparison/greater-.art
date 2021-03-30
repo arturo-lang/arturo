@@ -1,5 +1,4 @@
 name: "greater?"
-address: "0x101948408"
 type: :function
 module: "Comparison"
 returns: [

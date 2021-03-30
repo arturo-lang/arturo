@@ -1,5 +1,4 @@
 name: "delete"
-address: "0x101957048"
 type: :function
 module: "Files"
 returns: [

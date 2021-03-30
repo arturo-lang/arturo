@@ -1,5 +1,4 @@
 name: "ceil"
-address: "0x10195EE58"
 type: :function
 module: "Numbers"
 returns: [

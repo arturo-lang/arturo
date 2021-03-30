@@ -18,7 +18,7 @@
                                  [and? [0 =< pidx-2]["library"= pageRoute \ (pidx-2)]] [
                         lastItem: join.with:" " map split.words lastItem 'x -> capitalize replace x "-" "?"
                     ]
-                    'pathItems ++ ~{<li class="is-active"><a href="#">|lastItem|</a></li>}
+                    'pathItems ++ ~{<li class="is-active"><a href="#">|replace lastItem "-" "?"|</a></li>}
                 ] 
                 else [
                     'pathItems ++ ~{<li><a href="|linkTo join.path pathSoFar|">|capitalize pp|</a></li>}
