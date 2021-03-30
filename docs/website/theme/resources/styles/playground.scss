@@ -11,7 +11,7 @@
     padding: 1em;
     background: black;
     font-family: 'Fira Code', monospace !important;
-    white-space: pre;
+    white-space: pre-wrap;
     color: white;
 }
 
@@ -32,5 +32,11 @@
 
     &:hover {
         box-shadow: 0px 0px 6px 3px grey;
+    }
+}
+
+@media (max-width: 768px) {
+    #runbutton {
+        left: calc(100vw - 90px);
     }
 }

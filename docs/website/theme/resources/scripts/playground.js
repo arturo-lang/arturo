@@ -1,20 +1,31 @@
 window.snippetId = "";
 var editor = ace.edit("editor");
 editor.setTheme("ace/theme/monokai");
-editor.getSession().setMode("ace/mode/arturo");    
+editor.getSession().setMode("ace/mode/arturo"); 
+
+window.previousCode = "";
 
 function execCode() {
-    ajaxPost("https://arturo-lang.io/exec.php",
+    var runbutton = document.getElementById('runbutton');
+    if (!runbutton.innerHTML.includes("notch")) {
+        if (editor.getValue()!=previousCode) {
+            previousCode = editor.getValue();
+            runbutton.innerHTML = `<i class='fas fa-circle-notch fa-spin'></i>`;
+            ajaxPost("https://arturo-lang.io/exec.php",
 
-    function (result) {
-        var got = JSON.parse(result);
-        document.getElementById("terminal_output").innerHTML = got.text;
-        window.snippetId = got.code;
-        window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `https://arturo-lang.io/playground/?${got.code}`);
-    }, {
-        c:editor.getValue(),
-        i:window.snippetId
-    });
+            function (result) {
+                var got = JSON.parse(result);
+                document.getElementById("terminal_output").innerHTML = got.text;
+                window.snippetId = got.code;
+                window.history.replaceState({code: got.code, text: got.text}, `${got.code} - Playground | Arturo programming language`, `https://arturo-lang.io/playground/?${got.code}`);
+
+                runbutton.innerHTML = `<i class='far fa-play-circle'></i>`;
+            }, {
+                c:editor.getValue(),
+                i:window.snippetId
+            });
+        }
+    }
 }
 
 function getSnippet(cd) {
