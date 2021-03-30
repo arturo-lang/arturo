@@ -1,5 +1,4 @@
 name: "inline?"
-address: "0x101978E58"
 type: :function
 module: "Reflection"
 returns: [

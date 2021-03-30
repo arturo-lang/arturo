@@ -1,5 +1,4 @@
 name: "mail"
-address: "0x10195E4F8"
 type: :function
 module: "Net"
 returns: [

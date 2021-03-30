@@ -1,5 +1,4 @@
 name: "symlink"
-address: "0x1019575E8"
 type: :function
 module: "Files"
 returns: [

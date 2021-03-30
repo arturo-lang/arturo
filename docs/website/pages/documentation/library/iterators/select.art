@@ -1,5 +1,4 @@
 name: "select"
-address: "0x1019596D8"
 type: :function
 module: "Iterators"
 returns: [

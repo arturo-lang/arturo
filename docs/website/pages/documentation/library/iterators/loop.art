@@ -1,5 +1,4 @@
 name: "loop"
-address: "0x1019594F8"
 type: :function
 module: "Iterators"
 returns: [

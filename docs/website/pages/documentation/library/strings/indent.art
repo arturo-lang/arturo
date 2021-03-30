@@ -1,5 +1,4 @@
 name: "indent"
-address: "0x101981B88"
 type: :function
 module: "Strings"
 returns: [

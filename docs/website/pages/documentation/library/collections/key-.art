@@ -1,5 +1,4 @@
 name: "key?"
-address: "0x101936C78"
 type: :function
 module: "Collections"
 returns: [

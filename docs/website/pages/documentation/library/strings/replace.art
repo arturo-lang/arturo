@@ -1,5 +1,4 @@
 name: "replace"
-address: "0x1019858B8"
 type: :function
 module: "Strings"
 returns: [

@@ -1,0 +1,18 @@
+<||= importPartial "components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+    <||= importPartial "components/navbar.html" ||>
+        
+        <main>
+            <a href="#" onclick="execCode()"><div id="runbutton"><i class="far fa-play-circle" aria-hidden="true"></i></div></a>
+            <div class="columns doccols">
+                <div class="column" style="padding-bottom:0;">
+                    <div id="editor"></div>
+                </div>
+                <div class="column">
+                    <div id="terminal"></div>
+                </div>
+            </div>
+        </main>
+    
+<||= importPartial "components/foot.html" ||>

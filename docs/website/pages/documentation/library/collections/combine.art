@@ -1,5 +1,4 @@
 name: "combine"
-address: "0x101936048"
 type: :function
 module: "Collections"
 returns: [

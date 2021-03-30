@@ -1,5 +1,4 @@
 name: "sqrt"
-address: "0x101953048"
 type: :function
 module: "Numbers"
 returns: [

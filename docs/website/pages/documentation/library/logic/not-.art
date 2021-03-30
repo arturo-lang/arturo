@@ -1,5 +1,4 @@
 name: "not?"
-address: "0x101959E58"
 type: :function
 module: "Logic"
 returns: [

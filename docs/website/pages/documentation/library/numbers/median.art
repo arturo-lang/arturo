@@ -1,5 +1,4 @@
 name: "median"
-address: "0x10196A048"
 type: :function
 module: "Numbers"
 returns: [

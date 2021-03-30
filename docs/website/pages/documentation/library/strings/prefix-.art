@@ -1,5 +1,4 @@
 name: "prefix?"
-address: "0x1019855E8"
 type: :function
 module: "Strings"
 returns: [

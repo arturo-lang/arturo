@@ -1,5 +1,4 @@
 name: "render"
-address: "0x1019856D8"
 type: :function
 module: "Strings"
 returns: [

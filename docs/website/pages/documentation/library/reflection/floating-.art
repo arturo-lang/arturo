@@ -1,5 +1,4 @@
 name: "floating?"
-address: "0x101979318"
 type: :function
 module: "Reflection"
 returns: [

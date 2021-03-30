@@ -1,5 +1,4 @@
 name: "less?"
-address: "0x1019487C8"
 type: :function
 module: "Comparison"
 returns: [

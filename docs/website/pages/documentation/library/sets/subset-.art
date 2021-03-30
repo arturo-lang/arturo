@@ -1,5 +1,4 @@
 name: "subset?"
-address: "0x1019814F8"
 type: :function
 module: "Sets"
 returns: [

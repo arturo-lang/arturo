@@ -13,6 +13,7 @@ postprocess: #.raw [
 ]
 
 routes: #.raw [
+    {playground/_index\.art}                "playground.html"
     {documentation/_index\.art}             "docpage.html"
     {library/_index\.art}                   "docpage.html"
     {library/[^/]+/_index\.art}             "module_index.html"

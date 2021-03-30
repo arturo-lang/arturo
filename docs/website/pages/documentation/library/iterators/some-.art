@@ -1,5 +1,4 @@
 name: "some?"
-address: "0x1019597C8"
 type: :function
 module: "Iterators"
 returns: [

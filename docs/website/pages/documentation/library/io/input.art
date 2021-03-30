@@ -1,5 +1,4 @@
 name: "input"
-address: "0x101957D68"
 type: :function
 module: "Io"
 returns: [

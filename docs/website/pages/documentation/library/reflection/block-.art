@@ -1,5 +1,4 @@
 name: "block?"
-address: "0x1019786D8"
 type: :function
 module: "Reflection"
 returns: [

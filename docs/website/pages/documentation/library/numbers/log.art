@@ -1,5 +1,4 @@
 name: "log"
-address: "0x101963E58"
 type: :function
 module: "Numbers"
 returns: [

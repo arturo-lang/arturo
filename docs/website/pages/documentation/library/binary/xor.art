@@ -1,5 +1,4 @@
 name: "xor"
-address: "0x101933B88"
 type: :function
 module: "Binary"
 returns: [

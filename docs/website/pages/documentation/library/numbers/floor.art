@@ -1,5 +1,4 @@
 name: "floor"
-address: "0x1019639A8"
 type: :function
 module: "Numbers"
 returns: [

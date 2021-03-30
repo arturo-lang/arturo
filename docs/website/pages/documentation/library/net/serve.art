@@ -1,5 +1,4 @@
 name: "serve"
-address: "0x10195E5E8"
 type: :function
 module: "Net"
 returns: [

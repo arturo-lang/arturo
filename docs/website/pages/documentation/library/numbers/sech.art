@@ -1,5 +1,4 @@
 name: "sech"
-address: "0x10196AC78"
 type: :function
 module: "Numbers"
 returns: [

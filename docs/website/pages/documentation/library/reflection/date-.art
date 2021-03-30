@@ -1,5 +1,4 @@
 name: "date?"
-address: "0x101978A98"
 type: :function
 module: "Reflection"
 returns: [

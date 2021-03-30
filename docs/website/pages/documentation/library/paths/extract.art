@@ -1,5 +1,4 @@
 name: "extract"
-address: "0x1019534F8"
 type: :function
 module: "Paths"
 returns: [

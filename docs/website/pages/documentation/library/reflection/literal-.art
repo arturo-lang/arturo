@@ -1,5 +1,4 @@
 name: "literal?"
-address: "0x1019795E8"
 type: :function
 module: "Reflection"
 returns: [

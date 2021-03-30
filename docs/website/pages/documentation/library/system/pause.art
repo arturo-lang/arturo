@@ -1,5 +1,4 @@
 name: "pause"
-address: "0x1019887C8"
 type: :function
 module: "System"
 returns: [

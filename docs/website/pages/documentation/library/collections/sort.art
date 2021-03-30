@@ -1,5 +1,4 @@
 name: "sort"
-address: "0x10193CB88"
 type: :function
 module: "Collections"
 returns: [

@@ -1,5 +1,4 @@
 name: "contains?"
-address: "0x101936138"
 type: :function
 module: "Collections"
 returns: [

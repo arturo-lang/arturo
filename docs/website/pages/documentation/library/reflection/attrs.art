@@ -1,5 +1,4 @@
 name: "attrs"
-address: "0x101978408"
 type: :function
 module: "Reflection"
 returns: [

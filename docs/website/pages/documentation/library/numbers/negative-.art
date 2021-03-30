@@ -1,5 +1,4 @@
 name: "negative?"
-address: "0x10196A138"
 type: :function
 module: "Numbers"
 returns: [

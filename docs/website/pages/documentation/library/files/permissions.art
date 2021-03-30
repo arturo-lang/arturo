@@ -1,5 +1,4 @@
 name: "permissions"
-address: "0x101957228"
 type: :function
 module: "Files"
 returns: [

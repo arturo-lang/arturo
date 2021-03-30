@@ -1,5 +1,4 @@
 name: "label?"
-address: "0x1019794F8"
 type: :function
 module: "Reflection"
 returns: [

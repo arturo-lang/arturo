@@ -1,5 +1,4 @@
 name: "extend"
-address: "0x1019364F8"
 type: :function
 module: "Collections"
 returns: [

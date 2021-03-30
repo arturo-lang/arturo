@@ -1,5 +1,4 @@
 name: "fdiv"
-address: "0x10191D7C8"
 type: :function
 module: "Arithmetic"
 returns: [

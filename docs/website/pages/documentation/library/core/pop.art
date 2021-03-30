@@ -1,5 +1,4 @@
 name: "pop"
-address: "0x10194C7C8"
 type: :function
 module: "Core"
 returns: [

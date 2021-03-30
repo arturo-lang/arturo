@@ -1,5 +1,4 @@
 name: "do"
-address: "0x10194BC78"
 type: :function
 module: "Core"
 returns: [

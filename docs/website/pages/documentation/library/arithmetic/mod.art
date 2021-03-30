@@ -1,5 +1,4 @@
 name: "mod"
-address: "0x10191DA98"
 type: :function
 module: "Arithmetic"
 returns: [

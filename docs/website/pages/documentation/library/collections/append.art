@@ -1,5 +1,4 @@
 name: "append"
-address: "0x101933C78"
 type: :function
 module: "Collections"
 returns: [

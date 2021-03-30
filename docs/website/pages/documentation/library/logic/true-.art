@@ -1,5 +1,4 @@
 name: "true?"
-address: "0x10195E138"
 type: :function
 module: "Logic"
 returns: [

@@ -1,5 +1,4 @@
 name: "null?"
-address: "0x1019796D8"
 type: :function
 module: "Reflection"
 returns: [

@@ -1,5 +1,4 @@
 name: "hash"
-address: "0x1019436D8"
 type: :function
 module: "Crypto"
 returns: [

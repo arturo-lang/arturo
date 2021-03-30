@@ -1,5 +1,4 @@
 name: "sub"
-address: "0x101933228"
 type: :function
 module: "Arithmetic"
 returns: [

@@ -1,5 +1,4 @@
 name: "digest"
-address: "0x1019435E8"
 type: :function
 module: "Crypto"
 returns: [

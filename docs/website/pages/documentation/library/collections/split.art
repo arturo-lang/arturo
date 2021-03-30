@@ -1,5 +1,4 @@
 name: "split"
-address: "0x10193CC78"
 type: :function
 module: "Collections"
 returns: [

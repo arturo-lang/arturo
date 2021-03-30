@@ -1,5 +1,4 @@
 name: "ensure"
-address: "0x10194C138"
 type: :function
 module: "Core"
 returns: [

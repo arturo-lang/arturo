@@ -1,5 +1,4 @@
 name: "goto"
-address: "0x101957C78"
 type: :function
 module: "Io"
 returns: [

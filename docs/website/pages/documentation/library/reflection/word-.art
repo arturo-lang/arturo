@@ -1,5 +1,4 @@
 name: "word?"
-address: "0x101981228"
 type: :function
 module: "Reflection"
 returns: [

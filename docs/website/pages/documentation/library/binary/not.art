@@ -1,5 +1,4 @@
 name: "not"
-address: "0x1019336D8"
 type: :function
 module: "Binary"
 returns: [

@@ -1,5 +1,4 @@
 name: "nor?"
-address: "0x101959D68"
 type: :function
 module: "Logic"
 returns: [

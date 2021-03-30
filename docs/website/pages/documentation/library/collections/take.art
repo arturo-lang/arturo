@@ -1,5 +1,4 @@
 name: "take"
-address: "0x10193CE58"
 type: :function
 module: "Collections"
 returns: [

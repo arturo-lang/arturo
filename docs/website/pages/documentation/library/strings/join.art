@@ -1,5 +1,4 @@
 name: "join"
-address: "0x101981C78"
 type: :function
 module: "Strings"
 returns: [

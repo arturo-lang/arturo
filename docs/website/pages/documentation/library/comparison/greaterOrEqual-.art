@@ -1,5 +1,4 @@
 name: "greaterOrEqual?"
-address: "0x1019485E8"
 type: :function
 module: "Comparison"
 returns: [

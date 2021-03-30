@@ -1,5 +1,4 @@
 name: "exp"
-address: "0x1019637C8"
 type: :function
 module: "Numbers"
 returns: [

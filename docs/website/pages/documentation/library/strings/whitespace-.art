@@ -1,5 +1,4 @@
 name: "whitespace?"
-address: "0x101988048"
 type: :function
 module: "Strings"
 returns: [

@@ -1,5 +1,4 @@
 name: "fold"
-address: "0x101959408"
 type: :function
 module: "Iterators"
 returns: [

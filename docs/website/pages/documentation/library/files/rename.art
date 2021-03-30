@@ -1,5 +1,4 @@
 name: "rename"
-address: "0x1019574F8"
 type: :function
 module: "Files"
 returns: [

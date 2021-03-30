@@ -1,5 +1,4 @@
 name: "xnor?"
-address: "0x10195E228"
 type: :function
 module: "Logic"
 returns: [
