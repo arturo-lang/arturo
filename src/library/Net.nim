@@ -25,6 +25,8 @@ import helpers/webview
 
 import vm/lib
 import vm/[env, exec]
+when defined(SAFE):
+    import vm/[errors]
 
 #=======================================
 # Methods
@@ -56,6 +58,7 @@ proc defineSymbols*() =
             ; (downloads file with a different name)
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("download")
             let path = x.s
 
             var target: string
@@ -92,6 +95,7 @@ proc defineSymbols*() =
                 ]
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("mail")
             let recipient = x.s
             let message = y.d
             let config = z.d
@@ -126,6 +130,7 @@ proc defineSymbols*() =
             ; (run the app and go to localhost:18966 - that was it!)
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
             {.push warning[GcUnsafe2]:off.}
             when not defined(VERBOSE):
                 let routes = x

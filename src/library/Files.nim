@@ -31,6 +31,8 @@ import helpers/datasource
 import helpers/jsonobject
 
 import vm/lib
+when defined(SAFE):
+    import vm/[errors]
 
 #=======================================
 # Methods
@@ -61,6 +63,8 @@ proc defineSymbols*() =
             ; copied whole folder
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("copy")
+
             var target = y.s
             if (popAttr("directory") != VNULL): 
                 try:
@@ -89,6 +93,8 @@ proc defineSymbols*() =
             ; file deleted
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("delete")
+            
             if (popAttr("directory") != VNULL): 
                 try:
                     removeDir(x.s)
@@ -154,6 +160,7 @@ proc defineSymbols*() =
             ; gave write permission to 'others'
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
             try:
                 if (popAttr("set") != VNULL):
                     var source = x.s
@@ -239,6 +246,7 @@ proc defineSymbols*() =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("read")
             if (popAttr("binary") != VNULL):
                 var f: File
                 discard f.open(x.s)
@@ -290,6 +298,7 @@ proc defineSymbols*() =
             ; file renamed
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("rename")
             var source = x.s
             var target = y.s
             if (popAttr("directory") != VNULL): 
@@ -327,6 +336,7 @@ proc defineSymbols*() =
             ; to our desktop
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("symlink")
             var source = x.s
             var target = y.s
             try:
@@ -376,6 +386,7 @@ proc defineSymbols*() =
             write.json "data.json" myData
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("write")
             if (popAttr("directory") != VNULL):
                 createDir(x.s)
             else:

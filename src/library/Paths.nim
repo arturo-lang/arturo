@@ -23,6 +23,8 @@ import helpers/url
 
 import vm/lib
 import vm/[env]
+when defined(SAFE):
+    import vm/[errors]
 
 #=======================================
 # Methods
@@ -139,6 +141,7 @@ proc defineSymbols*() =
             ; data.txt
         """:
             ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("list")
             let recursive = (popAttr("recursive") != VNULL)
             let relative = (popAttr("relative") != VNULL)
             let path = x.s
