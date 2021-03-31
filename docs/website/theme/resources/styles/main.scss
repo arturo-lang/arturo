@@ -339,3 +339,7 @@ pre[class*=language-] {
     text-shadow: 0 0 20px #fff;
     }
 }
+
+code[class*=language-], pre[class*=language-] {
+    white-space: pre-wrap; 
+}
