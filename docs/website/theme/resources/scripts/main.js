@@ -343,21 +343,21 @@ document.addEventListener('DOMContentLoaded', () => {
 		}, 2000);
 	  });
 
+	const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+	if ($navbarBurgers.length > 0) {
+		$navbarBurgers.forEach( el => {
+			el.addEventListener('click', () => {
+				const target = el.dataset.target;
+				const $target = document.getElementById(target);
+				el.classList.toggle('is-active');
+				$target.classList.toggle('is-active');
+			});
+		});
+	}
+
     var element =  document.getElementById('stargazers');
     if (typeof(element) != 'undefined' && element != null)
     {
-        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-        if ($navbarBurgers.length > 0) {
-            $navbarBurgers.forEach( el => {
-                el.addEventListener('click', () => {
-                    const target = el.dataset.target;
-                    const $target = document.getElementById(target);
-                    el.classList.toggle('is-active');
-                    $target.classList.toggle('is-active');
-                });
-            });
-        }
-
         function setDiv(div,content){
             document.getElementById(div).innerHTML = content;
         }
