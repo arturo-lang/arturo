@@ -1,4 +1,4 @@
-<nav class="breadcrumb" aria-label="breadcrumbs">
+<nav class="breadcrumb is-size-7-mobile is-size-6" aria-label="breadcrumbs">
     <ul>
         <||= if not? all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath][ ||>
             <li><a href="<||= linkTo {documentation/} ||>" style="margin-left:0">Home</a></li>

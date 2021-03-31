@@ -16,7 +16,7 @@ nav ul li a {
 }
 
 #downloads a {
-    border: 1px solid white;
+    border: 1px solid transparent;
     border-radius: 20px;
     padding: 0.5em;
 
@@ -342,4 +342,14 @@ pre[class*=language-] {
 
 code[class*=language-], pre[class*=language-] {
     white-space: pre-wrap; 
+}
+
+@media (max-width: 768px) {
+    .is-grouped-multiline {
+        justify-content: center !important;
+    }
+
+    .card {
+        border: 0;
+    }
 }
