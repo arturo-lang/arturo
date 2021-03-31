@@ -5,7 +5,6 @@ editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/arturo"); 
 
 window.previousCode = "";
-
 function execCode() {
     var runbutton = document.getElementById('runbutton');
     if (!runbutton.innerHTML.includes("notch")) {
@@ -24,6 +23,8 @@ function execCode() {
 
                 runbutton.innerHTML = `<i class='far fa-play-circle'></i>`;
                 runbutton.classList.remove('working');
+
+                window.scroll.animateScroll(document.querySelector("#terminal"));
             }, {
                 c:editor.getValue(),
                 i:window.snippetId
@@ -51,3 +52,29 @@ document.addEventListener("DOMContentLoaded", function() {
         getSnippet(code);
     }
 });
+
+function shareLink(){
+    if (window.snippetId!=""){
+        Bulma().alert({
+            type: 'info',
+            title: 'Share this script',
+            body:  `<input id='snippet-link' class='input is-info' value='http://arturo-lang.io/playground?${window.snippetId}'>`,
+            confirm: {
+                label: 'Copy link',
+                onClick: function(){
+                    var copyText = document.getElementById("snippet-link");
+                    copyText.select();
+                    copyText.setSelectionRange(0, 99999);
+                    document.execCommand("copy");
+                    (window.getSelection ? window.getSelection() : document.selection).empty()
+                    Bulma().alert({
+                        type: 'success',
+                        title: 'Copied',
+                        body: 'Ready to go!'
+                    });
+                }
+            },
+            cancel: 'Close'
+        });
+    }
+}

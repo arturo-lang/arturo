@@ -52,7 +52,7 @@ Prism.languages.arturo = {
 Prism.languages.art = Prism.languages['arturo'];
 document.addEventListener('DOMContentLoaded', () => {
     Prism.highlightAll();
-    var scroll = new SmoothScroll('a[href*="#"]',{
+    window.scroll = new SmoothScroll('a[href*="#"]',{
         speed: 200,
         offset: 90
     });
@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ajaxGet(parsed[0].assets_url, function (data){
                 var parsed = JSON.parse(data);
-                var downloadsTable = `<tr><th></th><th></th><th class="is-hidden-touch">Version</th><th class="is-hidden-touch">Compressed file size</th><th></th></tr>`;
+                var downloadsTable = `<tr><th></th><th></th><th class="is-hidden-touch has-text-centered">Version</th><th class="is-hidden-touch has-text-centered">Compressed file size</th><th></th></tr>`;
                 var downloadItems = [];
                 for (var i = 0; i < parsed.length; i++){
                     var elem = parsed[i];
@@ -405,11 +405,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     var size = ((elem.size)/(1024*1024)).toFixed(2) + " MB";
                     var link = elem.browser_download_url;
 
-                    downloadItems.push(`<tr><td order="${order}" class="first-td"><i class="fab fa-2x fa-${logo}"></i></td><td>${os}</td><td class="is-hidden-touch">${version}</td><td class="is-hidden-touch">${size}</td><td><a href="${link}"><i class="far fa-arrow-alt-circle-down"></i>&nbsp;&nbsp;Download</a></td></tr>`);
+                    downloadItems.push(`<tr><td order="${order}" class="first-td"><i class="fab fa-2x fa-${logo}"></i></td><td>${os}</td><td class="is-hidden-touch has-text-centered">${version}</td><td class="is-hidden-touch has-text-centered">${size}</td><td><a href="${link}"><i class="far fa-arrow-alt-circle-down"></i>&nbsp;&nbsp;Download</a></td></tr>`);
                 }
                 downloadItems.sort();
                 downloadsTable += downloadItems.join("");
-                downloadsTable += `<tr><td class="first-td"><i class="fab fa-2x fa-docker"></i></td><td><b>Docker</b></td><td class="release-version is-hidden-touch">${releaseVersion}</td><td class="is-hidden-touch">--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
+                downloadsTable += `<tr><td class="first-td"><i class="fab fa-2x fa-docker"></i></td><td><b>Docker</b></td><td class="release-version is-hidden-touch has-text-centered">${releaseVersion}</td><td class="is-hidden-touch has-text-centered">--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
                 setDiv("downloads",downloadsTable);
                 console.log(parsed);
             });

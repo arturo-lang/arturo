@@ -1,5 +1,5 @@
 #editor {
-    height: calc(100vh - 40px);
+    height: calc(100vh - 52px);
     font-family: 'Fira Code', monospace !important;
     text-shadow: 0 1px rgba(0,0,0,.3);
     line-height: 1.5;
@@ -17,7 +17,7 @@
 
 #runbutton {
     position: absolute;
-    top: calc((100vh - 52px)/2 + 22px);
+    top: calc(52px + (100vh - 52px)/2 - 70px);
     left: calc(50vw - 90px);
     width: 60px;
     z-index: 5;
@@ -39,8 +39,74 @@
     }
 }
 
+#sharebutton {
+    position: absolute;
+    top: calc(52px + (100vh - 52px)/2 + 10px);
+    left: calc(50vw - 90px);
+    width: 60px;
+    z-index: 5;
+    background: #15AABF;
+    height: 60px;
+    border-radius: 50px;
+    color: white;
+    font-size: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.working {
+        background: gray;
+    }
+
+    &:not(.working):hover {
+        box-shadow: 0px 0px 6px 3px grey;
+    }
+}
+
 @media (max-width: 768px) {
     #runbutton {
         left: calc(100vw - 90px);
     }
+
+    #sharebutton {
+        left: calc(100vw - 90px);
+    }
+}
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  
+  /* Tooltip text */
+  .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+   
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1000;
+
+    &::after {
+        content: " ";
+        position: absolute;
+        top: 50%;
+        left: 100%; /* To the right of the tooltip */
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent transparent black;
+      }
+  }
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  &:hover .tooltiptext {
+    visibility: visible;
+  }
 }
