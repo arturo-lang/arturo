@@ -15,7 +15,7 @@
                             <a data-scroll href="#download" class="button is-white is-outlined is-large"><i class="fas fa-cloud-download-alt"></i>&nbsp;&nbsp;Download</a>
                         </p>
                     </div>
-                    <div class="column is-6">
+                    <div class="column is-6 is-hidden-touch">
                         <picture>
                             <source srcset="<||= linkTo {resources/images/screenshot.webp} ||>" type="image/webp">
                             <source srcset="<||= linkTo {resources/images/screenshot.png} ||>" type="image/png">
@@ -57,7 +57,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="column is-6 is-hidden-mobile is-hidden-tablet-only is-block-desktop">
+                <div class="column is-6 is-hidden-touch is-block-desktop">
                     <p class="has-text-right is-size-6">
                         <b>Latest release:</b><br><span class="release-version"><!-- AUTO-GENERATED / -->v0.9.7.4<!-- / AUTO-GENERATED --></span> @ <span id="release-date"><!-- AUTO-GENERATED / -->2021-03-20T11:24:01Z<!-- / AUTO-GENERATED --></span>
                     </p>
@@ -113,7 +113,7 @@
         </div>
         <div class="columns" style="margin-top:2em">
             <div class="column is-6 is-offset-3">
-                <pre style="text-align:center; padding-top: 2em; padding-bottom: 2em;"><div class="copy">copy</div><code class="language-bash" style="font-size: 1.3em;">curl -sSL https://get.arturo-lang.io | sh</code></pre>
+                <pre style="text-align:center; padding-top: 2em; padding-bottom: 2em;"><div class="copy">copy</div><code class="language-bash is-size-7-mobile is-size-6-tablet-only is-size-5-desktop">curl -sSL https://get.arturo-lang.io | sh</code></pre>
                 <div class="has-text-centered" style="margin-top:2em; margin-bottom: 4em;">
                     <p class="is-size-7">Copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.<br>To get the most recent (nightly) build, just use: <code>curl -sSL https://get.arturo-lang.io/latest | sh</code></p>
                 </div>
