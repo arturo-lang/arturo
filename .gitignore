@@ -13,3 +13,4 @@ test.js
 old.nim
 tmp*
 .sass-cache
+profile_results.txt
