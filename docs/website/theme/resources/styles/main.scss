@@ -353,3 +353,20 @@ code[class*=language-], pre[class*=language-] {
         border: 0;
     }
 }
+
+#searchbar {
+    border: 0;
+    border-radius: 0;
+    border-left: 2px solid black;
+    outline: none;
+    width: 30vw;
+    font-size: 1.2em;
+    padding-left: 50px;
+    margin-top: 10px;
+}
+
+#searchbar-icon {
+    position: relative;
+    left: calc(-1 * 30vw + 20px);
+    top: 18px;
+}
