@@ -154,8 +154,22 @@ proc execBlock*(
                     else:
                         Arities = savedArities
                         for k, v in pairs(newSyms):
-                            if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
-                                Syms[k] = newSyms[k]
+                            if not (v.kind==Function and v.fnKind==BuiltinFunction):
+                                # echo "checking " & k & " in newSyms"
+                                # if Syms.hasKey(k):
+                                #     echo "\talready existed in Syms"
+                                #     echo "\t==> " & $(cast[ByteAddress](v))
+                                #     echo "\t==> " & $(cast[ByteAddress](newSyms[k]))
+                                #     echo "\t==> " & $(cast[ByteAddress](Syms[k]))
+                                #     echo "\t==> " & $(cast[int](unsafeAddr v))
+                                #     echo "\t==> " & $(cast[int](unsafeAddr newSyms[k]))
+                                #     echo "\t==> " & $(cast[int](unsafeAddr Syms[k]))
+                                #     echo "\tSyms[k]!=newSyms[k] : " & $(Syms[k]!=newSyms[k])
+
+                                # else:
+                                #     echo "\tnot already existed"
+                                if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
+                                    Syms[k] = newSyms[k]
 
     return Syms
 
