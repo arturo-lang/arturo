@@ -155,7 +155,7 @@ proc execBlock*(
                         Arities = savedArities
                         for k, v in pairs(newSyms):
                             if not (v.kind==Function and v.fnKind==BuiltinFunction):
-                                if Syms.hasKey(k) and Syms[k]!=newSyms[k]:
+                                if Syms.hasKey(k):# and Syms[k]!=newSyms[k]:
                                     Syms[k] = newSyms[k]
 
     return Syms
