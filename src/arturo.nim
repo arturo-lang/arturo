@@ -151,7 +151,7 @@ when isMainModule:
             of showVersion:
                 echo VersionTxt
     else:
-        arguments = commandLineParams().map(proc (x:string):Value = newString(x))
+        arguments = commandLineParams()
         code = static readFile(getEnv("PORTABLE_INPUT"))
 
         discard run(code, arguments, isFile=false)
