@@ -426,16 +426,18 @@ template parseNumber(p: var Parser) =
             echo "p.buf[pos] = " & $(p.buf[pos]) & " at " & $(pos)
             if p.buf[pos] == Dot:
                 echo "next one is a dot too"
-                while p.buf[pos] in Digits:
-                    echo "Found digit: " & $(p.buf[pos])
-                    add(p.value, p.buf[pos])
+                if p.buf[pos+1] in Digits:
                     inc(pos)
-                
-                echo "p.buf[pos] = " & $(p.buf[pos]) & " at " & $(pos)
-                if p.buf[pos] in {'+','-'}:
-                    while p.buf[pos] in SemVerExtra:
+                    while p.buf[pos] in Digits:
+                        echo "Found digit: " & $(p.buf[pos])
                         add(p.value, p.buf[pos])
                         inc(pos)
+                    
+                    echo "p.buf[pos] = " & $(p.buf[pos]) & " at " & $(pos)
+                    if p.buf[pos] in {'+','-'}:
+                        while p.buf[pos] in SemVerExtra:
+                            add(p.value, p.buf[pos])
+                            inc(pos)
 
             p.bufpos = pos
     else:
