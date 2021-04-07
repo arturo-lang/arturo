@@ -6,6 +6,10 @@
 # @file: helpers/webview.nim
 ######################################################
 
+# TODO(Helpers\webview): Add support for new version of Webview library
+#  from https://github.com/webview/webview
+#  labels: library, 3rd-party
+
 #=======================================
 # Command-line arguments
 #=======================================
