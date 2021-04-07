@@ -28,6 +28,8 @@ type
         values*: ValueArray
         symbol*: SymbolKind
 
+    ParseResult* = (Value, string) # (main, package)
+
 #=======================================
 # Constants
 #=======================================
@@ -66,18 +68,18 @@ const
 
     Empty                       = ""
 
-# #=======================================
-# # Variables
-# #=======================================
+#=======================================
+# Variables
+#=======================================
 
-# var
-#     ScriptConfig : string
+var
+    ScriptConfig : string
 
 #=======================================
 # Forward declarations
 #=======================================
 
-proc doParse*(input: string, isFile: bool = true): Value
+proc doParseAll*(input: string, isFile: bool = true): ParseResult
 
 #=======================================
 # Templates
@@ -120,36 +122,36 @@ template skip(p: var Parser) =
     case p.buf[pos]
         of Semicolon:
             inc(pos)
-            # if p.buf[pos]==Semicolon:
-            #     inc(pos)
-            #     while true:
-            #         ScriptConfig &= p.buf[pos]
-            #         case p.buf[pos]:
-            #             of EOF:
-            #                 break
-            #             of CR:
-            #                 pos = lexbase.handleCR(p, pos)
-            #                 ScriptConfig &= "\n"
-            #                 break
-            #             of LF:
-            #                 pos = lexbase.handleLF(p, pos)
-            #                 ScriptConfig &= "\n"
-            #                 break
-            #             else:
-            #                 inc(pos)
-            # else:
-            while true:
-                case p.buf[pos]:
-                    of EOF:
-                        break
-                    of CR:
-                        pos = lexbase.handleCR(p, pos)
-                        break
-                    of LF:
-                        pos = lexbase.handleLF(p, pos)
-                        break
-                    else:
-                        inc(pos)
+            if p.buf[pos]==Semicolon:
+                inc(pos)
+                while true:
+                    ScriptConfig &= p.buf[pos]
+                    case p.buf[pos]:
+                        of EOF:
+                            break
+                        of CR:
+                            pos = lexbase.handleCR(p, pos)
+                            ScriptConfig &= "\n"
+                            break
+                        of LF:
+                            pos = lexbase.handleLF(p, pos)
+                            ScriptConfig &= "\n"
+                            break
+                        else:
+                            inc(pos)
+            else:
+                while true:
+                    case p.buf[pos]:
+                        of EOF:
+                            break
+                        of CR:
+                            pos = lexbase.handleCR(p, pos)
+                            break
+                        of LF:
+                            pos = lexbase.handleLF(p, pos)
+                            break
+                        else:
+                            inc(pos)
         of Whitespace:
             inc(pos)
         of CR:
@@ -697,7 +699,7 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
-proc doParse*(input: string, isFile: bool = true): Value =
+proc doParseAll*(input: string, isFile: bool = true): ParseResult =
     var p: Parser
 
     # open stream
@@ -719,7 +721,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
     # initialize
 
     p.value = ""
-    # ScriptConfig = ""
+    ScriptConfig = ""
 
     # do parse
     
@@ -733,4 +735,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
 
     lexbase.close(p)
             
-    return rootBlock
+    return (rootBlock,ScriptConfig)
+
+template doParse*(input: string, isFile: bool = true): Value =
+    doParseAll(input, isFile)[0]
