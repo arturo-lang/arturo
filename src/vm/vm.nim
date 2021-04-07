@@ -78,8 +78,8 @@ template initialize*(args: seq[string], filename: string, isFile:bool) =
     # environment
     initEnv(
         arguments = args, 
-        version = ArturoVersion,
-        build = ArturoBuild
+        version = Version,
+        build = Build
     )
 
     # paths
