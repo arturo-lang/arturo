@@ -335,6 +335,23 @@ proc newFloating*(f: int): Value {.inline.} =
 proc newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
+proc newVersion*(v: string): Value {.inline.} =
+    var numPart = ""
+    var lastIndex : int
+    for i, c in v:
+        lastIndex = i
+        if c notin {'+','-'}:
+            numPart.add(c)
+        else:
+            break
+    
+    let extraPart = v[lastIndex .. ^1]
+    let parts: seq[string] = numPart.split(".")
+    Value(kind: Version, major: parseInt(parts[0]), 
+                         minor: parseInt(parts[1]), 
+                         patch: parseInt(parts[2]), 
+                         extra: extraPart)
+
 proc newType*(t: ValueKind): Value {.inline.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
