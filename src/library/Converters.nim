@@ -451,6 +451,10 @@ proc defineSymbols*() =
                                 push newBinary(ret)
                             else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
+                    of Version:
+                        if tp==String: push newString($(y))
+                        else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
                     of Type:
                         if tp==String: push newString(($(y.t)).toLowerAscii())
                         else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
@@ -477,6 +481,11 @@ proc defineSymbols*() =
                             of Floating:
                                 try:
                                     push newFloating(parseFloat(y.s))
+                                except ValueError:
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            of Version:
+                                try:
+                                    push newVersion(y.s)
                                 except ValueError:
                                     RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                             of Type:
