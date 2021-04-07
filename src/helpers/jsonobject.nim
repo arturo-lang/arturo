@@ -25,6 +25,7 @@ proc generateJsonNode*(n: Value): JsonNode =
         of Boolean      : result = newJBool(n.b)
         of Integer      : result = newJInt(n.i)
         of Floating     : result = newJFloat(n.f)
+        of Version      : result = newJString($(n))
         of Type         : result = newJString($(n.t))
         of Char         : result = newJString($(n.c))
         of String,
