@@ -62,6 +62,7 @@ const
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
     PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
+    SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
     Empty                       = ""
 
@@ -419,6 +420,17 @@ template parseNumber(p: var Parser) =
             while p.buf[pos] in Digits:
                 add(p.value, p.buf[pos])
                 inc(pos)
+
+            if p.buf[pos] == Dot:
+                while p.buf[pos] in Digits:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
+                
+                if p.buf[pos] in {'+','-'}:
+                    while p.buf[pos] in SemVerExtra:
+                        add(p.value, p.buf[pos])
+                        inc(pos)
+
             p.bufpos = pos
     else:
         p.bufpos = pos
@@ -548,7 +560,11 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     AddToken newType(p.value)
             of PermittedNumbers_Start:
                 parseNumber(p)
-                if Dot in p.value: AddToken newFloating(p.value)
+                if Dot in p.value: 
+                    if p.value.count({Dot})>1:
+                        AddToken newVersion(p.value)
+                    else:
+                        AddToken newFloating(p.value)
                 else: AddToken newInteger(p.value)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
