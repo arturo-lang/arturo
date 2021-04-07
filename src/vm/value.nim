@@ -1190,6 +1190,14 @@ proc `<`*(x: Value, y: Value): bool =
         case x.kind:
             of Null: return false
             of Boolean: return false
+            of Version:
+                if x.major > y.major: return false
+                if x.minor > y.minor: return false
+                if x.patch > y.patch: return false
+                if not (x.major == y.major and x.minor == y.minor and x.patch == y.patch):
+                    return true
+                else:
+                    return false
             of Type: return false
             of Char: return $(x.c) < $(y.c)
             of String,
