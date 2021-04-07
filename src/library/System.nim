@@ -103,11 +103,6 @@ proc defineSymbols*() =
             ##########################################################
             quit()
 
-    constant "package",
-        alias       = unaliased,
-        description = "information about the current package":
-            newDictionary(getPackageInfo())
-
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -151,6 +146,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             sleep(x.i)
+
+    constant "script",
+        alias       = unaliased,
+        description = "embedded information about the current script":
+            newDictionary(getScriptInfo())
 
     constant "sys",
         alias       = unaliased,
