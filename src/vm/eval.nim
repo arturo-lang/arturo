@@ -262,6 +262,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if node.f==1.0: addToCommand((byte)opConstF1)
                     else: addConst(consts, node, opPush)
 
+            of Version:
+                addTerminalValue(false):
+                    addConst(consts, node, opPush)
+
             of Type:
                 addTerminalValue(false):
                     addConst(consts, node, opPush)
