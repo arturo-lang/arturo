@@ -169,6 +169,11 @@ type
                         else:
                             discard
             of Floating:    f*  : float
+            of Version: 
+                major   : int
+                minor   : int
+                patch   : int
+                extra   : string
             of Type:        
                 t*  : ValueKind
                 case tpKind*: TypeKind:
