@@ -336,16 +336,22 @@ proc newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
 proc newVersion*(v: string): Value {.inline.} =
+    echo "parsing version: |" & $(v) & "|"
     var numPart = ""
+    var extraPart = ""
     var lastIndex : int
     for i, c in v:
         lastIndex = i
         if c notin {'+','-'}:
             numPart.add(c)
         else:
+            extraPart &= c
             break
+
+    echo "numPart: |" & $(numPart) & "|"
     
-    let extraPart = v[lastIndex .. ^1]
+    extraPart &= v[lastIndex+1 .. ^1]
+    echo "extraPart: |" & $(extraPart) & "|"
     let parts: seq[string] = numPart.split(".")
     Value(kind: Version, major: parseInt(parts[0]), 
                          minor: parseInt(parts[1]), 
