@@ -1117,6 +1117,8 @@ proc `==`*(x: Value, y: Value): bool =
         case x.kind:
             of Null: return true
             of Boolean: return x.b == y.b
+            of Version:
+                return x.major == y.major and x.minor == y.minor and x.patch == y.patch
             of Type: return x.t == y.t
             of Char: return x.c == y.c
             of String,
