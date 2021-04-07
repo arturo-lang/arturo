@@ -31,6 +31,8 @@ var
     ArturoVersion   : string
     ArturoBuild     : string
 
+    PackageInfo     : ValueDict
+
 #=======================================
 # Helpers
 #=======================================
@@ -84,6 +86,9 @@ proc getPathInfo*(): ValueDict =
         "temp"      : newString(TmpDir),
     }.toOrderedTable
 
+proc getPackageInfo*(): ValueDict =
+    PackageInfo
+
 #=======================================
 # Methods
 #=======================================
@@ -101,10 +106,12 @@ proc addPath*(newPath: string) =
 proc popPath*(): string =
     PathStack.pop()
 
-proc initEnv*(arguments: seq[string], version: string, build: string) =
+proc initEnv*(arguments: seq[string], version: string, build: string, package: ValueDict) =
     Arguments = newStringBlock(arguments)
     ArturoVersion = version
     ArturoBuild = build
+
+    PackageInfo = package
 
     PathStack = @[]
     HomeDir = getHomeDir()
