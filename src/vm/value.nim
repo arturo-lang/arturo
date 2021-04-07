@@ -1714,6 +1714,13 @@ proc hash*(v: Value): Hash {.inline.}=
                 when not defined(NOGMP):
                     result = cast[Hash](v.bi)
         of Floating     : result = cast[Hash](v.f)
+        of Version      : 
+            result = 1
+            result = result !& cast[Hash](v.major)
+            result = result !& cast[Hash](v.minor)
+            result = result !& cast[Hash](v.patch)
+            result = result !& hash(v.extra)
+            result = !$ result
         of Type         : result = cast[Hash](ord(v.t))
         of Char         : result = cast[Hash](ord(v.c))
         of String       : result = hash(v.s)
