@@ -27,9 +27,9 @@ var
     #--------------------
     # private
     #--------------------
-    Arguments   : Value
-    Version     : string
-    Build       : string
+    Arguments       : Value
+    ArturoVersion   : string
+    ArturoBuild     : string
 
 #=======================================
 # Helpers
@@ -70,8 +70,8 @@ proc getSystemInfo*(): ValueDict =
     {
         "author"    : newString("Yanis Zafirópulos"),
         "copyright" : newString("(c) 2019-2021"),
-        "version"   : newString(Version),
-        "build"     : newInteger(parseInt(Build)),
+        "version"   : newString(ArturoVersion),
+        "build"     : newInteger(parseInt(ArturoBuild)),
         "buildDate" : newDate(now()),
         "cpu"       : newString(hostCPU),
         "os"        : newString(hostOS)
@@ -103,8 +103,8 @@ proc popPath*(): string =
 
 proc initEnv*(arguments: seq[string], version: string, build: string) =
     Arguments = newStringBlock(arguments)
-    Version = version
-    Build = build
+    ArturoVersion = version
+    ArturoBuild = build
 
     PathStack = @[]
     HomeDir = getHomeDir()
