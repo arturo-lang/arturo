@@ -77,7 +77,7 @@ var
 # Forward declarations
 #=======================================
 
-proc doParseImpl*(input: string, isFile: bool = true): (Value,string)
+proc doParseAll*(input: string, isFile: bool = true): (Value,string)
 
 #=======================================
 # Templates
