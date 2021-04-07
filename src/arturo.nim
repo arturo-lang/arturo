@@ -149,7 +149,7 @@ when isMainModule:
             of showHelp:
                 echo helpTxt
             of showVersion:
-                echo VersionTxt
+                echo ArturoVersionTxt
     else:
         arguments = commandLineParams()
         code = static readFile(getEnv("PORTABLE_INPUT"))
