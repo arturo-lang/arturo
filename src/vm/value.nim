@@ -1438,6 +1438,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 when not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
+        of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
                 dumpPrimitive(($(v.t)).toLowerAscii(), v)
@@ -1562,6 +1563,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 when not defined(NOGMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
+        of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
