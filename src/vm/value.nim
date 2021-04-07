@@ -98,28 +98,29 @@ type
         Boolean         = 1
         Integer         = 2
         Floating        = 3
-        Type            = 4
-        Char            = 5
-        String          = 6
-        Word            = 7
-        Literal         = 8
-        Label           = 9
-        Attribute       = 10
-        AttributeLabel  = 11
-        Path            = 12
-        PathLabel       = 13
-        Symbol          = 14
-        Date            = 15
-        Binary          = 16
-        Dictionary      = 17
-        Function        = 18
-        Inline          = 19
-        Block           = 20
-        Database        = 21
-        Bytecode        = 22
+        Version         = 4
+        Type            = 5
+        Char            = 6
+        String          = 7
+        Word            = 8
+        Literal         = 9
+        Label           = 10
+        Attribute       = 11
+        AttributeLabel  = 12
+        Path            = 13
+        PathLabel       = 14
+        Symbol          = 15
+        Date            = 16
+        Binary          = 17
+        Dictionary      = 18
+        Function        = 19
+        Inline          = 20
+        Block           = 21
+        Database        = 22
+        Bytecode        = 23
 
-        Nothing         = 23
-        Any             = 24
+        Nothing         = 24
+        Any             = 25
 
     ValueSpec* = set[ValueKind]
 
@@ -168,6 +169,11 @@ type
                         else:
                             discard
             of Floating:    f*  : float
+            of Version: 
+                major   : int
+                minor   : int
+                patch   : int
+                extra   : string
             of Type:        
                 t*  : ValueKind
                 case tpKind*: TypeKind:
@@ -328,6 +334,26 @@ proc newFloating*(f: int): Value {.inline.} =
 
 proc newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
+
+proc newVersion*(v: string): Value {.inline.} =
+    var numPart = ""
+    var extraPart = ""
+    var lastIndex : int
+    for i, c in v:
+        lastIndex = i
+        if c notin {'+','-'}:
+            numPart.add(c)
+        else:
+            extraPart &= c
+            break
+
+    extraPart &= v[lastIndex+1 .. ^1]
+
+    let parts: seq[string] = numPart.split(".")
+    Value(kind: Version, major: parseInt(parts[0]), 
+                         minor: parseInt(parts[1]), 
+                         patch: parseInt(parts[2]), 
+                         extra: extraPart)
 
 proc newType*(t: ValueKind): Value {.inline.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
@@ -1094,6 +1120,8 @@ proc `==`*(x: Value, y: Value): bool =
         case x.kind:
             of Null: return true
             of Boolean: return x.b == y.b
+            of Version:
+                return x.major == y.major and x.minor == y.minor and x.patch == y.patch
             of Type: return x.t == y.t
             of Char: return x.c == y.c
             of String,
@@ -1167,6 +1195,17 @@ proc `<`*(x: Value, y: Value): bool =
         case x.kind:
             of Null: return false
             of Boolean: return false
+            of Version:
+                if x.major < y.major: return true
+                elif x.major > y.major: return false
+
+                if x.minor < y.minor: return true
+                elif x.minor > y.minor: return false
+
+                if x.patch < y.patch: return true
+                elif x.patch > y.patch: return false
+
+                return false
             of Type: return false
             of Char: return $(x.c) < $(y.c)
             of String,
@@ -1213,6 +1252,17 @@ proc `>`*(x: Value, y: Value): bool =
         case x.kind:
             of Null: return false
             of Boolean: return false
+            of Version:
+                if x.major > y.major: return true
+                elif x.major < y.major: return false
+
+                if x.minor > y.minor: return true
+                elif x.minor < y.minor: return false
+
+                if x.patch > y.patch: return true
+                elif x.patch < y.patch: return false
+
+                return false
             of Type: return false
             of Char: return $(x.c) > $(y.c)
             of String,
@@ -1252,6 +1302,7 @@ proc `$`*(v: Value): string {.inline.} =
             else:
                 when not defined(NOGMP): 
                     return $(v.bi)
+        of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Floating     : return $(v.f)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1396,6 +1447,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 when not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
+        of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
                 dumpPrimitive(($(v.t)).toLowerAscii(), v)
@@ -1520,6 +1572,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 when not defined(NOGMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
+        of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
                 result &= ":" & ($v.t).toLowerAscii()
@@ -1670,6 +1723,13 @@ proc hash*(v: Value): Hash {.inline.}=
                 when not defined(NOGMP):
                     result = cast[Hash](v.bi)
         of Floating     : result = cast[Hash](v.f)
+        of Version      : 
+            result = 1
+            result = result !& cast[Hash](v.major)
+            result = result !& cast[Hash](v.minor)
+            result = result !& cast[Hash](v.patch)
+            result = result !& hash(v.extra)
+            result = !$ result
         of Type         : result = cast[Hash](ord(v.t))
         of Char         : result = cast[Hash](ord(v.c))
         of String       : result = hash(v.s)
