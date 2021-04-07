@@ -28,6 +28,8 @@ type
         values*: ValueArray
         symbol*: SymbolKind
 
+    ParseResult* = (Value, string) # (main, package)
+
 #=======================================
 # Constants
 #=======================================
@@ -77,7 +79,7 @@ var
 # Forward declarations
 #=======================================
 
-proc doParseAll*(input: string, isFile: bool = true): (Value,string)
+proc doParseAll*(input: string, isFile: bool = true): ParseResult
 
 #=======================================
 # Templates
@@ -697,7 +699,7 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
-proc doParseAll*(input: string, isFile: bool = true): (Value,string) =
+proc doParseAll*(input: string, isFile: bool = true): ParseResult =
     var p: Parser
 
     # open stream
