@@ -103,6 +103,11 @@ proc defineSymbols*() =
             ##########################################################
             quit()
 
+    constant "package",
+        alias       = unaliased,
+        description = "information about the current package":
+            newDictionary(getPackageInfo())
+
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
