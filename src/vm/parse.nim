@@ -697,7 +697,7 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
-proc doParseImpl*(input: string, isFile: bool = true): (Value,string) =
+proc doParseAll*(input: string, isFile: bool = true): (Value,string) =
     var p: Parser
 
     # open stream
@@ -736,4 +736,4 @@ proc doParseImpl*(input: string, isFile: bool = true): (Value,string) =
     return (rootBlock,ScriptConfig)
 
 template doParse*(input: string, isFile: bool = true): Value =
-    doParseImpl(input, isFile)[0]
+    doParseAll(input, isFile)[0]
