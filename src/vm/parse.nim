@@ -427,6 +427,7 @@ template parseNumber(p: var Parser) =
             if p.buf[pos] == Dot:
                 echo "next one is a dot too"
                 if p.buf[pos+1] in Digits:
+                    add(p.value, Dot)
                     inc(pos)
                     while p.buf[pos] in Digits:
                         echo "Found digit: " & $(p.buf[pos])
@@ -570,8 +571,8 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 echo "parsing number"
                 parseNumber(p)
                 if Dot in p.value: 
-                    echo "found dot"
-                    if p.value.count({Dot})>1:
+                    echo "found dot in: " & $(p.value)
+                    if p.value.count(Dot)>1:
                         echo "found more than 1 dot: it's a Version"
                         AddToken newVersion(p.value)
                     else:
