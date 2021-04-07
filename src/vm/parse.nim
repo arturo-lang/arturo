@@ -411,6 +411,7 @@ template parseNumber(p: var Parser) =
         inc(pos)
 
     if p.buf[pos] == Dot:
+        echo "found one dot"
         if p.buf[pos+1] == Dot:
             p.bufpos = pos
         else:
@@ -418,14 +419,19 @@ template parseNumber(p: var Parser) =
             inc(pos)
     
             while p.buf[pos] in Digits:
+                echo "Found digit: " & $(p.buf[pos])
                 add(p.value, p.buf[pos])
                 inc(pos)
 
+            echo "p.buf[pos] = " & $(p.buf[pos]) & " at " & $(pos)
             if p.buf[pos] == Dot:
+                echo "next one is a dot too"
                 while p.buf[pos] in Digits:
+                    echo "Found digit: " & $(p.buf[pos])
                     add(p.value, p.buf[pos])
                     inc(pos)
                 
+                echo "p.buf[pos] = " & $(p.buf[pos]) & " at " & $(pos)
                 if p.buf[pos] in {'+','-'}:
                     while p.buf[pos] in SemVerExtra:
                         add(p.value, p.buf[pos])
@@ -559,11 +565,15 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 else:
                     AddToken newType(p.value)
             of PermittedNumbers_Start:
+                echo "parsing number"
                 parseNumber(p)
                 if Dot in p.value: 
+                    echo "found dot"
                     if p.value.count({Dot})>1:
+                        echo "found more than 1 dot: it's a Version"
                         AddToken newVersion(p.value)
                     else:
+                        echo "found 1 dot: it's a Floating"
                         AddToken newFloating(p.value)
                 else: AddToken newInteger(p.value)
             of Symbols:
