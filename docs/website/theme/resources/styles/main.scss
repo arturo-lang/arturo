@@ -357,16 +357,26 @@ code[class*=language-], pre[class*=language-] {
 #searchbar {
     border: 0;
     border-radius: 0;
-    border-left: 2px solid black;
+    border-left: 2px solid $main-purple;
     outline: none;
     width: 30vw;
     font-size: 1.2em;
     padding-left: 50px;
-    margin-top: 10px;
+    margin-top: 0px;
+    line-height: 1.9em;
 }
 
 #searchbar-icon {
     position: relative;
     left: calc(-1 * 30vw + 20px);
     top: 18px;
+}
+
+a.algolia-docsearch-suggestion:hover {
+    border-bottom: 0;
+}
+@media (max-width: 1023px) {
+    .algolia-autocomplete {
+        display: none !important;
+    }
 }
