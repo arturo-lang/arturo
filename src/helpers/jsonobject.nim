@@ -81,5 +81,7 @@ proc parseJsonNode*(n: JsonNode): Value =
 proc valueFromJson*(src: string): Value =
     parseJsonNode(parseJson(src))
 
-proc jsonFromValue*(val: Value): string =
-    json.pretty(generateJsonNode(val), indent=4)
+proc jsonFromValue*(val: Value, pretty: bool = true): string =
+    let node = generateJsonNode(val)
+    if pretty: json.pretty(node, indent=4)
+    else: $(node)
