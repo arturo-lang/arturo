@@ -17,10 +17,11 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver
-import cgi, httpclient, os, sequtils, smtp
+import cgi, httpclient, httpcore, os, sequtils, smtp
 import nre except toSeq
 
 import helpers/colors
+import helpers/jsonobject
 import helpers/webview
 
 import vm/lib
@@ -111,19 +112,81 @@ proc defineSymbols*() =
     builtin "request",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "perform HTTP request to given url",
+        description = "perform HTTP request to url with given data and get response",
         args        = {
-            "url"   : {String}
+            "url"   : {String},
+            "data"  : {Dictionary}
         },
         attrs       = {
-
+            "get"       : ({Boolean},"perform a GET request (default)"),
+            "post"      : ({Boolean},"perform a POST request"),
+            "patch"     : ({Boolean},"perform a PATCH request"),
+            "put"       : ({Boolean},"perform a PUT request"),
+            "delete"    : ({Boolean},"perform a DELETE request"),
+            "json"      : ({Boolean},"send data as Json"),
+            "headers"   : ({Dictionary},"send custom HTTP headers"),
+            "timeout"   : ({Integer},"set a timeout"),
+            "proxy"     : ({String},"use given proxy url")
         },
-        returns     = {String},
+        returns     = {Dictionary},
         example     = """
         """:
             ##########################################################
-            when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
-            discard
+            when defined(SAFE): RuntimeError_OperationNotPermitted("request")
+
+            var meth: HttpMethod = HttpGet 
+
+            if (popAttr("get")!=VNULL): discard
+            if (popAttr("post")!=VNULL): meth = HttpPost
+            if (popAttr("patch")!=VNULL): meth = HttpPatch
+            if (popAttr("put")!=VNULL): meth = HttpPut
+            if (popAttr("delete")!=VNULL): meth = HttpDelete
+
+            var headers: HttpHeaders = newHttpHeaders()
+            if (let aHeaders = popAttr("headers"); aHeaders != VNULL):
+                var headersArr: seq[(string,string)] = @[]
+                for k,v in pairs(aHeaders.d):
+                    headersArr.add((k, $(v)))
+                headers = newHttpHeaders(headersArr)
+
+            var timeout: int = -1
+            if (let aTimeout = popAttr("timeout"); aTimeout != VNULL):
+                timeout = aTimeout.i
+
+            var proxy: Proxy = nil
+            if (let aProxy = popAttr("proxy"); aProxy != VNULL):
+                proxy = newProxy(aProxy.s)
+
+            var body: string = ""
+            var multipart: MultipartData = nil
+            if (popAttr("json") != VNULL):
+                headers.add("Content-Type", "application/json")
+                body = jsonFromValue(y, pretty=false)
+            else:
+                multipart = newMultipartData()
+                for k,v in pairs(y.d):
+                    multipart.add(k, $(v))
+
+            let client = newHttpClient(proxy=proxy, 
+                                       timeout=timeout,
+                                       headers=headers)
+
+            let response = client.request(url = x.s,
+                                          httpMethod = meth,
+                                          body = body,
+                                          headers = headers,
+                                          multipart = multipart)
+
+            var ret: ValueDict = initOrderedTable[string,Value]()
+            ret["version"] = newString(response.version)
+            ret["status"] = newString(response.status)
+            ret["body"] = newString(response.body)
+            ret["headers"] = newDictionary()
+
+            for k,v in ret.headers.table:
+                ret["headers"].d[k] = newStringBlock(v)
+                
+            push newDictionary(ret)
 
     builtin "serve",
         alias       = unaliased, 
