@@ -1,0 +1,11 @@
+loop 1..7 'x [
+    loop 1..7 'y [
+        loop 1..7 'z [
+            if all? @[
+                even? x
+                12 = sum @[x y z]
+                3 = size unique @[x y z]
+            ] -> print [x y z]
+        ]
+    ]
+]
