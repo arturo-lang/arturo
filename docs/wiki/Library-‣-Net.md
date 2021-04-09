@@ -5,6 +5,7 @@
 <!--ts-->
    * [download](#download)
    * [mail](#mail)
+   * [request](#request)
    * [serve](#serve)
 <!--te-->
 
@@ -76,6 +77,39 @@ mail "recipient@somemail.com"
         password: "mypass123"
     ]
 ```
+
+## request
+
+#### Description
+
+Perform HTTP request to url with given data and get response
+
+#### Usage
+
+<pre>
+<b>request</b> <ins>url</ins> <i>:string</i>
+        <ins>data</ins> <i>:null</i> <i>:dictionary</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|get|<i>:boolean</i>|perform a GET request (default)|
+|post|<i>:boolean</i>|perform a POST request|
+|patch|<i>:boolean</i>|perform a PATCH request|
+|put|<i>:boolean</i>|perform a PUT request|
+|delete|<i>:boolean</i>|perform a DELETE request|
+|json|<i>:boolean</i>|send data as Json|
+|headers|<i>:dictionary</i>|send custom HTTP headers|
+|agent|<i>:string</i>|use given user agent|
+|timeout|<i>:integer</i>|set a timeout|
+|proxy|<i>:string</i>|use given proxy url|
+|raw|<i>:boolean</i>|return raw response with processing|
+
+#### Returns
+
+- *:dictionary*
+
 
 ## serve
 
