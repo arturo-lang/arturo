@@ -10,6 +10,7 @@
    * [exit](#exit)
    * [panic](#panic)
    * [pause](#pause)
+   * [script](#script)
    * [sys](#sys)
 <!--te-->
 
@@ -167,6 +168,16 @@ pause 1000      ; sleeping for one second
 
 print "done. let's continue..."
 ```
+
+## script
+
+#### Description
+
+Embedded information about the current script
+
+#### Returns
+
+- *:dictionary*
 
 ## sys
 
