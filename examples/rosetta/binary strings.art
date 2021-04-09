@@ -1,0 +1,35 @@
+; creation
+x: "this is a string"
+y: "this is another string"
+z: "this is a string"
+ 
+; comparison
+if x = z -> print "x is z"
+ 
+; assignment
+z: "now this is another string too"
+ 
+; copying reference
+y: z 
+
+; copying value
+y: new z
+
+; check if empty
+if? empty? x -> print "empty"
+else         -> print "not empty"
+
+; append a string
+'x ++ "!"
+
+print x
+
+; substrings
+print slice x 5 8
+
+; join strings
+z: x ++ y
+print z
+
+; replace occurrences of substring
+print replace z "t" "T"
