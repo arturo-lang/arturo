@@ -108,6 +108,23 @@ proc defineSymbols*() =
             smtpConn.auth(config["username"].s, config["password"].s)
             smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
+    builtin "request",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "perform HTTP request to given url",
+        args        = {
+            "url"   : {String}
+        },
+        attrs       = {
+
+        },
+        returns     = {String},
+        example     = """
+        """:
+            ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
+            discard
+
     builtin "serve",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
