@@ -153,7 +153,7 @@ proc defineSymbols*() =
                 headers = newHttpHeaders(headersArr)
 
             var agent = "Arturo HTTP Client / " & getSystemInfo()["version"].s
-            if (let aAgent = popAttr("agent"; aAgent != VNULL)):
+            if (let aAgent = popAttr("agent"); aAgent != VNULL):
                 agent = aAgent.s
 
             var timeout: int = -1
