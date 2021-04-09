@@ -17,7 +17,8 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver
-import cgi, httpclient, httpcore, os, sequtils, smtp
+import cgi, httpclient, httpcore, os
+import sequtils, smtp, strscans, strutils, times
 import nre except toSeq
 
 import helpers/colors
@@ -129,6 +130,7 @@ proc defineSymbols*() =
             "agent"     : ({String},"use given user agent"),
             "timeout"   : ({Integer},"set a timeout"),
             "proxy"     : ({String},"use given proxy url"),
+            "raw"       : ({Boolean},"return raw response with processing")
         },
         returns     = {Dictionary},
         example     = """
@@ -194,12 +196,47 @@ proc defineSymbols*() =
 
             var ret: ValueDict = initOrderedTable[string,Value]()
             ret["version"] = newString(response.version)
-            ret["status"] = newString(response.status)
+            
             ret["body"] = newString(response.body)
             ret["headers"] = newDictionary()
 
-            for k,v in response.headers.table:
-                ret["headers"].d[k] = newStringBlock(v)
+            if (popAttr("raw")!=VNULL):
+                ret["status"] = newString(response.status)
+
+                for k,v in response.headers.table:
+                    ret["headers"].d[k] = newStringBlock(v)
+            else:
+                try:
+                    let respStatus = (response.status.splitWhitespace())[0]
+                    ret["status"] = newInteger(respStatus)
+                except:
+                    ret["status"] = newString(response.status)
+
+                for k,v in response.headers.table:
+                    var val: Value
+                    if v.len==1:
+                        case k
+                            of "content-length": 
+                                try:
+                                    val = newInteger(v[0])
+                                except:
+                                    val = newString(v[0])
+                            of "access-control-allow-credentials":
+                                val = newBoolean(v[0])
+                            of "date", "expires", "last-modified":
+                                let dateParts = v[0].splitWhitespace()
+                                let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
+                                var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
+                                let timeFormat = initTimeFormat(dateFormat)
+                                try:
+                                    val = newDate(parse(cleanDate, timeFormat))
+                                except:
+                                    val = newString(v[0])
+                            else:
+                                val = newString(v[0])
+                    else:
+                        val = newStringBlock(v)
+                    ret["headers"].d[k] = val
 
             push newDictionary(ret)
 
