@@ -174,7 +174,7 @@ proc defineSymbols*() =
                     multipart = newMultipartData()
                     for k,v in pairs(y.d):
                         echo "adding multipart data:" & $(k)
-                        multipart.add(k, $(v))
+                        multipart[k] = $(v)
             else:
                 if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
                     var parts: seq[string] = @[]
