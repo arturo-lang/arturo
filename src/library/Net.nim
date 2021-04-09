@@ -116,7 +116,7 @@ proc defineSymbols*() =
         description = "perform HTTP request to url with given data and get response",
         args        = {
             "url"   : {String},
-            "data"  : {Dictionary}
+            "data"  : {Dictionary, Null}
         },
         attrs       = {
             "get"       : ({Boolean},"perform a GET request (default)"),
@@ -126,8 +126,9 @@ proc defineSymbols*() =
             "delete"    : ({Boolean},"perform a DELETE request"),
             "json"      : ({Boolean},"send data as Json"),
             "headers"   : ({Dictionary},"send custom HTTP headers"),
+            "agent"     : ({String},"use given user agent"),
             "timeout"   : ({Integer},"set a timeout"),
-            "proxy"     : ({String},"use given proxy url")
+            "proxy"     : ({String},"use given proxy url"),
         },
         returns     = {Dictionary},
         example     = """
@@ -150,6 +151,10 @@ proc defineSymbols*() =
                 for k,v in pairs(aHeaders.d):
                     headersArr.add((k, $(v)))
                 headers = newHttpHeaders(headersArr)
+
+            var agent = "Arturo HTTP Client / " & getSystemInfo()["version"].s
+            if (let aAgent = popAttr("agent"; aAgent != VNULL)):
+                agent = aAgent.s
 
             var timeout: int = -1
             if (let aTimeout = popAttr("timeout"); aTimeout != VNULL):
@@ -176,9 +181,10 @@ proc defineSymbols*() =
                         parts.add(k & "=" & encodeUrl($(v)))
                     url &= "?" & parts.join("&")
 
-            let client = newHttpClient(proxy=proxy, 
-                                       timeout=timeout,
-                                       headers=headers)
+            let client = newHttpClient(agent = agent,
+                                       proxy = proxy, 
+                                       timeout = timeout,
+                                       headers = headers)
 
             let response = client.request(url = url,
                                           httpMethod = meth,
