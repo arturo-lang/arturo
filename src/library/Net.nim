@@ -190,7 +190,6 @@ proc defineSymbols*() =
             let response = client.request(url = url,
                                           httpMethod = meth,
                                           body = body,
-                                          headers = headers,
                                           multipart = multipart)
 
             var ret: ValueDict = initOrderedTable[string,Value]()
