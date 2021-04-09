@@ -183,9 +183,9 @@ proc defineSymbols*() =
             ret["body"] = newString(response.body)
             ret["headers"] = newDictionary()
 
-            for k,v in ret.headers.table:
+            for k,v in response.headers.table:
                 ret["headers"].d[k] = newStringBlock(v)
-                
+
             push newDictionary(ret)
 
     builtin "serve",
