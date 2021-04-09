@@ -22,6 +22,7 @@ import nre except toSeq
 
 import helpers/colors
 import helpers/jsonobject
+import helpers/url
 import helpers/webview
 
 import vm/lib
@@ -134,6 +135,7 @@ proc defineSymbols*() =
             ##########################################################
             when defined(SAFE): RuntimeError_OperationNotPermitted("request")
 
+            var url = x.s
             var meth: HttpMethod = HttpGet 
 
             if (popAttr("get")!=VNULL): discard
@@ -159,19 +161,26 @@ proc defineSymbols*() =
 
             var body: string = ""
             var multipart: MultipartData = nil
-            if (popAttr("json") != VNULL):
-                headers.add("Content-Type", "application/json")
-                body = jsonFromValue(y, pretty=false)
+            if meth != HttpGet:
+                if (popAttr("json") != VNULL):
+                    headers.add("Content-Type", "application/json")
+                    body = jsonFromValue(y, pretty=false)
+                else:
+                    multipart = newMultipartData()
+                    for k,v in pairs(y.d):
+                        multipart.add(k, $(v))
             else:
-                multipart = newMultipartData()
-                for k,v in pairs(y.d):
-                    multipart.add(k, $(v))
+                if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
+                    var parts: seq[string] = @[]
+                    for k,v in pairs(y.d):
+                        parts.add(k & "=" & encodeUrl($(v)))
+                    url &= "?" & parts.join("&")
 
             let client = newHttpClient(proxy=proxy, 
                                        timeout=timeout,
                                        headers=headers)
 
-            let response = client.request(url = x.s,
+            let response = client.request(url = url,
                                           httpMethod = meth,
                                           body = body,
                                           headers = headers,
