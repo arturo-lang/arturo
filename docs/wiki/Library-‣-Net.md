@@ -104,7 +104,7 @@ Perform HTTP request to url with given data and get response
 |agent|<i>:string</i>|use given user agent|
 |timeout|<i>:integer</i>|set a timeout|
 |proxy|<i>:string</i>|use given proxy url|
-|raw|<i>:boolean</i>|return raw response with processing|
+|raw|<i>:boolean</i>|return raw response without processing|
 
 #### Returns
 
