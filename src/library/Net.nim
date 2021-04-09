@@ -130,7 +130,7 @@ proc defineSymbols*() =
             "agent"     : ({String},"use given user agent"),
             "timeout"   : ({Integer},"set a timeout"),
             "proxy"     : ({String},"use given proxy url"),
-            "raw"       : ({Boolean},"return raw response with processing")
+            "raw"       : ({Boolean},"return raw response without processing")
         },
         returns     = {Dictionary},
         example     = """
