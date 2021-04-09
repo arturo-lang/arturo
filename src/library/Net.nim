@@ -152,7 +152,7 @@ proc defineSymbols*() =
                     headersArr.add((k, $(v)))
                 headers = newHttpHeaders(headersArr)
 
-            var agent = "Arturo HTTP Client / " & getSystemInfo()["version"].s
+            var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
             if (let aAgent = popAttr("agent"); aAgent != VNULL):
                 agent = aAgent.s
 
