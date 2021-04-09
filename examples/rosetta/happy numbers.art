@@ -1,0 +1,21 @@
+ord0: to :integer `0`
+happy?: function [x][
+    n: x
+    past: new []
+
+    while [n <> 1][
+        s: to :string n
+        n: 0
+        loop s 'c [
+            i: (to :integer c) - ord0
+            n: n + i * i
+        ]
+        if contains? past n -> return false
+        'past ++ n
+    ]
+    return true
+]
+
+loop 0..31 'x [
+    if happy? x -> print x
+]
