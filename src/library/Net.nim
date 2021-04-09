@@ -178,10 +178,10 @@ proc defineSymbols*() =
                 if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
                     var parts: seq[string] = @[]
                     for k,v in pairs(y.d):
-                        parts.add(k & "=" & encodeUrl($(v)))
+                        parts.add(k & "=" & urlencode($(v)))
                     url &= "?" & parts.join("&")
 
-            let client = newHttpClient(agent = agent,
+            let client = newHttpClient(userAgent = agent,
                                        proxy = proxy, 
                                        timeout = timeout,
                                        headers = headers)
