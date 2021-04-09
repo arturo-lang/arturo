@@ -18,7 +18,7 @@
 
 import algorithm, asyncdispatch, asynchttpserver
 import cgi, httpclient, httpcore, os
-import sequtils, smtp, strscans, strutils, times
+import sequtils, smtp, strutils, times
 import nre except toSeq
 
 import helpers/colors
@@ -216,7 +216,7 @@ proc defineSymbols*() =
                     var val: Value
                     if v.len==1:
                         case k
-                            of "content-length": 
+                            of "age","content-length": 
                                 try:
                                     val = newInteger(v[0])
                                 except:
