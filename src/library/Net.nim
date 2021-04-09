@@ -17,10 +17,13 @@
 #=======================================
 
 import algorithm, asyncdispatch, asynchttpserver
-import cgi, httpclient, os, sequtils, smtp
+import cgi, httpclient, httpcore, os
+import sequtils, smtp, strutils, times
 import nre except toSeq
 
 import helpers/colors
+import helpers/jsonobject
+import helpers/url
 import helpers/webview
 
 import vm/lib
@@ -107,6 +110,135 @@ proc defineSymbols*() =
             smtpConn.connect(config["server"].s, Port 465)
             smtpConn.auth(config["username"].s, config["password"].s)
             smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+
+    builtin "request",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "perform HTTP request to url with given data and get response",
+        args        = {
+            "url"   : {String},
+            "data"  : {Dictionary, Null}
+        },
+        attrs       = {
+            "get"       : ({Boolean},"perform a GET request (default)"),
+            "post"      : ({Boolean},"perform a POST request"),
+            "patch"     : ({Boolean},"perform a PATCH request"),
+            "put"       : ({Boolean},"perform a PUT request"),
+            "delete"    : ({Boolean},"perform a DELETE request"),
+            "json"      : ({Boolean},"send data as Json"),
+            "headers"   : ({Dictionary},"send custom HTTP headers"),
+            "agent"     : ({String},"use given user agent"),
+            "timeout"   : ({Integer},"set a timeout"),
+            "proxy"     : ({String},"use given proxy url"),
+            "raw"       : ({Boolean},"return raw response without processing")
+        },
+        returns     = {Dictionary},
+        example     = """
+        """:
+            ##########################################################
+            when defined(SAFE): RuntimeError_OperationNotPermitted("request")
+
+            var url = x.s
+            var meth: HttpMethod = HttpGet 
+
+            if (popAttr("get")!=VNULL): discard
+            if (popAttr("post")!=VNULL): meth = HttpPost
+            if (popAttr("patch")!=VNULL): meth = HttpPatch
+            if (popAttr("put")!=VNULL): meth = HttpPut
+            if (popAttr("delete")!=VNULL): meth = HttpDelete
+
+            var headers: HttpHeaders = newHttpHeaders()
+            if (let aHeaders = popAttr("headers"); aHeaders != VNULL):
+                var headersArr: seq[(string,string)] = @[]
+                for k,v in pairs(aHeaders.d):
+                    headersArr.add((k, $(v)))
+                headers = newHttpHeaders(headersArr)
+
+            var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
+            if (let aAgent = popAttr("agent"); aAgent != VNULL):
+                agent = aAgent.s
+
+            var timeout: int = -1
+            if (let aTimeout = popAttr("timeout"); aTimeout != VNULL):
+                timeout = aTimeout.i
+
+            var proxy: Proxy = nil
+            if (let aProxy = popAttr("proxy"); aProxy != VNULL):
+                proxy = newProxy(aProxy.s)
+
+            var body: string = ""
+            var multipart: MultipartData = nil
+            if meth != HttpGet:
+                if (popAttr("json") != VNULL):
+                    headers.add("Content-Type", "application/json")
+                    body = jsonFromValue(y, pretty=false)
+                else:
+                    multipart = newMultipartData()
+                    for k,v in pairs(y.d):
+                        echo "adding multipart data:" & $(k)
+                        multipart[k] = $(v)
+            else:
+                if y != VNULL and (y.kind==Dictionary and y.d.len!=0):
+                    var parts: seq[string] = @[]
+                    for k,v in pairs(y.d):
+                        parts.add(k & "=" & urlencode($(v)))
+                    url &= "?" & parts.join("&")
+
+            let client = newHttpClient(userAgent = agent,
+                                       proxy = proxy, 
+                                       timeout = timeout,
+                                       headers = headers)
+
+            let response = client.request(url = url,
+                                          httpMethod = meth,
+                                          body = body,
+                                          multipart = multipart)
+
+            var ret: ValueDict = initOrderedTable[string,Value]()
+            ret["version"] = newString(response.version)
+            
+            ret["body"] = newString(response.body)
+            ret["headers"] = newDictionary()
+
+            if (popAttr("raw")!=VNULL):
+                ret["status"] = newString(response.status)
+
+                for k,v in response.headers.table:
+                    ret["headers"].d[k] = newStringBlock(v)
+            else:
+                try:
+                    let respStatus = (response.status.splitWhitespace())[0]
+                    ret["status"] = newInteger(respStatus)
+                except:
+                    ret["status"] = newString(response.status)
+
+                for k,v in response.headers.table:
+                    var val: Value
+                    if v.len==1:
+                        case k
+                            of "age","content-length": 
+                                try:
+                                    val = newInteger(v[0])
+                                except:
+                                    val = newString(v[0])
+                            of "access-control-allow-credentials":
+                                val = newBoolean(v[0])
+                            of "date", "expires", "last-modified":
+                                let dateParts = v[0].splitWhitespace()
+                                let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
+                                var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
+                                let timeFormat = initTimeFormat(dateFormat)
+                                try:
+                                    val = newDate(parse(cleanDate, timeFormat))
+                                except:
+                                    val = newString(v[0])
+                            else:
+                                val = newString(v[0])
+                    else:
+                        val = newStringBlock(v)
+                    ret["headers"].d[k] = val
+
+            push newDictionary(ret)
 
     builtin "serve",
         alias       = unaliased, 

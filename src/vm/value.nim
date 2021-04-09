@@ -299,6 +299,10 @@ proc newBoolean*(b: bool): Value {.inline.} =
     if b: VTRUE
     else: VFALSE
 
+proc newBoolean*(s: string): Value {.inline.} =
+    if s=="true": newBoolean(true)
+    else: newBoolean(false)
+
 proc newBoolean*(i: int): Value {.inline.} =
     if i==0: newBoolean(false)
     else: newBoolean(true)
