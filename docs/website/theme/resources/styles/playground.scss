@@ -1,5 +1,5 @@
 #editor {
-    height: calc(100vh - 52px);
+    height: calc(100vh - 103px); /* navbar: 52 + tabs+margin: 51 */
     font-family: 'Fira Code', monospace !important;
     text-shadow: 0 1px rgba(0,0,0,.3);
     line-height: 1.5;
@@ -109,4 +109,17 @@
   &:hover .tooltiptext {
     visibility: visible;
   }
+}
+
+.tabs {
+    margin-bottom: 10px !important;
+
+    ul {
+        border-bottom-color: #6b6b6b;
+    }
+    
+    li.is-active a {
+        border-bottom-color: #20d929;
+        color: #20d929;
+    }
 }
