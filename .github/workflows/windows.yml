@@ -63,7 +63,7 @@ jobs:
           echo "Running nim"
           nim --version
 
-          nimble build -Y "-d:MINI"
+          ./install mini
 
       - name: Run unit tests
         run: |
