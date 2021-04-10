@@ -62,6 +62,8 @@ Options:
         update              Update all local modules
 
   -d --debug                Show debugging information
+  --no-color                Mute all colors from output
+
   -h --help                 Show this help screen
   -v --version              Show current version
 """
@@ -80,6 +82,7 @@ when isMainModule:
     var runModule   = static readFile("src/scripts/module.art")
     var code: string = ""
     var arguments: seq[string] = @[]
+    var muted: bool = false
 
     when not defined(PORTABLE):
 
@@ -116,6 +119,8 @@ when isMainModule:
                         of "d","debug":
                             # DoDebug = true
                             discard
+                        of "no-color":
+                            muted = true
                         of "h","help":
                             action = showHelp
                         of "v","version":
@@ -134,9 +139,9 @@ when isMainModule:
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        discard run(code, arguments, action==execFile)
+                        discard run(code, arguments, action==execFile, muted=muted)
                 else:
-                    discard run(code, arguments, action==execFile)
+                    discard run(code, arguments, action==execFile, muted=muted)
                     
             of writeBcode:
                 let filename = code

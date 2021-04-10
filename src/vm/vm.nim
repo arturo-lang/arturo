@@ -54,7 +54,7 @@ proc setupLibrary*() =
     for importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptInfo:ValueDict = initOrderedTable[string,Value]()) =
+template initialize*(args: seq[string], filename: string, isFile:bool, scriptInfo:ValueDict = initOrderedTable[string,Value](), mutedColors: bool = false) =
     # function arity
     Arities = initTable[string,int]()
     
@@ -80,7 +80,8 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptInf
         arguments = args, 
         version = ArturoVersion,
         build = ArturoBuild,
-        script = scriptInfo
+        script = scriptInfo,
+        muted = mutedColors
     )
 
     # paths
@@ -110,7 +111,7 @@ proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
 
         discard doExec(code)
 
-proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true): Translation =
+proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation =
     handleVMErrors:
         let (mainCode, scriptInfo) = doParseAll(code, isFile)
 
@@ -118,7 +119,8 @@ proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = t
             args, 
             code, 
             isFile=isFile, 
-            parseData(doParse(scriptInfo, false)).d
+            parseData(doParse(scriptInfo, false)).d,
+            muted
         )
 
         let evaled = mainCode.doEval()

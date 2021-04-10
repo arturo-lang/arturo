@@ -24,7 +24,7 @@ import helpers/colors
 import helpers/strings
 
 import vm/lib
-import vm/[eval, exec, parse]
+import vm/[eval, env, exec, parse]
 
 #=======================================
 # Variables
@@ -150,7 +150,10 @@ proc defineSymbols*() =
             else:
                 finalColor = fg(color)
 
-            push(newString(finalColor & x.s & resetColor))
+            if MutedColors: 
+                push newString(x.s)
+            else:
+                push(newString(finalColor & x.s & resetColor))
 
     builtin "escape",
         alias       = unaliased, 
