@@ -23,6 +23,7 @@ var
     PathStack*  {.threadvar.}: seq[string]
     HomeDir*    : string
     TmpDir*     : string
+    MutedColors*: bool
 
     #--------------------
     # private
@@ -106,7 +107,7 @@ proc addPath*(newPath: string) =
 proc popPath*(): string =
     PathStack.pop()
 
-proc initEnv*(arguments: seq[string], version: string, build: string, script: ValueDict) =
+proc initEnv*(arguments: seq[string], version: string, build: string, script: ValueDict, muted: bool = false) =
     Arguments = newStringBlock(arguments)
     ArturoVersion = version
     ArturoBuild = build
@@ -116,3 +117,5 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
     PathStack = @[]
     HomeDir = getHomeDir()
     TmpDir  = getTempDir()
+
+    MutedColors = muted
