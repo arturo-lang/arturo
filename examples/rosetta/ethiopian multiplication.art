@@ -1,0 +1,19 @@
+; By @Krenium
+
+halve: $ => [shr & 1]
+double: $ => [shl & 1]
+
+; even? already exists
+
+ethiopian: function [x y][
+    prod: 0
+    while [x > 0][
+        unless even? x [prod: prod + y]
+        x: halve x
+        y: double y
+    ]
+    return prod
+]
+
+print ethiopian 17 34
+print ethiopian 2 3
