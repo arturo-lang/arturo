@@ -417,6 +417,8 @@ proc defineSymbols*() =
                             if not forever:
                                 keepGoing = false
 
+    # TODO(Iterators\map): Make map work even without arguments
+    #  labels: bug, library
     builtin "map",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
