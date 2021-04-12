@@ -33,6 +33,6 @@ arguments: #[
 related: [
         "Files/read"
          "Iterators/select"
+         "Net/request"
          "Strings/replace"
-         "Collections/append"
     ]

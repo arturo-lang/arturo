@@ -46,10 +46,55 @@ function getSnippet(cd) {
     });
 }
 
+function getExample(cd) {
+    ajaxPost("https://arturo-lang.io/example.php",
+    
+    function (result) {
+        var got = JSON.parse(result);
+        editor.setValue(got.text);
+        editor.clearSelection();
+        editor.gotoLine(1);
+    }, {
+        i:cd
+    });
+}
+
+function parse_query_string(query) {
+    var vars = query.split("&");
+    var query_string = {};
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      var key = decodeURIComponent(pair[0]);
+      var value = decodeURIComponent(pair[1]);
+      // If first entry with this name
+      if (typeof query_string[key] === "undefined") {
+        query_string[key] = decodeURIComponent(value);
+        // If second entry with this name
+      } else if (typeof query_string[key] === "string") {
+        var arr = [query_string[key], decodeURIComponent(value)];
+        query_string[key] = arr;
+        // If third or later entry with this name
+      } else {
+        query_string[key].push(decodeURIComponent(value));
+      }
+    }
+    return query_string;
+  }
+  
+
 document.addEventListener("DOMContentLoaded", function() {
     if (window.location.search != "") {
-        var code = window.location.search.replace("?","");
-        getSnippet(code);
+        var query = window.location.search.substring(1);
+        var qs = parse_query_string(query);
+
+        if (qs.example !== undefined){
+            getExample(qs.example);
+            document.getElementById('scriptName').innerHTML = `${qs.example}.art`;
+        }
+        else {
+            var code = window.location.search.replace("?","");
+            getSnippet(code);
+        }
     }
 });
 
