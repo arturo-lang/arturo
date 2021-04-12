@@ -51,7 +51,7 @@ function getExample(cd) {
     
     function (result) {
         var got = JSON.parse(result);
-        editor.setValue(got.text);
+        editor.setValue(got.text+"\n");
         editor.clearSelection();
         editor.gotoLine(1);
     }, {
