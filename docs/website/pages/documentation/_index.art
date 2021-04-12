@@ -63,7 +63,7 @@ Here's what you can find here...
 <div id="at-a-glance" class="columns">
 
 
-<div class="column is-3">
+<div class="column">
   <a href="getting-started"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="far fa-play-circle"></i>
@@ -74,7 +74,7 @@ Here's what you can find here...
   </div></a>
 </div>
 
-<div class="column is-3">
+<div class="column">
   <a href="language"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-laptop-code"></i>
@@ -85,7 +85,7 @@ Here's what you can find here...
   </div></a>
 </div>
 
-<div class="column is-3">
+<div class="column">
   <a href="command-line"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-terminal"></i>
@@ -97,7 +97,7 @@ Here's what you can find here...
 </div>
 
 
-<div class="column is-3">
+<div class="column">
   <a href="library"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-book-open"></i>
@@ -108,11 +108,16 @@ Here's what you can find here...
   </div></a>
 </div>
 
+<div class="column">
+  <a href="examples"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-flask"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">Examples</h4>
+  </div>
+  </div></a>
 </div>
 
-<h3 class="title is-4 is-spaced mt-6">Examples</h3>
-
-If you're more of a hands-on coder (trust me, I do undestand you) and want to see the language in action, with real-life code examples, just <a target="_blank" rel="noopener" href="https://github.com/arturo-lang/arturo/tree/master/examples/" >look into the "examples" folder</a>. There you will find <i>lots</i> of working (and tested) examples, mostly following questions from Rosetta Code and Project Euler. 
-
-If you want to contribute your own, feel free to submit a pull request and it will be taken care of! ;-)
+</div>
 }

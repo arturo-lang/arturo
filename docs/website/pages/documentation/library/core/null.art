@@ -1,5 +1,4 @@
 name: "null"
-address: "0x103FFF048"
 type: :null
 description: "the NULL constant"
 module: "Core"

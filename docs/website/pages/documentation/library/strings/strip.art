@@ -38,8 +38,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/shr"
+        "System/script"
+         "Binary/shr"
          "Collections/drop"
          "Collections/sort"
-         "Collections/split"
     ]

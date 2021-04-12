@@ -1,0 +1,91 @@
+name: "request"
+type: :function
+module: "Net"
+returns: [
+        :dictionary
+    ]
+description: "perform HTTP request to url with given data and get response"
+example: ""
+attributes: #[
+    get: #[
+        types: [
+                :boolean
+            ]
+        description: "perform a GET request (default)"
+        ]
+    post: #[
+        types: [
+                :boolean
+            ]
+        description: "perform a POST request"
+        ]
+    patch: #[
+        types: [
+                :boolean
+            ]
+        description: "perform a PATCH request"
+        ]
+    put: #[
+        types: [
+                :boolean
+            ]
+        description: "perform a PUT request"
+        ]
+    delete: #[
+        types: [
+                :boolean
+            ]
+        description: "perform a DELETE request"
+        ]
+    json: #[
+        types: [
+                :boolean
+            ]
+        description: "send data as Json"
+        ]
+    headers: #[
+        types: [
+                :dictionary
+            ]
+        description: "send custom HTTP headers"
+        ]
+    agent: #[
+        types: [
+                :string
+            ]
+        description: "use given user agent"
+        ]
+    timeout: #[
+        types: [
+                :integer
+            ]
+        description: "set a timeout"
+        ]
+    proxy: #[
+        types: [
+                :string
+            ]
+        description: "use given proxy url"
+        ]
+    raw: #[
+        types: [
+                :boolean
+            ]
+        description: "return raw response without processing"
+        ]
+    ]
+arguments: #[
+    url: [
+            :string
+        ]
+    data: [
+            :null
+             :dictionary
+        ]
+    ]
+related: [
+        "Collections/repeat"
+         "Collections/reverse"
+         "Collections/values"
+         "Comparison/equal?"
+    ]

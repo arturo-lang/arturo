@@ -1,5 +1,4 @@
 name: "false"
-address: "0x103FFEE58"
 type: :boolean
 description: "the FALSE boolean constant"
 module: "Logic"

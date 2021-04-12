@@ -1,5 +1,4 @@
 name: "path"
-address: "0x104035C78"
 type: :dictionary
 description: "common path constants"
 module: "Paths"
