@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import bitops, std/math, sequtils, sugar
+import algorithm, bitops, std/math, sequtils, sugar
 when not defined(NOGMP):
     import extras/bignum
 
@@ -136,6 +136,25 @@ proc factors*(n: int): seq[int] =
 
     result = res
 
+proc primeFactorization*(n: int): seq[int] =
+    var x = n
+    result = @[]
+    while x mod 2 == 0:
+        result.add(2)
+        x = x div 2
+
+    var i = 3
+    while i <= (int)sqrt((float)x):
+        while x mod i == 0:
+            result.add(i)
+            x = x div i
+        i += 2
+
+    if x>2:
+        result.add(x)
+    
+    sort(result)
+
 proc primeFactors*(n: int): seq[int] =   
     factors(n).filter((x)=>isPrime(x.uint64)) 
 
@@ -160,6 +179,32 @@ when not defined(NOGMP):
 
         result.add(factor1)
         result.add(factor2)
+        
+    proc primeFactorization*(n: Int): seq[Int] =
+        var x = n
+        result = @[]
+        var d = newInt(1)
+        var m = newInt(1)
+        while x mod 2 == 0:
+            result.add(newInt(2))
+            discard `div`(x, x, 2)
+
+        var i = newInt(3)
+        while i <= sqrt(x):
+            m = `mod`(x,i)
+            #discard `mod`(m,x,i)
+            while x mod i==0:
+                result.add(i)
+                x = x div i
+                #(x,m) = divMod(x,i)
+                #discard divMod(x,m,x,i)
+
+            i = nextPrime(i)
+
+        if x>2:
+            result.add(x)
+        
+        sort(result)
 
     proc factors*(n: Int): seq[Int] =
         var res: seq[Int] = @[]
