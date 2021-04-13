@@ -486,7 +486,7 @@ Get list of factors for given integer
 
 |Attribute|Type|Description|
 |---|---|---|
-|prime|<i>:boolean</i>|get only prime factors|
+|prime|<i>:boolean</i>|prime factorization|
 
 #### Returns
 
@@ -495,8 +495,12 @@ Get list of factors for given integer
 #### Examples
 
 ```red
-factors 16          ; => [1 2 4 8 16]
-factors.prime 16    ; => [2]
+factors 16                                  ; => [1 2 4 8 16]
+factors.prime 48                            ; => [2 2 2 2 3]
+unique factors.prime 48                     ; => [2 3]
+
+factors.prime 18446744073709551615123120
+; => [2 2 2 2 3 5 61 141529 26970107 330103811]
 ```
 
 ## floor
