@@ -196,3 +196,11 @@
     }
     .ace_scrollbar-h{margin: 0 2px}    
 }
+
+#terminal_output {
+    -webkit-transition: opacity .75s ease-in-out;
+   -moz-transition: opacity .75s ease-in-out;
+   -ms-transition: opacity .75s ease-in-out;
+   -o-transition: opacity .75s ease-in-out;
+   transition: opacity .75s ease-in-out;
+}
