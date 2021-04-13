@@ -123,3 +123,24 @@ function shareLink(){
         });
     }
 }
+window.expanded = false;
+function toggleExpand(){
+    if (window.expanded){
+        window.expanded = false;
+        document.querySelector(".doccols").style.display = "flex";
+        document.querySelector("#expanderIcon").classList.remove("fa-compress-alt");
+        document.querySelector("#expanderIcon").classList.add("fa-expand-alt");
+        document.querySelector("#runbutton").classList.remove("expanded");
+        document.querySelector("#sharebutton").classList.remove("expanded");
+        document.querySelector("#expander").classList.remove("expanded");
+    }
+    else {
+        window.expanded = true;
+        document.querySelector(".doccols").style.display = "inherit";
+        document.querySelector("#expanderIcon").classList.remove("fa-expand-alt");
+        document.querySelector("#expanderIcon").classList.add("fa-compress-alt");
+        document.querySelector("#runbutton").classList.add("expanded");
+        document.querySelector("#sharebutton").classList.add("expanded");
+        document.querySelector("#expander").classList.add("expanded");
+    }
+}
