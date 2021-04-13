@@ -7,6 +7,13 @@
 ######################################################
 
 #=======================================
+# Global Variables
+#=======================================
+
+var
+    NoColors* = false
+
+#=======================================
 # Constants
 #=======================================
 
@@ -28,13 +35,17 @@ const
 #=======================================
 
 template fg*(color: string=""):string =
-    "\e[0" & color & "m"
+    if NoColors: ""
+    else: "\e[0" & color & "m"
 
 template bold*(color: string=""):string =
-    "\e[1" & color & "m"
+    if NoColors: ""
+    else: "\e[1" & color & "m"
 
 template underline*(color: string=""):string = 
-    "\e[4" & color & "m"
+    if NoColors: ""
+    else: "\e[4" & color & "m"
 
 template rgb*(color: string=""):string =
-    ";38;5;" & color
+    if NoColors: ""
+    else: ";38;5;" & color
