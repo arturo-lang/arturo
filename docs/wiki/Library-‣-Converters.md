@@ -311,6 +311,9 @@ to :string .format:"dd/MM/yy" now
 
 to :date .format:"dd/MM/yyyy" "22/03/2021"
 ; 2021-03-22T00:00:00+01:00
+
+to :string .format:".2f" 123.12345
+; 123.12
 ```
 
 ## with
