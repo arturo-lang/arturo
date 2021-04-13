@@ -63,6 +63,23 @@
     }
 }
 
+#expander {
+    position: absolute;
+    top: 58px;
+    left: calc(50vw - 40px);
+    color: white;
+    z-index: 5;
+
+    a {
+        color: #777;
+        border: 0;
+        
+        &:hover {
+            color: #BBB;
+        }
+    }
+}
+
 @media (max-width: 768px) {
     #runbutton {
         left: calc(100vw - 90px);
@@ -71,6 +88,22 @@
     #sharebutton {
         left: calc(100vw - 90px);
     }
+
+    #expander {
+        left: calc(100vw - 40px);
+    }
+}
+
+#runbutton.expanded {
+    left: calc(100vw - 90px);
+}
+
+#sharebutton.expanded {
+    left: calc(100vw - 90px);
+}
+
+#expander.expanded {
+    left: calc(100vw - 40px);
 }
 
 /* Tooltip container */
