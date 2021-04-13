@@ -13,6 +13,8 @@
 import os, parseopt, sequtils, strutils
 import sugar, tables, times
 
+import helpers/colors
+
 import vm/[parse,value]
 
 #=======================================
@@ -23,7 +25,6 @@ var
     PathStack*  {.threadvar.}: seq[string]
     HomeDir*    : string
     TmpDir*     : string
-    MutedColors*: bool
 
     #--------------------
     # private
@@ -118,4 +119,4 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
     HomeDir = getHomeDir()
     TmpDir  = getTempDir()
 
-    MutedColors = muted
+    NoColors = muted

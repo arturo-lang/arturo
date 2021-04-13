@@ -150,10 +150,7 @@ proc defineSymbols*() =
             else:
                 finalColor = fg(color)
 
-            if MutedColors: 
-                push newString(x.s)
-            else:
-                push(newString(finalColor & x.s & resetColor))
+            push(newString(finalColor & x.s & resetColor))
 
     builtin "escape",
         alias       = unaliased, 
