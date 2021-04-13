@@ -342,6 +342,8 @@ proc defineSymbols*() =
             ##########################################################
             push(newFloating(exp(asFloat(x))))
 
+    # TODO(Numbers\factors) Add option for complete prime factorization
+    #  labels: library, enhancement
     builtin "factors",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
