@@ -354,6 +354,9 @@ proc defineSymbols*() =
 
             push(newFunction(x,y,imports,exports,exportable))
 
+    # TODO(Converters\to) Add option for custom number (:integer,:floating) formatting
+    #  this could be done pretty much like with `:date` values and the `.format` attribute
+    #  labels: library, enhancement
     builtin "to",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
