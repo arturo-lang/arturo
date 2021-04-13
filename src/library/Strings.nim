@@ -440,8 +440,6 @@ proc defineSymbols*() =
             else:
                 push(newString(unindent(x.s, count, padding))) 
 
-    # TODO(Strings\pad) Add option to support padding with given string (e.g. digit)
-    #  labels: library, enhancement
     builtin "pad",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
