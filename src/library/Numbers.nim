@@ -342,8 +342,6 @@ proc defineSymbols*() =
             ##########################################################
             push(newFloating(exp(asFloat(x))))
 
-    # TODO(Numbers\factors) Add option for complete prime factorization
-    #  labels: library, enhancement
     builtin "factors",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -352,12 +350,16 @@ proc defineSymbols*() =
             "number"    : {Integer}
         },
         attrs       = {
-            "prime" : ({Boolean},"get only prime factors")
+            "prime" : ({Boolean},"prime factorization")
         },
         returns     = {Block},
         example     = """
-            factors 16          ; => [1 2 4 8 16]
-            factors.prime 16    ; => [2]
+            factors 16                                  ; => [1 2 4 8 16]
+            factors.prime 48                            ; => [2 2 2 2 3]
+            unique factors.prime 48                     ; => [2 3]
+            
+            factors.prime 18446744073709551615123120
+            ; => [2 2 2 2 3 5 61 141529 26970107 330103811]
         """:
             ##########################################################
             var prime = false
@@ -365,13 +367,13 @@ proc defineSymbols*() =
 
             if x.iKind==NormalInteger:
                 if prime:
-                    push(newBlock(primeFactors(x.i).map((x)=>newInteger(x))))
+                    push(newBlock(primeFactorization(x.i).map((x)=>newInteger(x))))
                 else:
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
                 when not defined(NOGMP):
                     if prime:
-                        push(newBlock(primeFactors(x.bi).map((x)=>newInteger(x))))
+                        push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
                     else:
                         push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 

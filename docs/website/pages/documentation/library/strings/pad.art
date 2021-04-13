@@ -26,6 +26,12 @@ attributes: #[
             ]
         description: "add right padding"
         ]
+    with: #[
+        types: [
+                :char
+            ]
+        description: "pad with given character"
+        ]
     ]
 arguments: #[
     string: [

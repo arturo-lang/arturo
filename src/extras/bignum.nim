@@ -2574,6 +2574,14 @@ proc exp*(x: int | culong, y: culong, m: Int): Int =
   ## If `m` == 0, z = x^y.
   exp(newInt(x), y, m)
 
+proc sqrt*(z, x: Int): Int =
+    result = z
+    mpz_sqrt(z[], x[])
+
+proc sqrt*(x: Int): Int =
+  ## Returns the greatest common divisor of `x` and `y`.
+  newInt().sqrt(x)
+
 proc gcd*(z, x, y: Int): Int =
   ## Sets `z` to the greatest common divisor of `x` and `y` and returns `z`.
   result = z

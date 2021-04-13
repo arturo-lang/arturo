@@ -354,9 +354,6 @@ proc defineSymbols*() =
 
             push(newFunction(x,y,imports,exports,exportable))
 
-    # TODO(Converters\to) Add option for custom number (:integer,:floating) formatting
-    #  this could be done pretty much like with `:date` values and the `.format` attribute
-    #  labels: library, enhancement
     builtin "to",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -394,6 +391,9 @@ proc defineSymbols*() =
 
             to :date .format:"dd/MM/yyyy" "22/03/2021"
             ; 2021-03-22T00:00:00+01:00
+
+            to :string .format:".2f" 123.12345
+            ; 123.12
         """:
             ##########################################################
             let tp = x.t
@@ -428,7 +428,16 @@ proc defineSymbols*() =
                             of Floating: push newFloating((float)y.i)
                             of Char: push newChar(chr(y.i))
                             of String: 
-                                if y.iKind==NormalInteger: push newString($(y.i))
+                                if y.iKind==NormalInteger: 
+                                    if (let aFormat = popAttr("format"); aFormat != VNULL):
+                                        try:
+                                            var ret = ""
+                                            formatValue(ret, y.i, aFormat.s)
+                                            push newString(ret)
+                                        except:
+                                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                    else:
+                                        push newString($(y.i))
                                 else:
                                     when not defined(NOGMP): 
                                         push newString($(y.bi))
@@ -445,7 +454,16 @@ proc defineSymbols*() =
                             of Boolean: push newBoolean(y.f!=0.0)
                             of Integer: push newInteger((int)y.f)
                             of Char: push newChar(chr((int)y.f))
-                            of String: push newString($(y.f))
+                            of String: 
+                                if (let aFormat = popAttr("format"); aFormat != VNULL):
+                                    try:
+                                        var ret = ""
+                                        formatValue(ret, y.f, aFormat.s)
+                                        push newString(ret)
+                                    except:
+                                        RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                                else:
+                                    push newString($(y.f))
                             of Binary:
                                 let str = $(y.f)
                                 var ret: ByteArray = newSeq[byte](str.len)
