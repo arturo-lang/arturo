@@ -433,6 +433,7 @@ Check if given string consists only of whitespace
 |---|---|---|
 |center|<i>:boolean</i>|add padding to both sides|
 |right|<i>:boolean</i>|add right padding|
+|with|<i>:char</i>|pad with given character|
 
 #### Returns
 

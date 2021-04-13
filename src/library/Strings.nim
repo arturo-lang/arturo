@@ -440,8 +440,6 @@ proc defineSymbols*() =
             else:
                 push(newString(unindent(x.s, count, padding))) 
 
-    # TODO(Strings\pad) Add option to support padding with given string (e.g. digit)
-    #  labels: library, enhancement
     builtin "pad",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -452,7 +450,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "center"    : ({Boolean},"add padding to both sides"),
-            "right"     : ({Boolean},"add right padding")
+            "right"     : ({Boolean},"add right padding"),
+            "with"      : ({Char},"pad with given character")
         },
         returns     = {String},
         example     = """
@@ -464,15 +463,21 @@ proc defineSymbols*() =
             pad 'a 10            ; a: "     hello"
         """:
             ##########################################################
+            var padding = ' '.Rune
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.c
+
             if (popAttr("right") != VNULL):
-                if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i)))
-                else: InPlace.s = unicode.alignLeft(InPlaced.s, y.i)
+                if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
+                else: InPlace.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
+            # TODO(Strings\pad) Add unicode support for .center
+            #  labels: library, enhancement, bug
             elif (popAttr("center") != VNULL): # PENDING unicode support
                 if x.kind==String: push(newString(center(x.s, y.i)))
                 else: InPlace.s = center(InPlaced.s, y.i)
             else:
-                if x.kind==String: push(newString(unicode.align(x.s, y.i)))
-                else: InPlace.s = unicode.align(InPlaced.s, y.i)
+                if x.kind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
+                else: InPlace.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
     builtin "prefix",
         alias       = unaliased, 
