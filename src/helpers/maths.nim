@@ -138,6 +138,7 @@ proc factors*(n: int): seq[int] =
 
 proc primeFactorization*(n: int): seq[int] =
     var x = n
+    if x==0: return
     result = @[]
     while x mod 2 == 0:
         result.add(2)
@@ -182,6 +183,7 @@ when not defined(NOGMP):
         
     proc primeFactorization*(n: Int): seq[Int] =
         var x = n
+        if x==0: return
         result = @[]
         #var d = newInt(1)
         #var m = newInt(1)
