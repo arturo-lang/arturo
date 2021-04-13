@@ -24,7 +24,7 @@ import helpers/colors
 import helpers/strings
 
 import vm/lib
-import vm/[eval, env, exec, parse]
+import vm/[eval, exec, parse]
 
 #=======================================
 # Variables
