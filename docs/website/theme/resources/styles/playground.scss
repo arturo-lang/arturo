@@ -80,6 +80,23 @@
     }
 }
 
+#wordwrapper {
+    position: absolute;
+    top: 59px;
+    left: calc(50vw - 70px);
+    color: white;
+    z-index: 5;
+
+    a {
+        color: #777;
+        border: 0;
+        
+        &:hover {
+            color: #BBB;
+        }
+    }
+}
+
 @media (max-width: 768px) {
     #runbutton {
         left: calc(100vw - 90px);
@@ -91,6 +108,10 @@
 
     #expander {
         left: calc(100vw - 40px);
+    }
+
+    #wordwrapper {
+        left: calc(100vw - 70px);
     }
 }
 
@@ -104,6 +125,10 @@
 
 #expander.expanded {
     left: calc(100vw - 40px);
+}
+
+#wordwrapper.expanded {
+    left: calc(100vw - 70px);
 }
 
 /* Tooltip container */

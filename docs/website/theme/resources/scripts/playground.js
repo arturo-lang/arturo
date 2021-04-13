@@ -133,6 +133,7 @@ function toggleExpand(){
         document.querySelector("#runbutton").classList.remove("expanded");
         document.querySelector("#sharebutton").classList.remove("expanded");
         document.querySelector("#expander").classList.remove("expanded");
+        document.querySelector("#wordwrapper").classList.remove("expanded");
     }
     else {
         window.expanded = true;
@@ -142,5 +143,22 @@ function toggleExpand(){
         document.querySelector("#runbutton").classList.add("expanded");
         document.querySelector("#sharebutton").classList.add("expanded");
         document.querySelector("#expander").classList.add("expanded");
+        document.querySelector("#wordwrapper").classList.add("expanded");
+    }
+}
+
+window.wordwrap = false;
+function toggleWordWrap(){
+    if (window.wordwrap){
+        window.wordwrap = false;
+        editor.setOption("wrap", false);
+        document.querySelector("#wordwrapperIcon").classList.remove("fa-align-justify");
+        document.querySelector("#wordwrapperIcon").classList.add("fa-align-left");
+    }
+    else {
+        window.wordwrap = true;
+        editor.setOption("wrap", true);
+        document.querySelector("#wordwrapperIcon").classList.remove("fa-align-left");
+        document.querySelector("#wordwrapperIcon").classList.add("fa-align-justify");
     }
 }

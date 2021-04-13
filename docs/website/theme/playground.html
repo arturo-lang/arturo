@@ -4,7 +4,8 @@
     <||= importPartial "components/navbar.html" ||>
         
         <main>
-            <div id="expander"><a href="#" onclick="toggleExpand()"><i id="expanderIcon" class="fas fa-expand-alt"></i></a></div>
+            <div id="wordwrapper"><a href="#" onclick="toggleWordWrap()" title="toggle word wrap"><i id="wordwrapperIcon" class="fas fa-align-left" aria-hidden="true"></i></a></div>
+            <div id="expander"><a href="#" onclick="toggleExpand()" title="toggle full size"><i id="expanderIcon" class="fas fa-expand-alt"></i></a></div>
             <a href="#" onclick="execCode()" title="Run script" aria-label="execute code snippet"><div id="runbutton"><i class="far fa-play-circle" aria-hidden="true"></i></div></a>
             <a href="#" onclick="shareLink()" title="Share link" aria-label="share code snippet"><div id="sharebutton"><i class="fas fa-share-alt" aria-hidden="true"></i></div></a>
             <div class="columns doccols">
