@@ -183,15 +183,15 @@ when not defined(NOGMP):
     proc primeFactorization*(n: Int): seq[Int] =
         var x = n
         result = @[]
-        var d = newInt(1)
-        var m = newInt(1)
+        #var d = newInt(1)
+        #var m = newInt(1)
         while x mod 2 == 0:
             result.add(newInt(2))
             discard `div`(x, x, 2)
 
         var i = newInt(3)
         while i <= sqrt(x):
-            m = `mod`(x,i)
+            #m = `mod`(x,i)
             #discard `mod`(m,x,i)
             while x mod i==0:
                 result.add(i)
