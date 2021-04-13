@@ -460,7 +460,10 @@ proc defineSymbols*() =
             pad.center "good" 10          ; => "   good   "
             
             a: "hello"
-            pad 'a 10            ; a: "     hello"
+            pad 'a 10                     ; a: "     hello"
+
+            pad.with:`0` to :string 123 5   
+            ; => 00123
         """:
             ##########################################################
             var padding = ' '.Rune
