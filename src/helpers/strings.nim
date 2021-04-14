@@ -59,5 +59,4 @@ proc centerUnicode*(s: string, width: int, padding = ' '.Rune): string =
     result = unicode.align(s, leftPadding+sLen, padding)
     
     for i in (leftPadding+sLen) ..< width:
-        echo $i
         result.add $padding
