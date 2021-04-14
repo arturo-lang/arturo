@@ -473,9 +473,7 @@ proc defineSymbols*() =
             if (popAttr("right") != VNULL):
                 if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
                 else: InPlace.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
-            # TODO(Strings\pad) Add unicode support for .center
-            #  labels: library, enhancement, bug
-            elif (popAttr("center") != VNULL): # PENDING unicode support
+            elif (popAttr("center") != VNULL):
                 if x.kind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
                 else: InPlace.s = centerUnicode(InPlaced.s, y.i, padding=padding)
             else:
