@@ -51,3 +51,13 @@ iterator tokenize*(text: string; sep: openArray[string]): string =
                 break
         inc i
     if i > lastMatch: yield text[lastMatch ..< i]
+
+proc centerUnicode*(s: string, width: int, padding = ' '.Rune): string =
+    let sLen = s.runeLen
+    if width <= sLen: return s
+    let leftPadding = (width - sLen) div 2
+    result = unicode.align(s, leftPadding+sLen, padding)
+    
+    for i in (leftPadding+sLen) ..< width:
+        echo $i
+        result.add $padding
