@@ -19,6 +19,7 @@ postprocess: #.raw [
 ]
 
 routes: #.raw [
+    {documentation/examples\.art}           "examplepage.html"
     {playground/_index\.art}                "playground.html"
     {examples/_index\.art}                  "docpage.html"
     {rosetta code/_index\.art}              "docpage.html"

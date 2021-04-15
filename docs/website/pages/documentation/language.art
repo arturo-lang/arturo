@@ -15,11 +15,13 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:boolean](#boolean)
        - [:integer](#integer)
        - [:floating](#floating)
+       - [:version](#version)
        - [:type](#type)
        - [:char](#char)
        - [:string](#string)
        - [:literal](#literal)
        - [:path](#path)
+       - [:pathLabel](#pathLabel)
        - [:inline](#inline)
        - [:block](#block)
        - [:dictionary](#dictionary)
@@ -50,7 +52,7 @@ Let's try to resume some key points of Arturo's no-syntax:
 - A block has no meaning until it is given one, or interpreted within some specific context, that is: `[ lorem ipsum ]` is perfectly valid Arturo code, until you try to "run" it - where the interpreter will complain that it has no idea what `lorem` and `ipsum` is. Pretty much like if I tell you a word in Swahili - you'll most likely need a dictionary to figure out what it might mean.
 - There are <u>no reserved "keywords"</u>. Every word can be re-defined.
 - You can format your code any way you want: no semicolons to add, no obligatory newlines, no commas, no parentheses, no Python-style indentation rules
-- Every **function** expects a pre-determined number of arguments. Initially, we check during evaluation, and during runtime we "consume" values until we reach the number of arguments required.
+- Every **function** expects a pre-determined number of arguments. Initially, we check during evaluation, and during runtime, we "consume" values until we reach the number of arguments required.
 
 As you can see, there is not much to learn from scratch here:
 
@@ -83,7 +85,7 @@ So, let's say you want to give a new meaning to the word `x`:
 ```red
 x: 2
 ```
-Basically, that was it: from now on, `x` will mean `2` (until and if it's changed). So if you follow the above statement with:
+That was it: from now on, `x` will mean `2` (until and if it's changed). So if you follow the above statement with:
 ```red
 print x
 ```
@@ -160,6 +162,16 @@ Floating values are basically floating-point numbers, that is: decimals. They be
 pi: 3.14159
 ```
 
+<h4 id="version">:version</h4>
+
+Version values are nothing but a fancy and portable way of defining SemVer-compliant versions (e.g. for packaging an application). The rule is rather simple: it has three numeric parts, separated by a `.` (dot).
+
+```red
+package: 1.0.3
+
+if package > 1.0.0 -> print "yep, the version is right!"
+```
+
 <h4 id="type">:type</h4>
 
 Type is a value representing another... type. To specify a type value, the format is a `:` (colon) followed by a word - the type's name: `:\w+`
@@ -182,7 +194,7 @@ ch: `a`
 
 <h4 id="string">:string</h4>
 
-A string is nothing but a series of characters, seen as one unit. In Arturo, in order to define a string, there are various ways:
+A string is nothing but a series of characters, seen as one unit. In Arturo, to define a string, there are various ways:
 
 **Single-line strings**
 
@@ -230,7 +242,7 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, in 
   line
   ```
 
-> 💡 If you want your string to contain sub-expressions that will be evaluated on-the-fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function `render` (or `~`) to process it accordingly: e.g. 
+> 💡 If you want your string to contain sub-expressions that will be evaluated on the fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function `render` (or `~`) to process it accordingly: e.g. 
 > ```red
 > x: 2
 > print ~"my variable is: |x|"
@@ -252,7 +264,7 @@ info func
 
 <h4 id="path">:path</h4>
 
-Paths in Arturo are a way of defining some hierarchy between values, something along the lines of: *parent* -> *child* -> *grandchild*. For this, in Arturo, we'd use a series of *values* or *words* delimited with a `\` (backslash). You can think of them as *indexes* in other programming languages.
+Paths in Arturo are a way of defining some hierarchy between values, something along the lines of *parent* -> *child* -> *grandchild*. For this, in Arturo, we'd use a series of *values* or *words* delimited with a `\` (backslash). You can think of them as *indexes* in other programming languages.
 
 ```red
 print user\name
@@ -274,6 +286,23 @@ print myArray\1
 ; prints "one"
 ```
 
+<h4 id="pathLabel">:pathLabels</h4>
+
+If paths are the way of defining some hierarchy between values, with *pathLabels* we are also able to assign values to some specific path.
+
+```red
+user: #[
+    name: "John"
+    surname: "Doe"
+]
+print user\name  ; will print "John"
+
+; let's change this user's name
+user\name: "Jane"
+
+print user\name ; ok, now it should print "Jane"
+```
+
 <h4 id="inline">:inline</h4>
 
 *Inline*s in Arturo generally denote a list of words/symbols/values that are grouped and given some type of priority in evaluation. An *inline* block is denoted by `(...)` (parentheses).
@@ -286,7 +315,7 @@ Please note though that, apart from precedence, `:inline` is a value type on its
 
 ```red
 a: [(one) two three]
-print type a\0 			; that is: (one)
+print type a\0      ; that is: (one)
 
 ; prints :inline
 ```
@@ -391,7 +420,7 @@ print to :binary "Hello world!"
 
 Another interesting feature of Arturo is what we'll analyze here: attributes.
 
-Basically, *attributes* are nothing but an easy way of defining optional named parameters for functions - but which can however transcend between different function calls.
+Technically, *attributes* are nothing but an easy way of defining optional named parameters for functions - but which can however transcend between different function calls.
 
 There are two types: 
 
@@ -400,7 +429,7 @@ There are two types:
 
 <h4 id="attr">:attr</h4>
 
-Attributes are basically optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
+Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
 
 Let's say we used the function `split`, to split a string into parts:
 ```red
@@ -441,7 +470,7 @@ But in order to understand why, you'd have to understand how evaluation in Artur
 
 <h3 id="the-right-to-left-rule">The right-to-left rule</h3>
 
-The main expression evaluation order of Arturo is *right-to-left*. But with a tiny asterisk: Your code *will* be evaluated from left-to-right, it is the expressions passed to your function calls that will be evaluated from right-to-left.
+The main expression evaluation order of Arturo is *right-to-left*. But with a tiny asterisk: Your code *will* be evaluated from left to right, it is the expressions passed to your function calls that will be evaluated from right-to-left.
 
 Let's take a very simple example:
 
@@ -457,7 +486,7 @@ Now let's take the first `print`. How is it working?
 Let's see:
 
 - First, the value `2 ` is pushed onto the stack
-- Then, we push the value `1	`
+- Then, we push the value `1  `
 - Then, we execute the function `add`: it pops two values from the stack, adds them up, and pushes the result (`3`) back onto the stack
 - Finally, we execute the function `print`: it pops the top value from the stack (`3`) and prints it.
 
@@ -568,7 +597,7 @@ This is equivalent to writing:
 x: $[x,y][add x y]
 ```
 
-Basically, it reads the following word, and if it's a function, pushes all it's needed arguments as anonymous variables.
+Basically, it reads the following word, and if it's a function, pushes all its needed arguments as anonymous variables.
 
 The same could work with a block argument, where `&` can be used as a placeholder for the needed anonymous variables:
 

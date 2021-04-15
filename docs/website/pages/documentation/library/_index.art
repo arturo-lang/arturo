@@ -1,9 +1,9 @@
 modules: ""
 content:{!md
 
-The Standard Library is split into different modules/dictionaries for keeping things better organized.  
+The Standard Library is split into different modules/dictionaries in order to keep things better organized.  
 
-Here is the complete list, each one containing all the defined words/function:
+Here is the complete list of modules, each one containing all the defined words/functions:
 
 ---
 
