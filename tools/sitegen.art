@@ -12,7 +12,7 @@ dict: new []
 
 loop rosettas 'ro [
     'dict ++ ro
-    'dict ++ read ~"examples/rosetta/|ro|.art"
+    ;'dict ++ read ~"examples/rosetta/|ro|.art"
 ]
 
 write "docs/website/data/rosetta.art" as.pretty.code dict
