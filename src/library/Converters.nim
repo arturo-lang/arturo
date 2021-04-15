@@ -98,7 +98,6 @@ proc defineSymbols*() =
                 "code"      : ({Boolean},"convert value to valid Arturo code"),
                 "pretty"    : ({Boolean},"prettify generated code"),
                 "unwrapped" : ({Boolean},"omit external block notation")
-
             }
         else:
             {
@@ -109,7 +108,6 @@ proc defineSymbols*() =
                 "code"      : ({Boolean},"convert value to valid Arturo code"),
                 "pretty"    : ({Boolean},"prettify generated code"),
                 "unwrapped" : ({Boolean},"omit external block notation")
-
             }
         ,
         returns     = {Any},
@@ -135,7 +133,7 @@ proc defineSymbols*() =
                 )
                 push(newBlock(res))
             elif (popAttr("code") != VNULL):
-                push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL))))
+                push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL), safeStrings = (popAttr("safe") != VNULL))))
             else:
                 when not defined(NOASCIIDECODE):
                     if (popAttr("ascii") != VNULL):
