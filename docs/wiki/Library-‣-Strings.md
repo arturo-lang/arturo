@@ -212,7 +212,7 @@ print indent .n:10 .with:"#" str
 
 #### Description
 
-Join collection of strings into string
+Join collection of values into string
 
 #### Usage
 
@@ -243,6 +243,12 @@ print join.with:"," arr
 
 join 'arr
 ; arr: "onetwothree"
+
+print join [`H` `e` `l` `l` `o` `!`]
+; Hello!
+
+print join @["1 + 2 = " 1+2]
+; 1 + 2 = 3
 ```
 
 ## levenshtein
