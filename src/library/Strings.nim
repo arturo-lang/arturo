@@ -251,7 +251,7 @@ proc defineSymbols*() =
     builtin "join",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "join collection of strings into string",
+        description = "join collection of values into string",
         args        = {
             "collection"    : {Block,Literal}
         },
@@ -270,22 +270,28 @@ proc defineSymbols*() =
             
             join 'arr
             ; arr: "onetwothree"
+
+            print join [`H` `e` `l` `l` `o` `!`]
+            ; Hello!
+
+            print join @["1 + 2 = " 1+2]
+            ; 1 + 2 = 3
         """:
             ##########################################################
             if (popAttr("path") != VNULL):
                 if x.kind==Literal:
-                    SetInPlace(newString(joinPath(InPlace.a.map(proc (v:Value):string = v.s))))
+                    SetInPlace(newString(joinPath(InPlace.a.map(proc (v:Value):string = $(v)))))
                 else:
-                    push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
+                    push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
             else:
                 var sep = ""
                 if (let aWith = popAttr("with"); aWith != VNULL):
                     sep = aWith.s
 
                 if x.kind==Literal:
-                    SetInPlace(newString(InPlace.a.map(proc (v:Value):string = v.s).join(sep)))
+                    SetInPlace(newString(InPlace.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
-                    push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
+                    push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 
