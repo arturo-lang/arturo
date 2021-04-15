@@ -286,9 +286,9 @@ print myArray\1
 ; prints "one"
 ```
 
-<h4 id="pathLabel">:pathLabels</h4>
+<h4 id="pathLabel">:pathLabel</h4>
 
-If paths are the way of defining some hierarchy between values, with *pathLabels* we are also able to assign values to some specific path.
+If paths are the way of defining some hierarchy between values, with *pathLabel*s we are also able to assign values to some specific path.
 
 ```red
 user: #[
