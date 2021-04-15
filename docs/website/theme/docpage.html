@@ -18,7 +18,7 @@
                         <h2 class="title is-size-3-touch is-size-2 is-spaced"><||= switch contains? pagePath "library" ["Library"] [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
                     <|| ] ||>
 
-                    <|| if? key? W 'modules [ 
+                    <||= switch key? W 'modules [ 
                         moduleList: join.with:"\n" map Data\libraryModules 'md [
                             ~{- [|to :string md|](|linkTo "documentation/library/"++(lower to :string md)|)}
                         ]
@@ -32,40 +32,20 @@
                         ]
                         functionList: new join.with:" ▪︎ " functionList
                         symbolList: new join.with:{&nbsp;&nbsp;&nbsp;} symbolList
-                    ||>
-                        <||= replace replace read.markdown replace replace replace replace replace replace
-                                W\content "#" "/" "Library-‣-" "" "%MODULE_LIST%" moduleList "%FUNCTION_LIST%" functionList "%SYMBOL_LIST%" symbolList "%FUNCTION_COUNT%" to :string (size Data\libraryFunctions) / 2 "<ul>" "<ulbd>" "</ul>" "</ulbd>" ||>
-                    <|| ] else [ ||>
-                        <||=
-                            switch "language" = last pagePath [ 
-                                aliasList: new []
-                                loop Data\librarySymbols [fn nm href][
-                                    'aliasList ++ ~{<tr><td><code>|replace replace fn "<" "&lt;" ">" "&gt;"|</code></td><td><a href='|linkTo "documentation/library/" ++ href|'>|nm|</a></td></tr>} 
-                                ]
-                                aliasList: new join.with:"\n" aliasList
-                                replace replace read.markdown replace W\content "%ALIAS_LIST%" aliasList "<ul>" "<ulbd>" "</ul>" "</ulbd>"
-                            ] [ 
-                                switch "examples" = last pagePath [
-                                    examples1: new []
-                                    examples2: new []
-                                    halfM: ((size Data\rosetta) / 2)
-                                    loop slice Data\rosetta 0 halfM [ti,co][
-                                        
-                                        'examples1 ++ ~{<li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
-                                    ]
-                                    loop slice Data\rosetta halfM+1 (size Data\rosetta) [ti, co][
-                                        'examples2 ++ ~{<li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" ltarget="_blank">|capitalize ti|</a></li>}
-                                    ]
-                                    examples1: join.with:"\n" examples1
-                                    examples2: join.with:"\n" examples2
-
-                                    read.markdown replace replace replace W\content "%EXAMPLES_COUNT%" to :string halfM "%EXAMPLES_1%" examples1 "%EXAMPLES_2%" examples2
-                                ] [
-                                    replace replace read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>"  
-                                ]
-                            ] 
-                        ||>
-                    <|| ] ||>
+                        replace replace read.markdown replace replace replace replace replace replace
+                                W\content "#" "/" "Library-‣-" "" "%MODULE_LIST%" moduleList "%FUNCTION_LIST%" functionList "%SYMBOL_LIST%" symbolList "%FUNCTION_COUNT%" to :string (size Data\libraryFunctions) / 2 "<ul>" "<ulbd>" "</ul>" "</ulbd>"
+                    ] [
+                        switch "language" = last pagePath [ 
+                            aliasList: new []
+                            loop Data\librarySymbols [fn nm href][
+                                'aliasList ++ ~{<tr><td><code>|replace replace fn "<" "&lt;" ">" "&gt;"|</code></td><td><a href='|linkTo "documentation/library/" ++ href|'>|nm|</a></td></tr>} 
+                            ]
+                            aliasList: new join.with:"\n" aliasList
+                            replace replace read.markdown replace W\content "%ALIAS_LIST%" aliasList "<ul>" "<ulbd>" "</ul>" "</ulbd>"
+                        ] [ 
+                            replace replace read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>"  
+                        ] 
+                    ] ||>
 
                 </div>
             </div>

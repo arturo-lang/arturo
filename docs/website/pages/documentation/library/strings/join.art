@@ -5,7 +5,7 @@ returns: [
         :string
          :nothing
     ]
-description: "join collection of strings into string"
+description: "join collection of values into string"
 example: {
         arr: ["one" "two" "three"]
         print join arr
@@ -16,6 +16,12 @@ example: {
         
         join 'arr
         ; arr: "onetwothree"
+        
+        print join [`H` `e` `l` `l` `o` `!`]
+        ; Hello!
+        
+        print join @["1 + 2 = " 1+2]
+        ; 1 + 2 = 3
     }
 attributes: #[
     with: #[
