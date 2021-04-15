@@ -29,8 +29,8 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:date](#date)
        - [:binary](#binary)
    * [Attributes](#attributes)
-       - [:attr](#attr)
-       - [:attrLabel](#attrLabel)
+       - [:attr](#attribute)
+       - [:attrLabel](#attributeLabel)
 - [Precedence and evaluation](#precedence-and-evaluation)
    * [The right-to-left rule](#the-right-to-left-rule)
 - [Syntactic sugar](#syntactic-sugar)
@@ -427,7 +427,7 @@ There are two types:
  a. attributes   
  b. attribute labels
 
-<h4 id="attr">:attr</h4>
+<h4 id="attribute">:attribute</h4>
 
 Attributes are actually optional on/off-type of values, set during a function call, that is there to denote some variation of the initial meaning of the function. To define an attribute, we'll be using a `.`(dot) followed by a normal word: `\.\w+`
 
@@ -448,7 +448,7 @@ split.words "hello world"
 ```
 > 💡 The order in which you pass the different attributes does <u>not</u> matter. Also, there is no issue at all whether you want to use spaces between them and the surrounding function call; Arturo will still be able to parse them and recognize them fine
 
-<h4 id="attrLabel">:attrLabel</h4>
+<h4 id="attributeLabel">:attributeLabel</h4>
 
 Attribute labels are pretty much like simple *attributes*, only they can also take a value. As it worked with *attributes*, we'll be using a `.`(dot) followed by a normal word, but now also followed by a `:`(colon) -- exactly like with normal *labels*, as we've seen above.
 
