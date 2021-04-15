@@ -27,10 +27,12 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:dictionary](#dictionary)
        - [:function](#function)
        - [:date](#date)
+       - [:database](#database)
        - [:binary](#binary)
+       - [:bytecode](#bytecode)
    * [Attributes](#attributes)
-       - [:attr](#attribute)
-       - [:attrLabel](#attributeLabel)
+       - [:attribute](#attribute)
+       - [:attributeLabel](#attributeLabel)
 - [Precedence and evaluation](#precedence-and-evaluation)
    * [The right-to-left rule](#the-right-to-left-rule)
 - [Syntactic sugar](#syntactic-sugar)
@@ -406,6 +408,18 @@ print now\year
 ; would print 2020
 ```
 
+<h4 id="database">:database</h4>
+
+Database values cannot be constructed literally. However, using the function `open`, you can create a database value and then use it to query the database in question and much more.
+
+```red
+db: open.sqlite "my.db"
+
+print query db "SELECT * FROM users"
+
+print type db   ; would print: :database
+```
+
 <h4 id="binary">:binary</h4>
 
 Binary values are used to represent *binary* data, that is: an array of bytes. You cannot define them directly, however, you can sure convert other data to binary.
@@ -414,6 +428,22 @@ Binary values are used to represent *binary* data, that is: an array of bytes. Y
 print to :binary "Hello world!"
 
 ; would print 4865 6C6C 6F20 776F 726C 6421
+```
+
+<h4 id="database">:bytecode</h4>
+
+Bytecode values cannot be constructed literally. However, you can create them indirectly, e.g. using the function `to`.
+
+```red
+; let's create some Arturo bytecode from scratch 
+x: to :bytecode [
+    ["print"]     ; first block contains our constants
+    [1 112 155]   ; second block contains the opcodes to be executed,
+                  ; in this case: ConstI1 (0x01), Call (0x70), End (0x9B)
+]
+
+; and execute it!
+do x              ; this will simply print... 1
 ```
 
 <h3 id="attributes">Attributes</h3>
