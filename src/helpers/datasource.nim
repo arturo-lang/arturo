@@ -14,6 +14,8 @@ import asyncdispatch, httpClient, os
 
 import helpers/url
 
+import vm/errors
+
 #=======================================
 # Types
 #=======================================
@@ -32,9 +34,11 @@ type
 
 proc getSource*(src: string): DataSource {.inline.} =
     if src.isUrl():
+        when defined(SAFE): RuntimeError_OperationNotPermitted("read")
         let content = waitFor (newAsyncHttpClient().getContent(src))
         result = (content, WebData)
     elif src.fileExists():
+        when defined(SAFE): RuntimeError_OperationNotPermitted("read")
         result = (readFile(src), FileData)
     else:
         result = (src, TextData)
