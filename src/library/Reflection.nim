@@ -406,7 +406,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check whether value is of given type",
         args        = {
-            "type"  : {Type},
+            "type"  : {Type,Block},
             "value" : {Any}
         },
         attrs       = NoAttrs,
@@ -418,7 +418,19 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if y.custom.isNil():
-                push(newBoolean(x.t == y.kind))
+                if x.kind == Type:
+                    push(newBoolean(x.t == y.kind))
+                else:
+                    let tp = x.a[0].t
+                    var res = true
+                    if y.kind != Block: 
+                        res = false
+                    else:
+                        for item in y.a:
+                            if tp != item.kind:
+                                res = false
+                                break
+                    push newBoolean(res)
             else:
                 push(newBoolean(x.name == y.custom.name))
 
