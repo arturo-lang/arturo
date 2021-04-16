@@ -549,7 +549,7 @@ print integer? "hello"      ; false
 
 #### Description
 
-Print full dump of given value to screen
+Check whether value is of given type
 
 #### Usage
 
