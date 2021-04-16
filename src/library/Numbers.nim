@@ -690,10 +690,10 @@ proc defineSymbols*() =
     builtin "range",
         alias       = ellipsis, 
         rule        = InfixPrecedence,
-        description = "get list of numbers in given range (inclusive)",
+        description = "get list of values in given range (inclusive)",
         args        = {
-            "from"  : {Integer},
-            "to"    : {Integer}
+            "from"  : {Integer, Char},
+            "to"    : {Integer, Char}
         },
         attrs       = {
             "step"  : ({Integer},"use step between range values")
@@ -701,27 +701,41 @@ proc defineSymbols*() =
         returns     = {Block},
         example     = """
             print range 1 4       ; 1 2 3 4
-            1..10                 ; [1 2 3 4 5 6 7 8 9 10]
+            1..10                 ; => [1 2 3 4 5 6 7 8 9 10]
+
+            print `a`..`f`        ; a b c d e f
         """:
             ##########################################################
-            var res = newBlock()
+            var res: seq[int] = @[]
+
+            var limX: int
+            var limY: int
+
+            if x.kind==Integer: limX = x.i
+            else: limX = ord(x.c)
+
+            if y.kind==Integer: limY = y.i
+            else: limY = ord(y.c)
 
             var step = 1
             if (let aStep = popAttr("step"); aStep != VNULL):
                 step = aStep.i
 
-            if x.i < y.i:
-                var j = x.i
-                while j <= y.i:
-                    res.a.add(newInteger(j))
+            if limX < limY:
+                var j = limX
+                while j <= limY:
+                    res.add(j)
                     j += step
             else:
-                var j = x.i
-                while j >= y.i:
-                    res.a.add(newInteger(j))
+                var j = limX
+                while j >= limY:
+                    res.add(j)
                     j -= step
 
-            push(res)
+            if x.kind==Char and y.kind==Char:
+                push newBlock(res.map((x) => newChar(chr(x))))
+            else:
+                push newBlock(res.map((x) => newInteger(x)))
 
     builtin "round",
         alias       = unaliased, 
