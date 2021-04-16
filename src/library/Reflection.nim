@@ -404,7 +404,7 @@ proc defineSymbols*() =
     builtin "is?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "print full dump of given value to screen",
+        description = "check whether value is of given type",
         args        = {
             "type"  : {Type},
             "value" : {Any}
