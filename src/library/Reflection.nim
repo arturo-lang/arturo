@@ -426,10 +426,13 @@ proc defineSymbols*() =
                     if y.kind != Block: 
                         res = false
                     else:
-                        for item in y.a:
-                            if tp != item.kind:
-                                res = false
-                                break
+                        if y.a.len==0: 
+                            res = false
+                        else:
+                            for item in y.a:
+                                if tp != item.kind:
+                                    res = false
+                                    break
                     push newBoolean(res)
             else:
                 push(newBoolean(x.name == y.custom.name))
