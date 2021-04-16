@@ -900,7 +900,9 @@ Get list of values in given range (inclusive)
 
 ```red
 print range 1 4       ; 1 2 3 4
-1..10                 ; [1 2 3 4 5 6 7 8 9 10]
+1..10                 ; => [1 2 3 4 5 6 7 8 9 10]
+
+print `a`..`f`        ; a b c d e f
 ```
 
 ## round
