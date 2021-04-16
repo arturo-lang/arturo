@@ -60,6 +60,11 @@ Get index of function arities
 
 - *:dictionary*
 
+#### Examples
+
+```red
+print arity\print   ; 1
+```
 
 ## attr
 
@@ -554,7 +559,7 @@ Check whether value is of given type
 #### Usage
 
 <pre>
-<b>is?</b> <ins>type</ins> <i>:type</i>
+<b>is?</b> <ins>type</ins> <i>:type</i> <i>:block</i>
     <ins>value</ins> <i>:any</i>
 </pre>
 
@@ -568,6 +573,9 @@ Check whether value is of given type
 is? :string "hello"       ; => true
 is? :block [1 2 3]        ; => true
 is? :integer "boom"       ; => false
+
+is? [:string] ["one" "two"]     ; => true
+is? [:integer] [1 "two]         ; => false
 ```
 
 ## floating?
