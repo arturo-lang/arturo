@@ -6,7 +6,7 @@ returns: [
     ]
 alias: ".."
 infix?: true
-description: "get list of numbers in given range (inclusive)"
+description: "get list of values in given range (inclusive)"
 example: {
         print range 1 4       ; 1 2 3 4
         1..10                 ; [1 2 3 4 5 6 7 8 9 10]
@@ -22,9 +22,11 @@ attributes: #[
 arguments: #[
     from: [
             :integer
+             :char
         ]
     to: [
             :integer
+             :char
         ]
     ]
 related: [

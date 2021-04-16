@@ -878,13 +878,13 @@ rnd: random 0 60          ; rnd: (a random number between 0 and 60)
 
 #### Description
 
-Get list of numbers in given range (inclusive)
+Get list of values in given range (inclusive)
 
 #### Usage
 
 <pre>
-<b>range</b> <ins>from</ins> <i>:integer</i>
-      <ins>to</ins> <i>:integer</i>
+<b>range</b> <ins>from</ins> <i>:integer</i> <i>:char</i>
+      <ins>to</ins> <i>:integer</i> <i>:char</i>
 </pre>
 #### Attributes
 
