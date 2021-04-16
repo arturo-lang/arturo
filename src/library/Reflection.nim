@@ -39,6 +39,7 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
+            print arity\print   ; 1
         """:
             ##########################################################
             var ret = initOrderedTable[string,Value]()
@@ -406,7 +407,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check whether value is of given type",
         args        = {
-            "type"  : {Type},
+            "type"  : {Type,Block},
             "value" : {Any}
         },
         attrs       = NoAttrs,
@@ -415,10 +416,28 @@ proc defineSymbols*() =
             is? :string "hello"       ; => true
             is? :block [1 2 3]        ; => true
             is? :integer "boom"       ; => false
+
+            is? [:string] ["one" "two"]     ; => true
+            is? [:integer] [1 "two]         ; => false
         """:
             ##########################################################
             if y.custom.isNil():
-                push(newBoolean(x.t == y.kind))
+                if x.kind == Type:
+                    push(newBoolean(x.t == y.kind))
+                else:
+                    let tp = x.a[0].t
+                    var res = true
+                    if y.kind != Block: 
+                        res = false
+                    else:
+                        if y.a.len==0: 
+                            res = false
+                        else:
+                            for item in y.a:
+                                if tp != item.kind:
+                                    res = false
+                                    break
+                    push newBoolean(res)
             else:
                 push(newBoolean(x.name == y.custom.name))
 

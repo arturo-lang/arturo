@@ -271,7 +271,7 @@ Convert value to given type
 #### Usage
 
 <pre>
-<b>to</b> <ins>type</ins> <i>:type</i>
+<b>to</b> <ins>type</ins> <i>:type</i> <i>:block</i>
    <ins>value</ins> <i>:any</i>
 </pre>
 #### Attributes
@@ -314,6 +314,9 @@ to :date .format:"dd/MM/yyyy" "22/03/2021"
 
 to :string .format:".2f" 123.12345
 ; 123.12
+
+to [:string] [1 2 3 4]         
+; ["1" "2" "3" "4"]
 ```
 
 ## with
