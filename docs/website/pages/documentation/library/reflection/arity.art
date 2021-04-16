@@ -5,7 +5,7 @@ returns: [
         :dictionary
     ]
 description: "get index of function arities"
-example: ""
+example: "print arity\\print   ; 1"
 attributes: #[
     ]
 arguments: #[
