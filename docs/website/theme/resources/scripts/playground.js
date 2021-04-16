@@ -40,7 +40,9 @@ function getSnippet(cd) {
         var got = JSON.parse(result);
         editor.setValue(got.text);
         editor.clearSelection();
-        editor.gotoLine(1);
+        editor.resize(true);
+        editor.scrollToLine(1,0,true,true,function(){});
+        editor.gotoLine(1,0,true);
     }, {
         i:cd
     });
@@ -53,7 +55,9 @@ function getExample(cd) {
         var got = JSON.parse(result);
         editor.setValue(got.text+"\n");
         editor.clearSelection();
-        editor.gotoLine(1);
+        editor.resize(true);
+        editor.scrollToLine(1,0,true,true,function(){});
+        editor.gotoLine(1,0,true);
     }, {
         i:cd
     });
