@@ -5,7 +5,7 @@ If you're more of a hands-on coder (trust me, I do understand you) and want to s
 <div class="columns" style="padding-top:2rem">
     <div class="column is-6">
         <div class="content">
-            <p class="exampleletter" style="margin-top:0;">0</p>
+            <p class="exampleletter" style="margin-top:0;">*</p>
             <ul>
                 %EXAMPLES_1%
         </div>
