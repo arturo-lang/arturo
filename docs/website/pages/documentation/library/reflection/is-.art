@@ -4,7 +4,7 @@ module: "Reflection"
 returns: [
         :boolean
     ]
-description: "print full dump of given value to screen"
+description: "check whether value is of given type"
 example: {
         is? :string "hello"       ; => true
         is? :block [1 2 3]        ; => true
@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/inspect"
-         "Collections/in?"
+        "Collections/in?"
          "Core/if?"
          "Arithmetic/inc"
+         "Converters/as"
     ]

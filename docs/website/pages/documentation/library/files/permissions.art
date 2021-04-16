@@ -44,7 +44,7 @@ arguments: #[
     ]
 related: [
         "Numbers/sin"
+         "Reflection/is?"
          "Numbers/sqrt"
          "Strings/indent"
-         "Core/let"
     ]
