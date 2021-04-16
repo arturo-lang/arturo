@@ -166,12 +166,18 @@ pi: 3.14159
 
 <h4 id="version">:version</h4>
 
-Version values are nothing but a fancy and portable way of defining SemVer-compliant versions (e.g. for packaging an application). The rule is rather simple: it has three numeric parts, separated by a `.` (dot).
+Version values are nothing but a fancy and portable way of defining SemVer-compliant versions (e.g. for packaging an application). The rule is rather simple: it has three numeric parts, separated by a `.` (dot) and an optional part with build or prerelease information.
 
 ```red
 package: 1.0.3
 
 if package > 1.0.0 -> print "yep, the version is right!"
+```
+
+or
+
+```red
+version: 1.2.3-rc1+build123
 ```
 
 <h4 id="type">:type</h4>
