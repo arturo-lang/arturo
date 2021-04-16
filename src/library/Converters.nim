@@ -27,6 +27,10 @@ when not defined(NOASCIIDECODE):
 import vm/lib
 import vm/[errors, exec, parse]
 
+#=======================================
+# Helpers
+#=======================================
+
 proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
     if y.kind == tp and y.kind!=Dictionary:
         return y
