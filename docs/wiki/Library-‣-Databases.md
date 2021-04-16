@@ -27,6 +27,15 @@ Close given database
 
 - *:nothing*
 
+#### Examples
+
+```red
+db: open "my.db"    ; opens an SQLite database named 'my.db'
+    
+    print query db "SELECT * FROM users"
+
+    close db            ; and close it
+```
 
 ## query
 
@@ -53,6 +62,21 @@ Execute command or block of commands in given database and get returned rows
 - *:integer*
 - *:block*
 
+#### Examples
+
+```red
+db: open "my.db"    ; opens an SQLite database named 'my.db'
+    
+    ; perform a simple query
+    print query db "SELECT * FROM users"
+
+    ; perform an INSERT query and get back the record's ID
+    username: "johndoe"
+    lastInsertId: query.id db ~{!sql INSERT INTO users (name) VALUES ('|username|')}
+
+    ; perform a safe query with given parameters
+    print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
+```
 
 ## open
 
