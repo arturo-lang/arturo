@@ -74,9 +74,15 @@ proc defineSymbols*() =
                 "with"  : ({Block},"use arguments for parametrized statement")
             },
             returns     = {Integer,Block,Null},
-            # TODO(Databases\query) add example for documentation
-            #  labels: library,documentation,easy
             example     = """
+                db: open "my.db"    ; opens an SQLite database named 'my.db'
+                
+                print query db "SELECT * FROM users"
+
+                username: "johndoe"
+                lastInsertId: query.id db ~{!sql INSERT INTO users (name) VALUES ('|username|')}
+
+                print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
             """:
                 ##########################################################
                 var with: seq[string] = @[]
