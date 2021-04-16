@@ -39,6 +39,7 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Dictionary},
         example     = """
+            print arity\print   ; 1
         """:
             ##########################################################
             var ret = initOrderedTable[string,Value]()
@@ -415,6 +416,9 @@ proc defineSymbols*() =
             is? :string "hello"       ; => true
             is? :block [1 2 3]        ; => true
             is? :integer "boom"       ; => false
+
+            is? [:string] ["one" "two"]     ; => true
+            is? [:integer] [1 "two]         ; => false
         """:
             ##########################################################
             if y.custom.isNil():
