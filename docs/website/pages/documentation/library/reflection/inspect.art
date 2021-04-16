@@ -25,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/is?"
-         "Collections/insert"
+        "Collections/insert"
          "Io/input"
          "Strings/indent"
+         "Arithmetic/inc"
     ]
