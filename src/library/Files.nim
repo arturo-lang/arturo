@@ -246,7 +246,6 @@ proc defineSymbols*() =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
         """:
             ##########################################################
-            when defined(SAFE): RuntimeError_OperationNotPermitted("read")
             if (popAttr("binary") != VNULL):
                 var f: File
                 discard f.open(x.s)
