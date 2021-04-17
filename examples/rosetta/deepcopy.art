@@ -1,0 +1,24 @@
+x: #[
+    name: "John"
+    surname: "Doe"
+    age: 34
+    hobbies: [
+        "Cycling", 
+        "History", 
+        "Programming", 
+        "Languages",
+        "Psychology", 
+        "Buddhism"
+    ]
+    sayHello: function [][
+        print "Hello there!"
+    ]
+]
+
+print ["Name of first person:" x\name]
+
+y: new x
+y\name: "Jane"
+
+print ["Name of first person:" x\name]
+print ["Name of second person:" y\name]
