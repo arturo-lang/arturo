@@ -219,7 +219,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                         return newBlock(y.a)
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
-                        
+
             of Block:
                 case tp:
                     of Inline:
@@ -314,7 +314,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                 Database,
                 Nothing,
                 Any,
-                Inline,
                 Path,
                 PathLabel,
                 Bytecode,
