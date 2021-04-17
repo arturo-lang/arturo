@@ -213,9 +213,17 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
-
+            of Inline:
+                case tp:
+                    of Block:
+                        return newBlock(y.a)
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+                        
             of Block:
                 case tp:
+                    of Inline:
+                        return newInline(y.a)
                     of Dictionary:
                         if x.tpKind==BuiltinType:
                             let stop = SP
