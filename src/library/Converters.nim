@@ -189,7 +189,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Literal, 
-                Word:
+               Word,
+               Label:
                 case tp:
                     of String: 
                         return newString(y.s)
@@ -199,6 +200,19 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                         return newWord(y.s)
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Attribute,
+               AttributeLabel:
+                case tp:
+                    of String: 
+                        return newString(y.r)
+                    of Literal:
+                        return newLiteral(y.r)
+                    of Word:
+                        return newWord(y.r)
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
 
             of Block:
                 case tp:
@@ -293,9 +307,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                 Nothing,
                 Any,
                 Inline,
-                Label,
-                Attribute,
-                AttributeLabel,
                 Path,
                 PathLabel,
                 Bytecode,
