@@ -1,0 +1,68 @@
+bases: ["A" "T" "G" "C"]
+dna: map 1..200 => [sample bases]
+
+prettyPrint: function [in][
+    count: #[ A: 0, T: 0, G: 0, C: 0 ]
+
+    loop.with:'i split.every:50 in 'line [
+        prints [pad to :string i*50 3 ":"]
+        print map split.every:10 line => join
+
+        loop split line 'ch [
+            case [ch=]
+                when? -> "A" -> count\A: count\A + 1
+                when? -> "T" -> count\T: count\T + 1
+                when? -> "G" -> count\G: count\G + 1
+                when? -> "C" -> count\C: count\C + 1
+                else []
+        ]
+    ]
+    print ["Total count => A:" count\A, "T:" count\T "G:" count\G "C:" count\C]
+]
+
+performRandomModifications: function [seq,times][
+    result: new seq
+
+    loop times [x][
+        what: random 1 3
+        case [what=]
+            when? -> 1 [
+                ind: random 0 (size result)
+                previous: get result ind
+                next: sample bases
+                set result ind next
+                print ["changing base at position" ind "from" previous "to" next]
+            ]
+            when? -> 2 [
+                ind: random 0 (size result)
+                next: sample bases
+                result: insert result ind next
+                print ["inserting base" next "at position" ind]
+            ]
+            else [
+                ind: random 0 (size result)
+                previous: get result ind
+                result: remove result .index ind
+                print ["deleting base" previous "at position" ind]
+            ]
+    ]
+    return result
+]
+
+print "------------------------------"
+print " Initial sequence"
+print "------------------------------"
+prettyPrint dna
+print ""
+
+print "------------------------------"
+print " Modifying sequence"
+print "------------------------------"
+dna: performRandomModifications dna 10
+print ""
+
+print "------------------------------"
+print " Final sequence"
+print "------------------------------"
+prettyPrint dna
+print ""
