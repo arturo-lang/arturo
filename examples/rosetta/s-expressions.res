@@ -8,9 +8,9 @@
 	[ :inline
 		data :word
 		[ :inline
-			<exclamation> :symbol
-			<at> :symbol
-			<sharp> :symbol
+			! :symbol
+			@ :symbol
+			# :symbol
 			[ :inline
 				4.5 :floating
 			]
