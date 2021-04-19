@@ -195,11 +195,11 @@ code[class*=language-], pre[class*=language-] {
     font-family: 'Fira Code', monospace !important; 
 }
 
-@supports (font-variation-settings: normal) {
-    code[class*=language-], pre[class*=language-] { 
-        font-family: 'Fira Code VF', monospace !important; 
-    }
-}
+// @supports (font-variation-settings: normal) {
+//     code[class*=language-], pre[class*=language-] { 
+//         font-family: 'Fira Code VF', monospace !important; 
+//     }
+// }
 
 .logo-secondary {
     color: #BBB;
