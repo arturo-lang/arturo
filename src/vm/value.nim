@@ -170,10 +170,10 @@ type
                             discard
             of Floating:    f*  : float
             of Version: 
-                major   : int
-                minor   : int
-                patch   : int
-                extra   : string
+                major*   : int
+                minor*   : int
+                patch*   : int
+                extra*   : string
             of Type:        
                 t*  : ValueKind
                 case tpKind*: TypeKind:
@@ -1297,6 +1297,57 @@ proc cmp*(x: Value, y: Value): int =
     else:
         return 0
 
+proc `$`*(s: SymbolKind): string =
+    case s:
+        of thickarrowleft   : result = "<="
+        of thickarrowright  : result = "=>"
+        of arrowleft        : result = "<-"
+        of arrowright       : result = "->"
+        of doublearrowleft  : result = "<<"
+        of doublearrowright : result = ">>"
+
+        of equalless        : result = "=<"
+        of greaterequal     : result = ">="
+        of lessgreater      : result = "<>"
+
+        of lesscolon        : result = "<:"
+        of minuscolon       : result = "-:"
+
+        of tilde            : result = "~"
+        of exclamation      : result = "!"
+        of question         : result = "?"
+        of doublequestion   : result = "??"
+        of at               : result = "@"
+        of sharp            : result = "#"
+        of dollar           : result = "$"
+        of percent          : result = "%"
+        of caret            : result = "^"
+        of ampersand        : result = "&"
+        of asterisk         : result = "*"
+        of minus            : result = "-"
+        of doubleminus      : result = "--"
+        of underscore       : result = "_"
+        of equal            : result = "="
+        of plus             : result = "+"
+        of doubleplus       : result = "++"
+        of lessthan         : result = "<"
+        of greaterthan      : result = ">"
+        of slash            : result = "/"
+        of doubleslash      : result = "//"
+        of backslash        : result = "\\"
+        of doublebackslash  : result = "\\\\"
+        of pipe             : result = "|"
+
+        of ellipsis         : result = ".."
+        of dotslash         : result = "./"
+        of colon            : result = ":"
+        of doublecolon      : result = "::"
+        of doublepipe       : result = "||"
+
+        of slashedzero      : result = "ø"
+
+        of unaliased        : discard
+
 proc `$`*(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
@@ -1324,55 +1375,7 @@ proc `$`*(v: Value): string {.inline.} =
            PathLabel    :
             result = v.p.map((x) => $(x)).join("\\")
         of Symbol       :
-            case v.m:
-                of thickarrowleft   : return "<="
-                of thickarrowright  : return "=>"
-                of arrowleft        : return "<-"
-                of arrowright       : return "->"
-                of doublearrowleft  : return "<<"
-                of doublearrowright : return ">>"
-
-                of equalless        : return "=<"
-                of greaterequal     : return ">="
-                of lessgreater      : return "<>"
-
-                of lesscolon        : return "<:"
-                of minuscolon       : return "-:"
-
-                of tilde            : return "~"
-                of exclamation      : return "!"
-                of question         : return "?"
-                of doublequestion   : return "??"
-                of at               : return "@"
-                of sharp            : return "#"
-                of dollar           : return "$"
-                of percent          : return "%"
-                of caret            : return "^"
-                of ampersand        : return "&"
-                of asterisk         : return "*"
-                of minus            : return "-"
-                of doubleminus      : return "--"
-                of underscore       : return "_"
-                of equal            : return "="
-                of plus             : return "+"
-                of doubleplus       : return "++"
-                of lessthan         : return "<"
-                of greaterthan      : return ">"
-                of slash            : return "/"
-                of doubleslash      : return "//"
-                of backslash        : return "\\"
-                of doublebackslash  : return "\\\\"
-                of pipe             : return "|"
-
-                of ellipsis         : return ".."
-                of dotslash         : return "./"
-                of colon            : return ":"
-                of doublecolon      : return "::"
-                of doublepipe       : return "||"
-
-                of slashedzero      : return "ø"
-
-                of unaliased        : discard
+            return $(v.m)
 
         of Date     : return $(v.eobj)
         of Binary   : discard
@@ -1597,56 +1600,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Label        : result &= v.s & ":"
         of Attribute         : result &= "." & v.r
         of AttributeLabel    : result &= "." & v.r & ":"
-        of Symbol       : 
-            case v.m:
-                of thickarrowleft   : result &= "<="
-                of thickarrowright  : result &= "=>"
-                of arrowleft        : result &= "<-"
-                of arrowright       : result &= "->"
-                of doublearrowleft  : result &= "<<"
-                of doublearrowright : result &= ">>"
-
-                of equalless        : result &= "=<"
-                of greaterequal     : result &= ">="
-                of lessgreater      : result &= "<>"
-
-                of lesscolon        : result &= "<:"
-                of minuscolon       : result &= "-:"
-
-                of tilde            : result &= "~"
-                of exclamation      : result &= "!"
-                of question         : result &= "?"
-                of doublequestion   : result &= "??"
-                of at               : result &= "@"
-                of sharp            : result &= "#"
-                of dollar           : result &= "$"
-                of percent          : result &= "%"
-                of caret            : result &= "^"
-                of ampersand        : result &= "&"
-                of asterisk         : result &= "*"
-                of minus            : result &= "-"
-                of doubleminus      : result &= "--"
-                of underscore       : result &= "_"
-                of equal            : result &= "="
-                of plus             : result &= "+"
-                of doubleplus       : result &= "++"
-                of lessthan         : result &= "<"
-                of greaterthan      : result &= ">"
-                of slash            : result &= "/"
-                of doubleslash      : result &= "//"
-                of backslash        : result &= "\\"
-                of doublebackslash  : result &= "\\\\"
-                of pipe             : result &= "|"
-
-                of ellipsis         : result &= ".."
-                of dotslash         : result &= "./"
-                of colon            : result &= ":"
-                of doublecolon      : result &= "::"
-                of doublepipe       : result &= "||"
-
-                of slashedzero      : result &= "ø"
-
-                of unaliased             : discard
+        of Symbol       :  result &= $(v.m)
 
         of Inline, Block:
             if not (pretty and unwrapped and level==0):
