@@ -33,7 +33,7 @@ To start the interactive console (see: *REPL*), just open up your terminal and t
 
 This is is what Arturo's interactive console looks like:
 
-![REPL](https://github.com/arturo-lang/arturo/wiki/images/repl.png)
+![REPL](https://arturo-lang.io/resources/images/repl.png)
 
 Here you may easily try things out and see things first hand. :)
 
@@ -73,7 +73,7 @@ This will show you all the modules you have installed locally.
 
 It looks like this:
 
-![Module listing](https://github.com/arturo-lang/arturo/wiki/images/module_list.png)
+![Module listing](https://arturo-lang.io/resources/images/module_list.png)
 
 <h4 id="list-remote-modules">List remote modules</h4>
 
