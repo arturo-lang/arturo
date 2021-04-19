@@ -26,7 +26,7 @@
 
                         previousFirst: ` `
 
-                        read.markdown replace replace replace W\content "%EXAMPLES_COUNT%" to :string size Data\rosetta "%EXAMPLES_2%" join.with:"\n" map last.n:otherHalfM Data\rosetta [ti][
+                        read.markdown replace replace replace W\content "%EXAMPLES_COUNT%" to :string size Data\rosetta "%EXAMPLES_2%" "<ul style='margin-top:0;'>" ++ join.with:"\n" map last.n:otherHalfM Data\rosetta [ti][
                             switch and? previousFirst <> first ti 
                                         `l` <> first ti [
                                 previousFirst: first ti
