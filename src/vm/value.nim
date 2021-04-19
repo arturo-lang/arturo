@@ -1429,8 +1429,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         else:           stdout.write fmt("{v.r} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpSymbol(v: Value) =
-        if not muted:   stdout.write fmt("{resetColor}<{v.m}>{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-        else:           stdout.write fmt("<{v.m}> :{($(v.kind)).toLowerAscii()}")
+        if not muted:   stdout.write fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
