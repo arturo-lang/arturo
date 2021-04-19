@@ -397,3 +397,15 @@ a.algolia-docsearch-suggestion:hover {
 #navbarMain {
     font-weight: 500;
 }
+
+#mainTitle {
+    span {
+        display: none !important;
+    }
+
+    &:hover {
+        span {
+            display: inline-block !important;
+        }
+    }
+}
