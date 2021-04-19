@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ajaxGet("https://api.github.com/repos/arturo-lang/arturo/releases", function (data){
             var parsed = JSON.parse(data);
-            console.log(parsed);
+            /*console.log(parsed);*/
             var releaseVersion = parsed[0].tag_name;
             setClass("release-version", parsed[0].tag_name);
             setClass("release-version-mini", `${parsed[0].tag_name}<sup>*</sup>`);
@@ -411,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 downloadsTable += downloadItems.join("");
                 downloadsTable += `<tr><td class="first-td"><i class="fab fa-2x fa-docker"></i></td><td><b>Docker</b></td><td class="release-version is-hidden-touch has-text-centered">${releaseVersion}</td><td class="is-hidden-touch has-text-centered">--</td><td><a rel="noopener" target="_blank" href="https://hub.docker.com/repository/docker/arturolang/arturo"><i class="far fa-arrow-alt-circle-right"></i>&nbsp;&nbsp;Docker Hub</a></td></tr>`
                 setDiv("downloads",downloadsTable);
-                console.log(parsed);
+                /*console.log(parsed);*/
             });
         })
     }
