@@ -26,7 +26,7 @@ when not defined(NOWEBVIEW):
         {.passC: "-DWEBVIEW_EDGE=1".}
         {.passL: "-L./dll/x64 -lwebview -lWebView2Loader".}
     elif defined(macosx):
-        {.passC: "-DWEBVIEW_COCOA=1 -x objective-c".}
+        {.passC: "-DWEBVIEW_COCOA=1".}
         {.passL: "-framework Cocoa -framework WebKit".}
 
 #=======================================
