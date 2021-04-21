@@ -43,6 +43,16 @@ type
     WebView* = pointer
 
 #=======================================
+# Constants
+#=======================================
+
+const
+    WEBVIEW_HINT_NONE   = 0.cint  # Width and height are default size
+    WEBVIEW_HINT_MIN    = 1.cint  # Width and height are minimum bounds
+    WEBVIEW_HINT_MAX    = 2.cint  # Width and height are maximum bounds
+    WEBVIEW_HINT_FIXED  = 3.cint  # Window size can not be changed by a user
+
+#=======================================
 # C Imports
 #=======================================
 
@@ -91,8 +101,12 @@ when not defined(NOWEBVIEW):
                      handler: pointer): WebView =
         var wv = newWebview(debug, nil)
 
+        var hints = WEBVIEW_HINT_NONE
+        if not resizable:
+            hints = WEBVIEW_HINT_FIXED
+
         wv.setTitle(cstring(title))
-        wv.setSize(width.cint, height.cint, 0.cint)
+        wv.setSize(width.cint, height.cint, hints)
         wv.navigate(cstring(url))
         
         # var w = cast[Webview](alloc0(sizeof(WebviewObj)))
