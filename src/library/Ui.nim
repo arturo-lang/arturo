@@ -121,8 +121,10 @@ proc defineSymbols*() =
                         push(newString("0"))
                         # var ret: Value = newString($(wv.getEval(query)))
                         # push(ret)
+                # echo "before running"
                 wv.run()
-                wv.destroy()
+                # echo "after running"
+                #wv.destroy()
 
 #=======================================
 # Add Library

@@ -62,6 +62,7 @@ when not defined(NOWEBVIEW):
     proc setSize*(w: WebView, width: int, height: int, hints: int) {.importc:"webview_set_size", header:"webview.h".}
     proc navigate*(w: WebView, url: cstring) {.importc:"webview_navigate", header:"webview.h".}
     proc eval*(w: WebView, js: cstring) {.importc:"webview_eval", header:"webview.h".}
+    proc bindProc*(w: WebView, name: cstring, fn: pointer, arg: pointer) {.importc:"webview_bind", header:"webview.h".}
     proc run*(w: WebView) {.importc:"webview_run", header:"webview.h".}
     proc terminate*(w: WebView) {.importc:"webview_terminate", header:"webview.h".}
     proc destroy*(w: WebView) {.importc:"webview_destroy", header:"webview.h".}
@@ -105,6 +106,12 @@ when not defined(NOWEBVIEW):
         if not resizable:
             hints = WEBVIEW_HINT_FIXED
 
+        wv.bindProc("callBack", proc (s: cstring, r: cstring, a: pointer)=
+            echo "boundproc called"
+            echo "s: " & $(s)
+            echo "r: " & $(r)
+        ,nil)
+
         wv.setTitle(cstring(title))
         wv.setSize(width.cint, height.cint, hints)
         wv.navigate(cstring(url))
@@ -124,12 +131,10 @@ when not defined(NOWEBVIEW):
                 arturo = {};
             }
             arturo.call = function(method,args) {
-                window.external.invoke(
-                    JSON.stringify({
-                        method: method,
-                        args: args
-                    })
-                );
+                callBack({
+                    method: method,
+                    args: args
+                });
             };
         """)
 
