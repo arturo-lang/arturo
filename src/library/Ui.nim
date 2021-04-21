@@ -89,6 +89,7 @@ proc defineSymbols*() =
                 if not isUrl(x.s):
                     targetUrl = joinPath(TmpDir,"artview.html")
                     writeFile(targetUrl, x.s)
+                    targetUrl = "file://" & targetUrl
 
                 let wv = createWebview(
                     title       = title, 
@@ -97,7 +98,7 @@ proc defineSymbols*() =
                     height      = height, 
                     resizable   = not fixed, 
                     debug       = withDebug,
-                    handler     = proc (w: Webview, arg: cstring) =
+                    handler     = proc (w: WebView, arg: cstring) =
                         let got = valueFromJson($arg)
                         push(GetKey(got.d, "args"))
                         callByName(GetKey(got.d, "method").s)
@@ -116,11 +117,12 @@ proc defineSymbols*() =
                     """:
                         ##########################################################
                         let query = "JSON.stringify(eval(\"" & x.s & "\"))"
-                        var ret: Value = newString($(wv.getEval(query)))
-                        push(ret)
-
+                        wv.eval(query)
+                        push(newString("0"))
+                        # var ret: Value = newString($(wv.getEval(query)))
+                        # push(ret)
                 wv.run()
-                wv.exit()
+                wv.destroy()
 
 #=======================================
 # Add Library
