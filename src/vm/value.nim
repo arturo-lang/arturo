@@ -1724,8 +1724,16 @@ proc hash*(v: Value): Hash {.inline.}=
             for k,v in pairs(v.d):
                 result = result !& hash(k)
                 result = result !& hash(v)
+            result = !$ result
         of Function     : 
-            result = cast[Hash](unsafeAddr v)
+            if v.fnKind == BuiltinFunction:
+                result = cast[Hash](cast[ByteAddress](v))
+            else:
+                result = 1
+                result = result !& hash(v.params)
+                result = result !& hash(v.main)
+                result = !$ result
+            # result = cast[Hash](unsafeAddr v)
             # result = hash(v.params) !& hash(v.main)
             # result = !$ result
         of Database:
