@@ -41,6 +41,7 @@ import os, osproc, strutils
 
 type
     WebView* = pointer
+    Callback* = proc (s: cstring, r: cstring, a: pointer)
 
 #=======================================
 # Constants
@@ -61,7 +62,7 @@ when not defined(NOWEBVIEW):
     proc setTitle*(w: WebView, title: cstring) {.importc:"webview_set_title", header:"webview.h".}
     proc setSize*(w: WebView, width: int, height: int, hints: int) {.importc:"webview_set_size", header:"webview.h".}
     proc navigate*(w: WebView, url: cstring) {.importc:"webview_navigate", header:"webview.h".}
-    proc eval*(w: WebView, js: cstring) {.importc:"webview_eval", header:"webview.h".}
+    proc evaljs*(w: WebView, js: cstring) {.importc:"webview_eval", header:"webview.h".}
     proc bindProc*(w: WebView, name: cstring, fn: pointer, arg: pointer) {.importc:"webview_bind", header:"webview.h".}
     proc run*(w: WebView) {.importc:"webview_run", header:"webview.h".}
     proc terminate*(w: WebView) {.importc:"webview_terminate", header:"webview.h".}
@@ -96,6 +97,9 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
         echo "could not open a Chrome window"
 
 when not defined(NOWEBVIEW):
+    proc eval*(w: WebView, js: string) =
+        w.evaljs(cstring(js))
+
     proc createWebView*(title="Arturo", url="", 
                      width=640, height=480, 
                      resizable=true, debug=false,
@@ -106,11 +110,8 @@ when not defined(NOWEBVIEW):
         if not resizable:
             hints = WEBVIEW_HINT_FIXED
 
-        wv.bindProc("callBack", proc (s: cstring, r: cstring, a: pointer)=
-            echo "boundproc called"
-            echo "s: " & $(s)
-            echo "r: " & $(r)
-        ,nil)
+        wv.bindProc("callBack", handler, nil);
+        #wv.bindProc("returnVal", returnVal, nil);
 
         wv.setTitle(cstring(title))
         wv.setSize(width.cint, height.cint, hints)
@@ -126,7 +127,7 @@ when not defined(NOWEBVIEW):
         # w.invokeCb = handler
         # if w.init() != 0: return nil
 
-        wv.eval cstring("""
+        wv.eval """
             if (typeof arturo === 'undefined') {
                 arturo = {};
             }
@@ -136,6 +137,12 @@ when not defined(NOWEBVIEW):
                     args: args
                 });
             };
-        """)
+            window.evaluate = function (code,callback) {
+                callBack({
+                    method: callback,
+                    args: eval(code)
+                });
+            }
+        """
 
         return wv
