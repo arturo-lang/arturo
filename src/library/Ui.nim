@@ -91,6 +91,8 @@ proc defineSymbols*() =
                     writeFile(targetUrl, x.s)
                     targetUrl = "file://" & targetUrl
 
+                var callback: string
+
                 let wv = createWebview(
                     title       = title, 
                     url         = targetUrl, 
@@ -98,29 +100,57 @@ proc defineSymbols*() =
                     height      = height, 
                     resizable   = not fixed, 
                     debug       = withDebug,
-                    handler     = proc (w: WebView, arg: cstring) =
-                        let got = valueFromJson($arg)
-                        push(GetKey(got.d, "args"))
-                        callByName(GetKey(got.d, "method").s)
+                    handler     = proc (s: cstring, r: cstring, a: pointer) =
+                        echo "handler called"
+                        echo "s: " & $(s)
+                        echo "r: " & $(r)
+                        let got = valueFromJson($r)
+                        echo "got: " & $(got)
+                        push(GetKey(got.a[0].d, "args"))
+                        callByName(GetKey(got.a[0].d, "method").s)
                 )
+
+                builtin "exec",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Get whatever",
+                    args        = {
+                        "value" : {String}
+                    },
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        echo "executing exec: " & $(x.s)
+                        let query = "JSON.stringify(eval(\"" & x.s & "\"))"
+                        wv.eval(query)
+
+                # var callback: Value
+
+                # var handler = 
 
                 builtin "eval",
                     alias       = unaliased, 
                     rule        = PrefixPrecedence,
                     description = "Get whatever",
                     args        = {
-                        "valueA": {String}
+                        "valueA": {String},
+                        "callback": {String}
                     },
                     attrs       = NoAttrs,
-                    returns     = {Integer,Nothing},
+                    returns     = {Nothing},
                     example     = """
                     """:
                         ##########################################################
-                        let query = "JSON.stringify(eval(\"" & x.s & "\"))"
+                        echo "executing eval: " & $(x.s)
+                        let query = "JSON.stringify(evaluate(\"" & x.s & "\",\"" & y.s & "\"))"
+                        #callback = y    
+                        # wv.bindProc("returnVal", proc (s: cstring, r: cstring, a: pointer) {.cdecl.} =
+                        #     echo "returned val: " & $(r)
+                        # , nil)
                         wv.eval(query)
-                        push(newString("0"))
-                        # var ret: Value = newString($(wv.getEval(query)))
-                        # push(ret)
+
                 # echo "before running"
                 wv.run()
                 # echo "after running"
