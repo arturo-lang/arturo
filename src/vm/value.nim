@@ -180,6 +180,7 @@ type
                     of UserType:
                         name*       : string
                         prototype*  : Value
+                        methods*    : Value
                     of BuiltinType:
                         discard
 
@@ -440,7 +441,7 @@ proc newBinary*(n: ByteArray = @[]): Value {.inline.} =
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool): Value {.inline.} =
+proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable)
 
 proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
