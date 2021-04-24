@@ -15,5 +15,5 @@ tmp*
 .sass-cache
 profile_results.txt
 /wview
-.*.icloud
 test.html
+*.icloud
