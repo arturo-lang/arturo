@@ -20,7 +20,7 @@ else:
 when defined(PROFILE):
     import nimprof
 
-import vm/[bytecode, version, value, vm]
+import vm/[bytecode, version, values/value, vm]
 
 #=======================================
 # Types
