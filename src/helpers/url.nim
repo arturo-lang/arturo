@@ -12,7 +12,7 @@
 
 import re, strutils, tables, uri
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Methods

@@ -14,7 +14,7 @@ import algorithm, bitops, std/math, sequtils, sugar
 when not defined(NOGMP):
     import extras/bignum
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Methods
