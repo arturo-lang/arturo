@@ -261,10 +261,6 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                                 push res
                                 callFunction(x.methods.d["init"])
 
-                            # TODO(Converters\to) Add support for custom initializer for user-defined types/objects
-                            #  If one of the defined methods is an `init` (or something like that), call it after (or before?) setting the appropriate fields
-                            #  labels: enhancement,language,library
-
                             return(res)
 
                     of Bytecode:
@@ -708,6 +704,10 @@ proc defineSymbols*() =
 
             to [:string] [1 2 3 4]         
             ; ["1" "2" "3" "4"]
+
+            define :person [name surname age][]
+            to :person ["John" "Doe" 35]
+            ; [name:John surname:Doe age:35]
         """:
             ##########################################################
             if x.kind==Type:
