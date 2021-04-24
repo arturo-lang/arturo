@@ -16,7 +16,7 @@ when not defined(NOPARSERS):
     else:
         import extras/md4c
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Methods

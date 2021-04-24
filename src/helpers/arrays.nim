@@ -12,7 +12,8 @@
 
 import strutils, tables
 
-import vm/value
+import vm/values/comparison
+import vm/values/value
 
 #=======================================
 # Methods
