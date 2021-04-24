@@ -16,7 +16,7 @@ when defined(VERBOSE):
     import strformat, strutils
     import helpers/debug
 
-import vm/[bytecode, globals, value]
+import vm/[bytecode, globals, values/comparison, values/value]
 
 #=======================================
 # Variables

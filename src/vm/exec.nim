@@ -16,7 +16,7 @@ when defined(VERBOSE):
     import strformat
     import helpers/debug
 
-import vm/[bytecode, errors, eval, globals, parse, stack, value]
+import vm/[bytecode, errors, eval, globals, parse, stack, values/comparison, values/value]
 
 #=======================================
 # Forward Declarations
@@ -182,14 +182,14 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc printSyms*(vv:ValueDict, message: string)=
-    echo "============================"
-    echo message
-    echo "============================"
-    for k,v in pairs(vv):
-        if k!="path" and k!="arg" and k!="sys" and k!="null" and k!="true" and k!="false" and k!="pi" and not (v.kind==Function and v.fnKind==BuiltinFunction):
-            echo k & " => " & $(v)
-    echo "----------------------------"
+# proc printSyms*(vv:ValueDict, message: string)=
+#     echo "============================"
+#     echo message
+#     echo "============================"
+#     for k,v in pairs(vv):
+#         if k!="path" and k!="arg" and k!="sys" and k!="null" and k!="true" and k!="false" and k!="pi" and not (v.kind==Function and v.fnKind==BuiltinFunction):
+#             echo k & " => " & $(v)
+#     echo "----------------------------"
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
     when defined(VERBOSE):
