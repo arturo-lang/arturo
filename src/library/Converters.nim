@@ -257,6 +257,10 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                             var res = newDictionary(dict)
                             res.custom = x
 
+                            if x.methods.d.hasKey("init"):
+                                push res
+                                callFunction(x.methods.d["init"])
+
                             # TODO(Converters\to) Add support for custom initializer for user-defined types/objects
                             #  If one of the defined methods is an `init` (or something like that), call it after (or before?) setting the appropriate fields
                             #  labels: enhancement,language,library
@@ -467,21 +471,32 @@ proc defineSymbols*() =
         """:
             ##########################################################
             x.prototype = y
-            let methods = execBlock(z,dictionary=true)
-            for k,v in pairs(methods):
-                # add a `this` first parameter
-                v.params.a.insert(newWord("this"),0)
-                # add as first command in block: 
-                # ensure [:TYPE = type this]
-                v.main.a.insert(newWord("ensure"),0)
-                v.main.a.insert(newBlock(@[
-                    newUserType(x.name),
-                    newSymbol(equal),
-                    newWord("type"),
-                    newWord("this")
-                ]),1)
-                SetSym(k, v)
-                Arities[k] = v.params.a.len
+            x.methods = newDictionary(execBlock(z,dictionary=true))
+            if x.methods.d.hasKey("init"):
+                x.methods.d["init"] = newFunction(
+                    newBlock(@[newWord("this")]),
+                    x.methods.d["init"] 
+                )
+            if x.methods.d.hasKey("print"):
+                x.methods.d["print"] = newFunction(
+                    newBlock(@[newWord("this")]),
+                    x.methods.d["print"] 
+                )
+            # let methods = execBlock(z,dictionary=true)
+            # for k,v in pairs(methods):
+            #     # add a `this` first parameter
+            #     v.params.a.insert(newWord("this"),0)
+            #     # add as first command in block: 
+            #     # ensure [:TYPE = type this]
+            #     v.main.a.insert(newWord("ensure"),0)
+            #     v.main.a.insert(newBlock(@[
+            #         newUserType(x.name),
+            #         newSymbol(equal),
+            #         newWord("type"),
+            #         newWord("this")
+            #     ]),1)
+            #     SetSym(k, v)
+            #     Arities[k] = v.params.a.len
 
     builtin "dictionary",
         alias       = sharp, 
