@@ -482,6 +482,12 @@ proc defineSymbols*() =
                     newBlock(@[newWord("this")]),
                     x.methods.d["print"] 
                 )
+
+            if x.methods.d.hasKey("compare"):
+                x.methods.d["compare"] = newFunction(
+                    newBlock(@[newWord("this"),newWord("that")]),
+                    x.methods.d["compare"] 
+                )
             # let methods = execBlock(z,dictionary=true)
             # for k,v in pairs(methods):
             #     # add a `this` first parameter
