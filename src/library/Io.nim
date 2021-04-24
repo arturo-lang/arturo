@@ -16,15 +16,94 @@
 # Libraries
 #=======================================
 
-import algorithm, rdstdin, terminal
+import algorithm, rdstdin, sequtils, strformat
+import sugar, tables, terminal, unicode
 
 when not defined(windows):
     import linenoise
+
+when not defined(NOGMP):
+    import extras/bignum
 
 import helpers/repl
 
 import vm/lib
 import vm/[eval, exec]
+
+#=======================================
+# Helpers
+#=======================================
+
+proc printable*(v: Value): string {.inline.} =
+    case v.kind:
+        of Null         : return "null"
+        of Boolean      : return $(v.b)
+        of Integer      : 
+            if v.iKind==NormalInteger: return $(v.i)
+            else:
+                when not defined(NOGMP): 
+                    return $(v.bi)
+        of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
+        of Floating     : return $(v.f)
+        of Type         : 
+            if v.tpKind==BuiltinType:
+                return ":" & ($v.t).toLowerAscii()
+            else:
+                return ":" & v.name
+        of Char         : return $(v.c)
+        of String,
+           Word, 
+           Literal,
+           Label        : return v.s
+        of Attribute,
+           AttributeLabel    : return v.r
+        of Path,
+           PathLabel    :
+            result = v.p.map((x) => $(x)).join("\\")
+        of Symbol       :
+            return $(v.m)
+
+        of Date     : return $(v.eobj)
+        of Binary   : discard
+        of Inline,
+           Block     :
+            # result = "["
+            # for i,child in v.a:
+            #     result &= $(child) & " "
+            # result &= "]"
+
+            result = "[" & v.a.map((child) => printable(child)).join(" ") & "]"
+
+        of Dictionary   :
+            if not v.custom.isNil and v.custom.methods.d.hasKey("print"):
+                push v
+                callFunction(v.custom.methods.d["print"])
+                result = pop().s
+            else:
+                var items: seq[string] = @[]
+                for key,value in v.d:
+                    items.add(key  & ":" & printable(value))
+
+                result = "[" & items.join(" ") & "]"
+
+        of Function     : 
+            result = ""
+            if v.fnKind==UserFunction:
+                result &= "<function>" & printable(v.params)
+                result &= "(" & fmt("{cast[ByteAddress](v.main):#X}") & ")"
+            else:
+                result &= "<function:builtin>" 
+
+        of Database:
+            when not defined(NOSQLITE):
+                if v.dbKind==SqliteDatabase: result = fmt("<database>({cast[ByteAddress](v.sqlitedb):#X})")
+                #elif v.dbKind==MysqlDatabase: result = fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+
+        of Bytecode:
+            result = "<bytecode>"
+            
+        of Nothing: discard
+        of ANY: discard
 
 #=======================================
 # Methods
@@ -166,13 +245,13 @@ proc defineSymbols*() =
                     res.add(pop())
 
                 for r in res.reversed:
-                    stdout.write($(r))
+                    stdout.write(printable(r))
                     stdout.write(" ")
 
                 stdout.write("\n")
                 stdout.flushFile()
             else:
-                echo $(x)
+                echo printable(x)
 
     builtin "prints",
         alias       = unaliased, 
@@ -201,12 +280,12 @@ proc defineSymbols*() =
                     res.add(pop())
 
                 for r in res.reversed:
-                    stdout.write($(r))
+                    stdout.write(printable(r))
                     stdout.write(" ")
 
                 stdout.flushFile()
             else:
-                stdout.write($(x))
+                stdout.write(printable(x))
                 stdout.flushFile()
 
     builtin "terminal",
