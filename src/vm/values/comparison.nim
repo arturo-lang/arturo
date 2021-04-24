@@ -3,6 +3,8 @@ import tables, unicode
 when not defined(NOGMP):
     import extras/bignum
 
+import vm/exec
+import vm/stack
 import vm/values/value
 
 proc `==`*(x: Value, y: Value): bool {.inline.}=
@@ -60,19 +62,19 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
 
                 return true
             of Dictionary:
-                # if not x.custom.isNil and x.custom.methods.d.hasKey("print"):
-                #     push y
-                #     push x
-                #     callFunction(x.custom.methods.d["compare"])
-                #     return pop().b
-                # else:
-                if x.d.len != y.d.len: return false
+                if not x.custom.isNil and x.custom.methods.d.hasKey("compare"):
+                    push y
+                    push x
+                    callFunction(x.custom.methods.d["compare"])
+                    return (pop().i == 0)
+                else:
+                    if x.d.len != y.d.len: return false
 
-                for k,v in pairs(x.d):
-                    if not y.d.hasKey(k): return false
-                    if not (v==y.d[k]): return false
+                    for k,v in pairs(x.d):
+                        if not y.d.hasKey(k): return false
+                        if not (v==y.d[k]): return false
 
-                return true
+                    return true
             of Function:
                 if x.fnKind==UserFunction:
                     return x.params == y.params and x.main == y.main and x.exports == y.exports
@@ -118,6 +120,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                         return (int)(x.f)<y.bi        
             else: return x.f<y.f
     else:
+        if x.kind != y.kind: return false
         case x.kind:
             of Null: return false
             of Boolean: return false
@@ -142,6 +145,14 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Inline,
                Block:
                 return x.a.len < y.a.len
+            of Dictionary:
+                if not x.custom.isNil and x.custom.methods.d.hasKey("compare"):
+                    push y
+                    push x
+                    callFunction(x.custom.methods.d["compare"])
+                    return (pop().i == -1)
+                else:
+                    return false
             else:
                 return false
 
@@ -175,6 +186,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                         return (int)(x.f)>y.bi        
             else: return x.f>y.f
     else:
+        if x.kind != y.kind: return false
         case x.kind:
             of Null: return false
             of Boolean: return false
@@ -199,6 +211,14 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Inline,
                Block:
                 return x.a.len > y.a.len
+            of Dictionary:
+                if not x.custom.isNil and x.custom.methods.d.hasKey("compare"):
+                    push y
+                    push x
+                    callFunction(x.custom.methods.d["compare"])
+                    return (pop().i == 1)
+                else:
+                    return false
             else:
                 return false
 
