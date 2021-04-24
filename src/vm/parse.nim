@@ -16,7 +16,7 @@ import streams, strutils, unicode
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug
 
-import vm/[errors, value]
+import vm/[errors, values/value]
 
 #=======================================
 # Types
