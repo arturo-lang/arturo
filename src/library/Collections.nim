@@ -16,8 +16,6 @@
 # Libraries
 #=======================================
 
-import vm/lib
-
 import algorithm, oids, os, random, sequtils
 import strutils, sugar, unicode
 import nre except toSeq
@@ -26,7 +24,7 @@ import helpers/arrays
 import helpers/strings
 import helpers/unisort
 
-
+import vm/lib
 
 #=======================================
 # Methods
