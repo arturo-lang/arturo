@@ -16,7 +16,7 @@ when defined(VERBOSE):
     import strformat
     import helpers/debug
 
-import vm/[bytecode, errors, eval, globals, parse, stack, values/comparison, values/value]
+import vm/[bytecode, errors, eval, globals, parse, stack, values/value]
 
 #=======================================
 # Forward Declarations
@@ -323,12 +323,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xB0-BF] #
             # comparison operators
-            of opEq                 : stack.push(newBoolean(Stack[SP-1]==Stack[SP-2]))
-            of opNe                 : stack.push(newBoolean(Stack[SP-1]!=Stack[SP-2]))
-            of opGt                 : stack.push(newBoolean(Stack[SP-1]>Stack[SP-2]))
-            of opGe                 : stack.push(newBoolean(Stack[SP-1]>=Stack[SP-2]))
-            of opLt                 : stack.push(newBoolean(Stack[SP-1]<Stack[SP-2]))
-            of opLe                 : stack.push(newBoolean(Stack[SP-1]<=Stack[SP-2]))
+            # of opEq                 : stack.push(newBoolean(Stack[SP-1]==Stack[SP-2]))
+            # of opNe                 : stack.push(newBoolean(Stack[SP-1]!=Stack[SP-2]))
+            # of opGt                 : stack.push(newBoolean(Stack[SP-1]>Stack[SP-2]))
+            # of opGe                 : stack.push(newBoolean(Stack[SP-1]>=Stack[SP-2]))
+            # of opLt                 : stack.push(newBoolean(Stack[SP-1]<Stack[SP-2]))
+            # of opLe                 : stack.push(newBoolean(Stack[SP-1]<=Stack[SP-2]))
+            else                      : discard
 
         i += 1
 
