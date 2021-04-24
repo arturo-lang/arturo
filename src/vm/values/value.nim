@@ -529,16 +529,6 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         else: discard
 
-proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
-    ## Returns the first index of `item` in `a` or -1 if not found. This requires
-    ## appropriate `items` and `==` operations to work.
-    result = 0
-    for i in items(a):
-        if item == i: return
-        if item.kind in [Word, Label] and i.kind in [Word, Label] and item.s==i.s: return
-        inc(result)
-    result = -1
-
 proc addChild*(parent: Value, child: Value) {.inline.} =
     parent.a.add(child)
 
