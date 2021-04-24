@@ -2,8 +2,6 @@ import sequtils, strformat, strutils, sugar, tables, unicode
 when not defined(NOGMP):
     import extras/bignum
 
-import helpers/colors
-
 import vm/exec
 import vm/stack
 import vm/values/value
