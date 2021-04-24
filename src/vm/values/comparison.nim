@@ -1,3 +1,14 @@
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2021 Yanis Zafirópulos
+#
+# @file: vm/values/comparison.nim
+######################################################
+
+#=======================================
+# Libraries
+#=======================================
 
 import tables, unicode
 when not defined(NOGMP):
@@ -6,6 +17,10 @@ when not defined(NOGMP):
 import vm/exec
 import vm/stack
 import vm/values/value
+
+#=======================================
+# Methods
+#=======================================
 
 proc `==`*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:

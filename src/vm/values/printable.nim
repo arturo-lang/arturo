@@ -1,10 +1,28 @@
-import sequtils, strformat, strutils, sugar, tables, unicode
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2021 Yanis Zafirópulos
+#
+# @file: vm/values/printable.nim
+######################################################
+
+#=======================================
+# Libraries
+#=======================================
+
+import sequtils, strformat, strutils
+import sugar, tables, unicode
+
 when not defined(NOGMP):
     import extras/bignum
 
 import vm/exec
 import vm/stack
 import vm/values/value
+
+#=======================================
+# Methods
+#=======================================
 
 proc `$`*(s: SymbolKind): string =
     case s:
