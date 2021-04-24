@@ -110,7 +110,7 @@ when not defined(NOWEBVIEW):
         if not resizable:
             hints = WEBVIEW_HINT_FIXED
 
-        wv.bindProc("callBack", handler, nil);
+        wv.bindProc("arturo", handler, cast[pointer](1));
         #wv.bindProc("returnVal", returnVal, nil);
 
         wv.setTitle(cstring(title))
@@ -127,21 +127,19 @@ when not defined(NOWEBVIEW):
         # w.invokeCb = handler
         # if w.init() != 0: return nil
 
+            #         if (typeof arturo === 'undefined') {
+            #     arturo = {};
+            # }
+            # arturo.call = function(method,args) {
+            #     callBack({
+            #         method: method,
+            #         args: args
+            #     });
+            # };
+
         wv.eval """
-            if (typeof arturo === 'undefined') {
-                arturo = {};
-            }
-            arturo.call = function(method,args) {
-                callBack({
-                    method: method,
-                    args: args
-                });
-            };
-            window.evaluate = function (code,callback) {
-                callBack({
-                    method: callback,
-                    args: eval(code)
-                });
+            window.evaluate = function (callback,code) {
+                arturo(callback, eval(code));
             }
         """
 
