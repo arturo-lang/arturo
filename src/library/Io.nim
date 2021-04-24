@@ -16,14 +16,11 @@
 # Libraries
 #=======================================
 
-import algorithm, rdstdin, sequtils, strformat
-import sugar, tables, terminal, unicode
+import algorithm, rdstdin, sequtils
+import tables, terminal
 
 when not defined(windows):
     import linenoise
-
-when not defined(NOGMP):
-    import extras/bignum
 
 import helpers/repl
 
