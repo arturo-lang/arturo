@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import algorithm, os, random, sequtils
+import algorithm, oids, os, random, sequtils
 import strutils, sugar, unicode
 import nre except toSeq
 
@@ -1259,9 +1259,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get given block without duplicates",
         args        = {
-            "collection"    : {Block,Literal}
+            "collection"    : {String,Block,Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "id"    : ({Boolean},"generate unique id using given prefix"),
+        },
         returns     = {Block,Nothing},
         example     = """
             arr: [1 2 4 1 3 2]
@@ -1272,8 +1274,11 @@ proc defineSymbols*() =
             print arr                     ; 1 2 4 3
         """:
             ##########################################################
-            if x.kind==Block: push(newBlock(x.a.deduplicate()))
-            else: InPlace.a = InPlaced.a.deduplicate()
+            if (popAttr("id") != VNULL):
+                push newString(x.s & $(genOid()))
+            else:
+                if x.kind==Block: push(newBlock(x.a.deduplicate()))
+                else: InPlace.a = InPlaced.a.deduplicate()
 
     builtin "values",
         alias       = unaliased, 
