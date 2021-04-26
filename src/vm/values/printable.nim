@@ -11,7 +11,7 @@
 #=======================================
 
 import sequtils, strformat, strutils
-import sugar, tables, unicode
+import sugar, tables, times, unicode
 
 when not defined(NOGMP):
     import extras/bignum
