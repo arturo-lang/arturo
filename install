@@ -82,6 +82,7 @@ MINI_BUILD=false
 COMPRESS=true
 PRINT_LOG=false
 RUN_UNIT_TESTS=false
+FOR_WEB=false
 
 if [ "$(whoami)" = "drkameleon" ]; then IS_DEV_BUILD=true
 else IS_DEV_BUILD=false
@@ -117,7 +118,15 @@ do
             FLAGS="$FLAGS -d:SAFE";;
         web)
             FOR_WEB=true
-            FLAGS="$FLAGS -d:WEB";;
+            FLAGS="$FLAGS -d:NOASCIIDECODE \
+                          -d:NOEXAMPLES \
+                          -d:NOGMP \
+                          -d:NOPARSERS \
+                          -d:NOSQLITE \
+                          -d:NOUNZIP \
+                          -d:NOWEBVIEW"
+            FLAGS="$FLAGS --verbosity:3"
+            FLAGS="$FLAGS -d:WEB ";;
 
         noasciidecode)  FLAGS="$FLAGS -d:NOASCIIDECODE";;
         noexamples)     FLAGS="$FLAGS -d:NOEXAMPLES";;
