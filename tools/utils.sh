@@ -16,6 +16,8 @@ MAIN="src/arturo.nim"
 
 FLAGS="\
  --skipParentCfg:on\
+ --skipUserCfg:on\
+ --skipProjCfg:on\
  --colors:off\
  -d:release\
  -d:danger\
