@@ -39,7 +39,7 @@ when defined(VERBOSE):
 # Helpers
 #=======================================
 
-proc `==`(x: Value, y: Value): bool {.inline.}=
+proc sameValue(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -75,7 +75,7 @@ proc `==`(x: Value, y: Value): bool {.inline.}=
             of Null: return true
             of Boolean: return x.b == y.b
             of Version:
-                return x.major == y.major and x.minor == y.minor and x.patch == y.patch
+                return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
             of Type: return x.t == y.t
             of Char: return x.c == y.c
             of String,
@@ -90,7 +90,7 @@ proc `==`(x: Value, y: Value): bool {.inline.}=
                 if x.a.len != y.a.len: return false
 
                 for i,child in x.a:
-                    if not (child==y.a[i]): return false
+                    if not (sameValue(child,y.a[i])): return false
 
                 return true
             of Dictionary:
@@ -104,12 +104,12 @@ proc `==`(x: Value, y: Value): bool {.inline.}=
 
                 for k,v in pairs(x.d):
                     if not y.d.hasKey(k): return false
-                    if not (v==y.d[k]): return false
+                    if not (sameValue(v,y.d[k])): return false
 
                 return true
             of Function:
                 if x.fnKind==UserFunction:
-                    return x.params == y.params and x.main == y.main and x.exports == y.exports
+                    return sameValue(x.params, y.params) and sameValue(x.main, y.main) and x.exports == y.exports
                 else:
                     return x.fname == y.fname
             of Database:
@@ -123,11 +123,9 @@ proc `==`(x: Value, y: Value): bool {.inline.}=
                 return false
 
 proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
-    ## Returns the first index of `item` in `a` or -1 if not found. This requires
-    ## appropriate `items` and `==` operations to work.
     result = 0
     for i in items(a):
-        if item == i: return
+        if sameValue(item, i): return
         if item.kind in [Word, Label] and i.kind in [Word, Label] and item.s==i.s: return
         inc(result)
     result = -1
