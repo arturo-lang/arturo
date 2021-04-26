@@ -9,8 +9,10 @@
 #=======================================
 # Libraries
 #=======================================
+when not defined(WEB):
+    import parseopt
 
-import os, parseopt, sequtils, strutils
+import os, sequtils, strutils
 import sugar, tables, times
 
 import helpers/colors
@@ -56,7 +58,7 @@ proc parseCmdlineArguments*(): ValueDict =
     result = initOrderedTable[string,Value]()
     var values: ValueArray = @[]
 
-    when not defined(windows):
+    when not defined(windows) and not defined(WEB):
         var p = initOptParser(Arguments.a.map((x)=>x.s))
         for kind, key, val in p.getopt():
             case kind
@@ -116,7 +118,8 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
     ScriptInfo = script
 
     PathStack = @[]
-    HomeDir = getHomeDir()
-    TmpDir  = getTempDir()
+    when not defined(WEB):
+        HomeDir = getHomeDir()
+        TmpDir  = getTempDir()
 
     NoColors = muted
