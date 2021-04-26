@@ -44,11 +44,11 @@ buildArturo(){
 }
 
 compressBinary(){
-    if ! command_exists upx ; 
-    then
-        info "compressing binary"
-        upx -q $BINARY >/dev/null 2>&1
-    fi
+    # if ! command_exists upx ; 
+    # then
+    #     info "compressing binary"
+    #     upx -q $BINARY >/dev/null 2>&1
+    # fi
 }
 
 installAll(){
