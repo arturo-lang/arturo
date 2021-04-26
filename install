@@ -33,12 +33,16 @@ buildArturo(){
     info "config: $CONFIG"
 
     eecho "${GRAY}"
-    if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
-    then
-        nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
-        animate_progress
+    if $FOR_WEB; then
+        nim js $FLAGS -o:$BINARY.js $MAIN
     else
-        nim c $FLAGS -o:$BINARY $MAIN
+        if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
+        then
+            nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
+            animate_progress
+        else
+            nim c $FLAGS -o:$BINARY $MAIN
+        fi
     fi
     eecho "${CLEAR}"
 }
@@ -111,6 +115,9 @@ do
 
         safe)
             FLAGS="$FLAGS -d:SAFE";;
+        web)
+            FOR_WEB=true
+            FLAGS="$FLAGS -d:WEB";;
 
         noasciidecode)  FLAGS="$FLAGS -d:NOASCIIDECODE";;
         noexamples)     FLAGS="$FLAGS -d:NOEXAMPLES";;
