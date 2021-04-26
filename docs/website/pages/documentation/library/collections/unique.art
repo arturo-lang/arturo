@@ -15,10 +15,17 @@ example: {
         print arr                     ; 1 2 4 3
     }
 attributes: #[
+    id: #[
+        types: [
+                :boolean
+            ]
+        description: "generate unique id using given prefix"
+        ]
     ]
 arguments: #[
     collection: [
-            :literal
+            :string
+             :literal
              :block
         ]
     ]

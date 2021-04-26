@@ -6,23 +6,55 @@ returns: [
     ]
 description: "define new type with given characteristics"
 example: {
-        define :person [name surname][
-            sayHello: function [][
-                print ["Hello" this\name]
+        define :person [name surname age][  
+        
+            ; magic method to be executed
+            ; after a new object has been created
+            init: [
+                this\name: capitalize this\name
+            ]
+        
+            ; magic method to be executed
+            ; when the object is about to be printed
+            print: [
+                render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
+            ]
+        
+            ; magic method to be used
+            ; when comparing objects (e.g. when sorting)
+            compare: [
+                if this\age = that\age -> return 0
+                if this\age < that\age -> return neg 1
+                if this\age > that\age -> return 1
             ]
         ]
         
-        do [
-            a: to :person ["John" "Doe"]
-            print a
-            ; [name:John surname:Doe]
-        
-            print ["Your surname is:" a\surname]
-            ; Doe
-        
-            sayHello a
-            ; Hello John
+        sayHello: function [this][
+            ensure -> is? :person this
+            print ["Hello" this\name]
         ]
+        
+        a: to :person ["John" "Doe" 35]
+        b: to :person ["jane" "Doe" 33]
+        
+        print a
+        ; NAME: John, SURNAME: Doe, AGE: 35
+        print b
+        ; NAME: Jane, SURNAME: Doe, AGE: 33
+        
+        sayHello a
+        ; Hello John 
+        
+        a > b 
+        ; => true (a\age > b\age)
+        
+        print join.with:"\n" sort @[a b]
+        ; NAME: Jane, SURNAME: Doe, AGE: 33
+        ; NAME: John, SURNAME: Doe, AGE: 35
+        
+        print join.with:"\n" sort.descending @[a b]
+        ; NAME: John, SURNAME: Doe, AGE: 35
+        ; NAME: Jane, SURNAME: Doe, AGE: 33
     }
 attributes: #[
     ]
