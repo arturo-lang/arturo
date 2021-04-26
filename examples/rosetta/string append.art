@@ -1,10 +1,10 @@
 print join ["Hello" "World"]
 
-a: "Hello"
+a: new "Hello"
 'a ++ "World"
 print a
 
-b: "Hello"
+b: new "Hello"
 append 'b "World"
 print b
 

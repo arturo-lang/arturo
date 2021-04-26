@@ -14,8 +14,6 @@ import asyncdispatch, httpClient, os
 
 import helpers/url
 
-import vm/errors
-
 #=======================================
 # Types
 #=======================================

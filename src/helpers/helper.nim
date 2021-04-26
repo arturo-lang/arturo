@@ -15,7 +15,7 @@ import strutils, tables
 
 import helpers/colors
 
-import vm/value
+import vm/values/[printable, value]
 
 #=======================================
 # Constants

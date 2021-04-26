@@ -10,13 +10,16 @@
 # Libraries
 #=======================================
 
-import algorithm, tables
+import algorithm, tables, unicode
+
+when not defined(NOGMP):
+    import extras/bignum
 
 when defined(VERBOSE):
     import strformat, strutils
     import helpers/debug
 
-import vm/[bytecode, globals, value]
+import vm/[bytecode, globals, values/value]
 
 #=======================================
 # Variables
@@ -31,6 +34,101 @@ var
 
 when defined(VERBOSE):
     proc dump*(evaled: Translation)
+
+#=======================================
+# Helpers
+#=======================================
+
+proc sameValue(x: Value, y: Value): bool {.inline.}=
+    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
+        if x.kind==Integer:
+            if y.kind==Integer: 
+                if x.iKind==NormalInteger and y.iKind==NormalInteger:
+                    return x.i==y.i
+                elif x.iKind==NormalInteger and y.iKind==BigInteger:
+                    when not defined(NOGMP):
+                        return x.i==y.bi
+                elif x.iKind==BigInteger and y.iKind==NormalInteger:
+                    when not defined(NOGMP):
+                        return x.bi==y.i
+                else:
+                    when not defined(NOGMP):
+                        return x.bi==y.bi
+            else: 
+                if x.iKind==NormalInteger:
+                    return (float)(x.i)==y.f
+                else:
+                    when not defined(NOGMP):
+                        return (x.bi)==(int)(y.f)
+        else:
+            if y.kind==Integer: 
+                if y.iKind==NormalInteger:
+                    return x.f==(float)(y.i)
+                elif y.iKind==BigInteger:
+                    when not defined(NOGMP):
+                        return (int)(x.f)==y.bi        
+            else: return x.f==y.f
+    else:
+        if x.kind != y.kind: return false
+
+        case x.kind:
+            of Null: return true
+            of Boolean: return x.b == y.b
+            of Version:
+                return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
+            of Type: return x.t == y.t
+            of Char: return x.c == y.c
+            of String,
+               Word,
+               Label,
+               Literal: return x.s == y.s
+            of Attribute,
+               AttributeLabel: return x.r == y.r
+            of Symbol: return x.m == y.m
+            of Inline,
+               Block:
+                if x.a.len != y.a.len: return false
+
+                for i,child in x.a:
+                    if not (sameValue(child,y.a[i])): return false
+
+                return true
+            of Dictionary:
+                # if not x.custom.isNil and x.custom.methods.d.hasKey("print"):
+                #     push y
+                #     push x
+                #     callFunction(x.custom.methods.d["compare"])
+                #     return pop().b
+                # else:
+                if x.d.len != y.d.len: return false
+
+                for k,v in pairs(x.d):
+                    if not y.d.hasKey(k): return false
+                    if not (sameValue(v,y.d[k])): return false
+
+                return true
+            of Function:
+                if x.fnKind==UserFunction:
+                    return sameValue(x.params, y.params) and sameValue(x.main, y.main) and x.exports == y.exports
+                else:
+                    return x.fname == y.fname
+            of Database:
+                if x.dbKind != y.dbKind: return false
+                when not defined(NOSQLITE):
+                    if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
+                    #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
+            of Date:
+                return x.eobj == y.eobj
+            else:
+                return false
+
+proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
+    result = 0
+    for i in items(a):
+        if sameValue(item, i): return
+        if item.kind in [Word, Label] and i.kind in [Word, Label] and item.s==i.s: return
+        inc(result)
+    result = -1
 
 #=======================================
 # Methods

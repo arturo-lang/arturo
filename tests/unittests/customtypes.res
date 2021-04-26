@@ -5,9 +5,15 @@ The second person's name is: Jane
 Hello Bob 
 :person
 true
-[name:Bob surname:Doe]
-[name:Jane surname:JONES]
+NAME: Bob, SURNAME: Doe
+NAME: Jane, SURNAME: Doe
 [brand:Ford model:Mustang year:1967]
 [brand:Nissan model:Sunny year:1991]
-Car C is a Ford and it's 54 years old 
-Car D is a Nissan and it's 30 years old
+Car C is a Ford 
+Car D is a Nissan 
+false
+true
+false
+true
+[brand:Ford model:Mustang year:1967] [brand:Nissan model:Sunny year:1991] 
+[brand:Nissan model:Sunny year:1991] [brand:Ford model:Mustang year:1967] 

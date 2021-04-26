@@ -14,7 +14,7 @@ when not defined(NOPARSERS):
     import htmlparser
     import strtabs, tables, xmltree
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Methods

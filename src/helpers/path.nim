@@ -12,7 +12,7 @@
 
 import os, tables
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Methods
