@@ -705,8 +705,9 @@ proc doParseAll*(input: string, isFile: bool = true): ParseResult =
     # open stream
 
     if isFile:
-        if not fileExists(input):
-            CompilerError_ScriptNotExists(input)
+        when not defined(WEB):
+            if not fileExists(input):
+                CompilerError_ScriptNotExists(input)
 
         var stream = newFileStream(input)
         lexbase.open(p, stream)

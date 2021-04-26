@@ -85,13 +85,14 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (let aExternal = popAttr("external"); aExternal != VNULL):
-                let externalLibrary = aExternal.s
+                when not defined(WEB):
+                    let externalLibrary = aExternal.s
 
-                var expected = Nothing
-                if (let aExpect = popAttr("expect"); aExpect != VNULL):
-                    expected = aExpect.t
+                    var expected = Nothing
+                    if (let aExpect = popAttr("expect"); aExpect != VNULL):
+                        expected = aExpect.t
 
-                push(execForeignMethod(externalLibrary, x.s, y.a, expected))
+                    push(execForeignMethod(externalLibrary, x.s, y.a, expected))
             else:
                 var fun: Value
 
