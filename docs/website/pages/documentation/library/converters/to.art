@@ -36,6 +36,10 @@ example: {
         
         to [:string] [1 2 3 4]         
         ; ["1" "2" "3" "4"]
+        
+        define :person [name surname age][]
+        to :person ["John" "Doe" 35]
+        ; [name:John surname:Doe age:35]
     }
 attributes: #[
     format: #[
