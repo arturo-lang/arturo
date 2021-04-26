@@ -12,7 +12,7 @@
 
 import hashes, marshal, streams
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Types 

@@ -12,7 +12,7 @@
 
 import os, sequtils, strutils, sugar, tables
 
-import vm/value
+import vm/values/value
 
 when not defined(windows):
 

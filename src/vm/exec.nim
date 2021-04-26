@@ -16,7 +16,7 @@ when defined(VERBOSE):
     import strformat
     import helpers/debug
 
-import vm/[bytecode, errors, eval, globals, parse, stack, value]
+import vm/[bytecode, errors, eval, globals, parse, stack, values/value]
 
 #=======================================
 # Forward Declarations
@@ -182,14 +182,14 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
 # Methods
 #=======================================
 
-proc printSyms*(vv:ValueDict, message: string)=
-    echo "============================"
-    echo message
-    echo "============================"
-    for k,v in pairs(vv):
-        if k!="path" and k!="arg" and k!="sys" and k!="null" and k!="true" and k!="false" and k!="pi" and not (v.kind==Function and v.fnKind==BuiltinFunction):
-            echo k & " => " & $(v)
-    echo "----------------------------"
+# proc printSyms*(vv:ValueDict, message: string)=
+#     echo "============================"
+#     echo message
+#     echo "============================"
+#     for k,v in pairs(vv):
+#         if k!="path" and k!="arg" and k!="sys" and k!="null" and k!="true" and k!="false" and k!="pi" and not (v.kind==Function and v.fnKind==BuiltinFunction):
+#             echo k & " => " & $(v)
+#     echo "----------------------------"
 
 proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): ValueDict = 
     when defined(VERBOSE):
@@ -323,12 +323,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             # [0xB0-BF] #
             # comparison operators
-            of opEq                 : stack.push(newBoolean(Stack[SP-1]==Stack[SP-2]))
-            of opNe                 : stack.push(newBoolean(Stack[SP-1]!=Stack[SP-2]))
-            of opGt                 : stack.push(newBoolean(Stack[SP-1]>Stack[SP-2]))
-            of opGe                 : stack.push(newBoolean(Stack[SP-1]>=Stack[SP-2]))
-            of opLt                 : stack.push(newBoolean(Stack[SP-1]<Stack[SP-2]))
-            of opLe                 : stack.push(newBoolean(Stack[SP-1]<=Stack[SP-2]))
+            # of opEq                 : stack.push(newBoolean(Stack[SP-1]==Stack[SP-2]))
+            # of opNe                 : stack.push(newBoolean(Stack[SP-1]!=Stack[SP-2]))
+            # of opGt                 : stack.push(newBoolean(Stack[SP-1]>Stack[SP-2]))
+            # of opGe                 : stack.push(newBoolean(Stack[SP-1]>=Stack[SP-2]))
+            # of opLt                 : stack.push(newBoolean(Stack[SP-1]<Stack[SP-2]))
+            # of opLe                 : stack.push(newBoolean(Stack[SP-1]<=Stack[SP-2]))
+            else                      : discard
 
         i += 1
 

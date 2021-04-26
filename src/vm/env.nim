@@ -15,7 +15,7 @@ import sugar, tables, times
 
 import helpers/colors
 
-import vm/[parse,value]
+import vm/[parse,values/value]
 
 #=======================================
 # Globals

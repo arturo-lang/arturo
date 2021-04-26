@@ -1,4 +1,4 @@
-a: "Hello"
+a: new "Hello"
 b: a            ; reference the same string
 
 ; changing one string in-place

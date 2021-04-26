@@ -16,7 +16,8 @@
 # Libraries
 #=======================================
 
-import algorithm, rdstdin, terminal
+import algorithm, rdstdin, sequtils
+import tables, terminal
 
 when not defined(windows):
     import linenoise
@@ -25,6 +26,7 @@ import helpers/repl
 
 import vm/lib
 import vm/[eval, exec]
+import vm/values/printable
 
 #=======================================
 # Methods

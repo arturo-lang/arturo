@@ -13,7 +13,7 @@
 import sequtils, sugar, tables
 import extras/parsetoml
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Methods

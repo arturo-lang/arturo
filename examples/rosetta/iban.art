@@ -18,7 +18,7 @@ valid?: function [iban][
     iban: replace iban " " ""
     if not? contains? iban .regex "[0-9A-Z]+" -> return false
     if not? (size iban)=ibanSize \ slice iban 0 1 -> return false
- 
+
     iban: (slice iban 4 (size iban)-1) ++ slice iban 0 3
     iban: join map split iban 'ch -> to :string index base36 ch
     iban: to :integer iban

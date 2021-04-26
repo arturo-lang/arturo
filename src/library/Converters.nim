@@ -257,9 +257,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                             var res = newDictionary(dict)
                             res.custom = x
 
-                            # TODO(Converters\to) Add support for custom initializer for user-defined types/objects
-                            #  If one of the defined methods is an `init` (or something like that), call it after (or before?) setting the appropriate fields
-                            #  labels: enhancement,language,library
+                            if x.methods.d.hasKey("init"):
+                                push res
+                                callFunction(x.methods.d["init"])
 
                             return(res)
 
@@ -447,41 +447,90 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            define :person [name surname][
-                sayHello: function [][
-                    print ["Hello" this\name]
+            define :person [name surname age][  
+
+                ; magic method to be executed
+                ; after a new object has been created
+                init: [
+                    this\name: capitalize this\name
+                ]
+
+                ; magic method to be executed
+                ; when the object is about to be printed
+                print: [
+                    render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
+                ]
+
+                ; magic method to be used
+                ; when comparing objects (e.g. when sorting)
+                compare: [
+                    if this\age = that\age -> return 0
+                    if this\age < that\age -> return neg 1
+                    if this\age > that\age -> return 1
                 ]
             ]
 
-            do [
-                a: to :person ["John" "Doe"]
-                print a
-                ; [name:John surname:Doe]
-
-                print ["Your surname is:" a\surname]
-                ; Doe
-
-                sayHello a
-                ; Hello John
+            sayHello: function [this][
+                ensure -> is? :person this
+                print ["Hello" this\name]
             ]
+
+            a: to :person ["John" "Doe" 35]
+            b: to :person ["jane" "Doe" 33]
+
+            print a
+            ; NAME: John, SURNAME: Doe, AGE: 35
+            print b
+            ; NAME: Jane, SURNAME: Doe, AGE: 33
+
+            sayHello a
+            ; Hello John 
+
+            a > b 
+            ; => true (a\age > b\age)
+
+            print join.with:"\n" sort @[a b]
+            ; NAME: Jane, SURNAME: Doe, AGE: 33
+            ; NAME: John, SURNAME: Doe, AGE: 35
+
+            print join.with:"\n" sort.descending @[a b]
+            ; NAME: John, SURNAME: Doe, AGE: 35
+            ; NAME: Jane, SURNAME: Doe, AGE: 33
         """:
             ##########################################################
             x.prototype = y
-            let methods = execBlock(z,dictionary=true)
-            for k,v in pairs(methods):
-                # add a `this` first parameter
-                v.params.a.insert(newWord("this"),0)
-                # add as first command in block: 
-                # ensure [:TYPE = type this]
-                v.main.a.insert(newWord("ensure"),0)
-                v.main.a.insert(newBlock(@[
-                    newUserType(x.name),
-                    newSymbol(equal),
-                    newWord("type"),
-                    newWord("this")
-                ]),1)
-                SetSym(k, v)
-                Arities[k] = v.params.a.len
+            x.methods = newDictionary(execBlock(z,dictionary=true))
+            if x.methods.d.hasKey("init"):
+                x.methods.d["init"] = newFunction(
+                    newBlock(@[newWord("this")]),
+                    x.methods.d["init"] 
+                )
+            if x.methods.d.hasKey("print"):
+                x.methods.d["print"] = newFunction(
+                    newBlock(@[newWord("this")]),
+                    x.methods.d["print"] 
+                )
+
+            if x.methods.d.hasKey("compare"):
+                x.methods.d["compare"] = newFunction(
+                    newBlock(@[newWord("this"),newWord("that")]),
+                    x.methods.d["compare"] 
+                )
+            # let methods = execBlock(z,dictionary=true)
+            # for k,v in pairs(methods):
+            #     # add a `this` first parameter
+            #     v.params.a.insert(newWord("this"),0)
+            #     # add as first command in block: 
+            #     # ensure [:TYPE = type this]
+            #     v.main.a.insert(newWord("ensure"),0)
+            #     v.main.a.insert(newBlock(@[
+            #         newUserType(x.name),
+            #         newSymbol(equal),
+            #         newWord("type"),
+            #         newWord("this")
+            #     ]),1)
+            #     SetSym(k, v)
+            #     Arities[k] = v.params.a.len
 
     builtin "dictionary",
         alias       = sharp, 
@@ -687,6 +736,10 @@ proc defineSymbols*() =
 
             to [:string] [1 2 3 4]         
             ; ["1" "2" "3" "4"]
+
+            define :person [name surname age][]
+            to :person ["John" "Doe" 35]
+            ; [name:John surname:Doe age:35]
         """:
             ##########################################################
             if x.kind==Type:

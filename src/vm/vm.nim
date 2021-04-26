@@ -20,7 +20,7 @@ import vm/[
     globals, 
     parse, 
     stack, 
-    value, 
+    values/value, 
     version
 ]
 

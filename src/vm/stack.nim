@@ -12,7 +12,7 @@
 
 import strformat, tables
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Constants

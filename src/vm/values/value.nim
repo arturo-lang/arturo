@@ -180,6 +180,7 @@ type
                     of UserType:
                         name*       : string
                         prototype*  : Value
+                        methods*    : Value
                     of BuiltinType:
                         discard
 
@@ -283,7 +284,7 @@ var
 #=======================================
 
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
-proc `$`*(v: Value): string {.inline.}
+proc `$`(v: Value): string {.inline.}
 
 #=======================================
 # Helpers
@@ -440,7 +441,7 @@ proc newBinary*(n: ByteArray = @[]): Value {.inline.} =
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool): Value {.inline.} =
+proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable)
 
 proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
@@ -527,16 +528,6 @@ proc copyValue*(v: Value): Value {.inline.} =
                 #elif v.dbKind == MysqlDatabase: result = newDatabase(v.mysqldb)
 
         else: discard
-
-proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
-    ## Returns the first index of `item` in `a` or -1 if not found. This requires
-    ## appropriate `items` and `==` operations to work.
-    result = 0
-    for i in items(a):
-        if item == i: return
-        if item.kind in [Word, Label] and i.kind in [Word, Label] and item.s==i.s: return
-        inc(result)
-    result = -1
 
 proc addChild*(parent: Value, child: Value) {.inline.} =
     parent.a.add(child)
@@ -1089,215 +1080,15 @@ proc `!!=`*(x: var Value) =
             when not defined(NOGMP):
                 x = newInteger(not x.bi)
 
-proc `==`*(x: Value, y: Value): bool =
-    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if x.iKind==NormalInteger and y.iKind==NormalInteger:
-                    return x.i==y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when not defined(NOGMP):
-                        return x.i==y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when not defined(NOGMP):
-                        return x.bi==y.i
-                else:
-                    when not defined(NOGMP):
-                        return x.bi==y.bi
-            else: 
-                if x.iKind==NormalInteger:
-                    return (float)(x.i)==y.f
-                else:
-                    when not defined(NOGMP):
-                        return (x.bi)==(int)(y.f)
-        else:
-            if y.kind==Integer: 
-                if y.iKind==NormalInteger:
-                    return x.f==(float)(y.i)
-                elif y.iKind==BigInteger:
-                    when not defined(NOGMP):
-                        return (int)(x.f)==y.bi        
-            else: return x.f==y.f
-    else:
-        if x.kind != y.kind: return false
+# proc `==`*[T](x,y:ref T){.error.}
+# proc `<`*[T](x,y:ref T){.error.}
+# proc `>`*[T](x,y:ref T){.error.}
+# proc `<=`*[T](x,y:ref T){.error.}
+# proc `>=`*[T](x,y:ref T){.error.}
+# proc `!=`*[T](x,y:ref T){.error.}
+# proc cmp*[T](x,y:ref T){.error.}
 
-        case x.kind:
-            of Null: return true
-            of Boolean: return x.b == y.b
-            of Version:
-                return x.major == y.major and x.minor == y.minor and x.patch == y.patch
-            of Type: return x.t == y.t
-            of Char: return x.c == y.c
-            of String,
-               Word,
-               Label,
-               Literal: return x.s == y.s
-            of Attribute,
-               AttributeLabel: return x.r == y.r
-            of Symbol: return x.m == y.m
-            of Inline,
-               Block:
-                if x.a.len != y.a.len: return false
-
-                for i,child in x.a:
-                    if not (child==y.a[i]): return false
-
-                return true
-            of Dictionary:
-                if x.d.len != y.d.len: return false
-
-                for k,v in pairs(x.d):
-                    if not y.d.hasKey(k): return false
-                    if not (v==y.d[k]): return false
-
-                return true
-            of Function:
-                if x.fnKind==UserFunction:
-                    return x.params == y.params and x.main == y.main and x.exports == y.exports
-                else:
-                    return x.fname == y.fname
-            of Database:
-                if x.dbKind != y.dbKind: return false
-                when not defined(NOSQLITE):
-                    if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
-                    #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
-            of Date:
-                return x.eobj == y.eobj
-            else:
-                return false
-
-proc `<`*(x: Value, y: Value): bool =
-    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if x.iKind==NormalInteger and y.iKind==NormalInteger:
-                    return x.i<y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when not defined(NOGMP):
-                        return x.i<y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when not defined(NOGMP):
-                        return x.bi<y.i
-                else:
-                    when not defined(NOGMP):
-                        return x.bi<y.bi
-            else: 
-                if x.iKind==NormalInteger:
-                    return (float)(x.i)<y.f
-                else:
-                    when not defined(NOGMP):
-                        return (x.bi)<(int)(y.f)
-        else:
-            if y.kind==Integer: 
-                if y.iKind==NormalInteger:
-                    return x.f<(float)(y.i)
-                elif y.iKind==BigInteger:
-                    when not defined(NOGMP):
-                        return (int)(x.f)<y.bi        
-            else: return x.f<y.f
-    else:
-        case x.kind:
-            of Null: return false
-            of Boolean: return false
-            of Version:
-                if x.major < y.major: return true
-                elif x.major > y.major: return false
-
-                if x.minor < y.minor: return true
-                elif x.minor > y.minor: return false
-
-                if x.patch < y.patch: return true
-                elif x.patch > y.patch: return false
-
-                return false
-            of Type: return false
-            of Char: return $(x.c) < $(y.c)
-            of String,
-               Word,
-               Label,
-               Literal: return x.s < y.s
-            of Symbol: return false
-            of Inline,
-               Block:
-                return x.a.len < y.a.len
-            else:
-                return false
-
-proc `>`*(x: Value, y: Value): bool =
-    if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
-        if x.kind==Integer:
-            if y.kind==Integer: 
-                if x.iKind==NormalInteger and y.iKind==NormalInteger:
-                    return x.i>y.i
-                elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when not defined(NOGMP):
-                        return x.i>y.bi
-                elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when not defined(NOGMP):
-                        return x.bi>y.i
-                else:
-                    when not defined(NOGMP):
-                        return x.bi>y.bi
-            else: 
-                if x.iKind==NormalInteger:
-                    return (float)(x.i)>y.f
-                else:
-                    when not defined(NOGMP):
-                        return (x.bi)>(int)(y.f)
-        else:
-            if y.kind==Integer: 
-                if y.iKind==NormalInteger:
-                    return x.f>(float)(y.i)
-                elif y.iKind==BigInteger:
-                    when not defined(NOGMP):
-                        return (int)(x.f)>y.bi        
-            else: return x.f>y.f
-    else:
-        case x.kind:
-            of Null: return false
-            of Boolean: return false
-            of Version:
-                if x.major > y.major: return true
-                elif x.major < y.major: return false
-
-                if x.minor > y.minor: return true
-                elif x.minor < y.minor: return false
-
-                if x.patch > y.patch: return true
-                elif x.patch < y.patch: return false
-
-                return false
-            of Type: return false
-            of Char: return $(x.c) > $(y.c)
-            of String,
-               Word,
-               Label,
-               Literal: return x.s > y.s
-            of Symbol: return false
-            of Inline,
-               Block:
-                return x.a.len > y.a.len
-            else:
-                return false
-
-proc `<=`*(x: Value, y: Value): bool =
-    x < y or x == y
-
-proc `>=`*(x: Value, y: Value): bool =
-    x > y or x == y
-
-proc `!=`*(x: Value, y: Value): bool =
-    not (x == y)
-
-proc cmp*(x: Value, y: Value): int =
-    if x < y:
-        return -1
-    elif x > y:
-        return 1
-    else:
-        return 0
-
-proc `$`*(s: SymbolKind): string =
+proc `$`(s: SymbolKind): string =
     case s:
         of thickarrowleft   : result = "<="
         of thickarrowright  : result = "=>"
@@ -1348,7 +1139,7 @@ proc `$`*(s: SymbolKind): string =
 
         of unaliased        : discard
 
-proc `$`*(v: Value): string {.inline.} =
+proc `$`(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
         of Boolean      : return $(v.b)

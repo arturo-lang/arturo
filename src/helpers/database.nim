@@ -15,7 +15,7 @@ import sequtils, sqlite3, strutils
 #import db_mysql as mysql
 import db_sqlite as sqlite
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Types
