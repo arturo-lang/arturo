@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import re, strutils, tables, uri
+when not defined(WEB):
+    import re
+import strutils, tables, uri
 
 import vm/values/value
 
@@ -19,7 +21,10 @@ import vm/values/value
 #=======================================
 
 proc isUrl*(s: string): bool {.inline.} =
-    return s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
+    when not defined(WEB):
+        return s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
+    else:
+        return false
 
 proc parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
     var res = initUri()

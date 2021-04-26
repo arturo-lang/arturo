@@ -17,7 +17,8 @@
 #=======================================
 
 import helpers/benchmark
-import helpers/helper
+when not defined(WEB):
+    import helpers/helper
 
 import vm/lib
 import vm/[env, exec]
@@ -297,57 +298,58 @@ proc defineSymbols*() =
             ##########################################################
             push(newBoolean(x.kind==Dictionary))
 
-    builtin "help",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "print a list of all available builtin functions",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            help        
+    when not defined(WEB):
+        builtin "help",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "print a list of all available builtin functions",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+                help        
 
-            ; abs              (value)                        -> get the absolute value for given integer
-            ; acos             (angle)                        -> calculate the inverse cosine of given angle
-            ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
-            ; add              (valueA,valueB)                -> add given values and return result
-            ; ...
-        """:
-            ##########################################################
-            printHelp(Syms)
+                ; abs              (value)                        -> get the absolute value for given integer
+                ; acos             (angle)                        -> calculate the inverse cosine of given angle
+                ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
+                ; add              (valueA,valueB)                -> add given values and return result
+                ; ...
+            """:
+                ##########################################################
+                printHelp(Syms)
 
-    builtin "info",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "print info for given symbol",
-        args        = {
-            "symbol": {String,Literal}
-        },
-        attrs       = {
-            "get"   : ({Boolean},"get information as dictionary")
-        },
-        returns     = {Dictionary,Nothing},
-        example     = """
-            info 'print
+        builtin "info",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "print info for given symbol",
+            args        = {
+                "symbol": {String,Literal}
+            },
+            attrs       = {
+                "get"   : ({Boolean},"get information as dictionary")
+            },
+            returns     = {Dictionary,Nothing},
+            example     = """
+                info 'print
 
-            ; |--------------------------------------------------------------------------------
-            ; |          print  :function                                          0x1028B3410
-            ; |--------------------------------------------------------------------------------
-            ; |                 print given value to screen with newline
-            ; |--------------------------------------------------------------------------------
-            ; |          usage  print value :any
-            ; |
-            ; |        returns  :nothing
-            ; |--------------------------------------------------------------------------------
+                ; |--------------------------------------------------------------------------------
+                ; |          print  :function                                          0x1028B3410
+                ; |--------------------------------------------------------------------------------
+                ; |                 print given value to screen with newline
+                ; |--------------------------------------------------------------------------------
+                ; |          usage  print value :any
+                ; |
+                ; |        returns  :nothing
+                ; |--------------------------------------------------------------------------------
 
-            print info.get 'print
-            ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
-        """:
-            ##########################################################
-            if (popAttr("get") != VNULL):
-                push(newDictionary(getInfo(x.s, InPlace, Aliases)))
-            else:
-                printInfo(x.s, InPlace, Aliases)
+                print info.get 'print
+                ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
+            """:
+                ##########################################################
+                if (popAttr("get") != VNULL):
+                    push(newDictionary(getInfo(x.s, InPlace, Aliases)))
+                else:
+                    printInfo(x.s, InPlace, Aliases)
 
     builtin "inline?",
         alias       = unaliased, 

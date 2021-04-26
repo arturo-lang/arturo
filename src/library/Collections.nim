@@ -16,13 +16,20 @@
 # Libraries
 #=======================================
 
-import algorithm, oids, os, random, sequtils
-import strutils, sugar, unicode
-import nre except toSeq
+when not defined(WEB):
+    import algorithm, oids, os, random, sequtils
+    import strutils, sugar, unicode
+    import nre except toSeq
 
-import helpers/arrays
-import helpers/strings
-import helpers/unisort
+    import helpers/arrays
+    import helpers/strings
+    import helpers/unisort
+else:
+    import algorithm, os, random, sequtils, strutils, sugar, unicode
+
+    import helpers/arrays
+    import helpers/strings
+    import helpers/unisort
 
 import vm/lib
 
@@ -182,7 +189,8 @@ proc defineSymbols*() =
             case x.kind:
                 of String:
                     if (popAttr("regex") != VNULL):
-                        push(newBoolean(nre.contains(x.s, nre.re(y.s))))
+                        when not defined(WEB):
+                            push(newBoolean(nre.contains(x.s, nre.re(y.s))))
                     else:
                         push(newBoolean(y.s in x.s))
                 of Block:
@@ -437,7 +445,8 @@ proc defineSymbols*() =
             case y.kind:
                 of String:
                     if (popAttr("regex") != VNULL):
-                        push(newBoolean(nre.contains(y.s, nre.re(x.s))))
+                        when not defined(WEB):
+                            push(newBoolean(nre.contains(y.s, nre.re(x.s))))
                     else:
                         push(newBoolean(x.s in y.s))
                 of Block:
@@ -1089,7 +1098,8 @@ proc defineSymbols*() =
                         else:
                             SetInPlace(newStringBlock(toSeq(InPlaced.s.tokenize(aBy.a.map((k)=>k.s)))))
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                        SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
+                        when not defined(WEB):
+                            SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1], InPlaced.s[aAt.i..^1]]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -1132,7 +1142,8 @@ proc defineSymbols*() =
                     else:
                         push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                    push(newStringBlock(x.s.split(nre.re(aRegex.s))))
+                    when not defined(WEB):
+                        push(newStringBlock(x.s.split(nre.re(aRegex.s))))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -1275,7 +1286,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("id") != VNULL):
-                push newString(x.s & $(genOid()))
+                when not defined(WEB):
+                    push newString(x.s & $(genOid()))
             else:
                 if x.kind==Block: push(newBlock(x.a.deduplicate()))
                 else: InPlace.a = InPlaced.a.deduplicate()
