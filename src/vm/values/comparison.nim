@@ -258,3 +258,10 @@ proc contains*(x: openArray[Value], y: Value): bool {.inline.} =
     for item in items(x):
         if y == item: return true
     return false
+
+proc find*(a: openArray[Value], item: Value): int {.inline.}=
+    result = 0
+    for i in items(a):
+        if i == item: return
+        inc(result)
+    result = -1
