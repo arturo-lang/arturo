@@ -16,7 +16,9 @@
 # Libraries
 #=======================================
 
-import os, osproc, sequtils
+when not defined(WEB):
+    import osproc
+import os, sequtils
 
 import vm/lib
 import vm/[env, errors]
@@ -40,53 +42,55 @@ proc defineSymbols*() =
         description = "a dictionary with all command-line arguments parsed":
             newDictionary(parseCmdlineArguments())
 
-    builtin "env",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get environment variables",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Dictionary},
-        example     = """
-            print env\SHELL
-            ; /bin/zsh
+    when not defined(WEB):
+        builtin "env",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get environment variables",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Dictionary},
+            example     = """
+                print env\SHELL
+                ; /bin/zsh
 
-            print env\HOME
-            ; /Users/drkameleon
+                print env\HOME
+                ; /Users/drkameleon
 
-            print env\PATH
-            ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
-        """:
-            ##########################################################
-            when defined(SAFE): RuntimeError_OperationNotPermitted("env")
-            var res: ValueDict = initOrderedTable[string,Value]()
+                print env\PATH
+                ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("env")
+                var res: ValueDict = initOrderedTable[string,Value]()
 
-            for k,v in envPairs():
-                res[k] = newString(v)
+                for k,v in envPairs():
+                    res[k] = newString(v)
 
-            push(newDictionary(res)) 
+                push(newDictionary(res)) 
 
-    builtin "execute",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "execute given shell command",
-        args        = {
-            "command"   : {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {String},
-        example     = """
-            print execute "pwd"
-            ; /Users/admin/Desktop
-            
-            split.lines execute "ls"
-            ; => ["tests" "var" "data.txt"]
-        """:
-            ##########################################################
-            when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
-            let res = execCmdEx(x.s)
-            
-            push(newString(res[0]))
+    when not defined(WEB):
+        builtin "execute",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "execute given shell command",
+            args        = {
+                "command"   : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {String},
+            example     = """
+                print execute "pwd"
+                ; /Users/admin/Desktop
+                
+                split.lines execute "ls"
+                ; => ["tests" "var" "data.txt"]
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
+                let res = execCmdEx(x.s)
+                
+                push(newString(res[0]))
 
     builtin "exit",
         alias       = unaliased, 
@@ -128,24 +132,25 @@ proc defineSymbols*() =
             else:
                 quit()    
 
-    builtin "pause",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "pause program's execution~for the given amount of milliseconds",
-        args        = {
-            "time"  : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            print "wait a moment"
+    when not defined(WEB):
+        builtin "pause",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "pause program's execution~for the given amount of milliseconds",
+            args        = {
+                "time"  : {Integer}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+                print "wait a moment"
 
-            pause 1000      ; sleeping for one second
+                pause 1000      ; sleeping for one second
 
-            print "done. let's continue..."
-        """:
-            ##########################################################
-            sleep(x.i)
+                print "done. let's continue..."
+            """:
+                ##########################################################
+                sleep(x.i)
 
     constant "script",
         alias       = unaliased,

@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import parseopt, segFaults
+when not defined(WEB):
+    import parseopt, segFaults
 
 when defined(PORTABLE):
     import os, sequtils
@@ -72,7 +73,7 @@ Options:
 # Main entry
 #=======================================
 
-when isMainModule:
+when isMainModule and not defined(WEB):
 
     var token = initOptParser()
 
@@ -160,3 +161,7 @@ when isMainModule:
         code = static readFile(getEnv("PORTABLE_INPUT"))
 
         discard run(code, arguments, isFile=false)
+else:
+    proc arturo*(txt: cstring) {.exportc:"arturo".}=
+        var str = $(txt)
+        discard run(str, @[], isFile=false)

@@ -33,12 +33,16 @@ buildArturo(){
     info "config: $CONFIG"
 
     eecho "${GRAY}"
-    if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
-    then
-        nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
-        animate_progress
+    if $FOR_WEB; then
+        nim js $FLAGS -o:$BINARY.js $MAIN
     else
-        nim c $FLAGS -o:$BINARY $MAIN
+        if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
+        then
+            nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
+            animate_progress
+        else
+            nim c $FLAGS -o:$BINARY $MAIN
+        fi
     fi
     eecho "${CLEAR}"
 }
@@ -78,6 +82,7 @@ MINI_BUILD=false
 COMPRESS=true
 PRINT_LOG=false
 RUN_UNIT_TESTS=false
+FOR_WEB=false
 
 if [ "$(whoami)" = "drkameleon" ]; then IS_DEV_BUILD=true
 else IS_DEV_BUILD=false
@@ -111,6 +116,17 @@ do
 
         safe)
             FLAGS="$FLAGS -d:SAFE";;
+        web)
+            FOR_WEB=true
+            FLAGS="$FLAGS -d:NOASCIIDECODE \
+                          -d:NOEXAMPLES \
+                          -d:NOGMP \
+                          -d:NOPARSERS \
+                          -d:NOSQLITE \
+                          -d:NOUNZIP \
+                          -d:NOWEBVIEW"
+            FLAGS="$FLAGS --verbosity:3"
+            FLAGS="$FLAGS -d:WEB ";;
 
         noasciidecode)  FLAGS="$FLAGS -d:NOASCIIDECODE";;
         noexamples)     FLAGS="$FLAGS -d:NOEXAMPLES";;

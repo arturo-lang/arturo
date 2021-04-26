@@ -10,7 +10,9 @@
 # Libraries
 #=======================================
 
-import re, sequtils
+when not defined(WEB):
+    import re
+import sequtils
 import strformat, strutils, sugar
 
 import helpers/colors
@@ -54,16 +56,23 @@ proc panic*(context: string, error: string) =
 #=======================================
 
 proc showVMErrors*(e: ref Exception) =
-    var header = e.name
+    var header: string
+    try:
+        header = $(e.name)
 
-    if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
-        header = RuntimeError
+        if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
+            header = RuntimeError
+    except:
+        header = "HEADER"
 
     let marker = ">>"
     let separator = "|"
     let indent = repeat(" ", header.len + marker.len + 2)
 
-    var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+    when not defined(WEB):
+        var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+    else:
+        var message = "MESSAGE"
 
     let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
     let alignedError = align("error", header.len)

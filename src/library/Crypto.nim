@@ -16,8 +16,11 @@
 # Libraries
 #=======================================
 
-import base64, md5, std/sha1, uri
-when not defined(freebsd):
+when not defined(WEB):
+    import md5, std/sha1
+
+import base64, uri
+when not defined(freebsd) and not defined(WEB):
     import encodings
 
 import helpers/url
@@ -98,7 +101,7 @@ proc defineSymbols*() =
                     push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
 
             elif (let aFrom = popAttr("from"); aFrom != VNULL):
-                when not defined(freebsd):
+                when not defined(freebsd) and not defined(WEB):
                     var src = aFrom.s
                     var dest = "UTF-8"
                     if (let aTo = popAttr("to"); aTo != VNULL):
@@ -113,7 +116,7 @@ proc defineSymbols*() =
                         push(newString(x.s))
 
             elif (let aTo = popAttr("to"); aTo != VNULL):
-                when not defined(freebsd):
+                when not defined(freebsd) and not defined(WEB):
                     var src = "CP1252"
                     var dest = aTo.s
 
@@ -131,35 +134,36 @@ proc defineSymbols*() =
                 else:
                     push(newString(x.s.encode()))
 
-    builtin "digest",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get digest for given value (default: MD5)",
-        args        = {
-            "value" : {String,Literal}
-        },
-        attrs       = {
-            "sha"   : ({Boolean},"use SHA1")
-        },
-        returns     = {String,Nothing},
-        example     = """
-            print digest "Hello world"
-            ; 3e25960a79dbc69b674cd4ec67a72c62
-            
-            print digest.sha "Hello world"
-            ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
-        """:
-            ##########################################################
-            if (popAttr("sha") != VNULL):
-                if x.kind==Literal:
-                    SetInPlace(newString(($(secureHash(InPlace.s))).toLowerAscii()))
+    when not defined(WEB):
+        builtin "digest",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get digest for given value (default: MD5)",
+            args        = {
+                "value" : {String,Literal}
+            },
+            attrs       = {
+                "sha"   : ({Boolean},"use SHA1")
+            },
+            returns     = {String,Nothing},
+            example     = """
+                print digest "Hello world"
+                ; 3e25960a79dbc69b674cd4ec67a72c62
+                
+                print digest.sha "Hello world"
+                ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
+            """:
+                ##########################################################
+                if (popAttr("sha") != VNULL):
+                    if x.kind==Literal:
+                        SetInPlace(newString(($(secureHash(InPlace.s))).toLowerAscii()))
+                    else:
+                        push(newString(($(secureHash(x.s))).toLowerAscii()))
                 else:
-                    push(newString(($(secureHash(x.s))).toLowerAscii()))
-            else:
-                if x.kind==Literal:
-                    SetInPlace(newString(($(toMD5(InPlace.s))).toLowerAscii()))
-                else:
-                    push(newString(($(toMD5(x.s))).toLowerAscii()))
+                    if x.kind==Literal:
+                        SetInPlace(newString(($(toMD5(InPlace.s))).toLowerAscii()))
+                    else:
+                        push(newString(($(toMD5(x.s))).toLowerAscii()))
 
     builtin "hash",
         alias       = unaliased, 
