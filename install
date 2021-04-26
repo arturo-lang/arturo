@@ -175,7 +175,7 @@ buildArturo
 if [ $? -eq 0 ];
 then
     section "Post-processing..."
-    #compressBinary
+    compressBinary
 
     section "Installing..."
     verifyDirectories
