@@ -85,7 +85,8 @@ proc getAttrsDict*(): Value =
 proc dumpStack*() =
     var i = 0
     while i < SP:
-        stdout.write fmt("{i}: ")
+        when not defined(WEB):
+            stdout.write fmt("{i}: ")
         var item = Stack[i]
 
         item.dump(0, false)

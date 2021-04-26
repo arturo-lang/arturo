@@ -14,7 +14,7 @@ import os, sequtils, strutils, sugar, tables
 
 import vm/values/value
 
-when not defined(windows):
+when not defined(windows) and not defined(WEB):
 
     #=======================================
     # Types

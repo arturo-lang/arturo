@@ -16,9 +16,11 @@
 # Libraries
 #=======================================
 
-import json, re, std/editdistance, os
+when not defined(WEB):
+    import re
+    import nre except toSeq
+import json, std/editdistance, os
 import sequtils, strutils, unicode, xmltree
-import nre except toSeq
 
 import helpers/colors
 import helpers/strings
@@ -189,9 +191,11 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
                 elif (popAttr("regex") != VNULL):
-                    SetInPlace(newString(re.escapeRe(InPlace.s)))
+                    when not defined(WEB):
+                        SetInPlace(newString(re.escapeRe(InPlace.s)))
                 elif (popAttr("shell") != VNULL):
-                    SetInPlace(newString(quoteShell(InPlace.s)))
+                    when not defined(WEB):
+                        SetInPlace(newString(quoteShell(InPlace.s)))
                 elif (popAttr("xml") != VNULL):
                     SetInPlace(newString(xmltree.escape(InPlace.s)))
                 else:
@@ -200,9 +204,11 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     push(newString(escapeJsonUnquoted(x.s)))
                 elif (popAttr("regex") != VNULL):
-                    push(newString(re.escapeRe(x.s)))
+                    when not defined(WEB):
+                        push(newString(re.escapeRe(x.s)))
                 elif (popAttr("shell") != VNULL):
-                    push(newString(quoteShell(x.s)))
+                    when not defined(WEB):
+                        push(newString(quoteShell(x.s)))
                 elif (popAttr("xml") != VNULL):
                     push(newString(xmltree.escape(x.s)))
                 else:
@@ -354,23 +360,24 @@ proc defineSymbols*() =
             if not broken:
                 push(VTRUE)
 
-    builtin "match",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get matches within string, using given regular expression",
-        args        = {
-            "string": {String},
-            "regex" : {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {Block},
-        example     = """
-            print match "hello" "hello"             ; => ["hello"]
-            match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
-            match "this is a string" "[0-9]+"       ; => []
-        """:
-            ##########################################################
-            push(newStringBlock(x.s.findAll(re.re(y.s))))
+    when not defined(WEB):
+        builtin "match",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get matches within string, using given regular expression",
+            args        = {
+                "string": {String},
+                "regex" : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Block},
+            example     = """
+                print match "hello" "hello"             ; => ["hello"]
+                match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
+                match "this is a string" "[0-9]+"       ; => []
+            """:
+                ##########################################################
+                push(newStringBlock(x.s.findAll(re.re(y.s))))
 
     builtin "numeric?",
         alias       = unaliased, 
@@ -524,105 +531,107 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+                when not defined(WEB):
+                    push(newBoolean(re.startsWith(x.s, re.re(y.s))))
             else:
                 push(newBoolean(x.s.startsWith(y.s)))
 
-    builtin "render",
-        alias       = tilde, 
-        rule        = PrefixPrecedence,
-        description = "render template with |string| interpolation",
-        args        = {
-            "template"  : {String}
-        },
-        attrs       = {
-            "single"    : ({Boolean},"don't render recursively"),
-            "template"  : ({Boolean},"render as a template")
-        },
-        returns     = {String,Nothing},
-        example     = """
-            x: 2
-            greeting: "hello"
-            print ~"|greeting|, your number is |x|"       ; hello, your number is 2
-            
-            data: #[
-                name: "John"
-                age: 34
-            ]
-            
-            print render.with: data 
-                "Hello, your name is |name| and you are |age| years old"
-            
-            ; Hello, your name is John and you are 34 years old
-        """:
-            ##########################################################
-            let recursive = not (popAttr("single") != VNULL)
-            var res = ""
-            if x.kind == Literal:
-                res = InPlace.s
-            else:
-                res = x.s
+    when not defined(WEB):
+        builtin "render",
+            alias       = tilde, 
+            rule        = PrefixPrecedence,
+            description = "render template with |string| interpolation",
+            args        = {
+                "template"  : {String}
+            },
+            attrs       = {
+                "single"    : ({Boolean},"don't render recursively"),
+                "template"  : ({Boolean},"render as a template")
+            },
+            returns     = {String,Nothing},
+            example     = """
+                x: 2
+                greeting: "hello"
+                print ~"|greeting|, your number is |x|"       ; hello, your number is 2
+                
+                data: #[
+                    name: "John"
+                    age: 34
+                ]
+                
+                print render.with: data 
+                    "Hello, your name is |name| and you are |age| years old"
+                
+                ; Hello, your name is John and you are 34 years old
+            """:
+                ##########################################################
+                let recursive = not (popAttr("single") != VNULL)
+                var res = ""
+                if x.kind == Literal:
+                    res = InPlace.s
+                else:
+                    res = x.s
 
-            let Interpolated    = nre.re"\|([^\|]+)\|"
-            let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
+                let Interpolated    = nre.re"\|([^\|]+)\|"
+                let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
-            if (popAttr("template") != VNULL):
-                var keepGoing = true
-                if recursive: 
-                    keepGoing = res.contains(Embeddable)
+                if (popAttr("template") != VNULL):
+                    var keepGoing = true
+                    if recursive: 
+                        keepGoing = res.contains(Embeddable)
 
-                while keepGoing:
-                    var evaled: Translation
+                    while keepGoing:
+                        var evaled: Translation
 
-                    if templateStore.hasKey(res):
-                        evaled = templateStore[res]
-                    else:
-                        let initial = res
-                        # make necessary substitutions
-                        res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
-                            ("||>","««"),
-                            ("<||","»»")
-                        ) & "»»"
+                        if templateStore.hasKey(res):
+                            evaled = templateStore[res]
+                        else:
+                            let initial = res
+                            # make necessary substitutions
+                            res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                                ("||>","««"),
+                                ("<||","»»")
+                            ) & "»»"
 
-                        # parse string template
-                        evaled = doEval(doParse(res, isFile=false))
-                        templateStore[initial] = evaled
+                            # parse string template
+                            evaled = doEval(doParse(res, isFile=false))
+                            templateStore[initial] = evaled
 
-                    # execute/reduce ('array') the resulting block
-                    let stop = SP
-                    discard execIsolated(evaled)
-                    let arr: ValueArray = sTopsFrom(stop)
-                    SP = stop
+                        # execute/reduce ('array') the resulting block
+                        let stop = SP
+                        discard execIsolated(evaled)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
 
-                    # and join the different strings
-                    res = ""
-                    for i, v in arr:
-                        add(res, v.s)
+                        # and join the different strings
+                        res = ""
+                        for i, v in arr:
+                            add(res, v.s)
 
-                    # if recursive, check if there's still more embedded tags
-                    # otherwise, break out of the loop
-                    if recursive: keepGoing = res.contains(Embeddable)
-                    else: keepGoing = false
-            else:
-                var keepGoing = true
-                if recursive: 
-                    keepGoing = res.find(Interpolated).isSome
+                        # if recursive, check if there's still more embedded tags
+                        # otherwise, break out of the loop
+                        if recursive: keepGoing = res.contains(Embeddable)
+                        else: keepGoing = false
+                else:
+                    var keepGoing = true
+                    if recursive: 
+                        keepGoing = res.find(Interpolated).isSome
 
-                while keepGoing:
-                    res = res.replace(Interpolated, proc (match: RegexMatch): string =
-                                discard execBlock(doParse(match.captures[0], isFile=false))
-                                $(pop())
-                            )
+                    while keepGoing:
+                        res = res.replace(Interpolated, proc (match: RegexMatch): string =
+                                    discard execBlock(doParse(match.captures[0], isFile=false))
+                                    $(pop())
+                                )
 
-                    # if recursive, check if there's still more embedded tags
-                    # otherwise, break out of the loop
-                    if recursive: keepGoing = res.find(Interpolated).isSome
-                    else: keepGoing = false
+                        # if recursive, check if there's still more embedded tags
+                        # otherwise, break out of the loop
+                        if recursive: keepGoing = res.find(Interpolated).isSome
+                        else: keepGoing = false
 
-            if x.kind == Literal:
-                InPlaced = newString(res)
-            else:
-                push(newString(res))
+                if x.kind == Literal:
+                    InPlaced = newString(res)
+                else:
+                    push(newString(res))
 
     builtin "replace",
         alias       = unaliased, 
@@ -645,8 +654,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
-                else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
+                when not defined(WEB):
+                    if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
+                    else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
             else:
                 if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
                 else: InPlace.s = InPlaced.s.replace(y.s, z.s)
@@ -723,7 +733,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+                when not defined(WEB):
+                    push(newBoolean(re.endsWith(x.s, re.re(y.s))))
             else:
                 push(newBoolean(x.s.endsWith(y.s)))
 

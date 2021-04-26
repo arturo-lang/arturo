@@ -47,17 +47,23 @@ import library/System       as SystemLib
 import library/Ui           as UiLib
 
 #=======================================
+# Variables
+#=======================================
+
+var
+    initialized     : bool = false
+
+#=======================================
 # Helpers
 #=======================================
 
 proc setupLibrary*() =
-    for importLibrary in Libraries:
+    for i,importLibrary in Libraries:
         importLibrary()
 
 template initialize*(args: seq[string], filename: string, isFile:bool, scriptInfo:ValueDict = initOrderedTable[string,Value](), mutedColors: bool = false) =
     # function arity
     Arities = initTable[string,int]()
-    
     # stack
     createMainStack()
 
@@ -84,14 +90,18 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptInf
         muted = mutedColors
     )
 
-    # paths
-    if isFile: env.addPath(filename)
-    else: env.addPath(getCurrentDir())
+    when not defined(WEB):
+        # paths
+        if isFile: env.addPath(filename)
+        else: env.addPath(getCurrentDir())
 
     Syms = initOrderedTable[string,Value]()
 
     # library
     setupLibrary()
+
+    # set VM as initialized
+    initialized = true
 
 template handleVMErrors*(blk: untyped): untyped =
     try:
@@ -111,17 +121,19 @@ proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
 
         discard doExec(code)
 
-proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation =
+proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation {.exportc:"run".} =
     handleVMErrors:
+        
         let (mainCode, scriptInfo) = doParseAll(code, isFile)
 
-        initialize(
-            args, 
-            code, 
-            isFile=isFile, 
-            parseData(doParse(scriptInfo, false)).d,
-            muted
-        )
+        if not initialized:
+            initialize(
+                args, 
+                code, 
+                isFile=isFile, 
+                parseData(doParse(scriptInfo, false)).d,
+                muted
+            )
 
         let evaled = mainCode.doEval()
 
