@@ -1405,7 +1405,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Symbol       :  result &= $(v.m)
 
         of Inline, Block:
-            if not (pretty and unwrapped and level==0):
+            if not (unwrapped and level==0):
                 if v.kind==Inline: result &= "("
                 else: result &= "["
 
@@ -1422,12 +1422,12 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
                 for i in 0..level-1: result &= "\t"
 
-            if not (pretty and unwrapped and level==0):
+            if not (unwrapped and level==0):
                 if v.kind==Inline: result &= ")"
                 else: result &= "]"
 
         of Dictionary:
-            if not (pretty and unwrapped and level==0):
+            if not (unwrapped and level==0):
                 result &= "#["
 
             if pretty:
@@ -1455,7 +1455,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if pretty:
                 for i in 0..level-1: result &= "\t"
             
-            if not (pretty and unwrapped and level==0):
+            if not (unwrapped and level==0):
                 result &= "]"
 
         of Function:
