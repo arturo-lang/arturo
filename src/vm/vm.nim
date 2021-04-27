@@ -150,9 +150,14 @@ when not defined(WEB):
 
 else:
 
-    proc run*(code: var string): JsObject {.exportc:"run".} =
+    proc run*(code: var string, params: JsObject = jsUndefined): JsObject {.exportc:"run".} =
         handleVMErrors:
-            
+
+            if params != jsUndefined:
+                for param in items(params):
+                    let val = parseJsObject(param)
+                    code &= " " & codify(val)
+
             let (mainCode, scriptInfo) = doParseAll(code, isFile=false)
 
             if not initialized:

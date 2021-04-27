@@ -29,7 +29,7 @@ when not defined(WEB):
 import vm/[values/value, vm]
 
 when not defined(WEB):
-    
+
     #=======================================
     # Types
     #=======================================
@@ -169,6 +169,6 @@ when isMainModule and not defined(WEB):
 
         discard run(code, arguments, isFile=false)
 else:
-    proc main*(txt: cstring): JsObject {.exportc:"A$".}=
+    proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)
-        return run(str)
+        return run(str, params)
