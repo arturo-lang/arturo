@@ -20,7 +20,8 @@ when not defined(NOSQLITE):
 when not defined(NOGMP):
     import extras/bignum
 
-import helpers/colors
+when not defined(WEB):
+    import helpers/colors
 
 import vm/errors
 

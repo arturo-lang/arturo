@@ -26,14 +26,17 @@ import helpers/colors
 import helpers/strings
 
 import vm/lib
-import vm/[eval, exec, parse]
+
+when not defined(WEB):
+    import vm/[eval, exec, parse]
 
 #=======================================
 # Variables
 #=======================================
 
-var
-    templateStore = initOrderedTable[string,Translation]()
+when not defined(WEB):
+    var
+        templateStore = initOrderedTable[string,Translation]()
 
 #=======================================
 # Methods

@@ -23,53 +23,58 @@ else:
 when defined(PROFILE):
     import nimprof
 
-import vm/[bytecode, version, values/value, vm]
+when not defined(WEB):
+    import vm/[bytecode, version]
 
-#=======================================
-# Types
-#=======================================
+import vm/[values/value, vm]
 
-type
-    CmdAction = enum
-        execFile
-        evalCode
-        readBcode
-        writeBcode
-        showHelp
-        showVersion
+when not defined(WEB):
+    
+    #=======================================
+    # Types
+    #=======================================
 
-#=======================================
-# Constants
-#=======================================
+    type
+        CmdAction = enum
+            execFile
+            evalCode
+            readBcode
+            writeBcode
+            showHelp
+            showVersion
 
-const helpTxt = """
+    #=======================================
+    # Constants
+    #=======================================
 
-Usage:
-  arturo [options] <path>
+    const helpTxt = """
 
-Options:
-  -c --compile              Compile script and write bytecode
-  -x --execute              Execute script from bytecode
+    Usage:
+    arturo [options] <path>
 
-  -e --evaluate             Evaluate given code
-  -r --repl                 Show repl / interactive console
+    Options:
+    -c --compile              Compile script and write bytecode
+    -x --execute              Execute script from bytecode
 
-  -u --update               Update to latest version
+    -e --evaluate             Evaluate given code
+    -r --repl                 Show repl / interactive console
 
-  -m --module           
-        list                List all available modules
-        remote              List all available remote modules
-        info <name>         Get info about given module
-        install <name>      Install remote module by name
-        uninstall <name>    Uninstall module by name
-        update              Update all local modules
+    -u --update               Update to latest version
 
-  -d --debug                Show debugging information
-  --no-color                Mute all colors from output
+    -m --module           
+            list                List all available modules
+            remote              List all available remote modules
+            info <name>         Get info about given module
+            install <name>      Install remote module by name
+            uninstall <name>    Uninstall module by name
+            update              Update all local modules
 
-  -h --help                 Show this help screen
-  -v --version              Show current version
-"""
+    -d --debug                Show debugging information
+    --no-color                Mute all colors from output
+
+    -h --help                 Show this help screen
+    -v --version              Show current version
+    """
     
 #=======================================
 # Main entry

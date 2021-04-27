@@ -17,15 +17,16 @@
 #=======================================
 
 when not defined(WEB):
-    import terminal
+    import rdstdin, terminal
 
-import algorithm, rdstdin, sequtils
+import algorithm
 import tables
 
-when not defined(windows):
+when not defined(windows) and not defined(WEB):
     import linenoise
 
-import helpers/repl
+when not defined(WEB):
+    import helpers/repl
 
 import vm/lib
 import vm/[eval, exec]

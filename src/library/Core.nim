@@ -19,7 +19,8 @@
 import algorithm, sequtils
 
 import helpers/datasource
-import helpers/ffi
+when not defined(WEB):
+    import helpers/ffi
 
 import vm/lib
 import vm/[env, errors, eval, exec, parse]
