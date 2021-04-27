@@ -31,6 +31,15 @@ import vm/lib
 import vm/[eval, exec]
 import vm/values/printable
 
+when defined(WEB):
+    var stdout: string = ""
+
+    proc write*(buffer: var string, str: string) =
+        buffer &= str
+    
+    proc flushFile*(buffer: var string) =
+        echo buffer
+
 #=======================================
 # Methods
 #=======================================
@@ -163,60 +172,65 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Block:
-                when not defined(WEB):
-                    let xblock = doEval(x)
-                    let stop = SP
-                    discard doExec(xblock)
+                when defined(WEB):
+                    stdout = ""
 
-                    var res: ValueArray = @[]
-                    while SP>stop:
-                        res.add(pop())
+                let xblock = doEval(x)
+                let stop = SP
+                discard doExec(xblock)
 
-                    for r in res.reversed:
-                        stdout.write($(r))
-                        stdout.write(" ")
+                var res: ValueArray = @[]
+                while SP>stop:
+                    res.add(pop())
 
-                    stdout.write("\n")
-                    stdout.flushFile()
+                for r in res.reversed:
+                    stdout.write($(r))
+                    stdout.write(" ")
+
+                stdout.write("\n")
+                stdout.flushFile()
             else:
                 echo $(x)
 
+    builtin "prints",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "print given value to screen",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            prints "Hello "
+            prints "world"
+            print "!"             
+            
+            ; Hello world!
+        """:
+            ##########################################################
+            when defined(WEB):
+                stdout = ""
+
+            if x.kind==Block:
+                let xblock = doEval(x)
+                let stop = SP
+                discard doExec(xblock)#, depth+1)
+
+                var res: ValueArray = @[]
+                while SP>stop:
+                    res.add(pop())
+
+                for r in res.reversed:
+                    stdout.write($(r))
+                    stdout.write(" ")
+
+                stdout.flushFile()
+            else:
+                stdout.write($(x))
+                stdout.flushFile()
+
     when not defined(WEB):
-        builtin "prints",
-            alias       = unaliased, 
-            rule        = PrefixPrecedence,
-            description = "print given value to screen",
-            args        = {
-                "value" : {Any}
-            },
-            attrs       = NoAttrs,
-            returns     = {Nothing},
-            example     = """
-                prints "Hello "
-                prints "world"
-                print "!"             
-                
-                ; Hello world!
-            """:
-                ##########################################################
-                if x.kind==Block:
-                    let xblock = doEval(x)
-                    let stop = SP
-                    discard doExec(xblock)#, depth+1)
-
-                    var res: ValueArray = @[]
-                    while SP>stop:
-                        res.add(pop())
-
-                    for r in res.reversed:
-                        stdout.write($(r))
-                        stdout.write(" ")
-
-                    stdout.flushFile()
-                else:
-                    stdout.write($(x))
-                    stdout.flushFile()
-
         builtin "terminal",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
