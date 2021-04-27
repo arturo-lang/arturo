@@ -10,11 +10,11 @@
 # Libraries
 #=======================================
 
-import os, sequtils, strutils, sugar, tables
-
-import vm/values/value
-
 when not defined(windows) and not defined(WEB):
+
+    import os, sequtils, strutils, sugar, tables
+
+    import vm/values/value
 
     #=======================================
     # Types

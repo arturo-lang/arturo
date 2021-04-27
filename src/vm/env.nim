@@ -10,10 +10,9 @@
 # Libraries
 #=======================================
 when not defined(WEB):
-    import parseopt
+    import parseopt, sequtils, sugar
 
-import os, sequtils, strutils
-import sugar, tables, times
+import os, strutils, tables, times
 
 import helpers/colors
 
