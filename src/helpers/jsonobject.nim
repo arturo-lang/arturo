@@ -14,7 +14,7 @@ import std/json, sequtils, sugar
 import tables, unicode
 
 when defined(WEB):
-    import jsffi
+    import jsffi, strutils
 
 import vm/values/[printable, value]
 
@@ -118,6 +118,34 @@ when defined(WEB):
                Bytecode,
                Nothing,
                Any          : discard
+
+    proc isArray(x: JsObject): bool {.noSideEffect, importcpp: "(Array.isArray(#))".}
+    proc jsonified(x: JsObject): cstring {.noSideEffect, importcpp: "(JSON.stringify(#))".}
+
+    proc parseJsObject*(n: JsObject): Value =
+        if n.isNull() or n.isUndefined(): return VNULL
+        case $(jsTypeOf(n)):
+            of "boolean"    : result = newBoolean($(jsonified(n)))
+            of "number"     : 
+                let got = $(jsonified(n))
+                if got.contains("."):
+                    result = newFloating(got)
+                else:
+                    result = newInteger(got)
+            of "string"     : result = newString($(jsonified(n)))
+            of "object"     :
+                if isArray(n):
+                    var ret: ValueArray = @[]
+                    for item in items(n):
+                        ret.add(parseJsObject(item))
+                    result = newBlock(ret)
+                else:
+                    var ret: ValueDict = initOrderedTable[string,Value]()
+                    for key,value in pairs(n):
+                        ret[$(key)] = parseJsObject(value)
+                    result = newDictionary(ret)
+
+            else            : result = VNULL
 
 #=======================================
 # Methods
