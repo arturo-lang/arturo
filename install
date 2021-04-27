@@ -33,25 +33,28 @@ buildArturo(){
     info "config: $CONFIG"
 
     eecho "${GRAY}"
-    if $FOR_WEB; then
-        nim js $FLAGS -o:$BINARY.js $MAIN
+    if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
+    then
+        nim $COMPILER $FLAGS -o:$BINARY $MAIN 2>/dev/null &
+        animate_progress
     else
-        if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
-        then
-            nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
-            animate_progress
-        else
-            nim c $FLAGS -o:$BINARY $MAIN
-        fi
+        nim $COMPILER $FLAGS -o:$BINARY $MAIN
     fi
     eecho "${CLEAR}"
 }
 
 compressBinary(){
-    if ! command_exists upx ; 
-    then
-        info "compressing binary"
-        upx -q $BINARY >/dev/null 2>&1
+    info "compressing binary"
+    if $FOR_WEB; then
+        if command_exists uglifyjs ;
+        then
+            uglifyjs $BINARY -c -m "toplevel,reserved=['A$']" -c -o ${BINARY/.js/.min.js}
+        fi
+    else
+        if ! command_exists upx ; 
+        then
+            upx -q $BINARY >/dev/null 2>&1
+        fi
     fi
 }
 
@@ -75,6 +78,7 @@ TARGET_LIB="$ROOT_DIR/lib"
 
 BINARY="bin/arturo"
 MAIN="src/arturo.nim"
+COMPILER="c"
 
 # variables
 
@@ -83,6 +87,7 @@ COMPRESS=true
 PRINT_LOG=false
 RUN_UNIT_TESTS=false
 FOR_WEB=false
+
 
 if [ "$(whoami)" = "drkameleon" ]; then IS_DEV_BUILD=true
 else IS_DEV_BUILD=false
@@ -118,6 +123,8 @@ do
             FLAGS="$FLAGS -d:SAFE";;
         web)
             FOR_WEB=true
+            COMPILER="js"
+            BINARY="$BINARY.js"
             FLAGS="$FLAGS -d:NOASCIIDECODE \
                           -d:NOEXAMPLES \
                           -d:NOGMP \
