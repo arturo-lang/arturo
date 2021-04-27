@@ -13,6 +13,9 @@
 import std/json, sequtils, sugar
 import tables, unicode
 
+when defined(WEB):
+    import jsffi
+
 import vm/values/[printable, value]
 
 #=======================================
@@ -73,6 +76,48 @@ proc parseJsonNode*(n: JsonNode): Value =
                 ret[k] = parseJsonNode(v)
 
             result = newDictionary(ret)
+
+when defined(WEB):
+
+    proc generateJsObject*(n: Value): JsObject =
+        case n.kind
+            of Null         : result = toJs(nil)
+            of Boolean      : result = toJs(n.b)
+            of Integer      : result = toJs(n.i)
+            of Floating     : result = toJs(n.f)
+            of Version      : result = toJs($(n))
+            of Type         : result = toJs($(n.t))
+            of Char         : result = toJs($(n.c))
+            of String,
+               Word,
+               Literal,
+               Label        : result = toJs(n.s)
+            of Attribute,
+               AttributeLabel: result = toJs(n.r)
+            of Path,
+               PathLabel    : 
+                var ret: seq[JsObject] = @[]
+                for v in n.p:
+                    ret.add(generateJsObject(v))
+                result = toJs(ret)
+            of Symbol       : result = toJs($(n.m))
+            of Date         : discard
+            of Binary       : discard
+            of Inline,
+               Block        : 
+                var ret: seq[JsObject] = @[]
+                for v in n.a:
+                    ret.add(generateJsObject(v))
+                result = toJs(ret)
+            of Dictionary   :
+                result = newJsObject()
+                for k,v in pairs(n.d):
+                    result[k] = generateJsObject(v)
+            of Function,
+               Database,
+               Bytecode,
+               Nothing,
+               Any          : discard
 
 #=======================================
 # Methods
