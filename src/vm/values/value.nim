@@ -20,8 +20,7 @@ when not defined(NOSQLITE):
 when not defined(NOGMP):
     import extras/bignum
 
-when not defined(WEB):
-    import helpers/colors
+import helpers/colors
 
 import vm/errors
 
@@ -290,6 +289,18 @@ proc `$`(v: Value): string {.inline.}
 #=======================================
 # Helpers
 #=======================================
+
+when defined(WEB):
+    var stdout: string = ""
+
+    proc resetStdout*()=
+        stdout = ""
+
+    proc write*(buffer: var string, str: string) =
+        buffer &= str
+    
+    proc flushFile*(buffer: var string) =
+        echo buffer
 
 proc newNull*(): Value {.inline.} =
     VNULL
@@ -1207,148 +1218,145 @@ proc `$`(v: Value): string {.inline.} =
         of ANY: discard
 
 proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.exportc.} = 
-    when not defined(WEB):
-        proc dumpPrimitive(str: string, v: Value) =
-            if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-            else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
+    proc dumpPrimitive(str: string, v: Value) =
+        if not muted:   stdout.write fmt("{bold(greenColor)}{str}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{str} :{($(v.kind)).toLowerAscii()}")
 
-        proc dumpIdentifier(v: Value) =
-            if not muted:   stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-            else:           stdout.write fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
+    proc dumpIdentifier(v: Value) =
+        if not muted:   stdout.write fmt("{resetColor}{v.s}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{v.s} :{($(v.kind)).toLowerAscii()}")
 
-        proc dumpAttribute(v: Value) =
-            if not muted:   stdout.write fmt("{resetColor}{v.r}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-            else:           stdout.write fmt("{v.r} :{($(v.kind)).toLowerAscii()}")
+    proc dumpAttribute(v: Value) =
+        if not muted:   stdout.write fmt("{resetColor}{v.r}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{v.r} :{($(v.kind)).toLowerAscii()}")
 
-        proc dumpSymbol(v: Value) =
-            if not muted:   stdout.write fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
-            else:           stdout.write fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
+    proc dumpSymbol(v: Value) =
+        if not muted:   stdout.write fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
+        else:           stdout.write fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
 
-        proc dumpBlockStart(v: Value) =
-            var tp = ($(v.kind)).toLowerAscii()
-            if not v.custom.isNil(): tp = v.custom.name
-            if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
-            else:           stdout.write fmt("[ :{tp}\n")
+    proc dumpBlockStart(v: Value) =
+        var tp = ($(v.kind)).toLowerAscii()
+        if not v.custom.isNil(): tp = v.custom.name
+        if not muted:   stdout.write fmt("{bold(magentaColor)}[{fg(grayColor)} :{tp}{resetColor}\n")
+        else:           stdout.write fmt("[ :{tp}\n")
 
-        proc dumpBlockEnd() =
-            for i in 0..level-1: stdout.write "\t"
-            if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
-            else:           stdout.write fmt("]")
-
+    proc dumpBlockEnd() =
         for i in 0..level-1: stdout.write "\t"
+        if not muted:   stdout.write fmt("{bold(magentaColor)}]{resetColor}")
+        else:           stdout.write fmt("]")
 
-        case v.kind:
-            of Null         : dumpPrimitive("null",v)
-            of Boolean      : dumpPrimitive($(v.b), v)
-            of Integer      : 
-                if v.iKind==NormalInteger: dumpPrimitive($(v.i), v)
-                else: 
-                    when not defined(NOGMP):
-                        dumpPrimitive($(v.bi), v)
-            of Floating     : dumpPrimitive($(v.f), v)
-            of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
-            of Type         : 
-                if v.tpKind==BuiltinType:
-                    dumpPrimitive(($(v.t)).toLowerAscii(), v)
-                else:
-                    dumpPrimitive(v.name, v)
-            of Char         : dumpPrimitive($(v.c), v)
-            of String       : dumpPrimitive(v.s, v)
-            
-            of Word,
-               Literal,
-               Label        : dumpIdentifier(v)
+    for i in 0..level-1: stdout.write "\t"
 
-            of Attribute,
-               AttributeLabel    : dumpAttribute(v)
+    case v.kind:
+        of Null         : dumpPrimitive("null",v)
+        of Boolean      : dumpPrimitive($(v.b), v)
+        of Integer      : 
+            if v.iKind==NormalInteger: dumpPrimitive($(v.i), v)
+            else: 
+                when not defined(NOGMP):
+                    dumpPrimitive($(v.bi), v)
+        of Floating     : dumpPrimitive($(v.f), v)
+        of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
+        of Type         : 
+            if v.tpKind==BuiltinType:
+                dumpPrimitive(($(v.t)).toLowerAscii(), v)
+            else:
+                dumpPrimitive(v.name, v)
+        of Char         : dumpPrimitive($(v.c), v)
+        of String       : dumpPrimitive(v.s, v)
+        
+        of Word,
+            Literal,
+            Label        : dumpIdentifier(v)
 
-            of Path,
-               PathLabel    :
-                dumpBlockStart(v)
+        of Attribute,
+            AttributeLabel    : dumpAttribute(v)
 
-                for i,child in v.p:
-                    dump(child, level+1, i==(v.a.len-1), muted=muted)
+        of Path,
+            PathLabel    :
+            dumpBlockStart(v)
 
-                stdout.write "\n"
+            for i,child in v.p:
+                dump(child, level+1, i==(v.a.len-1), muted=muted)
 
-                dumpBlockEnd()
-
-            of Symbol       : dumpSymbol(v)
-
-            of Date         : 
-                dumpBlockStart(v)
-
-                let keys = toSeq(v.e.keys)
-
-                if keys.len > 0:
-                    let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
-
-                    for key,value in v.e:
-                        for i in 0..level: stdout.write "\t"
-
-                        stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
-
-                        dump(value, level+1, false, muted=muted)
-
-                dumpBlockEnd()
-
-            of Binary       : discard
-
-            of Inline,
-               Block        :
-                dumpBlockStart(v)
-
-                for i,child in v.a:
-                    dump(child, level+1, i==(v.a.len-1), muted=muted)
-
-                stdout.write "\n"
-
-                dumpBlockEnd()
-
-            of Dictionary   : 
-                dumpBlockStart(v)
-
-                let keys = toSeq(v.d.keys)
-
-                if keys.len > 0:
-                    let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
-
-                    for key,value in v.d:
-                        for i in 0..level: stdout.write "\t"
-
-                        stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
-
-                        dump(value, level+1, false, muted=muted)
-
-                dumpBlockEnd()
-            of Function     : 
-                dumpBlockStart(v)
-
-                if v.fnKind==UserFunction:
-                    dump(v.params, level+1, false, muted=muted)
-                    dump(v.main, level+1, true, muted=muted)
-                else:
-                    for i in 0..level: stdout.write "\t"
-                    stdout.write "(builtin)"
-
-                stdout.write "\n"
-
-                dumpBlockEnd()
-
-            of Database     :
-                when not defined(NOSQLITE):
-                    if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
-                    #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
-            
-            of Bytecode     : stdout.write("<bytecode>")
-
-            of Nothing      : discard
-            of ANY          : discard
-
-        if not isLast:
             stdout.write "\n"
-    else:
-        discard
+
+            dumpBlockEnd()
+
+        of Symbol       : dumpSymbol(v)
+
+        of Date         : 
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.e.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.e:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted)
+
+            dumpBlockEnd()
+
+        of Binary       : discard
+
+        of Inline,
+            Block        :
+            dumpBlockStart(v)
+
+            for i,child in v.a:
+                dump(child, level+1, i==(v.a.len-1), muted=muted)
+
+            stdout.write "\n"
+
+            dumpBlockEnd()
+
+        of Dictionary   : 
+            dumpBlockStart(v)
+
+            let keys = toSeq(v.d.keys)
+
+            if keys.len > 0:
+                let maxLen = (keys.map(proc (x: string):int = x.len)).max + 2
+
+                for key,value in v.d:
+                    for i in 0..level: stdout.write "\t"
+
+                    stdout.write unicode.alignLeft(key & " ", maxLen) & ":"
+
+                    dump(value, level+1, false, muted=muted)
+
+            dumpBlockEnd()
+        of Function     : 
+            dumpBlockStart(v)
+
+            if v.fnKind==UserFunction:
+                dump(v.params, level+1, false, muted=muted)
+                dump(v.main, level+1, true, muted=muted)
+            else:
+                for i in 0..level: stdout.write "\t"
+                stdout.write "(builtin)"
+
+            stdout.write "\n"
+
+            dumpBlockEnd()
+
+        of Database     :
+            when not defined(NOSQLITE):
+                if v.dbKind==SqliteDatabase: stdout.write fmt("[sqlite db] {cast[ByteAddress](v.sqlitedb):#X}")
+                #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[ByteAddress](v.mysqldb):#X}")
+        
+        of Bytecode     : stdout.write("<bytecode>")
+
+        of Nothing      : discard
+        of ANY          : discard
+
+    if not isLast:
+        stdout.write "\n"
 
 # TODO Fix pretty-printing for unwrapped blocks
 #  Indentation is not working right for inner dictionaries and blocks

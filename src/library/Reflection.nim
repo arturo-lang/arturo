@@ -385,6 +385,8 @@ proc defineSymbols*() =
             inspect a                 ; some text :string
         """:
             ##########################################################
+            when defined(WEB):
+                resetStdout()
             let mutedOutput = (popAttr("muted")!=VNULL)
             x.dump(0, false, muted=mutedOutput)
 
