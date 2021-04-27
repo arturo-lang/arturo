@@ -12,6 +12,8 @@
 
 when not defined(WEB):
     import parseopt, segFaults
+else:
+    import jsffi
 
 when defined(PORTABLE):
     import os, sequtils
@@ -162,6 +164,6 @@ when isMainModule and not defined(WEB):
 
         discard run(code, arguments, isFile=false)
 else:
-    proc arturo*(txt: cstring) {.exportc:"arturo".}=
+    proc main*(txt: cstring): JsObject {.exportc:"A$".}=
         var str = $(txt)
-        discard run(str, @[], isFile=false)
+        return run(str)
