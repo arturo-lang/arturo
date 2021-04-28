@@ -59,7 +59,10 @@ compressBinary(){
 }
 
 installAll(){
-    cp $BINARY $TARGET_DIR
+    if [ ! $FOR_WEB ];
+    then 
+        cp $BINARY $TARGET_DIR
+    fi
 
     if $RUN_UNIT_TESTS; then
         ./tools/tester.art
