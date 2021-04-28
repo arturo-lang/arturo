@@ -77,8 +77,8 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                cursor false    ; (hides the cursor)
-                cursor true     ; (shows the cursor)
+            cursor false    ; (hides the cursor)
+            cursor true     ; (shows the cursor)
             """:
                 ##########################################################
                 if x.b:
@@ -97,8 +97,8 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                goto 10 15      ; (move cursor to column 10, line 15)
-                goto 10 ø       ; (move cursor to column 10, same line)
+            goto 10 15      ; (move cursor to column 10, line 15)
+            goto 10 ø       ; (move cursor to column 10, same line)
             """:
                 ##########################################################
                 if x.kind==Null:
@@ -130,11 +130,11 @@ proc defineSymbols*() =
             },
             returns     = {String},
             example     = """
-                name: input "What is your name? "
-                ; (user enters his name: Bob)
-                
-                print ["Hello" name "!"]
-                ; Hello Bob!
+            name: input "What is your name? "
+            ; (user enters his name: Bob)
+            
+            print ["Hello" name "!"]
+            ; Hello Bob!
             """:
                 ##########################################################
                 if (popAttr("repl")!=VNULL):
@@ -240,8 +240,8 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-                print terminal      ; [width:107 height:34]
-                terminal\width      ; => 107
+            print terminal      ; [width:107 height:34]
+            terminal\width      ; => 107
             """:
                 ##########################################################
                 let size = terminalSize()

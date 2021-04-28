@@ -307,13 +307,13 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                help        
+            help        
 
-                ; abs              (value)                        -> get the absolute value for given integer
-                ; acos             (angle)                        -> calculate the inverse cosine of given angle
-                ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
-                ; add              (valueA,valueB)                -> add given values and return result
-                ; ...
+            ; abs              (value)                        -> get the absolute value for given integer
+            ; acos             (angle)                        -> calculate the inverse cosine of given angle
+            ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
+            ; add              (valueA,valueB)                -> add given values and return result
+            ; ...
             """:
                 ##########################################################
                 printHelp(Syms)
@@ -330,20 +330,20 @@ proc defineSymbols*() =
             },
             returns     = {Dictionary,Nothing},
             example     = """
-                info 'print
+            info 'print
 
-                ; |--------------------------------------------------------------------------------
-                ; |          print  :function                                          0x1028B3410
-                ; |--------------------------------------------------------------------------------
-                ; |                 print given value to screen with newline
-                ; |--------------------------------------------------------------------------------
-                ; |          usage  print value :any
-                ; |
-                ; |        returns  :nothing
-                ; |--------------------------------------------------------------------------------
+            ; |--------------------------------------------------------------------------------
+            ; |          print  :function                                          0x1028B3410
+            ; |--------------------------------------------------------------------------------
+            ; |                 print given value to screen with newline
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  print value :any
+            ; |
+            ; |        returns  :nothing
+            ; |--------------------------------------------------------------------------------
 
-                print info.get 'print
-                ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
+            print info.get 'print
+            ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 ##########################################################
                 if (popAttr("get") != VNULL):

@@ -406,9 +406,9 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Floating},
             example     = """
-                print gamma 3.0         ; 2.0
-                print gamma 10.0        ; 362880.0
-                print gamma 15          ; 87178291199.99985
+            print gamma 3.0         ; 2.0
+            print gamma 10.0        ; 362880.0
+            print gamma 15          ; 87178291199.99985
             """:
                 ##########################################################
                 push(newFloating(gamma(asFloat(x))))
