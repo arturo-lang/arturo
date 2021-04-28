@@ -19,11 +19,15 @@
 when not defined(WEB):
     import re
     import nre except toSeq
+else:
+    import jsre
 import json, std/editdistance, os
 import sequtils, strutils, unicode, xmltree
 
 import helpers/colors
 import helpers/strings
+when defined(WEB):
+    import helpers/js
 
 import vm/lib
 
@@ -536,6 +540,8 @@ proc defineSymbols*() =
             if (popAttr("regex") != VNULL):
                 when not defined(WEB):
                     push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+                else:
+                    push newBoolean(x.s.startsWith(newRegExp(y.s,"")))
             else:
                 push(newBoolean(x.s.startsWith(y.s)))
 
@@ -660,6 +666,9 @@ proc defineSymbols*() =
                 when not defined(WEB):
                     if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
                     else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
+                else:
+                    if x.kind==String: push(newString(x.s.replace(newRegExp(y.s,""), z.s)))
+                    else: InPlace.s = $(InPlaced.s.replace(newRegExp(y.s,""), z.s))
             else:
                 if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
                 else: InPlace.s = InPlaced.s.replace(y.s, z.s)
@@ -738,6 +747,8 @@ proc defineSymbols*() =
             if (popAttr("regex") != VNULL):
                 when not defined(WEB):
                     push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+                else:
+                    push newBoolean(x.s.endsWith(newRegExp(y.s,"")))
             else:
                 push(newBoolean(x.s.endsWith(y.s)))
 
