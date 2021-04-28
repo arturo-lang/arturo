@@ -296,6 +296,11 @@ jobs:
           wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
           echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
+      - name: Install dependecies
+        run: |
+          apt-get update -y
+          apt-get install -y uglifyjs
+
       - name: Verify dependecies
         run: |
           nim --version
