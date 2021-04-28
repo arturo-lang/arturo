@@ -495,6 +495,9 @@ proc newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
 proc newStringBlock*(a: seq[string]): Value {.inline.} =
     newBlock(a.map(proc (x:string):Value = newString($x)))
 
+proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
+    newBlock(a.map(proc (x:cstring):Value = newString(x)))
+
 proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
         of Null:        result = VNULL
