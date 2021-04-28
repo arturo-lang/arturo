@@ -127,7 +127,7 @@ proc factors*(n: int): seq[int] =
     var res: seq[int] = @[]
 
     var i = 1
-    while i < n-1:
+    while i <= n-1:
         if n mod i == 0:
             res.add(i)
         i += 1
