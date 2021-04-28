@@ -10,7 +10,10 @@
 # Libraries
 #=======================================
 
-import strformat, tables
+when not defined(WEB):
+    import strformat
+
+import tables
 
 import vm/values/value
 

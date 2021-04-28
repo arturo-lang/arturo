@@ -23,9 +23,10 @@ when not defined(WEB):
     import helpers/url
 
 import vm/lib
-import vm/[env]
+when not defined(WEB):
+    import vm/env
 when defined(SAFE):
-    import vm/[errors]
+    import vm/errors
 
 #=======================================
 # Methods
