@@ -192,6 +192,8 @@ proc defineSymbols*() =
                     if (popAttr("regex") != VNULL):
                         when not defined(WEB):
                             push(newBoolean(nre.contains(x.s, nre.re(y.s))))
+                        else:
+                            push(newBoolean(test(newRegExp(y.s,""), x.s)))
                     else:
                         push(newBoolean(y.s in x.s))
                 of Block:
@@ -448,6 +450,8 @@ proc defineSymbols*() =
                     if (popAttr("regex") != VNULL):
                         when not defined(WEB):
                             push(newBoolean(nre.contains(y.s, nre.re(x.s))))
+                        else:
+                            push(newBoolean(test(newRegExp(x.s,""), y.s)))
                     else:
                         push(newBoolean(x.s in y.s))
                 of Block:
