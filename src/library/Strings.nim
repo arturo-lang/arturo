@@ -387,7 +387,7 @@ proc defineSymbols*() =
                 push newStringBlock(x.s.findAll(re.re(y.s)))
             else:
                 push newStringBlock(x.s.match(newRegExp(y.s,"g")))
-
+ 
     builtin "numeric?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
