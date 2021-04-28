@@ -13,6 +13,9 @@
 import std/json, sequtils, sugar
 import tables, unicode
 
+when defined(WEB):
+    import jsffi, strutils
+
 import vm/values/[printable, value]
 
 #=======================================
@@ -73,6 +76,76 @@ proc parseJsonNode*(n: JsonNode): Value =
                 ret[k] = parseJsonNode(v)
 
             result = newDictionary(ret)
+
+when defined(WEB):
+
+    proc generateJsObject*(n: Value): JsObject =
+        case n.kind
+            of Null         : result = toJs(nil)
+            of Boolean      : result = toJs(n.b)
+            of Integer      : result = toJs(n.i)
+            of Floating     : result = toJs(n.f)
+            of Version      : result = toJs($(n))
+            of Type         : result = toJs($(n.t))
+            of Char         : result = toJs($(n.c))
+            of String,
+               Word,
+               Literal,
+               Label        : result = toJs(n.s)
+            of Attribute,
+               AttributeLabel: result = toJs(n.r)
+            of Path,
+               PathLabel    : 
+                var ret: seq[JsObject] = @[]
+                for v in n.p:
+                    ret.add(generateJsObject(v))
+                result = toJs(ret)
+            of Symbol       : result = toJs($(n.m))
+            of Date         : discard
+            of Binary       : discard
+            of Inline,
+               Block        : 
+                var ret: seq[JsObject] = @[]
+                for v in n.a:
+                    ret.add(generateJsObject(v))
+                result = toJs(ret)
+            of Dictionary   :
+                result = newJsObject()
+                for k,v in pairs(n.d):
+                    result[k] = generateJsObject(v)
+            of Function,
+               Database,
+               Bytecode,
+               Nothing,
+               Any          : discard
+
+    proc isArray(x: JsObject): bool {.noSideEffect, importcpp: "(Array.isArray(#))".}
+    proc jsonified(x: JsObject): cstring {.noSideEffect, importcpp: "(JSON.stringify(#))".}
+
+    proc parseJsObject*(n: JsObject): Value =
+        if n.isNull() or n.isUndefined(): return VNULL
+        case $(jsTypeOf(n)):
+            of "boolean"    : result = newBoolean($(jsonified(n)))
+            of "number"     : 
+                let got = $(jsonified(n))
+                if got.contains("."):
+                    result = newFloating(got)
+                else:
+                    result = newInteger(got)
+            of "string"     : result = newString($(jsonified(n)))
+            of "object"     :
+                if isArray(n):
+                    var ret: ValueArray = @[]
+                    for item in items(n):
+                        ret.add(parseJsObject(item))
+                    result = newBlock(ret)
+                else:
+                    var ret: ValueDict = initOrderedTable[string,Value]()
+                    for key,value in pairs(n):
+                        ret[$(key)] = parseJsObject(value)
+                    result = newDictionary(ret)
+
+            else            : result = VNULL
 
 #=======================================
 # Methods

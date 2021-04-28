@@ -12,6 +12,8 @@
 
 when not defined(WEB):
     import parseopt, segFaults
+else:
+    import jsffi
 
 when defined(PORTABLE):
     import os, sequtils
@@ -21,53 +23,58 @@ else:
 when defined(PROFILE):
     import nimprof
 
-import vm/[bytecode, version, values/value, vm]
+when not defined(WEB):
+    import vm/[bytecode, version]
 
-#=======================================
-# Types
-#=======================================
+import vm/[values/value, vm]
 
-type
-    CmdAction = enum
-        execFile
-        evalCode
-        readBcode
-        writeBcode
-        showHelp
-        showVersion
+when not defined(WEB):
 
-#=======================================
-# Constants
-#=======================================
+    #=======================================
+    # Types
+    #=======================================
 
-const helpTxt = """
+    type
+        CmdAction = enum
+            execFile
+            evalCode
+            readBcode
+            writeBcode
+            showHelp
+            showVersion
 
-Usage:
-  arturo [options] <path>
+    #=======================================
+    # Constants
+    #=======================================
 
-Options:
-  -c --compile              Compile script and write bytecode
-  -x --execute              Execute script from bytecode
+    const helpTxt = """
 
-  -e --evaluate             Evaluate given code
-  -r --repl                 Show repl / interactive console
+    Usage:
+    arturo [options] <path>
 
-  -u --update               Update to latest version
+    Options:
+    -c --compile              Compile script and write bytecode
+    -x --execute              Execute script from bytecode
 
-  -m --module           
-        list                List all available modules
-        remote              List all available remote modules
-        info <name>         Get info about given module
-        install <name>      Install remote module by name
-        uninstall <name>    Uninstall module by name
-        update              Update all local modules
+    -e --evaluate             Evaluate given code
+    -r --repl                 Show repl / interactive console
 
-  -d --debug                Show debugging information
-  --no-color                Mute all colors from output
+    -u --update               Update to latest version
 
-  -h --help                 Show this help screen
-  -v --version              Show current version
-"""
+    -m --module           
+            list                List all available modules
+            remote              List all available remote modules
+            info <name>         Get info about given module
+            install <name>      Install remote module by name
+            uninstall <name>    Uninstall module by name
+            update              Update all local modules
+
+    -d --debug                Show debugging information
+    --no-color                Mute all colors from output
+
+    -h --help                 Show this help screen
+    -v --version              Show current version
+    """
     
 #=======================================
 # Main entry
@@ -162,6 +169,6 @@ when isMainModule and not defined(WEB):
 
         discard run(code, arguments, isFile=false)
 else:
-    proc arturo*(txt: cstring) {.exportc:"arturo".}=
+    proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)
-        discard run(str, @[], isFile=false)
+        return run(str, params)

@@ -17,8 +17,9 @@
 #=======================================
 
 when not defined(WEB):
-    import osproc
-import os, sequtils
+    import os, osproc
+    
+import sequtils
 
 import vm/lib
 import vm/[env, errors]
