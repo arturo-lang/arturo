@@ -28,7 +28,8 @@ when not defined(WEB):
     import helpers/webview
 
 import vm/lib
-import vm/[env, exec]
+when not defined(WEB):
+    import vm/[env, exec]
 when defined(SAFE):
     import vm/[errors]
 

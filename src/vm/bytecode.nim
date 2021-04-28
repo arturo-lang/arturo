@@ -11,8 +11,8 @@
 #=======================================
 
 when not defined(WEB):
-    import marshal
-import hashes, streams
+    import marshal, streams
+import hashes
 
 import vm/values/value
 

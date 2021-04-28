@@ -12,6 +12,10 @@
 
 import os, random, strutils, tables
 
+when defined(WEB):
+    import jsffi, std/json
+    import helpers/jsonobject
+
 import vm/[
     env, 
     errors, 
@@ -115,30 +119,64 @@ template handleVMErrors*(blk: untyped): untyped =
 # Methods
 #=======================================
 
-proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
-    handleVMErrors:
-        initialize(args, filename, isFile=true)
+when not defined(WEB):
 
-        discard doExec(code)
+    proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
+        handleVMErrors:
+            initialize(args, filename, isFile=true)
 
-proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation {.exportc:"run".} =
-    handleVMErrors:
-        
-        let (mainCode, scriptInfo) = doParseAll(code, isFile)
+            discard doExec(code)
 
-        if not initialized:
-            initialize(
-                args, 
-                code, 
-                isFile=isFile, 
-                parseData(doParse(scriptInfo, false)).d,
-                muted
-            )
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation {.exportc:"run".} =
+        handleVMErrors:
+            
+            let (mainCode, scriptInfo) = doParseAll(code, isFile)
 
-        let evaled = mainCode.doEval()
+            if not initialized:
+                initialize(
+                    args, 
+                    code, 
+                    isFile=isFile, 
+                    parseData(doParse(scriptInfo, false)).d,
+                    muted
+                )
 
-        if doExecute:
-            discard doExec(evaled)
+            let evaled = mainCode.doEval()
 
-        return evaled
+            if doExecute:
+                discard doExec(evaled)
+
+            return evaled
+
+else:
+
+    proc run*(code: var string, params: JsObject = jsUndefined): JsObject {.exportc:"run".} =
+        handleVMErrors:
+
+            if params != jsUndefined:
+                for param in items(params):
+                    let val = parseJsObject(param)
+                    code &= " " & codify(val)
+
+            let (mainCode, scriptInfo) = doParseAll(code, isFile=false)
+
+            if not initialized:
+                initialize(
+                    @[""], 
+                    code, 
+                    isFile=false, 
+                    parseData(doParse(scriptInfo, false)).d,
+                    mutedColors = true
+                )
+
+            let evaled = mainCode.doEval()
+
+            Syms = doExec(evaled)
+
+            var ret: Value = VNULL
+
+            if SP>0:
+                ret = sTop()
+            
+            return generateJsObject(ret)
     
