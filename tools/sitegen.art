@@ -1,6 +1,6 @@
 #!/usr/bin/env arturo
 
-modules: []
+modules: new []
 functions: #[]
 relatedFuncs: #[]
 
@@ -89,16 +89,23 @@ loop functions [modl,lst][
 ]
 funcs: new []
 loop functions [modl,lst][
+    ; print ["re-processing:" modl]
     loop lst 'f [
+        print ["adding:" f]
         'funcs ++ f
     ]
 ]
 
-funcs: sort funcs
+print "AFTER"
+
+sort 'funcs
 funcList: new []
 symbList: new []
 
+inspect funcs
+
 loop funcs 'f [
+    print ["processing func:" f]
     inf: info.get f 
 
     href: lower replace ~"|inf\module|/|f|" "?" "-"
