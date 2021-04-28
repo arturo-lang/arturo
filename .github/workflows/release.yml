@@ -314,7 +314,7 @@ jobs:
         run: |
           install -m 0755 ./bin/${{ env.app-name }}.js .
           install -m 0755 ./bin/${{ env.app-name }}.min.js .
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-web-${{matrix.version}}.tar.gz ${{ env.app-name }.js ${{ env.app-name }.min.js README.md LICENSE
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-web-${{matrix.version}}.tar.gz ${{ env.app-name }}.js ${{ env.app-name }}.min.js README.md LICENSE
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
