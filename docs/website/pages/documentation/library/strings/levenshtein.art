@@ -3,6 +3,7 @@ type: :function
 module: "Strings"
 returns: [
         :integer
+         :block
     ]
 description: "calculate Levenshtein distance between given strings"
 example: {
@@ -10,6 +11,18 @@ example: {
         print levenshtein "one" "one"         ; 0
     }
 attributes: #[
+    align: #[
+        types: [
+                :boolean
+            ]
+        description: "return aligned strings"
+        ]
+    with: #[
+        types: [
+                :char
+            ]
+        description: "use given filler for alignment (default: -)"
+        ]
     ]
 arguments: #[
     stringA: [
