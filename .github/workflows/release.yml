@@ -298,8 +298,8 @@ jobs:
 
       - name: Install dependecies
         run: |
-          apt-get update -y
-          apt-get install -y uglifyjs
+          sudo apt-get update -y
+          sudo apt-get install -y uglifyjs
 
       - name: Verify dependecies
         run: |
