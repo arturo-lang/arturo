@@ -1,0 +1,3 @@
+attractive?: function => [prime? size factors.prime &]
+
+print select 1..120 => attractive?
