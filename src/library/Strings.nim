@@ -571,19 +571,19 @@ proc defineSymbols*() =
             },
             returns     = {String,Nothing},
             example     = """
-                x: 2
-                greeting: "hello"
-                print ~"|greeting|, your number is |x|"       ; hello, your number is 2
-                
-                data: #[
-                    name: "John"
-                    age: 34
-                ]
-                
-                print render.with: data 
-                    "Hello, your name is |name| and you are |age| years old"
-                
-                ; Hello, your name is John and you are 34 years old
+            x: 2
+            greeting: "hello"
+            print ~"|greeting|, your number is |x|"       ; hello, your number is 2
+            
+            data: #[
+                name: "John"
+                age: 34
+            ]
+            
+            print render.with: data 
+                "Hello, your name is |name| and you are |age| years old"
+            
+            ; Hello, your name is John and you are 34 years old
             """:
                 ##########################################################
                 let recursive = not (popAttr("single") != VNULL)

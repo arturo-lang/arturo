@@ -62,29 +62,29 @@ proc defineSymbols*() =
             },
             returns     = {String,Dictionary},
             example     = """
-                path: "/this/is/some/path.txt"
+            path: "/this/is/some/path.txt"
 
-                print extract.directory path        ; /this/is/some
-                print extract.basename path         ; path.txt
-                print extract.filename path         ; path
-                print extract.extension path        ; .txt
+            print extract.directory path        ; /this/is/some
+            print extract.basename path         ; path.txt
+            print extract.filename path         ; path
+            print extract.extension path        ; .txt
 
-                print extract path 
-                ; [directory:/this/is/some basename:path.txt filename:path extension:.txt]
+            print extract path 
+            ; [directory:/this/is/some basename:path.txt filename:path extension:.txt]
 
-                url: "http://subdomain.website.com:8080/path/to/file.php?q=something#there"
+            url: "http://subdomain.website.com:8080/path/to/file.php?q=something#there"
 
-                print extract.scheme url            ; http
-                print extract.host url              ; subdomain.website.com
-                print extract.port url              ; 8080
-                print extract.user url              ; 
-                print extract.password url          ;
-                print extract.path url              ; /path/to/file.php
-                print extract.query url             ; q=something
-                print extract.anchor url            ; there
+            print extract.scheme url            ; http
+            print extract.host url              ; subdomain.website.com
+            print extract.port url              ; 8080
+            print extract.user url              ; 
+            print extract.password url          ;
+            print extract.path url              ; /path/to/file.php
+            print extract.query url             ; q=something
+            print extract.anchor url            ; there
 
-                print extract url
-                ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
+            print extract url
+            ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
 
             """:
                 ##########################################################
@@ -136,13 +136,13 @@ proc defineSymbols*() =
             },
             returns     = {Block},
             example     = """
-                loop list "." 'file [
-                ___print file
-                ]
-                
-                ; tests
-                ; var
-                ; data.txt
+            loop list "." 'file [
+            ___print file
+            ]
+            
+            ; tests
+            ; var
+            ; data.txt
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("list")
@@ -169,9 +169,9 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {String,Null},
             example     = """
-                print module 'html        ; /usr/local/lib/arturo/html.art
-                
-                do.import module 'html    ; (imports given module)
+            print module 'html        ; /usr/local/lib/arturo/html.art
+            
+            do.import module 'html    ; (imports given module)
             """:
                 ##########################################################
                 push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
@@ -189,20 +189,20 @@ proc defineSymbols*() =
             },
             returns     = {String,Nothing},
             example     = """
-                normalize "one/../two/../../three"
-                ; => ../three
+            normalize "one/../two/../../three"
+            ; => ../three
 
-                normalize "~/one/../two/../../three"
-                ; => three
+            normalize "~/one/../two/../../three"
+            ; => three
 
-                normalize.tilde "~/one/../two/../../three"
-                ; => /Users/three
+            normalize.tilde "~/one/../two/../../three"
+            ; => /Users/three
 
-                normalize.tilde "~/Documents"
-                ; => /Users/drkameleon/Documents
+            normalize.tilde "~/Documents"
+            ; => /Users/drkameleon/Documents
 
-                normalize.executable "myscript"
-                ; => ./myscript          
+            normalize.executable "myscript"
+            ; => ./myscript          
             """:
                 ##########################################################
                 if (popAttr("executable") != VNULL):
@@ -244,10 +244,10 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {String},
             example     = """
-                ; we are in folder: /Users/admin/Desktop
-                
-                print relative "test.txt"
-                ; /Users/admin/Desktop/test.txt
+            ; we are in folder: /Users/admin/Desktop
+            
+            print relative "test.txt"
+            ; /Users/admin/Desktop/test.txt
             """:
                 ##########################################################
                 push(newString(joinPath(env.currentPath(),x.s)))

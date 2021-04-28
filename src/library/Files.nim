@@ -60,11 +60,11 @@ proc defineSymbols*() =
             },
             returns     = {Nothing},
             example     = """
-                copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
-                ; copied file
+            copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+            ; copied file
 
-                copy "testfolder" normalize.tilde "~/Desktop/testfolder"
-                ; copied whole folder
+            copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+            ; copied whole folder
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("copy")
@@ -93,8 +93,8 @@ proc defineSymbols*() =
             },
             returns     = {Nothing},
             example     = """
-                delete "testscript.art"
-                ; file deleted
+            delete "testscript.art"
+            ; file deleted
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("delete")
@@ -119,9 +119,9 @@ proc defineSymbols*() =
             },
             returns     = {Boolean},
             example     = """
-                if exists? "somefile.txt" [ 
-                    print "file exists!" 
-                ]
+            if exists? "somefile.txt" [ 
+                print "file exists!" 
+            ]
             """:
                 ##########################################################
                 if (popAttr("directory") != VNULL): 
@@ -141,27 +141,27 @@ proc defineSymbols*() =
             },
             returns     = {Dictionary,Null},
             example     = """
-                inspect permissions "bin/arturo"
-                ; [ :dictionary
-                ;     user    :	[ :dictionary
-                ;         read     :		true :boolean
-                ;         write    :		true :boolean
-                ;         execute  :		true :boolean
-                ;     ]
-                ;     group   :	[ :dictionary
-                ;         read     :		true :boolean
-                ;         write    :		false :boolean
-                ;         execute  :		true :boolean
-                ;     ]
-                ;     others  :	[ :dictionary
-                ;         read     :		true :boolean
-                ;         write    :		false :boolean
-                ;         execute  :		true :boolean
-                ;     ]
-                ; ]
+            inspect permissions "bin/arturo"
+            ; [ :dictionary
+            ;     user    :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		true :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ;     group   :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		false :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ;     others  :	[ :dictionary
+            ;         read     :		true :boolean
+            ;         write    :		false :boolean
+            ;         execute  :		true :boolean
+            ;     ]
+            ; ]
 
-                permissions.set:#[others:#[write:true]] "bin/arturo"
-                ; gave write permission to 'others'
+            permissions.set:#[others:#[write:true]] "bin/arturo"
+            ; gave write permission to 'others'
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("permissions")
@@ -237,17 +237,17 @@ proc defineSymbols*() =
                     },
             returns     = {String,Block,Binary},
             example     = """
-                ; reading a simple local file
-                str: read "somefile.txt"
+            ; reading a simple local file
+            str: read "somefile.txt"
 
-                ; also works with remote urls
-                page: read "http://www.somewebsite.com/page.html"
+            ; also works with remote urls
+            page: read "http://www.somewebsite.com/page.html"
 
-                ; we can also "read" JSON data as an object
-                data: read.json "mydata.json"
+            ; we can also "read" JSON data as an object
+            data: read.json "mydata.json"
 
-                ; or even convert Markdown to HTML on-the-fly
-                html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
+            ; or even convert Markdown to HTML on-the-fly
+            html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 ##########################################################
                 if (popAttr("binary") != VNULL):
@@ -297,8 +297,8 @@ proc defineSymbols*() =
             },
             returns     = {Nothing},
             example     = """
-                rename "README.md" "READIT.md"
-                ; file renamed
+            rename "README.md" "READIT.md"
+            ; file renamed
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("rename")
@@ -328,15 +328,15 @@ proc defineSymbols*() =
             },
             returns     = {Nothing},
             example     = """
-                symlink relative "arturo/README.md" 
-                        "/Users/drkameleon/Desktop/gotoREADME.md"
-                ; creates a symbolic link to our readme file
-                ; in our desktop
+            symlink relative "arturo/README.md" 
+                    "/Users/drkameleon/Desktop/gotoREADME.md"
+            ; creates a symbolic link to our readme file
+            ; in our desktop
 
-                symlink.hard relative "arturo/README.md" 
-                        "/Users/drkameleon/Desktop/gotoREADME.md"
-                ; hard-links (effectively copies) our readme file
-                ; to our desktop
+            symlink.hard relative "arturo/README.md" 
+                    "/Users/drkameleon/Desktop/gotoREADME.md"
+            ; hard-links (effectively copies) our readme file
+            ; to our desktop
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("symlink")
@@ -362,7 +362,7 @@ proc defineSymbols*() =
                 attrs       = NoAttrs,
                 returns     = {Nothing},
                 example     = """
-                    unzip "folder" "archive.zip"
+                unzip "folder" "archive.zip"
                 """:
                     ##########################################################
                     miniz.unzip(y.s, x.s)
@@ -382,11 +382,11 @@ proc defineSymbols*() =
             },
             returns     = {Nothing},
             example     = """
-                ; write some string data to given file path
-                write "somefile.txt" "Hello world!"
+            ; write some string data to given file path
+            write "somefile.txt" "Hello world!"
 
-                ; we can also write any type of data as JSON
-                write.json "data.json" myData
+            ; we can also write any type of data as JSON
+            write.json "data.json" myData
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
@@ -421,7 +421,7 @@ proc defineSymbols*() =
                 attrs       = NoAttrs,
                 returns     = {Nothing},
                 example     = """
-                    zip "dest.zip" ["file1.txt" "img.png"]
+                zip "dest.zip" ["file1.txt" "img.png"]
                 """:
                     ##########################################################
                     let files: seq[string] = y.a.map((z)=>z.s)

@@ -146,12 +146,12 @@ proc defineSymbols*() =
                 "sha"   : ({Boolean},"use SHA1")
             },
             returns     = {String,Nothing},
-            example     = """
-                print digest "Hello world"
-                ; 3e25960a79dbc69b674cd4ec67a72c62
-                
-                print digest.sha "Hello world"
-                ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
+            example     = """                
+            print digest "Hello world"
+            ; 3e25960a79dbc69b674cd4ec67a72c62
+            
+            print digest.sha "Hello world"
+            ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
             """:
                 ##########################################################
                 if (popAttr("sha") != VNULL):

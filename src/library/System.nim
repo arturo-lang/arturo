@@ -52,14 +52,14 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-                print env\SHELL
-                ; /bin/zsh
+            print env\SHELL
+            ; /bin/zsh
 
-                print env\HOME
-                ; /Users/drkameleon
+            print env\HOME
+            ; /Users/drkameleon
 
-                print env\PATH
-                ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+            print env\PATH
+            ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("env")
@@ -81,11 +81,11 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {String},
             example     = """
-                print execute "pwd"
-                ; /Users/admin/Desktop
-                
-                split.lines execute "ls"
-                ; => ["tests" "var" "data.txt"]
+            print execute "pwd"
+            ; /Users/admin/Desktop
+            
+            split.lines execute "ls"
+            ; => ["tests" "var" "data.txt"]
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
@@ -144,11 +144,11 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                print "wait a moment"
+            print "wait a moment"
 
-                pause 1000      ; sleeping for one second
+            pause 1000      ; sleeping for one second
 
-                print "done. let's continue..."
+            print "done. let's continue..."
             """:
                 ##########################################################
                 sleep(x.i)
