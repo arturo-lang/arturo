@@ -262,6 +262,60 @@ jobs:
         with:
           name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
           path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
+  
+  web:
+    name: "Package Web"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        version:
+          - mini
+
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: "Get version"
+        uses: pCYSl5EDgo/cat@master
+        id: versionNumber
+        with:
+          path: version/version
+          trim: true
+
+      - name: Install Nim
+        run: |
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Verify dependecies
+        run: |
+          nim --version
+
+      - name: Build Arturo
+        run: |
+          ./install mini web
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+
+      - name: Create artifact
+        run: |
+          install -m 0755 ./bin/${{ env.app-name }}.js .
+          install -m 0755 ./bin/${{ env.app-name }}.min.js .
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-web-${{matrix.version}}.tar.gz ${{ env.app-name }.js ${{ env.app-name }.min.js README.md LICENSE
+
+      - name: Upload Artifact
+        uses: 'actions/upload-artifact@v1'
+        with:
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-web-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-web-${{matrix.version}}.tar.gz
 
   upload:
     name: "Upload"
@@ -272,6 +326,7 @@ jobs:
       - raspberry
       - freebsd
       - windows
+      - web
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
