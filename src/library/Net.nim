@@ -137,6 +137,8 @@ proc defineSymbols*() =
                 "raw"       : ({Boolean},"return raw response without processing")
             },
             returns     = {Dictionary},
+            # TODO(Net\request): add documentation example
+            #  labels: documentation, easy, library
             example     = """
             """:
                 ##########################################################
