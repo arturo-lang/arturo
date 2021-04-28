@@ -314,13 +314,23 @@ proc defineSymbols*() =
             "stringA"   : {String},
             "stringB"   : {String}
         },
-        attrs       = NoAttrs,
-        returns     = {Integer},
+        attrs       = {
+            "align" : ({Boolean},"return aligned strings"),
+            "with"  : ({Char},"use given filler for alignment (default: -)")
+        },
+        returns     = {Integer,Block},
         example     = """
             print levenshtein "for" "fur"         ; 1
             print levenshtein "one" "one"         ; 0
         """:
-            push(newInteger(editDistance(x.s,y.s)))
+            if ( popAttr("align") != VNULL):
+                var filler:Rune = "-".runeAt(0)
+                if (let aWith = popAttr("with"); aWith != VNULL):
+                    filler = aWith.c
+                let aligned = levenshteinAlign(x.s,y.s,filler)
+                push(newStringBlock(@[aligned[0], aligned[1]]))
+            else:
+                push(newInteger(editDistance(x.s,y.s)))
 
     builtin "lower",
         alias       = unaliased, 
