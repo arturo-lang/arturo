@@ -367,24 +367,26 @@ proc defineSymbols*() =
             if not broken:
                 push(VTRUE)
 
-    when not defined(WEB):
-        builtin "match",
-            alias       = unaliased, 
-            rule        = PrefixPrecedence,
-            description = "get matches within string, using given regular expression",
-            args        = {
-                "string": {String},
-                "regex" : {String}
-            },
-            attrs       = NoAttrs,
-            returns     = {Block},
-            example     = """
-                print match "hello" "hello"             ; => ["hello"]
-                match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
-                match "this is a string" "[0-9]+"       ; => []
-            """:
-                ##########################################################
-                push(newStringBlock(x.s.findAll(re.re(y.s))))
+    builtin "match",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get matches within string, using given regular expression",
+        args        = {
+            "string": {String},
+            "regex" : {String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            print match "hello" "hello"             ; => ["hello"]
+            match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
+            match "this is a string" "[0-9]+"       ; => []
+        """:
+            ##########################################################
+            when not defined(WEB):
+                push newStringBlock(x.s.findAll(re.re(y.s)))
+            else:
+                push newStringBlock(x.s.match(newRegExp(y.s,"g")))
 
     builtin "numeric?",
         alias       = unaliased, 
