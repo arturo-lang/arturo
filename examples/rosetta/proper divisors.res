@@ -1,5 +1,5 @@
 proper divisors of 1 => [] 
-proper divisors of 2 => [] 
+proper divisors of 2 => [1] 
 proper divisors of 3 => [1] 
 proper divisors of 4 => [1 2] 
 proper divisors of 5 => [1] 
