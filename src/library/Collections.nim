@@ -17,19 +17,20 @@
 #=======================================
 
 when not defined(WEB):
-    import algorithm, oids, os, random, sequtils
-    import strutils, sugar, unicode
+    import oids
     import nre except toSeq
-
-    import helpers/arrays
-    import helpers/strings
-    import helpers/unisort
 else:
-    import algorithm, os, random, sequtils, strutils, sugar, unicode
+    import jsre
 
-    import helpers/arrays
-    import helpers/strings
-    import helpers/unisort
+import algorithm, os, random, sequtils
+import strutils, sugar, unicode
+    
+
+import helpers/arrays
+import helpers/strings
+import helpers/unisort
+when defined(WEB):
+    import helpers/js
 
 import vm/lib
 
@@ -1100,6 +1101,8 @@ proc defineSymbols*() =
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
                         when not defined(WEB):
                             SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
+                        else:
+                            SetInPlace(newStringBlock(InPlaced.s.split(newRegExp(aRegex.s,""))))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1], InPlaced.s[aAt.i..^1]]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -1144,6 +1147,8 @@ proc defineSymbols*() =
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):
                     when not defined(WEB):
                         push(newStringBlock(x.s.split(nre.re(aRegex.s))))
+                    else:
+                        push(newStringBlock(x.s.split(newRegExp(aRegex.s,""))))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
