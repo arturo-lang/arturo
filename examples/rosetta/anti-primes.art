@@ -1,0 +1,13 @@
+found: 0
+i: 1
+maxDiv: 0
+
+while [found<20][
+    fac: size factors i
+    if fac > maxDiv [
+        print i
+        maxDiv: fac
+        found: found + 1
+    ]
+    i: i + 1
+]
