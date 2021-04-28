@@ -34,3 +34,11 @@ func split*(pattern: cstring, self: RegExp, sep: cstring): seq[cstring] {.import
 
 func match*(pattern: cstring, self: RegExp): seq[cstring] {.importjs: "#.match(#)".}
   ## Returns an array of matches of a RegExp against given string
+
+func startsWith*(pattern: cstring; self: RegExp): bool =
+  ## Tests if string starts with given RegExp
+  test(newRegExp(("^" & $(self.source)).cstring, self.flags), pattern)
+
+func endsWith*(pattern: cstring; self: RegExp): bool =
+  ## Tests if string ends with given RegExp
+  test(newRegExp(($(self.source) & "$").cstring, self.flags), pattern)
