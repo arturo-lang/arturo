@@ -1,5 +1,5 @@
 commonPathPrefix: function [lst][
-    paths: map lst => [split.path &]
+    paths: map lst => [split.by:"/" &]
 
     common: new []
     firstPath: first paths
@@ -13,7 +13,7 @@ commonPathPrefix: function [lst][
         ]
         if found -> 'common ++ part
     ]
-    return "/" ++ join.path common
+    return join.with:"/" common
 ]
 
 print commonPathPrefix [
