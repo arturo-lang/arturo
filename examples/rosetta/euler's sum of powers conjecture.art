@@ -1,0 +1,19 @@
+eulerSumOfPowers: function [top][
+    p5: map 0..top => [& ^ 5]
+
+    loop 4..top 'a [
+        loop 3..a-1 'b [
+            loop 2..b-1 'c [
+                loop 1..c-1 'd [
+                    s: (get p5 a) + (get p5 b) + (get p5 c) + (get p5 d)
+                    if integer? index p5 s ->
+                        return ~"|a|^5 + |b|^5 + |c|^5 + |d|^5 = |index p5 s|^5"
+                ]
+            ]
+        ]
+    ]
+
+    return "not found" ; shouldn't reach here
+]
+
+print eulerSumOfPowers 249
