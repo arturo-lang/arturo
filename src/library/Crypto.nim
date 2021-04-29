@@ -68,7 +68,7 @@ proc defineSymbols*() =
 
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
-    #  labels: library
+    #  labels: library, open discussion
     builtin "encode",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -135,6 +135,9 @@ proc defineSymbols*() =
                     push(newString(x.s.encode()))
 
     when not defined(WEB):
+        # TODO(System\digest) could it be used for Web/JS builds too?
+        #  would it be that useful to have md5/sha1 encoding capabilities through JavaScript?
+        #  labels: library,enhancement,open discussion,web
         builtin "digest",
             alias       = unaliased, 
             rule        = PrefixPrecedence,

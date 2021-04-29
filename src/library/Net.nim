@@ -43,6 +43,7 @@ proc defineSymbols*() =
         echo "- Importing: Net"
 
     when not defined(WEB):
+        
 
         builtin "download",
             alias       = unaliased, 
@@ -115,6 +116,9 @@ proc defineSymbols*() =
                 smtpConn.auth(config["username"].s, config["password"].s)
                 smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
 
+        # TODO(Net\request) could it work for Web/JS builds?
+        #  it could easily be a hidden Ajax request
+        #  labels: library,enhancement,open discussion,web
         builtin "request",
             alias       = unaliased, 
             rule        = PrefixPrecedence,

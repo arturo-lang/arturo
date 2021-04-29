@@ -27,6 +27,10 @@ import vm/lib
 # Methods
 #=======================================
 
+# TODO(Databases) Add support for IndexedDB
+#  Currently, the only supported database is Sqlite. Obviously, this would be only for Web/JS builds.
+#  labels: library,enhancement,web
+
 # TODO(Databases) Add support for MySQL
 #  Currently, the only supported database is Sqlite
 #  labels: library,enhancement

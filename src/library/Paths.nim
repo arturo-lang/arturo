@@ -39,6 +39,8 @@ proc defineSymbols*() =
 
     when not defined(WEB):
 
+        # TODO(Paths\extract) implement for Web/JS builds
+        #  labels: library,enhancement,web
         builtin "extract",
             alias       = unaliased, 
             rule        = PrefixPrecedence,

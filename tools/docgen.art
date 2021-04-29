@@ -1,5 +1,9 @@
 #!/usr/bin/env arturo
 
+; TODO(Tools\DocGen) script is not working properly
+;  if we decide to keep the wiki documentation @ GitHub, then this should be fixed asap.
+;  labels: bug,cleanup,documentation
+
 IndexTemplate: relative "wikidocs/index.template.md"
 SidebarTemplate: relative "wikidocs/sidebar.template.md"
 LibraryTemplate: relative "wikidocs/library.template.md"

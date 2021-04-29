@@ -1,3 +1,6 @@
+# TODO(tools) completely remove ./install.sh script
+#  labels: cleanup
+
 panic() {
     printf "$@\n" >&2
     exit 1

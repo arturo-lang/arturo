@@ -208,6 +208,7 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
           "not permitted in online playground"
 
 # TODO Re-establish stack trace debug reports
+#  labels: vm, error handling
 
 # var
 #     OpStack*    : array[5,OpCode]

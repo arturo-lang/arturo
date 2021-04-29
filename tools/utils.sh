@@ -1,3 +1,6 @@
+# TODO(tools) integrate utils.sh in a single script
+#  that script could be easily used either for normal installation or packaging
+#  labels: installer,cleanup
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
