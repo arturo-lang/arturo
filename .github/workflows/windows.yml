@@ -22,6 +22,7 @@ jobs:
           - windows-latest
         version:
           - mini
+          - full
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
@@ -38,7 +39,36 @@ jobs:
           update: true
           install: 'git base-devel'
 
-      - name: Install dependencies + Build Arturo
+      - name: Install dependencies + Build Arturo (full)
+        if: matrix.version == 'full'
+        shell: msys2 {0}
+        run: |
+          pacman --noconfirm -S p7zip
+          pacman --noconfirm -S mingw-w64-x86_64-gcc
+          mkdir dist
+          mkdir nim
+          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
+          curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
+          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
+          7z x dist/mingw64.zip -odist
+          7z x dist/dlls.zip -obin
+          7z x dist/nim.zip -onim
+          
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          export PATH="${{ github.workspace }}/bin":$PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
+          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
+          ls -la nim/nim-1.4.0
+          ls -la nim/nim-1.4.0/bin 
+          echo "$GITHUB_PATH"
+          
+          echo "Running nim"
+          nim --version
+
+          ./install
+
+      - name: Install dependencies + Build Arturo (mini)
+        if: matrix.version == 'mini'
         shell: msys2 {0}
         run: |
           pacman --noconfirm -S p7zip
@@ -65,10 +95,17 @@ jobs:
 
           ./install mini
 
-      - name: Run unit tests
+      - name: Run unit tests (full)
+        if: matrix.version == 'full'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art 6
+          arturo tools/tester.art
+
+      - name: Run unit tests (mini)
+        if: matrix.version == 'mini'
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          arturo tools/tester.art 5
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
