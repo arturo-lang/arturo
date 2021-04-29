@@ -562,7 +562,7 @@ proc defineSymbols*() =
     when not defined(WEB):
         # TODO(Strings\render) function should also work for Web/JS builds
         #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
-        #  labels: enhancement,library
+        #  labels: enhancement,library,web
         builtin "render",
             alias       = tilde, 
             rule        = PrefixPrecedence,
