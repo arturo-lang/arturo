@@ -357,8 +357,8 @@ jobs:
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
         with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-web-${{matrix.version}}.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-web-${{matrix.version}}.tar.gz
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Web-${{matrix.version}}.tar.gz
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-Web-${{matrix.version}}.tar.gz
 
   upload:
     name: "Upload"
