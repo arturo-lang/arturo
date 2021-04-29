@@ -197,6 +197,7 @@ jobs:
           - windows-latest
         version:
           - mini
+          - full
 
     steps:
       - name: "Cancel similar actions in progress"
@@ -221,7 +222,8 @@ jobs:
           update: true
           install: 'git base-devel'
 
-      - name: Install dependencies + Build Arturo
+      - name: Install dependencies + Build Arturo (full)
+        if: matrix.version == 'full'
         shell: msys2 {0}
         run: |
           pacman --noconfirm -S p7zip
@@ -239,6 +241,7 @@ jobs:
           curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
           curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           export PATH="${{ github.workspace }}/bin":$PATH
@@ -251,11 +254,47 @@ jobs:
           echo "Running nim"
           nim --version
 
-          nimble build -Y "-d:MINI"
+          ./install
+
+          mv bin/arturo.exe arturo.exe
+
+      - name: Install dependencies + Build Arturo (mini)
+        if: matrix.version == 'mini'
+        shell: msys2 {0}
+        run: |
+          pacman --noconfirm -S p7zip
+          pacman --noconfirm -S mingw-w64-x86_64-gcc
+          mkdir dist
+          mkdir nim
+          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
+          curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
+          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
+          7z x dist/mingw64.zip -odist
+          7z x dist/dlls.zip -obin
+          7z x dist/nim.zip -onim
+
+          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
+          
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          export PATH="${{ github.workspace }}/bin":$PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
+          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
+          ls -la nim/nim-1.4.0
+          ls -la nim/nim-1.4.0/bin 
+          echo "$GITHUB_PATH"
+          
+          echo "Running nim"
+          nim --version
+
+          ./install mini
+
+          mv bin/arturo.exe arturo.exe
 
       - name: Create artifact
         run: |
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz bin/${{ env.app-name }}.exe README.md LICENSE *.dll
+          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz ${{ env.app-name }}.exe README.md LICENSE *.dll
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
