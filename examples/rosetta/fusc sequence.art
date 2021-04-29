@@ -1,0 +1,27 @@
+fusc: function [n][
+    if? or? n=0 n=1 -> n
+    else [
+        if? 0=n%2 -> fusc n/2
+        else -> (fusc (n-1)/2) + fusc (n+1)/2
+    ]
+]
+
+print "The first 61 Fusc numbers:"
+print map 0..61 => fusc
+
+print "\nThe Fusc numbers whose lengths are greater than those of previous Fusc numbers:"
+print "        n   fusc(n)"
+print "--------- ---------"
+maxLength: 0
+
+loop 0..40000 'i [
+    f: fusc i
+    l: size to :string f
+    if l > maxLength [
+        maxLength: l
+        print [
+            pad to :string i 9
+            pad to :string f 9
+        ]
+    ]
+]
