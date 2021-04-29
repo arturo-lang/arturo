@@ -103,6 +103,9 @@ type
         Char            = 6
         String          = 7
         Word            = 8
+        # TODO(Values\value): Better documentation for use of literals
+        #  Right now, using a literal as a function argument, for in-place modification, might produce unexpected results. So, it should be thoroughly explained.
+        #  labels: documentation, vm, language
         Literal         = 9
         Label           = 10
         Attribute       = 11
