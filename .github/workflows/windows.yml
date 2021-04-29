@@ -40,7 +40,7 @@ jobs:
           install: 'git base-devel'
 
       - name: Install dependencies + Build Arturo (full)
-        if: matrix.version == 'mini'
+        if: matrix.version == 'full'
         shell: msys2 {0}
         run: |
           pacman --noconfirm -S p7zip
