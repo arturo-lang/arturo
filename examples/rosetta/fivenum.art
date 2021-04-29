@@ -21,8 +21,6 @@ lists: @[
       0.66206163,  1.04312009,0-0.10305385,  0.75775634,  0.32566578]
 ]
 
-inspect lists
-
 loop lists 'l [
     print [l "->"]
     print [fivenum l]
