@@ -171,6 +171,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Logic\false?): add documentation example
+        #  labels: documentation, easy, library
         example     = """
         """:
             ##########################################################
@@ -361,6 +363,8 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Logic\true?): add documentation example
+        #  labels: documentation, easy, library
         example     = """
         """:
             ##########################################################
