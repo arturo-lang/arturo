@@ -1295,6 +1295,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("id") != VNULL):
+                # TODO(System\unique) make `.id` work for Web/JS builds
+                #  labels: library,enhancement,web
                 when not defined(WEB):
                     push newString(x.s & $(genOid()))
             else:

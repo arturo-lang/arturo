@@ -1,3 +1,5 @@
+# TODO(package) unify with main install script
+#  labels: installer,cleanup
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler

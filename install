@@ -122,6 +122,8 @@ do
         safe)
             FLAGS="$FLAGS -d:SAFE";;
         web)
+            # TODO(install) make Web builds mini, by default
+            #  labels: enhancement,cleanup,installer,web
             FOR_WEB=true
             COMPILER="js"
             BINARY="$BINARY.js"

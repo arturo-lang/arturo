@@ -39,6 +39,8 @@ when defined(VERBOSE):
 # Helpers
 #=======================================
 
+# TODO(Eval\sameValue) move to Values/value?
+#  labels: enhancement,cleanup,vm,evaluator,values
 proc sameValue(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:

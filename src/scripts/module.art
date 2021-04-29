@@ -6,6 +6,10 @@
 ; @file: system/module.art
 ;========================================================
 
+; TODO(Script\module) needs complete rewrite
+;  currently the package manager barely works, we should re-think and re-design the whole process and functionality
+;  labels: package manager,open discussion,enhancement,bug,critical
+
 ; Globals
 
 REMOTE: « https://github.com/arturo-lang/art-modules/releases/download/v0.0.3/list.art

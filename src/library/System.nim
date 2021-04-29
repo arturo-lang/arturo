@@ -44,6 +44,9 @@ proc defineSymbols*() =
             newDictionary(parseCmdlineArguments())
 
     when not defined(WEB):
+        # TODO(System\env) could it be used for Web/JS builds too?
+        #  and what type of environment variables could be served or would be useful serve?
+        #  labels: library,enhancement,open discussion,web
         builtin "env",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -71,6 +74,9 @@ proc defineSymbols*() =
                 push(newDictionary(res)) 
 
     when not defined(WEB):
+        # TODO(System\execute) make function work for Web/JS builds
+        #  in that case, it could be an easy way of directly executing JavaScript code
+        #  labels: library,enhancement,web
         builtin "execute",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -108,6 +114,8 @@ proc defineSymbols*() =
             ##########################################################
             quit()
 
+    # TODO(System\panic) Verify VM errors work right
+    #  labels: library,unit-test
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -126,7 +134,6 @@ proc defineSymbols*() =
             # vmPanic = true
             # vmError = x.s
             discard x
-            # TODO Fix showVMErrors()
 
             if (let aCode = popAttr("code"); aCode != VNULL):
                 quit(aCode.i)
@@ -134,6 +141,9 @@ proc defineSymbols*() =
                 quit()    
 
     when not defined(WEB):
+        # TODO(System\pause) implement for Web/JS builds
+        #  it could easily correspond to some type of javascript timeout
+        #  labels: library,enhancement,web
         builtin "pause",
             alias       = unaliased, 
             rule        = PrefixPrecedence,

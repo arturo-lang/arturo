@@ -319,7 +319,7 @@ proc defineSymbols*() =
             "with"  : ({Char},"use given filler for alignment (default: -)")
         },
         returns     = {Integer,Block},
-        # TODO(Strings\levenshtein): add documentation example for `.align`
+        # TODO(Strings\levenshtein) add documentation example for `.align`
         #  labels: documentation, easy, library
         example     = """
             print levenshtein "for" "fur"         ; 1
@@ -560,6 +560,9 @@ proc defineSymbols*() =
                 push(newBoolean(x.s.startsWith(y.s)))
 
     when not defined(WEB):
+        # TODO(Strings\render) function should also work for Web/JS builds
+        #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
+        #  labels: enhancement,library
         builtin "render",
             alias       = tilde, 
             rule        = PrefixPrecedence,

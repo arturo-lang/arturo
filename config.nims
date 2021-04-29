@@ -1,3 +1,6 @@
+# TODO(config.nims) do we really need that?
+#  perhaps the only reason this should stay is if the .nimble file remains. if not, it only generates confusion.
+#  labels: installer,cleanup
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler

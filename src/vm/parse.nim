@@ -72,6 +72,9 @@ const
 # Variables
 #=======================================
 
+# TODO(Parser) ScriptConfig enhancement
+#  first, we should verify it works fine. (Should it recognize only 100% valid Arturo code?) Also, it could be parsed on a per-block basis - so that each block has its one config. Plus, keep one at the root level, as the global script information.
+#  labels: enhancement,unit-test,vm,parser
 var
     ScriptConfig : string
 

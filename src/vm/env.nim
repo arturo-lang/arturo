@@ -53,6 +53,8 @@ proc parseCmdlineValue*(v: string): Value =
         except:
             return newString(v)
 
+# TODO(Env\parseCmdlineArguments) verify it's working right
+#  labels: vm,library,language,unit-test
 proc parseCmdlineArguments*(): ValueDict =
     result = initOrderedTable[string,Value]()
     var values: ValueArray = @[]
