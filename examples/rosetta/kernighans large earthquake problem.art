@@ -1,0 +1,12 @@
+data: {
+    3/13/2009    CostaRica           5.1
+    8/27/1883    Krakatoa            8.8
+    5/18/1980    MountStHelens       7.6
+}
+
+define :earthquake [date place magnitude][
+    init: -> this\magnitude: round.to:1 to :floating this\magnitude
+]
+
+print first sort.descending.by:'magnitude map split.lines data => 
+    [to :earthquake split.words &]
