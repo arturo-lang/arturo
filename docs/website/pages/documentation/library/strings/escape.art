@@ -59,6 +59,6 @@ arguments: #[
 related: [
         "Core/case"
          "Crypto/encode"
+         "Strings/wordwrap"
          "Collections/sample"
-         "Collections/size"
     ]

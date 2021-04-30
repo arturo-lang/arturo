@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Sets/union"
+        "Sets/powerset"
+         "Sets/union"
          "Sets/difference"
          "Numbers/asin"
-         "Paths/normalize"
     ]
