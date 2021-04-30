@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, times, unicode
+import sequtils, strformat, sugar, times, unicode
 when not defined(NOGMP):
     import extras/bignum
 
@@ -737,6 +737,9 @@ proc defineSymbols*() =
             to [:string] [1 2 3 4]         
             ; ["1" "2" "3" "4"]
 
+            to [:char] "hello"
+            ; [`h` `e` `l` `l` `o`]
+
             define :person [name surname age][]
             to :person ["John" "Doe" 35]
             ; [name:John surname:Doe age:35]
@@ -748,8 +751,12 @@ proc defineSymbols*() =
             else:
                 var ret: ValueArray = @[]
                 let tp = x.a[0].t
-                for item in y.a:
-                    ret.add(convertedValueToType(x.a[0], item, tp))
+                    
+                if y.kind==String:
+                    ret = toSeq(runes(y.s)).map((c) => newChar(c))
+                else:
+                    for item in y.a:
+                        ret.add(convertedValueToType(x.a[0], item, tp))
 
                 push newBlock(ret)
             
