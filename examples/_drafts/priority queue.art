@@ -1,0 +1,35 @@
+define :task [name priority][
+    compare: [
+        if this\priority > that\priority -> return 1
+        if this\priority = that\priority -> return 0
+        return neg 1
+    ]
+]
+
+define :queue [tasks][]
+
+addTask: function [q t][
+    q\tasks: q\tasks ++ t
+]
+removeTop: function [q][
+
+]
+
+removeTop: []
+Q: to :queue [[]]
+inspect Q
+t1: to :task [3 "Clear drains"]
+inspect t1
+addTask Q to :task [3 "Clear drains"]
+inspect Q
+addTask Q to :task [4 "Feed cat"]
+addTask Q to :task [5 "Make tea"]
+addTask Q to :task [1 "Solve RC tasks"]
+addTask Q to :task [2 "Tax return"]
+; 3         Clear drains
+;            4         Feed cat
+;            5         Make tea
+;            1         Solve RC tasks
+;            2         Tax return
+
+inspect Q
