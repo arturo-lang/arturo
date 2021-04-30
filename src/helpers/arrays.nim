@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import strutils, tables
+import hashes, sets, strutils, tables
 
 import vm/values/comparison
 import vm/values/value
@@ -117,3 +117,12 @@ proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
         s[pp] = w
  
     rc(s.len)
+
+proc powerset*(s: HashSet[Value]): HashSet[HashSet[Value]] =
+    result.incl(initHashSet[Value]())  # Initialized with empty set.
+    for val in s:
+        let previous = result
+        for aSet in previous:
+            var newSet = aSet
+            newSet.incl(val)
+            result.incl(newSet)

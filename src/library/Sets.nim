@@ -16,7 +16,9 @@
 # Libraries
 #=======================================
 
-import sequtils, std/sets
+import sequtils, std/sets, sugar
+
+import helpers/arrays
 
 import vm/lib
 
@@ -89,6 +91,25 @@ proc defineSymbols*() =
                 SetInPlace(newBlock(toSeq(intersection(toHashSet(InPlace.a), toHashSet(y.a)))))
             else:
                 push(newBlock(toSeq(intersection(toHashSet(x.a), toHashSet(y.a)))))
+
+    builtin "powerset",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "return the powerset of given set",
+        args        = {
+            "set"   : {Block,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block,Nothing},
+        # TODO(Sets\powerset) add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Literal:
+                SetInPlace(newBlock(toSeq(powerset(toHashSet(InPlace.a))).map((hs) => newBlock(toSeq(hs)))))
+            else:
+                push(newBlock(toSeq(powerset(toHashSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
 
     builtin "subset?",
         alias       = unaliased, 
