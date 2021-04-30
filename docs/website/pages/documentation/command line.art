@@ -51,7 +51,7 @@ This way, you will be able to share your code, without sharing your source, or a
 ##### To write a bytecode file from a script:
 
 ```bash
-arturo -o path/to/your/script.art
+arturo -c path/to/your/script.art
 ```
 
 This will output a `path/to/your/script.art.bcode` file.
@@ -59,7 +59,7 @@ This will output a `path/to/your/script.art.bcode` file.
 ##### To read and execute a bytecode file:
 
 ```bash
-arturo -i path/to/your/script.art.bcode
+arturo -x path/to/your/script.art.bcode
 ```
 
 <h3 id="package-manager">Package manager</h3>
