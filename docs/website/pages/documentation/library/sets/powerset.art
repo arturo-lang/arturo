@@ -1,0 +1,23 @@
+name: "powerset"
+type: :function
+module: "Sets"
+returns: [
+        :block
+         :nothing
+    ]
+description: "return the powerset of given set"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    set: [
+            :literal
+             :block
+        ]
+    ]
+related: [
+        "Sets/intersection"
+         "Sets/difference"
+         "Sets/union"
+         "Collections/reverse"
+    ]

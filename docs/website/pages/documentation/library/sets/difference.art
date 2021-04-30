@@ -37,7 +37,7 @@ arguments: #[
     ]
 related: [
         "Sets/intersection"
+         "Sets/powerset"
          "Sets/union"
          "Converters/define"
-         "Files/delete"
     ]

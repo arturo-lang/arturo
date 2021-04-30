@@ -39,7 +39,7 @@ arguments: #[
     ]
 related: [
         "Sets/subset?"
+         "Sets/powerset"
          "Collections/reverse"
          "Net/serve"
-         "Reflection/set?"
     ]
