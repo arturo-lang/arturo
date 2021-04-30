@@ -21,8 +21,8 @@ when not defined(WEB):
     import nre except toSeq
 else:
     import jsre
-import json, std/editdistance, os
-import sequtils, strutils, unicode, xmltree
+import std/editdistance, json, os
+import sequtils, strutils, unicode, std/wordwrap, xmltree
 
 import helpers/colors
 import helpers/strings
@@ -853,6 +853,31 @@ proc defineSymbols*() =
 
             if not broken:
                 push(VTRUE)
+
+    builtin "wordwrap",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "word wrap a given string",
+        args        = {
+            "string": {String,Literal}
+        },
+        attrs       = {
+            "at"    : ({Integer},"use given max line width (default: 80)")
+        },
+        returns     = {Boolean},
+        # TODO(Strings\wordwrap) add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            var cutoff = 80
+            if (let aAt = popAttr("at"); aAt != VNULL):
+                cutoff = aAt.i
+            
+            if x.kind==Literal:
+                SetInPlace(newString(wrapWords(InPlace.s, maxLineWidth=cutoff)))
+            else:
+                push newString(wrapWords(x.s, maxLineWidth=cutoff))
 
     builtin "whitespace?",
         alias       = unaliased, 
