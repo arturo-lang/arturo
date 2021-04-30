@@ -121,6 +121,8 @@ template handleVMErrors*(blk: untyped): untyped =
 
 when not defined(WEB):
 
+    # TODO(VM\runBytecode) doesn't work properly - at least - on Windows
+    #  labels: bug,critical,execution,vm,windows
     proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
         handleVMErrors:
             initialize(args, filename, isFile=true)
