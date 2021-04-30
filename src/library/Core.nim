@@ -347,6 +347,9 @@ proc defineSymbols*() =
                 #     return ReturnResult
             push(newBoolean(condition))
 
+    # TODO(Core\let) add support for multiple simultaneous assignment or tuple unpacking
+    #  If the first option is not a string or literal but a word block, then given a block second parameter, each of the initial words would be set to the corresponding value from the right-hand value block.
+    #  labels: library,language,enhancement,easy
     builtin "let",
         alias       = colon, 
         rule        = InfixPrecedence,
