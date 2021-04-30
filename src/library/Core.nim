@@ -372,6 +372,12 @@ proc defineSymbols*() =
             print a                 ; 1
             print b                 ; 2
 
+            ; multiple assignment to single value
+            [a b c]: 5
+            print a                 ; 5
+            print b                 ; 5
+            print c                 ; 5
+
             ; tuple unpacking
             divmod: function [x,y][
                 @[x/y x%y]
@@ -380,8 +386,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Block:
-                for i,w in x.a:
-                    SetSym(w.s, y.a[i])
+                if y.kind==Block:
+                    for i,w in x.a:
+                        SetSym(w.s, y.a[i])
+                else:
+                    for i,w in x.a:
+                        SetSym(w.s, y)
             else:
                 SetInPlace(y)
 
