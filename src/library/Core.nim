@@ -355,7 +355,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "set symbol to given value",
         args        = {
-            "symbol"    : {String,Literal},
+            "symbol"    : {String,Literal,Block},
             "value"     : {Any}
         },
         attrs       = NoAttrs,
@@ -365,7 +365,11 @@ proc defineSymbols*() =
             print x           ; 10
         """:
             ##########################################################
-            SetInPlace(y)
+            if x.kind==Block:
+                for i,w in x.a:
+                    SetSym(w.s, y.a[i])
+            else:
+                SetInPlace(y)
 
     builtin "new",
         alias       = unaliased, 
