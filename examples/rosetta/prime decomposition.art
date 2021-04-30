@@ -1,0 +1,9 @@
+decompose: function [num][
+    facts: to [:string] factors.prime num
+    print [
+        pad.right (to :string num) ++ " = " ++  join.with:" x " facts 30 
+        "{"++ (join.with:", " unique facts) ++ "}"
+    ]
+]
+
+loop 2..40 => decompose
