@@ -361,8 +361,25 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-            let 'x 10         ; x: 10
-            print x           ; 10
+            let 'x 10               ; x: 10
+            print x                 ; 10
+
+            ; variable assignments
+            "a": 2                  ; a: 2
+            
+            {_someValue}: 3
+            print var {_someValue}  ; 3
+
+            ; multiple assignments
+            [a b]: [1 2]
+            print a                 ; 1
+            print b                 ; 2
+
+            ; tuple unpacking
+            divmod: function [x,y][
+                @[x/y x%y]
+            ]
+            [d,m]: divmod 10 3      ; d: 3, m: 1
         """:
             ##########################################################
             if x.kind==Block:
