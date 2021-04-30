@@ -17,6 +17,7 @@ arguments: #[
     symbol: [
             :string
              :literal
+             :block
         ]
     value: [
             :any
