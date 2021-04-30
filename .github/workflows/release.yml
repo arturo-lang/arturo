@@ -294,13 +294,13 @@ jobs:
 
       - name: Create artifact
         run: |
-          tar czf ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz ${{ env.app-name }}.exe README.md LICENSE *.dll
+          7z a ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip ${{ env.app-name }}.exe README.md LICENSE *.dll
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'
         with:
-          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
-          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.tar.gz
+          name: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip
+          path: ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip
   
   web:
     name: "Package Web"
