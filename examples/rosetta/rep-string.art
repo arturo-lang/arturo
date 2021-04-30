@@ -1,0 +1,31 @@
+repeated?: function [text][
+    loop ((size text)/2)..0 'x [
+        if prefix? text slice text x (size text)-1 [
+            (x>0)? -> return slice text 0 x-1
+                   -> return false
+        ]
+    ]
+    return false
+]
+
+strings: {
+    1001110011
+    1110111011
+    0010010010
+    1010101010
+    1111111111
+    0100101101
+    0100100
+    101
+    11
+    00
+    1
+}
+
+loop split.lines strings 'str [
+    rep: repeated? str
+    if? false = rep -> 
+        print [str "-> *not* a rep-string"]
+    else ->
+        print [str "->" rep "( length:" size rep ")"]
+]
