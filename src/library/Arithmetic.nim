@@ -36,7 +36,7 @@ proc defineSymbols*() =
             "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print add 1 2      ; 3
             print 1 + 3        ; 4
@@ -76,7 +76,7 @@ proc defineSymbols*() =
             "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print div 5 2      ; 2
             print 9 / 3        ; 3
@@ -157,7 +157,7 @@ proc defineSymbols*() =
             "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print mul 1 2      ; 2
             print 2 * 3        ; 6
@@ -200,7 +200,7 @@ proc defineSymbols*() =
             "valueB": {Integer,Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print pow 2 3      ; 8
             print 3 ^ 2        ; 9
@@ -221,7 +221,7 @@ proc defineSymbols*() =
             "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print sub 2 1      ; 1
             print 5 - 3        ; 2
