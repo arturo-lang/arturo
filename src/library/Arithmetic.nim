@@ -169,18 +169,15 @@ proc defineSymbols*() =
             if x.kind==Literal  : InPlace *= y
             else                : push(x*y)
 
-    # TODO(Arithmetic\neg) Add alias `_`?
-    #  Current implementation has no alias. Should we add one? (Given that `-` is already reserved for subtraction and the function `sub`)
-    #  labels: library,open discussion
     builtin "neg",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "reverse sign of given value and return it",
         args        = {
-            "value" : {Integer,Floating,Literal}
+            "value" : {Integer,Floating,Complex,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print neg 1        ; -1
             
