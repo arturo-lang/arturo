@@ -82,7 +82,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
         returns     = {Floating},
@@ -92,7 +92,8 @@ proc defineSymbols*() =
             print acosh 5.0         ; 2.292431669561178
         """:
             ##########################################################
-            push(newFloating(arccosh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arccosh(x.z)))
+            else: push(newFloating(arccosh(asFloat(x))))
 
     builtin "asin",
         alias       = unaliased, 
