@@ -252,6 +252,23 @@ proc defineSymbols*() =
             if x.kind==Complex: push(newComplex(arctan(x.z)))
             else: push(newFloating(arctan(asFloat(x))))
 
+    builtin "atan2",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse tangent of y / x",
+        args        = {
+            "x"     : {Integer,Floating},
+            "y"     : {Integer,Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\atan2): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            push(newFloating(arctan2(asFloat(x), asFloat(y))))
+
     builtin "atanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
