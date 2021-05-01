@@ -78,5 +78,5 @@ related: [
         "Dates/before"
          "Reflection/attr"
          "Iterators/filter"
-         "Numbers/atan"
+         "Numbers/acsec"
     ]

@@ -32,11 +32,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print add 1 2      ; 3
             print 1 + 3        ; 4
@@ -72,11 +72,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print div 5 2      ; 2
             print 9 / 3        ; 3
@@ -153,11 +153,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the modulo given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print mul 1 2      ; 2
             print 2 * 3        ; 6
@@ -169,18 +169,15 @@ proc defineSymbols*() =
             if x.kind==Literal  : InPlace *= y
             else                : push(x*y)
 
-    # TODO(Arithmetic\neg) Add alias `_`?
-    #  Current implementation has no alias. Should we add one? (Given that `-` is already reserved for subtraction and the function `sub`)
-    #  labels: library,open discussion
     builtin "neg",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "reverse sign of given value and return it",
         args        = {
-            "value" : {Integer,Floating,Literal}
+            "value" : {Integer,Floating,Complex,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print neg 1        ; -1
             
@@ -196,11 +193,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the power of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
+            "valueA": {Integer,Floating,Complex,Literal},
             "valueB": {Integer,Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print pow 2 3      ; 8
             print 3 ^ 2        ; 9
@@ -217,11 +214,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "subtract given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer,Floating,Nothing},
+        returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print sub 2 1      ; 1
             print 5 - 3        ; 2

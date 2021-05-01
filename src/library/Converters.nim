@@ -222,6 +222,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
 
             of Block:
                 case tp:
+                    of Complex:
+                        return newComplex(y.a[0], y.a[1])
                     of Inline:
                         return newInline(y.a)
                     of Dictionary:
@@ -310,14 +312,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                     else: 
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
-            of Function,
-                Database,
-                Nothing,
-                Any,
-                Path,
-                PathLabel,
-                Bytecode,
-                Binary: discard
+            of Complex,
+               Function,
+               Database,
+               Nothing,
+               Any,
+               Path,
+               PathLabel,
+               Bytecode,
+               Binary: discard
 
 #=======================================
 # Methods
@@ -725,6 +728,9 @@ proc defineSymbols*() =
             
             to :integer 4.3               ; 4
             to :floating 4                ; 4.0
+
+            to :complex [1 2]             ; 1.0+2.0i
+            to :complex @[2.3 neg 4.5]    ; 2.3-4.5i
             
             to :boolean 0                 ; false
             to :boolean 1                 ; true
