@@ -457,17 +457,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the natural logarithm of given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print ln 1.0            ; 0.0
             print ln 0              ; -inf
             print ln neg 7.0        ; nan
         """:
             ##########################################################
-            push(newFloating(ln(asFloat(x))))
+            if x.kind==Complex: push(newComplex(ln(x.z)))
+            else: push(newFloating(ln(asFloat(x))))
 
     builtin "hypot",
         alias       = unaliased, 
