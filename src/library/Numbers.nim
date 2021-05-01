@@ -96,6 +96,23 @@ proc defineSymbols*() =
             if x.kind==Complex: push(newComplex(arccosh(x.z)))
             else: push(newFloating(arccosh(asFloat(x))))
 
+    builtin "acsec",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse cosecant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\actan): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arccsc(x.z)))
+            else: push(newFloating(arccsc(asFloat(x))))
+
     builtin "actan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
