@@ -282,17 +282,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print cosh 0            ; 1.0
             print cosh 0.3          ; 1.04533851412886
             print cosh 1.0          ; 1.543080634815244
         """:
             ##########################################################
-            push(newFloating(cosh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(cosh(x.z)))
+            else: push(newFloating(cosh(asFloat(x))))
 
     builtin "csec",
         alias       = unaliased, 
