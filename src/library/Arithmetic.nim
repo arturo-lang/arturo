@@ -32,8 +32,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "add given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Nothing},
@@ -72,8 +72,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "perform integer division between given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Nothing},
@@ -153,8 +153,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the modulo given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Nothing},
@@ -217,8 +217,8 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "subtract given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
-            "valueB": {Integer,Floating}
+            "valueA": {Integer,Floating,Complex,Literal},
+            "valueB": {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
         returns     = {Integer,Floating,Nothing},
