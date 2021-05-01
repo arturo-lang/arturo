@@ -222,6 +222,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
 
             of Block:
                 case tp:
+                    of Complex:
+                        return newComplex(y.a[0], y.a[1])
                     of Inline:
                         return newInline(y.a)
                     of Dictionary:
