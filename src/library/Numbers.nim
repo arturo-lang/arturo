@@ -452,24 +452,6 @@ proc defineSymbols*() =
 
             push(current)
 
-    builtin "ln",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "calculate the natural logarithm of given value",
-        args        = {
-            "value" : {Integer,Floating,Complex}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating,Complex},
-        example     = """
-            print ln 1.0            ; 0.0
-            print ln 0              ; -inf
-            print ln neg 7.0        ; nan
-        """:
-            ##########################################################
-            if x.kind==Complex: push(newComplex(ln(x.z)))
-            else: push(newFloating(ln(asFloat(x))))
-
     builtin "hypot",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -489,6 +471,24 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newFloating(hypot(asFloat(x), asFloat(y))))
+
+    builtin "ln",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the natural logarithm of given value",
+        args        = {
+            "value" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print ln 1.0            ; 0.0
+            print ln 0              ; -inf
+            print ln neg 7.0        ; nan
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(ln(x.z)))
+            else: push(newFloating(ln(asFloat(x))))
 
     builtin "log",
         alias       = unaliased, 
@@ -810,17 +810,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sin 0             ; 0.0
             print sin 0.3           ; 0.2955202066613395
             print sin 1.0           ; 0.8414709848078965
         """:
             ##########################################################
-            push(newFloating(sin(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sin(x.z)))
+            else: push(newFloating(sin(asFloat(x))))
 
     builtin "sinh",
         alias       = unaliased, 
