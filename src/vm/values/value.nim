@@ -1268,7 +1268,7 @@ proc `$`(v: Value): string {.inline.} =
                     return $(v.bi)
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Floating     : return $(v.f)
-        of Complex      : return $(v.z.re) & "+" & $(v.z.im) & "i"
+        of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Type         : 
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
@@ -1363,7 +1363,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 when not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
-        of Complex      : dumpPrimitive($(v.z.re) & "+" & $(v.z.im) & "i", v)
+        of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
