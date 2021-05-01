@@ -55,7 +55,8 @@ proc generateJsonNode*(n: Value): JsonNode =
             for k,v in pairs(n.d):
                 result.add(k, generateJsonNode(v))
 
-        of Function,
+        of Complex,
+           Function,
            Database,
            Bytecode,
            Nothing,
@@ -113,7 +114,8 @@ when defined(WEB):
                 result = newJsObject()
                 for k,v in pairs(n.d):
                     result[k] = generateJsObject(v)
-            of Function,
+            of Complex,
+               Function,
                Database,
                Bytecode,
                Nothing,

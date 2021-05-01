@@ -1,0 +1,11 @@
+a: to :complex [1 1]
+b: to :complex @[pi 1.2]
+
+print ["a:" a]
+print ["b:" b]
+
+print ["a + b:" a + b]
+print ["a * b:" a * b]
+print ["1 / a:" 1 / a]
+print ["neg a:" neg a]
+print ["conj a:" conj a]

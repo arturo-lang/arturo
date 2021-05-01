@@ -16,6 +16,7 @@
 # Libraries
 #=======================================
 
+import complex except Complex
 import math, random, sequtils, sugar
 
 when not defined(NOGMP):
@@ -39,10 +40,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get the absolute value for given integer",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer},
+        returns     = {Integer,Floating},
         example     = """
             print abs 6       ; 6
             print abs 6-7     ; 1
@@ -54,110 +55,253 @@ proc defineSymbols*() =
                 else:
                     when not defined(NOGMP):
                         push(newInteger(abs(x.bi)))
-            else:
+            elif x.kind==Floating:
                 push(newFloating(abs(x.f)))
+            else:
+                push(newFloating(abs(x.z)))
 
     builtin "acos",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print acos 0            ; 1.570796326794897
             print acos 0.3          ; 1.266103672779499
             print acos 1.0          ; 0.0
         """:
             ##########################################################
-            push(newFloating(arccos(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arccos(x.z)))
+            else: push(newFloating(arccos(asFloat(x))))
 
     builtin "acosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print acosh 1.0         ; 0.0
             print acosh 2           ; 1.316957896924817
             print acosh 5.0         ; 2.292431669561178
         """:
             ##########################################################
-            push(newFloating(arccosh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arccosh(x.z)))
+            else: push(newFloating(arccosh(asFloat(x))))
+
+    builtin "acsec",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse cosecant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\acsec): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arccsc(x.z)))
+            else: push(newFloating(arccsc(asFloat(x))))
+
+    builtin "acsech",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse hyperbolic cosecant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\acsech): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arccsch(x.z)))
+            else: push(newFloating(arccsch(asFloat(x))))
+
+    builtin "actan",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse cotangent of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\actan): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arccot(x.z)))
+            else: push(newFloating(arccot(asFloat(x))))
+
+    builtin "actanh",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse hyperbolic cotangent of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\actanh): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arccoth(x.z)))
+            else: push(newFloating(arccoth(asFloat(x))))
+
+    builtin "angle",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the phase angle of given number",
+        args        = {
+            "number" : {Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\angle): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            push(newFloating(phase(x.z)))
+
+    builtin "asec",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse secant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\asec): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arcsec(x.z)))
+            else: push(newFloating(arcsec(asFloat(x))))
+
+    builtin "asech",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse hyperbolic secant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\asech): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arcsech(x.z)))
+            else: push(newFloating(arcsech(asFloat(x))))
 
     builtin "asin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print asin 0            ; 0.0
             print asin 0.3          ; 0.3046926540153975
             print asin 1.0          ; 1.570796326794897
         """:
             ##########################################################
-            push(newFloating(arcsin(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arcsin(x.z)))
+            else: push(newFloating(arcsin(asFloat(x))))
 
     builtin "asinh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print asinh 0           ; 0.0
             print asinh 0.3         ; 0.2956730475634224
             print asinh 1.0         ; 0.881373587019543
         """:
             ##########################################################
-            push(newFloating(arcsinh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arcsinh(x.z)))
+            else: push(newFloating(arcsinh(asFloat(x))))
 
     builtin "atan",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print atan 0            ; 0.0
             print atan 0.3          ; 0.2914567944778671
             print atan 1.0          ; 0.7853981633974483
         """:
             ##########################################################
-            push(newFloating(arctan(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arctan(x.z)))
+            else: push(newFloating(arctan(asFloat(x))))
+
+    builtin "atan2",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse tangent of y / x",
+        args        = {
+            "y"     : {Integer,Floating},
+            "x"     : {Integer,Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\atan2): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            push(newFloating(arctan2(asFloat(y), asFloat(x))))
 
     builtin "atanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print atanh 0           ; 0.0
             print atanh 0.3         ; 0.3095196042031118
             print atanh 1.0         ; inf
         """:
             ##########################################################
-            push(newFloating(arctanh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arctanh(x.z)))
+            else: push(newFloating(arctanh(asFloat(x))))
 
     builtin "average",
         alias       = unaliased, 
@@ -200,56 +344,75 @@ proc defineSymbols*() =
             ##########################################################
             push(newInteger((int)(ceil(asFloat(x)))))
 
+    builtin "conj",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the complex conjugate of given number",
+        args        = {
+            "number" : {Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Complex},
+        # TODO(Numbers\conj): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            push(newComplex(conjugate(x.z)))
+
     builtin "cos",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print cos 0             ; 1.0
             print cos 0.3           ; 0.955336489125606
             print cos 1.0           ; 0.5403023058681398
         """:
             ##########################################################
-            push(newFloating(cos(asFloat(x))))
+            if x.kind==Complex: push(newComplex(cos(x.z)))
+            else: push(newFloating(cos(asFloat(x))))
 
     builtin "cosh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print cosh 0            ; 1.0
             print cosh 0.3          ; 1.04533851412886
             print cosh 1.0          ; 1.543080634815244
         """:
             ##########################################################
-            push(newFloating(cosh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(cosh(x.z)))
+            else: push(newFloating(cosh(asFloat(x))))
 
     builtin "csec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print csec 0            ; inf
             print csec 0.3          ; 3.383863361824123
             print csec 1.0          ; 1.188395105778121
         """:
             ##########################################################
-            push(newFloating(csc(asFloat(x))))
+            if x.kind==Complex: push(newComplex(csc(x.z)))
+            else: push(newFloating(csc(asFloat(x))))
 
     builtin "csech",
         alias       = unaliased, 
@@ -273,17 +436,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print ctan 0            ; inf
             print ctan 0.3          ; 3.232728143765828
             print ctan 1.0          ; 0.6420926159343308
         """:
             ##########################################################
-            push(newFloating(cot(asFloat(x))))
+            if x.kind==Complex: push(newComplex(cot(x.z)))
+            else: push(newFloating(cot(asFloat(x))))
 
     builtin "ctanh",
         alias       = unaliased, 
@@ -330,17 +494,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the exponential function for given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print exp 1.0       ; 2.718281828459045
             print exp 0         ; 1.0
             print exp neg 1.0   ; 0.3678794411714423
         """:
             ##########################################################
-            push(newFloating(exp(asFloat(x))))
+            if x.kind==Complex: push(newComplex(exp(x.z)))
+            else: push(newFloating(exp(asFloat(x))))
 
     builtin "factors",
         alias       = unaliased, 
@@ -447,23 +612,6 @@ proc defineSymbols*() =
 
             push(current)
 
-    builtin "ln",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "calculate the natural logarithm of given value",
-        args        = {
-            "value" : {Integer,Floating}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating},
-        example     = """
-            print ln 1.0            ; 0.0
-            print ln 0              ; -inf
-            print ln neg 7.0        ; nan
-        """:
-            ##########################################################
-            push(newFloating(ln(asFloat(x))))
-
     builtin "hypot",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -483,6 +631,24 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newFloating(hypot(asFloat(x), asFloat(y))))
+
+    builtin "ln",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the natural logarithm of given value",
+        args        = {
+            "value" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        example     = """
+            print ln 1.0            ; 0.0
+            print ln 0              ; -inf
+            print ln neg 7.0        ; nan
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(ln(x.z)))
+            else: push(newFloating(ln(asFloat(x))))
 
     builtin "log",
         alias       = unaliased, 
@@ -770,75 +936,79 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the secant of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sec 0             ; 1.0
             print sec 0.3           ; 1.046751601538086
             print sec 1.0           ; 1.850815717680925
         """:
             ##########################################################
-            push(newFloating(sec(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sec(x.z)))
+            else: push(newFloating(sec(asFloat(x))))
 
     builtin "sech",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic secant of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sech 0            ; 1.0
             print sech 0.3          ; 0.9566279119002483
             print sech 1.0          ; 0.6480542736638855
         """:
             ##########################################################
-            push(newFloating(sech(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sech(x.z)))
+            else: push(newFloating(sech(asFloat(x))))
 
     builtin "sin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sin 0             ; 0.0
             print sin 0.3           ; 0.2955202066613395
             print sin 1.0           ; 0.8414709848078965
         """:
             ##########################################################
-            push(newFloating(sin(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sin(x.z)))
+            else: push(newFloating(sin(asFloat(x))))
 
     builtin "sinh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sinh 0            ; 0.0
             print sinh 0.3          ; 0.3045202934471426
             print sinh 1.0          ; 1.175201193643801
         """:
             ##########################################################
-            push(newFloating(sinh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sinh(x.z)))
+            else: push(newFloating(sinh(asFloat(x))))
 
     builtin "sqrt",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "get square root of given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Complex}
         },
         attrs       = 
         when not defined(NOGMP):
@@ -860,8 +1030,8 @@ proc defineSymbols*() =
                         push(newInteger(isqrt(x.i)))
                     else:
                         push(newInteger(isqrt(x.bi)))
-            else:
-                push(newFloating(sqrt(asFloat(x))))
+            elif x.kind==Complex: push(newComplex(sqrt(x.z)))
+            else: push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = unaliased, 
@@ -892,34 +1062,36 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print tan 0             ; 0.0
             print tan 0.3           ; 0.3093362496096232
             print tan 1.0           ; 1.557407724654902
         """:
             ##########################################################
-            push(newFloating(tan(asFloat(x))))
+            if x.kind==Complex: push(newComplex(tan(x.z)))
+            else: push(newFloating(tan(asFloat(x))))
 
     builtin "tanh",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print tanh 0            ; 0.0
             print tanh 0.3          ; 0.2913126124515909
             print tanh 1.0          ; 0.7615941559557649
         """:
             ##########################################################
-            push(newFloating(tanh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(tanh(x.z)))
+            else: push(newFloating(tanh(asFloat(x))))
 
     builtin "zero?",
         alias       = unaliased, 

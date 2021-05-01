@@ -19,5 +19,5 @@ related: [
         "Collections/slice"
          "Collections/take"
          "Numbers/atan"
-         "Numbers/atanh"
+         "Numbers/atan2"
     ]

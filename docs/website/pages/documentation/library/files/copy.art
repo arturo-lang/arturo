@@ -31,6 +31,6 @@ arguments: #[
 related: [
         "Collections/chop"
          "Core/pop"
+         "Numbers/conj"
          "Numbers/cos"
-         "Numbers/cosh"
     ]

@@ -1,16 +1,12 @@
-name: "csec"
+name: "acsech"
 type: :function
 module: "Numbers"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the cosecant of given angle"
-example: {
-        print csec 0            ; inf
-        print csec 0.3          ; 3.383863361824123
-        print csec 1.0          ; 1.188395105778121
-    }
+description: "calculate the inverse hyperbolic cosecant of given angle"
+example: ""
 attributes: #[
     ]
 arguments: #[
@@ -21,8 +17,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sec"
+        "Numbers/asech"
          "Numbers/acsec"
-         "Numbers/asec"
          "Numbers/csech"
+         "Numbers/acosh"
     ]

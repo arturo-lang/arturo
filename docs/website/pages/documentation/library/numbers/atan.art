@@ -3,6 +3,7 @@ type: :function
 module: "Numbers"
 returns: [
         :floating
+         :complex
     ]
 description: "calculate the inverse tangent of given angle"
 example: {
@@ -16,11 +17,12 @@ arguments: #[
     angle: [
             :integer
              :floating
+             :complex
         ]
     ]
 related: [
-        "Numbers/atanh"
+        "Numbers/actan"
+         "Numbers/atan2"
+         "Numbers/atanh"
          "Numbers/ctan"
-         "Numbers/tan"
-         "Numbers/asin"
     ]

@@ -1,16 +1,12 @@
-name: "ctan"
+name: "actanh"
 type: :function
 module: "Numbers"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the cotangent of given angle"
-example: {
-        print ctan 0            ; inf
-        print ctan 0.3          ; 3.232728143765828
-        print ctan 1.0          ; 0.6420926159343308
-    }
+description: "calculate the inverse hyperbolic cotangent of given angle"
+example: ""
 attributes: #[
     ]
 arguments: #[
@@ -21,8 +17,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/tan"
+        "Numbers/atanh"
          "Numbers/actan"
-         "Numbers/atan"
          "Numbers/ctanh"
+         "Numbers/acosh"
     ]
