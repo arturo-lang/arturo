@@ -281,17 +281,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print ctan 0            ; inf
             print ctan 0.3          ; 3.232728143765828
             print ctan 1.0          ; 0.6420926159343308
         """:
             ##########################################################
-            push(newFloating(cot(asFloat(x))))
+            if x.kind==Complex: push(newComplex(cot(x.z)))
+            else: push(newFloating(cot(asFloat(x))))
 
     builtin "ctanh",
         alias       = unaliased, 
