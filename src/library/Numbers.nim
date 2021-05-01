@@ -798,17 +798,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the secant of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sec 0             ; 1.0
             print sec 0.3           ; 1.046751601538086
             print sec 1.0           ; 1.850815717680925
         """:
             ##########################################################
-            push(newFloating(sec(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sec(x.z)))
+            else: push(newFloating(sec(asFloat(x))))
 
     builtin "sech",
         alias       = unaliased, 
