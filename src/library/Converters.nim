@@ -310,14 +310,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                     else: 
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
-            of Function,
-                Database,
-                Nothing,
-                Any,
-                Path,
-                PathLabel,
-                Bytecode,
-                Binary: discard
+            of Complex,
+               Function,
+               Database,
+               Nothing,
+               Any,
+               Path,
+               PathLabel,
+               Bytecode,
+               Binary: discard
 
 #=======================================
 # Methods
