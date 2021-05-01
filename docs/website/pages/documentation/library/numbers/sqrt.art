@@ -22,6 +22,7 @@ arguments: #[
     value: [
             :integer
              :floating
+             :complex
         ]
     ]
 related: [

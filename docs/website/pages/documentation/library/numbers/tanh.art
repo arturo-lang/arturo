@@ -3,6 +3,7 @@ type: :function
 module: "Numbers"
 returns: [
         :floating
+         :complex
     ]
 description: "calculate the hyperbolic tangent of given angle"
 example: {
@@ -16,6 +17,7 @@ arguments: #[
     angle: [
             :integer
              :floating
+             :complex
         ]
     ]
 related: [

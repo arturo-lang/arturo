@@ -20,7 +20,7 @@ arguments: #[
     ]
 related: [
         "Numbers/tanh"
+         "Numbers/actanh"
          "Numbers/atanh"
          "Numbers/ctan"
-         "Numbers/cosh"
     ]

@@ -4,6 +4,7 @@ module: "Arithmetic"
 returns: [
         :integer
          :floating
+         :complex
          :nothing
     ]
 description: "reverse sign of given value and return it"
@@ -19,6 +20,7 @@ arguments: #[
     value: [
             :integer
              :floating
+             :complex
              :literal
         ]
     ]

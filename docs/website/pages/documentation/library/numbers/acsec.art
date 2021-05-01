@@ -1,0 +1,24 @@
+name: "acsec"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+         :complex
+    ]
+description: "calculate the inverse cosecant of given angle"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Numbers/asec"
+         "Numbers/acsech"
+         "Numbers/csec"
+         "Numbers/acos"
+    ]

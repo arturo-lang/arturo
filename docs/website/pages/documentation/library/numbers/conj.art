@@ -1,0 +1,21 @@
+name: "conj"
+type: :function
+module: "Numbers"
+returns: [
+        :complex
+    ]
+description: "calculate the complex conjugate of given number"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    number: [
+            :complex
+        ]
+    ]
+related: [
+        "Files/copy"
+         "Numbers/cos"
+         "Numbers/cosh"
+         "Arithmetic/inc"
+    ]

@@ -3,6 +3,7 @@ type: :function
 module: "Numbers"
 returns: [
         :integer
+         :floating
     ]
 description: "get the absolute value for given integer"
 example: {
@@ -15,6 +16,7 @@ arguments: #[
     value: [
             :integer
              :floating
+             :complex
         ]
     ]
 related: [
