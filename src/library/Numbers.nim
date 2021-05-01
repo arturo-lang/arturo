@@ -65,17 +65,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print acos 0            ; 1.570796326794897
             print acos 0.3          ; 1.266103672779499
             print acos 1.0          ; 0.0
         """:
             ##########################################################
-            push(newFloating(arccos(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arccos(x.z)))
+            else: push(newFloating(arccos(asFloat(x))))
 
     builtin "acosh",
         alias       = unaliased, 
