@@ -76,6 +76,7 @@ proc sameValue(x: Value, y: Value): bool {.inline.}=
         case x.kind:
             of Null: return true
             of Boolean: return x.b == y.b
+            of Complex: return x.z == y.z
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
             of Type: return x.t == y.t
