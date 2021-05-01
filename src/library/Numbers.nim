@@ -854,17 +854,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic secant of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sech 0            ; 1.0
             print sech 0.3          ; 0.9566279119002483
             print sech 1.0          ; 0.6480542736638855
         """:
             ##########################################################
-            push(newFloating(sech(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sech(x.z)))
+            else: push(newFloating(sech(asFloat(x))))
 
     builtin "sin",
         alias       = unaliased, 
