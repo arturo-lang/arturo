@@ -147,6 +147,23 @@ proc defineSymbols*() =
             if x.kind==Complex: push(newComplex(arccot(x.z)))
             else: push(newFloating(arccot(asFloat(x))))
 
+    builtin "actanh",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse hyperbolic cotangent of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\actanh): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arccoth(x.z)))
+            else: push(newFloating(arccoth(asFloat(x))))
+
     builtin "asec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
