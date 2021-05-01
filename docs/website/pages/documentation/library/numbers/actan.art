@@ -1,0 +1,24 @@
+name: "actan"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+         :complex
+    ]
+description: "calculate the inverse cotangent of given angle"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Numbers/atan"
+         "Numbers/actanh"
+         "Numbers/ctan"
+         "Numbers/acos"
+    ]

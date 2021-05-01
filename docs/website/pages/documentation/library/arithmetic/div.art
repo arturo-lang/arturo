@@ -3,6 +3,8 @@ type: :function
 module: "Arithmetic"
 returns: [
         :integer
+         :floating
+         :complex
          :nothing
     ]
 alias: "/"
@@ -21,11 +23,13 @@ arguments: #[
     valueA: [
             :integer
              :floating
+             :complex
              :literal
         ]
     valueB: [
             :integer
              :floating
+             :complex
         ]
     ]
 related: [
