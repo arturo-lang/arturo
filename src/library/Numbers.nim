@@ -719,6 +719,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newBoolean(x % I2 == I1))
 
+    builtin "phase",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the phase angle of given number",
+        args        = {
+            "number" : {Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\phase): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            push(newFloating(phase(x.z)))
+
     constant "pi",
         alias       = unaliased,
         description = "the number π, mathematical constant":
