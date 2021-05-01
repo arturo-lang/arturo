@@ -334,17 +334,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the exponential function for given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print exp 1.0       ; 2.718281828459045
             print exp 0         ; 1.0
             print exp neg 1.0   ; 0.3678794411714423
         """:
             ##########################################################
-            push(newFloating(exp(asFloat(x))))
+            if x.kind==Complex: push(newComplex(exp(x.z)))
+            else: push(newFloating(exp(asFloat(x))))
 
     builtin "factors",
         alias       = unaliased, 
