@@ -1170,6 +1170,7 @@ proc `$`(v: Value): string {.inline.} =
                     return $(v.bi)
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Floating     : return $(v.f)
+        of Complex      : return $(v.x.re) & "+" & $(v.x.im) & "i"
         of Type         : 
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
@@ -1264,6 +1265,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 when not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
+        of Complex      : dumpPrimitive($(v.x.re) & "+" & $(v.x.im) & "i", v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1390,6 +1392,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 when not defined(NOGMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
+        of Complex      : result &= fmt("to :complex [{v.x.re} {v.x.im}")
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1492,6 +1495,11 @@ proc hash*(v: Value): Hash {.inline.}=
                 when not defined(NOGMP):
                     result = cast[Hash](v.bi)
         of Floating     : result = cast[Hash](v.f)
+        of Complex      : 
+            result = 1
+            result = result !& cast[Hash](v.x.re)
+            result = result !& cast[Hash](v.x.im)
+            result = !$ result
         of Version      : 
             result = 1
             result = result !& cast[Hash](v.major)
