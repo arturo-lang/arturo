@@ -257,8 +257,8 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of y / x",
         args        = {
-            "x"     : {Integer,Floating},
-            "y"     : {Integer,Floating}
+            "y"     : {Integer,Floating},
+            "x"     : {Integer,Floating}
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
@@ -267,7 +267,7 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            push(newFloating(arctan2(asFloat(x), asFloat(y))))
+            push(newFloating(arctan2(asFloat(y), asFloat(x))))
 
     builtin "atanh",
         alias       = unaliased, 
