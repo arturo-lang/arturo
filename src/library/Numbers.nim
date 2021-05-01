@@ -85,7 +85,7 @@ proc defineSymbols*() =
             "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print acosh 1.0         ; 0.0
             print acosh 2           ; 1.316957896924817
@@ -842,7 +842,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get square root of given value",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Complex}
         },
         attrs       = 
         when not defined(NOGMP):
@@ -864,8 +864,8 @@ proc defineSymbols*() =
                         push(newInteger(isqrt(x.i)))
                     else:
                         push(newInteger(isqrt(x.bi)))
-            else:
-                push(newFloating(sqrt(asFloat(x))))
+            elif x.kind==Complex: push(newComplex(sqrt(x.z)))
+            else: push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = unaliased, 
