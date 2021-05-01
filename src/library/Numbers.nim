@@ -281,17 +281,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print csec 0            ; inf
             print csec 0.3          ; 3.383863361824123
             print csec 1.0          ; 1.188395105778121
         """:
             ##########################################################
-            push(newFloating(csc(asFloat(x))))
+            if x.kind==Complex: push(newComplex(csc(x.z)))
+            else: push(newFloating(csc(asFloat(x))))
 
     builtin "csech",
         alias       = unaliased, 
