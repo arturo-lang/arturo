@@ -357,6 +357,21 @@ proc newFloating*(f: int): Value {.inline.} =
 proc newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
+proc newComplex*(fre: float, fim: float): Value {.inline.} =
+    Value(kind: Complex, x: Complex64(re: fre, im: fim))
+
+proc newComplex*(fre: Value, fim: Value): Value {.inline} =
+    var r: float
+    var i: float
+
+    if fre.kind==Integer: r = (float)(fre.i)
+    else: r = fre.f
+
+    if fim.kind==Integer: i = (float)(fim.i)
+    else: i = fim.f
+
+    newComplex(r,i)
+
 proc newVersion*(v: string): Value {.inline.} =
     var numPart = ""
     var extraPart = ""
@@ -1392,7 +1407,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 when not defined(NOGMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
-        of Complex      : result &= fmt("to :complex [{v.x.re} {v.x.im}")
+        of Complex      : result &= fmt("to :complex [{v.x.re} {v.x.im}]")
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
