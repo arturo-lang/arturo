@@ -173,7 +173,7 @@ type
                         else:
                             discard
             of Floating:    f*  : float
-            of Complex:     x*  : Complex64
+            of Complex:     z*  : Complex64
             of Version: 
                 major*   : int
                 minor*   : int
@@ -357,8 +357,11 @@ proc newFloating*(f: int): Value {.inline.} =
 proc newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
+proc newComplex*(com: Complex64): Value {.inline} =
+    Value(kind: Complex, z: com)
+
 proc newComplex*(fre: float, fim: float): Value {.inline.} =
-    Value(kind: Complex, x: Complex64(re: fre, im: fim))
+    Value(kind: Complex, z: Complex64(re: fre, im: fim))
 
 proc newComplex*(fre: Value, fim: Value): Value {.inline} =
     var r: float
@@ -585,7 +588,7 @@ proc getArity*(x: Value): int =
 #=======================================
 
 proc `+`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -610,12 +613,20 @@ proc `+`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f+y.f)
+                elif y.kind==Complex: return newComplex(x.f+y.z)
                 else: return newFloating(x.f+(float)(y.i))
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newComplex(x.z+(float)(y.i))
+                    else: return VNULL
+                elif y.kind==Floating: return newComplex(x.z+y.f)
+                else: return newComplex(x.z+y.z)
             else:
-                return newFloating((float)(x.i)+y.f)
+                if y.kind==Floating: return newFloating((float)(x.i)+y.f)
+                else: return newComplex((float)(x.i)+y.z)
 
 proc `+=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -641,12 +652,20 @@ proc `+=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f += y.f
+                elif y.kind==Complex: x = newComplex(x.f + y.z)
                 else: x.f += (float)(y.i)
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x = newComplex(x.z + (float)(y.i))
+                    else: discard
+                elif y.kind==Floating: x = newComplex(x.z + y.f)
+                else: x.z += y.z
             else:
-                x = newFloating((float)(x.i)+y.f)
+                if y.kind==Floating: x = newFloating((float)(x.i)+y.f)
+                else: x = newComplex((float)(x.i)+y.z)
 
 proc `-`*(x: Value, y: Value): Value = 
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -672,12 +691,20 @@ proc `-`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f-y.f)
+                elif y.kind==Complex: return newComplex(x.f-y.z)
                 else: return newFloating(x.f-(float)(y.i))
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newComplex(x.z-(float)(y.i))
+                    else: return VNULL
+                elif y.kind==Floating: return newComplex(x.z-y.f)
+                else: return newComplex(x.z-y.z)
             else:
-                return newFloating((float)(x.i)-y.f)
+                if y.kind==Floating: return newFloating((float)(x.i)-y.f)
+                else: return newComplex((float)(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -702,12 +729,20 @@ proc `-=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f -= y.f
+                elif y.kind==Complex: x = newComplex(x.f - y.z)
                 else: x.f -= (float)(y.i)
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x = newComplex(x.z - (float)(y.i))
+                    else: discard
+                elif y.kind==Floating: x = newComplex(x.z - y.f)
+                else: x.z -= y.z
             else:
-                x = newFloating((float)(x.i)-y.f)
+                if y.kind==Floating: x = newFloating((float)(x.i)-y.f)
+                else: x = newComplex((float)(x.i)-y.z)
 
 proc `*`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -732,12 +767,20 @@ proc `*`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f*y.f)
+                elif y.kind==Complex: return newComplex(x.f*y.z)
                 else: return newFloating(x.f*(float)(y.i))
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newComplex(x.z*(float)(y.i))
+                    else: return VNULL
+                elif y.kind==Floating: return newComplex(x.z*y.f)
+                else: return newComplex(x.z*y.z)
             else:
-                return newFloating((float)(x.i)*y.f)
+                if y.kind==Floating: return newFloating((float)(x.i)*y.f)
+                else: return newComplex((float)(x.i)*y.z)
 
 proc `*=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -762,12 +805,20 @@ proc `*=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f *= y.f
+                elif y.kind==Complex: x = newComplex(x.f * y.z)
                 else: x.f *= (float)(y.i)
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x = newComplex(x.z * (float)(y.i))
+                    else: discard
+                elif y.kind==Floating: x = newComplex(x.z * y.f)
+                else: x.z *= y.z
             else:
-                x = newFloating((float)(x.i)*y.f)
+                if y.kind==Floating: x = newFloating((float)(x.i)*y.f)
+                else: x = newComplex((float)(x.i)*y.z)
 
 proc `/`*(x: Value, y: Value): Value =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -786,12 +837,20 @@ proc `/`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f/y.f)
+                elif y.kind==Complex: return newComplex(x.f/y.z)
                 else: return newFloating(x.f/(float)(y.i))
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
+                    else: return VNULL
+                elif y.kind==Floating: return newComplex(x.z/y.f)
+                else: return newComplex(x.z/y.z)
             else:
-                return newFloating((float)(x.i)/y.f)
+                if y.kind==Floating: return newFloating((float)(x.i)/y.f)
+                else: return newComplex((float)(x.i)/y.z)
 
 proc `/=`*(x: var Value, y: Value) =
-    if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
+    if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         x = VNULL
     else:
         if x.kind==Integer and y.kind==Integer:
@@ -816,9 +875,17 @@ proc `/=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
+                elif y.kind==Complex: x = newComplex(x.f / y.z)
                 else: x.f /= (float)(y.i)
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x = newComplex(x.z / (float)(y.i))
+                    else: discard
+                elif y.kind==Floating: x = newComplex(x.z / y.f)
+                else: x.z /= y.z
             else:
-                x = newFloating((float)(x.i)/y.f)
+                if y.kind==Floating: x = newFloating((float)(x.i)/y.f)
+                else: x = newComplex((float)(x.i)/y.z)
 
 proc `//`*(x: Value, y: Value): Value =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
@@ -1185,7 +1252,7 @@ proc `$`(v: Value): string {.inline.} =
                     return $(v.bi)
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Floating     : return $(v.f)
-        of Complex      : return $(v.x.re) & "+" & $(v.x.im) & "i"
+        of Complex      : return $(v.z.re) & "+" & $(v.z.im) & "i"
         of Type         : 
             if v.tpKind==BuiltinType:
                 return ":" & ($v.t).toLowerAscii()
@@ -1280,7 +1347,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
                 when not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
         of Floating     : dumpPrimitive($(v.f), v)
-        of Complex      : dumpPrimitive($(v.x.re) & "+" & $(v.x.im) & "i", v)
+        of Complex      : dumpPrimitive($(v.z.re) & "+" & $(v.z.im) & "i", v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1407,7 +1474,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 when not defined(NOGMP):
                     result &= $(v.bi)
         of Floating     : result &= $(v.f)
-        of Complex      : result &= fmt("to :complex [{v.x.re} {v.x.im}]")
+        of Complex      : result &= fmt("to :complex [{v.z.re} {v.z.im}]")
         of Version      : result &= fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
@@ -1512,8 +1579,8 @@ proc hash*(v: Value): Hash {.inline.}=
         of Floating     : result = cast[Hash](v.f)
         of Complex      : 
             result = 1
-            result = result !& cast[Hash](v.x.re)
-            result = result !& cast[Hash](v.x.im)
+            result = result !& cast[Hash](v.z.re)
+            result = result !& cast[Hash](v.z.im)
             result = !$ result
         of Version      : 
             result = 1
