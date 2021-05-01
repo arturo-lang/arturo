@@ -100,17 +100,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print asin 0            ; 0.0
             print asin 0.3          ; 0.3046926540153975
             print asin 1.0          ; 1.570796326794897
         """:
             ##########################################################
-            push(newFloating(arcsin(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arcsin(x.z)))
+            else: push(newFloating(arcsin(asFloat(x))))
 
     builtin "asinh",
         alias       = unaliased, 
