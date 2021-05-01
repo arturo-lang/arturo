@@ -164,6 +164,22 @@ proc defineSymbols*() =
             if x.kind==Complex: push(newComplex(arccoth(x.z)))
             else: push(newFloating(arccoth(asFloat(x))))
 
+    builtin "angle",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the phase angle of given number",
+        args        = {
+            "number" : {Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Numbers\angle): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            push(newFloating(phase(x.z)))
+
     builtin "asec",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -718,22 +734,6 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newBoolean(x % I2 == I1))
-
-    builtin "phase",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "calculate the phase angle of given number",
-        args        = {
-            "number" : {Complex}
-        },
-        attrs       = NoAttrs,
-        returns     = {Floating},
-        # TODO(Numbers\phase): add documentation example
-        #  labels: documentation, easy, library
-        example     = """
-        """:
-            ##########################################################
-            push(newFloating(phase(x.z)))
 
     constant "pi",
         alias       = unaliased,
