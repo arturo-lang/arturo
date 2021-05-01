@@ -206,17 +206,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print atanh 0           ; 0.0
             print atanh 0.3         ; 0.3095196042031118
             print atanh 1.0         ; inf
         """:
             ##########################################################
-            push(newFloating(arctanh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arctanh(x.z)))
+            else: push(newFloating(arctanh(asFloat(x))))
 
     builtin "average",
         alias       = unaliased, 
@@ -978,17 +979,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print tanh 0            ; 0.0
             print tanh 0.3          ; 0.2913126124515909
             print tanh 1.0          ; 0.7615941559557649
         """:
             ##########################################################
-            push(newFloating(tanh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(tanh(x.z)))
+            else: push(newFloating(tanh(asFloat(x))))
 
     builtin "zero?",
         alias       = unaliased, 
