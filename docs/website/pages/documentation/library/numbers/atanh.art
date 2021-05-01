@@ -23,6 +23,6 @@ arguments: #[
 related: [
         "Numbers/actanh"
          "Numbers/atan"
+         "Numbers/atan2"
          "Numbers/ctanh"
-         "Numbers/tanh"
     ]
