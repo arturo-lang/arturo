@@ -105,13 +105,30 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\actan): add documentation example
+        # TODO(Numbers\acsec): add documentation example
         #  labels: documentation, easy, library
         example     = """
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arccsc(x.z)))
             else: push(newFloating(arccsc(asFloat(x))))
+
+    builtin "acsech",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse hyperbolic cosecant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\acsech): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arccsch(x.z)))
+            else: push(newFloating(arccsch(asFloat(x))))
 
     builtin "actan",
         alias       = unaliased, 
