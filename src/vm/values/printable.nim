@@ -85,7 +85,7 @@ proc `$`*(v: Value): string {.inline.} =
                 when not defined(NOGMP): 
                     return $(v.bi)
         of Floating     : return $(v.f)
-        of Complex      : return $(v.x.re) & "+" & $(v.x.im) & "i"
+        of Complex      : return $(v.z.re) & "+" & $(v.z.im) & "i"
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Type         : 
             if v.tpKind==BuiltinType:
