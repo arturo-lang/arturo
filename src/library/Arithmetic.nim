@@ -196,7 +196,7 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "calculate the power of given values and return result",
         args        = {
-            "valueA": {Integer,Floating,Literal},
+            "valueA": {Integer,Floating,Complex,Literal},
             "valueB": {Integer,Floating}
         },
         attrs       = NoAttrs,

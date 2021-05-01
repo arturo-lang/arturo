@@ -973,9 +973,17 @@ proc `^`*(x: Value, y: Value): Value =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(pow(x.f,y.f))
+                elif y.kind==Complex: return VNULL
                 else: return newFloating(pow(x.f,(float)(y.i)))
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: return newComplex(pow(x.z,(float)(y.i)))
+                    else: return VNULL
+                elif y.kind==Floating: return newComplex(pow(x.z,y.f))
+                else: return newComplex(pow(x.z,y.z))
             else:
-                return newFloating(pow((float)(x.i),y.f))
+                if y.kind==Floating: return newFloating(pow((float)(x.i),y.f))
+                else: return VNULL
 
 proc `^=`*(x: var Value, y: Value) =
     if not (x.kind in [Integer, Floating]) or not (y.kind in [Integer, Floating]):
@@ -987,9 +995,17 @@ proc `^=`*(x: var Value, y: Value) =
         else:
             if x.kind==Floating:
                 if y.kind==Floating: x = newFloating(pow(x.f,y.f))
+                elif y.kind==Complex: discard
                 else: x = newFloating(pow(x.f,(float)(y.i)))
+            elif x.kind==Complex:
+                if y.kind==Integer:
+                    if y.iKind==NormalInteger: x = newComplex(pow(x.z,(float)(y.i)))
+                    else: discard
+                elif y.kind==Floating: x = newComplex(pow(x.z,y.f))
+                else: x = newComplex(pow(x.z,y.z))
             else:
-                x = newFloating(pow((float)(x.i),y.f))
+                if y.kind==Floating: x = newFloating(pow((float)(x.i),y.f))
+                else: discard
 
 proc `&&`*(x: Value, y: Value): Value =
     if not (x.kind==Integer) or not (y.kind==Integer):
