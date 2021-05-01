@@ -18,8 +18,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/max"
+        "Numbers/angle"
+         "Collections/max"
          "Collections/min"
          "Arithmetic/mul"
-         "Binary/shl"
     ]

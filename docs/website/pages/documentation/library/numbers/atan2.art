@@ -10,11 +10,11 @@ example: ""
 attributes: #[
     ]
 arguments: #[
-    x: [
+    y: [
             :integer
              :floating
         ]
-    y: [
+    x: [
             :integer
              :floating
         ]

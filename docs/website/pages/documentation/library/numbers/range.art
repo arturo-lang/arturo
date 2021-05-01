@@ -32,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/and"
+        "Numbers/angle"
+         "Binary/and"
          "Binary/nand"
          "Collections/take"
-         "Core/case"
     ]
