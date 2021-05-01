@@ -170,17 +170,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print asinh 0           ; 0.0
             print asinh 0.3         ; 0.2956730475634224
             print asinh 1.0         ; 0.881373587019543
         """:
             ##########################################################
-            push(newFloating(arcsinh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arcsinh(x.z)))
+            else: push(newFloating(arcsinh(asFloat(x))))
 
     builtin "atan",
         alias       = unaliased, 
@@ -886,17 +887,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic sine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print sinh 0            ; 0.0
             print sinh 0.3          ; 0.3045202934471426
             print sinh 1.0          ; 1.175201193643801
         """:
             ##########################################################
-            push(newFloating(sinh(asFloat(x))))
+            if x.kind==Complex: push(newComplex(sinh(x.z)))
+            else: push(newFloating(sinh(asFloat(x))))
 
     builtin "sqrt",
         alias       = unaliased, 
