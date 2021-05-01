@@ -136,17 +136,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the inverse tangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print atan 0            ; 0.0
             print atan 0.3          ; 0.2914567944778671
             print atan 1.0          ; 0.7853981633974483
         """:
             ##########################################################
-            push(newFloating(arctan(asFloat(x))))
+            if x.kind==Complex: push(newComplex(arctan(x.z)))
+            else: push(newFloating(arctan(asFloat(x))))
 
     builtin "atanh",
         alias       = unaliased, 
