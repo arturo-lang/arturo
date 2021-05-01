@@ -210,17 +210,18 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the cosine of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
             print cos 0             ; 1.0
             print cos 0.3           ; 0.955336489125606
             print cos 1.0           ; 0.5403023058681398
         """:
             ##########################################################
-            push(newFloating(cos(asFloat(x))))
+            if x.kind==Complex: push(newComplex(cos(x.z)))
+            else: push(newFloating(cos(asFloat(x))))
 
     builtin "cosh",
         alias       = unaliased, 
