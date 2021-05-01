@@ -311,6 +311,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newInteger((int)(ceil(asFloat(x)))))
 
+    builtin "conj",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the complex conjugate of given number",
+        args        = {
+            "number" : {Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Complex},
+        # TODO(Numbers\conj): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            push(newComplex(conjugate(x.z)))
+
     builtin "cos",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
