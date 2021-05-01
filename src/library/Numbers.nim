@@ -16,6 +16,7 @@
 # Libraries
 #=======================================
 
+import complex except Complex
 import math, random, sequtils, sugar
 
 when not defined(NOGMP):
@@ -39,10 +40,10 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get the absolute value for given integer",
         args        = {
-            "value" : {Integer,Floating}
+            "value" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Integer},
+        returns     = {Integer,Floating},
         example     = """
             print abs 6       ; 6
             print abs 6-7     ; 1
@@ -54,8 +55,10 @@ proc defineSymbols*() =
                 else:
                     when not defined(NOGMP):
                         push(newInteger(abs(x.bi)))
-            else:
+            elif x.kind==Floating:
                 push(newFloating(abs(x.f)))
+            else:
+                push(newFloating(abs(x.z)))
 
     builtin "acos",
         alias       = unaliased, 
