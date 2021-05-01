@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes, math, sequtils, strformat
+import complex, hashes, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
@@ -98,32 +98,33 @@ type
         Boolean         = 1
         Integer         = 2
         Floating        = 3
-        Version         = 4
-        Type            = 5
-        Char            = 6
-        String          = 7
-        Word            = 8
+        Complex         = 4
+        Version         = 5
+        Type            = 6
+        Char            = 7
+        String          = 8
+        Word            = 9
         # TODO(Values\value): Better documentation for use of literals
         #  Right now, using a literal as a function argument, for in-place modification, might produce unexpected results. So, it should be thoroughly explained.
         #  labels: documentation, vm, language
-        Literal         = 9
-        Label           = 10
-        Attribute       = 11
-        AttributeLabel  = 12
-        Path            = 13
-        PathLabel       = 14
-        Symbol          = 15
-        Date            = 16
-        Binary          = 17
-        Dictionary      = 18
-        Function        = 19
-        Inline          = 20
-        Block           = 21
-        Database        = 22
-        Bytecode        = 23
+        Literal         = 10
+        Label           = 11
+        Attribute       = 12
+        AttributeLabel  = 13
+        Path            = 14
+        PathLabel       = 15
+        Symbol          = 16
+        Date            = 17
+        Binary          = 18
+        Dictionary      = 19
+        Function        = 20
+        Inline          = 21
+        Block           = 22
+        Database        = 23
+        Bytecode        = 24
 
-        Nothing         = 24
-        Any             = 25
+        Nothing         = 25
+        Any             = 26
 
     ValueSpec* = set[ValueKind]
 
@@ -172,6 +173,7 @@ type
                         else:
                             discard
             of Floating:    f*  : float
+            of Complex:     x*  : Complex64
             of Version: 
                 major*   : int
                 minor*   : int
