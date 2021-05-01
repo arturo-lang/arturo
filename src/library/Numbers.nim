@@ -147,6 +147,23 @@ proc defineSymbols*() =
             if x.kind==Complex: push(newComplex(arcsec(x.z)))
             else: push(newFloating(arcsec(asFloat(x))))
 
+    builtin "asech",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the inverse hyperbolic secant of given angle",
+        args        = {
+            "angle" : {Integer,Floating,Complex}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating,Complex},
+        # TODO(Numbers\asech): add documentation example
+        #  labels: documentation, easy, library
+        example     = """
+        """:
+            ##########################################################
+            if x.kind==Complex: push(newComplex(arcsech(x.z)))
+            else: push(newFloating(arcsech(asFloat(x))))
+
     builtin "asin",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
