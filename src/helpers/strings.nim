@@ -61,9 +61,9 @@ proc centerUnicode*(s: string, width: int, padding = ' '.Rune): string =
     for i in (leftPadding+sLen) ..< width:
         result.add $padding
 
-proc levenshteinAlign*(a, b: string, filler: Rune): tuple[a, b: string] =
-    let a = a.toLower()
-    let b = b.toLower()
+proc levenshteinAlign*(astr, bstr: string, filler: Rune): tuple[a, b: string] =
+    let a = astr
+    let b = bstr
     var costs = newSeqWith(a.len + 1, newSeq[int](b.len + 1))
     for j in 0..b.len: costs[0][j] = j
     for i in 1..a.len:
