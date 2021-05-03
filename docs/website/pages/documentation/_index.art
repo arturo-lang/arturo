@@ -71,10 +71,11 @@ Here's what you can find here...
 
 <h3 class="title is-4 is-spaced mt-6">At a glance</h3>
 
-<div id="at-a-glance" class="columns">
+<div id="at-a-glance">
+<div class="columns">
 
 
-<div class="column">
+<div class="column is-4">
   <a href="getting-started"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="far fa-play-circle"></i>
@@ -85,7 +86,7 @@ Here's what you can find here...
   </div></a>
 </div>
 
-<div class="column">
+<div class="column is-4">
   <a href="in-a-nutshell"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="far fa-hand-point-up"></i>
@@ -96,7 +97,7 @@ Here's what you can find here...
   </div></a>
 </div>
 
-<div class="column">
+<div class="column is-4">
   <a href="language"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-laptop-code"></i>
@@ -106,8 +107,10 @@ Here's what you can find here...
   </div>
   </div></a>
 </div>
+</div>
+<div class="columns">
 
-<div class="column">
+<div class="column is-4">
   <a href="command-line"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-terminal"></i>
@@ -119,7 +122,7 @@ Here's what you can find here...
 </div>
 
 
-<div class="column">
+<div class="column is-4">
   <a href="library"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-book-open"></i>
@@ -130,7 +133,7 @@ Here's what you can find here...
   </div></a>
 </div>
 
-<div class="column">
+<div class="column is-4">
   <a href="examples"><div class="holder">
   <div class="card-image has-text-centered">
     <i class="fas fa-flask"></i>
@@ -140,6 +143,6 @@ Here's what you can find here...
   </div>
   </div></a>
 </div>
-
+</div>
 </div>
 }
