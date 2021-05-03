@@ -141,8 +141,6 @@ proc defineSymbols*() =
                 "raw"       : ({Boolean},"return raw response without processing")
             },
             returns     = {Dictionary},
-            # TODO(Net\request): add documentation example
-            #  labels: documentation, easy, library
             example     = """
                 print request "https://httpbin.org/get" #[some:"arg" another: 123]
                 ; [version:1.1 body:{
