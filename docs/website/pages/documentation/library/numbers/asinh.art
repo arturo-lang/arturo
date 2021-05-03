@@ -7,9 +7,12 @@ returns: [
     ]
 description: "calculate the inverse hyperbolic sine of given angle"
 example: {
-        print asinh 0           ; 0.0
-        print asinh 0.3         ; 0.2956730475634224
-        print asinh 1.0         ; 0.881373587019543
+        print asinh 0               ; 0.0
+        print asinh 0.3             ; 0.2956730475634224
+        print asinh 1.0             ; 0.881373587019543
+        
+        asinh to :complex @[pi 1]
+        ; => 1.904627686970658+0.2955850342116299i
     }
 attributes: #[
     ]

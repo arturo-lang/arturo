@@ -6,9 +6,12 @@ returns: [
     ]
 description: "get square root of given value"
 example: {
-        print sqrt 4            ; 2.0
-        print sqrt 16.0         ; 4.0
-        print sqrt 1.45         ; 1.20415945787923
+        print sqrt 4                ; 2.0
+        print sqrt 16.0             ; 4.0
+        print sqrt 1.45             ; 1.20415945787923
+        
+        sqrt to :complex @[pi 1]
+        ; => 1.794226987182141+0.2786715413222365i
     }
 attributes: #[
     integer: #[
