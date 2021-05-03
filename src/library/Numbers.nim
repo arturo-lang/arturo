@@ -45,8 +45,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Integer,Floating},
         example     = """
-            print abs 6       ; 6
-            print abs 6-7     ; 1
+            print abs 6                 ; 6
+            print abs 6-7               ; 1
+
+            abs to :complex @[pi 1] 
+            ; => 3.296908309475615
         """:
             ##########################################################
             if x.kind==Integer:
@@ -70,9 +73,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print acos 0            ; 1.570796326794897
-            print acos 0.3          ; 1.266103672779499
-            print acos 1.0          ; 0.0
+            print acos 0                ; 1.570796326794897
+            print acos 0.3              ; 1.266103672779499
+            print acos 1.0              ; 0.0
+
+            acos to :complex @[pi 1]
+            ; => 0.3222532939814587-1.86711439316026i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arccos(x.z)))
@@ -88,9 +94,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print acosh 1.0         ; 0.0
-            print acosh 2           ; 1.316957896924817
-            print acosh 5.0         ; 2.292431669561178
+            print acosh 1.0             ; 0.0
+            print acosh 2               ; 1.316957896924817
+            print acosh 5.0             ; 2.292431669561178
+
+            acosh to :complex @[pi 1]
+            ; => 1.86711439316026+0.3222532939814587i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arccosh(x.z)))
@@ -139,9 +148,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\actan): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            print actan 0                   ; 1.570796326794897
+            print actan 1                   ; 0.7853981633974483
+            print actan 10.0                ; 0.09966865249116204
+
+            actan to :complex @[pi 1]
+            ; => 0.2834557524705047-0.08505998507745414i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arccot(x.z)))
@@ -156,9 +169,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\actanh): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            print actanh 0                  ; nan
+            print actanh 1                  ; inf
+            print actanh 10.0               ; 0.1003353477310756
+
+            actanh to :complex @[pi 1]
+            ; => 0.2946214403408572-0.09996750087543603i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arccoth(x.z)))
@@ -189,9 +206,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\asec): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            asec 0              ; nan
+            asec 45             ; 1.548572275176629
+            asec 5              ; 1.369438406004566
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arcsec(x.z)))
@@ -206,9 +224,10 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\asech): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            asech 0             ; inf
+            asech 0.45          ; 1.436685652839686
+            asech 1             ; 0.0
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arcsech(x.z)))
