@@ -15,6 +15,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:boolean](#boolean)
        - [:integer](#integer)
        - [:floating](#floating)
+       - [:complex](#complex)
        - [:version](#version)
        - [:type](#type)
        - [:char](#char)
@@ -35,6 +36,8 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:attributeLabel](#attributeLabel)
 - [Precedence and evaluation](#precedence-and-evaluation)
    * [The right-to-left rule](#the-right-to-left-rule)
+- [In-place variable modification](#in-place-variable-modification)
+   * [Using literals](#using-literals)
 - [Syntactic sugar](#syntactic-sugar)
    * [Right-arrow operator: `->`](#right-arrow-operator)
    * [Fat right-arrow operator: `=>`](#fat-right-arrow-operator)
@@ -162,6 +165,18 @@ Floating values are basically floating-point numbers, that is: decimals. They be
 
 ```red
 pi: 3.14159
+```
+
+<h4 id="complex">:complex</h4>
+
+Even though there is no special syntax for defining a complex number, you can always create one using `to`. Arturo comes with full support for complex numbers and all the associated operations.
+
+```red
+a: to :complex [1 2]      ; a: 1.0+2.0i
+b: to :complex @[pi pi]   ; b: 3.141592653589793+3.141592653589793i
+
+print a + b 
+; 4.141592653589793+5.141592653589793i
 ```
 
 <h4 id="version">:version</h4>
@@ -556,6 +571,65 @@ or (giving precedence to the multiplication, artificially, using parentheses):
 ```red
 (2 * 3) + 4
 ``` 
+
+<h2 id="in-place-variable-modification">In-place variable modification</h2>
+
+In Arturo, every time you pass a parameter to a function, you can rest assured that the value of that parameter won't change (unless it's a string, block or dictionary and you - consciously - decided to use `set` on it, in which case it does alter its inner structure).
+
+So, basically, you when do this...
+
+```red
+a: [1 5 2 4 3]
+sort a
+```
+
+...all you do is to take an array, sort it, and push the sorted array onto the stack. Variable `a` simply does not change.
+
+So, what would you do if you wanted to get the array back, but sorted?
+
+The simple - and most obvious - way would be to re-assign the returned result from `sort`:
+
+```red
+a: [1 5 2 4 3]
+a: sort a
+```
+
+And now, yes, `a` does contain the sorted version of the initial array.
+
+But, what if you want to perform the mofication in-place, which is normally faster and without the need of intermediate variables? Literals come to the rescue!
+
+<h3 id="using-literals">Using literals</h3>
+
+As we've already said, "literals" (`'i 'am 'a 'literal`) are nothing but string representations of a word, that is... the word itself. For that reason, they may come in very handy when you want to modify a variable in-place.
+
+Let's re-visit the above example and what the syntax of `sort` is:
+
+```red
+sort collection :literal :dictionary :block
+```
+
+As we can see, `sort` takes one parameter (*collection*) which is either a `:dictionary` or `:block` OR a `:literal`.
+
+Why pass a literal? Simply because this turns in-place modification on! Let's have a look:
+
+```red
+a: [1 5 2 4 3]
+sort 'a         ; yep, now a *has* been sorted in-place!
+```
+
+And this is *very powerful*: in Arturo, most of the built-in functions in the library come with this feature included. Practically, whenever you see a function taking a literal first parameter, that means you can use it for in-place modifying a variable (yes, even `add` works like that!).
+
+> ⚠️ **Word of caution:**
+> Since in-place modifiers work internally, by modifying the pointed value and not the value itself, every time you use a variable-literal for this purpose, always make sure it has been initially assigned with a `new`:
+>
+> ```red
+> a: 1
+> inc 'a    ; this does increment variable a by one,
+>           ; but it will sooner or later create a complete mess!
+>
+> a: new 1  ; this is the right way to do it
+> inc 'a    ; and works beautifully ;-)   
+> ```
 
 <h2 id="syntactic-sugar">Syntactic sugar</h2>
 
