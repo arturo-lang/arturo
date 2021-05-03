@@ -15,6 +15,17 @@ boxes: {:
 
 <a href="#"><div class="tile box">
   <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="far fa-hand-point-up"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Language</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
     <i class="fas fa-laptop-code"></i>
   </div>
   <footer class="card-footer">
@@ -70,6 +81,17 @@ Here's what you can find here...
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">Getting Started</h4>
+  </div>
+  </div></a>
+</div>
+
+<div class="column">
+  <a href="in-a-nutshell"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="far fa-hand-point-up"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">In A Nutshell</h4>
   </div>
   </div></a>
 </div>
