@@ -7,9 +7,12 @@ returns: [
     ]
 description: "calculate the hyperbolic sine of given angle"
 example: {
-        print sinh 0            ; 0.0
-        print sinh 0.3          ; 0.3045202934471426
-        print sinh 1.0          ; 1.175201193643801
+        print sinh 0                ; 0.0
+        print sinh 0.3              ; 0.3045202934471426
+        print sinh 1.0              ; 1.175201193643801
+        
+        sinh to :complex [1 1]
+        ; => 0.6349639147847361+1.298457581415977i
     }
 attributes: #[
     ]
