@@ -955,7 +955,10 @@ proc `^`*(x: Value, y: Value): Value =
             if x.iKind==NormalInteger:
                 if y.iKind==NormalInteger:
                     try:
-                        return newInteger(x.i^y.i)
+                        if y.i >= 0:
+                            return newInteger(x.i^y.i)
+                        else:
+                            return newFloating(pow(asFloat(x),asFloat(y)))
                     except OverflowDefect:
                         when not defined(NOGMP):
                             return newInteger(pow(x.i,(culong)(y.i)))
