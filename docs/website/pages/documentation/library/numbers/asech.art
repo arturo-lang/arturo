@@ -6,7 +6,11 @@ returns: [
          :complex
     ]
 description: "calculate the inverse hyperbolic secant of given angle"
-example: ""
+example: {
+        asech 0             ; inf
+        asech 0.45          ; 1.436685652839686
+        asech 1             ; 0.0
+    }
 attributes: #[
     ]
 arguments: #[
