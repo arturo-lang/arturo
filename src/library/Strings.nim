@@ -865,9 +865,23 @@ proc defineSymbols*() =
             "at"    : ({Integer},"use given max line width (default: 80)")
         },
         returns     = {Boolean},
-        # TODO(Strings\wordwrap) add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+            ; Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non
+            ; justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur
+            ; egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet
+            ; suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et
+            ; sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus
+            ; non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam
+            ; ac nisi justo.
+
+            print wordwrap.at: 10 "one two three four five six seven eight nine ten"
+            ; one two
+            ; three four
+            ; five six
+            ; seven 
+            ; eight nine
+            ; ten 
         """:
             ##########################################################
             var cutoff = 80
