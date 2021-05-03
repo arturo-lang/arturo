@@ -285,6 +285,8 @@ func: 'print
 info func
 ```
 
+However, literals may be used for much more - e.g. modifying a passed parameter in-place, without having to re-assign the result of an operation to a new variable. To learn more, have a look at **[In-place variable modification](#in-place-variable-modification)**.
+
 <h4 id="path">:path</h4>
 
 Paths in Arturo are a way of defining some hierarchy between values, something along the lines of *parent* -> *child* -> *grandchild*. For this, in Arturo, we'd use a series of *values* or *words* delimited with a `\` (backslash). You can think of them as *indexes* in other programming languages.
