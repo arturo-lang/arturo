@@ -353,9 +353,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Complex},
-        # TODO(Numbers\conj): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            b: to :complex [1 2]    ; b: 1.0+2.0i
+            print conj b            ; 1.0-2.0i
         """:
             ##########################################################
             push(newComplex(conjugate(x.z)))
