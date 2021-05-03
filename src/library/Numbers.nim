@@ -114,9 +114,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\acsec): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            print acsec 0               ; nan
+            print acsec 1.0             ; 1.570796326794897
+            print acsec 10              ; 0.1001674211615598
+
+            acsec to :complex @[pi 1]
+            ; => 0.2918255976444114-0.0959139808172324i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arccsc(x.z)))
@@ -131,9 +135,13 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\acsech): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            print acsech 0              ; inf
+            print acsech 1.0            ; 0.0
+            print acsech 10             ; 0.09983407889920758
+
+            acsech to :complex @[pi 1]
+            ; => 0.2862356627279947-0.08847073864038091i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arccsch(x.z)))
@@ -207,9 +215,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            asec 0              ; nan
-            asec 45             ; 1.548572275176629
-            asec 5              ; 1.369438406004566
+            print asec 0                ; nan
+            print asec 45               ; 1.548572275176629
+            print asec 5                ; 1.369438406004566
+
+            asec to :complex @[pi 1]
+            ; => 1.278970729150485+0.09591398081723231i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arcsec(x.z)))
@@ -225,9 +236,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            asech 0             ; inf
-            asech 0.45          ; 1.436685652839686
-            asech 1             ; 0.0
+            print asech 0               ; inf
+            print asech 0.45            ; 1.436685652839686
+            print asech 1               ; 0.0
+
+            asech to :complex @[pi 1]
+            ; => 0.09591398081723221-1.278970729150485i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arcsech(x.z)))
@@ -243,9 +257,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print asin 0            ; 0.0
-            print asin 0.3          ; 0.3046926540153975
-            print asin 1.0          ; 1.570796326794897
+            print asin 0                ; 0.0
+            print asin 0.3              ; 0.3046926540153975
+            print asin 1.0              ; 1.570796326794897
+
+            asin to :complex @[pi 1]
+            ; => 1.248543032813438+1.867114393160262i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arcsin(x.z)))
@@ -261,9 +278,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print asinh 0           ; 0.0
-            print asinh 0.3         ; 0.2956730475634224
-            print asinh 1.0         ; 0.881373587019543
+            print asinh 0               ; 0.0
+            print asinh 0.3             ; 0.2956730475634224
+            print asinh 1.0             ; 0.881373587019543
+
+            asinh to :complex @[pi 1]
+            ; => 1.904627686970658+0.2955850342116299i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arcsinh(x.z)))
@@ -279,9 +299,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print atan 0            ; 0.0
-            print atan 0.3          ; 0.2914567944778671
-            print atan 1.0          ; 0.7853981633974483
+            print atan 0                ; 0.0
+            print atan 0.3              ; 0.2914567944778671
+            print atan 1.0              ; 0.7853981633974483
+
+            atan to :complex @[pi 1]
+            ; => 1.287340574324392+0.08505998507745416i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arctan(x.z)))
@@ -314,9 +337,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print atanh 0           ; 0.0
-            print atanh 0.3         ; 0.3095196042031118
-            print atanh 1.0         ; inf
+            print atanh 0               ; 0.0
+            print atanh 0.3             ; 0.3095196042031118
+            print atanh 1.0             ; inf
+
+            atanh to :complex @[pi 1]
+            ; => 0.2946214403408571+1.470828825919461i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(arctanh(x.z)))
@@ -373,8 +399,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Complex},
         example     = """
-            b: to :complex [1 2]    ; b: 1.0+2.0i
-            print conj b            ; 1.0-2.0i
+            b: to :complex [1 2]        ; b: 1.0+2.0i
+            print conj b                ; 1.0-2.0i
         """:
             ##########################################################
             push(newComplex(conjugate(x.z)))
@@ -389,9 +415,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print cos 0             ; 1.0
-            print cos 0.3           ; 0.955336489125606
-            print cos 1.0           ; 0.5403023058681398
+            print cos 0                 ; 1.0
+            print cos 0.3               ; 0.955336489125606
+            print cos 1.0               ; 0.5403023058681398
+
+            cos to :complex [1 1]
+            ; => 0.8337300251311491-0.9888977057628651i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(cos(x.z)))
@@ -407,9 +436,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print cosh 0            ; 1.0
-            print cosh 0.3          ; 1.04533851412886
-            print cosh 1.0          ; 1.543080634815244
+            print cosh 0                ; 1.0
+            print cosh 0.3              ; 1.04533851412886
+            print cosh 1.0              ; 1.543080634815244
+
+            cosh to :complex [2 1]
+            ; => 2.032723007019666+3.0518977991518i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(cosh(x.z)))
@@ -425,9 +457,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print csec 0            ; inf
-            print csec 0.3          ; 3.383863361824123
-            print csec 1.0          ; 1.188395105778121
+            print csec 0                ; inf
+            print csec 0.3              ; 3.383863361824123
+            print csec 1.0              ; 1.188395105778121
+
+            csec to :complex [1 1]  
+            ; => 0.6215180171704283-0.3039310016284264i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(csc(x.z)))
@@ -438,17 +473,21 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cosecant of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
-            print csech 0           ; inf
-            print csech 0.3         ; 3.283853396698424
-            print csech 1.0         ; 0.8509181282393216
+            print csech 0               ; inf
+            print csech 0.3             ; 3.283853396698424
+            print csech 1.0             ; 0.8509181282393216
+
+            csech to :complex [1 1]
+            ; => 0.3039310016284264-0.6215180171704283i
         """:
             ##########################################################
-            push(newFloating(csch(asFloat(x))))
+            if x.kind==Complex: push(newComplex(csch(x.z)))
+            else: push(newFloating(csch(asFloat(x))))
 
     builtin "ctan",
         alias       = unaliased, 
@@ -460,9 +499,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print ctan 0            ; inf
-            print ctan 0.3          ; 3.232728143765828
-            print ctan 1.0          ; 0.6420926159343308
+            print ctan 0                ; inf
+            print ctan 0.3              ; 3.232728143765828
+            print ctan 1.0              ; 0.6420926159343308
+
+            ctan to :complex [1 1]
+            ; => 0.2176215618544027-0.8680141428959249i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(cot(x.z)))
@@ -473,17 +515,21 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "calculate the hyperbolic cotangent of given angle",
         args        = {
-            "angle" : {Integer,Floating}
+            "angle" : {Integer,Floating,Complex}
         },
         attrs       = NoAttrs,
-        returns     = {Floating},
+        returns     = {Floating,Complex},
         example     = """
-            print ctanh 0           ; inf
-            print ctanh 0.3         ; 3.432738430321741
-            print ctanh 1.0         ; 1.313035285499331
+            print ctanh 0               ; inf
+            print ctanh 0.3             ; 3.432738430321741
+            print ctanh 1.0             ; 1.313035285499331
+
+            ctanh to :complex [1 1]
+            ; => 0.8680141428959249-0.2176215618544027i
         """:
             ##########################################################
-            push(newFloating(coth(asFloat(x))))
+            if x.kind==Complex: push(newComplex(coth(x.z)))
+            else: push(newFloating(coth(asFloat(x))))
 
     constant "epsilon",
         alias       = unaliased,
@@ -518,9 +564,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print exp 1.0       ; 2.718281828459045
-            print exp 0         ; 1.0
-            print exp neg 1.0   ; 0.3678794411714423
+            print exp 1.0           ; 2.718281828459045
+            print exp 0             ; 1.0
+            print exp neg 1.0       ; 0.3678794411714423
+
+            exp to :complex @[pi 1]
+            ; => 12.50296958887651+19.47222141884161i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(exp(x.z)))
@@ -661,9 +710,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print ln 1.0            ; 0.0
-            print ln 0              ; -inf
-            print ln neg 7.0        ; nan
+            print ln 1.0                ; 0.0
+            print ln 0                  ; -inf
+            print ln neg 7.0            ; nan
+
+            ln to :complex @[pi 1]
+            ; => 1.19298515341341+0.308169071115985i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(ln(x.z)))
@@ -960,9 +1012,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print sec 0             ; 1.0
-            print sec 0.3           ; 1.046751601538086
-            print sec 1.0           ; 1.850815717680925
+            print sec 0                 ; 1.0
+            print sec 0.3               ; 1.046751601538086
+            print sec 1.0               ; 1.850815717680925
+
+            sec to :complex [1 1]
+            ; => 0.4983370305551868+0.591083841721045i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(sec(x.z)))
@@ -978,9 +1033,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print sech 0            ; 1.0
-            print sech 0.3          ; 0.9566279119002483
-            print sech 1.0          ; 0.6480542736638855
+            print sech 0                ; 1.0
+            print sech 0.3              ; 0.9566279119002483
+            print sech 1.0              ; 0.6480542736638855
+
+            sech to :complex [1 1]
+            ; => 0.4983370305551868-0.5910838417210451i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(sech(x.z)))
@@ -996,9 +1054,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print sin 0             ; 0.0
-            print sin 0.3           ; 0.2955202066613395
-            print sin 1.0           ; 0.8414709848078965
+            print sin 0                 ; 0.0
+            print sin 0.3               ; 0.2955202066613395
+            print sin 1.0               ; 0.8414709848078965
+
+            sin to :complex [1 1]
+            ; => 0.4983370305551868-0.5910838417210451i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(sin(x.z)))
@@ -1014,9 +1075,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print sinh 0            ; 0.0
-            print sinh 0.3          ; 0.3045202934471426
-            print sinh 1.0          ; 1.175201193643801
+            print sinh 0                ; 0.0
+            print sinh 0.3              ; 0.3045202934471426
+            print sinh 1.0              ; 1.175201193643801
+
+            sinh to :complex [1 1]
+            ; => 0.6349639147847361+1.298457581415977i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(sinh(x.z)))
@@ -1038,9 +1102,12 @@ proc defineSymbols*() =
             NoAttrs,
         returns     = {Floating},
         example     = """
-            print sqrt 4            ; 2.0
-            print sqrt 16.0         ; 4.0
-            print sqrt 1.45         ; 1.20415945787923
+            print sqrt 4                ; 2.0
+            print sqrt 16.0             ; 4.0
+            print sqrt 1.45             ; 1.20415945787923
+
+            sqrt to :complex @[pi 1]
+            ; => 1.794226987182141+0.2786715413222365i
         """:
             ##########################################################
             if (popAttr("integer") != VNULL):
@@ -1086,9 +1153,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
         example     = """
-            print tan 0             ; 0.0
-            print tan 0.3           ; 0.3093362496096232
-            print tan 1.0           ; 1.557407724654902
+            print tan 0                 ; 0.0
+            print tan 0.3               ; 0.3093362496096232
+            print tan 1.0               ; 1.557407724654902
+
+            tan to :complex [1 1]
+            ; => 0.2717525853195119+1.083923327338695i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(tan(x.z)))
@@ -1107,6 +1177,9 @@ proc defineSymbols*() =
             print tanh 0            ; 0.0
             print tanh 0.3          ; 0.2913126124515909
             print tanh 1.0          ; 0.7615941559557649
+
+            tanh to :complex [1 1]
+            ; => 1.083923327338695+0.2717525853195117i
         """:
             ##########################################################
             if x.kind==Complex: push(newComplex(tanh(x.z)))
