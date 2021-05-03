@@ -167,16 +167,20 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "returns true if given value is false; otherwise, it returns false",
         args        = {
-            "value" : {Boolean}
+            "value" : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Logic\false?): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            print false? 1 = 2          ; true
+            print false? 1 <> 2         ; false
+            print false? odd? 2         ; true
+
+            print false? [1 2 3]        ; false
         """:
             ##########################################################
-            push(newBoolean(not x.b))
+            if x.kind != Boolean: push(newBoolean(false))
+            else: push(newBoolean(not x.b))
 
     builtin "nand?",
         alias       = unaliased, 
@@ -359,16 +363,20 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "returns true if given value is true; otherwise, it returns false",
         args        = {
-            "value" : {Boolean}
+            "value" : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
-        # TODO(Logic\true?): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            print true? 1 = 2           ; false
+            print true? 1 <> 2          ; true
+            print true? even? 2         ; true
+
+            print true? [1 2 3]         ; false
         """:
             ##########################################################
-            push(x)
+            if x.kind != Boolean: push(newBoolean(false))
+            else: push(x)
 
     builtin "xnor?",
         alias       = unaliased, 
