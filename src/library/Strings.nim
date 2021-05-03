@@ -324,6 +324,10 @@ proc defineSymbols*() =
         example     = """
             print levenshtein "for" "fur"         ; 1
             print levenshtein "one" "one"         ; 0
+
+            print join.with:"\n" levenshtein .align "ACTGCACTGAC" "GCATGACTAT"
+            ; AC-TGCACTGAC
+            ; GCATG-ACT-AT
         """:
             if ( popAttr("align") != VNULL):
                 var filler:Rune = "-".runeAt(0)
