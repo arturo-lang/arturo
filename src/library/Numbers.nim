@@ -173,9 +173,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Numbers\angle): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            a: to complex [1 1]     ; a: 1.0+1.0i
+            print angle a           ; 0.7853981633974483
         """:
             ##########################################################
             push(newFloating(phase(x.z)))
