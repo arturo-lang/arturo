@@ -101,9 +101,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
-        # TODO(Sets\powerset) add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            powerset [1 2 3]
+            ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
             ##########################################################
             if x.kind==Literal:

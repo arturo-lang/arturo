@@ -7,9 +7,12 @@ returns: [
     ]
 description: "calculate the inverse cosine of given angle"
 example: {
-        print acos 0            ; 1.570796326794897
-        print acos 0.3          ; 1.266103672779499
-        print acos 1.0          ; 0.0
+        print acos 0                ; 1.570796326794897
+        print acos 0.3              ; 1.266103672779499
+        print acos 1.0              ; 0.0
+        
+        acos to :complex @[pi 1]
+        ; => 0.3222532939814587-1.86711439316026i
     }
 attributes: #[
     ]

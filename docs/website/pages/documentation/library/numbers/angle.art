@@ -5,7 +5,10 @@ returns: [
         :floating
     ]
 description: "calculate the phase angle of given number"
-example: ""
+example: {
+        a: to complex [1 1]     ; a: 1.0+1.0i
+        print angle a           ; 0.7853981633974483
+    }
 attributes: #[
     ]
 arguments: #[

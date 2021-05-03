@@ -7,9 +7,12 @@ returns: [
     ]
 description: "calculate the tangent of given angle"
 example: {
-        print tan 0             ; 0.0
-        print tan 0.3           ; 0.3093362496096232
-        print tan 1.0           ; 1.557407724654902
+        print tan 0                 ; 0.0
+        print tan 0.3               ; 0.3093362496096232
+        print tan 1.0               ; 1.557407724654902
+        
+        tan to :complex [1 1]
+        ; => 0.2717525853195119+1.083923327338695i
     }
 attributes: #[
     ]
