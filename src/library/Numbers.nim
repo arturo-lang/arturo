@@ -278,9 +278,9 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating,Complex},
-        # TODO(Numbers\atan2): add documentation example
-        #  labels: documentation, easy, library
         example     = """
+            atan2 1 1           ; 0.7853981633974483
+            atan2 1 1.5         ; 0.9827937232473291
         """:
             ##########################################################
             push(newFloating(arctan2(asFloat(y), asFloat(x))))
