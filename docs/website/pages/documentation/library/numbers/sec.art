@@ -7,9 +7,12 @@ returns: [
     ]
 description: "calculate the secant of given angle"
 example: {
-        print sec 0             ; 1.0
-        print sec 0.3           ; 1.046751601538086
-        print sec 1.0           ; 1.850815717680925
+        print sec 0                 ; 1.0
+        print sec 0.3               ; 1.046751601538086
+        print sec 1.0               ; 1.850815717680925
+        
+        sec to :complex [1 1]
+        ; => 0.4983370305551868+0.591083841721045i
     }
 attributes: #[
     ]
