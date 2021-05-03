@@ -6,7 +6,11 @@ returns: [
          :complex
     ]
 description: "calculate the inverse secant of given angle"
-example: ""
+example: {
+        asec 0              ; nan
+        asec 45             ; 1.548572275176629
+        asec 5              ; 1.369438406004566
+    }
 attributes: #[
     ]
 arguments: #[
