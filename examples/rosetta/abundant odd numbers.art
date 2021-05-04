@@ -1,0 +1,29 @@
+abundant?: function [n]-> (2*n) < sum factors n
+
+print "the first 25 abundant odd numbers:"
+[i, found]: @[new 1, new 0]
+while [found<25][
+    if abundant? i [
+        inc 'found
+        print [i "=> sum:" sum factors i]
+    ]
+    'i + 2
+]
+
+[i, found]: @[new 1, new 0]
+while [found<1000][
+    if abundant? i [
+        inc 'found
+    ]
+    'i + 2
+]
+print ["the 1000th abundant odd number:" i-2 "=> sum:" sum factors i-2]
+
+i: new 1 + 10^9
+while ø [
+    if abundant? i [
+        print ["the first abundant odd number greater than one billion (10^9):" i "=> sum:" sum factors i]
+        break
+    ]
+    'i + 2
+]
