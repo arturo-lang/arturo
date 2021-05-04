@@ -123,18 +123,34 @@ when not defined(NOGMP):
         else:
             return d
 
+# proc factors*(n: int): seq[int] =
+#     var res: seq[int] = @[]
+
+#     var i = 1
+#     let s = (int)sqrt((float) n)
+#     while i <= s: #n-1:
+#         if n mod i == 0:
+#             res.add(i)
+#             res.add(n div i)
+#         i += 1
+
+#     # res.add(n)
+
+#     result = res
+
 proc factors*(n: int): seq[int] =
-    var res: seq[int] = @[]
+    result = @[]
 
     var i = 1
-    while i <= n-1:
+    let s = (int)sqrt((float)n)
+    while i <= s:
         if n mod i == 0:
-            res.add(i)
+            let d = n div i
+            if i != d: result.add(d)
+            result.add(i)
         i += 1
 
-    res.add(n)
-
-    result = res
+    result.sort()
 
 proc primeFactorization*(n: int): seq[int] =
     var x = n
@@ -209,17 +225,31 @@ when not defined(NOGMP):
         sort(result)
 
     proc factors*(n: Int): seq[Int] =
-        var res: seq[Int] = @[]
+        result = @[]
 
         var i = newInt(1)
-        while i < n-1:
+        let s = sqrt(n)
+        while i <= s:
             if n mod i == 0:
-                res.add(i)
+                let d = n div i
+                if i != d: result.add(d)
+                result.add(i)
+                
             i += 1
 
-        res.add(n)
+        result.sort()
+        # var res: seq[Int] = @[]
 
-        result = res
+        # var i = newInt(1)
+        # let s = (n div 2)+1
+        # while i <= n-1:
+        #     if n mod i == 0:
+        #         res.add(i)
+        #     i += 1
+
+        # res.add(n)
+
+        # result = res
 
     proc isqrt*[T: SomeSignedInt | Int](x: T): T =
         when T is Int:
