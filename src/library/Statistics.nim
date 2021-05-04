@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import sequtils, sugar
+import sequtils, stats, sugar
 
 import vm/lib
 
@@ -51,6 +51,27 @@ proc defineSymbols*() =
             res //= newFloating(x.a.len)
 
             push(res)
+
+    builtin "deviation",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get the standard deviation of given collection of numbers",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = {
+            "sample"    : ({Boolean},"calculate the sample standard deviation")
+        },
+        returns     = {Floating},
+        # TODO(Statistics\deviation) add documentation example
+        #  labels: documentation, library, easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("sample") != VNULL):
+                push newFloating(standardDeviationS(x.a.map((z)=>asFloat(z))))
+            else:
+                push newFloating(standardDeviation(x.a.map((z)=>asFloat(z))))
 
     builtin "median",
         alias       = unaliased, 
