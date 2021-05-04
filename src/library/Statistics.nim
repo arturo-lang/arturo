@@ -55,7 +55,7 @@ proc defineSymbols*() =
     builtin "deviation",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get the population standard deviation of given collection of numbers",
+        description = "get population standard deviation of given collection of numbers",
         args        = {
             "collection"    : {Block}
         },
@@ -76,7 +76,7 @@ proc defineSymbols*() =
     builtin "kurtosis",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get the population kurtosis of given collection of numbers",
+        description = "get population kurtosis of given collection of numbers",
         args        = {
             "collection"    : {Block}
         },
@@ -121,6 +121,27 @@ proc defineSymbols*() =
                     push(first) 
                 else:
                     push((first + second)//I2)
+
+    builtin "skewness",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get population skewness of given collection of numbers",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = {
+            "sample"    : ({Boolean},"calculate the sample skewness")
+        },
+        returns     = {Floating},
+        # TODO(Statistics\deviation) add documentation example
+        #  labels: documentation, library, easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("sample") != VNULL):
+                push newFloating(skewnessS(x.a.map((z)=>asFloat(z))))
+            else:
+                push newFloating(skewness(x.a.map((z)=>asFloat(z))))
 
 #=======================================
 # Add Library
