@@ -1,0 +1,87 @@
+######################################################
+# Arturo
+# Programming Language + Bytecode VM compiler
+# (c) 2019-2021 Yanis Zafirópulos
+#
+# @file: library/Statistics.nim
+######################################################
+
+#=======================================
+# Pragmas
+#=======================================
+
+{.used.}
+
+#=======================================
+# Libraries
+#=======================================
+
+import sequtils, sugar
+
+import vm/lib
+
+#=======================================
+# Methods
+#=======================================
+
+proc defineSymbols*() =
+
+    when defined(VERBOSE):
+        echo "- Importing: Numbers"
+
+    builtin "average",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get average from given collection of numbers",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        example     = """
+            print average [2 4 5 6 7 2 3]
+            ; 4.142857142857143
+        """:
+            ##########################################################
+            var res = F0.copyValue
+
+            for num in x.a:
+                res += num
+
+            res //= newFloating(x.a.len)
+
+            push(res)
+
+    builtin "median",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get median from given collection of numbers",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Integer,Floating,Null},
+        example     = """
+            print median [2 4 5 6 7 2 3]
+            ; 6
+            
+            print median [1 5 2 3 4 7 9 8]
+            ; 3.5
+        """:
+            ##########################################################
+            if x.a.len==0: 
+                push(VNULL)
+            else:
+                let first = x.a[(x.a.len-1) div 2]
+                let second = x.a[((x.a.len-1) div 2)+1]
+
+                if x.a.len mod 2 == 1:
+                    push(first) 
+                else:
+                    push((first + second)//I2)
+
+#=======================================
+# Add Library
+#=======================================
+
+Libraries.add(defineSymbols)
