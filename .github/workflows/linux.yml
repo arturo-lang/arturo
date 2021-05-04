@@ -47,7 +47,13 @@ jobs:
           echo "$HOME/.nimble/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        if: matrix.version == 'full' or matrix.version == 'safe'
+        if: matrix.version == 'full'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libwebkit2gtk-4.0-dev
+
+      - name: Install dependencies
+        if: matrix.version == 'safe'
         run: |
           sudo apt-get update
           sudo apt-get install libwebkit2gtk-4.0-dev
