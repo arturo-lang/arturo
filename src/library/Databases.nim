@@ -56,11 +56,11 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                db: open "my.db"    ; opens an SQLite database named 'my.db'
-                
-                print query db "SELECT * FROM users"
+            db: open "my.db"    ; opens an SQLite database named 'my.db'
+            
+            print query db "SELECT * FROM users"
 
-                close db            ; and close it
+            close db            ; and close it
             """:
                 ##########################################################
                 if x.dbKind == SqliteDatabase:
@@ -82,17 +82,17 @@ proc defineSymbols*() =
             },
             returns     = {Integer,Block,Null},
             example     = """
-                db: open "my.db"    ; opens an SQLite database named 'my.db'
-                
-                ; perform a simple query
-                print query db "SELECT * FROM users"
+            db: open "my.db"    ; opens an SQLite database named 'my.db'
+            
+            ; perform a simple query
+            print query db "SELECT * FROM users"
 
-                ; perform an INSERT query and get back the record's ID
-                username: "johndoe"
-                lastInsertId: query.id db ~{!sql INSERT INTO users (name) VALUES ('|username|')}
+            ; perform an INSERT query and get back the record's ID
+            username: "johndoe"
+            lastInsertId: query.id db ~{!sql INSERT INTO users (name) VALUES ('|username|')}
 
-                ; perform a safe query with given parameters
-                print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
+            ; perform a safe query with given parameters
+            print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
             """:
                 ##########################################################
                 var with: seq[string] = @[]
@@ -126,7 +126,7 @@ proc defineSymbols*() =
             },
             returns     = {Database},
             example     = """
-                db: open "my.db"    ; opens an SQLite database named 'my.db'
+            db: open "my.db"    ; opens an SQLite database named 'my.db'
             """:
                 ##########################################################
                 var dbKind = SqliteDatabase
