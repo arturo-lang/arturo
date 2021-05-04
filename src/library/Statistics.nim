@@ -84,7 +84,7 @@ proc defineSymbols*() =
             "sample"    : ({Boolean},"calculate the sample kurtosis")
         },
         returns     = {Floating},
-        # TODO(Statistics\deviation) add documentation example
+        # TODO(Statistics\kurtosis) add documentation example
         #  labels: documentation, library, easy
         example     = """
         """:
@@ -133,7 +133,7 @@ proc defineSymbols*() =
             "sample"    : ({Boolean},"calculate the sample skewness")
         },
         returns     = {Floating},
-        # TODO(Statistics\deviation) add documentation example
+        # TODO(Statistics\skewness) add documentation example
         #  labels: documentation, library, easy
         example     = """
         """:
@@ -142,6 +142,27 @@ proc defineSymbols*() =
                 push newFloating(skewnessS(x.a.map((z)=>asFloat(z))))
             else:
                 push newFloating(skewness(x.a.map((z)=>asFloat(z))))
+    
+    builtin "variance",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get population variance of given collection of numbers",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = {
+            "sample"    : ({Boolean},"calculate the sample variance")
+        },
+        returns     = {Floating},
+        # TODO(Statistics\variance) add documentation example
+        #  labels: documentation, library, easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("sample") != VNULL):
+                push newFloating(varianceS(x.a.map((z)=>asFloat(z))))
+            else:
+                push newFloating(variance(x.a.map((z)=>asFloat(z))))
 
 #=======================================
 # Add Library
