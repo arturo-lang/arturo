@@ -1,6 +1,6 @@
 name: "median"
 type: :function
-module: "Numbers"
+module: "Statistics"
 returns: [
         :null
          :integer
@@ -22,7 +22,7 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/average"
+        "Statistics/average"
          "Collections/min"
          "Arithmetic/div"
          "Arithmetic/fdiv"
