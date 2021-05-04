@@ -1,6 +1,6 @@
 name: "average"
 type: :function
-module: "Numbers"
+module: "Statistics"
 returns: [
         :floating
     ]
@@ -17,7 +17,7 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/median"
+        "Statistics/median"
          "Collections/reverse"
          "Converters/array"
          "Files/rename"
