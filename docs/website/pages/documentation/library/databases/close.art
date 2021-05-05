@@ -7,10 +7,10 @@ returns: [
 description: "close given database"
 example: {
         db: open "my.db"    ; opens an SQLite database named 'my.db'
-            
-            print query db "SELECT * FROM users"
         
-            close db            ; and close it
+        print query db "SELECT * FROM users"
+        
+        close db            ; and close it
     }
 attributes: #[
     ]
