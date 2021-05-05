@@ -10,6 +10,7 @@
 # Libraries
 #=======================================
 
+import colors except Color
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
@@ -105,6 +106,8 @@ proc `$`*(v: Value): string {.inline.} =
             result = v.p.map((x) => $(x)).join("\\")
         of Symbol       :
             return $(v.m)
+        of Color        :
+            return $(v.l)
 
         of Date     : return $(v.eobj)
         of Binary   : discard

@@ -43,6 +43,7 @@ proc generateJsonNode*(n: Value): JsonNode =
            for v in n.p:
                 result.add(generateJsonNode(v))
         of Symbol       : result = newJString($(n.m))
+        of Color        : discard
         of Date         : discard
         of Binary       : discard
         of Inline,
@@ -102,6 +103,7 @@ when defined(WEB):
                     ret.add(generateJsObject(v))
                 result = toJs(ret)
             of Symbol       : result = toJs($(n.m))
+            of Color        : discard
             of Date         : discard
             of Binary       : discard
             of Inline,

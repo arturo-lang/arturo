@@ -96,7 +96,7 @@
  	"close"
  	"databases/close"
  	"color"
- 	"strings/color"
+ 	"io/color"
  	"combine"
  	"collections/combine"
  	"conj"

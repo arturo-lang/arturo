@@ -20,6 +20,8 @@ import helpers/benchmark
 when not defined(WEB):
     import helpers/helper
 
+import helpers/colors
+
 import vm/lib
 import vm/[env, exec]
 
@@ -387,7 +389,7 @@ proc defineSymbols*() =
             ##########################################################
             when defined(WEB):
                 resetStdout()
-            let mutedOutput = (popAttr("muted")!=VNULL)
+            let mutedOutput = (popAttr("muted")!=VNULL) or NoColors
             x.dump(0, false, muted=mutedOutput)
 
     builtin "integer?",
