@@ -466,7 +466,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                                           p.buf[pos+4] & p.buf[pos+5] & p.buf[pos+6]
 
                     AddToken newColor(colorCode)
-                    p.bufpos = pos+6
+                    p.bufpos = pos+7
             else:
                 p.symbol = sharp
         of '$'  : p.symbol = dollar
