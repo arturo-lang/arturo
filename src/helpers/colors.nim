@@ -50,6 +50,10 @@ template underline*(color: string=""):string =
     if NoColors: ""
     else: "\e[4" & color & "m"
 
-template rgb*(color: string=""):string =
+template rgb*(r: string=""):string =
     if NoColors: ""
     else: ";38;5;" & color
+
+template rgb*(r: tuple[r, g, b: range[0 .. 255]]):string =
+    if NoColors: ""
+    else: ";38;2;" & $(r[0]) & ";" & $(r[1]) & ";" & $(r[2])

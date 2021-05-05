@@ -19,14 +19,16 @@
 when not defined(WEB):
     import rdstdin, terminal
 
-import algorithm
-import tables
+import colors except Color
+import algorithm, tables
 
 when not defined(windows) and not defined(WEB):
     import linenoise
 
 when not defined(WEB):
     import helpers/repl
+
+import helpers/colors as colorsHelper
 
 import vm/lib
 import vm/[eval, exec]
@@ -65,6 +67,62 @@ proc defineSymbols*() =
                 clearScreen()
             else:
                 discard
+
+    builtin "color",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get colored version of given string",
+        args        = {
+            "color" : {Color},
+            "string": {String}
+        },
+        attrs       = {
+            "rgb"       : ({Integer},"use specific RGB color"),
+            "bold"      : ({Boolean},"bold font"),
+            "underline" : ({Boolean},"show underlined")
+        },
+        returns     = {String},
+        example     = """
+            print color.green "Hello!"                ; Hello! (in green)
+            print color.red.bold "Some text"          ; Some text (in red/bold)
+        """:
+            ##########################################################
+            var color = ""
+
+            case x.l:
+                of colBlack:
+                    color = blackColor
+                of colRed:
+                    color = redColor
+                of colGreen:
+                    color = greenColor
+                of colYellow:
+                    color = yellowColor
+                of colBlue:
+                    color = blueColor
+                of colMagenta:
+                    color = magentaColor
+                of colOrange:
+                    color = rgb("208")
+                of colCyan:
+                    color = cyanColor
+                of colWhite:
+                    color = whiteColor
+                of colGray:
+                    color = grayColor
+                else:
+                    color = rgb(extractRGB(x.l))
+
+            var finalColor = ""
+
+            if (popAttr("bold") != VNULL):
+                finalColor = bold(color)
+            elif (popAttr("underline") != VNULL):
+                finalColor = underline(color)
+            else:
+                finalColor = fg(color)
+
+            push(newString(finalColor & y.s & resetColor))
     
     when not defined(WEB):
         builtin "cursor",
