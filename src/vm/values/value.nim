@@ -456,6 +456,9 @@ proc newSymbol*(m: SymbolKind): Value {.inline.} =
 proc newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
+proc newColor*(l: string): Value {.inline.} =
+    Value(kind: Color, l: parseColor(l))
+
 proc newDate*(dt: DateTime): Value {.inline.} =
     let edict = {
         "hour"      : newInteger(dt.hour),
