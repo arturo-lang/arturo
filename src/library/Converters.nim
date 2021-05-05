@@ -175,6 +175,11 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                         return newBinary(ret)
                     of Block:
                         return doParse(y.s, isFile=false)
+                    of Color:
+                        try:
+                            return newColor(y.s)
+                        except:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                         if (let aFormat = popAttr("format"); aFormat != VNULL):
