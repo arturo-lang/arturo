@@ -60,6 +60,7 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
+    HexDigits                   = {'A'..'F', '0'..'9'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
@@ -453,7 +454,16 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             if p.buf[pos+1]=='?': inc(pos); p.symbol = doublequestion
             else: p.symbol = question
         of '@'  : p.symbol = at
-        of '#'  : p.symbol = sharp
+        of '#'  : 
+            if p.buf[pos+1] in HexDigits and
+               p.buf[pos+2] in HexDigits and
+               p.buf[pos+3] in HexDigits and
+               p.buf[pos+4] in HexDigits and
+               p.buf[pos+5] in HexDigits and
+               p.buf[pos+6] in HexDigits:
+                   echo "found color!!"
+            else:
+                p.symbol = sharp
         of '$'  : p.symbol = dollar
         of '%'  : p.symbol = percent
         of '^'  : p.symbol = caret
