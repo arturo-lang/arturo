@@ -27,6 +27,7 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:block](#block)
        - [:dictionary](#dictionary)
        - [:function](#function)
+       - [:color](#color)
        - [:date](#date)
        - [:database](#database)
        - [:binary](#binary)
@@ -415,6 +416,17 @@ addThemUp: $[x,y][x+y]
 print addThemUp 2 3
 
 ; would print 5
+```
+
+<h4 id="color">:color</h4>
+
+Colors can be easily defined using the `#xxxxxx` syntax, where *xxxxxx* is either the RGB value of the color in hex, or its common-name alias, like `#red`, `#green` or `#blue`:
+
+```red
+color1: #red
+color2: #0077BB
+
+print color1 + color2
 ```
 
 <h4 id="date">:date</h4>
