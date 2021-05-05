@@ -83,8 +83,8 @@ proc defineSymbols*() =
         },
         returns     = {String},
         example     = """
-            print color.green "Hello!"                ; Hello! (in green)
-            print color.red.bold "Some text"          ; Some text (in red/bold)
+            print color #green "Hello!"                ; Hello! (in green)
+            print color #red.bold "Some text"          ; Some text (in red/bold)
         """:
             ##########################################################
             var color = ""
