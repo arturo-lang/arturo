@@ -314,6 +314,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
 
             of Complex,
                Function,
+               Color,
                Database,
                Nothing,
                Any,
