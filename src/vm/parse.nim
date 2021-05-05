@@ -461,7 +461,12 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                p.buf[pos+4] in HexDigits and
                p.buf[pos+5] in HexDigits and
                p.buf[pos+6] in HexDigits:
-                   echo "found color!!"
+                    isSymbol = false
+                    let colorCode = "#" & p.buf[pos+1] & p.buf[pos+2] & p.buf[pos+3] &
+                                          p.buf[pos+4] & p.buf[pos+5] & p.buf[pos+6]
+
+                    AddToken newColor(colorCode)
+                    p.bufpos = pos+6
             else:
                 p.symbol = sharp
         of '$'  : p.symbol = dollar
