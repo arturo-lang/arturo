@@ -95,7 +95,7 @@ case [arg\0=]
 	]
 	when? ["install"]	[ 
 		if 2<>size arg [
-			print [color.red.bold "Error:" "Not enough arguments for 'install'."]
+			print [color #red.bold "Error:" "Not enough arguments for 'install'."]
 			exit
 		]
 		print "- Fetching remote list...\n"
