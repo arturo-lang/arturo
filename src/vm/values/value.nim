@@ -278,16 +278,6 @@ let VNULL* = Value(kind: Null)
 
 let VNOTHING* = Value(kind: Nothing)
 
-let CBLACK*     = Value(kind: Color, l: colBlack)
-let CRED*       = Value(kind: Color, l: colRed)
-let CGREEN*     = Value(kind: Color, l: colGreen)
-let CYELLOW*    = Value(kind: Color, l: colYellow)
-let CBLUE*      = Value(kind: Color, l: colBlue)
-let CMAGENTA*   = Value(kind: Color, l: colMagenta)
-let CCYAN*      = Value(kind: Color, l: colCyan)
-let CWHITE*     = Value(kind: Color, l: colWhite)
-let CGRAY*      = Value(kind: Color, l: colGray)
-
 #=======================================
 # Variables
 #=======================================
