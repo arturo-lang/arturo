@@ -456,8 +456,11 @@ proc newSymbol*(m: SymbolKind): Value {.inline.} =
 proc newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
+proc newColor*(l: colors.Color): Value {.inline.} =
+    Value(kind: Color, l: l)
+
 proc newColor*(l: string): Value {.inline.} =
-    Value(kind: Color, l: parseColor(l))
+    newColor(parseColor(l))
 
 proc newDate*(dt: DateTime): Value {.inline.} =
     let edict = {
@@ -593,6 +596,8 @@ proc getArity*(x: Value): int =
 #=======================================
 
 proc `+`*(x: Value, y: Value): Value =
+    if x.kind==Color and y.kind==Color:
+        return newColor(x.l + y.l)
     if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
@@ -670,6 +675,8 @@ proc `+=`*(x: var Value, y: Value) =
                 else: x = newComplex((float)(x.i)+y.z)
 
 proc `-`*(x: Value, y: Value): Value = 
+    if x.kind==Color and y.kind==Color:
+        return newColor(x.l - y.l)
     if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
