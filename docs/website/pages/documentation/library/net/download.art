@@ -29,7 +29,7 @@ arguments: #[
     ]
 related: [
         "Numbers/powmod"
+         "Io/color"
          "Iterators/fold"
          "Numbers/round"
-         "Strings/color"
     ]

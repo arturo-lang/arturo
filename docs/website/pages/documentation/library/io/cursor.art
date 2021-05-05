@@ -17,7 +17,7 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/color"
+        "Io/color"
          "Binary/nor"
          "Binary/or"
          "Binary/shr"

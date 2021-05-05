@@ -43,7 +43,7 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/color"
+        "Io/color"
          "Collections/combine"
          "Strings/capitalize"
          "Paths/list"
