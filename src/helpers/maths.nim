@@ -139,6 +139,7 @@ when not defined(NOGMP):
 #     result = res
 
 proc factors*(n: int): seq[int] =
+    var tail: seq[int] = @[]
     result = @[]
 
     var i = 1
@@ -146,11 +147,12 @@ proc factors*(n: int): seq[int] =
     while i <= s:
         if n mod i == 0:
             let d = n div i
-            if i != d: result.add(d)
+            if i != d: tail.add(d)
             result.add(i)
         i += 1
 
-    result.sort()
+    tail.reverse()
+    result &= tail
 
 proc primeFactorization*(n: int): seq[int] =
     var x = n
@@ -225,31 +227,20 @@ when not defined(NOGMP):
         sort(result)
 
     proc factors*(n: Int): seq[Int] =
+        var tail: seq[Int] = @[]
         result = @[]
-
         var i = newInt(1)
         let s = sqrt(n)
         while i <= s:
             if n mod i == 0:
                 let d = n div i
-                if i != d: result.add(d)
+                if i != d: tail.add(d)
                 result.add(i)
                 
             i += 1
 
-        result.sort()
-        # var res: seq[Int] = @[]
-
-        # var i = newInt(1)
-        # let s = (n div 2)+1
-        # while i <= n-1:
-        #     if n mod i == 0:
-        #         res.add(i)
-        #     i += 1
-
-        # res.add(n)
-
-        # result = res
+        tail.reverse()
+        result &= tail
 
     proc isqrt*[T: SomeSignedInt | Int](x: T): T =
         when T is Int:
