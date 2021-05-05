@@ -18,7 +18,7 @@ var
 #=======================================
 
 const
-    resetColor*     = "\e[0m"
+    noColor*     = "\e[0m"
 
     blackColor*     = ";30"
     redColor*       = ";31"
@@ -33,6 +33,10 @@ const
 #=======================================
 # Templates
 #=======================================
+
+template resetColor*():string =
+    if NoColors: ""
+    else: noColor
 
 template fg*(color: string=""):string =
     if NoColors: ""
