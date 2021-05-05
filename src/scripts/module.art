@@ -25,7 +25,7 @@ getFileUrl: function [initial,pa][
 ]
 
 printInfo: function [name,remote][
-	print color.cyan ~"> Info for |name|: "
+	print color #cyan ~"> Info for |name|: "
 	src: remote \ name
 
 	print # getFileUrl src "info.art"
@@ -33,26 +33,26 @@ printInfo: function [name,remote][
 
 installModule: function [name,remote][
 	if? ø <> attr "update"
-		-> prints color.cyan ~"> Updating: |name|... "
+		-> prints color #cyan ~"> Updating: |name|... "
 	else
-		-> prints color.cyan ~"> Installing: |name|... "
+		-> prints color #cyan ~"> Installing: |name|... "
 	src: remote \ name
 	write ~"|LOCAL|/|name|.art" read getFileUrl src "main.art"
 	print "[ DONE ]"
 ]
 
 uninstallModule: function [name][
-	prints color.cyan ~"> Uninstalling: |name|... "
+	prints color #cyan ~"> Uninstalling: |name|... "
 	execute "rm " ++ ~"|LOCAL|/|name|.art"
 	print "[ DONE ]"
 ]
 
 ; Main
 
-print color.green "- Launching Arturo module manager..."
+print color #green "- Launching Arturo module manager..."
 
 if 0=size arg [
-	print [color.red.bold "\nError:" "Not enough arguments."]
+	print [color #red.bold "\nError:" "Not enough arguments."]
 	exit
 ]
 
@@ -61,7 +61,7 @@ case [arg\0=]
 		print "- Fetching list...\n"
 		locals: map list.relative ~LOCAL 'x [replace x ".art" ""]
 
-		print color.cyan "> Available local modules:"
+		print color #cyan "> Available local modules:"
 		if? 0=size locals [
 			print "   ! No modules found"
 		]
@@ -72,22 +72,22 @@ case [arg\0=]
 	]
 	when? ["remote"]	[ 
 		print "- Fetching remote list...\n"
-		remotes: #REMOTE
+		remotes: # REMOTE
 
-		print color.cyan "> Available remote modules:"
+		print color #cyan "> Available remote modules:"
 		loop sort keys remotes [name]
 			-> print ["  ▪︎" name]
 	]
 	when? ["info"]		[
 		if 2<>size arg [
-			print [color.red.bold "Error:" "Not enough arguments for 'install'."]
+			print [color #red.bold "Error:" "Not enough arguments for 'install'."]
 			exit
 		]
 		print "- Fetching remote list...\n"
-		remotes: #REMOTE
+		remotes: # REMOTE
 
 		if not? contains? keys remotes arg\1 [
-			print [color.red.bold "Error:" "Remote module not found."]
+			print [color #red.bold "Error:" "Remote module not found."]
 			exit
 		]
 
@@ -99,24 +99,24 @@ case [arg\0=]
 			exit
 		]
 		print "- Fetching remote list...\n"
-		remotes: #REMOTE
+		remotes: # REMOTE
 
 		if not? contains? keys remotes arg\1 [
-			print [color.red.bold "Error:" "Remote module not found."]
+			print [color #red.bold "Error:" "Remote module not found."]
 			exit
 		]
 		installModule arg\1 remotes
 	]
 	when? ["uninstall"]	[ 
 		if 2<>size arg [
-			print [color.red.bold "Error:" "Not enough arguments for 'uninstall'."]
+			print [color #red.bold "Error:" "Not enough arguments for 'uninstall'."]
 			exit
 		]
 		print "- Fetching list...\n"
 		locals: map list.relative ~LOCAL 'x [replace x ".art" ""]
 
 		if not? contains? locals arg\1 [
-			print [color.red.bold "Error:" "Local module not found."]
+			print [color #red.bold "Error:" "Local module not found."]
 			exit
 		]
 
@@ -127,18 +127,18 @@ case [arg\0=]
 		locals: map list.relative ~LOCAL 'x [replace x ".art" ""]
 
 		if? 0=size locals [
-			print [color.red.bold "Error:" "No modules found to update."]
+			print [color #red.bold "Error:" "No modules found to update."]
 			exit
 		]
 		else [
 			print "- Fetching remote list...\n"
-			remotes: #REMOTE
+			remotes: # REMOTE
 			loop sort locals [name]
 				-> installModule .update name remotes
 		]
 	]
 	else [
-		print [color.red.bold "Error:" "Command not recognized."]
+		print [color #red.bold "Error:" "Command not recognized."]
 		exit
 	]
 
