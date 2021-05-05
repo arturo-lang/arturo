@@ -5,6 +5,7 @@ returns: [
         :integer
          :floating
          :complex
+         :color
          :nothing
     ]
 alias: "+"
@@ -25,11 +26,13 @@ arguments: #[
              :floating
              :complex
              :literal
+             :color
         ]
     valueB: [
             :integer
              :floating
              :complex
+             :color
         ]
     ]
 related: [

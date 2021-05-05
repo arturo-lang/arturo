@@ -21,10 +21,10 @@ when not defined(WEB):
     import nre except toSeq
 else:
     import jsre
+
 import std/editdistance, json, os
 import sequtils, strutils, unicode, std/wordwrap, xmltree
 
-import helpers/colors
 import helpers/strings
 when defined(WEB):
     import helpers/js
@@ -100,66 +100,6 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==String: push(newString(x.s.capitalize()))
             else: InPlace.s = InPlaced.s.capitalize()
-
-    builtin "color",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get colored version of given string",
-        args        = {
-            "string": {String}
-        },
-        attrs       = {
-            "rgb"       : ({Integer},"use specific RGB color"),
-            "bold"      : ({Boolean},"bold font"),
-            "black"     : ({Boolean},"black foreground color"),
-            "red"       : ({Boolean},"red foreground color"),
-            "green"     : ({Boolean},"green foreground color"),
-            "yellow"    : ({Boolean},"yellow foreground color"),
-            "blue"      : ({Boolean},"blue foreground color"),
-            "magenta"   : ({Boolean},"magenta foreground color"),
-            "cyan"      : ({Boolean},"cyan foreground color"),
-            "white"     : ({Boolean},"white foreground color"),
-            "gray"      : ({Boolean},"gray foreground color")
-        },
-        returns     = {String},
-        example     = """
-            print color.green "Hello!"                ; Hello! (in green)
-            print color.red.bold "Some text"          ; Some text (in red/bold)
-        """:
-            ##########################################################
-            var color = ""
-
-            if (let aRgb = popAttr("rgb"); aRgb != VNULL):
-                color = rgb($(aRgb.i))
-            if (popAttr("black") != VNULL):
-                color = blackColor
-            elif (popAttr("red") != VNULL):
-                color = redColor
-            elif (popAttr("green") != VNULL):
-                color = greenColor
-            elif (popAttr("yellow") != VNULL):
-                color = yellowColor
-            elif (popAttr("blue") != VNULL):
-                color = blueColor
-            elif (popAttr("magenta") != VNULL):
-                color = magentaColor
-            elif (popAttr("cyan") != VNULL):
-                color = cyanColor
-            elif (popAttr("white") != VNULL):
-                color = whiteColor
-            elif (popAttr("gray") != VNULL):
-                color = grayColor
-
-            var finalColor = ""
-
-            if (popAttr("bold") != VNULL):
-                finalColor = bold(color)
-            elif (popAttr("underline") != VNULL):
-                finalColor = underline(color)
-            else:
-                finalColor = fg(color)
-
-            push(newString(finalColor & x.s & resetColor))
 
     builtin "escape",
         alias       = unaliased, 

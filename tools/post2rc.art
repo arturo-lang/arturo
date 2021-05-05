@@ -86,6 +86,6 @@ files:
     => [not? prefix? & "_"]
 
 loop files 'file [
-    print ["-" file "=>" if? not? null? updateCode file -> color.green "OK" else -> color.red "error"]
+    print ["-" file "=>" if? not? null? updateCode file -> color #green "OK" else -> color #red "error"]
 ]
 

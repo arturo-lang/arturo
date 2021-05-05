@@ -63,7 +63,9 @@ const
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
-    PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
+    PermittedColorChars         = Letters + {'0'..'9'}
+    PermittedIdentifiers_In     = PermittedColorChars + {'?'}
+    
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
     Empty                       = ""
@@ -453,7 +455,32 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             if p.buf[pos+1]=='?': inc(pos); p.symbol = doublequestion
             else: p.symbol = question
         of '@'  : p.symbol = at
-        of '#'  : p.symbol = sharp
+        of '#'  : 
+            if p.buf[pos+1] in PermittedColorChars:
+                let oldPos = pos
+                inc pos
+                var colorCode = ""
+                while p.buf[pos] in PermittedColorChars:
+                    colorCode &= p.buf[pos]
+                    inc pos
+                var color: Value
+                try:
+                    color = newColor(colorCode)
+                    isSymbol = false
+                    AddToken color
+                    p.bufpos = pos
+                except:
+                    try:
+                        color = newColor("#" & colorCode)
+                        isSymbol = false
+                        AddToken color
+                        p.bufpos = pos
+                    except:
+                        p.symbol = sharp
+                        pos = oldPos
+
+            else:
+                p.symbol = sharp
         of '$'  : p.symbol = dollar
         of '%'  : p.symbol = percent
         of '^'  : p.symbol = caret

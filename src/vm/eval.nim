@@ -455,6 +455,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addTerminalValue(false):
                                 addConst(consts, node, opPush)
 
+            of Color : 
+                addTerminalValue(false):
+                    addConst(consts, node, opPush)
             of Date : discard
 
             of Binary : discard

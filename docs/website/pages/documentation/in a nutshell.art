@@ -52,12 +52,16 @@ f: function [x][
     2 * x
 ]
 
+; colors - right, you can directly define them as well!
+g1: #red
+g2: #0077BF
+
 ; dates
-g: now              ; 2021-05-03T17:10:48+02:00
+h: now              ; 2021-05-03T17:10:48+02:00
 
 ; booleans
-h1: true
-h2: false
+i1: true
+i2: false
 
 ;---------------------------------
 ; BASIC OPERATORS

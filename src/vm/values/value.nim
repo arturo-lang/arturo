@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import complex, hashes, math, sequtils, strformat
+import colors, complex, hashes, math, sequtils, strformat
 import strutils, sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
@@ -20,7 +20,7 @@ when not defined(NOSQLITE):
 when not defined(NOGMP):
     import extras/bignum
 
-import helpers/colors
+import helpers/colors as ColorsHelper
 
 import vm/errors
 
@@ -114,17 +114,18 @@ type
         Path            = 14
         PathLabel       = 15
         Symbol          = 16
-        Date            = 17
-        Binary          = 18
-        Dictionary      = 19
-        Function        = 20
-        Inline          = 21
-        Block           = 22
-        Database        = 23
-        Bytecode        = 24
+        Color           = 17
+        Date            = 18
+        Binary          = 19
+        Dictionary      = 20
+        Function        = 21
+        Inline          = 22
+        Block           = 23
+        Database        = 24
+        Bytecode        = 25
 
-        Nothing         = 25
-        Any             = 26
+        Nothing         = 26
+        Any             = 27
 
     ValueSpec* = set[ValueKind]
 
@@ -199,6 +200,7 @@ type
             of Path,
                PathLabel:   p*  : ValueArray
             of Symbol:      m*  : SymbolKind
+            of Color:       l*  : Color
             of Date:        
                 e*     : ValueDict         
                 eobj*  : DateTime
@@ -454,6 +456,12 @@ proc newSymbol*(m: SymbolKind): Value {.inline.} =
 proc newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
+proc newColor*(l: colors.Color): Value {.inline.} =
+    Value(kind: Color, l: l)
+
+proc newColor*(l: string): Value {.inline.} =
+    newColor(parseColor(l))
+
 proc newDate*(dt: DateTime): Value {.inline.} =
     let edict = {
         "hour"      : newInteger(dt.hour),
@@ -588,6 +596,8 @@ proc getArity*(x: Value): int =
 #=======================================
 
 proc `+`*(x: Value, y: Value): Value =
+    if x.kind==Color and y.kind==Color:
+        return newColor(x.l + y.l)
     if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
@@ -665,6 +675,8 @@ proc `+=`*(x: var Value, y: Value) =
                 else: x = newComplex((float)(x.i)+y.z)
 
 proc `-`*(x: Value, y: Value): Value = 
+    if x.kind==Color and y.kind==Color:
+        return newColor(x.l - y.l)
     if not (x.kind in [Integer, Floating, Complex]) or not (y.kind in [Integer, Floating, Complex]):
         return VNULL
     else:
@@ -1287,6 +1299,9 @@ proc `$`(v: Value): string {.inline.} =
         of Path,
            PathLabel    :
             result = v.p.map((x) => $(x)).join("\\")
+
+        of Color        :
+            return $(v.l)
         of Symbol       :
             return $(v.m)
 
@@ -1395,6 +1410,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             dumpBlockEnd()
 
         of Symbol       : dumpSymbol(v)
+
+        of Color        : dumpPrimitive($(v.l), v)
 
         of Date         : 
             dumpBlockStart(v)
@@ -1516,6 +1533,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Attribute         : result &= "." & v.r
         of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       :  result &= $(v.m)
+        of Color        : result &= $(v.l)
 
         of Inline, Block:
             if not (pretty and unwrapped and level==0):
@@ -1631,6 +1649,7 @@ proc sameValue*(x: Value, y: Value): bool {.inline.}=
             of Attribute,
                AttributeLabel: return x.r == y.r
             of Symbol: return x.m == y.m
+            of Color: return x.l == y.l
             of Inline,
                Block:
                 if x.a.len != y.a.len: return false
@@ -1711,6 +1730,7 @@ proc hash*(v: Value): Hash {.inline.}=
             result = !$ result
 
         of Symbol       : result = cast[Hash](ord(v.m))
+        of Color        : result = cast[Hash](v.l)
 
         of Date         : discard
 

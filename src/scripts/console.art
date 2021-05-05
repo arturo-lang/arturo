@@ -36,7 +36,7 @@ historyPath: join.path @[path\home ".arturo" "history.lst"]
 ; helpers & templates
 
 LongHeader: {
-    |color.green.bold "Arturo"|  
+    |color #green.bold "Arturo"|  
     |sys\copyright| |sys\author|
 }
 
@@ -51,11 +51,11 @@ Details: {
 BR: "\n"
 
 orange: $[x][
-    color.rgb:208 x
+    color #orange x
 ]
 
 orangeBold: $[x][
-    color.bold.rgb:208 x
+    color #orange.bold x
 ]
 
 ; print header
@@ -63,7 +63,7 @@ orangeBold: $[x][
 clear
 print join @[
     ~LongHeader BR BR
-    color.gray ~Details BR BR
+    color #gray ~Details BR BR
     orange "# Type " 
     orangeBold "info 'symbol"
     orange " for info about a specific symbol or built-in function" BR
@@ -101,8 +101,8 @@ while [true] .import [
 
         StackSize: size stack
         
-        if StackSize > 0 		-> Got: pop 1
-        if Got <> null 			-> print color.gray ~"=> |Got|"
+        if StackSize > 0 		[ Got: pop 1 ]
+        if Got <> null 			[ print color #gray ~"=> |Got|" ]
 
         print ""
     ]
