@@ -60,11 +60,12 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
-    HexDigits                   = {'A'..'F', '0'..'9'}
     Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
-    PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
+    PermittedColorChars         = Letters + {'0'..'9'}
+    PermittedIdentifiers_In     = PermittedColorChars + {'?'}
+    
     SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
     Empty                       = ""
@@ -455,18 +456,41 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             else: p.symbol = question
         of '@'  : p.symbol = at
         of '#'  : 
-            if p.buf[pos+1] in HexDigits and
-               p.buf[pos+2] in HexDigits and
-               p.buf[pos+3] in HexDigits and
-               p.buf[pos+4] in HexDigits and
-               p.buf[pos+5] in HexDigits and
-               p.buf[pos+6] in HexDigits:
+            if p.buf[pos+1] in PermittedColorChars:
+                let oldPos = pos
+                inc pos
+                var colorCode = ""
+                while p.buf[pos] in PermittedColorChars:
+                    colorCode &= p.buf[pos]
+                    inc pos
+                var color: Value
+                try:
+                    color = newColor(colorCode)
                     isSymbol = false
-                    let colorCode = "#" & p.buf[pos+1] & p.buf[pos+2] & p.buf[pos+3] &
-                                          p.buf[pos+4] & p.buf[pos+5] & p.buf[pos+6]
+                    AddToken color
+                    p.bufpos = pos
+                except:
+                    try:
+                        color = newColor("#" & colorCode)
+                        isSymbol = false
+                        AddToken color
+                        p.bufpos = pos
+                    except:
+                        p.symbol = sharp
+                        pos = oldPos
 
-                    AddToken newColor(colorCode)
-                    p.bufpos = pos+7
+            # if p.buf[pos+1] in HexDigits and
+            #    p.buf[pos+2] in HexDigits and
+            #    p.buf[pos+3] in HexDigits and
+            #    p.buf[pos+4] in HexDigits and
+            #    p.buf[pos+5] in HexDigits and
+            #    p.buf[pos+6] in HexDigits:
+            #         isSymbol = false
+            #         let colorCode = "#" & p.buf[pos+1] & p.buf[pos+2] & p.buf[pos+3] &
+            #                               p.buf[pos+4] & p.buf[pos+5] & p.buf[pos+6]
+
+            #         AddToken newColor(colorCode)
+            #         p.bufpos = pos+7
             else:
                 p.symbol = sharp
         of '$'  : p.symbol = dollar
