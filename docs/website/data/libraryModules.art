@@ -2,6 +2,7 @@
 	"Arithmetic"
  	"Binary"
  	"Collections"
+ 	"Color"
  	"Comparison"
  	"Converters"
  	"Core"
