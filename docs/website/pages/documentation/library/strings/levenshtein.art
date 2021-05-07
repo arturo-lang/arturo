@@ -38,7 +38,7 @@ arguments: #[
     ]
 related: [
         "Collections/reverse"
+         "Color/lighten"
          "Core/ensure"
          "Files/delete"
-         "Numbers/even?"
     ]

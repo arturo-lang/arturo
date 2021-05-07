@@ -1,0 +1,24 @@
+name: "darken"
+type: :function
+module: "Color"
+returns: [
+        :color
+    ]
+description: "darken color by given percentage (0.0-0.1)"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    color: [
+            :color
+        ]
+    percent: [
+            :floating
+        ]
+    ]
+related: [
+        "Color/lighten"
+         "Collections/take"
+         "Reflection/date?"
+         "Arithmetic/dec"
+    ]
