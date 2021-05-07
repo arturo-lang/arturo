@@ -31,6 +31,7 @@ import vm/[
 import library/Arithmetic   as ArithmeticLib
 import library/Binary       as BinaryLib
 import library/Collections  as CollectionsLib
+import library/Color        as ColorLib
 import library/Comparison   as ComparisonLib
 import library/Converters   as ConvertersLib
 import library/Core         as CoreLib
