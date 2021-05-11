@@ -13,7 +13,7 @@
 import lenientops, tables, unicode
 when not defined(NOGMP):
     import extras/bignum
-
+ 
 import vm/exec
 import vm/stack
 import vm/values/value
