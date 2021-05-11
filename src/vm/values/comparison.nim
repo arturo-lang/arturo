@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import tables, unicode
+import lenientops, tables, unicode
 when not defined(NOGMP):
     import extras/bignum
 
@@ -123,14 +123,14 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                         return x.bi<y.bi
             else: 
                 if x.iKind==NormalInteger:
-                    return (float)(x.i)<y.f
+                    return x.i<y.f
                 else:
                     when not defined(NOGMP):
                         return (x.bi)<(int)(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
-                    return x.f<(float)(y.i)
+                    return x.f<y.i
                 elif y.iKind==BigInteger:
                     when not defined(NOGMP):
                         return (int)(x.f)<y.bi        
