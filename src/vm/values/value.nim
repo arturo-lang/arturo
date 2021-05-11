@@ -10,8 +10,9 @@
 # Libraries
 #=======================================
 
-import colors, complex, hashes, math, sequtils, strformat
-import strutils, sugar, tables, times, unicode
+import colors, complex, hashes, lenientops
+import math, sequtils, strformat, strutils
+import sugar, tables, times, unicode
 
 when not defined(NOSQLITE):
     import db_sqlite as sqlite
@@ -624,7 +625,7 @@ proc `+`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f+y.f)
                 elif y.kind==Complex: return newComplex(x.f+y.z)
-                else: return newFloating(x.f+(float)(y.i))
+                else: return newFloating(x.f+y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z+(float)(y.i))
@@ -632,7 +633,7 @@ proc `+`*(x: Value, y: Value): Value =
                 elif y.kind==Floating: return newComplex(x.z+y.f)
                 else: return newComplex(x.z+y.z)
             else:
-                if y.kind==Floating: return newFloating((float)(x.i)+y.f)
+                if y.kind==Floating: return newFloating(x.i+y.f)
                 else: return newComplex((float)(x.i)+y.z)
 
 proc `+=`*(x: var Value, y: Value) =
@@ -663,7 +664,7 @@ proc `+=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f += y.f
                 elif y.kind==Complex: x = newComplex(x.f + y.z)
-                else: x.f += (float)(y.i)
+                else: x.f = x.f + y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z + (float)(y.i))
@@ -671,7 +672,7 @@ proc `+=`*(x: var Value, y: Value) =
                 elif y.kind==Floating: x = newComplex(x.z + y.f)
                 else: x.z += y.z
             else:
-                if y.kind==Floating: x = newFloating((float)(x.i)+y.f)
+                if y.kind==Floating: x = newFloating(x.i+y.f)
                 else: x = newComplex((float)(x.i)+y.z)
 
 proc `-`*(x: Value, y: Value): Value = 
@@ -704,7 +705,7 @@ proc `-`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f-y.f)
                 elif y.kind==Complex: return newComplex(x.f-y.z)
-                else: return newFloating(x.f-(float)(y.i))
+                else: return newFloating(x.f-y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z-(float)(y.i))
@@ -712,7 +713,7 @@ proc `-`*(x: Value, y: Value): Value =
                 elif y.kind==Floating: return newComplex(x.z-y.f)
                 else: return newComplex(x.z-y.z)
             else:
-                if y.kind==Floating: return newFloating((float)(x.i)-y.f)
+                if y.kind==Floating: return newFloating(x.i-y.f)
                 else: return newComplex((float)(x.i)-y.z)
 
 proc `-=`*(x: var Value, y: Value) =
@@ -742,7 +743,7 @@ proc `-=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f -= y.f
                 elif y.kind==Complex: x = newComplex(x.f - y.z)
-                else: x.f -= (float)(y.i)
+                else: x.f = x.f - y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z - (float)(y.i))
@@ -750,7 +751,7 @@ proc `-=`*(x: var Value, y: Value) =
                 elif y.kind==Floating: x = newComplex(x.z - y.f)
                 else: x.z -= y.z
             else:
-                if y.kind==Floating: x = newFloating((float)(x.i)-y.f)
+                if y.kind==Floating: x = newFloating(x.i-y.f)
                 else: x = newComplex((float)(x.i)-y.z)
 
 proc `*`*(x: Value, y: Value): Value =
@@ -780,7 +781,7 @@ proc `*`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f*y.f)
                 elif y.kind==Complex: return newComplex(x.f*y.z)
-                else: return newFloating(x.f*(float)(y.i))
+                else: return newFloating(x.f*y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z*(float)(y.i))
@@ -788,7 +789,7 @@ proc `*`*(x: Value, y: Value): Value =
                 elif y.kind==Floating: return newComplex(x.z*y.f)
                 else: return newComplex(x.z*y.z)
             else:
-                if y.kind==Floating: return newFloating((float)(x.i)*y.f)
+                if y.kind==Floating: return newFloating(x.i*y.f)
                 else: return newComplex((float)(x.i)*y.z)
 
 proc `*=`*(x: var Value, y: Value) =
@@ -818,7 +819,7 @@ proc `*=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f *= y.f
                 elif y.kind==Complex: x = newComplex(x.f * y.z)
-                else: x.f *= (float)(y.i)
+                else: x.f = x.f * y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z * (float)(y.i))
@@ -826,7 +827,7 @@ proc `*=`*(x: var Value, y: Value) =
                 elif y.kind==Floating: x = newComplex(x.z * y.f)
                 else: x.z *= y.z
             else:
-                if y.kind==Floating: x = newFloating((float)(x.i)*y.f)
+                if y.kind==Floating: x = newFloating(x.i*y.f)
                 else: x = newComplex((float)(x.i)*y.z)
 
 proc `/`*(x: Value, y: Value): Value =
@@ -850,7 +851,7 @@ proc `/`*(x: Value, y: Value): Value =
             if x.kind==Floating:
                 if y.kind==Floating: return newFloating(x.f/y.f)
                 elif y.kind==Complex: return newComplex(x.f/y.z)
-                else: return newFloating(x.f/(float)(y.i))
+                else: return newFloating(x.f/y.i)
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: return newComplex(x.z/(float)(y.i))
@@ -858,7 +859,7 @@ proc `/`*(x: Value, y: Value): Value =
                 elif y.kind==Floating: return newComplex(x.z/y.f)
                 else: return newComplex(x.z/y.z)
             else:
-                if y.kind==Floating: return newFloating((float)(x.i)/y.f)
+                if y.kind==Floating: return newFloating(x.i/y.f)
                 else: return newComplex((float)(x.i)/y.z)
 
 proc `/=`*(x: var Value, y: Value) =
@@ -888,7 +889,7 @@ proc `/=`*(x: var Value, y: Value) =
             if x.kind==Floating:
                 if y.kind==Floating: x.f /= y.f
                 elif y.kind==Complex: x = newComplex(x.f / y.z)
-                else: x.f /= (float)(y.i)
+                else: x.f = x.f / y.i
             elif x.kind==Complex:
                 if y.kind==Integer:
                     if y.iKind==NormalInteger: x = newComplex(x.z / (float)(y.i))
@@ -896,7 +897,7 @@ proc `/=`*(x: var Value, y: Value) =
                 elif y.kind==Floating: x = newComplex(x.z / y.f)
                 else: x.z /= y.z
             else:
-                if y.kind==Floating: x = newFloating((float)(x.i)/y.f)
+                if y.kind==Floating: x = newFloating(x.i / y.f)
                 else: x = newComplex((float)(x.i)/y.z)
 
 proc `//`*(x: Value, y: Value): Value =
