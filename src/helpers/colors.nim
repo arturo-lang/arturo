@@ -78,7 +78,6 @@ template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
 #=======================================
 
 proc hueToRGB*(p, q, t: float): float =
-    echo "p: " & $(p) & " q: " & $(q) & " t: " & $(t)
     var T = t
     if t<0: T += 1.0
     if t>1: T -= 1.0
@@ -111,14 +110,9 @@ proc HSLtoRGB*(hsl: HSL): RGB =
         else:       q = l + s - l * s
 
         let p = 2*l - q
-        echo "red hue"
         r = (hueToRGB(p, q, h + 1/3.0) * 255).round
-        echo "green hue"
         g = (hueToRGB(p, q, h) * 255).round
-        echo "blue hue"
         b = (hueToRGB(p, q, h - 1/3.0) * 255).round
-
-    echo "r: " & $(r) & ", g: " & $(g) & ", b: " & $(b)
 
     return ((int)r, (int)g, (int)b)
 
@@ -154,7 +148,5 @@ proc RGBtoHSL*(c: Color): HSL =
         s = 0
     else:
         s = D / (1 - abs(2*l - 1))
-
-    echo HSLtoRGB(((int)h,s,l))
 
     return ((int)h,s,l)
