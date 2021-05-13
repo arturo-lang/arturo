@@ -54,6 +54,12 @@ attributes: #[
             ]
         description: "use given format (for dates)"
         ]
+    hsl: #[
+        types: [
+                :boolean
+            ]
+        description: "convert HSL block to color"
+        ]
     ]
 arguments: #[
     type: [

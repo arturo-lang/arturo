@@ -42,5 +42,5 @@ related: [
         "Binary/and"
          "Collections/extend"
          "Collections/remove"
-         "Databases/open"
+         "Colors/blend"
     ]

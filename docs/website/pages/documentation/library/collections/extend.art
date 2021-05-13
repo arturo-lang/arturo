@@ -23,7 +23,7 @@ arguments: #[
     ]
 related: [
         "Collections/append"
+         "Colors/blend"
          "Numbers/even?"
          "Binary/and"
-         "Binary/nand"
     ]

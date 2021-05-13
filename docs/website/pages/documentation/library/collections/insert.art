@@ -40,8 +40,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/inspect"
+        "Colors/invert"
+         "Reflection/inspect"
          "Strings/indent"
          "Collections/index"
-         "Collections/set"
     ]

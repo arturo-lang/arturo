@@ -42,6 +42,6 @@ arguments: #[
 related: [
         "Collections/index"
          "Collections/insert"
+         "Colors/invert"
          "Io/input"
-         "Reflection/inspect"
     ]
