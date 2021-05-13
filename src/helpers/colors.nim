@@ -185,5 +185,4 @@ proc invertColor*(c: Color): RGB =
     hsl.h += 180;
     if hsl.h > 360:
         hsl.h -= 360
-    hsl.h = (int)((hsl.h/360).round)
     return HSLtoRGB(hsl)
