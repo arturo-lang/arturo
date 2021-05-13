@@ -7,6 +7,21 @@
 ######################################################
 
 #=======================================
+# Libraries
+#=======================================
+
+import math
+import std/colors as stdColors
+
+#=======================================
+# Types
+#=======================================
+
+type
+    RGB* = tuple[r: int, g: int, b: int]
+    HSL* = tuple[h: int, s: float, l: float]
+
+#=======================================
 # Global Variables
 #=======================================
 
@@ -57,3 +72,89 @@ template rgb*(color: string=""):string =
 template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
+
+#=======================================
+# Helpers
+#=======================================
+
+proc hueToRGB*(p, q, t: float): float =
+    echo "p: " & $(p) & " q: " & $(q) & " t: " & $(t)
+    var T = t
+    if t<0: T += 1.0
+    if t>1: T -= 1.0
+
+    if T < 1/6.0: return (p+(q-p)*6*T)
+    if T < 1/2.0: return q
+    if T < 2/3.0: return (p+(q-p)*(2/3.0-T)*6)
+    return p
+
+#=======================================
+# Methods
+#=======================================
+
+proc HSLtoRGB*(hsl: HSL): RGB =
+    let h = hsl.h/360
+    let s = hsl.s
+    let l = hsl.l
+
+    var r = 0.0
+    var g = 0.0
+    var b = 0.0
+    
+    if s == 0.0:
+        r = l
+        g = l
+        b = l
+    else:
+        var q: float
+        if l<0.5:   q = l * (1+s)
+        else:       q = l + s - l * s
+
+        let p = 2*l - q
+        echo "red hue"
+        r = (hueToRGB(p, q, h + 1/3.0) * 255).round
+        echo "green hue"
+        g = (hueToRGB(p, q, h) * 255).round
+        echo "blue hue"
+        b = (hueToRGB(p, q, h - 1/3.0) * 255).round
+
+    echo "r: " & $(r) & ", g: " & $(g) & ", b: " & $(b)
+
+    return ((int)r, (int)g, (int)b)
+
+proc RGBtoHSL*(c: Color): HSL =
+    let rgb = extractRGB(c)
+
+    let R = rgb.r / 255
+    let G = rgb.g / 255
+    let B = rgb.b / 255
+
+    let cMax = max(@[R,G,B])
+    let cMin = min(@[R,G,B])
+    let D = cMax - cMin
+
+    var h,s,l : float
+
+    if D==0:
+        h = 0
+    elif cMax==R:
+        h = (G-B)/D
+        if G<B: h += 6.0
+    elif cMax==G:
+        h = (B-R)/D + 2
+    elif cMax==B:
+        h = ((R-G)/D) + 4
+
+    h /= 6.0
+    h = (360*h).round
+
+    l = (cMax + cMin)/2
+
+    if D==0:
+        s = 0
+    else:
+        s = D / (1 - abs(2*l - 1))
+
+    echo HSLtoRGB(((int)h,s,l))
+
+    return ((int)h,s,l)
