@@ -59,6 +59,25 @@ proc defineSymbols*() =
             else:
                 push newColor(alterColorValue(x.l, y.f * (-1)))
 
+    builtin "invert",
+        alias       = at, 
+        rule        = PrefixPrecedence,
+        description = "invert given color",
+        args        = {
+            "color"     : {ValueKind.Color}
+        },
+        attrs       = NoAttrs,
+        returns     = {ValueKind.Color},
+        # TODO(Color\invert) add documentation example
+        #  labels: documentation,library,easy
+        example     = """
+        """:
+            ##########################################################
+            if x.kind == Literal:
+                SetInPlace(newColor(invertColor(InPlace.l)))
+            else:
+                push newColor(invertColor(x.l))
+
     builtin "lighten",
         alias       = at, 
         rule        = PrefixPrecedence,
