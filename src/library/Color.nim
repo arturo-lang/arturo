@@ -26,41 +26,9 @@
 
 import colors as stdColors
 
+import helpers/colors as colorsHelper
+
 import vm/lib
-#import vm/[errors, exec, parse]
-
-#=======================================
-# Helpers
-#=======================================
-
-template rawRGB(r, g, b: int): stdColors.Color =
-    stdColors.Color(r shl 16 or g shl 8 or b)
-
-proc satPlus(a, b: int): int {.inline.} =
-    result = a +% b
-    if result > 255: result = 255
-
-proc satMinus(a, b: int): int {.inline.} =
-    result = a -% b
-    if result < 0: result = 0
-
-proc alterColorValue*(c: stdColors.Color, f: float): stdColors.Color =
-    var (r,g,b) = extractRGB(c)
-    var pcent: float
-    if f > 0:
-        pcent = f
-        r = satPlus(r, toInt(toFloat(r) * pcent))
-        g = satPlus(g, toInt(toFloat(g) * pcent))
-        b = satPlus(b, toInt(toFloat(b) * pcent))
-        result = rawRGB(r, g, b)
-    elif f < 0:
-        pcent = (-1) * f
-        r = satMinus(r, toInt(toFloat(r) * pcent))
-        g = satMinus(g, toInt(toFloat(g) * pcent))
-        b = satMinus(b, toInt(toFloat(b) * pcent))
-        result = rawRGB(r, g, b)
-    else:
-        return c
 
 #=======================================
 # Methods
