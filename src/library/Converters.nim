@@ -20,6 +20,7 @@ import sequtils, strformat, sugar, times, unicode
 when not defined(NOGMP):
     import extras/bignum
 
+import helpers/colors
 import helpers/datasource
 when not defined(NOASCIIDECODE):
     import helpers/strings
@@ -269,6 +270,12 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                                 callFunction(x.methods.d["init"])
 
                             return(res)
+
+                    of Color:
+                        if (popAttr("hsl") != VNULL):
+                            return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f)))
+                        else:
+                            return newColor((y.a[0].i, y.a[1].i, y.a[2].i))
 
                     of Bytecode:
                         return(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
@@ -722,9 +729,12 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = {
-            "format": ({String},"use given format (for dates)")
+            "format": ({String},"use given format (for dates)"),
+            "hsl"   : ({Boolean},"convert HSL block to color")
         },
         returns     = {Any},
+        # TODO(Converters\to) add documentation for block to color conversion
+        #  labels: documentation, library, easy
         example     = """
             to :string 2020               ; "2020"
             to :integer "2020"            ; 2020
