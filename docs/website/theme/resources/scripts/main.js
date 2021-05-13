@@ -398,6 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (elem.name.includes("FreeBSD")) { order = 4; logo = "freebsd"; os = "<b>FreeBSD</b>"; }
                     else if (elem.name.includes("arm-")) { order = 5; logo = "raspberry-pi"; os = "<b>arm</b>"; }
                     else if (elem.name.includes("arm64-")) { order = 6; logo = "raspberry-pi"; os = "<b>arm64</b>"; }
+					else if (elem.name.includes("Web")) { order = 7; logo = "js"; os = "<b>Web / JavaScript</b>"; }
                     if (elem.name.includes("mini")) { 
 						version += "<sup>*</sup>"; 
 						os += "<sup class='is-hidden-desktop'>*</sup>";
