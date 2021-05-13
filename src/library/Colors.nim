@@ -41,7 +41,7 @@ proc defineSymbols*() =
             "balance"   : ({Floating},"use different mix of color (0.0-1.0, default:0.5)")
         },
         returns     = {ValueKind.Color},
-        # TODO(Color\blend) add documentation example
+        # TODO(Colors\blend) add documentation example
         #  labels: documentation,library,easy
         example     = """
         """:
@@ -65,7 +65,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
-        # TODO(Color\darken) add documentation example
+        # TODO(Colors\darken) add documentation example
         #  labels: documentation,library,easy
         example     = """
         """:
@@ -85,7 +85,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
-        # TODO(Color\desaturate) add documentation example
+        # TODO(Colors\desaturate) add documentation example
         #  labels: documentation,library,easy
         example     = """
         """:
@@ -104,7 +104,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
-        # TODO(Color\invert) add documentation example
+        # TODO(Colors\invert) add documentation example
         #  labels: documentation,library,easy
         example     = """
         """:
@@ -124,7 +124,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
-        # TODO(Color\lighten) add documentation example
+        # TODO(Colors\lighten) add documentation example
         #  labels: documentation,library,easy
         example     = """
         """:
@@ -144,7 +144,7 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
-        # TODO(Color\saturate) add documentation example
+        # TODO(Colors\saturate) add documentation example
         #  labels: documentation,library,easy
         example     = """
         """:
