@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import colors except Color
+import std/colors except Color
 
 when not defined(WEB):
     import os, sequtils, sugar
