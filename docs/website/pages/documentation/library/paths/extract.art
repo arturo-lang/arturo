@@ -104,10 +104,53 @@ attributes: #[
             ]
         description: "get anchor field from URL"
         ]
+    red: #[
+        types: [
+                :boolean
+            ]
+        description: "get red component from color"
+        ]
+    green: #[
+        types: [
+                :boolean
+            ]
+        description: "get green component from color"
+        ]
+    blue: #[
+        types: [
+                :boolean
+            ]
+        description: "get blue component from color"
+        ]
+    hsl: #[
+        types: [
+                :boolean
+            ]
+        description: "get HSL representation from color"
+        ]
+    hue: #[
+        types: [
+                :boolean
+            ]
+        description: "get hue component from color"
+        ]
+    saturation: #[
+        types: [
+                :boolean
+            ]
+        description: "get saturation component from color"
+        ]
+    luminosity: #[
+        types: [
+                :boolean
+            ]
+        description: "get luminosity component from color"
+        ]
     ]
 arguments: #[
     path: [
             :string
+             :color
         ]
     ]
 related: [

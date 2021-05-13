@@ -1,10 +1,10 @@
-name: "lighten"
+name: "darken"
 type: :function
-module: "Color"
+module: "Colors"
 returns: [
         :color
     ]
-description: "lighten color by given percentage (0.0-0.1)"
+description: "darken color by given percentage (0.0-1.0)"
 example: ""
 attributes: #[
     ]
@@ -17,8 +17,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Color/darken"
-         "Collections/flatten"
-         "Iterators/filter"
-         "Paths/list"
+        "Colors/lighten"
+         "Colors/saturate"
+         "Colors/desaturate"
+         "Collections/take"
     ]

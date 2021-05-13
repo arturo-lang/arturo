@@ -11,8 +11,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Core/break"
+        "Colors/blend"
+         "Core/break"
          "Core/let"
          "Core/var"
-         "Databases/close"
     ]

@@ -19,6 +19,6 @@ arguments: #[
 related: [
         "Statistics/median"
          "Collections/reverse"
+         "Colors/saturate"
          "Converters/array"
-         "Files/rename"
     ]

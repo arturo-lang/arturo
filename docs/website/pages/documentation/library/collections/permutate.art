@@ -17,8 +17,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Io/terminal"
+        "Colors/desaturate"
+         "Colors/saturate"
+         "Io/terminal"
          "Strings/truncate"
-         "Collections/empty"
-         "Collections/empty?"
     ]

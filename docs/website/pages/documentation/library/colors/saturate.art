@@ -1,10 +1,10 @@
-name: "darken"
+name: "saturate"
 type: :function
-module: "Color"
+module: "Colors"
 returns: [
         :color
     ]
-description: "darken color by given percentage (0.0-0.1)"
+description: "saturate color by given percentage (0.0-1.0)"
 example: ""
 attributes: #[
     ]
@@ -17,8 +17,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Color/lighten"
-         "Collections/take"
-         "Reflection/date?"
-         "Arithmetic/dec"
+        "Colors/desaturate"
+         "Colors/darken"
+         "Colors/lighten"
+         "Statistics/average"
     ]

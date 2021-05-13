@@ -36,6 +36,6 @@ arguments: #[
 related: [
         "Iterators/fold"
          "Collections/last"
-         "Color/darken"
-         "Color/lighten"
+         "Colors/darken"
+         "Colors/lighten"
     ]
