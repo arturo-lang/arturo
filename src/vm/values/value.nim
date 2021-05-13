@@ -460,6 +460,9 @@ proc newSymbol*(m: string): Value {.inline.} =
 proc newColor*(l: colors.Color): Value {.inline.} =
     Value(kind: Color, l: l)
 
+proc newColor*(rgb: RGB): Value {.inline.} =
+    newColor(rgb(rgb.r, rgb.g, rgb.b))
+
 proc newColor*(l: string): Value {.inline.} =
     newColor(parseColor(l))
 
