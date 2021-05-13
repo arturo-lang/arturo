@@ -16,9 +16,12 @@
 # Libraries
 #=======================================
 
+import colors except Color
+
 when not defined(WEB):
     import os, sequtils, sugar
 
+    import helpers/colors as colorsHelper
     import helpers/path
     import helpers/url
 
@@ -46,7 +49,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "extract components from path",
             args        = {
-                "path"  : {String}
+                "path"  : {String,Color}
             },
             attrs       = {
                 "directory" : ({Boolean},"get path directory"),
@@ -60,9 +63,18 @@ proc defineSymbols*() =
                 "password"  : ({Boolean},"get password field from URL"),
                 "path"      : ({Boolean},"get path field from URL"),
                 "query"     : ({Boolean},"get query field from URL"),
-                "anchor"    : ({Boolean},"get anchor field from URL")
+                "anchor"    : ({Boolean},"get anchor field from URL"),
+                "red"       : ({Boolean},"get red component from color"),
+                "green"     : ({Boolean},"get green component from color"),
+                "blue"      : ({Boolean},"get blue component from color"),
+                "hsl"       : ({Boolean},"get HSL representation from color"),
+                "hue"       : ({Boolean},"get hue component from color"),
+                "saturation": ({Boolean},"get saturation component from color"),
+                "luminosity": ({Boolean},"get luminosity component from color")
             },
             returns     = {String,Dictionary},
+            # TODO(Paths\extract) add documentation for RGB extraction from Color values
+            #  labels: documentation, library, easy
             example     = """
             path: "/this/is/some/path.txt"
 
@@ -90,40 +102,72 @@ proc defineSymbols*() =
 
             """:
                 ##########################################################
-                if isUrl(x.s):
-                    let details = parseUrlComponents(x.s)
+                if x.kind==Color:
+                    let (r,g,b) = extractRGB(x.l)
 
-                    if (popAttr("scheme") != VNULL):
-                        push(details["scheme"])
-                    elif (popAttr("host") != VNULL):
-                        push(details["host"])
-                    elif (popAttr("port") != VNULL):
-                        push(details["port"])
-                    elif (popAttr("user") != VNULL):
-                        push(details["user"])
-                    elif (popAttr("password") != VNULL):
-                        push(details["password"])
-                    elif (popAttr("path") != VNULL):
-                        push(details["path"])
-                    elif (popAttr("query") != VNULL):
-                        push(details["query"])
-                    elif (popAttr("anchor") != VNULL):
-                        push(details["anchor"])
+                    if (popAttr("red") != VNULL):
+                        push newInteger(r)
+                    elif (popAttr("green") != VNULL):
+                        push newInteger(g)
+                    elif (popAttr("blue") != VNULL):
+                        push newInteger(b)
+                    elif (popAttr("hsl") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newDictionary({
+                            "hue"       : newInteger(hsl.h),
+                            "saturation": newFloating(hsl.s),
+                            "luminosity": newFloating(hsl.l)
+                        }.toOrderedTable)
+                    elif (popAttr("hue") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newInteger(hsl.h)
+                    elif (popAttr("saturation") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newFloating(hsl.s)
+                    elif (popAttr("luminosity") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newFloating(hsl.l)
                     else:
-                        push(newDictionary(details))
+                        push newDictionary({
+                            "red"   : newInteger(r),
+                            "green" : newInteger(g),
+                            "blue"  : newInteger(b)
+                        }.toOrderedTable)
                 else:
-                    let details = parsePathComponents(x.s)
+                    if isUrl(x.s):
+                        let details = parseUrlComponents(x.s)
 
-                    if (popAttr("directory") != VNULL):
-                        push(details["directory"])
-                    elif (popAttr("basename") != VNULL):
-                        push(details["basename"])
-                    elif (popAttr("filename") != VNULL):
-                        push(details["filename"])
-                    elif (popAttr("extension") != VNULL):
-                        push(details["extension"])
+                        if (popAttr("scheme") != VNULL):
+                            push(details["scheme"])
+                        elif (popAttr("host") != VNULL):
+                            push(details["host"])
+                        elif (popAttr("port") != VNULL):
+                            push(details["port"])
+                        elif (popAttr("user") != VNULL):
+                            push(details["user"])
+                        elif (popAttr("password") != VNULL):
+                            push(details["password"])
+                        elif (popAttr("path") != VNULL):
+                            push(details["path"])
+                        elif (popAttr("query") != VNULL):
+                            push(details["query"])
+                        elif (popAttr("anchor") != VNULL):
+                            push(details["anchor"])
+                        else:
+                            push(newDictionary(details))
                     else:
-                        push(newDictionary(details))
+                        let details = parsePathComponents(x.s)
+
+                        if (popAttr("directory") != VNULL):
+                            push(details["directory"])
+                        elif (popAttr("basename") != VNULL):
+                            push(details["basename"])
+                        elif (popAttr("filename") != VNULL):
+                            push(details["filename"])
+                        elif (popAttr("extension") != VNULL):
+                            push(details["extension"])
+                        else:
+                            push(newDictionary(details))
 
         builtin "list",
             alias       = unaliased, 
