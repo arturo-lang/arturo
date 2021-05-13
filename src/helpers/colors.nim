@@ -73,6 +73,9 @@ template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
 
+template rawRGB(r, g, b: int): stdColors.Color =
+    stdColors.Color(r shl 16 or g shl 8 or b)
+
 #=======================================
 # Helpers
 #=======================================
@@ -87,9 +90,35 @@ proc hueToRGB*(p, q, t: float): float =
     if T < 2/3.0: return (p+(q-p)*(2/3.0-T)*6)
     return p
 
+proc satPlus(a, b: int): int {.inline.} =
+    result = a +% b
+    if result > 255: result = 255
+
+proc satMinus(a, b: int): int {.inline.} =
+    result = a -% b
+    if result < 0: result = 0
+
 #=======================================
 # Methods
 #=======================================
+
+proc alterColorValue*(c: stdColors.Color, f: float): stdColors.Color =
+    var (r,g,b) = extractRGB(c)
+    var pcent: float
+    if f > 0:
+        pcent = f
+        r = satPlus(r, toInt(toFloat(r) * pcent))
+        g = satPlus(g, toInt(toFloat(g) * pcent))
+        b = satPlus(b, toInt(toFloat(b) * pcent))
+        result = rawRGB(r, g, b)
+    elif f < 0:
+        pcent = (-1) * f
+        r = satMinus(r, toInt(toFloat(r) * pcent))
+        g = satMinus(g, toInt(toFloat(g) * pcent))
+        b = satMinus(b, toInt(toFloat(b) * pcent))
+        result = rawRGB(r, g, b)
+    else:
+        return c
 
 proc HSLtoRGB*(hsl: HSL): RGB =
     let h = hsl.h/360
@@ -150,3 +179,11 @@ proc RGBtoHSL*(c: Color): HSL =
         s = D / (1 - abs(2*l - 1))
 
     return ((int)h,s,l)
+
+proc invertColor*(c: Color): RGB =
+    var hsl = RGBtoHSL(c)
+    hsl.h += 180;
+    if hsl.h > 360:
+        hsl.h -= 360
+    hsl.h = (int)((hsl.h/360).round)
+    return HSLtoRGB(hsl)
