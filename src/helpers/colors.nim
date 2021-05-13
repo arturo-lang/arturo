@@ -186,3 +186,23 @@ proc invertColor*(c: Color): RGB =
     if hsl.h > 360:
         hsl.h -= 360
     return HSLtoRGB(hsl)
+
+proc saturateColor*(c: Color, diff: float): RGB =
+    var hsl = RGBtoHSL(c)
+    hsl.s = hsl.s + hsl.s * diff
+    if hsl.s > 1: hsl.s = 1
+    if hsl.s < 0: hsl.s = 0
+    return HSLtoRGB(hsl)
+
+proc blendColors*(c1: Color, c2: Color, balance: float): RGB =
+    let rgb1 = extractRGB(c1)
+    let rgb2 = extractRGB(c2)
+
+    let w1 = 1.0 - balance
+    let w2 = balance
+
+    let r = (float)(rgb1.r) * w1 + (float)(rgb2.r) * w2
+    let g = (float)(rgb1.g) * w1 + (float)(rgb2.g) * w2
+    let b = (float)(rgb1.b) * w1 + (float)(rgb2.b) * w2
+
+    return ((int)(r.round), (int)(g.round), (int)(b.round))
