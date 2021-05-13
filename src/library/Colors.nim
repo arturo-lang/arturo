@@ -16,16 +16,6 @@
 # Libraries
 #=======================================
 
-# import sequtils, strformat, sugar, times, unicode
-# when not defined(NOGMP):
-#     import extras/bignum
-
-# import helpers/datasource
-# when not defined(NOASCIIDECODE):
-#     import helpers/strings
-
-import std/colors as stdColors
-
 import helpers/colors as colorsHelper
 
 import vm/lib
