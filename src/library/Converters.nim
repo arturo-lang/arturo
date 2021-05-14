@@ -682,6 +682,8 @@ proc defineSymbols*() =
             "memoize"   : ({Boolean},"store results of function calls")
         },
         returns     = {Function},
+        # TODO(Converters\function) add documentation example for `.memoize`
+        #  labels: documentation,library,easy
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
