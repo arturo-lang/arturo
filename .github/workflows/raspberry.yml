@@ -1,0 +1,67 @@
+name: "Raspberry"
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request:
+    paths-ignore:
+      - 'docs/*'
+      - '*.yml'
+      - '*.md'
+      - 'LICENSE'
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:  
+  build:
+    name: "Build & Test"
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        os: 
+          - linux
+        arch:
+          - arm
+          - arm64
+        version:
+          - mini
+    steps:
+      - name: "Cancel similar actions in progress"
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: "Checkout"
+        uses: actions/checkout@main
+        with:
+          submodules: recursive
+
+      - name: Install Nim
+        run: |
+          wget -qO - https://nim-lang.org/choosenim/init.sh | bash -s -- -y
+          echo "$HOME/.nimble/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
+          
+      - name: Verify dependecies
+        run: |
+          nim --version
+          
+      - name: Build Arturo
+        run: |
+          ./install ${{ matrix.version }} nosqlite nogmp ${{ matrix.arch }} log
+          echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          file bin/arturo
+
+      - name: Upload Artifacts
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: "arturo-${{matrix.version}}-${{matrix.os}}-${{matrix.arch}}"
+          path: bin/arturo

@@ -1,0 +1,26 @@
+#!/usr/bin/env arturo
+
+modules: []
+functions: #[]
+
+docsFolder: "../docs/wiki"
+
+; get modules and functions
+
+loop symbols [sym][
+    inf: info.get sym
+
+    if key? inf 'module [
+        fun: inf\name
+        lib: inf\module
+        append 'modules lib
+        if not? key? functions lib [
+            set functions lib []
+        ]
+        set functions lib append (get functions lib) fun
+    ]
+]
+
+loop functions [md,fns][
+    print ["syntax keyword arturoLib"++md] ++ fns
+]

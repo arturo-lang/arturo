@@ -1,0 +1,40 @@
+name: "replace"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "add given suffix to string"
+example: {
+        replace "hello" "l" "x"           ; => "hexxo"
+        
+        str: "hello"
+        replace 'str "l" "x"              ; str: "hexxo"
+    }
+attributes: #[
+    regex: #[
+        types: [
+                :boolean
+            ]
+        description: "match against a regular expression"
+        ]
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    match: [
+            :string
+        ]
+    replacement: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/suffix"
+         "Strings/prefix"
+         "Collections/repeat"
+         "Files/rename"
+    ]

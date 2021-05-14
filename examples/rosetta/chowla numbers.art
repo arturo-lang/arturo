@@ -1,0 +1,22 @@
+chowla: function [n]-> sum remove remove factors n 1 n
+countPrimesUpTo: function [limit][
+    count: 1
+    loop 3.. .step: 2 limit 'x [
+        if zero? chowla x -> count: count + 1
+    ]
+    return count
+]
+
+loop 1..37 'i -> print [i "=>" chowla i]
+print ""
+
+loop [100 1000 10000 100000 1000000 10000000] 'lim [
+    print ["primes up to" lim "=>" countPrimesUpTo lim]
+]
+print ""
+print "perfect numbers up to 35000000:"
+i: 2
+while [i < 35000000][
+    if (chowla i) = i - 1 -> print i
+    i: i + 2
+]

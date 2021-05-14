@@ -1,0 +1,5 @@
+print to :integer "10"      ; 10
+
+print from.hex "10"         ; 16
+print from.octal "120"      ; 80
+print from.binary "10101"   ; 21

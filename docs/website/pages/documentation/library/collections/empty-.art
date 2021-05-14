@@ -1,0 +1,30 @@
+name: "empty?"
+type: :function
+module: "Collections"
+returns: [
+        :boolean
+    ]
+description: "check if given collection is empty"
+example: {
+        empty? ""             ; => true
+        empty? []             ; => true
+        empty? #[]            ; => true
+        
+        empty [1 "two" 3]     ; => false
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :null
+             :string
+             :dictionary
+             :block
+        ]
+    ]
+related: [
+        "Collections/empty"
+         "Iterators/every?"
+         "Collections/key?"
+         "Comparison/equal?"
+    ]

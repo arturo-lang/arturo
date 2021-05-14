@@ -1,0 +1,31 @@
+name: "shr"
+type: :function
+module: "Binary"
+returns: [
+        :integer
+         :nothing
+    ]
+description: "shift-right first value bits by second value"
+example: {
+        print shr 16 3     ; 2
+        
+        a: 16
+        shr 'a 3           ; a: 2
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :literal
+        ]
+    bits: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/shl"
+         "Arithmetic/sub"
+         "Binary/nor"
+         "Binary/or"
+    ]

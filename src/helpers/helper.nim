@@ -13,9 +13,9 @@
 import algorithm, sequtils, sets, strformat
 import strutils, tables
 
-import helpers/colors as ColorsHelper
+import helpers/colors
 
-import vm/[globals, value]
+import vm/values/[printable, value]
 
 #=======================================
 # Constants
@@ -44,11 +44,11 @@ template printLine() =
 proc printEmptyLine() = 
     echo "|"
 
-proc getAlias(n: string): string = 
-    for k,v in pairs(Aliases):
+proc getAlias(n: string, aliases: SymbolDict): (string,PrecedenceKind) = 
+    for k,v in pairs(aliases):
         if v.name.s==n:
-            return $(newSymbol(k))
-    return ""
+            return ($(newSymbol(k)), v.precedence)
+    return ("", PrefixPrecedence)
 
 proc printOneData(label: string, data: string, color: string = resetColor, colorb: string = resetColor) =
     echo fmt("{initialSep}{initialPadding}{color}{align(label,labelAlignment)}{resetColor}  {colorb}{data}{resetColor}")
@@ -119,7 +119,7 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         if ts!=":boolean":
-            let len = fmt(".{attr[0]} {fg(grayColor)}{ts}").len
+            let len = fmt(".{attr[0]} {ts}").len
             if len>maxLen: maxLen = len
         else:
             let len = fmt(".{attr[0]}").len
@@ -128,27 +128,30 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
         var leftSide = ""
+        var myLen = maxLen
         if ts!=":boolean":
             leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
+            myLen += len(fmt("{fg(cyanColor)}{fg(grayColor)}"))
         else:
             leftSide = fmt("{fg(cyanColor)}.{attr[0]}")
+            myLen += len(fmt("{fg(cyanColor)}"))
         
-        result.add fmt("{alignLeft(leftSide,maxLen)} {resetColor}-> {attr[1][1]}")
+        result.add fmt("{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}")
 
 #=======================================
 # Methods
 #=======================================
 
-proc printHelp*() =
-    let sorted = toSeq(Syms.keys).sorted
+proc printHelp*(syms: ValueDict) =
+    let sorted = toSeq(syms.keys).sorted
     for key in sorted:
-        let v = Syms[key]
+        let v = syms[key]
         if v.kind==Function and v.fnKind==BuiltinFunction:
             var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
             
             echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.fdesc
 
-proc getInfo*(n: string, v: Value):ValueDict =
+proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result = initOrderedTable[string,Value]()
 
     result["name"] = newString(n)
@@ -156,7 +159,11 @@ proc getInfo*(n: string, v: Value):ValueDict =
     result["type"] = newType(v.kind)
 
     if v.info!="":
-        result["description"] = newString(v.info)
+        let parts = v.info.split("]")
+        let desc = parts[1].strip()
+        let modl = parts[0].strip().strip(chars={'['})
+        result["description"] = newString(desc)
+        result["module"] = newString(modl)
 
     if v.kind==Function:
         if v.fnKind==BuiltinFunction:
@@ -195,9 +202,10 @@ proc getInfo*(n: string, v: Value):ValueDict =
                 returns.add(newType(ret))
             result["returns"] = newBlock(returns)
 
-            let alias = getAlias(n)
-            if alias!="":
-                result["alias"] = newString(alias)
+            let alias = getAlias(n, aliases)
+            if alias[0]!="":
+                result["alias"] = newString(alias[0])
+                result["infix?"] = newBoolean(alias[1]==InfixPrecedence)
 
             result["description"] = newString(v.fdesc)
             result["example"] = newString(v.example)
@@ -206,7 +214,7 @@ proc getInfo*(n: string, v: Value):ValueDict =
             result["args"] = v.params
 
 
-proc printInfo*(n: string, v: Value) =
+proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
     var typeStr = ":" & ($(v.kind)).toLowerAscii
     # if v.kind==Function and v.fnKind==BuiltinFunction:
@@ -224,9 +232,9 @@ proc printInfo*(n: string, v: Value) =
     printOneData(n,fmt("{typeStr}{fg(grayColor)}{address}"),bold(magentaColor),resetColor)
 
     # Print alias if it exists
-    let alias = getAlias(n)
-    if alias!="":
-        printOneData("alias",alias)
+    let alias = getAlias(n, aliases)
+    if alias[0]!="":
+        printOneData("alias",alias[0])
 
     # Print separator
     printLine()
@@ -238,10 +246,12 @@ proc printInfo*(n: string, v: Value) =
             printOneData("",d)
         printLine()
     elif v.info!="":
-        for d in getShortData(v.info):
+        let parts = v.info.split("]")
+        let desc = parts[1].strip()
+        for d in getShortData(desc):
             printOneData("",d)
         printLine()
-        echo v.info
+        #echo v.info
 
     # If it's a function,
     # print more details

@@ -1,0 +1,54 @@
+<||= importPartial "components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+    <||= importPartial "components/navbar.html" ||>
+        
+        <main>
+            <div class="columns doccols"><!--is-gapless" style="height: 100vh; overflow-y:auto;">-->
+                <!-- SIDEBAR -->
+                <||= importPartial "components/sidebar.html" ||>
+
+                <!-- MAIN -->
+                <div class="column is-9 p-6 mb-6">
+
+                    <!-- Breadcrumbs -->
+                    <||= importPartial "components/breadcrumbs.html" ||>
+
+                    <|| if not? all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] [ ||>
+                        <h2 class="title is-size-3-touch is-size-2 is-spaced"><||= switch contains? pagePath "library" ["Library"] [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
+                    <|| ] ||>
+
+                    <||= switch key? W 'modules [ 
+                        moduleList: join.with:"\n" map Data\libraryModules 'md [
+                            ~{- [|to :string md|](|linkTo "documentation/library/"++(lower to :string md)|)}
+                        ]
+                        functionList: new []
+                        symbolList: new []
+                        loop Data\libraryFunctions [fn href][
+                           'functionList ++ ~{<a href='|href|'>|fn|</a>}
+                        ]
+                        loop Data\librarySymbols [fn nm href][
+                            'symbolList ++ ~{<a href='|href|'><b>|replace replace fn "<" "&lt;" ">" "&gt;"|</b></a>} 
+                        ]
+                        functionList: new join.with:" ▪︎ " functionList
+                        symbolList: new join.with:{&nbsp;&nbsp;&nbsp;} symbolList
+                        replace replace read.markdown replace replace replace replace replace replace
+                                W\content "#" "/" "Library-‣-" "" "%MODULE_LIST%" moduleList "%FUNCTION_LIST%" functionList "%SYMBOL_LIST%" symbolList "%FUNCTION_COUNT%" to :string (size Data\libraryFunctions) / 2 "<ul>" "<ulbd>" "</ul>" "</ulbd>"
+                    ] [
+                        switch "language" = last pagePath [ 
+                            aliasList: new []
+                            loop Data\librarySymbols [fn nm href][
+                                'aliasList ++ ~{<tr><td><code>|replace replace fn "<" "&lt;" ">" "&gt;"|</code></td><td><a href='|linkTo "documentation/library/" ++ href|'>|nm|</a></td></tr>} 
+                            ]
+                            aliasList: new join.with:"\n" aliasList
+                            replace replace read.markdown replace W\content "%ALIAS_LIST%" aliasList "<ul>" "<ulbd>" "</ul>" "</ulbd>"
+                        ] [ 
+                            replace replace read.markdown W\content "<ul>" "<ulbd>" "</ul>" "</ulbd>"  
+                        ] 
+                    ] ||>
+
+                </div>
+            </div>
+        </main>
+
+<||= importPartial "components/foot.html" ||>

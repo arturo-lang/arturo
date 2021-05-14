@@ -6,28 +6,30 @@
 ; @author: drkameleon
 ;==========================================
 
-runSet: function [title,location][
-    print color.bold.cyan ~"\n> |title|"
+errorMargin: 0
+if 1 = size arg -> errorMargin: to :integer first arg
 
-    tests: sort list.select:".res" relative location
+runSet: function [title,location][
+    print color #cyan.bold ~"\n> |title|"
+    tests: sort select list relative location => [in? ".res"]
     success: 0
 
     loop tests 'test [
         script: replace test ".res" ".art"
         expected: split.lines strip read test
 
-        prints pad.right ((color.magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
+        prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
         result: split.lines strip execute ~{arturo "|script|"}
 
         if? result=expected [
-            prints color.green.bold "[ OK ]"
+            prints color #green.bold "[ OK ]"
             success: success + 1
         ]
         else [
             print "<-------------------"
             print result
             print "------------------->"
-            prints color.red "[ Error ]"
+            prints color #red "[ Error ]"
         ]
     ]
 
@@ -39,17 +41,18 @@ runSet: function [title,location][
         ******************************
     }
 
-    if success < size tests 
-        -> panic.code: 1 "testing failed"
+    if success < (size tests)-errorMargin [ 
+        panic.code: 1 "testing failed"
+    ]
 ]
 
-print color.bold {
-	|============================================
-	| Arturo Tester
-	|============================================
+print color #white.bold {
+    |============================================
+    | Arturo Tester
+    |============================================
 }
 
-runSet "Unit Tests" "../tests"
+runSet "Unit Tests" "../tests/unittests"
 runSet "Examples" "../examples/rosetta"
 
 exit

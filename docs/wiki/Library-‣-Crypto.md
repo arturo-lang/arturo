@@ -16,13 +16,18 @@
 
 #### Description
 
-Base-64 encode given value
+Encode given value (default: base-64)
 
 #### Usage
 
 <pre>
 <b>decode</b> <ins>value</ins> <i>:string</i> <i>:literal</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|url|<i>:boolean</i>|decode URL based on RFC3986|
 
 #### Returns
 
@@ -34,19 +39,31 @@ Base-64 encode given value
 ```red
 print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
 ; Numquam fugiens respexeris
+
+print decode.url "http%3A%2F%2Ffoo+bar%2F"
+; http://foo bar/
 ```
 
 ## encode
 
 #### Description
 
-Base-64 decode given value
+Decode given value (default: base-64)
 
 #### Usage
 
 <pre>
 <b>encode</b> <ins>value</ins> <i>:string</i> <i>:literal</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|url|<i>:boolean</i>|encode URL based on RFC3986|
+|spaces|<i>:boolean</i>|also encode spaces|
+|slashes|<i>:boolean</i>|also encode slashes|
+|from|<i>:string</i>|source character encoding (default: CP1252)|
+|to|<i>:string</i>|target character encoding (default: UTF-8)|
 
 #### Returns
 
@@ -58,6 +75,9 @@ Base-64 decode given value
 ```red
 print encode "Numquam fugiens respexeris"
 ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
+
+print encode.url "http://foo bar/"
+; http%3A%2F%2Ffoo+bar%2F
 ```
 
 ## digest
@@ -113,3 +133,15 @@ Get hash for given value
 
 - *:integer*
 - *:string*
+
+#### Examples
+
+```red
+print hash "hello"      ; 613153351
+print hash [1 2 3]      ; 645676735036410
+print hash 123          ; 123
+
+a: [1 2 3]
+b: [1 2 3]
+print (hash a)=(hash b) ; true
+```

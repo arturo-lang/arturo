@@ -1,0 +1,26 @@
+name: "numeric?"
+type: :function
+module: "Strings"
+returns: [
+        :boolean
+    ]
+description: "check if given string is numeric"
+example: {
+        numeric? "hello"           ; => false
+        numeric? "3.14"            ; => true
+        numeric? "18966"           ; => true
+        numeric? "123xxy"          ; => false
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/lower?"
+         "Strings/upper?"
+         "Numbers/zero?"
+         "Numbers/even?"
+    ]

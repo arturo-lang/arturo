@@ -1,0 +1,13 @@
+name: "path"
+type: :dictionary
+description: "common path constants"
+module: "Paths"
+returns: [
+        :dictionary
+    ]
+related: [
+        "Reflection/path?"
+         "Converters/with"
+         "Crypto/hash"
+         "Numbers/tanh"
+    ]

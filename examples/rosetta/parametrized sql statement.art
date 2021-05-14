@@ -1,0 +1,39 @@
+; Helper functions
+
+createTable: function [][
+    query db {!sql DROP TABLE IF EXISTS users}
+    query db {!sql
+        CREATE TABLE users (
+            ID          INTEGER PRIMARY KEY AUTOINCREMENT,
+            username    TEXT NOT NULL,
+            email       TEXT NOT NULL,
+            age         INTEGER
+        )
+    }
+]
+
+addUser: function [name, email, age][
+    query.id db .with:@[name,email,age] {!sql
+        INSERT INTO users (username, email, age) 
+        VALUES (?,?,?)
+    }
+]
+
+findUser: function [name][
+    query db .with:@[name] ~{!sql
+        SELECT *
+        FROM users
+        WHERE username=?
+    }
+]
+
+db: open.sqlite "users.db"
+
+createTable 
+
+print ["added user with id:" addUser "JohnDoe" "jodoe@gmail.com" 35]
+print ["added user with id:" addUser "JaneDoe" "jadoe@gmail.com" 14]
+
+print ["getting user with name: JohnDoe =>" findUser "JohnDoe"]
+
+close db

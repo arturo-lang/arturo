@@ -1,0 +1,16 @@
+pernicious?: function [n][
+    prime? size filter split as.binary n 'x -> x="0"
+]
+
+i: 1
+found: 0
+while [found<25][
+    if pernicious? i [
+        prints i
+        prints " "
+        found: found + 1
+    ]
+    i: i + 1
+]
+print ""
+print select 888888877..888888888 => pernicious?

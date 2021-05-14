@@ -1,0 +1,10 @@
+str: "Hello World"
+
+print color #red str
+print color #green str
+print color #blue str
+print color #magenta str
+print color #yellow str
+print color #cyan str
+print color #black str
+print color #white str

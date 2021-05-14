@@ -1,0 +1,35 @@
+name: "fdiv"
+type: :function
+module: "Arithmetic"
+returns: [
+        :floating
+         :nothing
+    ]
+alias: "//"
+infix?: true
+description: "divide given values and return result"
+example: {
+        print fdiv 5 2     ; 2.5
+        
+        a: 6
+        fdiv 'a 3          ; a: 2.0
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :floating
+             :literal
+        ]
+    valueB: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Arithmetic/div"
+         "Arithmetic/add"
+         "Arithmetic/sub"
+         "Arithmetic/dec"
+    ]

@@ -1,0 +1,74 @@
+name: "remove"
+type: :function
+module: "Collections"
+returns: [
+        :string
+         :dictionary
+         :block
+         :nothing
+    ]
+alias: "--"
+infix?: true
+description: "remove value from given collection"
+example: {
+        remove "hello" "l"        ; => "heo"
+        print "hello" -- "l"      ; heo
+        
+        str: "mystring"
+        remove 'str "str"         
+        print str                 ; mying
+        
+        print remove.once "hello" "l"
+        ; helo
+        
+        remove [1 2 3 4] 4        ; => [1 2 3]
+    }
+attributes: #[
+    key: #[
+        types: [
+                :boolean
+            ]
+        description: "remove dictionary key"
+        ]
+    once: #[
+        types: [
+                :boolean
+            ]
+        description: "remove only first occurence"
+        ]
+    index: #[
+        types: [
+                :boolean
+            ]
+        description: "remove specific index"
+        ]
+    prefix: #[
+        types: [
+                :boolean
+            ]
+        description: "remove first matching prefix from string"
+        ]
+    suffix: #[
+        types: [
+                :boolean
+            ]
+        description: "remove first matching suffix from string"
+        ]
+    ]
+arguments: #[
+    collection: [
+            :string
+             :literal
+             :dictionary
+             :block
+        ]
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/chop"
+         "Collections/append"
+         "Crypto/decode"
+         "Dates/before"
+    ]

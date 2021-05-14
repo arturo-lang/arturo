@@ -10,25 +10,19 @@
 # Libraries
 #=======================================
 
-import strutils, unicode
+import sequtils, strutils, unicode
 
-when not defined(MINI):
+when not defined(NOASCIIDECODE):
     import unidecode
-
-import vm/value
 
 #=======================================
 # Methods
 #=======================================
 
-when not defined(MINI):
-    proc convertToAscii*(input: string): Value =
-        return newString(unidecode(input))
+when not defined(NOASCIIDECODE):
+    proc convertToAscii*(input: string): string =
+        return unidecode(input)
 
-else:
-    proc convertToAscii*(input: string): Value =
-        echo "- feature not supported in MINI builds"
-        return VNULL
 
 proc truncatePreserving*(s: string, at: int, with: string = "..."): string =
     result = s
@@ -45,3 +39,58 @@ proc truncate*(s: string, at: int, with: string = "..."): string =
     if runeLen(s) > (at + len(with)):
         setLen result, at+1
         result.add with
+
+iterator tokenize*(text: string; sep: openArray[string]): string =
+    var i, lastMatch = 0
+    while i < text.len:
+        for j, s in sep:
+            if text[i..text.high].startsWith s:
+                if i > lastMatch: yield text[lastMatch ..< i]
+                lastMatch = i + s.len
+                i += s.high
+                break
+        inc i
+    if i > lastMatch: yield text[lastMatch ..< i]
+
+proc centerUnicode*(s: string, width: int, padding = ' '.Rune): string =
+    let sLen = s.runeLen
+    if width <= sLen: return s
+    let leftPadding = (width - sLen) div 2
+    result = unicode.align(s, leftPadding+sLen, padding)
+    
+    for i in (leftPadding+sLen) ..< width:
+        result.add $padding
+
+proc levenshteinAlign*(astr, bstr: string, filler: Rune): tuple[a, b: string] =
+    let a = astr
+    let b = bstr
+    var costs = newSeqWith(a.len + 1, newSeq[int](b.len + 1))
+    for j in 0..b.len: costs[0][j] = j
+    for i in 1..a.len:
+        costs[i][0] = i
+        for j in 1..b.len:
+            let tmp = costs[i - 1][j - 1] + ord(a[i - 1] != b[j - 1])
+            costs[i][j] = min(1 + min(costs[i - 1][j], costs[i][j - 1]), tmp)
+ 
+    var aPathRev, bPathRev: string
+    var i = a.len
+    var j = b.len
+    while i != 0 and j != 0:
+        let tmp = costs[i - 1][j - 1] + ord(a[i - 1] != b[j - 1])
+        if costs[i][j] == tmp:
+            dec i
+            dec j
+            aPathRev.add a[i]
+            bPathRev.add b[j]
+        elif costs[i][j] == 1 + costs[i-1][j]:
+            dec i
+            aPathRev.add a[i]
+            bPathRev.add filler
+        elif costs[i][j] == 1 + costs[i][j-1]:
+            dec j
+            aPathRev.add filler
+            bPathRev.add b[j]
+        else:
+            discard
+ 
+    result = (reversed(aPathRev).join(), reversed(bPathRev).join())

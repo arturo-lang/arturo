@@ -35,24 +35,35 @@ buildArturo(){
     eecho "${GRAY}"
     if [ ! $PRINT_LOG ] && [ ! $IS_DEV_BUILD ];
     then
-        nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
+        nim $COMPILER $FLAGS -o:$BINARY $MAIN 2>/dev/null &
         animate_progress
     else
-        nim c $FLAGS -o:$BINARY $MAIN
+        nim $COMPILER $FLAGS -o:$BINARY $MAIN
     fi
     eecho "${CLEAR}"
 }
 
 compressBinary(){
-    if ! command_exists upx ; 
-    then
-        info "compressing binary"
-        upx -q $BINARY >/dev/null 2>&1
+    info "compressing binary"
+    if $FOR_WEB; then
+        if command_exists uglifyjs ;
+        then
+            uglifyjs $BINARY -c -m "toplevel,reserved=['A$']" -c -o ${BINARY/.js/.min.js}
+        fi
+    else
+        if ! command_exists upx ; 
+        then
+            upx -q $BINARY >/dev/null 2>&1
+        fi
     fi
 }
 
 installAll(){
     cp $BINARY $TARGET_DIR
+
+    if $RUN_UNIT_TESTS; then
+        ./tools/tester.art
+    fi
 }
 
 ################################################
@@ -67,12 +78,16 @@ TARGET_LIB="$ROOT_DIR/lib"
 
 BINARY="bin/arturo"
 MAIN="src/arturo.nim"
+COMPILER="c"
 
 # variables
 
 MINI_BUILD=false
 COMPRESS=true
 PRINT_LOG=false
+RUN_UNIT_TESTS=false
+FOR_WEB=false
+
 
 if [ "$(whoami)" = "drkameleon" ]; then IS_DEV_BUILD=true
 else IS_DEV_BUILD=false
@@ -90,9 +105,51 @@ do
             PRINT_LOG=true;;
         dev)
             IS_DEV_BUILD=true;;
+        test)
+            RUN_UNIT_TESTS=true;;
+        release)
+            FLAGS="$FLAGS --passC:'-flto'";;
         mini)      
             MINI_BUILD=true 
-            FLAGS="$FLAGS -d:MINI";;
+            FLAGS="$FLAGS -d:NOASCIIDECODE \
+                          -d:NOEXAMPLES \
+                          -d:NOGMP \
+                          -d:NOPARSERS \
+                          -d:NOSQLITE \
+                          -d:NOUNZIP \
+                          -d:NOWEBVIEW";;
+
+        safe)
+            FLAGS="$FLAGS -d:SAFE";;
+        web)
+            # TODO(install) make Web builds mini, by default
+            #  labels: enhancement,cleanup,installer,web
+            FOR_WEB=true
+            COMPILER="js"
+            BINARY="$BINARY.js"
+            FLAGS="$FLAGS -d:NOASCIIDECODE \
+                          -d:NOEXAMPLES \
+                          -d:NOGMP \
+                          -d:NOPARSERS \
+                          -d:NOSQLITE \
+                          -d:NOUNZIP \
+                          -d:NOWEBVIEW"
+            FLAGS="$FLAGS --verbosity:3"
+            FLAGS="$FLAGS -d:WEB ";;
+
+        noasciidecode)  FLAGS="$FLAGS -d:NOASCIIDECODE";;
+        noexamples)     FLAGS="$FLAGS -d:NOEXAMPLES";;
+        nogmp)          FLAGS="$FLAGS -d:NOGMP";;
+        noparsers)      FLAGS="$FLAGS -d:NOPARSERS";;
+        nosqlite)       FLAGS="$FLAGS -d:NOSQLITE";;
+        nounzip)        FLAGS="$FLAGS -d:NOUNZIP";;
+        nowebview)      FLAGS="$FLAGS -d:NOWEBVIEW";;
+        
+        arm)
+            FLAGS="$FLAGS --cpu:arm";;
+        arm64)
+            FLAGS="$FLAGS --cpu:arm64 --gcc.path:/usr/bin"
+            FLAGS="$FLAGS --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc";;
         verbose) 	
             CONFIG="verbose $CONFIG"
             FLAGS="$FLAGS -d:VERBOSE";;
@@ -123,7 +180,7 @@ if $IS_DEV_BUILD; then
     awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
     git commit -m 'build update' version/build
 
-    FLAGS="$FLAGS -d:DEV"
+    FLAGS="$FLAGS -d:DEV --hints:on"
 fi
 
 ################################################

@@ -1,0 +1,36 @@
+name: "copy"
+type: :function
+module: "Files"
+returns: [
+        :nothing
+    ]
+description: "copy file at path to given destination"
+example: {
+        copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+        ; copied file
+        
+        copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+        ; copied whole folder
+    }
+attributes: #[
+    directory: #[
+        types: [
+                :boolean
+            ]
+        description: "path is a directory"
+        ]
+    ]
+arguments: #[
+    file: [
+            :string
+        ]
+    destination: [
+            :string
+        ]
+    ]
+related: [
+        "Collections/chop"
+         "Core/pop"
+         "Numbers/conj"
+         "Numbers/cos"
+    ]

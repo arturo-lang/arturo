@@ -1,0 +1,23 @@
+lcs: function [a,b][
+    lengths: map 0..size a => [map 0..size b => 0]
+    greatestLength: 0
+    result: ""
+    loop.with:'i a 'x [
+        loop.with:'j b 'y [
+            if x=y [
+                if? or? i=0 j=0 ->
+                    set lengths \ i j 0
+                else ->
+                    set lengths \ i j (1 + (lengths \ i-1) \ j-1)
+
+                if greatestLength < (lengths \ i) \ j [
+                    greatestLength: (lengths \ i) \ j
+                    result: slice a (i-greatestLength)+1 i
+                ]
+            ]
+        ]
+    ]
+    return result
+]
+
+print lcs "thisisatest", "testing123testing"

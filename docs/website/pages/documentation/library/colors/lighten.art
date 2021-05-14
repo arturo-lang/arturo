@@ -1,0 +1,24 @@
+name: "lighten"
+type: :function
+module: "Colors"
+returns: [
+        :color
+    ]
+description: "lighten color by given percentage (0.0-1.0)"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    color: [
+            :color
+        ]
+    percent: [
+            :floating
+        ]
+    ]
+related: [
+        "Colors/darken"
+         "Colors/saturate"
+         "Colors/desaturate"
+         "Collections/flatten"
+    ]

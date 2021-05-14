@@ -1,0 +1,24 @@
+digitSum: function [v][
+    n: new v
+    result: new 0
+    while [n > 0][
+        'result + n % 10
+        'n / 10
+    ]
+    return result
+]
+
+smith?: function [z][
+    return
+        (prime? z) ? -> false
+                     -> (digitSum z) = sum map factors.prime z 'num [digitSum num]
+]
+found: 0
+loop 1..10000 'x [
+    if smith? x [
+        found: found + 1
+        prints (pad to :string x 6) ++ " "
+        if 0 = found % 10 -> print ""
+    ]
+]
+print ""

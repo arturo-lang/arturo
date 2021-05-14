@@ -1,0 +1,21 @@
+iroot: function [b n][
+    if b<2 -> return b
+ 
+    n1: n-1
+    n2: n
+    n3: n1
+    c: 1
+    d: (n3+b)/n2
+    e: ((n3*d) + b/d^n1)/n2
+    while [and? c<>d c<>e][
+        c: d
+        d: e
+        e: ((n3*e) + b/e^n1)/n2
+    ]
+    if d<e -> return d
+    return e
+]
+ 
+print ["3rd root of 8:" iroot 8 3]
+print ["3rd root of 9:" iroot 9 3]
+print ["First 2001 digits of the square root of 2:" iroot (100^2000)*2 2]

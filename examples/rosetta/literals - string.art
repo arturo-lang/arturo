@@ -2,10 +2,23 @@ str: "Hello world"
 
 print [str "->" type str]
 
+fullLineStr: « This is a full-line string
+
+print [fullLineStr "->" type fullLineStr]
+
 multiline: {
-This
-is a multi-line
-string
+    This
+    is a multi-line
+    string
 }
 
 print [multiline "->" type multiline]
+
+verbatim: {:
+    This is 
+    a verbatim
+    multi-line
+    string
+:}
+
+print [verbatim "->" type verbatim]

@@ -10,70 +10,87 @@
 # Libraries
 #=======================================
 
-import parseopt, segFaults, tables
+when not defined(WEB):
+    import parseopt, segFaults
+else:
+    import jsffi
+
+when defined(PORTABLE):
+    import os, sequtils
+else:
+    import tables
 
 when defined(PROFILE):
     import nimprof
 
-import vm/[version, value, vm]
+when not defined(WEB):
+    import vm/[bytecode, version]
 
-#=======================================
-# Types
-#=======================================
+import vm/[values/value, vm]
 
-type
-    CmdAction = enum
-        execFile
-        evalCode
-        # readBcode
-        # writeBcode
-        showHelp
-        showVersion
+when not defined(WEB):
 
-#=======================================
-# Constants
-#=======================================
+    #=======================================
+    # Types
+    #=======================================
 
-#   -o --output               Compile script and write bytecode
-#   -i --input                Execute script from bytecode
+    type
+        CmdAction = enum
+            execFile
+            evalCode
+            readBcode
+            writeBcode
+            showHelp
+            showVersion
 
-const helpTxt = """
+    #=======================================
+    # Constants
+    #=======================================
 
-Usage:
-  arturo [options] <path>
+    const helpTxt = """
 
-Options:
-  -e --evaluate             Evaluate given code
-  -c --console              Show repl / interactive console
+    Usage:
+    arturo [options] <path>
 
-  -u --update               Update to latest version
+    Options:
+    -c --compile              Compile script and write bytecode
+    -x --execute              Execute script from bytecode
 
-  -m --module           
-        list                List all available modules
-        remote              List all available remote modules
-        info <name>         Get info about given module
-        install <name>      Install remote module by name
-        uninstall <name>    Uninstall module by name
-        update              Update all local modules
+    -e --evaluate             Evaluate given code
+    -r --repl                 Show repl / interactive console
 
-  -h --help                 Show this help screen
-  -v --version              Show current version
-"""
+    -u --update               Update to latest version
+
+    -m --module           
+            list                List all available modules
+            remote              List all available remote modules
+            info <name>         Get info about given module
+            install <name>      Install remote module by name
+            uninstall <name>    Uninstall module by name
+            update              Update all local modules
+
+    -d --debug                Show debugging information
+    --no-color                Mute all colors from output
+
+    -h --help                 Show this help screen
+    -v --version              Show current version
+    """
     
 #=======================================
 # Main entry
 #=======================================
 
-when isMainModule:
+when isMainModule and not defined(WEB):
 
     var token = initOptParser()
 
     var action: CmdAction = evalCode
-    var runConsole  = static readFile("src/system/console.art")
-    var runUpdate   = static readFile("src/system/update.art")
-    var runModule   = static readFile("src/system/module.art")
+    var runConsole  = static readFile("src/scripts/console.art")
+    var runUpdate   = static readFile("src/scripts/update.art")
+    var runModule   = static readFile("src/scripts/module.art")
     var code: string = ""
-    var arguments: ValueArray = @[]
+    var arguments: seq[string] = @[]
+    var muted: bool = false
 
     when not defined(PORTABLE):
 
@@ -86,35 +103,42 @@ when isMainModule:
                             action = execFile
                         
                         code = token.key
-                    else:
-                        arguments.add(newString(token.key))
+                        break
                 of cmdShortOption, cmdLongOption:
                     case token.key:
-                        of "c","console":
+                        of "r","repl":
                             action = evalCode
                             code = runConsole
                         of "e","evaluate":
                             action = evalCode
                             code = token.val
-                        # of "o","output":
-                        #     action = writeBcode
-                        #     code = token.val
-                        # of "i","input":
-                        #     action = readBcode
-                        #     code = token.val
+                        of "c","compile":
+                            action = writeBcode
+                            code = token.val
+                        of "x","execute":
+                            action = readBcode
+                            code = token.val
                         of "u","update":
                             action = evalCode
                             code = runUpdate
                         of "m", "module":
                             action = evalCode
                             code = runModule
+                        of "d","debug":
+                            # DoDebug = true
+                            discard
+                        of "no-color":
+                            muted = true
                         of "h","help":
                             action = showHelp
                         of "v","version":
                             action = showVersion
                         else:
-                            echo "error: unrecognized option (" & token.key & ")"
+                            #echo "error: unrecognized option (" & token.key & ")"
+                            discard
                 of cmdEnd: break
+
+        arguments = token.remainingArgs()
 
         case action:
             of execFile, evalCode:
@@ -123,30 +147,28 @@ when isMainModule:
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        run(code, arguments, action==execFile)
+                        discard run(code, arguments, action==execFile, muted=muted)
                 else:
-                    run(code, arguments, action==execFile)
+                    discard run(code, arguments, action==execFile, muted=muted)
                     
-            # of writeBcode:
-            #     discard
-            #     # bootup(run=false):
-            #     #     let filename = code
-            #     #     let parsed = doParse(move code, isFile = true)
-            #     #     let evaled = parsed.doEval()
+            of writeBcode:
+                let filename = code
+                discard writeBytecode(run(code, arguments, isFile=true, doExecute=false), filename & ".bcode")
 
-            #     #     discard writeBytecode(evaled, filename & ".bcode")
-
-            # of readBcode:
-            #     discard
-            #     # bootup(run=true):
-            #     #     let evaled = readBytecode(code)
+            of readBcode:
+                let filename = code
+                runBytecode(readBytecode(code), filename, arguments)
 
             of showHelp:
                 echo helpTxt
             of showVersion:
-                echo VersionTxt
+                echo ArturoVersionTxt
     else:
-        arguments = commandLineParams().map(proc (x:string):Value = newString(x))
+        arguments = commandLineParams()
         code = static readFile(getEnv("PORTABLE_INPUT"))
 
-        run(code, arguments, isFile=false)
+        discard run(code, arguments, isFile=false)
+else:
+    proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
+        var str = $(txt)
+        return run(str, params)

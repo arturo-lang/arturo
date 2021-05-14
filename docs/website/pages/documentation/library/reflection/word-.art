@@ -1,0 +1,24 @@
+name: "word?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :word"
+example: {
+        word? first [something x]
+        ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/block?"
+         "Reflection/char?"
+         "Reflection/date?"
+         "Reflection/null?"
+    ]

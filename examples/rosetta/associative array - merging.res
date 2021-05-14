@@ -1,0 +1,1 @@
+[name:Rocket Skates price:15.25 colour:red year:1974]

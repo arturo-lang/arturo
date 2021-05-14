@@ -1,0 +1,7 @@
+rnd: function []-> (random 0 10000)//10000
+
+rands: map 1..1000 'x [
+    1 + (sqrt neg 2 * ln rnd) * (cos 2 * pi * rnd)
+]
+
+print rands

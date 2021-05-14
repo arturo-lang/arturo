@@ -1,0 +1,25 @@
+name: "floating?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :floating"
+example: {
+        print floating? 3.14        ; true
+        print floating? 123         ; false
+        print floating? "hello"     ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/function?"
+         "Reflection/string?"
+         "Reflection/block?"
+         "Reflection/boolean?"
+    ]

@@ -29,6 +29,7 @@ jobs:
         version:
           - mini
           - full
+          - safe
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
@@ -50,6 +51,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libwebkit2gtk-4.0-dev
+
+      - name: Install dependencies
+        if: matrix.version == 'safe'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libwebkit2gtk-4.0-dev
           
       - name: Verify dependecies
         run: |
@@ -66,7 +73,14 @@ jobs:
           name: "arturo-${{matrix.version}}-${{matrix.os}}"
           path: bin/arturo
 
-      - name: Run unit tests
+      - name: Run unit tests (full)
+        if: matrix.version == 'full'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
+
+      - name: Run unit tests (mini)
+        if: matrix.version == 'mini'
+        run: |
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          arturo tools/tester.art 5

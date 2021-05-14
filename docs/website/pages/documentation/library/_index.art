@@ -1,0 +1,29 @@
+modules: ""
+content:{!md
+
+The Standard Library is split into different modules/dictionaries in order to keep things better organized.  
+
+Here is the complete list of modules, each one containing all the defined words/functions:
+
+---
+
+%MODULE_LIST%
+
+---
+
+<h3 id="alphabetical-index">Alphabetical Index</h3>
+
+<p class="pt-5 pb-5">Yes, all the %FUNCTION_COUNT% library functions, predicates & constants in one place!</p>
+
+<p align="justify">
+%FUNCTION_LIST%
+</p>
+
+---
+
+<h3 id="symbol-index">Symbol index</h3>
+
+<p align="justify">
+%SYMBOL_LIST%
+</p>
+}

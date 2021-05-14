@@ -1,0 +1,40 @@
+name: "select"
+type: :function
+module: "Iterators"
+returns: [
+        :block
+         :nothing
+    ]
+description: "get collection\'s items that fulfil given condition"
+example: {
+        print select 1..10 [x][
+            even? x
+        ]
+        ; 2 4 6 8 10
+        
+        arr: 1..10
+        select 'arr 'x -> even? x
+        print arr
+        ; 2 4 6 8 10
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :literal
+             :block
+        ]
+    params: [
+            :literal
+             :block
+        ]
+    action: [
+            :block
+        ]
+    ]
+related: [
+        "Collections/repeat"
+         "Collections/set"
+         "Collections/slice"
+         "Collections/split"
+    ]

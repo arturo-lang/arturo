@@ -1,0 +1,24 @@
+name: "dictionary?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :dictionary"
+example: {
+        print dictionary? #[name: "John"]   ; true
+        print dictionary? 123               ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Converters/dictionary"
+         "Reflection/binary?"
+         "Reflection/function?"
+         "Reflection/char?"
+    ]

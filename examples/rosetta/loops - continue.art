@@ -1,0 +1,8 @@
+loop 1..10 'i [
+    prints i
+    if 0 = i%5 [
+        print ""
+        continue
+    ]
+    prints ", "
+]

@@ -1,0 +1,26 @@
+hailstone: function [n][
+	ret: @[n]
+	while [n>1][
+		if? 1 = and n 1 -> n: 1+3*n
+		else -> n: n/2
+
+		append 'ret n
+	]
+	ret
+]
+
+print "Hailstone sequence for 27:"
+print hailstone 27
+
+maxHailstoneLength: 0
+maxHailstone: 0
+
+loop 2..1000 'x [
+	l: size hailstone x
+	if l>maxHailstoneLength [
+		maxHailstoneLength: l
+		maxHailstone: x
+	]
+]
+
+print ["max hailstone sequence found (<100000): of length" maxHailstoneLength "for" maxHailstone]

@@ -1,0 +1,8 @@
+code: {
+    ((data "quoted data" 123 4.5)
+     (data (!@# (4.5) "(more" "data)")))
+}
+
+s: first to :block code
+inspect.muted s
+print as.code s

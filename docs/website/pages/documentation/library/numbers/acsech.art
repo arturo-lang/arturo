@@ -1,0 +1,31 @@
+name: "acsech"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+         :complex
+    ]
+description: "calculate the inverse hyperbolic cosecant of given angle"
+example: {
+        print acsech 0              ; inf
+        print acsech 1.0            ; 0.0
+        print acsech 10             ; 0.09983407889920758
+        
+        acsech to :complex @[pi 1]
+        ; => 0.2862356627279947-0.08847073864038091i
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Numbers/asech"
+         "Numbers/acsec"
+         "Numbers/csech"
+         "Numbers/acosh"
+    ]

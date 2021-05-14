@@ -1,0 +1,21 @@
+name: "invert"
+type: :function
+module: "Colors"
+returns: [
+        :color
+    ]
+description: "get complement for given color"
+example: ""
+attributes: #[
+    ]
+arguments: #[
+    color: [
+            :color
+        ]
+    ]
+related: [
+        "Collections/insert"
+         "Strings/indent"
+         "Collections/index"
+         "Io/input"
+    ]

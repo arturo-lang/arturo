@@ -1,0 +1,30 @@
+name: "delete"
+type: :function
+module: "Files"
+returns: [
+        :nothing
+    ]
+description: "delete file at given path"
+example: {
+        delete "testscript.art"
+        ; file deleted
+    }
+attributes: #[
+    directory: #[
+        types: [
+                :boolean
+            ]
+        description: "path is a directory"
+        ]
+    ]
+arguments: #[
+    file: [
+            :string
+        ]
+    ]
+related: [
+        "Paths/list"
+         "Converters/define"
+         "Core/else"
+         "Core/let"
+    ]

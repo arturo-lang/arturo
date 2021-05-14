@@ -4,6 +4,7 @@
 
 <!--ts-->
    * [append](#append)
+   * [chop](#chop)
    * [combine](#combine)
    * [contains?](#contains?)
    * [drop](#drop)
@@ -32,6 +33,7 @@
    * [slice](#slice)
    * [sort](#sort)
    * [split](#split)
+   * [squeeze](#squeeze)
    * [take](#take)
    * [unique](#unique)
    * [values](#values)
@@ -78,6 +80,36 @@ print a                   ; hello
 b: [1 2 3]
 'b ++ 4
 print b                   ; [1 2 3 4]
+```
+
+## chop
+
+#### Description
+
+Remove last item from given collection
+
+#### Usage
+
+<pre>
+<b>chop</b> <ins>collection</ins> <i>:string</i> <i>:literal</i> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:string*
+- *:block*
+- *:nothing*
+
+#### Examples
+
+```red
+print chop "books"          ; book
+print chop chop "books"     ; boo
+
+str: "books"
+chop 'str                   ; str: "book"
+
+chop [1 2 3 4]              ; => [1 2 3]
 ```
 
 ## combine
@@ -248,6 +280,14 @@ Get new dictionary by merging given ones
 
 - *:dictionary*
 
+#### Examples
+
+```red
+person: #[ name: "john" surname: "doe" ]
+
+print extend person #[ age: 35 ]
+; [name:john surname:doe age:35]
+```
 
 ## first
 
@@ -290,6 +330,11 @@ Flatten given collection by eliminating nested blocks
 <pre>
 <b>flatten</b> <ins>collection</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|once|<i>:boolean</i>|do not perform recursive flattening|
 
 #### Returns
 
@@ -305,6 +350,12 @@ print flatten arr
 arr: [[1 2 3] [4 5 6]]
 flatten 'arr
 ; arr: [1 2 3 4 5 6]
+
+flatten [1 [2 3] [4 [5 6]]]
+; => [1 2 3 4 5 6]
+
+flatten.once [1 [2 3] [4 [5 6]]]
+; => [1 2 3 4 [5 6]]
 ```
 
 ## get
@@ -319,7 +370,7 @@ Get collection's item by given index
 
 <pre>
 <b>get</b> <ins>collection</ins> <i>:string</i> <i>:date</i> <i>:dictionary</i> <i>:block</i>
-    <ins>index</ins> <i>:integer</i> <i>:string</i> <i>:literal</i>
+    <ins>index</ins> <i>:any</i>
 </pre>
 
 #### Returns
@@ -479,7 +530,7 @@ Check if dictionary contains given key
 
 <pre>
 <b>key?</b> <ins>collection</ins> <i>:dictionary</i>
-     <ins>key</ins> <i>:string</i> <i>:literal</i>
+     <ins>key</ins> <i>:any</i>
 </pre>
 
 #### Returns
@@ -648,7 +699,9 @@ Remove value from given collection
 |---|---|---|
 |key|<i>:boolean</i>|remove dictionary key|
 |once|<i>:boolean</i>|remove only first occurence|
-|index|<i>:integer</i>|remove specific index|
+|index|<i>:boolean</i>|remove specific index|
+|prefix|<i>:boolean</i>|remove first matching prefix from string|
+|suffix|<i>:boolean</i>|remove first matching suffix from string|
 
 #### Returns
 
@@ -770,7 +823,7 @@ Set collection's item at index to given value
 
 <pre>
 <b>set</b> <ins>collection</ins> <i>:string</i> <i>:dictionary</i> <i>:block</i>
-    <ins>index</ins> <i>:integer</i> <i>:string</i> <i>:literal</i>
+    <ins>index</ins> <i>:any</i>
     <ins>value</ins> <i>:any</i>
 </pre>
 
@@ -879,15 +932,17 @@ Sort given block in ascending order
 #### Usage
 
 <pre>
-<b>sort</b> <ins>collection</ins> <i>:literal</i> <i>:block</i>
+<b>sort</b> <ins>collection</ins> <i>:literal</i> <i>:dictionary</i> <i>:block</i>
 </pre>
 #### Attributes
 
 |Attribute|Type|Description|
 |---|---|---|
-|as|<i>:literal</i>|localizezd by ISO 639-1 language code|
+|as|<i>:literal</i>|localized by ISO 639-1 language code|
 |sensitive|<i>:boolean</i>|case-sensitive sorting|
 |descending|<i>:boolean</i>|sort in ascending order|
+|values|<i>:boolean</i>|sort dictionary by values|
+|by|<i>:string</i>|sort array of dictionaries by given key|
 
 #### Returns
 
@@ -928,6 +983,7 @@ Split collection to components
 |regex|<i>:boolean</i>|match against a regular expression|
 |at|<i>:integer</i>|split collection at given position|
 |every|<i>:integer</i>|split collection every <n> elements|
+|path|<i>:boolean</i>|split path components in string|
 
 #### Returns
 
@@ -949,6 +1005,37 @@ split.at: 4 "helloworld"
 arr: 1..9
 split.at:3 'arr
 ; => [ [1 2 3 4] [5 6 7 8 9] ]
+```
+
+## squeeze
+
+#### Description
+
+Reduce adjacent elements in given collection
+
+#### Usage
+
+<pre>
+<b>squeeze</b> <ins>collection</ins> <i>:string</i> <i>:literal</i> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:string*
+- *:block*
+- *:nothing*
+
+#### Examples
+
+```red
+print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
+; 1 2 3 4 2 3 4 5 6 7 
+
+arr: [4 2 1 1 3 6 6]
+squeeze 'arr            ; a: [4 2 1 3 6]
+
+print squeeze hello world";
+; helo world
 ```
 
 ## take

@@ -1,0 +1,31 @@
+name: "cosh"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+         :complex
+    ]
+description: "calculate the hyperbolic cosine of given angle"
+example: {
+        print cosh 0                ; 1.0
+        print cosh 0.3              ; 1.04533851412886
+        print cosh 1.0              ; 1.543080634815244
+        
+        cosh to :complex [2 1]
+        ; => 2.032723007019666+3.0518977991518i
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Numbers/sinh"
+         "Numbers/acosh"
+         "Numbers/cos"
+         "Numbers/csech"
+    ]

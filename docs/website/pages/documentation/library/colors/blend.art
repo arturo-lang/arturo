@@ -1,0 +1,30 @@
+name: "blend"
+type: :function
+module: "Colors"
+returns: [
+        :color
+    ]
+description: "blend given colors and get result"
+example: ""
+attributes: #[
+    balance: #[
+        types: [
+                :floating
+            ]
+        description: "use different mix of color (0.0-1.0, default:0.5)"
+        ]
+    ]
+arguments: #[
+    colorA: [
+            :color
+        ]
+    colorB: [
+            :color
+        ]
+    ]
+related: [
+        "Binary/and"
+         "Binary/nand"
+         "Collections/append"
+         "Collections/extend"
+    ]

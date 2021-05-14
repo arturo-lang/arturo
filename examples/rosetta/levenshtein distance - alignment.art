@@ -1,0 +1,2 @@
+print join.with:"\n" levenshtein.align "place" "palace"
+print join.with:"\n" levenshtein.align "rosettacode" "raisethysword"

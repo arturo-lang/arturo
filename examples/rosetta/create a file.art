@@ -1,0 +1,8 @@
+output: "output.txt"
+docs:   "docs"
+
+write output ""
+write.directory docs ø
+
+write join.path ["/" output] ""
+write.directory join.path ["/" docs] ø

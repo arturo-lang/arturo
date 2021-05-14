@@ -3,13 +3,13 @@ syms: #[ M: 1000, D: 500, C: 100, L: 50, X: 10, V: 5, I: 1 ]
 fromRoman: function [roman][
 	ret: 0
 	loop 0..(size roman)-2 'ch [
-		valueA: syms \ to :string roman \ ch
-		valueB: syms \ to :string roman \ ch+1
+		valueA: syms \ roman \ ch
+		valueB: syms \ roman \ ch+1
 
 		if? valueA < valueB -> ret: ret - valueA
 	 	else				-> ret: ret + valueA
 	]
-	return ret + syms \ to :string last roman
+	return ret + syms \ last roman
 ]
 
 loop ["MCMXC" "MMVIII" "MDCLXVI"] 'r -> print [r "->" fromRoman r]

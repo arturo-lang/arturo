@@ -1,0 +1,27 @@
+name: "product"
+type: :function
+module: "Numbers"
+returns: [
+        :integer
+         :floating
+    ]
+description: "calculate the product of all values in given list"
+example: {
+        print product [3 4]       ; 12
+        print product [1 2 4 6]   ; 48
+        
+        print product 1..10       ; 3628800
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :block
+        ]
+    ]
+related: [
+        "Numbers/sum"
+         "Io/print"
+         "Numbers/round"
+         "Paths/module"
+    ]

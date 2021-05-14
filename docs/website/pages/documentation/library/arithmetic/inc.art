@@ -1,0 +1,30 @@
+name: "inc"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :nothing
+    ]
+description: "increase given value by 1"
+example: {
+        print inc 5        ; 6
+        
+        a: 4
+        inc 'a             ; a: 5
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+             :literal
+        ]
+    ]
+related: [
+        "Arithmetic/dec"
+         "Collections/in?"
+         "Binary/and"
+         "Collections/min"
+    ]

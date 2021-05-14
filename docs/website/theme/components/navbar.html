@@ -1,0 +1,40 @@
+<nav class="navbar is-fixed-top is-boxed" aria-label="main navigation" style="border-bottom:2px solid #6a156b;">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="<||= linkTo {} ||>" style="font-weight:bold; font-size: 1.2em; color: black">
+            <picture>
+                <source srcset="<||= linkTo {resources/images/navlogo.webp} ||>" type="image/webp">
+                <source srcset="<||= linkTo {resources/images/navlogo.png} ||>" type="image/png">
+                <img class="screenshot" src="<||= linkTo {resources/images/navlogo.png} ||>" width="28" height="28" alt="arturo logo">
+            </picture>
+            &nbsp;&nbsp;<h1 id="mainTitle" style="font-weight: inherit !important;">Arturo&nbsp;<span class="logo-secondary">: programming language</span></h1>
+        </a>
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+  
+    <div id="navbarMain" class="navbar-menu">
+        <div class="navbar-end">
+            
+            <||= if contains? pagePath "documentation" [||>
+                <input class="navbar-item is-hidden-touch" id="searchbar" type="search" placeholder="Search...">
+                <i id="searchbar-icon" class="fa fa-search is-hidden-touch"></i>
+            <|| ] ||>
+            <a class="<||= if contains? pagePath "documentation" [||>is-active<||]||> navbar-item is-tab is-warning" href="<||= linkTo{documentation} ||>">
+                <!--<i class="far fa-file-alt"></i>&nbsp;&nbsp;-->Documentation
+            </a>
+            <a class="<||= if contains? pagePath "playground" [||>is-active<||]||> navbar-item is-tab " href="<||= linkTo{playground} ||>">
+                <!--<i class="fab fa-github"></i>&nbsp;&nbsp;-->Playground
+            </a>
+            <!-- <a rel="noopener" target="_blank" class="navbar-item is-tab " href="https://github.com/arturo-lang/arturo">
+                Source
+            </a> -->
+            <!-- <div class="is-divider-vertical"></div>
+            <a rel="noopener" target="_blank" class="navbar-item is-tab" href="https://twitter.com/ArturoLanguage" aria-label="official twitter page">
+                <i class="fab fa-twitter"></i>
+            </a> -->
+        </div>
+    </div>
+</nav>

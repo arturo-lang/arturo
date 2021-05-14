@@ -1,0 +1,8 @@
+n: 20
+rng: 11..19
+while [not? every? rng => [zero? n %]][
+	'n + 20
+	print n
+]
+
+print n

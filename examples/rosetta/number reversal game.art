@@ -1,0 +1,14 @@
+arr: 1..9
+
+while [arr = sort arr]->
+    arr: shuffle arr
+
+score: 0
+while [arr <> sort arr][
+    prints [arr "-- "]
+    digits: to :integer strip input "How many digits to reverse? "
+    arr: (reverse slice arr 0 digits-1) ++ slice arr digits (size arr)-1
+    score: score + 1
+]
+
+print ["Your score:" score]

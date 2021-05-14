@@ -1,0 +1,28 @@
+name: "lower"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "convert given string to lowercase"
+example: {
+        print lower "hello World, 你好!"      ; "hello world, 你好!"
+        
+        str: "hello World, 你好!"
+        lower 'str                           ; str: "hello world, 你好!"
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Strings/lower?"
+         "Strings/upper"
+         "Arithmetic/pow"
+         "Binary/nor"
+    ]

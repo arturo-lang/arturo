@@ -1,0 +1,14 @@
+ordered?: function [w]->
+    w = join sort split w
+
+words: read.lines relative "unixdict.txt"
+ret: new []
+loop words 'wrd [
+    if ordered? wrd ->
+        'ret ++ #[w: wrd l: size wrd]
+]
+
+sort.descending.by: 'l 'ret
+maxl: get first ret 'l
+print sort map select ret 'x -> maxl = x\l
+                          'x -> x\w

@@ -1,0 +1,79 @@
+;-----------------
+; data
+;-----------------
+puzzle: [
+    8 5 0 0 0 2 4 0 0             
+    7 2 0 0 0 0 0 0 9
+    0 0 4 0 0 0 0 0 0
+    0 0 0 1 0 7 0 0 2
+    3 0 5 0 0 0 9 0 0
+    0 4 0 0 0 0 0 0 0
+    0 0 0 0 8 0 0 7 0
+    0 1 7 0 0 0 0 0 0
+    0 0 0 0 3 6 0 4 0
+]
+solved?: false
+
+;-----------------
+; methods
+;-----------------
+prettyPrint: function [grid][
+    print "|-------+-------+-------|"
+    loop.with:'i split.every:9 grid 'line [
+        print "| " ++ (replace join.with: " | " map split.every:3 line => [join.with:" "] "0" ".") ++ " |"
+        if 2 = i % 3 -> print "|-------+-------+-------|"
+    ]
+]
+
+checkValid: function [v,x,y][
+    loop 0..8 'i [
+        if or? v = puzzle \ i+y*9
+               v = puzzle \ x+i*9 -> return false
+    ]   
+    startX: 3*x/3
+    startY: 3*y/3
+    loop startY..startY+2 'i [
+        loop startX..startX+2 'j [
+            if v = puzzle \ j + i*9 -> return false
+        ]
+    ]
+    return true  
+]
+
+placeNumber: function [pos].export:[solved?, puzzle][
+    ;print ["placing number @ " pos]
+    ;prettyPrint puzzle
+    if solved? -> return ø
+    if pos=81 [
+        solved?: true
+        return ø
+    ]
+    if positive? puzzle \ pos [
+        print ["location" pos "already filled"]
+        placeNumber pos+1
+        return ø
+    ]
+    loop 1..9 'n [
+        if checkValid n pos%9 pos/9 [
+            set puzzle pos n
+            placeNumber pos+1
+            if solved? [ return ø ]
+            set puzzle pos 0 
+        ]
+    ]
+]
+
+solve: function [][
+    placeNumber 0
+    return solved?
+]
+
+;-----------------
+; main
+;-----------------
+print "\nINITIAL:\n"
+prettyPrint puzzle
+
+solve 
+print "\nSOLVED:\n"
+prettyPrint puzzle

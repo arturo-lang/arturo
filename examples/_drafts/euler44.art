@@ -1,0 +1,21 @@
+pentagonal: $[x]->(x*(3*x)-1)/2
+pentagonals: map 1..10000 => pentagonal
+
+
+findMinD: function [][
+	i: 1
+	 
+	while [true] [
+	    i: i+1
+
+	    n: pentagonal i
+	    loop (i-1)..1 'j [
+	    	m: pentagonal j
+
+	    	if and? [contains? pentagonals n-m] [contains? pentagonals n+m] ->
+	    		return n-m
+	    ] 
+	]
+]
+
+findMinD

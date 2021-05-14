@@ -1,0 +1,126 @@
+#!/usr/bin/env arturo
+
+modules: new []
+functions: #[]
+relatedFuncs: #[]
+
+rosettas: sort map select list "examples/rosetta" => [in? ".res"] 'rosetta [
+    (extract.basename rosetta) -- extract.extension rosetta
+]
+
+dict: new []
+
+loop rosettas 'ro [
+    'dict ++ ro
+    ;'dict ++ read ~"examples/rosetta/|ro|.art"
+]
+
+write "docs/website/data/rosetta.art" as.pretty.code dict
+
+print as.pretty.code dict
+; get modules and functions
+
+loop symbols [sym][
+    print ["processing:" sym]
+    inf: info.get sym
+
+    if key? inf 'module [
+        fun: inf\name
+        lib: inf\module
+        append 'modules lib
+        if not? key? functions lib [
+            set functions lib []
+        ]
+        set functions lib append (get functions lib) fun
+
+
+        levD: 100
+        related: new #[]
+        loop symbols [sym2][
+            inf2: info.get sym2
+
+            if and? key? inf2 'module
+                    inf <> inf2 [
+                lib2: inf2\module
+                lev: 100
+                levA: (levenshtein sym sym2) * 3
+                levB: levenshtein (inf\description) (inf2\description)
+                set related new ~"|capitalize lib2|/|sym2|" min @[levA levB]
+            ]
+        ]
+        ;inspect sort.values related
+        set relatedFuncs sym first.n: 4 keys sort.values related
+        ; inspect relatedFuncs
+    ]
+]
+
+inspect modules
+
+inspect relatedFuncs
+
+unique 'modules
+
+loop functions [modl,lst][
+    target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
+    ; write.directory target ø
+
+    loop lst 'func [
+        funcInfo:  info.get func
+        if? funcInfo\type = :function [
+            attributes: funcInfo\attrs
+            arguments: funcInfo\args
+            funcInfo: remove.key funcInfo 'attrs
+            funcInfo: remove.key funcInfo 'args
+            funcInfo\attributes: attributes
+            funcInfo\arguments: arguments
+        ]
+        else [
+            funcInfo\returns: @[funcInfo\type]
+        ]
+        funcInfo: remove.key funcInfo 'address
+        funcInfo\related: get relatedFuncs func
+        funcInfo: replace strip as.pretty.code.unwrapped funcInfo "\t" "    "
+
+        inspect funcInfo
+        
+        print join.path @[target ~"|func|.art"]
+        write join.path @[target ~{|replace func "?" "-"|.art}] funcInfo
+    ]
+]
+funcs: new []
+loop functions [modl,lst][
+    ; print ["re-processing:" modl]
+    loop lst 'f [
+        print ["adding:" f]
+        'funcs ++ f
+    ]
+]
+
+print "AFTER"
+
+sort 'funcs
+funcList: new []
+symbList: new []
+
+inspect funcs
+
+loop funcs 'f [
+    print ["processing func:" f]
+    inf: info.get f 
+
+    href: lower replace ~"|inf\module|/|f|" "?" "-"
+    'funcList ++ f
+    'funcList ++ href
+
+    if key? inf 'alias [
+        'symbList ++ to :string inf\alias
+        'symbList ++ to :string inf\name
+        'symbList ++ href
+    ]
+]
+
+write "docs/website/data/libraryModules.art" as.pretty.code sort unique modules
+write "docs/website/data/libraryFunctions.art" as.pretty.code funcList
+write "docs/website/data/librarySymbols.art" as.pretty.code symbList
+
+inspect funcList

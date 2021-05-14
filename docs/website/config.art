@@ -1,0 +1,27 @@
+debug: true
+verbose: true
+
+rules: [
+    {.art$} #[
+        title: "Rendering"
+        target: function [f][
+            location: (contains? f "_index")? -> replace append f -- extract.extension f ".html" "_" ""
+                                              -> append join.path @[f -- extract.extension f "index"] ".html"
+
+            lower replace replace location "?" "-" " " "-"
+        ]
+        template: function [f][
+            case [not? empty? match f]
+                when? -> {index\.art} -> return "theme/index.html"
+                else                  -> return "theme/function.html"
+        ]
+
+        pre: function [f,d][
+            return d
+        ]
+
+        post: function [f,c][
+
+        ]
+    ]
+]

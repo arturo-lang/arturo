@@ -1,0 +1,20 @@
+strings: [
+    "", "   ", "2", "333", ".55", "tttTTT", 
+    "4444   444k", "pépé", "🐶🐶🐺🐶", "🎄🎄🎄🎄"
+]
+
+allSameChars?: function [str][
+    if empty? str -> return ø
+    current: first str
+    loop.with:'i str 'ch [
+        if ch <> current -> return i
+    ]
+    return ø
+]
+
+loop strings 's [
+    prints ["\"" ++ s ++ "\"" ~"(size |size s|):"]
+    firstNotSame: allSameChars? s
+    if? null? firstNotSame -> print "all the same."
+    else -> print ~"first different char `|get s firstNotSame|` at position |firstNotSame|."
+]

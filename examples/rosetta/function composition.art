@@ -1,0 +1,8 @@
+compose: function [f,g] ->
+    return function [x].import:[f,g][
+        call f @[call g @[x]]
+    ]
+
+splitupper: compose 'split 'upper
+
+print call 'splitupper ["done"]

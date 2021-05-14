@@ -16,14 +16,31 @@
 # Libraries
 #=======================================
 
-import algorithm, re, std/editdistance, os
-import sequtils, strutils, sugar, unicode
-import nre except toSeq
+when not defined(WEB):
+    import re
+    import nre except toSeq
+else:
+    import jsre
 
-import helpers/colors as ColorsHelper
-import helpers/strings as StringsHelper
+import std/editdistance, json, os
+import sequtils, strutils, unicode, std/wordwrap, xmltree
 
-import vm/[common, exec, globals, parse, stack, value]
+import helpers/strings
+when defined(WEB):
+    import helpers/js
+
+import vm/lib
+
+when not defined(WEB):
+    import vm/[eval, exec, parse]
+
+#=======================================
+# Variables
+#=======================================
+
+when not defined(WEB):
+    var
+        templateStore = initOrderedTable[string,Translation]()
 
 #=======================================
 # Methods
@@ -53,17 +70,17 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Char:
-                stack.push(newBoolean(ord(x.c)<128))
+                push(newBoolean(ord(x.c)<128))
             else:
                 var allOK = true
                 for ch in runes(x.s):
                     if ord(ch) >= 128:
                         allOK = false
-                        stack.push(VFALSE)
+                        push(VFALSE)
                         break
 
                 if allOK:
-                    stack.push(VTRUE)
+                    push(VTRUE)
 
     builtin "capitalize",
         alias       = unaliased, 
@@ -81,73 +98,113 @@ proc defineSymbols*() =
             capitalize 'str                     ; str: "Hello World"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s.capitalize()))
-            else: Syms[x.s].s = Syms[x.s].s.capitalize()
+            if x.kind==String: push(newString(x.s.capitalize()))
+            else: InPlace.s = InPlaced.s.capitalize()
 
-    builtin "color",
+    builtin "escape",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "get colored version of given string",
+        description = "escape given string",
         args        = {
-            "string": {String}
+            "string": {String,Literal}
         },
         attrs       = {
-            "rgb"       : ({Integer},"use specific RGB color"),
-            "bold"      : ({Boolean},"bold font"),
-            "black"     : ({Boolean},"black foreground color"),
-            "red"       : ({Boolean},"red foreground color"),
-            "green"     : ({Boolean},"green foreground color"),
-            "yellow"    : ({Boolean},"yellow foreground color"),
-            "blue"      : ({Boolean},"blue foreground color"),
-            "magenta"   : ({Boolean},"magenta foreground color"),
-            "cyan"      : ({Boolean},"cyan foreground color"),
-            "white"     : ({Boolean},"white foreground color"),
-            "gray"      : ({Boolean},"gray foreground color")
+            "json"  : ({Boolean},"for literal use in JSON strings"),
+            "regex" : ({Boolean},"for literal use in regular expression"),
+            "shell" : ({Boolean},"for use in a shell command"),
+            "xml"   : ({Boolean},"for use in an XML document")
         },
-        returns     = {String},
+        returns     = {String,Nothing},
         example     = """
-            print color.green "Hello!"                ; Hello! (in green)
-            print color.red.bold "Some text"          ; Some text (in red/bold)
+            str: {a long "string" + with \diffe\rent symbols.}
+
+            print escape str
+            ; "a long \"string\" + with \\diffe\\rent symbols."
+
+            print escape.json str
+            ; a long \"string\" + with \\diffe\\rent symbols.
+
+            print escape.regex str
+            ; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
+
+            print escape.shell str
+            ; 'a long "string" + with \diffe\rent symbols.'
+
+            print escape.xml str
+            ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             ##########################################################
-            var color = ""
-
-            if (let aRgb = popAttr("rgb"); aRgb != VNULL):
-                color = rgb($(aRgb.i))
-            if (popAttr("black") != VNULL):
-                color = blackColor
-            elif (popAttr("red") != VNULL):
-                color = redColor
-            elif (popAttr("green") != VNULL):
-                color = greenColor
-            elif (popAttr("yellow") != VNULL):
-                color = yellowColor
-            elif (popAttr("blue") != VNULL):
-                color = blueColor
-            elif (popAttr("magenta") != VNULL):
-                color = magentaColor
-            elif (popAttr("cyan") != VNULL):
-                color = cyanColor
-            elif (popAttr("white") != VNULL):
-                color = whiteColor
-            elif (popAttr("gray") != VNULL):
-                color = grayColor
-
-            var finalColor = ""
-
-            if (popAttr("bold") != VNULL):
-                finalColor = bold(color)
-            elif (popAttr("underline") != VNULL):
-                finalColor = underline(color)
+            if x.kind==Literal:
+                if (popAttr("json") != VNULL):
+                    SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
+                elif (popAttr("regex") != VNULL):
+                    when not defined(WEB):
+                        SetInPlace(newString(re.escapeRe(InPlace.s)))
+                elif (popAttr("shell") != VNULL):
+                    when not defined(WEB):
+                        SetInPlace(newString(quoteShell(InPlace.s)))
+                elif (popAttr("xml") != VNULL):
+                    SetInPlace(newString(xmltree.escape(InPlace.s)))
+                else:
+                    SetInPlace(newString(strutils.escape(InPlace.s)))
             else:
-                finalColor = fg(color)
+                if (popAttr("json") != VNULL):
+                    push(newString(escapeJsonUnquoted(x.s)))
+                elif (popAttr("regex") != VNULL):
+                    when not defined(WEB):
+                        push(newString(re.escapeRe(x.s)))
+                elif (popAttr("shell") != VNULL):
+                    when not defined(WEB):
+                        push(newString(quoteShell(x.s)))
+                elif (popAttr("xml") != VNULL):
+                    push(newString(xmltree.escape(x.s)))
+                else:
+                    push(newString(strutils.escape(x.s)))
 
-            stack.push(newString(finalColor & x.s & resetColor))
+    builtin "indent",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "indent each line of given text",
+        args        = {
+            "text"  : {String,Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer},"pad by given number of spaces (default: 4)"),
+            "with"  : ({String},"use given padding")
+        },
+        returns     = {String,Nothing},
+        example     = """
+            str: "one\ntwo\nthree"
+
+            print indent str
+            ;     one
+            ;     two
+            ;     three
+
+            print indent .n:10 .with:"#" str
+            ; ##########one
+            ; ##########two
+            ; ##########three
+        """:
+            ##########################################################
+            var count = 4
+            var padding = " "
+
+            if (let aN = popAttr("n"); aN != VNULL):
+                count = aN.i
+
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.s
+
+            if x.kind==Literal:
+                SetInPlace(newString(indent(InPlace.s, count, padding)))
+            else:
+                push(newString(indent(x.s, count, padding)))            
 
     builtin "join",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "join collection of strings into string",
+        description = "join collection of values into string",
         args        = {
             "collection"    : {Block,Literal}
         },
@@ -166,22 +223,28 @@ proc defineSymbols*() =
             
             join 'arr
             ; arr: "onetwothree"
+
+            print join [`H` `e` `l` `l` `o` `!`]
+            ; Hello!
+
+            print join @["1 + 2 = " 1+2]
+            ; 1 + 2 = 3
         """:
             ##########################################################
             if (popAttr("path") != VNULL):
                 if x.kind==Literal:
-                    Syms[x.s] = newString(joinPath(Syms[x.s].a.map(proc (v:Value):string = v.s)))
+                    SetInPlace(newString(joinPath(InPlace.a.map(proc (v:Value):string = $(v)))))
                 else:
-                    stack.push(newString(joinPath(x.a.map(proc (v:Value):string = v.s))))
+                    push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
             else:
                 var sep = ""
                 if (let aWith = popAttr("with"); aWith != VNULL):
                     sep = aWith.s
 
                 if x.kind==Literal:
-                    Syms[x.s] = newString(Syms[x.s].a.map(proc (v:Value):string = v.s).join(sep))
+                    SetInPlace(newString(InPlace.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
-                    stack.push(newString(x.a.map(proc (v:Value):string = v.s).join(sep)))
+                    push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 
@@ -191,13 +254,29 @@ proc defineSymbols*() =
             "stringA"   : {String},
             "stringB"   : {String}
         },
-        attrs       = NoAttrs,
-        returns     = {Integer},
+        attrs       = {
+            "align" : ({Boolean},"return aligned strings"),
+            "with"  : ({Char},"use given filler for alignment (default: -)")
+        },
+        returns     = {Integer,Block},
+        # TODO(Strings\levenshtein) add documentation example for `.align`
+        #  labels: documentation, easy, library
         example     = """
             print levenshtein "for" "fur"         ; 1
             print levenshtein "one" "one"         ; 0
+
+            print join.with:"\n" levenshtein .align "ACTGCACTGAC" "GCATGACTAT"
+            ; AC-TGCACTGAC
+            ; GCATG-ACT-AT
         """:
-            stack.push(newInteger(editDistance(x.s,y.s)))
+            if ( popAttr("align") != VNULL):
+                var filler:Rune = "-".runeAt(0)
+                if (let aWith = popAttr("with"); aWith != VNULL):
+                    filler = aWith.c
+                let aligned = levenshteinAlign(x.s,y.s,filler)
+                push(newStringBlock(@[aligned[0], aligned[1]]))
+            else:
+                push(newInteger(editDistance(x.s,y.s)))
 
     builtin "lower",
         alias       = unaliased, 
@@ -215,8 +294,8 @@ proc defineSymbols*() =
             lower 'str                           ; str: "hello world, 你好!"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s.toLower()))
-            else: Syms[x.s].s = Syms[x.s].s.toLower()
+            if x.kind==String: push(newString(x.s.toLower()))
+            else: InPlace.s = InPlaced.s.toLower()
 
     builtin "lower?",
         alias       = unaliased, 
@@ -237,12 +316,12 @@ proc defineSymbols*() =
             var broken = false
             for c in runes(x.s):
                 if not c.isLower():
-                    stack.push(VFALSE)
+                    push(VFALSE)
                     broken = true
                     break
 
             if not broken:
-                stack.push(VTRUE)
+                push(VTRUE)
 
     builtin "match",
         alias       = unaliased, 
@@ -260,8 +339,11 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
-            stack.push(newStringBlock(x.s.findAll(re.re(y.s))))
-
+            when not defined(WEB):
+                push newStringBlock(x.s.findAll(re.re(y.s)))
+            else:
+                push newStringBlock(x.s.match(newRegExp(y.s,"g")))
+ 
     builtin "numeric?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -280,9 +362,61 @@ proc defineSymbols*() =
             ##########################################################
             try:
                 discard x.s.parseFloat()
-                stack.push(VTRUE)
+                push(VTRUE)
             except ValueError:
-                stack.push(VFALSE)
+                push(VFALSE)
+
+    builtin "outdent",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "outdent each line of given text, by using minimum shared indentation",
+        args        = {
+            "text"  : {String,Literal}
+        },
+        attrs       = {
+            "n"     : ({Integer},"unpad by given number of spaces"),
+            "with"  : ({String},"use given padding")
+        },
+        returns     = {String,Nothing},
+        example     = """
+            print outdent {:
+                one
+                    two
+                    three
+            :}
+            ; one
+            ;     two
+            ;     three
+
+            print outdent.n:1 {:
+                one
+                    two
+                    three
+            :}
+            ;  one
+            ;      two
+            ;      three
+
+        """:
+            ##########################################################
+            var count = 0
+            if x.kind==Literal:
+                count = indentation(InPlace.s)
+            else:
+                count = indentation(x.s)
+
+            var padding = " "
+
+            if (let aN = popAttr("n"); aN != VNULL):
+                count = aN.i
+
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.s
+
+            if x.kind==Literal:
+                SetInPlace(newString(unindent(InPlaced.s, count, padding)))
+            else:
+                push(newString(unindent(x.s, count, padding))) 
 
     builtin "pad",
         alias       = unaliased, 
@@ -294,7 +428,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "center"    : ({Boolean},"add padding to both sides"),
-            "right"     : ({Boolean},"add right padding")
+            "right"     : ({Boolean},"add right padding"),
+            "with"      : ({Char},"pad with given character")
         },
         returns     = {String},
         example     = """
@@ -303,18 +438,25 @@ proc defineSymbols*() =
             pad.center "good" 10          ; => "   good   "
             
             a: "hello"
-            pad 'a 10            ; a: "     hello"
+            pad 'a 10                     ; a: "     hello"
+
+            pad.with:`0` to :string 123 5   
+            ; => 00123
         """:
             ##########################################################
+            var padding = ' '.Rune
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                padding = aWith.c
+
             if (popAttr("right") != VNULL):
-                if x.kind==String: stack.push(newString(unicode.alignLeft(x.s, y.i)))
-                else: Syms[x.s].s = unicode.alignLeft(Syms[x.s].s, y.i)
-            elif (popAttr("center") != VNULL): # PENDING unicode support
-                if x.kind==String: stack.push(newString(center(x.s, y.i)))
-                else: Syms[x.s].s = center(Syms[x.s].s, y.i)
+                if x.kind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
+                else: InPlace.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
+            elif (popAttr("center") != VNULL):
+                if x.kind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
+                else: InPlace.s = centerUnicode(InPlaced.s, y.i, padding=padding)
             else:
-                if x.kind==String: stack.push(newString(unicode.align(x.s, y.i)))
-                else: Syms[x.s].s = unicode.align(Syms[x.s].s, y.i)
+                if x.kind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
+                else: InPlace.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
     builtin "prefix",
         alias       = unaliased, 
@@ -333,8 +475,8 @@ proc defineSymbols*() =
             prefix 'str                        ; str: "hello"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(y.s & x.s))
-            else: Syms[x.s] = newString(y.s & Syms[x.s].s)
+            if x.kind==String: push(newString(y.s & x.s))
+            else: SetInPlace(newString(y.s & InPlace.s))
 
     builtin "prefix?",
         alias       = unaliased, 
@@ -354,27 +496,30 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                stack.push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+                when not defined(WEB):
+                    push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+                else:
+                    push newBoolean(x.s.startsWith(newRegExp(y.s,"")))
             else:
-                stack.push(newBoolean(x.s.startsWith(y.s)))
+                push(newBoolean(x.s.startsWith(y.s)))
 
-    # TODO(Strings\render) `.template` attribute should behave more like a template engine
-    #  Other than changing interpolation delimiters to `<| .. |>`, the handling should be different from the usual implementation, with text outside the text being treated as a string and then concatenated with return values from tag-blocks.
-    #  labels: library,enhancement
-    builtin "render",
-        alias       = tilde, 
-        rule        = PrefixPrecedence,
-        description = "render template with |string| interpolation",
-        args        = {
-            "template"  : {String}
-        },
-        attrs       = {
-            "single"    : ({Boolean},"don't render recursively"),
-            "with"      : ({Dictionary},"use given dictionary for reference"),
-            "template"  : ({Boolean},"render as a template")
-        },
-        returns     = {String,Nothing},
-        example     = """
+    when not defined(WEB):
+        # TODO(Strings\render) function should also work for Web/JS builds
+        #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
+        #  labels: enhancement,library,web
+        builtin "render",
+            alias       = tilde, 
+            rule        = PrefixPrecedence,
+            description = "render template with |string| interpolation",
+            args        = {
+                "template"  : {String}
+            },
+            attrs       = {
+                "single"    : ({Boolean},"don't render recursively"),
+                "template"  : ({Boolean},"render as a template")
+            },
+            returns     = {String,Nothing},
+            example     = """
             x: 2
             greeting: "hello"
             print ~"|greeting|, your number is |x|"       ; hello, your number is 2
@@ -388,63 +533,75 @@ proc defineSymbols*() =
                 "Hello, your name is |name| and you are |age| years old"
             
             ; Hello, your name is John and you are 34 years old
-        """:
-            ##########################################################
-            var rgx = nre.re"\|([^\|]+)\|"
+            """:
+                ##########################################################
+                let recursive = not (popAttr("single") != VNULL)
+                var res = ""
+                if x.kind == Literal:
+                    res = InPlace.s
+                else:
+                    res = x.s
 
-            if (popAttr("template") != VNULL):
-                rgx = nre.re"\<\|(.+)\|\>"
+                let Interpolated    = nre.re"\|([^\|]+)\|"
+                let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
-                if x.kind==String:
-                    var res = newString(x.s)
-                    while (contains(res.s, rgx)):
-                        res = newString(x.s.replace(rgx,
-                            proc (match: RegexMatch): string =
-                                var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
+                if (popAttr("template") != VNULL):
+                    var keepGoing = true
+                    if recursive: 
+                        keepGoing = res.contains(Embeddable)
 
-                                for v in ((toSeq(values(aWith.d))).reversed):
-                                    stack.push(v)
-                                discard execBlock(doParse(match.captures[0], isFile=false), args=args)
-                                $(stack.pop())
-                        ))
-                    stack.push(res)
-                elif x.kind==Literal:
-                    while (contains(Syms[x.s].s, rgx)):
-                        Syms[x.s].s = Syms[x.s].s.replace(rgx,
-                            proc (match: RegexMatch): string =
-                                var args: ValueArray = (toSeq(keys(aWith.d))).map((x) => newString(x))
+                    while keepGoing:
+                        var evaled: Translation
 
-                                for v in ((toSeq(values(aWith.d))).reversed):
-                                    stack.push(v)
-                                discard execBlock(doParse(match.captures[0], isFile=false), args=args)
-                                $(stack.pop())
-                        )
+                        if templateStore.hasKey(res):
+                            evaled = templateStore[res]
+                        else:
+                            let initial = res
+                            # make necessary substitutions
+                            res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                                ("||>","««"),
+                                ("<||","»»")
+                            ) & "»»"
 
-            else:
-                if x.kind==String:
-                    var res = newString(x.s)
-                    if (popAttr("single") != VNULL):
-                        res = newString(res.s.replace(rgx,
-                                proc (match: RegexMatch): string =
+                            # parse string template
+                            evaled = doEval(doParse(res, isFile=false))
+                            templateStore[initial] = evaled
+
+                        # execute/reduce ('array') the resulting block
+                        let stop = SP
+                        discard execIsolated(evaled)
+                        let arr: ValueArray = sTopsFrom(stop)
+                        SP = stop
+
+                        # and join the different strings
+                        res = ""
+                        for i, v in arr:
+                            add(res, v.s)
+
+                        # if recursive, check if there's still more embedded tags
+                        # otherwise, break out of the loop
+                        if recursive: keepGoing = res.contains(Embeddable)
+                        else: keepGoing = false
+                else:
+                    var keepGoing = true
+                    if recursive: 
+                        keepGoing = res.find(Interpolated).isSome
+
+                    while keepGoing:
+                        res = res.replace(Interpolated, proc (match: RegexMatch): string =
                                     discard execBlock(doParse(match.captures[0], isFile=false))
-                                    $(stack.pop())
-                            ))
-                    else:
-                        while (contains(res.s, rgx)):
-                            res = newString(res.s.replace(rgx,
-                                proc (match: RegexMatch): string =
-                                    discard execBlock(doParse(match.captures[0], isFile=false))
-                                    $(stack.pop())
-                            ))
-                    stack.push(res)
-                elif x.kind==Literal:
-                    while (contains(Syms[x.s].s, rgx)):
-                        Syms[x.s].s = Syms[x.s].s.replace(rgx,
-                            proc (match: RegexMatch): string =
-                                discard execBlock(doParse(match.captures[0], isFile=false))
-                                $(stack.pop())
-                        )
+                                    $(pop())
+                                )
+
+                        # if recursive, check if there's still more embedded tags
+                        # otherwise, break out of the loop
+                        if recursive: keepGoing = res.find(Interpolated).isSome
+                        else: keepGoing = false
+
+                if x.kind == Literal:
+                    InPlaced = newString(res)
+                else:
+                    push(newString(res))
 
     builtin "replace",
         alias       = unaliased, 
@@ -467,11 +624,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                if x.kind==String: stack.push(newString(x.s.replace(re.re(y.s), z.s)))
-                else: Syms[x.s].s = Syms[x.s].s.replace(re.re(y.s), z.s)
+                when not defined(WEB):
+                    if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
+                    else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
+                else:
+                    if x.kind==String: push(newString(x.s.replace(newRegExp(y.s,""), z.s)))
+                    else: InPlace.s = $(InPlaced.s.replace(newRegExp(y.s,""), z.s))
             else:
-                if x.kind==String: stack.push(newString(x.s.replace(y.s, z.s)))
-                else: Syms[x.s].s = Syms[x.s].s.replace(y.s, z.s)
+                if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
+                else: InPlace.s = InPlaced.s.replace(y.s, z.s)
 
     builtin "strip",
         alias       = unaliased, 
@@ -504,8 +665,8 @@ proc defineSymbols*() =
                 leading = true
                 trailing = true
 
-            if x.kind==String: stack.push(newString(strutils.strip(x.s, leading, trailing)))
-            else: Syms[x.s].s = strutils.strip(Syms[x.s].s, leading, trailing) 
+            if x.kind==String: push(newString(strutils.strip(x.s, leading, trailing)))
+            else: InPlace.s = strutils.strip(InPlaced.s, leading, trailing) 
 
     builtin "suffix",
         alias       = unaliased, 
@@ -524,8 +685,8 @@ proc defineSymbols*() =
             suffix 'str                        ; str: "hello"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s & y.s))
-            else: Syms[x.s] = newString(Syms[x.s].s & y.s)
+            if x.kind==String: push(newString(x.s & y.s))
+            else: SetInPlace(newString(InPlace.s & y.s))
 
     builtin "suffix?",
         alias       = unaliased, 
@@ -545,9 +706,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                stack.push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+                when not defined(WEB):
+                    push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+                else:
+                    push newBoolean(x.s.endsWith(newRegExp(y.s,"")))
             else:
-                stack.push(newBoolean(x.s.endsWith(y.s)))
+                push(newBoolean(x.s.endsWith(y.s)))
 
     builtin "truncate",
         alias       = unaliased, 
@@ -583,11 +747,11 @@ proc defineSymbols*() =
                 with = aWith.s
 
             if (popAttr("preserve")!=VNULL):
-                if x.kind==String: stack.push(newString(truncatePreserving(x.s, y.i, with)))
-                else: Syms[x.s].s = truncatePreserving(Syms[x.s].s, y.i, with)
+                if x.kind==String: push(newString(truncatePreserving(x.s, y.i, with)))
+                else: InPlace.s = truncatePreserving(InPlaced.s, y.i, with)
             else:
-                if x.kind==String: stack.push(newString(truncate(x.s, y.i, with)))
-                else: Syms[x.s].s = truncate(Syms[x.s].s, y.i, with)
+                if x.kind==String: push(newString(truncate(x.s, y.i, with)))
+                else: InPlace.s = truncate(InPlaced.s, y.i, with)
 
     builtin "upper",
         alias       = unaliased, 
@@ -605,8 +769,8 @@ proc defineSymbols*() =
             upper 'str                           ; str: "HELLO WORLD, 你好!"
         """:
             ##########################################################
-            if x.kind==String: stack.push(newString(x.s.toUpper()))
-            else: Syms[x.s].s = Syms[x.s].s.toUpper()
+            if x.kind==String: push(newString(x.s.toUpper()))
+            else: InPlace.s = InPlaced.s.toUpper()
 
     builtin "upper?",
         alias       = unaliased, 
@@ -627,12 +791,51 @@ proc defineSymbols*() =
             var broken = false
             for c in runes(x.s):
                 if not c.isUpper():
-                    stack.push(VFALSE)
+                    push(VFALSE)
                     broken = true
                     break
 
             if not broken:
-                stack.push(VTRUE)
+                push(VTRUE)
+
+    builtin "wordwrap",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "word wrap a given string",
+        args        = {
+            "string": {String,Literal}
+        },
+        attrs       = {
+            "at"    : ({Integer},"use given max line width (default: 80)")
+        },
+        returns     = {Boolean},
+        example     = """
+            print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
+            ; Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non
+            ; justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur
+            ; egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet
+            ; suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et
+            ; sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus
+            ; non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam
+            ; ac nisi justo.
+
+            print wordwrap.at: 10 "one two three four five six seven eight nine ten"
+            ; one two
+            ; three four
+            ; five six
+            ; seven 
+            ; eight nine
+            ; ten 
+        """:
+            ##########################################################
+            var cutoff = 80
+            if (let aAt = popAttr("at"); aAt != VNULL):
+                cutoff = aAt.i
+            
+            if x.kind==Literal:
+                SetInPlace(newString(wrapWords(InPlace.s, maxLineWidth=cutoff)))
+            else:
+                push newString(wrapWords(x.s, maxLineWidth=cutoff))
 
     builtin "whitespace?",
         alias       = unaliased, 
@@ -649,7 +852,7 @@ proc defineSymbols*() =
             whitespace? "\n \n"           ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.s.isEmptyOrWhitespace()))
+            push(newBoolean(x.s.isEmptyOrWhitespace()))
 
 #=======================================
 # Add Library

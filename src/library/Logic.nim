@@ -16,7 +16,8 @@
 # Libraries
 #=======================================
 
-import vm/[common, globals, stack, value]
+import vm/lib
+import vm/[exec]
 
 #=======================================
 # Methods
@@ -45,24 +46,36 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
+            # check if empty
+            if x.a.len==0: 
+                push(newBoolean(false))
+                return
+
             var allOK = true
 
             for item in x.a:
-                if item!=VTRUE:
+                var val: Value
+                if item.kind == Block: 
+                    discard execBlock(item)
+                    val = pop()
+                else:
+                    val = item
+
+                if val!=VTRUE:
                     allOK = false
-                    stack.push(newBoolean(false))
+                    push(newBoolean(false))
                     break
 
             if allOK:
-                stack.push(newBoolean(true))
+                push(newBoolean(true))
 
     builtin "and?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical AND for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -77,7 +90,32 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             ##########################################################
-            stack.push(newBoolean(x.b and y.b))
+            if x.kind==Boolean and y.kind==Boolean:
+                push(newBoolean(x.b and y.b))
+            else:
+                if x.kind==Block:
+                    if y.kind==Block:
+                        # block block
+                        discard execBlock(x)
+                        if not pop().b:
+                            push(newBoolean(false))
+                            return
+
+                        discard execBlock(y)
+                        push(newBoolean(pop().b))
+                    else:
+                        # block boolean
+                        discard execBlock(x)
+                        push(newBoolean(pop().b and y.b))
+                else:
+                    # boolean block
+                    if not x.b:
+                        push(newBoolean(false))
+                        return
+
+                    discard execBlock(y)
+                    push(newBoolean(pop().b))
+
 
     builtin "any?",
         alias       = unaliased, 
@@ -97,19 +135,31 @@ proc defineSymbols*() =
             ; false
         """:
             ##########################################################
+            # check if empty
+            if x.a.len==0: 
+                push(newBoolean(false))
+                return
+            
             var anyOK = false
             for item in x.a:
-                if item==VTRUE:
+                var val: Value
+                if item.kind == Block: 
+                    discard execBlock(item)
+                    val = pop()
+                else:
+                    val = item
+
+                if val==VTRUE:
                     anyOK = true
-                    stack.push(newBoolean(true))
+                    push(newBoolean(true))
                     break
                 
             if not anyOK:
-                stack.push(newBoolean(false))
+                push(newBoolean(false))
 
     constant "false",
         alias       = unaliased,
-        description = "the FALSE/0 boolean constant":
+        description = "the FALSE boolean constant":
             VFALSE
 
     builtin "false?",
@@ -117,22 +167,28 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "returns true if given value is false; otherwise, it returns false",
         args        = {
-            "value" : {Boolean}
+            "value" : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
+            print false? 1 = 2          ; true
+            print false? 1 <> 2         ; false
+            print false? odd? 2         ; true
+
+            print false? [1 2 3]        ; false
         """:
             ##########################################################
-            stack.push(newBoolean(not x.b))
+            if x.kind != Boolean: push(newBoolean(false))
+            else: push(newBoolean(not x.b))
 
     builtin "nand?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical NAND for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -150,15 +206,39 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(not (x.b and y.b)))
+            if x.kind==Boolean and y.kind==Boolean:
+                push(newBoolean(not (x.b and y.b)))
+            else:
+                if x.kind==Block:
+                    if y.kind==Block:
+                        # block block
+                        discard execBlock(x)
+                        if not pop().b:
+                            push(newBoolean(true))
+                            return
+
+                        discard execBlock(y)
+                        push(newBoolean(not pop().b))
+                    else:
+                        # block boolean
+                        discard execBlock(x)
+                        push(newBoolean(not (pop().b and y.b)))
+                else:
+                    # boolean block
+                    if not x.b:
+                        push(newBoolean(true))
+                        return
+
+                    discard execBlock(y)
+                    push(newBoolean(not pop().b))
 
     builtin "nor?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical NAND for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -176,14 +256,38 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(not (x.b or y.b)))
+            if x.kind==Boolean and y.kind==Boolean:
+                push(newBoolean(not(x.b or y.b)))
+            else:
+                if x.kind==Block:
+                    if y.kind==Block:
+                        # block block
+                        discard execBlock(x)
+                        if pop().b:
+                            push(newBoolean(false))
+                            return
+
+                        discard execBlock(y)
+                        push(newBoolean(not pop().b))
+                    else:
+                        # block boolean
+                        discard execBlock(x)
+                        push(newBoolean(not(pop().b or y.b)))
+                else:
+                    # boolean block
+                    if x.b:
+                        push(newBoolean(false))
+                        return
+
+                    discard execBlock(y)
+                    push(newBoolean(not pop().b))
 
     builtin "not?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical complement of the given value",
         args        = {
-            "value" : {Boolean}
+            "value" : {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -196,15 +300,19 @@ proc defineSymbols*() =
             ; we're still not ready!
         """:
             ##########################################################
-            stack.push(newBoolean(not x.b))
+            if x.kind==Boolean:
+                push(newBoolean(not x.b))
+            else:
+                discard execBlock(x)
+                push(newBoolean(not pop().b))
 
     builtin "or?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical OR for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -219,11 +327,35 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             ##########################################################
-            stack.push(newBoolean(x.b or y.b))
+            if x.kind==Boolean and y.kind==Boolean:
+                push(newBoolean(x.b or y.b))
+            else:
+                if x.kind==Block:
+                    if y.kind==Block:
+                        # block block
+                        discard execBlock(x)
+                        if pop().b:
+                            push(newBoolean(true))
+                            return
+
+                        discard execBlock(y)
+                        push(newBoolean(pop().b))
+                    else:
+                        # block boolean
+                        discard execBlock(x)
+                        push(newBoolean(pop().b or y.b))
+                else:
+                    # boolean block
+                    if x.b:
+                        push(newBoolean(true))
+                        return
+
+                    discard execBlock(y)
+                    push(newBoolean(pop().b))
 
     constant "true",
         alias       = unaliased,
-        description = "the TRUE/1 boolean constant":
+        description = "the TRUE boolean constant":
             VTRUE
 
     builtin "true?",
@@ -231,22 +363,28 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "returns true if given value is true; otherwise, it returns false",
         args        = {
-            "value" : {Boolean}
+            "value" : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
+            print true? 1 = 2           ; false
+            print true? 1 <> 2          ; true
+            print true? even? 2         ; true
+
+            print true? [1 2 3]         ; false
         """:
             ##########################################################
-            stack.push(x)
+            if x.kind != Boolean: push(newBoolean(false))
+            else: push(x)
 
     builtin "xnor?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical XNOR for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -264,15 +402,29 @@ proc defineSymbols*() =
             ; yep, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(not (x.b xor y.b)))
+            var a: bool
+            var b: bool
+            if x.kind == Boolean: 
+                a = x.b
+            else:
+                discard execBlock(x)
+                a = pop().b
 
-    builtin "xnor?",
+            if y.kind == Boolean: 
+                b = y.b
+            else:
+                discard execBlock(y)
+                b = pop().b
+
+            push(newBoolean(not (a xor b)))
+
+    builtin "xor?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
-        description = "return the logical XNOR for the given values",
+        description = "return the logical XOR for the given values",
         args        = {
-            "valueA": {Boolean},
-            "valueB": {Boolean}
+            "valueA": {Boolean,Block},
+            "valueB": {Boolean,Block}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
@@ -290,7 +442,21 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            stack.push(newBoolean(x.b xor y.b))
+            var a: bool
+            var b: bool
+            if x.kind == Boolean: 
+                a = x.b
+            else:
+                discard execBlock(x)
+                a = pop().b
+
+            if y.kind == Boolean: 
+                b = y.b
+            else:
+                discard execBlock(y)
+                b = pop().b
+
+            push(newBoolean(a xor b))
             
 #=======================================
 # Add Library

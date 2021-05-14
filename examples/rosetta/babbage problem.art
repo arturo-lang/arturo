@@ -1,0 +1,5 @@
+n: new 0
+while [269696 <> (n^2) % 1000000] 
+    -> inc 'n
+
+print n

@@ -1,0 +1,11 @@
+getMapped: function [a,b,i][
+    round .to:1 b\0 + ((i - a\0) * (b\1 - b\0))/(a\1 - a\0)
+]
+
+rangeA: @[0.0 10.0]
+rangeB: @[0-1.0 0.0]
+
+loop 0..10 'x [
+    mapped: getMapped rangeA rangeB to :floating x
+    print [x "maps to" mapped]
+]

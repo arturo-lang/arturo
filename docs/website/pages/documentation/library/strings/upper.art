@@ -1,0 +1,28 @@
+name: "upper"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "convert given string to uppercase"
+example: {
+        print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
+        
+        str: "hello World, 你好!"
+        upper 'str                           ; str: "HELLO WORLD, 你好!"
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Strings/lower"
+         "Strings/upper?"
+         "Collections/append"
+         "Databases/open"
+    ]

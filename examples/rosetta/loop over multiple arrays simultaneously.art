@@ -1,0 +1,4 @@
+parts: ["abc" "ABC" [1 2 3]]
+
+loop 0..2 'x -> 
+    print ~"|parts\0 \x||parts\1 \x||parts\2 \x|"

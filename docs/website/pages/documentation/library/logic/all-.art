@@ -1,0 +1,28 @@
+name: "all?"
+type: :function
+module: "Logic"
+returns: [
+        :boolean
+    ]
+description: "check if all values in given block are true"
+example: {
+        if all? @[2>1 "DONE"=upper "done" true] 
+            -> print "yes, all are true"
+        ; yes, all are true
+        
+        print all? @[true false true true]
+        ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    conditions: [
+            :block
+        ]
+    ]
+related: [
+        "Core/call"
+         "Logic/and?"
+         "Logic/any?"
+         "Reflection/null?"
+    ]

@@ -1,0 +1,27 @@
+name: "skewness"
+type: :function
+module: "Statistics"
+returns: [
+        :floating
+    ]
+description: "get population skewness of given collection of numbers"
+example: ""
+attributes: #[
+    sample: #[
+        types: [
+                :boolean
+            ]
+        description: "calculate the sample skewness"
+        ]
+    ]
+arguments: #[
+    collection: [
+            :block
+        ]
+    ]
+related: [
+        "Statistics/kurtosis"
+         "Statistics/variance"
+         "Collections/keys"
+         "Core/unless"
+    ]

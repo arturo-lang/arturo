@@ -1,0 +1,31 @@
+name: "tanh"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+         :complex
+    ]
+description: "calculate the hyperbolic tangent of given angle"
+example: {
+        print tanh 0            ; 0.0
+        print tanh 0.3          ; 0.2913126124515909
+        print tanh 1.0          ; 0.7615941559557649
+        
+        tanh to :complex [1 1]
+        ; => 1.083923327338695+0.2717525853195117i
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Numbers/ctanh"
+         "Numbers/atanh"
+         "Numbers/tan"
+         "Numbers/sech"
+    ]

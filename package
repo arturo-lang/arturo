@@ -1,3 +1,5 @@
+# TODO(package) unify with main install script
+#  labels: installer,cleanup
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
@@ -22,11 +24,11 @@ compressBinary(){
 
 buildPackage(){
     export PORTABLE_INPUT="$1"
-    FLAGS="$FLAGS --forceBuild:on --opt:size -d:PORTABLE --hints:off"
+    FLAGS="$FLAGS --forceBuild:on --opt:size -d:PORTABLE"
     INPUT=$1
     BINARY="${INPUT/.art/}"
-    nim c $FLAGS -o:$BINARY $MAIN 2>/dev/null &
-    animate_progress
+    nim c $FLAGS -o:$BINARY $MAIN # 2>/dev/null &
+    #animate_progress 
 }
 
 ################################################

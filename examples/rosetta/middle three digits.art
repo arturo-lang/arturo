@@ -1,0 +1,17 @@
+middleThree: function [num][
+    n: to :string abs num
+    if 3 > size n -> return "Number must have at least three digits"
+    if even? size n -> return "Number must have an odd number of digits"
+
+    middle: ((size n)/2)- 1 
+    return slice n middle middle+2
+]
+
+samples: @[ 
+    123, 12345, 1234567, 987654321, 10001, neg 10001, neg 123, neg 100, 100, neg 12345,
+    1, 2, neg 1, neg 10, 2002, neg 2002, 0 
+]
+
+loop samples 's [
+    print [pad to :string s 10 ":" middleThree s]
+]

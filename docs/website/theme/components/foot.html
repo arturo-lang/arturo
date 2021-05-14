@@ -1,0 +1,136 @@
+<!-- <div class="section">
+    <div class="has-text-centered">
+        <p class="motto">•&nbsp;&nbsp;CODE IS <span onmouseenter="this.innerHTML='ARTURO'" onmouseout="this.innerHTML='ART'">ART</span>&nbsp;&nbsp;•</p>
+    </div>
+</div> -->
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p class="block">
+            <a class="footer-icon github" aria-label="github" rel="noopener" href="https://github.com/arturo-lang" target="_blank"><i class="fab fa-github"></i></a>&nbsp;&nbsp;&nbsp;
+            <a class="footer-icon twitter" aria-label="twitter" rel="noopener" href="https://twitter.com/ArturoLanguage" target="_blank"><i class="fab fa-twitter"></i></a>&nbsp;&nbsp;&nbsp;
+            <a class="footer-icon discord" aria-label="discord" rel="noopener" href="https://discord.gg/YdVK2CB" target="_blank"><i class="fab fa-discord"></i></a>
+        </p>
+    </div>
+    <div class="content has-text-centered">
+        <p class="block">
+            <strong>Arturo Programming Language</strong><br>Copyright &copy; 2019-2021 Yanis Zafirópulos<br><br>
+            <small class="is-size-7-touch">Website built and generated using Arturo + Webize.<span class="is-hidden-touch"> Running on <a rel="noopener" href="https://m.do.co/c/d9efb97aa0f2" target="_blank">DigitalOcean</a>.</span></small><br>
+            <small class="is-size-7-touch">Source code <span class="is-hidden-touch">licensed </span>under <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. Website <span class="is-hidden-touch">content licensed </span><span class="is-hidden-desktop">under </span><a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.</small>
+        </p>
+    </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15.0.0/dist/smooth-scroll.polyfills.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15.0.0/dist/smooth-scroll.polyfills.min.js"></script>
+<!--<||= if contains? pagePath "documentation" [||>
+    <script src="https://cdn.jsdelivr.net/combine/npm/jquery@3.6.0/dist/jquery.min.js,npm/typeahead.js@0.11.1/dist/typeahead.jquery.min.js"></script>
+<|| ] ||>-->
+<||= if contains? pagePath "playground" [||>
+    <script src="https://cdn.jsdelivr.net/npm/@vizuaalog/bulmajs@0.12.1/dist/alert.min.js"></script>
+    <script src="<||= linkTo {resources/scripts/ace.js} ||>" type="text/javascript" charset="utf-8"></script>
+    <script src="<||= linkTo {resources/scripts/playground.js} ||>"></script>
+<||]||>
+<script src="<||= linkTo {resources/scripts/main.js} ||>"></script>
+<||= if false [ ||>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        var substringMatcher = function(strs) {
+            return function findMatches(q, cb) {
+            var matches, substringRegex;
+        
+            // an array that will be populated with substring matches
+            matches = [];
+        
+            // regex used to determine if a string contains the substring `q`
+            substrRegex = new RegExp(q, 'i');
+        
+            // iterate through the pool of strings and for any string that
+            // contains the substring `q`, add it to the `matches` array
+            $.each(strs, function(i, str) {
+                if (substrRegex.test(str)) {
+                matches.push(str);
+                }
+            });
+        
+            cb(matches);
+            };
+        };
+        
+        var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+            'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
+            'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
+            'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
+            'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
+            'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
+            'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+            'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+            'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+        ];
+        
+        $('#searchbar').typeahead({
+            minLength: 1,
+            maxItem: 50,
+            backdrop: true,
+            generateOnLoad: false,
+            order: null,
+            hint: false,
+            offset: "true",
+            matcher: function (item, displayKey) {
+                return (item.group == localStorage.getItem("scaDictLang"));
+            },
+            display: ["w","u"],
+            accent: false,
+            asyncResult: true,
+            group: false,
+            source: {
+                template: '<div><span class="searchlemma"><strong class="hsk{{h}}fg">{{w}}</strong></span><span class="searchpinyin">{{p}}</span><div class="hskbadge mini is{{h}}"><div class="hsk">HSK</div><div class="level hsk{{h}}">{{h}}</div></div></div>',
+                data: states
+            },
+            callback: {
+                onInit: function (node) {
+                },
+                onSearch: function (node, query) {
+                },
+                onReady: function (node) {
+                    window.datasource = {
+                        data: response
+                    };
+                    setDictLang(localStorage.getItem("scaDictLang"));
+                },
+                onDropdownFilter: function (node, a, item, event) {
+                },
+                onSubmit: function (node, form, item, event) {
+                    console.log(item);
+                    if (item==null) {
+                        var firstItem = $($(".typeahead__list li a span")[0]).text();
+                        if (firstItem!=""){
+                            window.location.href = window.searchurl[localStorage.getItem("scaDictLang")]+firstItem;
+                        }
+                    } 
+                    else {
+                    }
+                    return false;
+                },
+                onClickAfter: function (node, a, item, event) {
+                    window.location.href = window.searchurl[localStorage.getItem("scaDictLang")]+item.w
+                },
+                onLayoutBuiltAfter: function (node, query, result, resultCount, resultCountPerGroup) {
+                    $('.typeahead__list').css("width",$('.typeahead__query').css("width"));
+                }
+            }
+        });
+    });
+</script>
+<|| ] ||>
+<||= if contains? pagePath "documentation" [ ||>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+    <script type="text/javascript"> docsearch({
+    apiKey: 'c4a83c17dd4a7f0faba0c60321ccd634',
+    indexName: 'arturo',
+    inputSelector: '#searchbar',
+    debug: true // Set debug to true if you want to inspect the dropdown
+    });
+    </script>
+<|| ] ||>
+</body>
+</html>

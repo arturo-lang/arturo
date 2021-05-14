@@ -16,13 +16,324 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, unicode
-import extras/bignum
+import sequtils, strformat, sugar, times, unicode
+when not defined(NOGMP):
+    import extras/bignum
 
-import helpers/datasource as DatasourceHelper
-import helpers/strings as StringsHelper
+import helpers/colors
+import helpers/datasource
+when not defined(NOASCIIDECODE):
+    import helpers/strings
 
-import vm/[common, errors, exec, globals, parse, stack, value]
+import vm/lib
+import vm/[errors, exec, parse]
+
+#=======================================
+# Helpers
+#=======================================
+
+proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
+    if y.kind == tp and y.kind!=Dictionary:
+        return y
+    else:
+        case y.kind:
+            of Null:
+                case tp:
+                    of Boolean: return VFALSE
+                    of Integer: return I0
+                    of String: return newString("null")
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Boolean:
+                case tp:
+                    of Integer:
+                        if y.b: return I1
+                        else: return I0
+                    of Floating:
+                        if y.b: return F1
+                        else: return F0
+                    of String:
+                        if y.b: return newString("true")
+                        else: return newString("false")
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Integer:
+                case tp:
+                    of Boolean: return newBoolean(y.i!=0)
+                    of Floating: return newFloating((float)y.i)
+                    of Char: return newChar(chr(y.i))
+                    of String: 
+                        if y.iKind==NormalInteger: 
+                            if (let aFormat = popAttr("format"); aFormat != VNULL):
+                                try:
+                                    var ret = ""
+                                    formatValue(ret, y.i, aFormat.s)
+                                    return newString(ret)
+                                except:
+                                    RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                            else:
+                                return newString($(y.i))
+                        else:
+                            when not defined(NOGMP): 
+                                return newString($(y.bi))
+                    of Binary:
+                        let str = $(y.i)
+                        var ret: ByteArray = newSeq[byte](str.len)
+                        for i,ch in str:
+                            ret[i] = (byte)(ord(ch))
+                        return newBinary(ret)
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Floating:
+                case tp:
+                    of Boolean: return newBoolean(y.f!=0.0)
+                    of Integer: return newInteger((int)y.f)
+                    of Char: return newChar(chr((int)y.f))
+                    of String: 
+                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                            try:
+                                var ret = ""
+                                formatValue(ret, y.f, aFormat.s)
+                                return newString(ret)
+                            except:
+                                RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                        else:
+                            return newString($(y.f))
+                    of Binary:
+                        let str = $(y.f)
+                        var ret: ByteArray = newSeq[byte](str.len)
+                        for i,ch in str:
+                            ret[i] = (byte)(ord(ch))
+                        return newBinary(ret)
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Version:
+                if tp==String: return newString($(y))
+                else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Type:
+                if tp==String: return newString(($(y.t)).toLowerAscii())
+                else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Char:
+                case tp:
+                    of Integer: return newInteger(ord(y.c))
+                    of Floating: return newFloating((float)ord(y.c))
+                    of String: return newString($(y.c))
+                    of Binary: return newBinary(@[(byte)(ord(y.c))])
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of String:
+                case tp:
+                    of Boolean: 
+                        if y.s=="true": return VTRUE
+                        elif y.s=="false": return VFALSE
+                        else: RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Integer:
+                        try:
+                            return newInteger(y.s)
+                        except ValueError:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Floating:
+                        try:
+                            return newFloating(parseFloat(y.s))
+                        except ValueError:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Version:
+                        try:
+                            return newVersion(y.s)
+                        except ValueError:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Type:
+                        try:
+                            return newType(y.s)
+                        except ValueError:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Char:
+                        if y.s.runeLen() == 1:
+                            return newChar(y.s)
+                        else:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Word:
+                        return newWord(y.s)
+                    of Literal:
+                        return newLiteral(y.s)
+                    of Label:
+                        return newLabel(y.s)
+                    of Attribute:
+                        return newAttribute(y.s)
+                    of AttributeLabel:
+                        return newAttributeLabel(y.s)
+                    of Symbol:
+                        try:
+                            return newSymbol(y.s)
+                        except ValueError:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Binary:
+                        var ret: ByteArray = newSeq[byte](y.s.len)
+                        for i,ch in y.s:
+                            ret[i] = (byte)(ord(ch))
+                        return newBinary(ret)
+                    of Block:
+                        return doParse(y.s, isFile=false)
+                    of Color:
+                        try:
+                            return newColor(y.s)
+                        except:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Date:
+                        var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
+                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                            dateFormat = aFormat.s
+                        
+                        let timeFormat = initTimeFormat(dateFormat)
+                        try:
+                            return newDate(parse(y.s, timeFormat))
+                        except:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Literal, 
+               Word,
+               Label:
+                case tp:
+                    of String: 
+                        return newString(y.s)
+                    of Literal:
+                        return newLiteral(y.s)
+                    of Word:
+                        return newWord(y.s)
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Attribute,
+               AttributeLabel:
+                case tp:
+                    of String: 
+                        return newString(y.r)
+                    of Literal:
+                        return newLiteral(y.r)
+                    of Word:
+                        return newWord(y.r)
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Inline:
+                case tp:
+                    of Block:
+                        return newBlock(y.a)
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Block:
+                case tp:
+                    of Complex:
+                        return newComplex(y.a[0], y.a[1])
+                    of Inline:
+                        return newInline(y.a)
+                    of Dictionary:
+                        if x.tpKind==BuiltinType:
+                            let stop = SP
+                            discard execBlock(y)
+
+                            let arr: ValueArray = sTopsFrom(stop)
+                            var dict: ValueDict = initOrderedTable[string,Value]()
+                            SP = stop
+
+                            var i = 0
+                            while i<arr.len:
+                                if i+1<arr.len:
+                                    dict[$(arr[i])] = arr[i+1]
+                                i += 2
+
+                            return(newDictionary(dict))
+                        else:
+                            let stop = SP
+                            discard execBlock(y)
+
+                            let arr: ValueArray = sTopsFrom(stop)
+                            var dict = initOrderedTable[string,Value]()
+                            SP = stop
+
+                            var i = 0
+                            while i<arr.len and i<x.prototype.a.len:
+                                let k = x.prototype.a[i]
+                                dict[k.s] = arr[i]
+                                i += 1
+
+                            var res = newDictionary(dict)
+                            res.custom = x
+
+                            if x.methods.d.hasKey("init"):
+                                push res
+                                callFunction(x.methods.d["init"])
+
+                            return(res)
+
+                    of Color:
+                        if (popAttr("hsl") != VNULL):
+                            return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f)))
+                        else:
+                            return newColor((y.a[0].i, y.a[1].i, y.a[2].i))
+
+                    of Bytecode:
+                        return(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
+                    else:
+                        discard
+
+            of Dictionary:
+                case tp:
+                    of Dictionary:
+                        if x.tpKind==BuiltinType:
+                            return(y)
+                        else:
+                            var dict = initOrderedTable[string,Value]()
+
+                            for k,v in pairs(y.d):
+                                for item in x.prototype.a:
+                                    if item.s == k:
+                                        dict[k] = v
+
+                            var res = newDictionary(dict)
+                            res.custom = x
+                            return(res)
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Symbol:
+                case tp:
+                    of String:
+                        return newString($(y))
+                    of Literal:
+                        return newLiteral($(y))
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Date:
+                case tp:
+                    of String:
+                        var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
+                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                            dateFormat = aFormat.s
+                        
+                        try:
+                            return newString(format(y.eobj, dateFormat))
+                        except:
+                            RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    else: 
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Complex,
+               Function,
+               Color,
+               Database,
+               Nothing,
+               Any,
+               Path,
+               PathLabel,
+               Bytecode,
+               Binary: discard
 
 #=======================================
 # Methods
@@ -75,7 +386,7 @@ proc defineSymbols*() =
             let arr: ValueArray = sTopsFrom(stop)
             SP = stop
 
-            stack.push(newBlock(arr))
+            push(newBlock(arr))
 
     builtin "as",
         alias       = unaliased, 
@@ -84,13 +395,29 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = {
-            "binary"    : ({Boolean},"format integer as binary"),
-            "hex"       : ({Boolean},"format integer as hexadecimal"),
-            "octal"     : ({Boolean},"format integer as octal"),
-            "ascii"     : ({Boolean},"transliterate string to ASCII"),
-            "agnostic"  : ({Boolean},"convert words in block to literals, if not in context")
-        },
+        attrs       = 
+        when not defined(NOASCIIDECODE):
+            {
+                "binary"    : ({Boolean},"format integer as binary"),
+                "hex"       : ({Boolean},"format integer as hexadecimal"),
+                "octal"     : ({Boolean},"format integer as octal"),
+                "ascii"     : ({Boolean},"transliterate string to ASCII"),
+                "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
+                "code"      : ({Boolean},"convert value to valid Arturo code"),
+                "pretty"    : ({Boolean},"prettify generated code"),
+                "unwrapped" : ({Boolean},"omit external block notation")
+            }
+        else:
+            {
+                "binary"    : ({Boolean},"format integer as binary"),
+                "hex"       : ({Boolean},"format integer as hexadecimal"),
+                "octal"     : ({Boolean},"format integer as octal"),
+                "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
+                "code"      : ({Boolean},"convert value to valid Arturo code"),
+                "pretty"    : ({Boolean},"prettify generated code"),
+                "unwrapped" : ({Boolean},"omit external block notation")
+            }
+        ,
         returns     = {Any},
         example     = """
             print as.binary 123           ; 1111011
@@ -102,21 +429,135 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("binary") != VNULL):
-                stack.push(newString(fmt"{x.i:b}"))
+                push(newString(fmt"{x.i:b}"))
             elif (popAttr("hex") != VNULL):
-                stack.push(newString(fmt"{x.i:x}"))
+                push(newString(fmt"{x.i:x}"))
             elif (popAttr("octal") != VNULL):
-                stack.push(newString(fmt"{x.i:o}"))
-            elif (popAttr("ascii") != VNULL):
-                stack.push(convertToAscii(x.s))
+                push(newString(fmt"{x.i:o}"))
             elif (popAttr("agnostic") != VNULL):
                 let res = x.a.map(proc(v:Value):Value =
-                    if v.kind == Word and not Syms.hasKey(v.s): newLiteral(v.s)
+                    if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
-                stack.push(newBlock(res))
+                push(newBlock(res))
+            elif (popAttr("code") != VNULL):
+                push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL), safeStrings = (popAttr("safe") != VNULL))))
             else:
-                stack.push(x)
+                when not defined(NOASCIIDECODE):
+                    if (popAttr("ascii") != VNULL):
+                        push(newString(convertToAscii(x.s)))
+                    else:
+                        push(x)
+                else:
+                    push(x)
+
+    builtin "define",
+        alias       = dollar, 
+        rule        = PrefixPrecedence,
+        description = "define new type with given characteristics",
+        args        = {
+            "type"      : {Type},
+            "prototype" : {Block},
+            "methods"   : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            define :person [name surname age][  
+
+                ; magic method to be executed
+                ; after a new object has been created
+                init: [
+                    this\name: capitalize this\name
+                ]
+
+                ; magic method to be executed
+                ; when the object is about to be printed
+                print: [
+                    render "NAME: |this\name|, SURNAME: |this\surname|, AGE: |this\age|"
+                ]
+
+                ; magic method to be used
+                ; when comparing objects (e.g. when sorting)
+                compare: [
+                    if this\age = that\age -> return 0
+                    if this\age < that\age -> return neg 1
+                    if this\age > that\age -> return 1
+                ]
+            ]
+
+            sayHello: function [this][
+                ensure -> is? :person this
+                print ["Hello" this\name]
+            ]
+
+            a: to :person ["John" "Doe" 35]
+            b: to :person ["jane" "Doe" 33]
+
+            print a
+            ; NAME: John, SURNAME: Doe, AGE: 35
+            print b
+            ; NAME: Jane, SURNAME: Doe, AGE: 33
+
+            sayHello a
+            ; Hello John 
+
+            a > b 
+            ; => true (a\age > b\age)
+
+            print join.with:"\n" sort @[a b]
+            ; NAME: Jane, SURNAME: Doe, AGE: 33
+            ; NAME: John, SURNAME: Doe, AGE: 35
+
+            print join.with:"\n" sort.descending @[a b]
+            ; NAME: John, SURNAME: Doe, AGE: 35
+            ; NAME: Jane, SURNAME: Doe, AGE: 33
+        """:
+            ##########################################################
+            x.prototype = y
+            x.methods = newDictionary(execBlock(z,dictionary=true))
+            if x.methods.d.hasKey("init"):
+                x.methods.d["init"] = newFunction(
+                    newBlock(@[newWord("this")]),
+                    x.methods.d["init"] 
+                )
+            if x.methods.d.hasKey("print"):
+                x.methods.d["print"] = newFunction(
+                    newBlock(@[newWord("this")]),
+                    x.methods.d["print"] 
+                )
+
+            if x.methods.d.hasKey("compare"):
+                if x.methods.d["compare"].kind==Block:
+                    x.methods.d["compare"] = newFunction(
+                        newBlock(@[newWord("this"),newWord("that")]),
+                        x.methods.d["compare"] 
+                    )
+                else:
+                    let key = x.methods.d["compare"]
+                    x.methods.d["compare"] = newFunction(
+                        newBlock(@[newWord("this"),newWord("that")]),
+                        newBlock(@[
+                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(greaterthan), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(1)]),
+                            newWord("if"), newPath(@[newWord("this"), key]), newSymbol(equal), newPath(@[newWord("that"), key]), newBlock(@[newWord("return"),newInteger(0)]),
+                            newWord("return"), newWord("neg"), newInteger(1)
+                        ])
+                    )
+            # let methods = execBlock(z,dictionary=true)
+            # for k,v in pairs(methods):
+            #     # add a `this` first parameter
+            #     v.params.a.insert(newWord("this"),0)
+            #     # add as first command in block: 
+            #     # ensure [:TYPE = type this]
+            #     v.main.a.insert(newWord("ensure"),0)
+            #     v.main.a.insert(newBlock(@[
+            #         newUserType(x.name),
+            #         newSymbol(equal),
+            #         newWord("type"),
+            #         newWord("this")
+            #     ]),1)
+            #     SetSym(k, v)
+            #     Arities[k] = v.params.a.len
 
     builtin "dictionary",
         alias       = sharp, 
@@ -127,7 +568,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Block},"embed given symbols"),
-            "raw"   : ({Boolean},"create dictionary from raw block")
+            "raw"   : ({Boolean},"create dictionary from raw block"),
+            "data"  : ({Boolean},"parse input as data")
         },
         returns     = {Dictionary},
         example     = """
@@ -151,29 +593,42 @@ proc defineSymbols*() =
             ##########################################################
             var dict: ValueDict
 
-            if x.kind==Block:
-                #dict = execDictionary(x)
-                if (popAttr("raw") != VNULL):
-                    dict = initOrderedTable[string,Value]()
-                    var idx = 0
-                    while idx < x.a.len:
-                        dict[x.a[idx].s] = x.a[idx+1]
-                        idx += 2
-                else:
-                    dict = execBlock(x,dictionary=true)
-            elif x.kind==String:
-                let (src, tp) = getSource(x.s)
+            if (popAttr("data") != VNULL):
+                if x.kind==Block:
+                    push(parseData(x))
+                elif x.kind==String:
+                    let (src, tp) = getSource(x.s)
 
-                if tp!=TextData:
-                    dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
-                else:
-                    echo "file does not exist"
+                    if tp!=TextData:
+                        dict = parseData(doParse(src, isFile=false)).d
+                    else:
+                        echo "file does not exist"
 
-            if (let aWith = popAttr("with"); aWith != VNULL):
-                for x in aWith.a:
-                    dict[x.s] = Syms[x.s]
-                    
-            stack.push(newDictionary(dict))
+                    push(newDictionary(dict))
+            else:
+                if x.kind==Block:
+                    #dict = execDictionary(x)
+                    if (popAttr("raw") != VNULL):
+                        dict = initOrderedTable[string,Value]()
+                        var idx = 0
+                        while idx < x.a.len:
+                            dict[x.a[idx].s] = x.a[idx+1]
+                            idx += 2
+                    else:
+                        dict = execBlock(x,dictionary=true)
+                elif x.kind==String:
+                    let (src, tp) = getSource(x.s)
+
+                    if tp!=TextData:
+                        dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
+                    else:
+                        echo "file does not exist"
+
+                if (let aWith = popAttr("with"); aWith != VNULL):
+                    for x in aWith.a:
+                        dict[x.s] = GetSym(x.s)
+                        
+                push(newDictionary(dict))
 
     builtin "from",
         alias       = unaliased, 
@@ -196,21 +651,21 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("binary") != VNULL):
                 try:
-                    stack.push(newInteger(parseBinInt(x.s)))
+                    push(newInteger(parseBinInt(x.s)))
                 except ValueError:
-                    stack.push(VNULL)
+                    push(VNULL)
             elif (popAttr("hex") != VNULL):
                 try:
-                    stack.push(newInteger(parseHexInt(x.s)))
+                    push(newInteger(parseHexInt(x.s)))
                 except ValueError:
-                    stack.push(VNULL)
+                    push(VNULL)
             elif (popAttr("octal") != VNULL):
                 try:
-                    stack.push(newInteger(parseOctInt(x.s)))
+                    push(newInteger(parseOctInt(x.s)))
                 except ValueError:
-                    stack.push(VNULL)
+                    push(VNULL)
             else:
-                stack.push(x)
+                push(x)
 
     builtin "function",
         alias       = dollar, 
@@ -221,9 +676,14 @@ proc defineSymbols*() =
             "body"      : {Block}
         },
         attrs       = {
-            "export": ({Block},"export given symbols to parent")
+            "import"    : ({Block},"import/embed given list of symbols from current environment"),
+            "export"    : ({Block},"export given symbols to parent"),
+            "exportable": ({Boolean},"export all symbols to parent"),
+            "memoize"   : ({Boolean},"store results of function calls")
         },
         returns     = {Function},
+        # TODO(Converters\function) add documentation example for `.memoize`
+        #  labels: documentation,library,easy
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
@@ -248,22 +708,38 @@ proc defineSymbols*() =
             ; 5
         """:
             ##########################################################
+            var imports = VNULL
+            if (let aImport = popAttr("import"); aImport != VNULL):
+                var ret = initOrderedTable[string,Value]()
+                for item in aImport.a:
+                    ret[item.s] = GetSym(item.s)
+                imports = newDictionary(ret)
+
+            var exportable = (popAttr("exportable")!=VNULL)
+
             var exports = VNULL
             if (let aExport = popAttr("export"); aExport != VNULL):
                 exports = aExport
 
-            stack.push(newFunction(x,y,exports))
+            var memoize = (popAttr("memoize")!=VNULL)
+
+            push(newFunction(x,y,imports,exports,exportable,memoize))
 
     builtin "to",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "convert value to given type",
         args        = {
-            "type"  : {Type},
+            "type"  : {Type,Block},
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "format": ({String},"use given format (for dates)"),
+            "hsl"   : ({Boolean},"convert HSL block to color")
+        },
         returns     = {Any},
+        # TODO(Converters\to) add documentation for block to color conversion
+        #  labels: documentation, library, easy
         example     = """
             to :string 2020               ; "2020"
             to :integer "2020"            ; 2020
@@ -273,6 +749,9 @@ proc defineSymbols*() =
             
             to :integer 4.3               ; 4
             to :floating 4                ; 4.0
+
+            to :complex [1 2]             ; 1.0+2.0i
+            to :complex @[2.3 neg 4.5]    ; 2.3-4.5i
             
             to :boolean 0                 ; false
             to :boolean 1                 ; true
@@ -283,183 +762,76 @@ proc defineSymbols*() =
             to :string :word              ; "word"
             
             to :block "one two three"     ; [one two three]
+
+            to :string .format:"dd/MM/yy" now
+            ; 22/03/21
+
+            to :date .format:"dd/MM/yyyy" "22/03/2021"
+            ; 2021-03-22T00:00:00+01:00
+
+            to :string .format:".2f" 123.12345
+            ; 123.12
+
+            to [:string] [1 2 3 4]         
+            ; ["1" "2" "3" "4"]
+
+            to [:char] "hello"
+            ; [`h` `e` `l` `l` `o`]
+
+            define :person [name surname age][]
+            to :person ["John" "Doe" 35]
+            ; [name:John surname:Doe age:35]
         """:
             ##########################################################
-            let tp = x.t
-            
-            if y.kind == tp:
-                stack.push y
+            if x.kind==Type:
+                let tp = x.t
+                push convertedValueToType(x, y, tp)
             else:
-                case y.kind:
-                    of Null:
-                        case tp:
-                            of Boolean: stack.push VFALSE
-                            of Integer: stack.push I0
-                            of String: stack.push newString("null")
-                            else: showConversionError()
+                var ret: ValueArray = @[]
+                let tp = x.a[0].t
+                    
+                if y.kind==String:
+                    ret = toSeq(runes(y.s)).map((c) => newChar(c))
+                else:
+                    for item in y.a:
+                        ret.add(convertedValueToType(x.a[0], item, tp))
 
-                    of Boolean:
-                        case tp:
-                            of Integer:
-                                if y.b: stack.push I1
-                                else: stack.push I0
-                            of Floating:
-                                if y.b: stack.push F1
-                                else: stack.push F0
-                            of String:
-                                if y.b: stack.push newString("true")
-                                else: stack.push newString("false")
-                            else: showConversionError()
+                push newBlock(ret)
+            
 
-                    of Integer:
-                        case tp:
-                            of Boolean: stack.push newBoolean(y.i!=0)
-                            of Floating: stack.push newFloating((float)y.i)
-                            of Char: stack.push newChar(chr(y.i))
-                            of String: 
-                                if y.iKind==NormalInteger: stack.push newString($(y.i))
-                                else: stack.push newString($(y.bi))
-                            of Binary:
-                                let str = $(y.i)
-                                var ret: ByteArray = newSeq[byte](str.len)
-                                for i,ch in str:
-                                    ret[i] = (byte)(ord(ch))
-                                stack.push newBinary(ret)
-                            else: showConversionError()
+    builtin "with",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "create closure-style block by embedding given words",
+        args        = {
+            "embed" : {Literal, Block},
+            "body"  : {Block}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        example     = """
+            f: function [x][ 
+                with [x][ 
+                    "the multiple of" x "is" 2*x 
+                ] 
+            ]
 
-                    of Floating:
-                        case tp:
-                            of Boolean: stack.push newBoolean(y.f!=0.0)
-                            of Integer: stack.push newInteger((int)y.f)
-                            of Char: stack.push newChar(chr((int)y.f))
-                            of String: stack.push newString($(y.f))
-                            of Binary:
-                                let str = $(y.f)
-                                var ret: ByteArray = newSeq[byte](str.len)
-                                for i,ch in str:
-                                    ret[i] = (byte)(ord(ch))
-                                stack.push newBinary(ret)
-                            else: showConversionError()
+            multiplier: f 10
 
-                    of Type:
-                        if tp==String: stack.push newString(($(y.t)).toLowerAscii())
-                        else: showConversionError()
+            print multiplier
+            ; the multiple of 10 is 20 
+        """:
+            ##########################################################
+            var blk: ValueArray = y.a
+            if x.kind == Literal:
+                blk.insert(GetSym(x.s))
+                blk.insert(newLabel(x.s))
+            else:
+                for item in x.a:
+                    blk.insert(GetSym(item.s))
+                    blk.insert(newLabel(item.s))
 
-                    of Char:
-                        case tp:
-                            of Integer: stack.push newInteger(ord(y.c))
-                            of Floating: stack.push newFloating((float)ord(y.c))
-                            of String: stack.push newString($(y.c))
-                            of Binary: stack.push newBinary(@[(byte)(ord(y.c))])
-                            else: showConversionError()
-
-                    of String:
-                        case tp:
-                            of Boolean: 
-                                if y.s=="true": stack.push VTRUE
-                                elif y.s=="false": stack.push VFALSE
-                                else: invalidConversionError(y.s)
-                            of Integer:
-                                try:
-                                    stack.push newInteger(y.s)
-                                except ValueError:
-                                    invalidConversionError(y.s)
-                            of Floating:
-                                try:
-                                    stack.push newFloating(parseFloat(y.s))
-                                except ValueError:
-                                    invalidConversionError(y.s)
-                            of Type:
-                                try:
-                                    stack.push newType(y.s)
-                                except ValueError:
-                                    invalidConversionError(y.s)
-                            of Char:
-                                if y.s.runeLen() == 1:
-                                    stack.push newChar(y.s)
-                                else:
-                                    invalidConversionError(y.s)
-                            of Word:
-                                stack.push newWord(y.s)
-                            of Literal:
-                                stack.push newLiteral(y.s)
-                            of Label:
-                                stack.push newLabel(y.s)
-                            of Attribute:
-                                stack.push newAttribute(y.s)
-                            of AttributeLabel:
-                                stack.push newAttributeLabel(y.s)
-                            of Symbol:
-                                try:
-                                    stack.push newSymbol(y.s)
-                                except ValueError:
-                                    invalidConversionError(y.s)
-                            of Binary:
-                                var ret: ByteArray = newSeq[byte](y.s.len)
-                                for i,ch in y.s:
-                                    ret[i] = (byte)(ord(ch))
-                                stack.push newBinary(ret)
-                            of Block:
-                                stack.push doParse(y.s, isFile=false)
-                            else:
-                                showConversionError()
-
-                    of Literal, 
-                        Word:
-                        case tp:
-                            of String: 
-                                stack.push newString(y.s)
-                            of Literal:
-                                stack.push newLiteral(y.s)
-                            else:
-                                showConversionError()
-
-                    of Block:
-                        case tp:
-                            of Dictionary:
-                                let stop = SP
-                                discard execBlock(y)
-
-                                let arr: ValueArray = sTopsFrom(stop)
-                                var dict: ValueDict = initOrderedTable[string,Value]()
-                                SP = stop
-
-                                var i = 0
-                                while i<arr.len:
-                                    if i+1<arr.len:
-                                        dict[$(arr[i])] = arr[i+1]
-                                    i += 2
-
-                                stack.push(newDictionary(dict))
-                            of Bytecode:
-                                stack.push(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
-                            else:
-                                discard
-
-                    of Symbol:
-                        case tp:
-                            of String:
-                                stack.push newString($(y))
-                            of Literal:
-                                stack.push newLiteral($(y))
-                            else:
-                                showConversionError()
-
-                    of Dictionary,
-                        Function,
-                        Database,
-                        Nothing,
-                        Any,
-                        Inline,
-                        Label,
-                        Attribute,
-                        AttributeLabel,
-                        Path,
-                        PathLabel,
-                        Date,
-                        Bytecode,
-                        Custom,
-                        Binary: discard
+            push(newBlock(blk))
 
 #=======================================
 # Add Library

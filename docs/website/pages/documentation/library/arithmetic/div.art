@@ -1,0 +1,40 @@
+name: "div"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :complex
+         :nothing
+    ]
+alias: "/"
+infix?: true
+description: "perform integer division between given values and return result"
+example: {
+        print div 5 2      ; 2
+        print 9 / 3        ; 3
+        
+        a: 6
+        div 'a 3           ; a: 2
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :floating
+             :complex
+             :literal
+        ]
+    valueB: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Arithmetic/fdiv"
+         "Arithmetic/dec"
+         "Collections/min"
+         "Core/do"
+    ]

@@ -1,0 +1,24 @@
+name: "random"
+type: :function
+module: "Numbers"
+returns: [
+        :integer
+    ]
+description: "get a random integer between given limits"
+example: "rnd: random 0 60          ; rnd: (a random number between 0 and 60)"
+attributes: #[
+    ]
+arguments: #[
+    lowerLimit: [
+            :integer
+        ]
+    upperLimit: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/and"
+         "Binary/nand"
+         "Logic/and?"
+         "Logic/nand?"
+    ]

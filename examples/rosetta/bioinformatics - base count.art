@@ -1,0 +1,33 @@
+dna: {
+    CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG
+    CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG
+    AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT
+    GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT
+    CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG
+    TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA
+    TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT
+    CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG
+    TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC
+    GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT
+}
+
+prettyPrint: function [in][
+    count: #[ A: 0, T: 0, G: 0, C: 0 ]
+
+    loop.with:'i split.lines in 'line [
+        prints [pad to :string i*50 3 ":"]
+        print split.every:10 line
+
+        loop split line 'ch [
+            case [ch=]
+                when? -> "A" -> count\A: count\A + 1
+                when? -> "T" -> count\T: count\T + 1
+                when? -> "G" -> count\G: count\G + 1
+                when? -> "C" -> count\C: count\C + 1
+                else []
+        ]
+    ]
+    print ["Total count => A:" count\A, "T:" count\T "G:" count\G "C:" count\C]
+]
+
+prettyPrint dna

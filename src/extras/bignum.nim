@@ -6,10 +6,7 @@
 # distribution, for details about the copyright.
 #
 
-# TODO(Bignum) Include path needed for other OSes?
-#  labels: 3rd-party
 {.passl: "-lgmp".}
-
 
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
@@ -2551,6 +2548,17 @@ proc exp*(z, x: Int, y: culong, m: Int): Int =
   result = z
   mpz_powm_ui(z[], x[], y, m[])
 
+proc exp*(z, x, y, m: Int): Int =
+  ## Sets `z` to (`x` raised to `y`) modulo `m` and returns `z`.
+  ## If `m` == 0, z = x^y.
+  result = z
+  mpz_powm(z[], x[], y[], m[])
+
+proc exp*(x: Int, y: Int, m: Int): Int =
+  ## Returns (`x` raised to `y`) modulo `m`.
+  ## If `m` == 0, z = x^y.
+  newInt().exp(x, y, m)
+
 proc exp*(x: Int, y: culong, m: Int): Int =
   ## Returns (`x` raised to `y`) modulo `m`.
   ## If `m` == 0, z = x^y.
@@ -2565,6 +2573,14 @@ proc exp*(x: int | culong, y: culong, m: Int): Int =
   ## Returns (`x` raised to `y`) modulo `m`.
   ## If `m` == 0, z = x^y.
   exp(newInt(x), y, m)
+
+proc sqrt*(z, x: Int): Int =
+    result = z
+    mpz_sqrt(z[], x[])
+
+proc sqrt*(x: Int): Int =
+  ## Returns the greatest common divisor of `x` and `y`.
+  newInt().sqrt(x)
 
 proc gcd*(z, x, y: Int): Int =
   ## Sets `z` to the greatest common divisor of `x` and `y` and returns `z`.

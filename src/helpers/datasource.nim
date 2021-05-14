@@ -10,9 +10,14 @@
 # Libraries
 #=======================================
 
-import asyncdispatch, httpClient, os
+when not defined(WEB):
+    import asyncdispatch, httpClient, os
 
-import helpers/url as UrlHelper
+when defined(SAFE):
+    import vm/errors
+
+when not defined(WEB):
+    import helpers/url
 
 #=======================================
 # Types
@@ -31,10 +36,15 @@ type
 #=======================================
 
 proc getSource*(src: string): DataSource {.inline.} =
-    if src.isUrl():
-        let content = waitFor (newAsyncHttpClient().getContent(src))
-        result = (content, WebData)
-    elif src.fileExists():
-        result = (readFile(src), FileData)
+    when not defined(WEB):
+        if src.isUrl():
+            when defined(SAFE): RuntimeError_OperationNotPermitted("read")
+            let content = waitFor (newAsyncHttpClient().getContent(src))
+            result = (content, WebData)
+        elif src.fileExists():
+            when defined(SAFE): RuntimeError_OperationNotPermitted("read")
+            result = (readFile(src), FileData)
+        else:
+            result = (src, TextData)
     else:
         result = (src, TextData)

@@ -1,0 +1,23 @@
+commonPathPrefix: function [lst][
+    paths: map lst => [split.by:"/" &]
+
+    common: new []
+    firstPath: first paths
+    loop .with:'i firstPath 'part [
+        found: true
+        loop paths 'p [
+            if part <> get p i [
+                found: false
+                break
+            ]
+        ]
+        if found -> 'common ++ part
+    ]
+    return join.with:"/" common
+]
+
+print commonPathPrefix [
+    "/home/user1/tmp/coverage/test"
+    "/home/user1/tmp/covert/operator"
+    "/home/user1/tmp/coven/members"
+]

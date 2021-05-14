@@ -1,5 +1,5 @@
 nthPrime: function [n][
-	i: 1
+	i: new 1
 	x: 1
 
 	while [i<>n][

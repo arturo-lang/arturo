@@ -12,7 +12,7 @@
 
 import algorithm, tables, unicode
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Constants
@@ -22,8 +22,8 @@ const
     onlySafeCode = true
 
     charsets = {
-        "en": toRunes("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"),
-        "es": toRunes("ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz")
+        "en": toRunes("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"),
+        "es": toRunes("0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZabcdefghijklmnñopqrstuvwxyz")
     }.toOrderedTable()
 
     transform = {
@@ -127,6 +127,9 @@ proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string,
     else:
         if k < j: copyMem(addr(a[k]), addr(b[i]), sizeof(Value)*(j-k))
 
+# TODO(Helpers\unisort) Verify string sorting works properly
+#  The `unisort` implementation looks like hack - or incomplete. Also, add unit tests
+#  labels: library,bug,unit-test
 func unisort*(a: var openArray[Value], lang: string, 
               cmp: proc (x, y: Value, lang: string, sensitive: bool): int {.closure.},
               sensitive:bool = false,

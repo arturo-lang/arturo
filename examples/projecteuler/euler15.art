@@ -12,6 +12,4 @@ loop (gridSize-1)..0 'i [
 	]
 ]
 
-;loop grid 'row -> print row
-
 print ~"In a |gridSize|x|gridSize| grid, there are |grid\0\0| possible paths"

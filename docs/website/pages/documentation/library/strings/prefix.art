@@ -1,0 +1,31 @@
+name: "prefix"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "add given prefix to string"
+example: {
+        prefix "ello" "h"                  ; => "hello"
+        
+        str: "ello"
+        prefix 'str                        ; str: "hello"
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    prefix: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/prefix?"
+         "Strings/replace"
+         "Strings/suffix"
+         "Converters/define"
+    ]

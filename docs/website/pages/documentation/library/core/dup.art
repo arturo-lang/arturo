@@ -1,0 +1,34 @@
+name: "dup"
+type: :function
+module: "Core"
+returns: [
+        :nothing
+    ]
+alias: "<="
+infix?: false
+description: "duplicate the top of the stack and convert non-returning call to a do-return call"
+example: {
+        ; a label normally consumes its inputs
+        ; and returns nothing
+        
+        ; using dup before a call, the non-returning function
+        ; becomes a returning one
+        
+        a: b: <= 3
+        
+        print a         ; 3
+        print b         ; 3
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Arithmetic/dec"
+         "Arithmetic/div"
+         "Arithmetic/mul"
+         "Arithmetic/sub"
+    ]

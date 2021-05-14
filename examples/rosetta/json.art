@@ -1,0 +1,14 @@
+print read.json {{ "foo": 1, "bar": [10, "apples"] }}
+
+object: #[
+	name: "john"
+	surname: "doe"
+	address: #[
+		number: 10
+		street: "unknown"
+		country: "Spain"
+    ]
+	married: false
+]
+
+print write.json ø object 

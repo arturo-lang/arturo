@@ -3,11 +3,120 @@
 ---
 
 <!--ts-->
+   * [after](#after)
+   * [before](#before)
+   * [leap?](#leap?)
    * [now](#now)
 <!--te-->
 
 ---
 
+
+## after
+
+#### Description
+
+Get date after given one using interval
+
+#### Usage
+
+<pre>
+<b>after</b> <ins>date</ins> <i>:literal</i> <i>:date</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|nanoseconds|<i>:integer</i>|add given number of nanoseconds|
+|milliseconds|<i>:integer</i>|add given number of milliseconds|
+|seconds|<i>:integer</i>|add given number of seconds|
+|minutes|<i>:integer</i>|add given number of minutes|
+|hours|<i>:integer</i>|add given number of hours|
+|days|<i>:integer</i>|add given number of days|
+|weeks|<i>:integer</i>|add given number of weeks|
+|months|<i>:integer</i>|add given number of months|
+|years|<i>:integer</i>|add given number of years|
+
+#### Returns
+
+- *:date*
+
+#### Examples
+
+```red
+print now
+; 2021-03-22T11:25:30+01:00
+
+print after.weeks:2 now
+; 2021-04-05T11:25:42+02:00
+```
+
+## before
+
+#### Description
+
+Get date before given one using interval
+
+#### Usage
+
+<pre>
+<b>before</b> <ins>date</ins> <i>:date</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|nanoseconds|<i>:integer</i>|subtract given number of nanoseconds|
+|milliseconds|<i>:integer</i>|subtract given number of milliseconds|
+|seconds|<i>:integer</i>|subtract given number of seconds|
+|minutes|<i>:integer</i>|subtract given number of minutes|
+|hours|<i>:integer</i>|subtract given number of hours|
+|days|<i>:integer</i>|subtract given number of days|
+|weeks|<i>:integer</i>|subtract given number of weeks|
+|months|<i>:integer</i>|subtract given number of months|
+|years|<i>:integer</i>|subtract given number of years|
+
+#### Returns
+
+- *:date*
+
+#### Examples
+
+```red
+print now
+; 2021-03-22T11:27:00+01:00
+
+print before.weeks:2 now
+; 2021-03-08T11:27:14+01:00
+
+print before.years:1 now
+; 2020-03-22T11:27:23+01:00
+```
+
+## leap?
+
+#### Description
+
+Check if given year is a leap year
+
+#### Usage
+
+<pre>
+<b>leap?</b> <ins>year</ins> <i>:integer</i> <i>:date</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+print leap? now     ; false
+
+print map 2019..2021 => leap? 
+; false true false
+```
 
 ## now
 

@@ -1,0 +1,21 @@
+name: "terminal"
+type: :function
+module: "Io"
+returns: [
+        :dictionary
+    ]
+description: "get info about terminal"
+example: {
+        print terminal      ; [width:107 height:34]
+        terminal\width      ; => 107
+    }
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Io/clear"
+         "Collections/min"
+         "Collections/permutate"
+         "Converters/define"
+    ]

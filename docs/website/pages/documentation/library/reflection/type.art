@@ -1,0 +1,24 @@
+name: "type"
+type: :function
+module: "Reflection"
+returns: [
+        :type
+    ]
+description: "get type of given value"
+example: {
+        print type 18966          ; :integer
+        print type "hello world"  ; :string
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/type?"
+         "Collections/take"
+         "Crypto/hash"
+         "Logic/true"
+    ]

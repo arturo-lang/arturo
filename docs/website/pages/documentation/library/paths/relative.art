@@ -1,0 +1,28 @@
+name: "relative"
+type: :function
+module: "Paths"
+returns: [
+        :string
+    ]
+alias: "./"
+infix?: false
+description: "get relative path for given path, based on current script\'s location"
+example: {
+        ; we are in folder: /Users/admin/Desktop
+        
+        print relative "test.txt"
+        ; /Users/admin/Desktop/test.txt
+    }
+attributes: #[
+    ]
+arguments: #[
+    path: [
+            :string
+        ]
+    ]
+related: [
+        "Numbers/negative?"
+         "Collections/remove"
+         "Files/delete"
+         "Files/rename"
+    ]

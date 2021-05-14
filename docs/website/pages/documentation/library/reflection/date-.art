@@ -1,0 +1,24 @@
+name: "date?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :date"
+example: {
+        print date? now             ; true
+        print date? "hello"         ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/path?"
+         "Reflection/label?"
+         "Reflection/type?"
+         "Reflection/char?"
+    ]

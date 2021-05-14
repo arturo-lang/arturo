@@ -1,0 +1,31 @@
+name: "asec"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+         :complex
+    ]
+description: "calculate the inverse secant of given angle"
+example: {
+        print asec 0                ; nan
+        print asec 45               ; 1.548572275176629
+        print asec 5                ; 1.369438406004566
+        
+        asec to :complex @[pi 1]
+        ; => 1.278970729150485+0.09591398081723231i
+    }
+attributes: #[
+    ]
+arguments: #[
+    angle: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Numbers/acsec"
+         "Numbers/asech"
+         "Numbers/csec"
+         "Numbers/sec"
+    ]

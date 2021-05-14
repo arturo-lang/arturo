@@ -18,4 +18,4 @@ while [bulls <> 4][
         print ["Bulls:" bulls "Cows:" cows "\n"]
     ]
 ]
-print color.green "** Well done! You made the right guess!!"
+print color #green "** Well done! You made the right guess!!"

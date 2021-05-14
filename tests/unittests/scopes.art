@@ -1,0 +1,188 @@
+; TODO(Tests\scopes) verify & update unit tests
+;  tests need to be verified + add more for `with` and `.import` (if it stays in)
+;  labels: easy, unit-test
+
+; NORMAL FUNCTION CALL
+; from the inside we can access the outer variable
+; but not modify it
+
+x: 1
+print ["x before:" x]
+
+f: function[][
+    x: x+10
+	print ["x in f:" x]
+]
+
+f
+print ["x after:" x]
+
+; FUNCTION CALL WITH .EXPORT
+; from the inside can we access the outer variable
+; and modify it
+
+y: 1
+print ["y before:" y]
+
+g: function [] .export:[y][
+    y: y+10
+	print ["y in g:" y]
+]
+
+g
+print ["y after:" y]
+
+; NESTED FUNCTION CALLS
+; the local variables should remain intact
+; between different function calls
+
+z: function[x][
+	s: x
+	print ["in Z: x=" x ", s=" s]
+]
+
+w: function[x y][
+	s: x
+	print ["in W: x=" x ", s=" s]
+	do y
+	print ["in W: x=" x ", s=" s]
+]
+
+w 10 [z 20]
+
+; NESTED FUNCTION CALLS (WITH STRINGS)
+; as above
+
+l: function[x][
+	m: x
+	print ["in L: x=" x ", m=" m]
+]
+
+k: function[x y][
+	m: x
+	do y
+	print ["in K: x=" x ", m=" m]
+]
+
+k "boom" [l "zoom"]
+
+; RECURSIVE FUNCTION
+; the local variables should remain intact
+; between different function calls
+
+fibo: function [n][
+	q: 3*n
+	print ["in fibo" n ", q =" q]
+	if? n<2 [ 
+		print ["in fibo" n ", q =" q]
+		1
+	]
+	else [ 
+		ret: add fibo n-1 fibo n-2
+		print ["in fibo" n ", q =" q]
+		ret
+	]
+]
+
+loop [3 4] 'r [
+	print ["fibo" r "=" fibo r]
+]
+
+; MULTIPLE NESTED DO-BLOCKS
+; children can access and modify parents' scope symbols
+; but not create new ones in them
+
+do [
+	a:9
+	do [	
+		b:4
+		x:a+b
+		do [	
+			y:x+b
+			print [x a b y]
+		]
+		; y was already defined,
+		; so it should be kept
+		print [x a b y]
+	]
+
+	if? set? 'b [
+ 		print [a b y x]
+ 	]
+ 	else [
+ 		print "b: not set -> CORRECT"
+ 	]
+]
+
+; LOOP BLOCK
+; the local parameters have to remain local
+; and be removed afterwards
+
+j: 0 
+
+loop [1 2 3 4] 'o [
+	j: j + o
+]
+
+print ["j :" j]
+
+if? set? 'o [
+	print o
+]
+else [
+	print "o: not set -> CORRECT"
+]
+
+; LOOP BLOCK WITH INTERNAL VARS
+; the local parameters and variables have to remain local
+; and be removed afterwards
+
+j: 0 
+
+loop [1 2 3 4] 'o [
+	j: j + o
+	h: 2*o
+]
+
+print ["j :" j]
+
+if? set? 'o [
+	print o
+]
+else [
+	print "o: not set -> CORRECT"
+]
+
+if? set? 'h [
+	print h
+]
+else [
+	print "h: not set -> CORRECT"
+]
+
+; MAP BLOCK
+; the local parameters have to remain local
+; and be removed afterwards
+
+print map [1 2 3 4] 'm [
+	2*m
+]
+
+if? set? 'm [
+	print m
+]
+else [
+	print "m: not set -> CORRECT"
+]
+
+; DO WITH .IMPORT
+; all variables modified or created inside
+; should be merged into the parent block
+
+do.import [
+	j: 666
+	u: "zap!"
+]
+
+print j
+print u

@@ -1,3 +1,6 @@
+# TODO(tools) integrate utils.sh in a single script
+#  that script could be easily used either for normal installation or packaging
+#  labels: installer,cleanup
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
@@ -20,11 +23,11 @@ FLAGS="\
  -d:release\
  -d:danger\
  --panics:off\
- --gc:orc\
+ --gc:arc\
  --checks:off\
  --overflowChecks:on\
  -d:ssl\
- --passC:'-O3'\
+ --passC:-O3\
  --cincludes:extras\
  --nimcache:.cache\
  --embedsrc:on\
@@ -132,14 +135,22 @@ animate_progress(){
 
 verifyOS(){
     case "$OSTYPE" in
-        linux*)   currentOS="linux" ;;
-        darwin*)  currentOS="macos" ;; 
-        cygwin*)  currentOS="windows" ;;
-        msys*)    currentOS="windows" ;;
-        solaris*) currentOS="solaris" ;;
-        freebsd*) currentOS="freebsd" ;;
-        bsd*)     currentOS="bsd" ;;
-        *)        currentOS="unknown" ;;
+        linux*)     currentOS="Linux" ;;
+        linux-gnu*) currentOS="Linux" ;;
+        darwin*)    currentOS="macOS" ;; 
+        cygwin*)    currentOS="Windows" ;;
+        msys*)      currentOS="Windows" ;;
+        solaris*)   currentOS="Solaris" ;;
+        freebsd*)   currentOS="FreeBSD" ;;
+        bsd*)       currentOS="BSD" ;;
+        *)         
+            if [ `uname` = "Linux" ]; then 
+                currentOS="Linux"
+            elif [ `uname` = "FreeBSD" ]; then
+                currentOS="FreeBSD"
+            else
+                currentOS="Unknown ($OSTYPE / `uname`)"
+            fi ;;
     esac
 
     info "os: $currentOS"

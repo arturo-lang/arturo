@@ -1,0 +1,27 @@
+name: "execute"
+type: :function
+module: "System"
+returns: [
+        :string
+    ]
+description: "execute given shell command"
+example: {
+        print execute "pwd"
+        ; /Users/admin/Desktop
+        
+        split.lines execute "ls"
+        ; => ["tests" "var" "data.txt"]
+    }
+attributes: #[
+    ]
+arguments: #[
+    command: [
+            :string
+        ]
+    ]
+related: [
+        "Core/ensure"
+         "Crypto/decode"
+         "Crypto/encode"
+         "Files/delete"
+    ]

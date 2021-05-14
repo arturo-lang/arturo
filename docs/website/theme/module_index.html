@@ -1,0 +1,99 @@
+<||= importPartial "components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+    <||= importPartial "components/navbar.html" ||>
+        
+        <main>
+            <div class="columns doccols">
+                <!-- SIDEBAR -->
+                <||= importPartial "components/sidebar.html" ||>
+
+                <!-- MAIN -->
+                <div class="column is-9 p-6 mb-6">
+
+                    <!-- Breadcrumbs -->
+                    <||= importPartial "components/breadcrumbs.html" ||>
+                    
+                    <!-- Title -->
+                    <div class="level mt-6 is-mobile">
+                        <div class="level-left">
+                            <h2 class="level-item title is-size-3-touch is-size-2"><||= capitalize last chop pagePath ||></h2>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <h3 class="subtitle is-size-5-touch is-size-4 is-spaced"><||= 
+                        dsc: W\description
+                        set dsc 0 to :char lower to :string dsc\0
+                        dsc 
+                    ||></h3>
+                    
+                    <hr>
+                    <|| 
+                        functionCount: 0
+                        predicateCount: 0
+                        constantCount: 0
+
+                        loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ 
+                            fun: replace replace fff "_" "" "-" "?"
+                            if? :function = type var fun [
+                                if? `?` = last fun [
+                                    predicateCount: predicateCount + 1 
+                                ]
+                                else [
+                                    functionCount: functionCount + 1
+                                ]
+                            ]
+                            else [
+                                constantCount: constantCount + 1
+                            ]
+                        ]
+                    ||>
+
+                    <||= if functionCount > 0 [ ||>
+                        <h4 class="title is-size-6-touch is-size-5 is-spaced">Functions</h4>
+                        
+                        <div class="content">
+                            <ul class="list">
+                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
+                                    <|| if and? :function = type var fun `?` <> last fun [ ||>
+                                        <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
+                                    <|| ] ||>
+                                <||]||>
+                            </ul>
+                        </div>
+                    <|| ] ||>
+
+                    <||= if predicateCount > 0 [ ||>
+                        <h4 class="title is-size-6-touch is-size-5 is-spaced">Predicates</h4>
+                        
+                        <div class="content">
+                            <ul class="list">
+                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
+                                    <|| if and? :function = type var fun `?` = last fun [ ||>
+                                        <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
+                                    <|| ] ||>
+                                <||]||>
+                            </ul>
+                        </div>
+                    <|| ] ||>
+
+                    <||= if constantCount > 0 [ ||>
+                        <h4 class="title is-size-6-touch is-size-5 is-spaced">Constants</h4>
+                        
+                        <div class="content">
+                            <ul class="list">
+                                <||= loop sort keys get pageTree\documentation\library last chop pagePath 'fff [ fun: replace replace fff "_" "" "-" "?" ||>
+                                    <|| if :function <> type var fun [ ||>
+                                        <li class="list-item"><a href="<||= linkTo ~{documentation/library/|last chop pagePath|/|lower fun|} ||>"><||= fun ||></a></li>
+                                    <|| ] ||>
+                                <||]||>
+                            </ul>
+                        </div>
+                    <|| ] ||>
+
+                </div>
+            </div>
+        </main>
+
+<||= importPartial "components/foot.html" ||>

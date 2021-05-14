@@ -1,0 +1,26 @@
+name: "unzip"
+type: :function
+module: "Files"
+returns: [
+        :nothing
+    ]
+description: "unzip given archive to destination"
+example: {
+        unzip "folder" "archive.zip"
+    }
+attributes: #[
+    ]
+arguments: #[
+    destination: [
+            :string
+        ]
+    original: [
+            :string
+        ]
+    ]
+related: [
+        "Core/until"
+         "Files/zip"
+         "Sets/union"
+         "Strings/strip"
+    ]

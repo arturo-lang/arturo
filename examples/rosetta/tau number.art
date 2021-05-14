@@ -1,0 +1,12 @@
+tau: function [x] -> size factors x
+
+found: 0
+i:1
+while [found<100][
+    if 0 = i % tau i [
+        prints pad to :string i 5
+        found: found + 1
+        if 0 = found % 10 -> print ""
+    ]
+    i: i + 1
+]

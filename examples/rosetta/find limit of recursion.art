@@ -1,0 +1,6 @@
+recurse: function [x][
+    print x
+    recurse x+1
+]
+
+recurse 0
