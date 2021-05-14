@@ -10,13 +10,20 @@
 # Libraries
 #=======================================
 
-import math, tables
+import hashes, math, tables
 
 when defined(VERBOSE):
     import strformat
     import helpers/debug
 
 import vm/[bytecode, errors, eval, globals, parse, stack, values/value]
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    Memoizer*  = initOrderedTable[Hash,Value]()
 
 #=======================================
 # Forward Declarations
@@ -48,7 +55,9 @@ template loadByIndex(idx: int):untyped =
 
 template callFunction*(f: Value):untyped =
     if f.fnKind==UserFunction:
-        discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable)
+        var memoized: Value = VNULL
+        if f.memoize: memoized = f
+        discard execBlock(f.main, args=f.params.a, isFuncBlock=true, imports=f.imports, exports=f.exports, exportable=f.exportable, memoized=memoized)
     else:
         f.action()
 
@@ -76,6 +85,12 @@ proc parseData*(
 template execIsolated*(evaled:Translation): untyped =
     doExec(evaled, 1, NoValues)
 
+template getMemoized*(v: Value): Value =
+    Memoizer.getOrDefault(hash(v), VNULL)
+
+template setMemoized*(v: Value, res: Value) =
+    Memoizer[hash(v)] = res
+
 proc execBlock*(
     blk             : Value, 
     dictionary      : bool = false, 
@@ -86,18 +101,31 @@ proc execBlock*(
     imports         : Value = nil,
     exports         : Value = nil,
     exportable      : bool = false,
-    inTryBlock      : bool = false
+    inTryBlock      : bool = false,
+    memoized        : Value = VNULL
 ): ValueDict =
     var newSyms: ValueDict
     let savedArities = Arities
     var savedSyms: OrderedTable[string,Value]
+    
+    var passedParams: Value = newBlock(@[])
 
     Arities = savedArities
     try:
         if isFuncBlock:
-            for i,arg in args:            
-                if stack.peek(i).kind==Function:
-                    Arities[arg.s] = stack.peek(i).params.a.len
+            if memoized != VNULL:
+                passedParams.a.add(memoized)
+                for i,arg in args:
+                    passedParams.a.add(stack.peek(i))
+
+                if (let memd = getMemoized(passedParams); memd != VNULL):            
+                    popN args.len
+                    push memd
+                    return Syms
+            else:
+                for i,arg in args:          
+                    if stack.peek(i).kind==Function:
+                        Arities[arg.s] = stack.peek(i).params.a.len
 
             if imports!=VNULL:
                 savedSyms = Syms
@@ -128,6 +156,9 @@ proc execBlock*(
             return res
         else:
             if isFuncBlock:
+                if memoized!=VNULL:
+                    setMemoized(passedParams, stack.peek(0))
+
                 if imports!=VNULL:
                     Syms = savedSyms
 
