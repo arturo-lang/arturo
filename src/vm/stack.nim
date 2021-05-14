@@ -44,6 +44,9 @@ template pop*(): Value =
     SP -= 1
     Stack[SP]
 
+template popN*(n: int) =
+    SP -= n
+
 template peek*(pos: int): Value =
     Stack[SP-1-pos]
 
