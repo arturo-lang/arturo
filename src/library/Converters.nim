@@ -678,7 +678,8 @@ proc defineSymbols*() =
         attrs       = {
             "import"    : ({Block},"import/embed given list of symbols from current environment"),
             "export"    : ({Block},"export given symbols to parent"),
-            "exportable": ({Boolean},"export all symbols to parent")
+            "exportable": ({Boolean},"export all symbols to parent"),
+            "memoize"   : ({Boolean},"store results of function calls")
         },
         returns     = {Function},
         example     = """
@@ -718,7 +719,9 @@ proc defineSymbols*() =
             if (let aExport = popAttr("export"); aExport != VNULL):
                 exports = aExport
 
-            push(newFunction(x,y,imports,exports,exportable))
+            var memoize = (popAttr("memoize")!=VNULL)
+
+            push(newFunction(x,y,imports,exports,exportable,memoize))
 
     builtin "to",
         alias       = unaliased, 
