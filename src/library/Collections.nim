@@ -16,13 +16,23 @@
 # Libraries
 #=======================================
 
-import algorithm, random, sequtils, strutils, sugar, unicode
-import nre except toSeq
+when not defined(WEB):
+    import oids
+    import nre except toSeq
+else:
+    import jsre
 
-import helpers/arrays as arraysHelper  
-import helpers/unisort as unisortHelper 
+import algorithm, os, random, sequtils
+import strutils, sugar, unicode
+    
 
-import vm/[common, globals, stack, value]
+import helpers/arrays
+import helpers/strings
+import helpers/unisort
+when defined(WEB):
+    import helpers/js
+
+import vm/lib
 
 #=======================================
 # Methods
@@ -61,33 +71,33 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
+                if InPlace.kind==String:
                     if y.kind==String:
-                        Syms[x.s].s &= y.s
+                        InPlaced.s &= y.s
                     elif y.kind==Char:
-                        Syms[x.s].s &= $(y.c)
-                elif Syms[x.s].kind==Char:
+                        InPlaced.s &= $(y.c)
+                elif InPlaced.kind==Char:
                     if y.kind==String:
-                        Syms[x.s] = newString($(Syms[x.s].c) & y.s)
+                        SetInPlace(newString($(InPlaced.c) & y.s))
                     elif y.kind==Char:
-                        Syms[x.s] = newString($(Syms[x.s].c) & $(y.c))
+                        SetInPlace(newString($(InPlaced.c) & $(y.c)))
                 else:
                     if y.kind==Block:
                         for item in y.a:
-                            Syms[x.s].a.add(item)
+                            InPlaced.a.add(item)
                     else:
-                        Syms[x.s].a.add(y)
+                        InPlaced.a.add(y)
             else:
                 if x.kind==String:
                     if y.kind==String:
-                        stack.push(newString(x.s & y.s))
+                        push(newString(x.s & y.s))
                     elif y.kind==Char:
-                        stack.push(newString(x.s & $(y.c)))  
+                        push(newString(x.s & $(y.c)))  
                 elif x.kind==Char:
                     if y.kind==String:
-                        stack.push(newString($(x.c) & y.s))
+                        push(newString($(x.c) & y.s))
                     elif y.kind==Char:
-                        stack.push(newString($(x.c) & $(y.c)))          
+                        push(newString($(x.c) & $(y.c)))          
                 else:
                     var ret = newBlock(x.a)
 
@@ -97,7 +107,7 @@ proc defineSymbols*() =
                     else:
                         ret.a.add(y)
                         
-                    stack.push(ret)
+                    push(ret)
 
     builtin "chop",
         alias       = unaliased, 
@@ -119,15 +129,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s = Syms[x.s].s[0..^2]
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s].a = Syms[x.s].a[0..^2]
+                if InPlace.kind==String:
+                    InPlaced.s = InPlaced.s[0..^2]
+                elif InPlaced.kind==Block:
+                    InPlaced.a = InPlaced.a[0..^2]
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s[0..^2]))
+                    push(newString(x.s[0..^2]))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a[0..^2]))
+                    push(newBlock(x.a[0..^2]))
 
     builtin "combine",
         alias       = unaliased, 
@@ -144,7 +154,7 @@ proc defineSymbols*() =
             ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
             ##########################################################
-            stack.push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
+            push(newBlock(zip(x.a,y.a).map((z)=>newBlock(@[z[0],z[1]]))))
 
     builtin "contains?",
         alias       = unaliased, 
@@ -165,8 +175,8 @@ proc defineSymbols*() =
             contains? arr 2             ; => true
             
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             contains? dict "John"       ; => true
@@ -180,14 +190,17 @@ proc defineSymbols*() =
             case x.kind:
                 of String:
                     if (popAttr("regex") != VNULL):
-                        stack.push(newBoolean(nre.contains(x.s, nre.re(y.s))))
+                        when not defined(WEB):
+                            push(newBoolean(nre.contains(x.s, nre.re(y.s))))
+                        else:
+                            push(newBoolean(test(newRegExp(y.s,""), x.s)))
                     else:
-                        stack.push(newBoolean(y.s in x.s))
+                        push(newBoolean(y.s in x.s))
                 of Block:
-                    stack.push(newBoolean(y in x.a))
+                    push(newBoolean(y in x.a))
                 of Dictionary: 
                     let values = toSeq(x.d.values)
-                    stack.push(newBoolean(y in values))
+                    push(newBoolean(y in values))
                 else:
                     discard
 
@@ -210,15 +223,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s = Syms[x.s].s[y.i..^1]
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s].a = Syms[x.s].a[y.i..^1]
+                if InPlace.kind==String:
+                    InPlaced.s = InPlaced.s[y.i..^1]
+                elif InPlaced.kind==Block:
+                    InPlaced.a = InPlaced.a[y.i..^1]
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s[y.i..^1]))
+                    push(newString(x.s[y.i..^1]))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a[y.i..^1]))
+                    push(newBlock(x.a[y.i..^1]))
 
     builtin "empty",
         alias       = unaliased, 
@@ -237,10 +250,10 @@ proc defineSymbols*() =
             empty 'str            ; str: ""
         """:
             ##########################################################
-            case Syms[x.s].kind:
-                of String: Syms[x.s].s = ""
-                of Block: Syms[x.s].a = @[]
-                of Dictionary: Syms[x.s].d = initOrderedTable[string,Value]()
+            case InPlace.kind:
+                of String: InPlaced.s = ""
+                of Block: InPlaced.a = @[]
+                of Dictionary: InPlaced.d = initOrderedTable[string,Value]()
                 else: discard
 
     builtin "empty?",
@@ -261,10 +274,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             case x.kind:
-                of Null: stack.push(VTRUE)
-                of String: stack.push(newBoolean(x.s==""))
-                of Block: stack.push(newBoolean(x.a.len==0))
-                of Dictionary: stack.push(newBoolean(x.d.len==0))
+                of Null: push(VTRUE)
+                of String: push(newBoolean(x.s==""))
+                of Block: push(newBoolean(x.a.len==0))
+                of Dictionary: push(newBoolean(x.d.len==0))
                 else: discard
 
     builtin "extend",
@@ -285,14 +298,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
+                discard InPlace
                 for k,v in pairs(y.d):
-                    Syms[x.s].d[k] = v
+                    InPlaced.d[k] = v
             else:
                 var res = copyValue(x)
-                for k,v in y.d:
+                for k,v in pairs(y.d):
                     res.d[k] = v
 
-                stack.push(res)
+                push(res)
 
     builtin "first",
         alias       = unaliased, 
@@ -313,11 +327,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (let aN = popAttr("n"); aN != VNULL):
-                if x.kind==String: stack.push(newString(x.s[0..aN.i-1]))
-                else: stack.push(newBlock(x.a[0..aN.i-1]))
+                if x.kind==String: push(newString(x.s[0..aN.i-1]))
+                else: push(newBlock(x.a[0..aN.i-1]))
             else:
-                if x.kind==String: stack.push(newChar(x.s.runeAt(0)))
-                else: stack.push(x.a[0])
+                if x.kind==String: push(newChar(x.s.runeAt(0)))
+                else: push(x.a[0])
 
     builtin "flatten",
         alias       = unaliased, 
@@ -348,9 +362,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                Syms[x.s] = Syms[x.s].flattened(once = popAttr("once")!=VNULL)
+                InPlace = InPlaced.flattened(once = popAttr("once")!=VNULL)
             else:
-                stack.push(x.flattened(once = popAttr("once")!=VNULL))
+                push(x.flattened(once = popAttr("once")!=VNULL))
 
     builtin "get",
         alias       = backslash, 
@@ -358,14 +372,14 @@ proc defineSymbols*() =
         description = "get collection's item by given index",
         args        = {
             "collection"    : {String,Block,Dictionary,Date},
-            "index"         : {Integer,String,Literal}
+            "index"         : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Any},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             print user\name               ; John
@@ -389,11 +403,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             case x.kind:
-                of Block: stack.push(x.a[y.i])
-                of Dictionary: stack.push(x.d[y.s])
-                of String: stack.push(newChar(x.s.runeAtPos(y.i)))
+                of Block: push(GetArrayIndex(x.a, y.i))
+                of Dictionary: 
+                    if y.kind==String:
+                        push(GetKey(x.d, y.s))
+                    else:
+                        push(GetKey(x.d, $(y)))
+                of String: push(newChar(x.s.runeAtPos(y.i)))
                 of Date: 
-                    stack.push(x.e[y.s])
+                    push(GetKey(x.e, y.s))
                 else: discard
 
     builtin "in?",
@@ -415,8 +433,8 @@ proc defineSymbols*() =
             in? 2 arr             ; => true
             
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             in? "John" dict       ; => true
@@ -430,14 +448,17 @@ proc defineSymbols*() =
             case y.kind:
                 of String:
                     if (popAttr("regex") != VNULL):
-                        stack.push(newBoolean(nre.contains(y.s, nre.re(x.s))))
+                        when not defined(WEB):
+                            push(newBoolean(nre.contains(y.s, nre.re(x.s))))
+                        else:
+                            push(newBoolean(test(newRegExp(x.s,""), y.s)))
                     else:
-                        stack.push(newBoolean(x.s in y.s))
+                        push(newBoolean(x.s in y.s))
                 of Block:
-                    stack.push(newBoolean(x in y.a))
+                    push(newBoolean(x in y.a))
                 of Dictionary: 
                     let values = toSeq(y.d.values)
-                    stack.push(newBoolean(x in values))
+                    push(newBoolean(x in values))
                 else:
                     discard
 
@@ -464,22 +485,22 @@ proc defineSymbols*() =
             case x.kind:
                 of String:
                     let indx = x.s.find(y.s)
-                    if indx != -1: stack.push(newInteger(indx))
-                    else: stack.push(VNULL)
+                    if indx != -1: push(newInteger(indx))
+                    else: push(VNULL)
                 of Block:
                     let indx = x.a.find(y)
-                    if indx != -1: stack.push(newInteger(indx))
-                    else: stack.push(VNULL)
+                    if indx != -1: push(newInteger(indx))
+                    else: push(VNULL)
                 of Dictionary:
                     var found = false
                     for k,v in pairs(x.d):
                         if v==y:
-                            stack.push(newString(k))
+                            push(newString(k))
                             found=true
                             break
 
                     if not found:
-                        stack.push(VNULL)
+                        push(VNULL)
                 else: discard
 
     builtin "insert",
@@ -501,7 +522,7 @@ proc defineSymbols*() =
             ; hello
             
             dict: #[
-            ____name: John
+                name: John
             ]
             
             insert 'dict 'name "Jane"
@@ -509,26 +530,26 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                case Syms[x.s].kind:
-                    of String: Syms[x.s].s.insert(z.s, y.i)
-                    of Block: Syms[x.s].a.insert(z, y.i)
+                case InPlace.kind:
+                    of String: InPlaced.s.insert(z.s, y.i)
+                    of Block: InPlaced.a.insert(z, y.i)
                     of Dictionary:
-                        Syms[x.s].d[y.s] = z
+                        InPlaced.d[y.s] = z
                     else: discard
             else:
                 case x.kind:
                     of String: 
                         var copied = x.s
                         copied.insert(z.s, y.i)
-                        stack.push(newString(copied))
+                        push(newString(copied))
                     of Block: 
                         var copied = x.a
                         copied.insert(z, y.i)
-                        stack.push(newBlock(copied))
+                        push(newBlock(copied))
                     of Dictionary:
                         var copied = x.d
                         copied[y.s] = z
-                        stack.push(newDictionary(copied))
+                        push(newDictionary(copied))
                     else: discard
 
     builtin "key?",
@@ -537,24 +558,29 @@ proc defineSymbols*() =
         description = "check if dictionary contains given key",
         args        = {
             "collection"    : {Dictionary},
-            "key"           : {String,Literal}
+            "key"           : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             key? user 'age            ; => false
             if key? user 'name [
-            ____print ["Hello" user\name]
+                print ["Hello" user\name]
             ]
             ; Hello John
         """:
             ##########################################################
-            stack.push(newBoolean(x.d.hasKey(y.s)))
+            var needle: string
+            if y.kind==String:
+                needle = y.s
+            else:
+                needle = $(y)
+            push(newBoolean(x.d.hasKey(needle)))
 
     builtin "keys",
         alias       = unaliased, 
@@ -567,8 +593,8 @@ proc defineSymbols*() =
         returns     = {Block},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             keys user
@@ -576,7 +602,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let s = toSeq(x.d.keys)
-            stack.push(newStringBlock(s))
+            push(newStringBlock(s))
 
     builtin "last",
         alias       = unaliased, 
@@ -597,12 +623,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (let aN = getAttr("n"); aN != VNULL):
-                if x.kind==String: stack.push(newString(x.s[x.s.len-aN.i..^1]))
-                else: stack.push(newBlock(x.a[x.a.len-aN.i..^1]))
+                if x.kind==String: push(newString(x.s[x.s.len-aN.i..^1]))
+                else: push(newBlock(x.a[x.a.len-aN.i..^1]))
             else:
                 if x.kind==String: 
-                    stack.push(newChar(toRunes(x.s)[^1]))
-                else: stack.push(x.a[x.a.len-1])
+                    push(newChar(toRunes(x.s)[^1]))
+                else: push(x.a[x.a.len-1])
 
     builtin "max",
         alias       = unaliased, 
@@ -617,7 +643,7 @@ proc defineSymbols*() =
             print max [4 2 8 5 1 9]       ; 9
         """:
             ##########################################################
-            if x.a.len==0: stack.push(VNULL)
+            if x.a.len==0: push(VNULL)
             else:
                 var maxElement = x.a[0]
                 var i = 1
@@ -626,7 +652,7 @@ proc defineSymbols*() =
                         maxElement = x.a[i]
                     inc(i)
 
-                stack.push(maxElement)
+                push(maxElement)
 
     builtin "min",
         alias       = unaliased, 
@@ -641,7 +667,7 @@ proc defineSymbols*() =
             print min [4 2 8 5 1 9]       ; 1
         """:
             ##########################################################
-            if x.a.len==0: stack.push(VNULL)
+            if x.a.len==0: push(VNULL)
             else:
                 var minElement = x.a[0]
                 var i = 1
@@ -650,7 +676,7 @@ proc defineSymbols*() =
                         minElement = x.a[i]
                     inc(i)
                     
-                stack.push(minElement)
+                push(minElement)
 
     builtin "permutate",
         alias       = unaliased, 
@@ -672,7 +698,7 @@ proc defineSymbols*() =
                 ret.add(newBlock(s))
             )
 
-            stack.push(newBlock(ret))
+            push(newBlock(ret))
 
     builtin "remove",
         alias       = doubleminus, 
@@ -685,7 +711,9 @@ proc defineSymbols*() =
         attrs       = {
             "key"   : ({Boolean},"remove dictionary key"),
             "once"  : ({Boolean},"remove only first occurence"),
-            "index" : ({Integer},"remove specific index")
+            "index" : ({Boolean},"remove specific index"),
+            "prefix": ({Boolean},"remove first matching prefix from string"),
+            "suffix": ({Boolean},"remove first matching suffix from string")
         },
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
@@ -703,43 +731,55 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
+                if InPlace.kind==String:
                     if (popAttr("once") != VNULL):
-                        Syms[x.s] = newString(Syms[x.s].s.removeFirst(y.s))
+                        SetInPlace(newString(InPlaced.s.removeFirst(y.s)))
+                    elif (popAttr("prefix") != VNULL):
+                        InPlace.s.removePrefix(y.s)
+                    elif (popAttr("suffix") != VNULL):
+                        InPlace.s.removeSuffix(y.s)
                     else:
-                        Syms[x.s] = newString(Syms[x.s].s.replace(y.s))
-                elif Syms[x.s].kind==Block: 
+                        SetInPlace(newString(InPlaced.s.replace(y.s)))
+                elif InPlaced.kind==Block: 
                     if (popAttr("once") != VNULL):
-                        Syms[x.s] = newBlock(Syms[x.s].a.removeFirst(y))
-                    elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                        Syms[x.s] = newBlock(Syms[x.s].a.removeByIndex(aIndex.i))
+                        SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
+                    elif (popAttr("index") != VNULL):
+                        SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
                     else:
-                        Syms[x.s] = newBlock(Syms[x.s].a.removeAll(y))
-                elif Syms[x.s].kind==Dictionary:
+                        SetInPlace(newBlock(InPlaced.a.removeAll(y)))
+                elif InPlaced.kind==Dictionary:
                     let key = (popAttr("key") != VNULL)
                     if (popAttr("once") != VNULL):
-                        Syms[x.s] = newDictionary(Syms[x.s].d.removeFirst(y, key))
+                        SetInPlace(newDictionary(InPlaced.d.removeFirst(y, key)))
                     else:
-                        Syms[x.s] = newDictionary(Syms[x.s].d.removeAll(y, key))
+                        SetInPlace(newDictionary(InPlaced.d.removeAll(y, key)))
             else:
                 if x.kind==String:
                     if (popAttr("once") != VNULL):
-                        stack.push(newString(x.s.removeFirst(y.s)))
+                        push(newString(x.s.removeFirst(y.s)))
+                    elif (popAttr("prefix") != VNULL):
+                        var ret = x.s
+                        ret.removePrefix(y.s)
+                        push(newString(ret))
+                    elif (popAttr("suffix") != VNULL):
+                        var ret = x.s
+                        ret.removeSuffix(y.s)
+                        push(newString(ret))
                     else:
-                        stack.push(newString(x.s.replace(y.s)))
+                        push(newString(x.s.replace(y.s)))
                 elif x.kind==Block: 
                     if (popAttr("once") != VNULL):
-                        stack.push(newBlock(x.a.removeFirst(y)))
-                    elif (let aIndex = popAttr("index"); aIndex != VNULL):
-                        stack.push(newBlock(x.a.removeByIndex(aIndex.i)))
+                        push(newBlock(x.a.removeFirst(y)))
+                    elif (popAttr("index") != VNULL):
+                        push(newBlock(x.a.removeByIndex(y.i)))
                     else:
-                        stack.push(newBlock(x.a.removeAll(y)))
+                        push(newBlock(x.a.removeAll(y)))
                 elif x.kind==Dictionary:
                     let key = (popAttr("key") != VNULL)
                     if (popAttr("once") != VNULL):
-                        stack.push(newDictionary(x.d.removeFirst(y, key)))
+                        push(newDictionary(x.d.removeFirst(y, key)))
                     else:
-                        stack.push(newDictionary(x.d.removeAll(y, key)))
+                        push(newDictionary(x.d.removeAll(y, key)))
 
     builtin "repeat",
         alias       = unaliased, 
@@ -766,19 +806,19 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s] = newString(Syms[x.s].s.repeat(y.i))
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s] = newBlock(Syms[x.s].a.cycle(y.i))
+                if InPlace.kind==String:
+                    SetInPlace(newString(InPlaced.s.repeat(y.i)))
+                elif InPlaced.kind==Block:
+                    SetInPlace(newBlock(InPlaced.a.cycle(y.i)))
                 else:
-                    Syms[x.s] = newBlock(Syms[x.s].repeat(y.i))
+                    SetInPlace(newBlock(InPlaced.repeat(y.i)))
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s.repeat(y.i)))
+                    push(newString(x.s.repeat(y.i)))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a.cycle(y.i)))
+                    push(newBlock(x.a.cycle(y.i)))
                 else:
-                    stack.push(newBlock(x.repeat(y.i)))
+                    push(newBlock(x.repeat(y.i)))
 
     builtin "reverse",
         alias       = unaliased, 
@@ -808,13 +848,13 @@ proc defineSymbols*() =
                     result[s.high - i] = c
 
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s.reverse()
+                if InPlace.kind==String:
+                    InPlaced.s.reverse()
                 else:
-                    Syms[x.s].a.reverse()
+                    InPlaced.a.reverse()
             else:
-                if x.kind==Block: stack.push(newBlock(x.a.reversed))
-                elif x.kind==String: stack.push(newString(x.s.reversed))
+                if x.kind==Block: push(newBlock(x.a.reversed))
+                elif x.kind==String: push(newString(x.s.reversed))
 
     builtin "sample",
         alias       = unaliased, 
@@ -831,7 +871,7 @@ proc defineSymbols*() =
             ; apple
         """:
             ##########################################################
-            stack.push(sample(x.a))
+            push(sample(x.a))
 
     builtin "set",
         alias       = unaliased, 
@@ -839,15 +879,15 @@ proc defineSymbols*() =
         description = "set collection's item at index to given value",
         args        = {
             "collection"    : {String,Block,Dictionary},
-            "index"         : {Integer,String,Literal},
+            "index"         : {Any},
             "value"         : {Any}
         },
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
             myDict: #[ 
-            ____name: "John"
-            ____age: 34
+                name: "John"
+                age: 34
             ]
             
             set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
@@ -858,9 +898,12 @@ proc defineSymbols*() =
             ##########################################################
             case x.kind:
                 of Block: 
-                    x.a[y.i] = z
+                    SetArrayIndex(x.a, y.i, z)
                 of Dictionary:
-                    x.d[y.s] = z
+                    if y.kind==String:
+                        x.d[y.s] = z
+                    else:
+                        x.d[$(y)] = z
                 else: discard
 
     builtin "shuffle",
@@ -881,9 +924,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                Syms[x.s].a.shuffle()
+                InPlace.a.shuffle()
             else:
-                stack.push(newBlock(x.a.dup(shuffle)))
+                push(newBlock(x.a.dup(shuffle)))
 
     builtin "size",
         alias       = unaliased, 
@@ -902,11 +945,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String:
-                stack.push(newInteger(runeLen(x.s)))
+                push(newInteger(runeLen(x.s)))
             elif x.kind==Dictionary:
-                stack.push(newInteger(x.d.len))
+                push(newInteger(x.d.len))
             else:
-                stack.push(newInteger(x.a.len))
+                push(newInteger(x.a.len))
             
     builtin "slice",
         alias       = unaliased, 
@@ -925,21 +968,23 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==String:
-                stack.push(newString(x.s.runeSubStr(y.i,z.i-y.i+1)))
+                push(newString(x.s.runeSubStr(y.i,z.i-y.i+1)))
             else:
-                stack.push(newBlock(x.a[y.i..z.i]))
+                push(newBlock(x.a[y.i..z.i]))
 
     builtin "sort",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "sort given block in ascending order",
         args        = {
-            "collection"    : {Block,Literal}
+            "collection"    : {Block,Dictionary,Literal}
         },
         attrs       = {
             "as"        : ({Literal},"localized by ISO 639-1 language code"),
             "sensitive" : ({Boolean},"case-sensitive sorting"),
-            "descending": ({Boolean},"sort in ascending order")
+            "descending": ({Boolean},"sort in ascending order"),
+            "values"    : ({Boolean},"sort dictionary by values"),
+            "by"        : ({String,Literal},"sort array of dictionaries by given key")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -959,30 +1004,59 @@ proc defineSymbols*() =
                 sortOrdering = SortOrder.Descending
 
             if x.kind==Block: 
-                if (let aAs = popAttr("as"); aAs != VNULL):
-                    stack.push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
+                if (let aBy = popAttr("by"); aBy != VNULL):
+                    var sorted: ValueArray = x.a.sorted(
+                        proc (v1, v2: Value): int = 
+                            cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
+                    push(newBlock(sorted))
                 else:
-                    if (popAttr("sensitive")!=VNULL):
-                        stack.push(newBlock(x.a.unisorted("en", sensitive=true, order = sortOrdering)))
+                    if (let aAs = popAttr("as"); aAs != VNULL):
+                        push(newBlock(x.a.unisorted(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)))
                     else:
-                        if x.a[0].kind==String:
-                            stack.push(newBlock(x.a.unisorted("en", order = sortOrdering)))
+                        if (popAttr("sensitive")!=VNULL):
+                            push(newBlock(x.a.unisorted("en", sensitive=true, order = sortOrdering)))
                         else:
-                            stack.push(newBlock(x.a.sorted(order = sortOrdering)))
+                            if x.a[0].kind==String:
+                                push(newBlock(x.a.unisorted("en", order = sortOrdering)))
+                            else:
+                                push(newBlock(x.a.sorted(order = sortOrdering)))
 
-                        
+            elif x.kind==Dictionary:
+                var sorted = x.d
+                if (popAttr("values") != VNULL):
+                    sorted.sort(proc (x, y: (string, Value)): int = cmp(x[1], y[1]), order=sortOrdering)
+                else:
+                    sorted.sort(system.cmp, order=sortOrdering)
+                
+                push(newDictionary(sorted))
+
             else: 
-                if (let aAs = popAttr("as"); aAs != VNULL):
-                    Syms[x.s].a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
-                else:
-                    if (popAttr("sensitive")!=VNULL):
-                        Syms[x.s].a.unisort("en", sensitive=true, order = sortOrdering)
+                if InPlace.kind==Block:
+                    if (let aBy = popAttr("by"); aBy != VNULL):
+                        InPlace.a.sort(
+                            proc (v1, v2: Value): int = 
+                                cmp(v1.d[aBy.s], v2.d[aBy.s]), order=sortOrdering)
                     else:
-                        if Syms[x.s].a[0].kind==String:
-                            Syms[x.s].a.unisort("en", order = sortOrdering)
+                        if (let aAs = popAttr("as"); aAs != VNULL):
+                            InPlaced.a.unisort(aAs.s, sensitive = popAttr("sensitive")!=VNULL, order = sortOrdering)
                         else:
-                            Syms[x.s].a.sort(order = sortOrdering)
+                            if (popAttr("sensitive")!=VNULL):
+                                InPlaced.a.unisort("en", sensitive=true, order = sortOrdering)
+                            else:
+                                if InPlace.a[0].kind==String:
+                                    InPlaced.a.unisort("en", order = sortOrdering)
+                                else:
+                                    InPlaced.a.sort(order = sortOrdering)
+                else:
+                    if (popAttr("values") != VNULL):
+                        InPlaced.d.sort(proc (x, y: (string,Value)): int = cmp(x[1], y[1]), order=sortOrdering)
+                    else:
+                        InPlaced.d.sort(system.cmp, order=sortOrdering)
 
+
+    # TODO(Collections\split) Add better support for unicode strings
+    #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
+    #  labels: library,bug
     builtin "split",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -993,10 +1067,11 @@ proc defineSymbols*() =
         attrs       = {
             "words"     : ({Boolean},"split string by whitespace"),
             "lines"     : ({Boolean},"split string by lines"),
-            "by"        : ({String},"split using given separator"),
+            "by"        : ({String,Block},"split using given separator"),
             "regex"     : ({Boolean},"match against a regular expression"),
             "at"        : ({Integer},"split collection at given position"),
-            "every"     : ({Integer},"split collection every <n> elements")
+            "every"     : ({Integer},"split collection every <n> elements"),
+            "path"      : ({Boolean},"split path components in string")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1015,55 +1090,71 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
+                if InPlace.kind==String:
                     if (popAttr("words") != VNULL):
-                        Syms[x.s] = newStringBlock(strutils.splitWhitespace(Syms[x.s].s))
+                        SetInPlace(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
                     elif (popAttr("lines") != VNULL):
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.splitLines())
+                        SetInPlace(newStringBlock(InPlaced.s.splitLines()))
+                    elif (popAttr("path") != VNULL):
+                        SetInPlace(newStringBlock(InPlaced.s.split(DirSep)))
                     elif (let aBy = popAttr("by"); aBy != VNULL):
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.split(aBy.s))
+                        if aBy.kind==String:
+                            SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
+                        else:
+                            SetInPlace(newStringBlock(toSeq(InPlaced.s.tokenize(aBy.a.map((k)=>k.s)))))
                     elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.split(nre.re(aRegex.s)))
+                        when not defined(WEB):
+                            SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
+                        else:
+                            SetInPlace(newStringBlock(InPlaced.s.split(newRegExp(aRegex.s,""))))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
-                        Syms[x.s] = newStringBlock(@[Syms[x.s].s[0..aAt.i-1], Syms[x.s].s[aAt.i..^1]])
+                        SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1], InPlaced.s[aAt.i..^1]]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
                         var ret: seq[string] = @[]
-                        var length = Syms[x.s].s.len
+                        var length = InPlaced.s.len
                         var i = 0
 
                         while i<length:
-                            ret.add(Syms[x.s].s[i..i+aEvery.i-1])
+                            ret.add(InPlaced.s[i..i+aEvery.i-1])
                             i += aEvery.i
 
-                        Syms[x.s] = newStringBlock(ret)
+                        SetInPlace(newStringBlock(ret))
                     else:
-                        Syms[x.s] = newStringBlock(Syms[x.s].s.map(proc (x:char):string = $(x)))
+                        SetInPlace(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
                 else:
                     if (let aAt = popAttr("at"); aAt != VNULL):
-                        Syms[x.s] = newBlock(@[newBlock(Syms[x.s].a[0..aAt.i]), newBlock(Syms[x.s].a[aAt.i..^1])])
+                        SetInPlace(newBlock(@[newBlock(InPlaced.a[0..aAt.i]), newBlock(InPlaced.a[aAt.i..^1])]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
                         var ret: ValueArray = @[]
-                        var length = Syms[x.s].a.len
+                        var length = InPlaced.a.len
                         var i = 0
 
                         while i<length:
-                            ret.add(Syms[x.s].a[i..i+aEvery.i-1])
+                            ret.add(InPlaced.a[i..i+aEvery.i-1])
                             i += aEvery.i
 
-                        Syms[x.s] = newBlock(ret)
+                        SetInPlace(newBlock(ret))
                     else: discard
 
             elif x.kind==String:
                 if (popAttr("words") != VNULL):
-                    stack.push(newStringBlock(strutils.splitWhitespace(x.s)))
+                    push(newStringBlock(strutils.splitWhitespace(x.s)))
                 elif (popAttr("lines") != VNULL):
-                    stack.push(newStringBlock(x.s.splitLines()))
+                    push(newStringBlock(x.s.splitLines()))
+                elif (popAttr("path") != VNULL):
+                    push(newStringBlock(x.s.split(DirSep)))
                 elif (let aBy = popAttr("by"); aBy != VNULL):
-                    stack.push(newStringBlock(x.s.split(aBy.s)))
+                    if aBy.kind==String:
+                        push(newStringBlock(x.s.split(aBy.s)))
+                    else:
+                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
                 elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                    stack.push(newStringBlock(x.s.split(nre.re(aRegex.s))))
+                    when not defined(WEB):
+                        push(newStringBlock(x.s.split(nre.re(aRegex.s))))
+                    else:
+                        push(newStringBlock(x.s.split(newRegExp(aRegex.s,""))))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
-                    stack.push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
+                    push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
                     var ret: seq[string] = @[]
                     var length = x.s.len
@@ -1073,12 +1164,12 @@ proc defineSymbols*() =
                         ret.add(x.s[i..i+aEvery.i-1])
                         i += aEvery.i
 
-                    stack.push(newStringBlock(ret))
+                    push(newStringBlock(ret))
                 else:
-                    stack.push(newStringBlock(x.s.map(proc (x:char):string = $(x))))
+                    push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
             else:
                 if (let aAt = popAttr("at"); aAt != VNULL):
-                    stack.push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(x.a[aAt.i..^1])]))
+                    push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(x.a[aAt.i..^1])]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
                     var ret: ValueArray = @[]
                     var length = x.a.len
@@ -1092,9 +1183,67 @@ proc defineSymbols*() =
 
                         i += aEvery.i
 
-                    stack.push(newBlock(ret))
-                else: stack.push(x)
+                    push(newBlock(ret))
+                else: push(x)
 
+    builtin "squeeze",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "reduce adjacent elements in given collection",
+        args        = {
+            "collection"    : {String,Block,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {String,Block,Nothing},
+        example     = """
+            print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
+            ; 1 2 3 4 2 3 4 5 6 7 
+
+            arr: [4 2 1 1 3 6 6]
+            squeeze 'arr            ; a: [4 2 1 3 6]
+
+            print squeeze hello world";
+            ; helo world
+        """:
+            ##########################################################
+            if x.kind==Literal:
+                if InPlace.kind==String:
+                    var i = 0
+                    var ret = ""
+                    while i<InPlaced.s.len:
+                        ret &= $(InPlaced.s[i])
+                        while (i+1<InPlaced.s.len and InPlaced.s[i+1]==x.s[i]):
+                            i += 1
+                        i += 1
+                    SetInPlace(newString(ret))
+                elif InPlaced.kind==Block:
+                    var i = 0
+                    var ret: ValueArray = @[]
+                    while i<InPlaced.a.len:
+                        ret.add(InPlaced.a[i])
+                        while (i+1<InPlaced.a.len and InPlaced.a[i+1]==InPlaced.a[i]):
+                            i += 1
+                        i += 1
+                    SetInPlace(newBlock(ret))
+            else:
+                if x.kind==String:
+                    var i = 0
+                    var ret = ""
+                    while i<x.s.len:
+                        ret &= $(x.s[i])
+                        while (i+1<x.s.len and x.s[i+1]==x.s[i]):
+                            i += 1
+                        i += 1
+                    push(newString(ret))
+                elif x.kind==Block:
+                    var i = 0
+                    var ret: ValueArray = @[]
+                    while i<x.a.len:
+                        ret.add(x.a[i])
+                        while (i+1<x.a.len and x.a[i+1]==x.a[i]):
+                            i += 1
+                        i += 1
+                    push(newBlock(ret))
 
     builtin "take",
         alias       = unaliased, 
@@ -1115,24 +1264,26 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Literal:
-                if Syms[x.s].kind==String:
-                    Syms[x.s].s = Syms[x.s].s[0..y.i-1]
-                elif Syms[x.s].kind==Block:
-                    Syms[x.s].a = Syms[x.s].a[0..y.i-1]
+                if InPlace.kind==String:
+                    InPlaced.s = InPlaced.s[0..y.i-1]
+                elif InPlaced.kind==Block:
+                    InPlaced.a = InPlaced.a[0..y.i-1]
             else:
                 if x.kind==String:
-                    stack.push(newString(x.s[0..y.i-1]))
+                    push(newString(x.s[0..y.i-1]))
                 elif x.kind==Block:
-                    stack.push(newBlock(x.a[0..y.i-1]))
+                    push(newBlock(x.a[0..y.i-1]))
 
     builtin "unique",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "get given block without duplicates",
         args        = {
-            "collection"    : {Block,Literal}
+            "collection"    : {String,Block,Literal}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "id"    : ({Boolean},"generate unique id using given prefix"),
+        },
         returns     = {Block,Nothing},
         example     = """
             arr: [1 2 4 1 3 2]
@@ -1143,8 +1294,14 @@ proc defineSymbols*() =
             print arr                     ; 1 2 4 3
         """:
             ##########################################################
-            if x.kind==Block: stack.push(newBlock(x.a.deduplicate()))
-            else: Syms[x.s].a = Syms[x.s].a.deduplicate()
+            if (popAttr("id") != VNULL):
+                # TODO(System\unique) make `.id` work for Web/JS builds
+                #  labels: library,enhancement,web
+                when not defined(WEB):
+                    push newString(x.s & $(genOid()))
+            else:
+                if x.kind==Block: push(newBlock(x.a.deduplicate()))
+                else: InPlace.a = InPlaced.a.deduplicate()
 
     builtin "values",
         alias       = unaliased, 
@@ -1157,8 +1314,8 @@ proc defineSymbols*() =
         returns     = {Block},
         example     = """
             user: #[
-            ____name: "John"
-            ____surname: "Doe"
+                name: "John"
+                surname: "Doe"
             ]
             
             values user
@@ -1166,7 +1323,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let s = toSeq(x.d.values)
-            stack.push(newBlock(s))
+            push(newBlock(s))
 
 #=======================================
 # Add Library

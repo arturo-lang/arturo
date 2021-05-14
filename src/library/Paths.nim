@@ -16,12 +16,20 @@
 # Libraries
 #=======================================
 
-import os
+import std/colors except Color
 
-import helpers/path as PathHelper
-import helpers/url as UrlHelper
+when not defined(WEB):
+    import os, sequtils, sugar
 
-import vm/[common, env, globals, stack, value]
+    import helpers/colors as colorsHelper
+    import helpers/path
+    import helpers/url
+
+import vm/lib
+when not defined(WEB):
+    import vm/env
+when defined(SAFE):
+    import vm/errors
 
 #=======================================
 # Methods
@@ -32,29 +40,42 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Paths"
 
-    builtin "extract",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "extract components from path",
-        args        = {
-            "path"  : {String}
-        },
-        attrs       = {
-            "directory" : ({Boolean},"get path directory"),
-            "basename"  : ({Boolean},"get path basename (filename+extension)"),
-            "filename"  : ({Boolean},"get path filename"),
-            "extension" : ({Boolean},"get path extension"),
-            "scheme"    : ({Boolean},"get scheme field from URL"),
-            "host"      : ({Boolean},"get host field from URL"),
-            "port"      : ({Boolean},"get port field from URL"),
-            "user"      : ({Boolean},"get user field from URL"),
-            "password"  : ({Boolean},"get password field from URL"),
-            "path"      : ({Boolean},"get path field from URL"),
-            "query"     : ({Boolean},"get query field from URL"),
-            "anchor"    : ({Boolean},"get anchor field from URL")
-        },
-        returns     = {String,Dictionary},
-        example     = """
+    when not defined(WEB):
+
+        # TODO(Paths\extract) implement for Web/JS builds
+        #  labels: library,enhancement,web
+        builtin "extract",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "extract components from path",
+            args        = {
+                "path"  : {String,Color}
+            },
+            attrs       = {
+                "directory" : ({Boolean},"get path directory"),
+                "basename"  : ({Boolean},"get path basename (filename+extension)"),
+                "filename"  : ({Boolean},"get path filename"),
+                "extension" : ({Boolean},"get path extension"),
+                "scheme"    : ({Boolean},"get scheme field from URL"),
+                "host"      : ({Boolean},"get host field from URL"),
+                "port"      : ({Boolean},"get port field from URL"),
+                "user"      : ({Boolean},"get user field from URL"),
+                "password"  : ({Boolean},"get password field from URL"),
+                "path"      : ({Boolean},"get path field from URL"),
+                "query"     : ({Boolean},"get query field from URL"),
+                "anchor"    : ({Boolean},"get anchor field from URL"),
+                "red"       : ({Boolean},"get red component from color"),
+                "green"     : ({Boolean},"get green component from color"),
+                "blue"      : ({Boolean},"get blue component from color"),
+                "hsl"       : ({Boolean},"get HSL representation from color"),
+                "hue"       : ({Boolean},"get hue component from color"),
+                "saturation": ({Boolean},"get saturation component from color"),
+                "luminosity": ({Boolean},"get luminosity component from color")
+            },
+            returns     = {String,Dictionary},
+            # TODO(Paths\extract) add documentation for RGB extraction from Color values
+            #  labels: documentation, library, easy
+            example     = """
             path: "/this/is/some/path.txt"
 
             print extract.directory path        ; /this/is/some
@@ -79,77 +100,203 @@ proc defineSymbols*() =
             print extract url
             ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
 
-        """:
-            ##########################################################
-            if isUrl(x.s):
-                let details = parseUrlComponents(x.s)
+            """:
+                ##########################################################
+                if x.kind==Color:
+                    let (r,g,b) = extractRGB(x.l)
 
-                if (popAttr("scheme") != VNULL):
-                    stack.push(details["scheme"])
-                elif (popAttr("host") != VNULL):
-                    stack.push(details["host"])
-                elif (popAttr("port") != VNULL):
-                    stack.push(details["port"])
-                elif (popAttr("user") != VNULL):
-                    stack.push(details["user"])
-                elif (popAttr("password") != VNULL):
-                    stack.push(details["password"])
-                elif (popAttr("path") != VNULL):
-                    stack.push(details["path"])
-                elif (popAttr("query") != VNULL):
-                    stack.push(details["query"])
-                elif (popAttr("anchor") != VNULL):
-                    stack.push(details["anchor"])
+                    if (popAttr("red") != VNULL):
+                        push newInteger(r)
+                    elif (popAttr("green") != VNULL):
+                        push newInteger(g)
+                    elif (popAttr("blue") != VNULL):
+                        push newInteger(b)
+                    elif (popAttr("hsl") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newDictionary({
+                            "hue"       : newInteger(hsl.h),
+                            "saturation": newFloating(hsl.s),
+                            "luminosity": newFloating(hsl.l)
+                        }.toOrderedTable)
+                    elif (popAttr("hue") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newInteger(hsl.h)
+                    elif (popAttr("saturation") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newFloating(hsl.s)
+                    elif (popAttr("luminosity") != VNULL):
+                        let hsl = RGBtoHSL(x.l)
+                        push newFloating(hsl.l)
+                    else:
+                        push newDictionary({
+                            "red"   : newInteger(r),
+                            "green" : newInteger(g),
+                            "blue"  : newInteger(b)
+                        }.toOrderedTable)
                 else:
-                    stack.push(newDictionary(details))
-            else:
-                let details = parsePathComponents(x.s)
+                    if isUrl(x.s):
+                        let details = parseUrlComponents(x.s)
 
-                if (popAttr("directory") != VNULL):
-                    stack.push(details["directory"])
-                elif (popAttr("basename") != VNULL):
-                    stack.push(details["basename"])
-                elif (popAttr("filename") != VNULL):
-                    stack.push(details["filename"])
-                elif (popAttr("extension") != VNULL):
-                    stack.push(details["extension"])
+                        if (popAttr("scheme") != VNULL):
+                            push(details["scheme"])
+                        elif (popAttr("host") != VNULL):
+                            push(details["host"])
+                        elif (popAttr("port") != VNULL):
+                            push(details["port"])
+                        elif (popAttr("user") != VNULL):
+                            push(details["user"])
+                        elif (popAttr("password") != VNULL):
+                            push(details["password"])
+                        elif (popAttr("path") != VNULL):
+                            push(details["path"])
+                        elif (popAttr("query") != VNULL):
+                            push(details["query"])
+                        elif (popAttr("anchor") != VNULL):
+                            push(details["anchor"])
+                        else:
+                            push(newDictionary(details))
+                    else:
+                        let details = parsePathComponents(x.s)
+
+                        if (popAttr("directory") != VNULL):
+                            push(details["directory"])
+                        elif (popAttr("basename") != VNULL):
+                            push(details["basename"])
+                        elif (popAttr("filename") != VNULL):
+                            push(details["filename"])
+                        elif (popAttr("extension") != VNULL):
+                            push(details["extension"])
+                        else:
+                            push(newDictionary(details))
+
+        builtin "list",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get files in given path",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = {
+                "recursive" : ({Boolean}, "perform recursive search"),
+                "relative"  : ({Boolean}, "get relative paths"),
+            },
+            returns     = {Block},
+            example     = """
+            loop list "." 'file [
+            ___print file
+            ]
+            
+            ; tests
+            ; var
+            ; data.txt
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("list")
+                let recursive = (popAttr("recursive") != VNULL)
+                let relative = (popAttr("relative") != VNULL)
+                let path = x.s
+
+                var contents: seq[string]
+
+                if recursive:
+                    contents = toSeq(walkDirRec(path, relative = relative))
                 else:
-                    stack.push(newDictionary(details))
+                    contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
 
-    builtin "module",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get path for given module name",
-        args        = {
-            "name"  : {String,Literal}
-        },
-        attrs       = NoAttrs,
-        returns     = {String,Null},
-        example     = """
+                push(newStringBlock(contents))
+
+        builtin "module",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get path for given module name",
+            args        = {
+                "name"  : {String,Literal}
+            },
+            attrs       = NoAttrs,
+            returns     = {String,Null},
+            example     = """
             print module 'html        ; /usr/local/lib/arturo/html.art
             
             do.import module 'html    ; (imports given module)
-        """:
-            ##########################################################
-            stack.push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
+            """:
+                ##########################################################
+                push(newString(HomeDir & ".arturo/lib/" & x.s & ".art"))
+        
+        builtin "normalize",
+            alias       = dotslash, 
+            rule        = PrefixPrecedence,
+            description = "get normalized version of given path",
+            args        = {
+                "path"  : {String,Literal}
+            },
+            attrs       = {
+                "executable"    : ({Boolean},"treat path as executable"),
+                "tilde"         : ({Boolean},"expand tildes in path")
+            },
+            returns     = {String,Nothing},
+            example     = """
+            normalize "one/../two/../../three"
+            ; => ../three
 
-    builtin "relative",
-        alias       = dotslash, 
-        rule        = PrefixPrecedence,
-        description = "get relative path for given path, based on current script's location",
-        args        = {
-            "path"  : {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {String},
-        example     = """
+            normalize "~/one/../two/../../three"
+            ; => three
+
+            normalize.tilde "~/one/../two/../../three"
+            ; => /Users/three
+
+            normalize.tilde "~/Documents"
+            ; => /Users/drkameleon/Documents
+
+            normalize.executable "myscript"
+            ; => ./myscript          
+            """:
+                ##########################################################
+                if (popAttr("executable") != VNULL):
+                    if x.kind==Literal:
+                        if (popAttr("tilde") != VNULL):
+                            InPlace.s = InPlaced.s.expandTilde()
+                        InPlace.s.normalizeExe()
+                    else:
+                        var ret: string
+                        if (popAttr("tilde") != VNULL):
+                            ret = x.s.expandTilde()
+                        else:
+                            ret = x.s
+                        ret.normalizeExe()
+                        push(newString(ret))
+                else:
+                    if x.kind==Literal:
+                        if (popAttr("tilde") != VNULL):
+                            InPlace.s = InPlaced.s.expandTilde()
+                        InPlace.s.normalizePath()
+                    else:
+                        if (popAttr("tilde") != VNULL):
+                            push(newString(normalizedPath(x.s.expandTilde())))
+                        else:
+                            push(newString(normalizedPath(x.s)))
+
+        constant "path",
+            alias       = unaliased,
+            description = "common path constants":
+                newDictionary(getPathInfo())
+
+        builtin "relative",
+            alias       = dotslash, 
+            rule        = PrefixPrecedence,
+            description = "get relative path for given path, based on current script's location",
+            args        = {
+                "path"  : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {String},
+            example     = """
             ; we are in folder: /Users/admin/Desktop
             
             print relative "test.txt"
             ; /Users/admin/Desktop/test.txt
-        """:
-            ##########################################################
-            stack.push(newString(joinPath(env.currentPath(),x.s)))
+            """:
+                ##########################################################
+                push(newString(joinPath(env.currentPath(),x.s)))
 
 #=======================================
 # Add Library

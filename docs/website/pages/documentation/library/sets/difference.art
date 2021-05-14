@@ -1,0 +1,43 @@
+name: "difference"
+type: :function
+module: "Sets"
+returns: [
+        :block
+         :nothing
+    ]
+description: "return the difference of given sets"
+example: {
+        print difference [1 2 3 4] [3 4 5 6]
+        ; 1 2
+        
+        a: [1 2 3 4]
+        b: [3 4 5 6]
+        difference 'a b
+        ; a: [1 2]
+        
+        print difference.symmetric [1 2 3 4] [3 4 5 6]
+        ; 1 2 5 6
+    }
+attributes: #[
+    symmetric: #[
+        types: [
+                :boolean
+            ]
+        description: "get the symmetric difference"
+        ]
+    ]
+arguments: #[
+    setA: [
+            :literal
+             :block
+        ]
+    setB: [
+            :block
+        ]
+    ]
+related: [
+        "Sets/intersection"
+         "Sets/powerset"
+         "Sets/union"
+         "Converters/define"
+    ]

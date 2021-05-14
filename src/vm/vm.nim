@@ -12,11 +12,26 @@
 
 import os, random, strutils, tables
 
-import vm/[globals, env, errors, eval, exec, globals, parse, stack, value, version]
+when defined(WEB):
+    import jsffi, std/json
+    import helpers/jsonobject
+
+import vm/[
+    env, 
+    errors, 
+    eval, 
+    exec, 
+    globals, 
+    parse, 
+    stack, 
+    values/value, 
+    version
+]
 
 import library/Arithmetic   as ArithmeticLib
 import library/Binary       as BinaryLib
 import library/Collections  as CollectionsLib
+import library/Colors       as ColorsLib
 import library/Comparison   as ComparisonLib
 import library/Converters   as ConvertersLib
 import library/Core         as CoreLib
@@ -31,56 +46,141 @@ import library/Net          as NetLib
 import library/Numbers      as NumbersLib
 import library/Paths        as PathsLib
 import library/Reflection   as ReflectionLib
+import library/Sets         as SetsLib
+import library/Statistics   as StatisticsLib
 import library/Strings      as StringsLib
 import library/System       as SystemLib
+import library/Ui           as UiLib
 
-when not defined(MINI):
-    import library/Ui           as UiLib
+#=======================================
+# Variables
+#=======================================
+
+var
+    initialized     : bool = false
 
 #=======================================
 # Helpers
 #=======================================
 
-proc initialize*() =
+proc setupLibrary*() =
+    for i,importLibrary in Libraries:
+        importLibrary()
+
+template initialize*(args: seq[string], filename: string, isFile:bool, scriptInfo:ValueDict = initOrderedTable[string,Value](), mutedColors: bool = false) =
     # function arity
     Arities = initTable[string,int]()
-    
     # stack
     createMainStack()
 
     # attributes
     createAttrsStack()
+
+    # # opstack
+    # if DoDebug:
+    #     OpStack[0] = opNop
+    #     OpStack[1] = opNop
+    #     OpStack[2] = opNop
+    #     OpStack[3] = opNop
+    #     OpStack[4] = opNop
     
     # random number generator
     randomize()
 
-proc setupLibrary*() =
-    for importLibrary in Libraries:
-        importLibrary()
+    # environment
+    initEnv(
+        arguments = args, 
+        version = ArturoVersion,
+        build = ArturoBuild,
+        script = scriptInfo,
+        muted = mutedColors
+    )
+
+    when not defined(WEB):
+        # paths
+        if isFile: env.addPath(filename)
+        else: env.addPath(getCurrentDir())
+
+    Syms = initOrderedTable[string,Value]()
+
+    # library
+    setupLibrary()
+
+    # set VM as initialized
+    initialized = true
+
+template handleVMErrors*(blk: untyped): untyped =
+    try:
+        blk
+    except:
+        let e = getCurrentException()
+        showVMErrors(e)
+        quit(1)
 
 #=======================================
 # Methods
 #=======================================
 
-proc run*(code: var string, args: ValueArray, isFile: bool) =
-    initialize()
+when not defined(WEB):
 
-    initEnv(
-        arguments = args, 
-        version = Version,
-        build = Build
-    )
+    # TODO(VM\runBytecode) doesn't work properly - at least - on Windows
+    #  labels: bug,critical,execution,vm,windows
+    proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
+        handleVMErrors:
+            initialize(args, filename, isFile=true)
 
-    if isFile: env.addPath(code)
-    else: env.addPath(getCurrentDir())
+            discard doExec(code)
 
-    Syms = getEnvDictionary()
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation {.exportc:"run".} =
+        handleVMErrors:
+            
+            let (mainCode, scriptInfo) = doParseAll(code, isFile)
 
-    setupLibrary()
+            if not initialized:
+                initialize(
+                    args, 
+                    code, 
+                    isFile=isFile, 
+                    parseData(doParse(scriptInfo, false)).d,
+                    muted
+                )
 
-    let parsed = doParse(move code, isFile)
-    let evaled = parsed.doEval()
-    discard doExec(evaled)
-    
-    showVMErrors()
+            let evaled = mainCode.doEval()
+
+            if doExecute:
+                discard doExec(evaled)
+
+            return evaled
+
+else:
+
+    proc run*(code: var string, params: JsObject = jsUndefined): JsObject {.exportc:"run".} =
+        handleVMErrors:
+
+            if params != jsUndefined:
+                for param in items(params):
+                    let val = parseJsObject(param)
+                    code &= " " & codify(val)
+
+            let (mainCode, scriptInfo) = doParseAll(code, isFile=false)
+
+            if not initialized:
+                initialize(
+                    @[""], 
+                    code, 
+                    isFile=false, 
+                    parseData(doParse(scriptInfo, false)).d,
+                    mutedColors = true
+                )
+
+            let evaled = mainCode.doEval()
+
+            Syms = doExec(evaled)
+
+            var ret: Value = VNULL
+
+            if SP>0:
+                ret = sTop()
+            
+            return generateJsObject(ret)
     

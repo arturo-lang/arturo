@@ -1,0 +1,35 @@
+name: "or?"
+type: :function
+module: "Logic"
+returns: [
+        :boolean
+    ]
+description: "return the logical OR for the given values"
+example: {
+        x: 2
+        y: 4
+        
+        if or? x=2 y>5 [
+            print "yep, that's correct!"]
+        ]
+        
+        ; yep, that's correct!
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :boolean
+             :block
+        ]
+    valueB: [
+            :boolean
+             :block
+        ]
+    ]
+related: [
+        "Logic/xor?"
+         "Logic/xnor?"
+         "Binary/or"
+         "Logic/and?"
+    ]

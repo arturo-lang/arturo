@@ -1,0 +1,27 @@
+name: "case"
+type: :function
+module: "Core"
+returns: [
+        :nothing
+    ]
+description: "initiate a case block to check for different cases"
+example: {
+        a: 2
+        case [a]
+            when? [<2] -> print "a is less than 2"
+            when? [=2] -> print "a is 2"
+            else       -> print "a is greater than 2"
+    }
+attributes: #[
+    ]
+arguments: #[
+    predicate: [
+            :block
+        ]
+    ]
+related: [
+        "Collections/last"
+         "Collections/take"
+         "Converters/as"
+         "Core/call"
+    ]

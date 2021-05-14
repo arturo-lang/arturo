@@ -1,0 +1,13 @@
+name: "script"
+type: :dictionary
+description: "embedded information about the current script"
+module: "System"
+returns: [
+        :dictionary
+    ]
+related: [
+        "Strings/strip"
+         "Collections/sort"
+         "Collections/split"
+         "Io/print"
+    ]

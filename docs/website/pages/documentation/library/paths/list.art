@@ -1,0 +1,41 @@
+name: "list"
+type: :function
+module: "Paths"
+returns: [
+        :block
+    ]
+description: "get files in given path"
+example: {
+        loop list "." 'file [
+        ___print file
+        ]
+        
+        ; tests
+        ; var
+        ; data.txt
+    }
+attributes: #[
+    recursive: #[
+        types: [
+                :boolean
+            ]
+        description: "perform recursive search"
+        ]
+    relative: #[
+        types: [
+                :boolean
+            ]
+        description: "get relative paths"
+        ]
+    ]
+arguments: #[
+    path: [
+            :string
+        ]
+    ]
+related: [
+        "Collections/last"
+         "Collections/first"
+         "Core/let"
+         "Reflection/is?"
+    ]

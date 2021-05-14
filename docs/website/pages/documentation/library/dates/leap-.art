@@ -1,0 +1,27 @@
+name: "leap?"
+type: :function
+module: "Dates"
+returns: [
+        :boolean
+    ]
+description: "check if given year is a leap year"
+example: {
+        print leap? now     ; false
+        
+        print map 2019..2021 => leap? 
+        ; false true false
+    }
+attributes: #[
+    ]
+arguments: #[
+    year: [
+            :integer
+             :date
+        ]
+    ]
+related: [
+        "Comparison/less?"
+         "Collections/key?"
+         "Collections/last"
+         "Core/let"
+    ]

@@ -1,0 +1,73 @@
+;------------------------------------
+; Objects and prototypes
+; in Arturo
+;------------------------------------
+
+;===========================
+; :PERSON
+;===========================
+
+define :person [                            ; define a new custom type "Person"
+    name                                    ; with fields: name, surname
+    surname
+][ 
+    init: [
+        this\name: capitalize this\name
+    ]
+
+    print: [
+        render "NAME: |this\name|, SURNAME: |this\surname|"
+    ]
+]
+
+sayHello: function [this][
+    ensure -> is? :person this
+
+    print ["Hello" this\name]
+]
+
+a: to :person ["John" "Doe"]                    ; let's create 2 "Person"s
+b: to :person ["jane" "Doe"]                    ; and another one
+
+sayHello a                                      ; call inner method
+sayHello b
+
+print ["The first person's name is:" a\name]    ; access inner field directly
+print ["The second person's name is:" b\name]
+
+a\name: "Bob"                                   ; change inner field
+sayHello a                                      ; and verify persistence
+
+print type a                                    ; verify object type
+print is? :person a                             ; and again with `is?`
+
+print a                                         ; inspect final objects' state
+print b
+
+;===========================
+; :CAR
+;===========================
+
+define :car [brand model year][
+    compare: [
+        if this\year = that\year -> return 0
+        if this\year > that\year -> return 1
+        return neg 1
+    ]
+]
+
+c: to :car #[brand: "Ford" model: "Mustang" year: 1967]
+d: to :car #[brand: "Nissan" model: "Sunny" year: 1991]
+
+print c
+print d
+
+print ["Car C is a" c\brand]
+print ["Car D is a" d\brand]
+
+print c > d
+print c < d 
+print c = d 
+print c <> d
+print sort @[c d]
+print sort.descending @[c d]

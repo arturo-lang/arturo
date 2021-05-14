@@ -10,15 +10,19 @@
    * [do](#do)
    * [dup](#dup)
    * [else](#else)
-   * [globalize](#globalize)
+   * [ensure](#ensure)
    * [if](#if)
    * [if?](#if?)
    * [let](#let)
    * [new](#new)
+   * [null](#null)
    * [pop](#pop)
    * [return](#return)
+   * [switch](#switch)
    * [try](#try)
    * [try?](#try?)
+   * [unless](#unless)
+   * [unless?](#unless?)
    * [until](#until)
    * [var](#var)
    * [when?](#when?)
@@ -44,6 +48,23 @@ Break out of current block or loop
 
 - *:block*
 
+#### Examples
+
+```red
+loop 1..5 'x [
+    print ["x:" x]
+    if x=3 -> break
+    print "after check"
+]
+print "after loop"
+
+; x: 1
+; after check
+; x: 2
+; after check
+; x: 3
+; after loop
+```
 
 ## call
 
@@ -57,6 +78,12 @@ Call function with given list of parameters
 <b>call</b> <ins>function</ins> <i>:string</i> <i>:literal</i> <i>:function</i>
      <ins>params</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|external|<i>:string</i>|path to external library|
+|expect|<i>:type</i>|expect given return type|
 
 #### Returns
 
@@ -116,6 +143,27 @@ Immediately continue with next iteration
 
 - *:block*
 
+#### Examples
+
+```red
+loop 1..5 'x [
+    print ["x:" x]
+    if x=3 -> continue
+    print "after check"
+]
+print "after loop"
+
+; x: 1 
+; after check
+; x: 2 
+; after check
+; x: 3 
+; x: 4 
+; after check
+; x: 5 
+; after check
+; after loop
+```
 
 ## do
 
@@ -126,7 +174,7 @@ Evaluate and execute given code
 #### Usage
 
 <pre>
-<b>do</b> <ins>code</ins> <i>:string</i> <i>:block</i>
+<b>do</b> <ins>code</ins> <i>:string</i> <i>:block</i> <i>:bytecode</i>
 </pre>
 #### Attributes
 
@@ -169,7 +217,7 @@ Duplicate the top of the stack and convert non-returning call to a do-return cal
 #### Usage
 
 <pre>
-<b>dup</b> 
+<b>dup</b> <ins>value</ins> <i>:any</i>
 </pre>
 
 #### Returns
@@ -221,33 +269,42 @@ else [
 ]
 ```
 
-## globalize
+## ensure
 
 #### Description
 
-Make all symbols within current context global
+Assert given condition is true, or exit
 
 #### Usage
 
 <pre>
-<b>globalize</b> 
+<b>ensure</b> <ins>condition</ins> <i>:block</i>
 </pre>
 
 #### Returns
 
 - *:nothing*
 
+#### Examples
+
+```red
+num: input "give me a positive number"
+
+ensure [num > 0]
+
+print "good, the number is positive indeed. let's continue..."
+```
 
 ## if
 
 #### Description
 
-Perform action, if given condition is true
+Perform action, if given condition is not false or null
 
 #### Usage
 
 <pre>
-<b>if</b> <ins>condition</ins> <i>:boolean</i>
+<b>if</b> <ins>condition</ins> <i>:any</i>
    <ins>action</ins> <i>:block</i>
 </pre>
 
@@ -268,12 +325,12 @@ if x=2 -> print "yes, that's right!"
 
 #### Description
 
-Perform action, if given condition is true and return condition result
+Perform action, if given condition is not false or null and return condition result
 
 #### Usage
 
 <pre>
-<b>if?</b> <ins>condition</ins> <i>:boolean</i>
+<b>if?</b> <ins>condition</ins> <i>:any</i>
     <ins>action</ins> <i>:block</i>
 </pre>
 
@@ -344,6 +401,29 @@ Create new value by cloning given one
 
 - *:any*
 
+#### Examples
+
+```red
+c: "Hello"
+d: new c        ; make a copy of the older string
+
+; changing one string in-place
+; will change only the string in question
+
+'d ++ "World"
+print d                 ; HelloWorld
+print c                 ; Hello
+```
+
+## null
+
+#### Description
+
+The NULL constant
+
+#### Returns
+
+- *:null*
 
 ## pop
 
@@ -366,6 +446,18 @@ Pop top <number> values from stack
 
 - *:any*
 
+#### Examples
+
+```red
+1 2 3
+a: pop 1        ; a: 3
+
+1 2 3
+b: pop 2        ; b: [3 2]
+
+1 2 3
+pop.discard 1   ; popped 3 from the stack
+```
 
 ## return
 
@@ -397,6 +489,36 @@ print f 3         ; 6
 print f 6         ; 10
 ```
 
+## switch
+
+**Alias:** `?`
+
+#### Description
+
+If condition is not false or null perform given action, otherwise perform alternative action
+
+#### Usage
+
+<pre>
+<b>switch</b> <ins>condition</ins> <i>:any</i>
+       <ins>action</ins> <i>:block</i>
+       <ins>alternative</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+x: 2
+
+switch x=2 -> print "yes, that's right!"
+           -> print "nope, that's not right!
+; yes, that's right!
+```
+
 ## try
 
 #### Description
@@ -408,6 +530,12 @@ Perform action and catch possible errors
 <pre>
 <b>try</b> <ins>action</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|import|<i>:boolean</i>|execute at root level|
+|verbose|<i>:boolean</i>|print all error messages as usual|
 
 #### Returns
 
@@ -435,6 +563,12 @@ Perform action, catch possible errors and return status
 <pre>
 <b>try?</b> <ins>action</ins> <i>:block</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|import|<i>:boolean</i>|execute at root level|
+|verbose|<i>:boolean</i>|print all error messages as usual|
 
 #### Returns
 
@@ -454,11 +588,76 @@ else [
 ; something went terribly wrong...
 ```
 
+## unless
+
+#### Description
+
+Perform action, if given condition is false or null
+
+#### Usage
+
+<pre>
+<b>unless</b> <ins>condition</ins> <i>:any</i>
+       <ins>action</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+x: 2
+
+unless x=1 -> print "yep, x is not 1!"
+; yep, x is not 1!
+```
+
+## unless?
+
+#### Description
+
+Perform action, if given condition is false or null and return condition result
+
+#### Usage
+
+<pre>
+<b>unless?</b> <ins>condition</ins> <i>:any</i>
+        <ins>action</ins> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+x: 2
+
+result: unless? x=1 -> print "yep, x is not 1!"
+; yep, x is not 1!
+
+print result
+; true
+
+z: 1
+
+unless? x>z [
+    print "yep, x was not greater than z"
+]
+else [
+    print "x was greater than z"
+]
+; x was greater than z
+```
+
 ## until
 
 #### Description
 
-Execute action until the given condition is true
+Execute action until the given condition is not false or null
 
 #### Usage
 
@@ -508,6 +707,18 @@ Get symbol value by given name
 
 - *:any*
 
+#### Examples
+
+```red
+a: 2
+print var 'a            ; a
+
+f: function [x][x+2]
+print f 10              ; 12
+
+g: var 'f               
+print g 10              ; 12
+```
 
 ## when?
 
@@ -540,12 +751,12 @@ case [a]
 
 #### Description
 
-Execute action while the given condition is true
+Execute action while the given condition is is not false or null
 
 #### Usage
 
 <pre>
-<b>while</b> <ins>condition</ins> <i>:block</i>
+<b>while</b> <ins>condition</ins> <i>:null</i> <i>:block</i>
       <ins>action</ins> <i>:block</i>
 </pre>
 #### Attributes
@@ -576,5 +787,9 @@ while [i<10][
 ; i => 6 
 ; i => 7 
 ; i => 8 
-; i => 9
+; i => 9 
+
+while ø [
+    print "something"   ; infinitely
+]
 ```

@@ -1,0 +1,30 @@
+name: "abs"
+type: :function
+module: "Numbers"
+returns: [
+        :integer
+         :floating
+    ]
+description: "get the absolute value for given integer"
+example: {
+        print abs 6                 ; 6
+        print abs 6-7               ; 1
+        
+        abs to :complex @[pi 1] 
+        ; => 3.296908309475615
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+             :complex
+        ]
+    ]
+related: [
+        "Converters/as"
+         "Arithmetic/add"
+         "Binary/and"
+         "Numbers/acos"
+    ]

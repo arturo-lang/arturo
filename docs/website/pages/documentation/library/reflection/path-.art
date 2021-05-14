@@ -1,0 +1,24 @@
+name: "path?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :path"
+example: {
+        path? first [a\b\c x]
+        ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/date?"
+         "Paths/path"
+         "Reflection/char?"
+         "Reflection/label?"
+    ]

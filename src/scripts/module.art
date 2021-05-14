@@ -1,0 +1,145 @@
+;========================================================
+; Arturo
+; Programming Language + Bytecode VM compiler
+; (c) 2019-2021 Yanis Zafirópulos
+;
+; @file: system/module.art
+;========================================================
+
+; TODO(Script\module) needs complete rewrite
+;  currently the package manager barely works, we should re-think and re-design the whole process and functionality
+;  labels: package manager,open discussion,enhancement,bug,critical
+
+; Globals
+
+REMOTE: « https://github.com/arturo-lang/art-modules/releases/download/v0.0.3/list.art
+LOCAL:  « |path\home|/.arturo/lib
+
+; Helpers
+
+getFileUrl: function [initial,pa][
+	release: read.json (replace initial "github.com" "api.github.com/repos") ++ "/releases/latest"
+	release: get release "tag_name"
+
+	return ~"|initial|/releases/download/|release|/|pa|"
+]
+
+printInfo: function [name,remote][
+	print color #cyan ~"> Info for |name|: "
+	src: remote \ name
+
+	print # getFileUrl src "info.art"
+]
+
+installModule: function [name,remote][
+	if? ø <> attr "update"
+		-> prints color #cyan ~"> Updating: |name|... "
+	else
+		-> prints color #cyan ~"> Installing: |name|... "
+	src: remote \ name
+	write ~"|LOCAL|/|name|.art" read getFileUrl src "main.art"
+	print "[ DONE ]"
+]
+
+uninstallModule: function [name][
+	prints color #cyan ~"> Uninstalling: |name|... "
+	execute "rm " ++ ~"|LOCAL|/|name|.art"
+	print "[ DONE ]"
+]
+
+; Main
+
+print color #green "- Launching Arturo module manager..."
+
+if 0=size arg [
+	print [color #red.bold "\nError:" "Not enough arguments."]
+	exit
+]
+
+case [arg\0=]
+	when? ["list"]		[ 
+		print "- Fetching list...\n"
+		locals: map list.relative ~LOCAL 'x [replace x ".art" ""]
+
+		print color #cyan "> Available local modules:"
+		if? 0=size locals [
+			print "   ! No modules found"
+		]
+		else [
+			loop sort locals [name]
+				-> print ["  ▪︎" name]
+		]
+	]
+	when? ["remote"]	[ 
+		print "- Fetching remote list...\n"
+		remotes: # REMOTE
+
+		print color #cyan "> Available remote modules:"
+		loop sort keys remotes [name]
+			-> print ["  ▪︎" name]
+	]
+	when? ["info"]		[
+		if 2<>size arg [
+			print [color #red.bold "Error:" "Not enough arguments for 'install'."]
+			exit
+		]
+		print "- Fetching remote list...\n"
+		remotes: # REMOTE
+
+		if not? contains? keys remotes arg\1 [
+			print [color #red.bold "Error:" "Remote module not found."]
+			exit
+		]
+
+		printInfo arg\1 remotes
+	]
+	when? ["install"]	[ 
+		if 2<>size arg [
+			print [color #red.bold "Error:" "Not enough arguments for 'install'."]
+			exit
+		]
+		print "- Fetching remote list...\n"
+		remotes: # REMOTE
+
+		if not? contains? keys remotes arg\1 [
+			print [color #red.bold "Error:" "Remote module not found."]
+			exit
+		]
+		installModule arg\1 remotes
+	]
+	when? ["uninstall"]	[ 
+		if 2<>size arg [
+			print [color #red.bold "Error:" "Not enough arguments for 'uninstall'."]
+			exit
+		]
+		print "- Fetching list...\n"
+		locals: map list.relative ~LOCAL 'x [replace x ".art" ""]
+
+		if not? contains? locals arg\1 [
+			print [color #red.bold "Error:" "Local module not found."]
+			exit
+		]
+
+		uninstallModule arg\1
+	]
+	when? ["update"]	[ 
+		print "- Fetching list...\n"
+		locals: map list.relative ~LOCAL 'x [replace x ".art" ""]
+
+		if? 0=size locals [
+			print [color #red.bold "Error:" "No modules found to update."]
+			exit
+		]
+		else [
+			print "- Fetching remote list...\n"
+			remotes: # REMOTE
+			loop sort locals [name]
+				-> installModule .update name remotes
+		]
+	]
+	else [
+		print [color #red.bold "Error:" "Command not recognized."]
+		exit
+	]
+
+print ""

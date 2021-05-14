@@ -1,0 +1,31 @@
+name: "suffix"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "add given suffix to string"
+example: {
+        suffix "hell" "o"                  ; => "hello"
+        
+        str: "hell"
+        suffix 'str                        ; str: "hello"
+    }
+attributes: #[
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    suffix: [
+            :string
+        ]
+    ]
+related: [
+        "Strings/replace"
+         "Strings/prefix"
+         "Strings/suffix?"
+         "Collections/shuffle"
+    ]

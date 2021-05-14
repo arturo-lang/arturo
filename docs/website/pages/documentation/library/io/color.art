@@ -1,0 +1,45 @@
+name: "color"
+type: :function
+module: "Io"
+returns: [
+        :string
+    ]
+description: "get colored version of given string"
+example: {
+        print color #green "Hello!"                ; Hello! (in green)
+        print color #red.bold "Some text"          ; Some text (in red/bold)
+    }
+attributes: #[
+    rgb: #[
+        types: [
+                :integer
+            ]
+        description: "use specific RGB color"
+        ]
+    bold: #[
+        types: [
+                :boolean
+            ]
+        description: "bold font"
+        ]
+    underline: #[
+        types: [
+                :boolean
+            ]
+        description: "show underlined"
+        ]
+    ]
+arguments: #[
+    color: [
+            :color
+        ]
+    string: [
+            :string
+        ]
+    ]
+related: [
+        "Binary/nor"
+         "Binary/or"
+         "Binary/xnor"
+         "Binary/xor"
+    ]

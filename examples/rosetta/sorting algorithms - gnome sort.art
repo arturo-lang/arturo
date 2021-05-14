@@ -1,0 +1,25 @@
+gnomeSort: function [items][
+    i: 1
+    j: 2
+    arr: new items 
+    while [i < size arr][
+        if? (arr \ i-1) =< arr \ i [
+            i: j
+            j: j + 1
+        ]
+        else [
+            tmp: arr \ i
+            set arr i get arr i-1
+            set arr i-1 tmp
+
+            i: i-1
+            if i=0 [
+                i: j
+                j: j + 1
+            ]
+        ]
+    ]
+    return arr
+]
+
+print gnomeSort [3 1 2 8 5 7 9 4 6]

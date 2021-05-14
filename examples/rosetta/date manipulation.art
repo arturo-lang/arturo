@@ -1,0 +1,13 @@
+; a tiny helper, so that we aren't too repetitive
+formatDate: function [dt][
+    to :string .format: "MMMM d yyyy h:mmtt" dt
+]
+
+initial: "March 7 2009 7:30pm EST"
+
+; chop timezone off
+initial: join.with:" " chop split.words initial
+initial: to :date .format: "MMMM d yyyy h:mmtt" initial
+
+print ["initial:"           formatDate initial]
+print ["after 12 hours:"    formatDate after.hours:12 initial]

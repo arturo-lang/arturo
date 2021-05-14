@@ -17,7 +17,7 @@ canMakeWord?: function [wrd][
     loop split wrd 'chr [
         cib: charInBlock chr ref
         if? cib = ø [ return false ]
-        else        [ ref: remove.index: cib ref ø ]
+        else        [ ref: remove ref .index cib ]
     ]
     return true
 ]

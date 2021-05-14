@@ -1,0 +1,20 @@
+examples: ""
+content: {:
+
+If you're more of a hands-on coder (trust me, I do understand you) and want to see the language in action, here are more than enough examples (%EXAMPLES_COUNT% in total! - most of them, based on Rosetta Code tasks), to instantly try and test in the online playground:
+<div class="columns" style="padding-top:2rem">
+    <div class="column is-6">
+        <div class="content">
+            <p class="exampleletter" style="margin-top:0;">*</p>
+            <ul>
+                %EXAMPLES_1%
+        </div>
+    </div>
+    <div class="column is-6">
+        <div class="content">
+                %EXAMPLES_2%
+            </ul>
+        </div>
+    </div>
+</div>
+:}

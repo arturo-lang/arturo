@@ -1,0 +1,28 @@
+name: "not"
+type: :function
+module: "Binary"
+returns: [
+        :integer
+         :nothing
+    ]
+description: "calculate the binary complement the given value"
+example: {
+        print not 123      ; -124
+        
+        a: 123
+        not 'a             ; a: -124
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :literal
+        ]
+    ]
+related: [
+        "Binary/nor"
+         "Dates/now"
+         "Logic/not?"
+         "Arithmetic/mod"
+    ]

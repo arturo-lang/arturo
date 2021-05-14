@@ -1,0 +1,30 @@
+name: "attrs"
+type: :function
+module: "Reflection"
+returns: [
+        :dictionary
+    ]
+description: "get dictionary of set attributes"
+example: {
+        greet: function [x][
+            print ["Hello" x "!"]
+            print attrs
+        ]
+        
+        greet.later "John"
+        
+        ; Hello John!
+        ; [
+        ;    later:    true
+        ; ]
+    }
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Reflection/attr"
+         "Reflection/attr?"
+         "Converters/as"
+         "Core/try"
+    ]

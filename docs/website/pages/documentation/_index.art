@@ -1,0 +1,148 @@
+boxes: {:
+<div class="container">
+<div class="tile is-parent">
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="far fa-play-circle"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Getting Started</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="far fa-hand-point-up"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Language</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="fas fa-laptop-code"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Language</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="fas fa-terminal"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Command Line</span>
+    </p>
+  </footer>
+</div></a>
+
+<a href="#"><div class="tile box">
+  <div class="card-content has-text-centered" style="font-size:5em;">
+    <i class="fas fa-book-open"></i>
+  </div>
+  <footer class="card-footer">
+    <p class="card-footer-item">
+      <span>Library</span>
+    </p>
+  </footer>
+</div></a>
+
+</div>
+
+</div>
+:}
+content: {!md 
+
+## Welcome to Arturo!
+
+In this section, you will find everything (or - hopefully - mostly everything) you need, in order to get successfully started with Arturo. As you will sooner or later realize, Arturo is practically a no-syntax language, that is: designed to make it easier for you to get the gist of it, so that you can be productive without bothering too much with the language.
+
+Here's what you can find here...
+
+<h3 class="title is-4 is-spaced mt-6">At a glance</h3>
+
+<div id="at-a-glance">
+<div class="columns">
+
+
+<div class="column is-4">
+  <a href="getting-started"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="far fa-play-circle"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">Getting Started</h4>
+  </div>
+  </div></a>
+</div>
+
+<div class="column is-4">
+  <a href="in-a-nutshell"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="far fa-hand-point-up"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">In A Nutshell</h4>
+  </div>
+  </div></a>
+</div>
+
+<div class="column is-4">
+  <a href="language"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-laptop-code"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">Language</h4>
+  </div>
+  </div></a>
+</div>
+</div>
+<div class="columns">
+
+<div class="column is-4">
+  <a href="command-line"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-terminal"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">Command Line</h4>
+  </div>
+  </div></a>
+</div>
+
+
+<div class="column is-4">
+  <a href="library"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-book-open"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">Library</h4>
+  </div>
+  </div></a>
+</div>
+
+<div class="column is-4">
+  <a href="examples"><div class="holder">
+  <div class="card-image has-text-centered">
+    <i class="fas fa-flask"></i>
+  </div>
+  <div class="card-content has-text-centered">
+      <h4 class="is-5">Examples</h4>
+  </div>
+  </div></a>
+</div>
+</div>
+</div>
+}

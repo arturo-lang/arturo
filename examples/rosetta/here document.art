@@ -1,4 +1,4 @@
-print ---
+print {:
     The “Red Death” had long devastated the country. 
     No pestilence had ever been so fatal, or so hideous. 
 
@@ -19,4 +19,4 @@ print ---
     And the whole seizure, 
     progress and termination of the disease, 
     were the incidents of half an hour.
----
+:}

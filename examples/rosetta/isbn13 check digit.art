@@ -1,0 +1,21 @@
+validISBN?: function [isbn][
+    currentCheck: to :integer to :string last isbn
+    isbn: map split chop replace isbn "-" "" => [to :integer]
+
+    s: 0
+    loop.with:'i isbn 'n [
+        if? even? i -> s: s + n
+        else -> s: s + 3*n
+    ]
+    checkDigit: 10 - s % 10
+    return currentCheck = checkDigit
+]
+
+tests: [
+    "978-1734314502" "978-1734314509"
+    "978-1788399081" "978-1788399083"
+]
+
+loop tests 'test [
+    print [test "=>" validISBN? test]
+]

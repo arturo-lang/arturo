@@ -1,0 +1,51 @@
+addThemUp: function [x y][
+    x+y
+]
+addOne: function [z][$[x].import:[z][ addThemUp x z]]
+add10: addOne 10
+
+print ["adding10 to 20:" call 'add10 [20]]
+
+;addOneX: function [z] .partial 'addThemUp
+
+
+; Create a function fs( f, s ) that takes a function, f( n ), of one value and a sequence of values s.
+; Function fs should return an ordered sequence of the result of applying function f to every value of s in turn.
+
+; fs: function [f,s][
+;     print "in fs"
+;     inspect f
+;     map s 'x -> call f @[x]
+; ]
+
+; print fs 'upper ["one" "two" "three"]
+
+; print fs function [y][2*y] [1 2 3]
+
+; Given values v1, v2
+; Given f(param1, param2)
+; Then partial(f, param1=v1) returns f'(param2)
+; And f(param1=v1, param2=v2) == f'(param2=v2) (for any value v2)
+
+
+; addThemUp: function [x y][
+;     x+y
+; ]
+
+; print addThemUp 10 20
+
+; addOneX: function [z][
+;     function [x].import:[z][
+;         addThemUp x z
+;     ]
+; ]
+
+; addOneX: function [z] .partial 'addThemUp
+
+
+
+; k: addOneX 10
+
+; inspect k
+
+; print call k [20]

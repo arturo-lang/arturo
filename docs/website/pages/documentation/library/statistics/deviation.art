@@ -1,0 +1,27 @@
+name: "deviation"
+type: :function
+module: "Statistics"
+returns: [
+        :floating
+    ]
+description: "get population standard deviation of given collection of numbers"
+example: ""
+attributes: #[
+    sample: #[
+        types: [
+                :boolean
+            ]
+        description: "calculate the sample standard deviation"
+        ]
+    ]
+arguments: #[
+    collection: [
+            :block
+        ]
+    ]
+related: [
+        "Statistics/variance"
+         "Converters/function"
+         "Paths/relative"
+         "Statistics/median"
+    ]

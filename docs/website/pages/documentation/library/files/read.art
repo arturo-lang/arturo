@@ -1,0 +1,85 @@
+name: "read"
+type: :function
+module: "Files"
+returns: [
+        :string
+         :binary
+         :block
+    ]
+alias: "<<"
+infix?: false
+description: "read file from given path"
+example: {
+        ; reading a simple local file
+        str: read "somefile.txt"
+        
+        ; also works with remote urls
+        page: read "http://www.somewebsite.com/page.html"
+        
+        ; we can also "read" JSON data as an object
+        data: read.json "mydata.json"
+        
+        ; or even convert Markdown to HTML on-the-fly
+        html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
+    }
+attributes: #[
+    lines: #[
+        types: [
+                :boolean
+            ]
+        description: "read file lines into block"
+        ]
+    json: #[
+        types: [
+                :boolean
+            ]
+        description: "read Json into value"
+        ]
+    csv: #[
+        types: [
+                :boolean
+            ]
+        description: "read CSV file into a block of rows"
+        ]
+    withHeaders: #[
+        types: [
+                :boolean
+            ]
+        description: "read CSV headers"
+        ]
+    html: #[
+        types: [
+                :boolean
+            ]
+        description: "read HTML file into node dictionary"
+        ]
+    markdown: #[
+        types: [
+                :boolean
+            ]
+        description: "read Markdown and convert to HTML"
+        ]
+    toml: #[
+        types: [
+                :boolean
+            ]
+        description: "read TOML into value"
+        ]
+    binary: #[
+        types: [
+                :boolean
+            ]
+        description: "read as binary"
+        ]
+    ]
+arguments: #[
+    file: [
+            :string
+        ]
+    ]
+related: [
+        "Core/break"
+         "Strings/pad"
+         "Paths/list"
+         "Arithmetic/add"
+    ]

@@ -1,0 +1,24 @@
+name: "database?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :database"
+example: {
+        database? open "my.db"
+        ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/date?"
+         "Reflection/pathLabel?"
+         "Reflection/attribute?"
+         "Reflection/label?"
+    ]

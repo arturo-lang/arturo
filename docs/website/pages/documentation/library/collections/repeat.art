@@ -1,0 +1,38 @@
+name: "repeat"
+type: :function
+module: "Collections"
+returns: [
+        :string
+         :block
+    ]
+description: "repeat value the given number of times and return new one"
+example: {
+        print repeat "hello" 3
+        ; hellohellohello
+        
+        repeat [1 2 3] 3
+        ; => [1 2 3 1 2 3 1 2 3]
+        
+        repeat 5 3
+        ; => [5 5 5]
+        
+        repeat [[1 2 3]] 3
+        ; => [[1 2 3] [1 2 3] [1 2 3]]
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :literal
+             :any
+        ]
+    times: [
+            :integer
+        ]
+    ]
+related: [
+        "Files/read"
+         "Iterators/select"
+         "Net/request"
+         "Strings/replace"
+    ]

@@ -6,13 +6,16 @@
    * [all?](#all?)
    * [and?](#and?)
    * [any?](#any?)
+   * [false](#false)
    * [false?](#false?)
    * [nand?](#nand?)
    * [nor?](#nor?)
    * [not?](#not?)
    * [or?](#or?)
+   * [true](#true)
    * [true?](#true?)
    * [xnor?](#xnor?)
+   * [xor?](#xor?)
 <!--te-->
 
 ---
@@ -54,8 +57,8 @@ Return the logical AND for the given values
 #### Usage
 
 <pre>
-<b>and?</b> <ins>valueA</ins> <i>:boolean</i>
-     <ins>valueB</ins> <i>:boolean</i>
+<b>and?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+     <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -102,6 +105,16 @@ print any? @[false false false]
 ; false
 ```
 
+## false
+
+#### Description
+
+The FALSE boolean constant
+
+#### Returns
+
+- *:boolean*
+
 ## false?
 
 #### Description
@@ -128,8 +141,8 @@ Return the logical NAND for the given values
 #### Usage
 
 <pre>
-<b>nand?</b> <ins>valueA</ins> <i>:boolean</i>
-      <ins>valueB</ins> <i>:boolean</i>
+<b>nand?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+      <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -161,8 +174,8 @@ Return the logical NAND for the given values
 #### Usage
 
 <pre>
-<b>nor?</b> <ins>valueA</ins> <i>:boolean</i>
-     <ins>valueB</ins> <i>:boolean</i>
+<b>nor?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+     <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -194,7 +207,7 @@ Return the logical complement of the given value
 #### Usage
 
 <pre>
-<b>not?</b> <ins>value</ins> <i>:boolean</i>
+<b>not?</b> <ins>value</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -221,8 +234,8 @@ Return the logical OR for the given values
 #### Usage
 
 <pre>
-<b>or?</b> <ins>valueA</ins> <i>:boolean</i>
-    <ins>valueB</ins> <i>:boolean</i>
+<b>or?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+    <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns
@@ -241,6 +254,16 @@ if or? x=2 y>5 [
 
 ; yep, that's correct!
 ```
+
+## true
+
+#### Description
+
+The TRUE boolean constant
+
+#### Returns
+
+- *:boolean*
 
 ## true?
 
@@ -268,8 +291,41 @@ Return the logical XNOR for the given values
 #### Usage
 
 <pre>
-<b>xnor?</b> <ins>valueA</ins> <i>:boolean</i>
-      <ins>valueB</ins> <i>:boolean</i>
+<b>xnor?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+      <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+x: 2
+y: 3
+
+if? xnor? x=2 y=3 [
+    print "yep, that's correct!"]
+]
+else [
+    print "nope, that's not correct"
+]
+
+; yep, that's not correct
+```
+
+## xor?
+
+#### Description
+
+Return the logical XOR for the given values
+
+#### Usage
+
+<pre>
+<b>xor?</b> <ins>valueA</ins> <i>:boolean</i> <i>:block</i>
+     <ins>valueB</ins> <i>:boolean</i> <i>:block</i>
 </pre>
 
 #### Returns

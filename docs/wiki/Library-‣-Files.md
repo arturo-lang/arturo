@@ -3,8 +3,13 @@
 ---
 
 <!--ts-->
+   * [copy](#copy)
+   * [delete](#delete)
    * [exists?](#exists?)
+   * [permissions](#permissions)
    * [read](#read)
+   * [rename](#rename)
+   * [symlink](#symlink)
    * [unzip](#unzip)
    * [write](#write)
    * [zip](#zip)
@@ -12,6 +17,66 @@
 
 ---
 
+
+## copy
+
+#### Description
+
+Copy file at path to given destination
+
+#### Usage
+
+<pre>
+<b>copy</b> <ins>file</ins> <i>:string</i>
+     <ins>destination</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|directory|<i>:boolean</i>|path is a directory|
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+; copied file
+
+copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+; copied whole folder
+```
+
+## delete
+
+#### Description
+
+Delete file at given path
+
+#### Usage
+
+<pre>
+<b>delete</b> <ins>file</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|directory|<i>:boolean</i>|path is a directory|
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+delete "testscript.art"
+; file deleted
+```
 
 ## exists?
 
@@ -28,7 +93,7 @@ Check if given file exists
 
 |Attribute|Type|Description|
 |---|---|---|
-|dir|<i>:boolean</i>|check for directory|
+|directory|<i>:boolean</i>|check for directory|
 
 #### Returns
 
@@ -40,6 +105,54 @@ Check if given file exists
 if exists? "somefile.txt" [ 
     print "file exists!" 
 ]
+```
+
+## permissions
+
+#### Description
+
+Check permissions of given file
+
+#### Usage
+
+<pre>
+<b>permissions</b> <ins>file</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|set|<i>:dictionary</i>|set using given file permissions|
+
+#### Returns
+
+- *:null*
+- *:dictionary*
+
+#### Examples
+
+```red
+inspect permissions "bin/arturo"
+; [ :dictionary
+;     user    :	[ :dictionary
+;         read     :		true :boolean
+;         write    :		true :boolean
+;         execute  :		true :boolean
+;     ]
+;     group   :	[ :dictionary
+;         read     :		true :boolean
+;         write    :		false :boolean
+;         execute  :		true :boolean
+;     ]
+;     others  :	[ :dictionary
+;         read     :		true :boolean
+;         write    :		false :boolean
+;         execute  :		true :boolean
+;     ]
+; ]
+
+permissions.set:#[others:#[write:true]] "bin/arturo"
+; gave write permission to 'others'
 ```
 
 ## read
@@ -60,10 +173,12 @@ Read file from given path
 |Attribute|Type|Description|
 |---|---|---|
 |lines|<i>:boolean</i>|read file lines into block|
-|json|<i>:boolean</i>|read CSV file into a block of rows|
+|json|<i>:boolean</i>|read Json into value|
+|csv|<i>:boolean</i>|read CSV file into a block of rows|
 |withHeaders|<i>:boolean</i>|read CSV headers|
 |html|<i>:boolean</i>|read HTML file into node dictionary|
 |markdown|<i>:boolean</i>|read Markdown and convert to HTML|
+|toml|<i>:boolean</i>|read TOML into value|
 |binary|<i>:boolean</i>|read as binary|
 
 #### Returns
@@ -86,6 +201,71 @@ data: read.json "mydata.json"
 
 ; or even convert Markdown to HTML on-the-fly
 html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
+```
+
+## rename
+
+#### Description
+
+Rename file at path using given new path name
+
+#### Usage
+
+<pre>
+<b>rename</b> <ins>file</ins> <i>:string</i>
+       <ins>name</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|directory|<i>:boolean</i>|path is a directory|
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+rename "README.md" "READIT.md"
+; file renamed
+```
+
+## symlink
+
+#### Description
+
+Create symbolic link of file to given destination
+
+#### Usage
+
+<pre>
+<b>symlink</b> <ins>file</ins> <i>:string</i>
+        <ins>destination</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|hard|<i>:boolean</i>|create a hard link|
+
+#### Returns
+
+- *:nothing*
+
+#### Examples
+
+```red
+symlink relative "arturo/README.md" 
+        "/Users/drkameleon/Desktop/gotoREADME.md"
+; creates a symbolic link to our readme file
+; in our desktop
+
+symlink.hard relative "arturo/README.md" 
+        "/Users/drkameleon/Desktop/gotoREADME.md"
+; hard-links (effectively copies) our readme file
+; to our desktop
 ```
 
 ## unzip

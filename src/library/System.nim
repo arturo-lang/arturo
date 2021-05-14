@@ -16,9 +16,13 @@
 # Libraries
 #=======================================
 
-import os, osproc, sequtils, sugar
+when not defined(WEB):
+    import os, osproc
+    
+import sequtils
 
-import vm/[common, errors, exec, globals, stack, value]
+import vm/lib
+import vm/[env, errors]
 
 #=======================================
 # Methods
@@ -29,52 +33,71 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: System"
 
-    builtin "ensure",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "assert given condition is true, or exit",
-        args        = {
-            "condition"     : {Block}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
-            num: input "give me a positive number"
+    constant "arg",
+        alias       = unaliased,
+        description = "access command-line arguments as a list":
+            getCmdlineArgumentArray()
 
-            ensure [num > 0]
+    constant "args",
+        alias       = unaliased,
+        description = "a dictionary with all command-line arguments parsed":
+            newDictionary(parseCmdlineArguments())
 
-            print "good, the number is positive indeed. let's continue..."
-        """:
-            ##########################################################
-            discard execBlock(x)
-            if not stack.pop().b:
-                vmPanic = true
-                vmError = "Assertion failed: " & x.codify()
-                        
-                showVMErrors()
+    when not defined(WEB):
+        # TODO(System\env) could it be used for Web/JS builds too?
+        #  and what type of environment variables could be served or would be useful serve?
+        #  labels: library,enhancement,open discussion,web
+        builtin "env",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get environment variables",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Dictionary},
+            example     = """
+            print env\SHELL
+            ; /bin/zsh
 
-                quit(1)  
+            print env\HOME
+            ; /Users/drkameleon
 
-    builtin "execute",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "execute given shell command",
-        args        = {
-            "command"   : {String}
-        },
-        attrs       = NoAttrs,
-        returns     = {String},
-        example     = """
+            print env\PATH
+            ; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("env")
+                var res: ValueDict = initOrderedTable[string,Value]()
+
+                for k,v in envPairs():
+                    res[k] = newString(v)
+
+                push(newDictionary(res)) 
+
+    when not defined(WEB):
+        # TODO(System\execute) make function work for Web/JS builds
+        #  in that case, it could be an easy way of directly executing JavaScript code
+        #  labels: library,enhancement,web
+        builtin "execute",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "execute given shell command",
+            args        = {
+                "command"   : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {String},
+            example     = """
             print execute "pwd"
             ; /Users/admin/Desktop
             
             split.lines execute "ls"
             ; => ["tests" "var" "data.txt"]
-        """:
-            ##########################################################
-            let res = execCmdEx(x.s)
-            
-            stack.push(newString(res[0]))
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
+                let res = execCmdEx(x.s)
+                
+                push(newString(res[0]))
 
     builtin "exit",
         alias       = unaliased, 
@@ -91,44 +114,8 @@ proc defineSymbols*() =
             ##########################################################
             quit()
 
-    builtin "list",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get files at given path",
-        args        = {
-            "path"  : {String}
-        },
-        attrs       = {
-            "select"    : ({String},"select files satisfying given pattern"),
-            "relative"  : ({Boolean},"get relative paths")
-        },
-        returns     = {Block},
-        example     = """
-            loop list "." 'file [
-            ___print file
-            ]
-            
-            ; ./tests
-            ; ./var
-            ; ./data.txt
-            
-            loop list.relative "tests" 'file [
-            ___print file
-            ]
-            
-            ; test1.art
-            ; test2.art
-            ; test3.art
-        """:
-            ##########################################################
-            let findRelative = (popAttr("relative") != VNULL)
-            let contents = toSeq(walkDir(x.s, relative=findRelative))
-
-            if (let aSelect = popAttr("select"); aSelect != VNULL):
-                stack.push(newStringBlock((contents.map((x)=>x[1])).filter((x) => x.contains aSelect.s)))
-            else:
-                stack.push(newStringBlock(contents.map((x)=>x[1])))
-
+    # TODO(System\panic) Verify VM errors work right
+    #  labels: library,unit-test
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -144,34 +131,47 @@ proc defineSymbols*() =
             panic.code:1 "something went terribly wrong. quitting..."
         """:
             ##########################################################
-            vmPanic = true
-            vmError = x.s
-
-            showVMErrors()
+            # vmPanic = true
+            # vmError = x.s
+            discard x
 
             if (let aCode = popAttr("code"); aCode != VNULL):
                 quit(aCode.i)
             else:
                 quit()    
 
-    builtin "pause",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "pause program's execution~for the given amount of milliseconds",
-        args        = {
-            "time"  : {Integer}
-        },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
+    when not defined(WEB):
+        # TODO(System\pause) implement for Web/JS builds
+        #  it could easily correspond to some type of javascript timeout
+        #  labels: library,enhancement,web
+        builtin "pause",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "pause program's execution~for the given amount of milliseconds",
+            args        = {
+                "time"  : {Integer}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
             print "wait a moment"
 
             pause 1000      ; sleeping for one second
 
             print "done. let's continue..."
-        """:
-            ##########################################################
-            sleep(x.i)
+            """:
+                ##########################################################
+                sleep(x.i)
+
+    constant "script",
+        alias       = unaliased,
+        description = "embedded information about the current script":
+            newDictionary(getScriptInfo())
+
+    constant "sys",
+        alias       = unaliased,
+        description = "information about the current system":
+            newDictionary(getSystemInfo())
 
 #=======================================
 # Add Library

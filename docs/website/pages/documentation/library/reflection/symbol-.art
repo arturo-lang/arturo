@@ -1,0 +1,24 @@
+name: "symbol?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "checks if given value is of type :symbol"
+example: {
+        symbol? first [+ x]
+        ; => true
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/symbols"
+         "Reflection/label?"
+         "Reflection/null?"
+         "Reflection/string?"
+    ]

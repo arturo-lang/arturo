@@ -1,0 +1,7 @@
+squares: map 1..100 => [&^2]
+cubes: map 1..100 => [&^3]
+
+print "Square but not cube:"
+print first.n:30 select squares => [not? in? & cubes]
+print "Square and cube:" 
+print first.n:3 select squares => [in? & cubes]

@@ -1,0 +1,32 @@
+name: "inspect"
+type: :function
+module: "Reflection"
+returns: [
+        :nothing
+    ]
+description: "print full dump of given value to screen"
+example: {
+        inspect 3                 ; 3 :integer
+        
+        a: "some text"
+        inspect a                 ; some text :string
+    }
+attributes: #[
+    muted: #[
+        types: [
+                :boolean
+            ]
+        description: "don\'t use color output"
+        ]
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/insert"
+         "Colors/invert"
+         "Io/input"
+         "Strings/indent"
+    ]

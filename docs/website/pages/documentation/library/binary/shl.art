@@ -1,0 +1,37 @@
+name: "shl"
+type: :function
+module: "Binary"
+returns: [
+        :integer
+         :nothing
+    ]
+description: "shift-left first value bits by second value"
+example: {
+        print shl 2 3      ; 16
+        
+        a: 2
+        shl 'a 3           ; a: 16
+    }
+attributes: #[
+    safe: #[
+        types: [
+                :boolean
+            ]
+        description: "check for overflows"
+        ]
+    ]
+arguments: #[
+    value: [
+            :integer
+             :literal
+        ]
+    bits: [
+            :integer
+        ]
+    ]
+related: [
+        "Binary/shr"
+         "Arithmetic/mul"
+         "Arithmetic/sub"
+         "Collections/set"
+    ]

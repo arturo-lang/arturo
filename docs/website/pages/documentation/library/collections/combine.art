@@ -1,0 +1,27 @@
+name: "combine"
+type: :function
+module: "Collections"
+returns: [
+        :block
+    ]
+description: "get combination of elements in given collections"
+example: {
+        combine ["one" "two" "three"] [1 2 3]
+        ; => [[1 "one"] [2 "two"] [3 "three"]]
+    }
+attributes: #[
+    ]
+arguments: #[
+    collectionA: [
+            :block
+        ]
+    collectionB: [
+            :block
+        ]
+    ]
+related: [
+        "Core/continue"
+         "Collections/min"
+         "Converters/define"
+         "Files/symlink"
+    ]

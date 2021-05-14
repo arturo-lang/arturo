@@ -1,0 +1,21 @@
+table: function [content]
+    -> join @["<table>" join @content "</table>"]
+
+header: function [cells] -> join @["<tr>" join @cells "</tr>"]
+th: function [lbl] -> join @["<th>" lbl "</th>"]
+row: function [no]
+    -> join @[
+        "<tr><td style='font-weight:bold'>" no "</td>"
+        "<td>" random 1000 9999 "</td>"
+        "<td>" random 1000 9999 "</td>"
+        "<td>" random 1000 9999 "</td></tr>"
+    ]
+
+print table [
+    header [th"" th"X" th"Y" th"Z"]
+    row 1
+    row 2
+    row 3
+    row 4
+    row 5
+]

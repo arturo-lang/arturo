@@ -1,0 +1,14 @@
+; call an external function directly
+call.external: "mylib" 'sayHello ["John"]
+
+; map an external function to a native one
+doubleNum: function [num][
+    ensure -> integer? num
+    call .external: "mylib"
+         .expect:   :integer
+         'doubleNum @[num]
+]
+
+loop 1..3 'x [
+    print ["The double of" x "is" doubleNum x]
+]

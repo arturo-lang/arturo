@@ -1,0 +1,6 @@
+write "TAPE.FILE" {
+    This code 
+    should be able to write 
+    a file 
+    to magnetic tape
+}

@@ -10,15 +10,18 @@
 # Libraries
 #=======================================
 
+when not defined(WEB):
+    import marshal, streams
 import hashes
+
+import vm/values/value
 
 #=======================================
 # Types 
 #=======================================
 
-type
+type 
     OpCode* = enum
-        #################################################
 
         # [0x00-0x0F]
         # push constants 
@@ -74,9 +77,9 @@ type
         opPush27        = 0x2B
         opPush28        = 0x2C
         opPush29        = 0x2D
-        opPush30        = 0x2E
 
-        opPush          = 0x2F
+        opPush          = 0x2E
+        opPushX         = 0x2F
 
         # [0x30-0x4F]
         # store variables (from <- stack)
@@ -110,9 +113,9 @@ type
         opStore27       = 0x4B
         opStore28       = 0x4C
         opStore29       = 0x4D
-        opStore30       = 0x4E
 
-        opStore         = 0x4F
+        opStore         = 0x4E
+        opStoreX        = 0x4F
 
         # [0x50-0x6F]
         # load variables (to -> stack)
@@ -146,9 +149,9 @@ type
         opLoad27        = 0x6B
         opLoad28        = 0x6C
         opLoad29        = 0x6D
-        opLoad30        = 0x6E
-
-        opLoad          = 0x6F
+        
+        opLoad          = 0x6E
+        opLoadX         = 0x6F
 
         # [0x70-0x8F]
         # function calls
@@ -182,11 +185,11 @@ type
         opCall27        = 0x8B
         opCall28        = 0x8C
         opCall29        = 0x8D
-        opCall30        = 0x8E
+        
+        opCall          = 0x8E
+        opCallX         = 0x8F
 
-        opCall          = 0x8F
-
-        #################################################
+        #-----------------------
 
         # [0x90-9F] #
         # generators
@@ -206,9 +209,11 @@ type
         opJumpIfNot     = 0x99
         opRet           = 0x9A
         opEnd           = 0x9B
+
+        opNop           = 0x9C
         
         # reserved
-        opRsrv0         = 0x9C
+
         opRsrv1         = 0x9D
         opRsrv2         = 0x9E
         opRsrv3         = 0x9F
@@ -247,11 +252,51 @@ type
         opLt            = 0xB4
         opLe            = 0xB5
 
-        #################################################
-
 #=======================================
 # Methods
 #=======================================
+
+proc writeBytecode*(trans: Translation, target: string): bool =
+    when not defined(WEB):
+        let marshaled = $$(trans[0])
+        let bcode = trans[1]
+
+        var f = newFileStream(target, fmWrite)
+        if not f.isNil:
+            f.write(len(marshaled))
+            f.write(marshaled)
+            f.write(len(bcode))
+            for b in bcode:
+                f.write(b)
+            f.flush
+
+            return true
+        else:
+            return false
+    else:
+        discard
+
+proc readBytecode*(origin: string): Translation =
+    when not defined(WEB):
+        var f = newFileStream(origin, fmRead)
+        if not f.isNil:
+            var s: int
+            f.read(s)           # read constants size
+            var t: string
+            f.readStr(s,t)      # read the marshaled constants
+
+            f.read(s)           # read bytecode size
+
+            var bcode: ByteArray = newSeq[byte](s)
+            var indx = 0
+            while not f.atEnd():
+                bcode[indx] = f.readUint8()         # read bytes one-by-one
+                indx += 1
+
+            return (t.to[:ValueArray], bcode)       # return the Translation
+    else:
+        discard
+
 
 proc hash*(x: OpCode): Hash {.inline.}=
     cast[Hash](ord(x))

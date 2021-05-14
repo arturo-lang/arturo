@@ -1,0 +1,67 @@
+name: "webview"
+type: :function
+module: "Ui"
+returns: [
+        :string
+         :nothing
+    ]
+description: "show webview window with given url or html source"
+example: {
+        webview "Hello world!"
+            ; (opens a webview windows with "Hello world!")
+            
+            webview .width:  200 
+                    .height: 300
+                    .title:  "My webview app"
+            ---
+                <h1>This is my webpage</h1>
+                <p>
+                    This is some content
+                </p>
+            ---
+            ; (opens a webview with given attributes)
+    }
+attributes: #[
+    title: #[
+        types: [
+                :string
+            ]
+        description: "set window title"
+        ]
+    width: #[
+        types: [
+                :integer
+            ]
+        description: "set window width"
+        ]
+    height: #[
+        types: [
+                :integer
+            ]
+        description: "set window height"
+        ]
+    fixed: #[
+        types: [
+                :boolean
+            ]
+        description: "window shouldn\'t be resizable"
+        ]
+    debug: #[
+        types: [
+                :boolean
+            ]
+        description: "add inspector console"
+        ]
+    ]
+arguments: #[
+    content: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Net/serve"
+         "Collections/remove"
+         "Converters/define"
+         "Converters/with"
+    ]

@@ -3,15 +3,68 @@
 ---
 
 <!--ts-->
+   * [arg](#arg)
+   * [args](#args)
+   * [env](#env)
    * [execute](#execute)
    * [exit](#exit)
-   * [list](#list)
    * [panic](#panic)
    * [pause](#pause)
+   * [script](#script)
+   * [sys](#sys)
 <!--te-->
 
 ---
 
+
+## arg
+
+#### Description
+
+Access command-line arguments as a list
+
+#### Returns
+
+- *:block*
+
+## args
+
+#### Description
+
+A dictionary with all command-line arguments parsed
+
+#### Returns
+
+- *:dictionary*
+
+## env
+
+#### Description
+
+Get environment variables
+
+#### Usage
+
+<pre>
+<b>env</b> 
+</pre>
+
+#### Returns
+
+- *:dictionary*
+
+#### Examples
+
+```red
+print env\SHELL
+; /bin/zsh
+
+print env\HOME
+; /Users/drkameleon
+
+print env\PATH
+; /Users/drkameleon/.arturo/bin:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+```
 
 ## execute
 
@@ -63,48 +116,6 @@ exit              ; (terminates the program)
 exit.with: 3      ; (terminates the program with code 3)
 ```
 
-## list
-
-#### Description
-
-Get files at given path
-
-#### Usage
-
-<pre>
-<b>list</b> <ins>path</ins> <i>:string</i>
-</pre>
-#### Attributes
-
-|Attribute|Type|Description|
-|---|---|---|
-|select|<i>:string</i>|select files satisfying given pattern|
-|relative|<i>:boolean</i>|get relative paths|
-
-#### Returns
-
-- *:block*
-
-#### Examples
-
-```red
-loop list "." 'file [
-   print file
-]
-
-; ./tests
-; ./var
-; ./data.txt
-
-loop list.relative "tests" 'file [
-   print file
-]
-
-; test1.art
-; test2.art
-; test3.art
-```
-
 ## panic
 
 #### Description
@@ -126,6 +137,11 @@ Exit program with error message
 
 - *:boolean*
 
+#### Examples
+
+```red
+panic.code:1 "something went terribly wrong. quitting..."
+```
 
 ## pause
 
@@ -142,3 +158,33 @@ Pause program's execution~for the given amount of milliseconds
 #### Returns
 
 - *:nothing*
+
+#### Examples
+
+```red
+print "wait a moment"
+
+pause 1000      ; sleeping for one second
+
+print "done. let's continue..."
+```
+
+## script
+
+#### Description
+
+Embedded information about the current script
+
+#### Returns
+
+- *:dictionary*
+
+## sys
+
+#### Description
+
+Information about the current system
+
+#### Returns
+
+- *:dictionary*

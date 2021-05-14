@@ -1,0 +1,13 @@
+name: "true"
+type: :boolean
+description: "the TRUE boolean constant"
+module: "Logic"
+returns: [
+        :boolean
+    ]
+related: [
+        "Logic/true?"
+         "Logic/false"
+         "Collections/take"
+         "Core/try"
+    ]

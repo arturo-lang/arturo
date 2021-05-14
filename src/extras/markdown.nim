@@ -62,7 +62,7 @@
 ##
 ## Finally, All Token types support conversion to HTML strings with the special $ proc,
 ##
-
+{.push hints:off.}
 import re
 from sequtils import map, keepIf, anyIt
 from sugar import `->`, `=>`
@@ -71,7 +71,7 @@ from uri import encodeUrl
 from strutils import join, splitLines, repeat, replace,
   strip, split, multiReplace, startsWith, endsWith,
   parseInt, intToStr, splitWhitespace, contains
-from tables import Table, initTable, contains, `[]=`, `[]`
+from tables import Table, initTable, mgetOrPut, contains, `[]=`, `[]`
 import unicode except `strip`, `splitWhitespace`
 from lists import DoublyLinkedList, DoublyLinkedNode,
   initDoublyLinkedList, newDoublyLinkedNode, prepend, append,
@@ -79,13 +79,31 @@ from lists import DoublyLinkedList, DoublyLinkedNode,
 from htmlgen import nil, p, br, em, strong, a, img, code, del, blockquote,
   li, ul, ol, pre, code, table, thead, tbody, th, tr, td, hr
 
-#from markdownpkg/entities import htmlEntityToUtf8
+from markdownpkg/entities import htmlEntityToUtf8
+
+var precompiledExp {.threadvar.}: Table[string, re.Regex]
+
+template re(data: string): Regex =
+  let tmpName = data
+  # We won't use mgetOrPut directly because otherwise Nim will lazily evaluate
+  # the argument for mgetOrPut so that we'll have no benefit
+  if tmpName in precompiledExp:
+    precompiledExp[tmpName]
+  else:
+    precompiledExp.mgetOrPut(tmpName, re.re(tmpName))
+
+template re(data: string, flags: set[RegexFlag]): Regex =
+  let tmpName = data
+  if tmpName in precompiledExp:
+    precompiledExp[tmpName]
+  else:
+    precompiledExp.mgetOrPut(tmpName, re.re(tmpName, flags))
 
 type
-  MarkdownError* = object of CatchableError ## The error object for markdown parsing and rendering.
-                                            ## Usually, you should not see MarkdownError raising in your application
-                                            ## unless it's documented. Otherwise, please report it as an issue.
-                                            ##
+  MarkdownError* = object of Defect    ## The error object for markdown parsing and rendering.
+                                       ## Usually, you should not see MarkdownError raising in your application
+                                       ## unless it's documented. Otherwise, please report it as an issue.
+                                       ##
   Parser* = ref object of RootObj
 
   MarkdownConfig* = ref object ## Options for configuring parsing or rendering behavior.
@@ -180,7 +198,7 @@ type
 
   TextParser* = ref object of Parser
   Text* = ref object of Inline
-    delimiter*: Delimiter
+    delimiter* {.cursor.}: Delimiter
 
   CodeSpanParser* = ref object of Parser
   CodeSpan* = ref object of Inline
@@ -402,7 +420,7 @@ proc escapeHTMLEntity*(doc: string): string =
   result = doc
   for entity in entities:
     if not IGNORED_HTML_ENTITY.contains(entity):
-      let utf8Char = "" #entity.htmlEntityToUtf8
+      let utf8Char = entity.htmlEntityToUtf8
       if utf8Char == "":
         result = result.replace(re(entity), entity.escapeAmpersandChar)
       else:
@@ -738,7 +756,7 @@ method parse*(this: UlParser, doc: string, start: int): ParseResult =
     listItems.add Li(
       doc: listItemDoc.strip(chars={'\n'}),
       verbatim: listItemDoc,
-      marker: move marker
+      marker: marker
     )
 
     pos += itemSize
@@ -754,7 +772,6 @@ method parse*(this: UlParser, doc: string, start: int): ParseResult =
 
   return ParseResult(token: ulToken, pos: pos)
 
-# DECLARED_BUT_NOT_USED
 # proc parseUnorderedList(doc: string, start: int): ParseResult {.locks: "unknown".} =
 #   UlParser().parse(doc, start)
 
@@ -778,7 +795,7 @@ method parse*(this: OlParser, doc: string, start: int): ParseResult =
     listItems.add Li(
       doc: listItemDoc.strip(chars={'\n'}),
       verbatim: listItemDoc,
-      marker: move marker
+      marker: marker
     )
 
     pos += itemSize
@@ -1107,7 +1124,7 @@ method parse*(this: HtmlTableParser, doc: string, start: int): ParseResult {.loc
   for index, elem in heads:
     var thToken = THeadCell(
       doc: elem.strip,
-      align: move aligns[index],
+      align: aligns[index],
     )
     theadRowToken.appendChild(thToken)
   theadToken.appendChild(theadRowToken)
@@ -1134,7 +1151,7 @@ method parse*(this: HtmlTableParser, doc: string, start: int): ParseResult {.loc
           rowColumns[index]
       var tdToken = TBodyCell(
         doc: doc.replace(re"\\\|", "|").strip,
-        align: move aligns[index],
+        align: aligns[index],
       )
       tableRowToken.appendChild(tdToken)
     tbodyRows.add(tableRowToken)
@@ -1301,7 +1318,7 @@ method parse*(this: BlockquoteParser, doc: string, start: int): ParseResult =
     pos += size
     # extract content with blockquote mark
     var blockChunk = matches[0].consumeBlockquoteMarker
-    chunks.add(Chunk(kind: BlockChunk, doc: move blockChunk, pos: pos))
+    chunks.add(Chunk(kind: BlockChunk, doc: blockChunk, pos: pos))
     document &= blockChunk
 
     # blank line in non-lazy content always breaks the blockquote.
@@ -1320,7 +1337,7 @@ method parse*(this: BlockquoteParser, doc: string, start: int): ParseResult =
       lazyChunk &= line
       pos += line.len
       document &= line
-    chunks.add(Chunk(kind: LazyChunk, doc: move lazyChunk, pos: pos))
+    chunks.add(Chunk(kind: LazyChunk, doc: lazyChunk, pos: pos))
 
   if not found:
     return ParseResult(token: nil, pos: -1)
@@ -1517,7 +1534,7 @@ proc parseContainerBlock(state: State, token: Token): ParseResult =
     pos = chunk.pos
     if chunk.kind == BlockChunk:
       token.doc = chunk.doc
-      var t = Token(doc: move chunk.doc)
+      var t = Token(doc: chunk.doc)
       parseBlock(state, t)
       var p = t.children.head
       if p != nil and p.value of Paragraph and token.tipToken of Paragraph:
@@ -1598,7 +1615,7 @@ method parse*(this: AutoLinkParser, doc: string, start: int): ParseResult {.lock
   if size != -1:
     var url = emailMatches[0]
     let token = AutoLink(
-      text: move url,
+      text: url,
       url: fmt"mailto:{url}"
     )
     return ParseResult(token: token, pos: start+size)
@@ -1835,6 +1852,7 @@ proc getLinkText*(doc: string, start: int, allowNested: bool = false): tuple[sli
     # Backtick: code spans bind more tightly than the brackets in link text.
     # Skip the tokens in code.
     elif ch == '`':
+      # FIXME: it's better to extract to a code span helper function
       skip = doc[start+i ..< doc.len].matchLen(re"^((`+)\s*([\s\S]*?[^`])\s*\2(?!`))") - 1
 
     # autolinks, and raw HTML tags bind more tightly than the brackets in link text.
@@ -1946,7 +1964,7 @@ proc parseCollapsedReferenceLink(doc: string, start: int, label: Slice[int]): Pa
   var text = doc[label.a+1 ..< label.b]
   var link = Link(
     doc: doc[start ..< label.b+1],
-    text: move text,
+    text: text,
     refId: text.toLower.replace(re"\s+", " ")
   )
   return ParseResult(token: link, pos: label.b + 3)
@@ -2511,3 +2529,4 @@ when isMainModule:
       config=readCLIOptions()
     )
   )
+{.push hints:on.}

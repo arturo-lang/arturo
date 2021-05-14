@@ -1,0 +1,13 @@
+name: "sys"
+type: :dictionary
+description: "information about the current system"
+module: "System"
+returns: [
+        :dictionary
+    ]
+related: [
+        "Arithmetic/sub"
+         "Binary/shl"
+         "Binary/shr"
+         "Collections/keys"
+    ]

@@ -1,0 +1,76 @@
+name: "as"
+type: :function
+module: "Converters"
+returns: [
+        :any
+    ]
+description: "format given value as implied type"
+example: {
+        print as.binary 123           ; 1111011
+        print as.octal 123            ; 173
+        print as.hex 123              ; 7b
+        
+        print as.ascii "thís ìß ñot à tést"
+        ; this iss not a test
+    }
+attributes: #[
+    binary: #[
+        types: [
+                :boolean
+            ]
+        description: "format integer as binary"
+        ]
+    hex: #[
+        types: [
+                :boolean
+            ]
+        description: "format integer as hexadecimal"
+        ]
+    octal: #[
+        types: [
+                :boolean
+            ]
+        description: "format integer as octal"
+        ]
+    ascii: #[
+        types: [
+                :boolean
+            ]
+        description: "transliterate string to ASCII"
+        ]
+    agnostic: #[
+        types: [
+                :boolean
+            ]
+        description: "convert words in block to literals, if not in context"
+        ]
+    code: #[
+        types: [
+                :boolean
+            ]
+        description: "convert value to valid Arturo code"
+        ]
+    pretty: #[
+        types: [
+                :boolean
+            ]
+        description: "prettify generated code"
+        ]
+    unwrapped: #[
+        types: [
+                :boolean
+            ]
+        description: "omit external block notation"
+        ]
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Numbers/abs"
+         "Arithmetic/add"
+         "Binary/and"
+         "Binary/or"
+    ]

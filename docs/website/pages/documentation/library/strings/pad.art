@@ -1,0 +1,53 @@
+name: "pad"
+type: :function
+module: "Strings"
+returns: [
+        :string
+    ]
+description: "check if given string consists only of whitespace"
+example: {
+        pad "good" 10                 ; => "      good"
+        pad.right "good" 10           ; => "good      "
+        pad.center "good" 10          ; => "   good   "
+        
+        a: "hello"
+        pad 'a 10                     ; a: "     hello"
+        
+        pad.with:`0` to :string 123 5   
+        ; => 00123
+    }
+attributes: #[
+    center: #[
+        types: [
+                :boolean
+            ]
+        description: "add padding to both sides"
+        ]
+    right: #[
+        types: [
+                :boolean
+            ]
+        description: "add right padding"
+        ]
+    with: #[
+        types: [
+                :char
+            ]
+        description: "pad with given character"
+        ]
+    ]
+arguments: #[
+    string: [
+            :string
+             :literal
+        ]
+    padding: [
+            :integer
+        ]
+    ]
+related: [
+        "Strings/whitespace?"
+         "Arithmetic/add"
+         "Arithmetic/mod"
+         "Arithmetic/pow"
+    ]

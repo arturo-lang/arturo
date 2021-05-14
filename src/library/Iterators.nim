@@ -16,9 +16,10 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sugar
+import algorithm, sequtils, sugar, unicode
 
-import vm/[common, eval, exec, globals, stack, value]
+import vm/lib
+import vm/[errors, eval, exec]
 
 #=======================================
 # Methods
@@ -58,20 +59,28 @@ proc defineSymbols*() =
             if y.kind==Literal: args = @[y]
             else: args = y.a
 
+            # check if empty
+            if x.a.len==0: 
+                push(newBoolean(false))
+                return
+
             let preevaled = doEval(z)
             var all = true
 
             for item in x.a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                let popped = stack.pop()
-                if popped.kind==Boolean and not popped.b:
-                    stack.push(newBoolean(false))
-                    all = false
-                    break
+                handleBranching:
+                    push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    let popped = pop()
+                    if popped.kind==Boolean and not popped.b:
+                        push(newBoolean(false))
+                        all = false
+                        break
+                do:
+                    discard
 
             if all:
-                stack.push(newBoolean(true))
+                push(newBoolean(true))
 
     builtin "filter",
         alias       = unaliased, 
@@ -106,21 +115,28 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in Syms[x.s].a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if not stack.pop().b:
-                        res.add(item)
+                discard InPlace
+                for i,item in InPlaced.a:
+                    handleBranching:
+                        push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        if not pop().b:
+                            res.add(item)
+                    do:
+                        discard
 
-                Syms[x.s].a = res
+                InPlaced.a = res
             else:
                 for item in x.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if not stack.pop().b:
-                        res.add(item)
+                    handleBranching:
+                        push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        if not pop().b:
+                            res.add(item)
+                    do:
+                        discard
 
-                stack.push(newBlock(res))
+                push(newBlock(res))
 
     builtin "fold",
         alias       = unaliased, 
@@ -135,7 +151,7 @@ proc defineSymbols*() =
             "seed"  : ({Any},"use specific seed value"),
             "right" : ({Boolean},"perform right folding")
         },
-        returns     = {Block,Nothing},
+        returns     = {Block,Null,Nothing},
         example     = """
             fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
@@ -155,9 +171,19 @@ proc defineSymbols*() =
 
             var seed = I0
             if x.kind==Literal:
-                if Syms[x.s].a[0].kind == String:
+                # check if empty
+                if InPlaced.a.len==0: 
+                    push(VNULL)
+                    return
+
+                if InPlaced.a[0].kind == String:
                     seed = newString("")
             else:
+                # check if empty
+                if x.a.len==0: 
+                    push(VNULL)
+                    return
+
                 if x.a[0].kind == String:
                     seed = newString("")
 
@@ -166,82 +192,90 @@ proc defineSymbols*() =
 
             let doRightFold = (popAttr("right")!=VNULL)
 
-            if (x.kind==Literal and Syms[x.s].a.len==0):
+            if (x.kind==Literal and InPlace.a.len==0):
                 discard
             elif (x.kind!=Literal and x.a.len==0):
-                stack.push(x)
+                push(x)
             else:
                 if (doRightFold):
                     # right fold
 
                     if x.kind == Literal:
                         var res: Value = seed
-                        for i in countdown(Syms[x.s].a.len-1,0):
-                            let a = Syms[x.s].a[i]
-                            let b = res
+                        for i in countdown(InPlaced.a.len-1,0):
+                            handleBranching:
+                                let a = InPlaced.a[i]
+                                let b = res
 
-                            stack.push(b)
-                            stack.push(a)
+                                push(b)
+                                push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                res = pop()
+                            do:
+                                discard
 
-                            res = stack.pop()
-
-                        Syms[x.s] = res
+                        SetInPlace(res)
 
                     else:
                         var res: Value = seed
                         for i in countdown(x.a.len-1,0):
-                            let a = x.a[i]
-                            let b = res
+                            handleBranching:
+                                let a = x.a[i]
+                                let b = res
 
-                            stack.push(b)
-                            stack.push(a)
+                                push(b)
+                                push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                res = pop()
+                            do:
+                                discard
 
-                            res = stack.pop()
-
-                        stack.push(res)
+                        push(res)
                 else:
                     # left fold
 
                     if x.kind == Literal:
                         var res: Value = seed
                         for i in x.a:
-                            let a = res
-                            let b = i
+                            handleBranching:
+                                let a = res
+                                let b = i
 
-                            stack.push(b)
-                            stack.push(a)
+                                push(b)
+                                push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                res = pop()
+                            do:
+                                discard
 
-                            res = stack.pop()
-
-                        Syms[x.s] = res
+                        SetInPlace(res)
 
                     else:
                         var res: Value = seed
                         for i in x.a:
-                            let a = res
-                            let b = i
+                            handleBranching:
+                                let a = res
+                                let b = i
 
-                            stack.push(b)
-                            stack.push(a)
+                                push(b)
+                                push(a)
 
-                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                discard execBlock(VNULL, evaluated=preevaled, args=args)
+                                res = pop()
+                            do:
+                                discard
 
-                            res = stack.pop()
-
-                        stack.push(res)
+                        push(res)
 
     builtin "loop",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
         description = "loop through collection, using given iterator and block",
         args        = {
-            "collection"    : {Integer,Block,Inline,Dictionary},
+            "collection"    : {Integer,String,Block,Inline,Dictionary},
             "params"        : {Literal,Block},
             "action"        : {Block}
         },
@@ -314,15 +348,45 @@ proc defineSymbols*() =
             let preevaled = doEval(z)
 
             if x.kind==Dictionary:
+                # check if empty
+                if x.d.len==0: return
+
                 var keepGoing = true
                 while keepGoing:
                     for k,v in pairs(x.d):
-                        stack.push(v)
-                        stack.push(newString(k))
-                        discard execBlock(VNULL, evaluated=preevaled, args=args)#, isBreakable=true)
-                        checkForBreak()
+                        handleBranching:
+                            push(v)
+                            push(newString(k))
+                            discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        do:
+                            discard
                     if not forever:
                         keepGoing = false
+            elif x.kind==String:
+                var arr: seq[Value] = toSeq(runes(x.s)).map((x) => newChar(x))
+
+                # check if empty
+                if arr.len==0: return
+
+                var keepGoing = true
+                while keepGoing:
+                    var indx = 0
+                    var run = 0
+                    while indx+args.len<=arr.len:
+                        handleBranching:
+                            for item in arr[indx..indx+args.len-1].reversed:
+                                push(item)
+
+                            if withIndex:
+                                push(newInteger(run))
+
+                            discard execBlock(VNULL, evaluated=preevaled, args=allArgs)
+                        do:
+                            run += 1
+                            indx += args.len
+
+                            if not forever:
+                                keepGoing = false
             else:
                 var arr: seq[Value]
                 if x.kind==Integer:
@@ -330,26 +394,31 @@ proc defineSymbols*() =
                 else:
                     arr = x.a
 
+                # check if empty
+                if arr.len==0: return
+
                 var keepGoing = true
                 while keepGoing:
                     var indx = 0
                     var run = 0
                     while indx+args.len<=arr.len:
-                        for item in arr[indx..indx+args.len-1].reversed:
-                            stack.push(item)
+                        handleBranching:
+                            for item in arr[indx..indx+args.len-1].reversed:
+                                push(item)
 
-                        if withIndex:
-                            stack.push(newInteger(run))
+                            if withIndex:
+                                push(newInteger(run))
 
-                        discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+                            discard execBlock(VNULL, evaluated=preevaled, args=allArgs)#, isBreakable=true)
+                        do:
+                            run += 1
+                            indx += args.len
 
-                        checkForBreak()
-                        run += 1
-                        indx += args.len
+                            if not forever:
+                                keepGoing = false
 
-                        if not forever:
-                            keepGoing = false
-
+    # TODO(Iterators\map): Make map work even without arguments
+    #  labels: bug, library
     builtin "map",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -383,17 +452,24 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in Syms[x.s].a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    Syms[x.s].a[i] = stack.pop()
+                discard InPlace
+                for i,item in InPlaced.a:
+                    handleBranching:
+                        push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        InPlaced.a[i] = pop()
+                    do:
+                        discard
             else:
                 for item in x.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    res.add(stack.pop())
+                    handleBranching:
+                        push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        res.add(pop())
+                    do:
+                        discard
                 
-                stack.push(newBlock(res))
+                push(newBlock(res))
 
     builtin "select",
         alias       = unaliased, 
@@ -428,21 +504,28 @@ proc defineSymbols*() =
             var res: ValueArray = @[]
 
             if x.kind==Literal:
-                for i,item in Syms[x.s].a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if stack.pop().b:
-                        res.add(item)
+                discard InPlace
+                for i,item in InPlaced.a:
+                    handleBranching:
+                        push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        if pop().b:
+                            res.add(item)
+                    do:
+                        discard
 
-                Syms[x.s].a = res
+                InPlaced.a = res
             else:
                 for item in x.a:
-                    stack.push(item)
-                    discard execBlock(VNULL, evaluated=preevaled, args=args)
-                    if stack.pop().b:
-                        res.add(item)
+                    handleBranching:
+                        push(item)
+                        discard execBlock(VNULL, evaluated=preevaled, args=args)
+                        if pop().b:
+                            res.add(item)
+                    do:
+                        discard
 
-                stack.push(newBlock(res))
+                push(newBlock(res))
 
     builtin "some?",
         alias       = unaliased, 
@@ -472,20 +555,28 @@ proc defineSymbols*() =
             if y.kind==Literal: args = @[y]
             else: args = y.a
 
+            # check if empty
+            if x.a.len==0: 
+                push(newBoolean(false))
+                return
+
             let preevaled = doEval(z)
             var one = false
 
             for item in x.a:
-                stack.push(item)
-                discard execBlock(VNULL, evaluated=preevaled, args=args)
-                let popped = stack.pop()
-                if popped.kind==Boolean and popped.b:
-                    stack.push(newBoolean(true))
-                    one = true
-                    break
+                handleBranching:
+                    push(item)
+                    discard execBlock(VNULL, evaluated=preevaled, args=args)
+                    let popped = pop()
+                    if popped.kind==Boolean and popped.b:
+                        push(newBoolean(true))
+                        one = true
+                        break
+                do:
+                    discard
 
             if not one:
-                stack.push(newBoolean(false))
+                push(newBoolean(false))
 
 #=======================================
 # Add Library

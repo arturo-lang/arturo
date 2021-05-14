@@ -16,10 +16,14 @@
 # Libraries
 #=======================================
 
-import helpers/benchmark as benchmarkHelper
-import helpers/helper as helperHelper
+import helpers/benchmark
+when not defined(WEB):
+    import helpers/helper
 
-import vm/[common, env, exec, globals, stack, value]
+import helpers/colors
+
+import vm/lib
+import vm/[env, exec]
 
 #=======================================
 # Methods
@@ -29,7 +33,24 @@ proc defineSymbols*() =
 
     when defined(VERBOSE):
         echo "- Importing: Reflection"
+    
+    builtin "arity",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get index of function arities",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Dictionary},
+        example     = """
+            print arity\print   ; 1
+        """:
+            ##########################################################
+            var ret = initOrderedTable[string,Value]()
+            for k,v in pairs(Arities):
+                ret[k] = newInteger(v)
 
+            push(newDictionary(ret))
+            
     builtin "attr",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -41,12 +62,12 @@ proc defineSymbols*() =
         returns     = {Any,Null},
         example     = """
             multiply: function [x][
-            ____if? attr? "with" [ 
-            ________x * attr "with"
-            ____] 
-            ____else [ 
-            ________2*x 
-            ____]
+                if? attr? "with" [ 
+                    x * attr "with"
+                ] 
+                else [ 
+                    2*x 
+                ]
             ]
             
             print multiply 5
@@ -56,7 +77,7 @@ proc defineSymbols*() =
             ; 60
         """:
             ##########################################################
-            stack.push(popAttr(x.s))
+            push(popAttr(x.s))
 
     builtin "attr?",
         alias       = unaliased, 
@@ -68,24 +89,24 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Boolean},
         example     = """
-            # greet: function [x][
-            # ____if? not? attr? 'later [
-            # ________print ["Hello" x "!"]
-            # ____]
-            # ____else [
-            # ________print [x "I'm afraid I'll greet you later!"]
-            # ____]
-            # ]
-            #
-            # greet.later "John"
-            #
-            # ; John I'm afraid I'll greet you later!
+            greet: function [x][
+                if? not? attr? 'later [
+                    print ["Hello" x "!"]
+                ]
+                else [
+                    print [x "I'm afraid I'll greet you later!"]
+                ]
+            ]
+            
+            greet.later "John"
+            
+            ; John I'm afraid I'll greet you later!
         """:
             ##########################################################
             if getAttr(x.s) != VNULL:
-                stack.push(VTRUE)
+                push(VTRUE)
             else:
-                stack.push(VFALSE)
+                push(VFALSE)
 
     builtin "attribute?",
         alias       = unaliased, 
@@ -101,7 +122,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Attribute))
+            push(newBoolean(x.kind==Attribute))
 
     builtin "attributeLabel?",
         alias       = unaliased, 
@@ -117,7 +138,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==AttributeLabel))
+            push(newBoolean(x.kind==AttributeLabel))
 
     builtin "attrs",
         alias       = unaliased, 
@@ -128,19 +149,19 @@ proc defineSymbols*() =
         returns     = {Dictionary},
         example     = """
             greet: function [x][
-            ____print ["Hello" x "!"]
-            ____print attrs
+                print ["Hello" x "!"]
+                print attrs
             ]
             
             greet.later "John"
             
             ; Hello John!
             ; [
-            ;____later:    true
+            ;    later:    true
             ; ]
         """:
             ##########################################################
-            stack.push(getAttrsDict())
+            push(getAttrsDict())
 
     builtin "benchmark",
         alias       = unaliased, 
@@ -153,8 +174,8 @@ proc defineSymbols*() =
         returns     = {Nothing},
         example     = """
             benchmark [ 
-            ____; some process that takes some time
-            ____loop 1..10000 => prime? 
+                ; some process that takes some time
+                loop 1..10000 => prime? 
             ]
             
             ; [benchmark] time: 0.065s
@@ -177,7 +198,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Binary))
+            push(newBoolean(x.kind==Binary))
 
     builtin "block?",
         alias       = unaliased, 
@@ -195,7 +216,7 @@ proc defineSymbols*() =
             print block? 123                ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Block))
+            push(newBoolean(x.kind==Block))
 
     builtin "boolean?",
         alias       = unaliased, 
@@ -213,7 +234,7 @@ proc defineSymbols*() =
             print boolena? 123          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Boolean))
+            push(newBoolean(x.kind==Boolean))
 
     builtin "char?",
         alias       = unaliased, 
@@ -229,7 +250,7 @@ proc defineSymbols*() =
             print char? 123         ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Char))
+            push(newBoolean(x.kind==Char))
 
     builtin "database?",
         alias       = unaliased, 
@@ -245,7 +266,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Database))
+            push(newBoolean(x.kind==Database))
 
     builtin "date?",
         alias       = unaliased, 
@@ -261,7 +282,7 @@ proc defineSymbols*() =
             print date? "hello"         ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Date))
+            push(newBoolean(x.kind==Date))
 
     builtin "dictionary?",
         alias       = unaliased, 
@@ -277,16 +298,17 @@ proc defineSymbols*() =
             print dictionary? 123               ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Dictionary))
+            push(newBoolean(x.kind==Dictionary))
 
-    builtin "help",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "print a list of all available builtin functions",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Nothing},
-        example     = """
+    when not defined(WEB):
+        builtin "help",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "print a list of all available builtin functions",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
             help        
 
             ; abs              (value)                        -> get the absolute value for given integer
@@ -294,22 +316,22 @@ proc defineSymbols*() =
             ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
             ; add              (valueA,valueB)                -> add given values and return result
             ; ...
-        """:
-            ##########################################################
-            printHelp()
+            """:
+                ##########################################################
+                printHelp(Syms)
 
-    builtin "info",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "print info for given symbol",
-        args        = {
-            "symbol": {String,Literal}
-        },
-        attrs       = {
-            "get"   : ({Boolean},"get information as dictionary")
-        },
-        returns     = {Dictionary,Nothing},
-        example     = """
+        builtin "info",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "print info for given symbol",
+            args        = {
+                "symbol": {String,Literal}
+            },
+            attrs       = {
+                "get"   : ({Boolean},"get information as dictionary")
+            },
+            returns     = {Dictionary,Nothing},
+            example     = """
             info 'print
 
             ; |--------------------------------------------------------------------------------
@@ -324,12 +346,12 @@ proc defineSymbols*() =
 
             print info.get 'print
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
-        """:
-            ##########################################################
-            if (popAttr("get") != VNULL):
-                stack.push(newDictionary(getInfo(x.s, Syms[x.s])))
-            else:
-                printInfo(x.s, Syms[x.s])
+            """:
+                ##########################################################
+                if (popAttr("get") != VNULL):
+                    push(newDictionary(getInfo(x.s, InPlace, Aliases)))
+                else:
+                    printInfo(x.s, InPlace, Aliases)
 
     builtin "inline?",
         alias       = unaliased, 
@@ -345,7 +367,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Inline))
+            push(newBoolean(x.kind==Inline))
 
     builtin "inspect",
         alias       = unaliased, 
@@ -354,7 +376,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "muted" : ({Boolean},"don't use color output")
+        },
         returns     = {Nothing},
         example     = """
             inspect 3                 ; 3 :integer
@@ -363,7 +387,10 @@ proc defineSymbols*() =
             inspect a                 ; some text :string
         """:
             ##########################################################
-            x.dump(0, false)
+            when defined(WEB):
+                resetStdout()
+            let mutedOutput = (popAttr("muted")!=VNULL) or NoColors
+            x.dump(0, false, muted=mutedOutput)
 
     builtin "integer?",
         alias       = unaliased, 
@@ -379,14 +406,14 @@ proc defineSymbols*() =
             print integer? "hello"      ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Integer))
+            push(newBoolean(x.kind==Integer))
 
     builtin "is?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "print full dump of given value to screen",
+        description = "check whether value is of given type",
         args        = {
-            "type"  : {Type},
+            "type"  : {Type,Block},
             "value" : {Any}
         },
         attrs       = NoAttrs,
@@ -395,9 +422,30 @@ proc defineSymbols*() =
             is? :string "hello"       ; => true
             is? :block [1 2 3]        ; => true
             is? :integer "boom"       ; => false
+
+            is? [:string] ["one" "two"]     ; => true
+            is? [:integer] [1 "two]         ; => false
         """:
             ##########################################################
-            stack.push(newBoolean(x.t == y.kind))
+            if y.custom.isNil():
+                if x.kind == Type:
+                    push(newBoolean(x.t == y.kind))
+                else:
+                    let tp = x.a[0].t
+                    var res = true
+                    if y.kind != Block: 
+                        res = false
+                    else:
+                        if y.a.len==0: 
+                            res = false
+                        else:
+                            for item in y.a:
+                                if tp != item.kind:
+                                    res = false
+                                    break
+                    push newBoolean(res)
+            else:
+                push(newBoolean(x.name == y.custom.name))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -414,7 +462,7 @@ proc defineSymbols*() =
             print floating? "hello"     ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Floating))
+            push(newBoolean(x.kind==Floating))
 
     builtin "function?",
         alias       = unaliased, 
@@ -432,7 +480,7 @@ proc defineSymbols*() =
             print function? 123             ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Function))
+            push(newBoolean(x.kind==Function))
 
     builtin "label?",
         alias       = unaliased, 
@@ -448,7 +496,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Label))
+            push(newBoolean(x.kind==Label))
 
     builtin "literal?",
         alias       = unaliased, 
@@ -465,7 +513,7 @@ proc defineSymbols*() =
             print literal? 123          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Literal))
+            push(newBoolean(x.kind==Literal))
 
     builtin "null?",
         alias       = unaliased, 
@@ -483,7 +531,7 @@ proc defineSymbols*() =
             print null? 123             ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Null))
+            push(newBoolean(x.kind==Null))
 
     builtin "path?",
         alias       = unaliased, 
@@ -499,7 +547,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Path))
+            push(newBoolean(x.kind==Path))
 
     builtin "pathLabel?",
         alias       = unaliased, 
@@ -515,7 +563,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==PathLabel))
+            push(newBoolean(x.kind==PathLabel))
 
     builtin "set?",
         alias       = unaliased, 
@@ -533,7 +581,7 @@ proc defineSymbols*() =
             print set? 'zoom          ; false
         """:
             ##########################################################
-            stack.push(newBoolean(Syms.hasKey(x.s)))
+            push(newBoolean(SymExists(x.s)))
 
     builtin "stack",
         alias       = unaliased, 
@@ -549,7 +597,7 @@ proc defineSymbols*() =
             ; 1 2 3 done
         """:
             ##########################################################
-            stack.push(newBlock(Stack[0..SP-1]))
+            push(newBlock(Stack[0..SP-1]))
 
     builtin "standalone?",
         alias       = unaliased, 
@@ -569,7 +617,7 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            stack.push(newBoolean(PathStack.len == 1))
+            push(newBoolean(PathStack.len == 1))
 
     builtin "string?",
         alias       = unaliased, 
@@ -586,7 +634,7 @@ proc defineSymbols*() =
             print string? 123           ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==String))
+            push(newBoolean(x.kind==String))
 
     builtin "symbol?",
         alias       = unaliased, 
@@ -602,7 +650,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Symbol))
+            push(newBoolean(x.kind==Symbol))
 
     builtin "symbols",
         alias       = unaliased, 
@@ -618,8 +666,8 @@ proc defineSymbols*() =
             print symbols
             
             ; [
-            ;____a: 2
-            ;____b: "hello"
+            ;    a: 2
+            ;    b: "hello"
             ;_]
         """:
             ##########################################################
@@ -627,7 +675,7 @@ proc defineSymbols*() =
             for k,v in pairs(Syms):
                 if k[0]!=toUpperAscii(k[0]):
                     symbols[k] = v
-            stack.push(newDictionary(symbols))
+            push(newDictionary(symbols))
 
     builtin "type",
         alias       = unaliased, 
@@ -643,7 +691,10 @@ proc defineSymbols*() =
             print type "hello world"  ; :string
         """:
             ##########################################################
-            stack.push(newType(x.kind))
+            if x.custom.isNil():
+                push(newType(x.kind))
+            else:
+                push(x.custom)
 
     builtin "type?",
         alias       = unaliased, 
@@ -660,7 +711,7 @@ proc defineSymbols*() =
             print type? 123             ; false
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Type))
+            push(newBoolean(x.kind==Type))
 
     builtin "word?",
         alias       = unaliased, 
@@ -676,7 +727,7 @@ proc defineSymbols*() =
             ; => true
         """:
             ##########################################################
-            stack.push(newBoolean(x.kind==Word))
+            push(newBoolean(x.kind==Word))
 
 #=======================================
 # Add Library

@@ -1,0 +1,27 @@
+name: "false?"
+type: :function
+module: "Logic"
+returns: [
+        :boolean
+    ]
+description: "returns true if given value is false; otherwise, it returns false"
+example: {
+        print false? 1 = 2          ; true
+        print false? 1 <> 2         ; false
+        print false? odd? 2         ; true
+        
+        print false? [1 2 3]        ; false
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Logic/false"
+         "Logic/true?"
+         "Collections/values"
+         "Core/case"
+    ]

@@ -17,7 +17,7 @@ import strutils
 #=======================================
 
 const 
-    Version*    = static readFile("version/version").strip()
-    Build*      = static readFile("version/build").strip()
+    ArturoVersion*    = static readFile("version/version").strip()
+    ArturoBuild*      = static readFile("version/build").strip()
 
-    VersionTxt* = "arturo v/" & Version
+    ArturoVersionTxt* = "arturo v/" & ArturoVersion

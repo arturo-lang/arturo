@@ -1,0 +1,26 @@
+<||= importPartial "components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+    <||= importPartial "components/navbar.html" ||>
+        
+        <main>
+            <div id="wordwrapper"><a href="#" onclick="toggleWordWrap()" title="toggle word wrap"><i id="wordwrapperIcon" class="fas fa-align-left" aria-hidden="true"></i></a></div>
+            <div id="expander"><a href="#" onclick="toggleExpand()" title="toggle full size"><i id="expanderIcon" class="fas fa-expand-alt"></i></a></div>
+            <a href="#" onclick="execCode()" title="Run script" aria-label="execute code snippet"><div id="runbutton"><i class="far fa-play-circle" aria-hidden="true"></i></div></a>
+            <a href="#" onclick="shareLink()" title="Share link" aria-label="share code snippet"><div id="sharebutton"><i class="fas fa-share-alt" aria-hidden="true"></i></div></a>
+            <div class="columns doccols">
+                <div class="column" style="padding-bottom:0; background: #272822; padding-right: 0">
+                    <div class="tabs">
+                        <ul>
+                            <li class="is-active"><a href="#"><span class="icon is-small"><i class="far fa-file" aria-hidden="true"></i></span><span id="scriptName">main.art</span></a></li>
+                            <!--<li><a href="#" style="border-bottom: 0;"><span class="icon is-small"><i class="fas fa-plus-square" aria-hidden="true"></i></span><span>&nbsp;&nbsp;&nbsp;</span></a></li>-->
+                        </ul>
+                    </div>
+                    <div id="editor"></div>
+                </div>
+                <div class="column" style="background: black;">
+                    <div id="terminal"><span style="color:gray;"># v/0.9.76 @ 2021-05-13T12:06:05+00:00<br># arch: amd64/linux @safe</span><br><br><div id="terminal_output"></div></div>
+                </div>
+            </div>
+        </main>
+<||= importPartial "components/foot.html" ||>

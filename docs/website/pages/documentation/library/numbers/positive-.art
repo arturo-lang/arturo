@@ -1,0 +1,24 @@
+name: "positive?"
+type: :function
+module: "Numbers"
+returns: [
+        :boolean
+    ]
+description: "check if given number is positive"
+example: {
+        positive? 5       ; => true
+        positive? 6-7     ; => false
+    }
+attributes: #[
+    ]
+arguments: #[
+    number: [
+            :integer
+        ]
+    ]
+related: [
+        "Numbers/negative?"
+         "Numbers/even?"
+         "Numbers/odd?"
+         "Numbers/zero?"
+    ]

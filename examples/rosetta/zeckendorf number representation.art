@@ -1,0 +1,22 @@
+Z: function [x][
+    if x=0 -> return "0"
+    fib: new [2 1]
+    n: new x
+    while -> n > first fib
+          -> insert 'fib 0 fib\0 + fib\1
+    
+    result: new ""
+    loop fib 'f [
+        if? f =< n [
+            'result ++ "1"
+            'n - f
+        ]
+        else -> 'result ++ "0"
+    ]
+    if result\0 = `0` ->
+        result: slice result 1 (size result)-1
+    return result
+]
+
+loop 0..20 'i ->
+    print [pad to :string i 3 pad Z i 8]

@@ -1,0 +1,43 @@
+name: "sub"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :complex
+         :color
+         :nothing
+    ]
+alias: "-"
+infix?: true
+description: "subtract given values and return result"
+example: {
+        print sub 2 1      ; 1
+        print 5 - 3        ; 2
+        
+        a: 7
+        sub 'a 2           ; a: 5
+    }
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :integer
+             :floating
+             :complex
+             :literal
+             :color
+        ]
+    valueB: [
+            :integer
+             :floating
+             :complex
+             :color
+        ]
+    ]
+related: [
+        "Numbers/sum"
+         "Arithmetic/mul"
+         "Binary/shl"
+         "Binary/shr"
+    ]

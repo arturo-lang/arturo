@@ -1,0 +1,35 @@
+name: "decode"
+type: :function
+module: "Crypto"
+returns: [
+        :string
+         :nothing
+    ]
+description: "encode given value (default: base-64)"
+example: {
+        print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
+        ; Numquam fugiens respexeris
+        
+        print decode.url "http%3A%2F%2Ffoo+bar%2F"
+        ; http://foo bar/
+    }
+attributes: #[
+    url: #[
+        types: [
+                :boolean
+            ]
+        description: "decode URL based on RFC3986"
+        ]
+    ]
+arguments: #[
+    value: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Crypto/encode"
+         "Arithmetic/dec"
+         "Collections/remove"
+         "Converters/define"
+    ]

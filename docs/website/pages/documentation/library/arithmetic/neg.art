@@ -1,0 +1,32 @@
+name: "neg"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :complex
+         :nothing
+    ]
+description: "reverse sign of given value and return it"
+example: {
+        print neg 1        ; -1
+        
+        a: 5
+        neg 'a             ; a: -5
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+             :complex
+             :literal
+        ]
+    ]
+related: [
+        "Core/new"
+         "Arithmetic/dec"
+         "Binary/nor"
+         "Binary/not"
+    ]

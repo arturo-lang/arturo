@@ -163,6 +163,11 @@ Shift-left first value bits by second value
 <b>shl</b> <ins>value</ins> <i>:integer</i> <i>:literal</i>
     <ins>bits</ins> <i>:integer</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|safe|<i>:boolean</i>|check for overflows|
 
 #### Returns
 

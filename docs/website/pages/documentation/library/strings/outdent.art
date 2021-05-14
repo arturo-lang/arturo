@@ -1,0 +1,53 @@
+name: "outdent"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "outdent each line of given text, by using minimum shared indentation"
+example: {
+        print outdent {:
+            one
+                two
+                three
+        :}
+        ; one
+        ;     two
+        ;     three
+        
+        print outdent.n:1 {:
+            one
+                two
+                three
+        :}
+        ;  one
+        ;      two
+        ;      three
+    }
+attributes: #[
+    n: #[
+        types: [
+                :integer
+            ]
+        description: "unpad by given number of spaces"
+        ]
+    with: #[
+        types: [
+                :string
+            ]
+        description: "use given padding"
+        ]
+    ]
+arguments: #[
+    text: [
+            :string
+             :literal
+        ]
+    ]
+related: [
+        "Strings/indent"
+         "Collections/extend"
+         "Databases/open"
+         "Arithmetic/dec"
+    ]

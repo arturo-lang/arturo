@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1.0">
+        <meta name="robots" content="all">
+        <link rel="canonical" href="<||= getCanonical "https://arturo-lang.io/" ||>">
+        <|| 
+            filtered: pagePath -- "_index"
+            docum: ""
+            if? and? 4 = size filtered
+                     contains? filtered "library" [
+                filtered: (map chop filtered => capitalize) ++ replace last filtered "-" "?"
+                docum: W\description
+            ]
+            else [
+                filtered: map filtered => capitalize
+                docum: join.with:" - " filtered
+            ]
+        ||>
+
+        <||= switch 0 = size filtered [ ||>
+            <title>Arturo programming language</title>
+            <meta name="description" content="Arturo programming language: Simple, expressive & portable programming language for efficient scripting">
+            <meta name="keywords" content="arturo,programming language,scripting language,rebol,red,portable programming language">
+        <||] [ ||>
+            <title><|| join.with:" | " reverse filtered ||> - Arturo</title>
+            <meta name="description" content="<|| docum ||> - Arturo programming">
+            <meta name="keywords" content="arturo,programming language,scripting language,<|| join.with:"," filtered ||>">
+        <||] ||>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bulma@0.9.1/css/bulma.min.css,npm/prismjs@1.23.0/themes/prism-okaidia.min.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"> 
+        <script src="https://cdn.jsdelivr.net/gh/zenorocha/clipboard.js@1.5.12/dist/clipboard.min.js"></script>
+        <script src="https://kit.fontawesome.com/8bfb2fe6f4.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="<||= linkTo {resources/styles/main.css} ||>">
+        <link rel="apple-touch-icon" sizes="57x57" href="<||= linkTo {favico/apple-icon-57x57.png} ||>">
+        <link rel="apple-touch-icon" sizes="60x60" href="<||= linkTo {favico/apple-icon-60x60.png} ||>">
+        <link rel="apple-touch-icon" sizes="72x72" href="<||= linkTo {favico/apple-icon-72x72.png} ||>">
+        <link rel="apple-touch-icon" sizes="76x76" href="<||= linkTo {favico/apple-icon-76x76.png} ||>">
+        <link rel="apple-touch-icon" sizes="114x114" href="<||= linkTo {favico/apple-icon-114x114.png} ||>">
+        <link rel="apple-touch-icon" sizes="120x120" href="<||= linkTo {favico/apple-icon-120x120.png} ||>">
+        <link rel="apple-touch-icon" sizes="144x144" href="<||= linkTo {favico/apple-icon-144x144.png} ||>">
+        <link rel="apple-touch-icon" sizes="152x152" href="<||= linkTo {favico/apple-icon-152x152.png} ||>">
+        <link rel="apple-touch-icon" sizes="180x180" href="<||= linkTo {favico/apple-icon-180x180.png} ||>">
+        <link rel="icon" type="image/png" sizes="192x192"  href="<||= linkTo {favico/android-icon-192x192.png} ||>">
+        <link rel="icon" type="image/png" sizes="32x32" href="<||= linkTo {favico/favicon-32x32.png} ||>">
+        <link rel="icon" type="image/png" sizes="96x96" href="<||= linkTo {favico/favicon-96x96.png} ||>">
+        <link rel="icon" type="image/png" sizes="16x16" href="<||= linkTo {favico/favicon-16x16.png} ||>">
+        <link rel="manifest" href="<||= linkTo {manifest.json} ||>">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="<||= linkTo {favico/ms-icon-144x144.png} ||>">
+        <meta name="theme-color" content="#ffffff">
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-RPNR7PTFYH"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-RPNR7PTFYH');
+        </script>
+        <||= if contains? pagePath "playground" [||>
+            <link rel="stylesheet" href="<||= linkTo {resources/styles/playground.css} ||>">
+        <|| ] ||>
+        <||= if contains? pagePath "documentation" [ ||>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+        <|| ] ||>
+    </head>

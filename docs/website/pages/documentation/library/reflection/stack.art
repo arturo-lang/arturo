@@ -1,0 +1,23 @@
+name: "stack"
+type: :function
+module: "Reflection"
+returns: [
+        :dictionary
+    ]
+description: "get current stack"
+example: {
+        1 2 3 "done"
+        
+        print stack
+        ; 1 2 3 done
+    }
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Collections/slice"
+         "Collections/take"
+         "Numbers/atan"
+         "Numbers/atan2"
+    ]

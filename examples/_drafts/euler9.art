@@ -1,0 +1,16 @@
+getSpecialTripletProduct: function [magic]->
+	loop 150..400 'a [
+		loop a..600 'b [
+			loop b..700 'c [
+				print [a b c a*b*c]
+				if (c^2)=(a^2)+b^2 [
+					triplet: @[a b c]
+					if magic=sum triplet [
+						return product triplet
+					]
+				]
+			]
+		]
+	]
+
+print getSpecialTripletProduct 1000

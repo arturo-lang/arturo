@@ -1,0 +1,24 @@
+name: "angle"
+type: :function
+module: "Numbers"
+returns: [
+        :floating
+    ]
+description: "calculate the phase angle of given number"
+example: {
+        a: to complex [1 1]     ; a: 1.0+1.0i
+        print angle a           ; 0.7853981633974483
+    }
+attributes: #[
+    ]
+arguments: #[
+    number: [
+            :complex
+        ]
+    ]
+related: [
+        "Numbers/range"
+         "Binary/and"
+         "Collections/sample"
+         "Core/null"
+    ]

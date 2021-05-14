@@ -1,0 +1,17 @@
+lastSundayForMonth: function [m,y][
+    ensure -> in? m 1..12
+
+    daysOfMonth: @[0 31 (leap? y)? -> 28 -> 27 31 30 31 30 31 31 30 31 30 31]
+    loop range get daysOfMonth m 1 [d][
+        dt: to :date.format:"yyyy-M-dd" ~"|y|-|m|-|d|"
+        if dt\Day = "Sunday" -> return dt
+    ]
+]
+
+getLastSundays: function [year][
+    loop 1..12 'month [
+        print to :string.format:"yyyy-MM-dd" lastSundayForMonth month year
+    ]
+]
+
+getLastSundays 2013

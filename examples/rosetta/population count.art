@@ -1,0 +1,12 @@
+popCount: function [num][
+    size select split to :string as.binary num 'x -> x="1"
+]
+
+print "population count for the first thirty powers of 3:"
+print map 0..29 => [popCount 3^&]
+
+print "first thirty evil numbers"
+print take select 0..100 => [even? popCount &] 30
+
+print "first thirty odious numbers"
+print take select 0..100 => [odd? popCount &] 30

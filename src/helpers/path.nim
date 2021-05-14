@@ -12,7 +12,7 @@
 
 import os, tables
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Methods
@@ -23,7 +23,7 @@ proc parsePathComponents*(s: string): OrderedTable[string,Value] {.inline.} =
 
     result = {
         "directory": newString(dir),
-        "basename": newString(name & "." & ext),
+        "basename": newString(name & ext),
         "filename": newString(name),
         "extension": newString(ext)
         }.toOrderedTable

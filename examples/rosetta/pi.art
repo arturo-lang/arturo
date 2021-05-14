@@ -1,0 +1,38 @@
+
+q: 1
+r: 0
+t: 1
+k: 1
+n: 3
+l: 3
+d: 0
+
+dotWritten: false
+
+while [true][
+    if? (n*t) > (4*q)+r-t [
+        d: d+1
+        prints n
+        unless dotWritten [
+            prints "."
+            dotWritten: true
+            d: d+1
+        ]
+
+        if 0 = d%80 -> prints "\n"
+        nr: 10*(r - n*t)
+        n: ((10*(r + 3*q)) / t) - 10*n
+        q: q*10
+        r: nr
+    ]
+    else [
+        nr: (r + 2*q) * l
+        nn: ((q*(2 + 7*k)) + r*l) / (t*l)
+        q: q*k
+        t: t*l
+        l: l+2
+        k: k+1
+        n: nn
+        r: nr
+    ]
+]

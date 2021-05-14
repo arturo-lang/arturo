@@ -1,0 +1,7 @@
+problem: {!md
+Display the string **Hello world!** on a text console.
+}
+link: "http://rosettacode.org/wiki/Hello_world/Text"
+code: 
+------
+print "Hello world!"

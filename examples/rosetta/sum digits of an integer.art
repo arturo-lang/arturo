@@ -1,0 +1,14 @@
+sumDigits: function [n base][
+	result: 0
+	while [n>0][
+		result: result + n%base
+		n: n/base
+    ]
+	return result
+]
+ 
+print sumDigits 1 10
+print sumDigits 12345 10
+print sumDigits 123045 10
+print sumDigits from.hex "0xfe" 16
+print sumDigits from.hex "0xf0e" 16

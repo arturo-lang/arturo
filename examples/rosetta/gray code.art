@@ -1,0 +1,22 @@
+toGray: function [n]-> xor n shr n 1
+fromGray: function [n][
+    p: n
+    while [n > 0][
+        n: shr n 1
+        p: xor p n
+    ] 
+    return p
+]
+
+loop 0..31 'num [
+    encoded: toGray num
+    decoded: fromGray encoded
+
+    print [
+        pad to :string num 2 ":" 
+        pad as.binary num 5 "=>" 
+        pad as.binary encoded 5 "=>" 
+        pad as.binary decoded 5 ":" 
+        pad to :string decoded 2
+    ]
+]

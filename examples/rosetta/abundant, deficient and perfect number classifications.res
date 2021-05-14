@@ -1,0 +1,1 @@
+Found 4953 abundant, 15043 deficient and 4 perfect numbers.

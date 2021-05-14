@@ -1,0 +1,5 @@
+tau: function [x] -> size factors x
+
+loop split.every:20 1..100 => [
+    print map & => [pad to :string tau & 3]
+]

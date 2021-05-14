@@ -10,17 +10,42 @@
 # Libraries
 #=======================================
 
-import algorithm, strformat, strutils, tables
+import algorithm, tables, unicode
 
-import helpers/debug as DebugHelper
+when not defined(NOGMP):
+    import extras/bignum
 
-import vm/[bytecode, globals, value]
+when defined(VERBOSE):
+    import strformat, strutils
+    import helpers/debug
+
+import vm/[bytecode, globals, values/value]
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    TmpArities*    : Table[string,int]
 
 #=======================================
 # Forward Declarations
 #=======================================
 
-proc dump*(evaled: Translation)
+when defined(VERBOSE):
+    proc dump*(evaled: Translation)
+
+#=======================================
+# Helpers
+#=======================================
+
+proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
+    result = 0
+    for i in items(a):
+        if sameValue(item, i): return
+        if item.kind in [Word, Label] and i.kind in [Word, Label] and item.s==i.s: return
+        inc(result)
+    result = -1
 
 #=======================================
 # Methods
@@ -66,8 +91,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             consts.add(v)
             indx = consts.len-1
 
-        if indx <= 30:
-            addToCommand((byte)(((byte)(op)-0x1F) + (byte)(indx)))
+        if indx <= 29:
+            addToCommand((byte)(((byte)(op)-0x1E) + (byte)(indx)))
         else:
             if indx>255:
                 addToCommand((byte)indx)
@@ -187,8 +212,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addTerminalValue(true):
                         discard
                 of Word:
-                    if Arities.hasKey(subnode.s):
-                        let funcArity = Arities[subnode.s]
+                    if TmpArities.hasKey(subnode.s):
+                        let funcArity = TmpArities[subnode.s]
                         if funcArity!=0:
                             subargStack.add(funcArity)
                         else:
@@ -252,6 +277,14 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if node.f==1.0: addToCommand((byte)opConstF1)
                     else: addConst(consts, node, opPush)
 
+            of Complex:
+                addTerminalValue(false):
+                    addConst(consts, node, opPush)
+
+            of Version:
+                addTerminalValue(false):
+                    addConst(consts, node, opPush)
+
             of Type:
                 addTerminalValue(false):
                     addConst(consts, node, opPush)
@@ -265,8 +298,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     addConst(consts, node, opPush)
 
             of Word:
-                if Arities.hasKey(node.s):
-                    let funcArity = Arities[node.s]
+                if TmpArities.hasKey(node.s):
+                    let funcArity = TmpArities[node.s]
                     if funcArity!=0:
                         addConst(consts, node, opCall)
                         argStack.add(funcArity)
@@ -285,10 +318,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let funcIndx = node.s
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    Arities[funcIndx] = n.a[i+2].a.len
+                    TmpArities[funcIndx] = n.a[i+2].a.len
                 else:
                     if not isDictionary:
-                        Arities.del(funcIndx)
+                        TmpArities.del(funcIndx)
 
                 addConst(consts, node, opStore)
                 argStack.add(1)
@@ -312,7 +345,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     let baseNode = node.p[0]
 
-                    if Arities.hasKey(baseNode.s) and Arities[baseNode.s]==0:
+                    if TmpArities.hasKey(baseNode.s) and TmpArities[baseNode.s]==0:
                         addConst(consts, baseNode, opCall)
                     else:
                         addConst(consts, baseNode, opLoad)
@@ -340,7 +373,19 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Symbol: 
                 case node.m:
+                    of doublecolon      :
+                        inc(i)
+                        var subblock: seq[Value] = @[]
+                        while i < n.a.len:
+                            let subnode = n.a[i]
+                            subblock.add(subnode)
+                            inc(i)
+                        addTerminalValue(false):
+                            addConst(consts, newBlock(subblock), opPush)
+                            
                     of arrowright       : 
+                        # TODO: arrowright sugar `->` should support attributes
+                        # labels: vm, evaluator, bug, enhancement, critical
                         var subargStack: seq[int] = @[]
                         var ended = false
                         var ret: seq[Value] = @[]
@@ -349,8 +394,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(false):
                             addConst(consts, newBlock(subblock), opPush)
 
-                    # TODO(Eval\evalOne) verify thickarrowright works right
-                    #  labels: vm,evaluator,unit-test
                     of thickarrowright  : 
                         # get next node
                         let subnode = n.a[i+1]
@@ -364,9 +407,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         # if it's a word
                         if subnode.kind==Word:
                             # check if it's a function
-                            if Arities.hasKey(subnode.s):
+                            if TmpArities.hasKey(subnode.s):
                                  # automatically "push" all its required arguments
-                                let funcArity = Arities[subnode.s]
+                                let funcArity = TmpArities[subnode.s]
 
                                 for i in 0..(funcArity-1):
                                     let arg = newWord("_" & $(i))
@@ -412,12 +455,17 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addTerminalValue(false):
                                 addConst(consts, node, opPush)
 
+            of Color : 
+                addTerminalValue(false):
+                    addConst(consts, node, opPush)
             of Date : discard
 
             of Binary : discard
 
             of Dictionary,
-               Function: discard
+               Function: 
+                   addTerminalValue(false):
+                        addConst(consts, node, opPush)
 
             of Inline: 
                 addTerminalValue(false):
@@ -431,10 +479,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Bytecode: discard
 
-            of Custom:
-                addTerminalValue(false):
-                    addConst(consts, node, opPush)
-
             of Nothing: discard
             of Any: discard
 
@@ -446,9 +490,44 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         else:
             for b in currentCommand.reversed: it.add(b)
 
+proc evalData*(blk: Value): ValueDict =
+    result = initOrderedTable[string,Value]()
+    
+    var i = 0
+    while i < blk.a.len:
+        let node = blk.a[i]
+
+        case node.kind:
+            of Label: 
+                if i+1 < blk.a.len:
+                    i += 1
+                    let val = blk.a[i]
+                    case val.kind:
+                        of Literal, Word, String:
+                            result[node.s] = newString(val.s)
+                        of Symbol:
+                            if val.m == sharp:
+                                if i+1 < blk.a.len and blk.a[i+1].kind==Block:
+                                    i += 1
+                                    let dval = blk.a[i]
+                                    result[node.s] = newDictionary(evalData(dval))
+                                else:
+                                    result[node.s] = val
+                            else:
+                                result[node.s] = val
+                        else:
+                            result[node.s] = val
+                else:
+                    break
+            else:
+                discard
+        i += 1
+
 proc doEval*(root: Value, isDictionary=false): Translation = 
     var cnsts: ValueArray = @[]
     var newit: ByteArray = @[]
+
+    TmpArities = Arities
 
     evalOne(root, cnsts, newit, isDictionary=isDictionary)
     newit.add((byte)opEnd)
@@ -464,43 +543,44 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 # Inspection
 #=======================================
 
-proc dump*(evaled: Translation) =
-    showDebugHeader("Constants")
+when defined(VERBOSE):
+    proc dump*(evaled: Translation) =
+        showDebugHeader("Constants")
 
-    var i = 0
+        var i = 0
 
-    let consts = evaled[0]
-    let it = evaled[1]
+        let consts = evaled[0]
+        let it = evaled[1]
 
-    while i < consts.len:
-        var cnst = consts[i]
+        while i < consts.len:
+            var cnst = consts[i]
 
-        stdout.write fmt("{i}: ")
-        cnst.dump(0, false)
+            stdout.write fmt("{i}: ")
+            cnst.dump(0, false)
 
-        i += 1
-    
-    showDebugHeader("Instruction Table")
+            i += 1
+        
+        showDebugHeader("Instruction Table")
 
-    i = 0
+        i = 0
 
-    while i < it.len:
-        stdout.write fmt("{i}: ")
-        var instr = (OpCode)(it[i])
+        while i < it.len:
+            stdout.write fmt("{i}: ")
+            var instr = (OpCode)(it[i])
 
-        stdout.write ($instr).replace("op").toLowerAscii()
+            stdout.write ($instr).replace("op").toLowerAscii()
 
-        case instr:
-            of opPush, opStore, opLoad, opCall, opAttr:
-                i += 1
-                let indx = it[i]
-                stdout.write fmt("\t#{indx}\n")
-            # of opExtra:
-            #     i += 1
-            #     let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
-            #     stdout.write fmt("\t%{extra}\n")
-            else:
-                discard
+            case instr:
+                of opPush, opStore, opLoad, opCall, opAttr:
+                    i += 1
+                    let indx = it[i]
+                    stdout.write fmt("\t#{indx}\n")
+                # of opExtra:
+                #     i += 1
+                #     let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
+                #     stdout.write fmt("\t%{extra}\n")
+                else:
+                    discard
 
-        stdout.write "\n"
-        i += 1
+            stdout.write "\n"
+            i += 1

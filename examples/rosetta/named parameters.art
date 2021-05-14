@@ -1,0 +1,12 @@
+func: function [x][
+    print ["argument x:" x]
+    print ["attribute foo:" attr 'foo]
+    print ["attribute bar:" attr 'bar]
+    print ""
+]
+
+func 1
+func .foo:"foo" 2
+func .bar:"bar" 3
+func .foo:123 .bar:124 4
+func .bar:124 .foo:123 5

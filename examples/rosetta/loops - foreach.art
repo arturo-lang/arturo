@@ -1,0 +1,13 @@
+arr: ["one" "two" "three"]
+
+dict: #[	
+    name:		"John"
+	surname:	"Doe"
+	age:		34
+]
+
+loop arr 'item ->
+    print item
+
+loop dict [key val]->
+    print [key "=>" val]

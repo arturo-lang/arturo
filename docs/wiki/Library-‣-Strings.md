@@ -3,14 +3,18 @@
 ---
 
 <!--ts-->
+   * [ascii?](#ascii?)
    * [capitalize](#capitalize)
    * [color](#color)
+   * [escape](#escape)
+   * [indent](#indent)
    * [join](#join)
    * [levenshtein](#levenshtein)
    * [lower](#lower)
    * [lower?](#lower?)
    * [match](#match)
    * [numeric?](#numeric?)
+   * [outdent](#outdent)
    * [pad](#pad)
    * [prefix](#prefix)
    * [prefix?](#prefix?)
@@ -19,6 +23,7 @@
    * [strip](#strip)
    * [suffix](#suffix)
    * [suffix?](#suffix?)
+   * [truncate](#truncate)
    * [upper](#upper)
    * [upper?](#upper?)
    * [whitespace?](#whitespace?)
@@ -26,6 +31,33 @@
 
 ---
 
+
+## ascii?
+
+#### Description
+
+Check if given character/string is in ASCII
+
+#### Usage
+
+<pre>
+<b>ascii?</b> <ins>string</ins> <i>:char</i> <i>:string</i>
+</pre>
+
+#### Returns
+
+- *:boolean*
+
+#### Examples
+
+```red
+ascii? `d`              ; true
+ascii? `😀`             ; false
+
+ascii? "hello world"    ; true
+ascii? "Hællø wœrld"    ; false
+ascii? "Γειά!"          ; false
+```
 
 ## capitalize
 
@@ -91,11 +123,96 @@ print color.green "Hello!"                ; Hello! (in green)
 print color.red.bold "Some text"          ; Some text (in red/bold)
 ```
 
+## escape
+
+#### Description
+
+Escape given string
+
+#### Usage
+
+<pre>
+<b>escape</b> <ins>string</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|json|<i>:boolean</i>|for literal use in JSON strings|
+|regex|<i>:boolean</i>|for literal use in regular expression|
+|shell|<i>:boolean</i>|for use in a shell command|
+|xml|<i>:boolean</i>|for use in an XML document|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
+#### Examples
+
+```red
+str: {a long "string" + with \diffe\rent symbols.}
+
+print escape str
+; "a long \"string\" + with \\diffe\\rent symbols."
+
+print escape.json str
+; a long \"string\" + with \\diffe\\rent symbols.
+
+print escape.regex str
+; a\x20long\x20\x22string\x22\x20\x2B\x20with\x20\x5Cdiffe\x5Crent\x20symbols\x2E
+
+print escape.shell str
+; 'a long "string" + with \diffe\rent symbols.'
+
+print escape.xml str
+; a long &quot;string&quot; + with \diffe\rent symbols.
+```
+
+## indent
+
+#### Description
+
+Indent each line of given text
+
+#### Usage
+
+<pre>
+<b>indent</b> <ins>text</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|n|<i>:integer</i>|pad by given number of spaces (default: 4)|
+|with|<i>:string</i>|use given padding|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
+#### Examples
+
+```red
+str: "one\ntwo\nthree"
+
+print indent str
+;     one
+;     two
+;     three
+
+print indent .n:10 .with:"#" str
+; ##########one
+; ##########two
+; ##########three
+```
+
 ## join
 
 #### Description
 
-Join collection of strings into string
+Join collection of values into string
 
 #### Usage
 
@@ -126,6 +243,12 @@ print join.with:"," arr
 
 join 'arr
 ; arr: "onetwothree"
+
+print join [`H` `e` `l` `l` `o` `!`]
+; Hello!
+
+print join @["1 + 2 = " 1+2]
+; 1 + 2 = 3
 ```
 
 ## levenshtein
@@ -253,6 +376,51 @@ numeric? "18966"           ; => true
 numeric? "123xxy"          ; => false
 ```
 
+## outdent
+
+#### Description
+
+Outdent each line of given text, by using minimum shared indentation
+
+#### Usage
+
+<pre>
+<b>outdent</b> <ins>text</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|n|<i>:integer</i>|unpad by given number of spaces|
+|with|<i>:string</i>|use given padding|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
+#### Examples
+
+```red
+print outdent {:
+    one
+        two
+        three
+:}
+; one
+;     two
+;     three
+
+print outdent.n:1 {:
+    one
+        two
+        three
+:}
+;  one
+;      two
+;      three
+```
+
 ## pad
 
 #### Description
@@ -271,6 +439,7 @@ Check if given string consists only of whitespace
 |---|---|---|
 |center|<i>:boolean</i>|add padding to both sides|
 |right|<i>:boolean</i>|add right padding|
+|with|<i>:char</i>|pad with given character|
 
 #### Returns
 
@@ -284,7 +453,10 @@ pad.right "good" 10           ; => "good      "
 pad.center "good" 10          ; => "   good   "
 
 a: "hello"
-pad 'a 10            ; a: "     hello"
+pad 'a 10                     ; a: "     hello"
+
+pad.with:`0` to :string 123 5   
+; => 00123
 ```
 
 ## prefix
@@ -361,7 +533,6 @@ Render template with |string| interpolation
 |Attribute|Type|Description|
 |---|---|---|
 |single|<i>:boolean</i>|don't render recursively|
-|with|<i>:dictionary</i>|use given dictionary for reference|
 |template|<i>:boolean</i>|render as a template|
 
 #### Returns
@@ -431,6 +602,12 @@ Strip whitespace from given string
 <pre>
 <b>strip</b> <ins>string</ins> <i>:string</i> <i>:literal</i>
 </pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|start|<i>:boolean</i>|strip leading whitespace|
+|end|<i>:boolean</i>|strip trailing whitespace|
 
 #### Returns
 
@@ -440,10 +617,15 @@ Strip whitespace from given string
 #### Examples
 
 ```red
-strip "  this is a string "        ; => "this is a string"
+str: "     Hello World     "
 
-str: "  some string  "
-strip 'str                         ; str: "some string"
+print ["strip all:"      ">" strip str       "<"]
+print ["strip leading:"  ">" strip.start str "<"]
+print ["strip trailing:" ">" strip.end str   "<"]
+
+; strip all: > Hello World < 
+; strip leading: > Hello World      < 
+; strip trailing: >      Hello World <
 ```
 
 ## suffix
@@ -500,6 +682,48 @@ Check if string ends with given suffix
 ```red
 suffix? "hello" "lo"          ; => true
 suffix? "boom" "lo"           ; => false
+```
+
+## truncate
+
+#### Description
+
+Truncate string at given length
+
+#### Usage
+
+<pre>
+<b>truncate</b> <ins>string</ins> <i>:string</i> <i>:literal</i>
+         <ins>cutoff</ins> <i>:integer</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|with|<i>:string</i>|use given filler|
+|preserve|<i>:boolean</i>|preserve word boundaries|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
+#### Examples
+
+```red
+str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
+
+truncate str 30
+; => "Lorem ipsum dolor sit amet, con..."
+
+truncate.preserve str 30
+; => "Lorem ipsum dolor sit amet,..."
+
+truncate.with:"---" str 30
+; => "Lorem ipsum dolor sit amet, con---"
+
+truncate.preserve.with:"---" str 30
+; => "Lorem ipsum dolor sit amet,---"
 ```
 
 ## upper

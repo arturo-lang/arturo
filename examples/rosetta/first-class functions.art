@@ -1,0 +1,13 @@
+cube: function [x] -> x^3
+croot: function [x] -> x^(1//3)
+
+names: ["sin/asin", "cos/acos", "cube/croot"]
+funclist: @[var 'sin, var 'cos, var 'cube]
+invlist:  @[var 'asin, var 'acos, var 'croot]
+
+num: 0.5
+
+loop 0..2 'f [
+    result: call funclist \ f @[num]
+    print [names \ f "=>" call invlist \ f @[result]]
+]

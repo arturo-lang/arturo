@@ -1,0 +1,27 @@
+name: "floor"
+type: :function
+module: "Numbers"
+returns: [
+        :integer
+    ]
+description: "calculate the largest integer not greater than given value"
+example: {
+        print floor 2.1         ; 2
+        print floor 2.9         ; 2
+        print floor neg 3.5     ; -4
+        print floor 4           ; 4
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+        ]
+    ]
+related: [
+        "Iterators/loop"
+         "Binary/nor"
+         "Binary/or"
+         "Binary/xnor"
+    ]

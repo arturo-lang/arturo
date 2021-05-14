@@ -1,0 +1,9 @@
+multiply: $[x,y][x*y]
+
+print multiply 3 7
+
+multiply2: function [x,y][
+	return x*y
+]
+
+print multiply2 3 7

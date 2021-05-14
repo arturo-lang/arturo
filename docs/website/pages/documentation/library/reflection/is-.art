@@ -1,0 +1,32 @@
+name: "is?"
+type: :function
+module: "Reflection"
+returns: [
+        :boolean
+    ]
+description: "check whether value is of given type"
+example: {
+        is? :string "hello"       ; => true
+        is? :block [1 2 3]        ; => true
+        is? :integer "boom"       ; => false
+        
+        is? [:string] ["one" "two"]     ; => true
+        is? [:integer] [1 "two]         ; => false
+    }
+attributes: #[
+    ]
+arguments: #[
+    type: [
+            :type
+             :block
+        ]
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Collections/in?"
+         "Core/if?"
+         "Arithmetic/inc"
+         "Converters/as"
+    ]

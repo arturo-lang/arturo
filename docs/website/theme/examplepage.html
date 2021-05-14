@@ -1,0 +1,50 @@
+<||= importPartial "components/head.html" ||>
+    <body data-prismjs-copy-timeout="500">
+        
+    <||= importPartial "components/navbar.html" ||>
+        
+        <main>
+            <div class="columns doccols"><!--is-gapless" style="height: 100vh; overflow-y:auto;">-->
+                <!-- SIDEBAR -->
+                <||= importPartial "components/sidebar.html" ||>
+
+                <!-- MAIN -->
+                <div class="column is-9 p-6 mb-6">
+                    <!-- Breadcrumbs -->
+                    <||= importPartial "components/breadcrumbs.html" ||>
+
+                    <|| if not? all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] [ ||>
+                        <h2 class="title is-size-3-touch is-size-2 is-spaced"><||= switch contains? pagePath "library" ["Library"] [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
+                    <|| ] ||>
+
+                    <||=
+                        examples1: new []
+                        examples2: new []
+                        halfM: (size Data\rosetta) / 2
+                        if odd? halfM [halfM: halfM+1]
+                        otherHalfM: (size Data\rosetta) - halfM
+
+                        previousFirst: ` `
+
+                        read.markdown replace replace replace W\content "%EXAMPLES_COUNT%" to :string size Data\rosetta "%EXAMPLES_2%" "<ul style='margin-top:0;'>" ++ join.with:"\n" map last.n:otherHalfM Data\rosetta [ti][
+                            switch and? previousFirst <> first ti 
+                                        `l` <> first ti [
+                                previousFirst: first ti
+                                ~{</ul><p class="exampleletter">|upper to :string previousFirst|</p><ul><li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                            ] [
+                                ~{<li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                            ]
+                        ] "%EXAMPLES_1%" join.with:"\n" map first.n:halfM Data\rosetta [ti][
+                            switch and? previousFirst <> first ti 
+                                        not? numeric? to :string first ti [
+                                previousFirst: first ti
+                                ~{</ul><p class="exampleletter">|upper to :string previousFirst|</p><ul><li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                            ] [
+                                ~{<li><a href="https://arturo-lang.io/playground?example=|encode.url.spaces ti|" target="_blank">|capitalize ti|</a></li>}
+                            ]
+                        ] 
+                    ||>
+                </div>
+            </div>
+        </main>
+<||= importPartial "components/foot.html" ||>

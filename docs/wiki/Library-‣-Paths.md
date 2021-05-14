@@ -4,7 +4,10 @@
 
 <!--ts-->
    * [extract](#extract)
+   * [list](#list)
    * [module](#module)
+   * [normalize](#normalize)
+   * [path](#path)
    * [relative](#relative)
 <!--te-->
 
@@ -72,6 +75,40 @@ print extract url
 ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
 ```
 
+## list
+
+#### Description
+
+Get files in given path
+
+#### Usage
+
+<pre>
+<b>list</b> <ins>path</ins> <i>:string</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|recursive|<i>:boolean</i>|perform recursive search|
+|relative|<i>:boolean</i>|get relative paths|
+
+#### Returns
+
+- *:block*
+
+#### Examples
+
+```red
+loop list "." 'file [
+   print file
+]
+
+; tests
+; var
+; data.txt
+```
+
 ## module
 
 #### Description
@@ -96,6 +133,58 @@ print module 'html        ; /usr/local/lib/arturo/html.art
 
 do.import module 'html    ; (imports given module)
 ```
+
+## normalize
+
+#### Description
+
+Get normalized version of given path
+
+#### Usage
+
+<pre>
+<b>normalize</b> <ins>path</ins> <i>:string</i> <i>:literal</i>
+</pre>
+#### Attributes
+
+|Attribute|Type|Description|
+|---|---|---|
+|executable|<i>:boolean</i>|treat path as executable|
+|tilde|<i>:boolean</i>|expand tildes in path|
+
+#### Returns
+
+- *:string*
+- *:nothing*
+
+#### Examples
+
+```red
+normalize "one/../two/../../three"
+; => ../three
+
+normalize "~/one/../two/../../three"
+; => three
+
+normalize.tilde "~/one/../two/../../three"
+; => /Users/three
+
+normalize.tilde "~/Documents"
+; => /Users/drkameleon/Documents
+
+normalize.executable "myscript"
+; => ./myscript
+```
+
+## path
+
+#### Description
+
+Common path constants
+
+#### Returns
+
+- *:dictionary*
 
 ## relative
 

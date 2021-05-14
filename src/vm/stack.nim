@@ -10,9 +10,12 @@
 # Libraries
 #=======================================
 
-import strformat, tables
+when not defined(WEB):
+    import strformat
 
-import vm/value
+import tables
+
+import vm/values/value
 
 #=======================================
 # Constants
@@ -40,6 +43,9 @@ template push*(v: Value) =
 template pop*(): Value = 
     SP -= 1
     Stack[SP]
+
+template popN*(n: int) =
+    SP -= n
 
 template peek*(pos: int): Value =
     Stack[SP-1-pos]
@@ -85,7 +91,8 @@ proc getAttrsDict*(): Value =
 proc dumpStack*() =
     var i = 0
     while i < SP:
-        stdout.write fmt("{i}: ")
+        when not defined(WEB):
+            stdout.write fmt("{i}: ")
         var item = Stack[i]
 
         item.dump(0, false)

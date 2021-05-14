@@ -1,0 +1,51 @@
+name: "write"
+type: :function
+module: "Files"
+returns: [
+        :nothing
+    ]
+alias: ">>"
+infix?: false
+description: "write content to file at given path"
+example: {
+        ; write some string data to given file path
+        write "somefile.txt" "Hello world!"
+        
+        ; we can also write any type of data as JSON
+        write.json "data.json" myData
+    }
+attributes: #[
+    directory: #[
+        types: [
+                :boolean
+            ]
+        description: "create directory at path"
+        ]
+    json: #[
+        types: [
+                :boolean
+            ]
+        description: "write value as Json"
+        ]
+    binary: #[
+        types: [
+                :boolean
+            ]
+        description: "write as binary"
+        ]
+    ]
+arguments: #[
+    file: [
+            :null
+             :string
+        ]
+    content: [
+            :any
+        ]
+    ]
+related: [
+        "Converters/with"
+         "Core/while"
+         "Reflection/arity"
+         "Collections/size"
+    ]

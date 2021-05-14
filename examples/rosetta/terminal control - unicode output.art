@@ -1,0 +1,12 @@
+canHandleUnicode?: function [][
+    any? @[
+        if key? env "LC_ALL"    -> contains? lower get env "LC_ALL" "utf-8"
+        if key? env "LC_CTYPE"  -> contains? lower get env "LC_CTYPE" "utf-8"
+        if key? env "LANG"      -> contains? lower get env "LANG" "utf-8"
+    ]
+]
+
+if? canHandleUnicode? ->
+    print "Terminal handle unicode and U+25B3 is: △"
+else ->
+    print "Unicode is not supported on this terminal"

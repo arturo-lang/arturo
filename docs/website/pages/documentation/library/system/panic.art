@@ -1,0 +1,29 @@
+name: "panic"
+type: :function
+module: "System"
+returns: [
+        :boolean
+    ]
+description: "exit program with error message"
+example: {
+        panic.code:1 "something went terribly wrong. quitting..."
+    }
+attributes: #[
+    code: #[
+        types: [
+                :integer
+            ]
+        description: "return given exit code"
+        ]
+    ]
+arguments: #[
+    message: [
+            :string
+        ]
+    ]
+related: [
+        "Arithmetic/inc"
+         "Binary/and"
+         "Binary/nand"
+         "Logic/and?"
+    ]

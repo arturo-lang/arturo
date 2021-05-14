@@ -10,33 +10,25 @@
 # Libraries
 #=======================================
 
-import lexbase, streams, strformat, strutils, unicode
+import lexbase, os, sequtils
+import streams, strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
-    import helpers/debug as debugHelper
+    import helpers/debug
 
-import vm/value
+import vm/[errors, values/value]
 
 #=======================================
 # Types
 #=======================================
 
 type
-    ParserStatus* = enum
-        allOK
-        invalidTokenError
-        missingClosingBracketError
-        unterminatedStringError
-        unrecognizedEscapeSequence
-        newlineInQuotedString
-        emptyLiteralError
-        emptyDatatypeError
-
     Parser* = object of BaseLexer
         value*: string
         values*: ValueArray
         symbol*: SymbolKind
-        status*: ParserStatus
+
+    ParseResult* = (Value, string) # (main, package)
 
 #=======================================
 # Constants
@@ -68,27 +60,66 @@ const
     Whitespace                  = {' ', Tab}
 
     PermittedNumbers_Start      = {'0'..'9'}
-    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|'}
+    Symbols                     = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '-', '_', '=', '+', '<', '>', '/', '\\', '|', '?'}
     Letters                     = {'a'..'z', 'A'..'Z'}
     PermittedIdentifiers_Start  = Letters
-    PermittedIdentifiers_In     = Letters + {'0'..'9', '?'}
+    PermittedColorChars         = Letters + {'0'..'9'}
+    PermittedIdentifiers_In     = PermittedColorChars + {'?'}
+    
+    SemVerExtra                 = Letters + PermittedNumbers_Start + {'+', '-', '.'}
 
     Empty                       = ""
 
-    ParserStatusString: array[ParserStatus, string] = [
-        "No error.",
-        "Invalid token found.",
-        "Missing closing bracket.",
-        "Unterminated string.",
-        "Unrecognized escape sequence.",
-        "Newline in quoted string.",
-        "Empty literal.",
-        "Empty datatype."
-    ]
+#=======================================
+# Variables
+#=======================================
+
+# TODO(Parser) ScriptConfig enhancement
+#  first, we should verify it works fine. (Should it recognize only 100% valid Arturo code?) Also, it could be parsed on a per-block basis - so that each block has its one config. Plus, keep one at the root level, as the global script information.
+#  labels: enhancement,unit-test,vm,parser
+var
+    ScriptConfig : string
+
+#=======================================
+# Forward declarations
+#=======================================
+
+proc doParseAll*(input: string, isFile: bool = true): ParseResult
+
+#=======================================
+# Templates
+#=======================================
+
+template AddToken*(token: untyped): untyped =
+    addChild(topBlock, token)
+    #topBlock.refs.add(p.lineNumber)
 
 #=======================================
 # Helpers
 #=======================================
+
+## Error reporting
+
+proc getContext*(p: var Parser, curPos: int): string =
+    var startPos = curPos-15
+    var endPos = curPos+15
+
+    if startPos < 0: startPos = 0
+
+    result = ""
+
+    var i = startPos
+    while i<endPos and p.buf[i]!=EOF:
+        result &= p.buf[i]
+        i += 1
+
+    if p.buf[i]!=EOF:
+        result &= "..."
+
+    result = join(toSeq(splitLines(result))," ")
+    result &= ";" & repeat("~%",6 + curPos-startPos) & "_^_"
+
+## Lexer/parser
 
 template skip(p: var Parser) =
   var pos = p.bufpos
@@ -96,18 +127,36 @@ template skip(p: var Parser) =
     case p.buf[pos]
         of Semicolon:
             inc(pos)
-            while true:
-                case p.buf[pos]:
-                    of EOF:
-                        break
-                    of CR:
-                        pos = lexbase.handleCR(p, pos)
-                        break
-                    of LF:
-                        pos = lexbase.handleLF(p, pos)
-                        break
-                    else:
-                        inc(pos)
+            if p.buf[pos]==Semicolon:
+                inc(pos)
+                while true:
+                    ScriptConfig &= p.buf[pos]
+                    case p.buf[pos]:
+                        of EOF:
+                            break
+                        of CR:
+                            pos = lexbase.handleCR(p, pos)
+                            ScriptConfig &= "\n"
+                            break
+                        of LF:
+                            pos = lexbase.handleLF(p, pos)
+                            ScriptConfig &= "\n"
+                            break
+                        else:
+                            inc(pos)
+            else:
+                while true:
+                    case p.buf[pos]:
+                        of EOF:
+                            break
+                        of CR:
+                            pos = lexbase.handleCR(p, pos)
+                            break
+                        of LF:
+                            pos = lexbase.handleLF(p, pos)
+                            break
+                        else:
+                            inc(pos)
         of Whitespace:
             inc(pos)
         of CR:
@@ -117,8 +166,6 @@ template skip(p: var Parser) =
             # if p.buf[pos] == Tab:
             #     echo "next one is tab!"
         of '#':
-            # echo "found sharp @ " & $(pos)
-            # echo "char @+1: " & $(p.buf[pos+1])
             if p.buf[pos+1]=='!':
                 inc(pos)
                 while true:
@@ -147,8 +194,7 @@ template parseString(p: var Parser, stopper: char = Quote) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
             of stopper:
                 inc(pos)
                 break
@@ -187,17 +233,16 @@ template parseString(p: var Parser, stopper: char = Quote) =
                             add(p.value, '\v')
                             inc(pos, 2)
                         else:
-                            p.status = unrecognizedEscapeSequence
-                            return
+                            add(p.value, "\\")
+                            add(p.value, p.buf[pos+1])
+                            inc(pos, 2)
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                p.status = newlineInQuotedString
-                return
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
             of LF:
-                p.status = newlineInQuotedString
-                return
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -206,18 +251,11 @@ template parseString(p: var Parser, stopper: char = Quote) =
 
 template parseMultilineString(p: var Parser) =
     var pos = p.bufpos + 1
+    while p.buf[pos]==Dash:
+        inc(pos)
+    
     while true:
         case p.buf[pos]:
-            of EOF: 
-                p.status = unterminatedStringError
-                break
-            of Dash:
-                if p.buf[pos+1]==Dash and p.buf[pos+2]==Dash:
-                    inc(pos,3)
-                    break
-                else:
-                    inc(pos)
-                    add(p.value, '-')
             of CR:
                 pos = lexbase.handleCR(p, pos)
                 when not defined(windows):
@@ -232,6 +270,8 @@ template parseMultilineString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
+            of EOF:
+                break
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -241,26 +281,32 @@ template parseMultilineString(p: var Parser) =
 template parseCurlyString(p: var Parser) =
     var pos = p.bufpos + 1
     var curliesExpected = 1
+    var verbatimString = false
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
             inc(pos)
 
+    if p.buf[pos]==':':
+        inc(pos)
+        verbatimString = true
     while true:
         case p.buf[pos]:
             of EOF: 
-                p.status = unterminatedStringError
-                break
+                SyntaxError_UnterminatedString("curly", p.lineNumber, getContext(p, p.bufpos))
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
                 inc(pos)
             of RCurly:
-                if curliesExpected==1:
-                    inc(pos)
-                    break
+                if not verbatimString:
+                    if curliesExpected==1:
+                        inc(pos)
+                        break
+                    else:
+                        curliesExpected -= 1
+                        add(p.value, p.buf[pos])
                 else:
-                    curliesExpected -= 1
                     add(p.value, p.buf[pos])
                 inc(pos)
             of CR:
@@ -277,11 +323,27 @@ template parseCurlyString(p: var Parser) =
                     add(p.value, LF)
                 else:
                     add(p.value, LF)
+            of ':':
+                if verbatimString:
+                    if p.buf[pos+1]==RCurly:
+                        inc(pos)
+                        inc(pos)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
-
     p.bufpos = pos
+
+    if verbatimString:
+        AddToken newString(p.value)
+    else:
+        AddToken newString(p.value, dedented=true)
 
 template parseFullLineString(p: var Parser) =
     var pos = p.bufpos + 2
@@ -301,6 +363,45 @@ template parseFullLineString(p: var Parser) =
 
     p.bufpos = pos
 
+template parseSafeString(p: var Parser) =
+    var pos = p.bufpos + 4
+    while true:
+        case p.buf[pos]:
+            of EOF: 
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
+                break
+            of CR:
+                pos = lexbase.handleCR(p, pos)
+                when not defined(windows):
+                    add(p.value, LF)
+                else:    
+                    add(p.value, CR)
+                    add(p.value, LF)
+            of LF:
+                pos = lexbase.handleLF(p, pos)
+                when defined(windows):
+                    add(p.value, CR)
+                    add(p.value, LF)
+                else:
+                    add(p.value, LF)
+            of chr(194):
+                if p.buf[pos+1]==chr(187): # got »
+                    if p.buf[pos+2]==chr(194) and p.buf[pos+3]==chr(187):
+                        inc(pos,4)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        add(p.value, p.buf[pos+1])
+                        inc(pos,2)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
+            else:
+                add(p.value, p.buf[pos])
+                inc(pos)
+
+    p.bufpos = pos
+
 template parseIdentifier(p: var Parser) =
     var pos = p.bufpos
     add(p.value, p.buf[pos])
@@ -312,9 +413,6 @@ template parseIdentifier(p: var Parser) =
 
 template parseNumber(p: var Parser) =
     var pos = p.bufpos
-    # if p.buf[pos] == Minus:
-    #     add(p.value, Minus)
-    #     inc(pos)
     while p.buf[pos] in Digits:
         add(p.value, p.buf[pos])
         inc(pos)
@@ -329,6 +427,20 @@ template parseNumber(p: var Parser) =
             while p.buf[pos] in Digits:
                 add(p.value, p.buf[pos])
                 inc(pos)
+
+            if p.buf[pos] == Dot:
+                if p.buf[pos+1] in Digits:
+                    add(p.value, Dot)
+                    inc(pos)
+                    while p.buf[pos] in Digits:
+                        add(p.value, p.buf[pos])
+                        inc(pos)
+                    
+                    if p.buf[pos] in {'+','-'}:
+                        while p.buf[pos] in SemVerExtra:
+                            add(p.value, p.buf[pos])
+                            inc(pos)
+
             p.bufpos = pos
     else:
         p.bufpos = pos
@@ -339,15 +451,45 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     case p.buf[pos]:
         of '~'  : p.symbol = tilde
         of '!'  : p.symbol = exclamation
+        of '?'  : 
+            if p.buf[pos+1]=='?': inc(pos); p.symbol = doublequestion
+            else: p.symbol = question
         of '@'  : p.symbol = at
-        of '#'  : p.symbol = sharp
+        of '#'  : 
+            if p.buf[pos+1] in PermittedColorChars:
+                let oldPos = pos
+                inc pos
+                var colorCode = ""
+                while p.buf[pos] in PermittedColorChars:
+                    colorCode &= p.buf[pos]
+                    inc pos
+                var color: Value
+                try:
+                    color = newColor(colorCode)
+                    isSymbol = false
+                    AddToken color
+                    p.bufpos = pos
+                except:
+                    try:
+                        color = newColor("#" & colorCode)
+                        isSymbol = false
+                        AddToken color
+                        p.bufpos = pos
+                    except:
+                        p.symbol = sharp
+                        pos = oldPos
+
+            else:
+                p.symbol = sharp
         of '$'  : p.symbol = dollar
         of '%'  : p.symbol = percent
         of '^'  : p.symbol = caret
         of '&'  : p.symbol = ampersand
         of '*'  : p.symbol = asterisk
         of '_'  : p.symbol = underscore
-        of '|'  : p.symbol = pipe
+        of '|'  : 
+            if p.buf[pos+1]=='|': inc(pos); p.symbol = doublepipe
+            else: p.symbol = pipe
         of '/'  : 
             if p.buf[pos+1]=='/': inc(pos); p.symbol = doubleslash
             else: p.symbol = slash
@@ -366,8 +508,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     isSymbol = false
                     p.bufpos = pos+1
                     parseMultilineString(p)
-                    if p.status != allOK: return nil
-                    addChild(topBlock, newString(p.value))
+                    AddToken newString(p.value, dedented=true)
                 else:
                     p.symbol = doubleminus
             else: p.symbol = minus
@@ -394,7 +535,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     if isSymbol:
         inc(pos)
         p.bufpos = pos
-        addChild(topBlock, newSymbol(p.symbol))
+        AddToken newSymbol(p.symbol)
 
 template parsePath(p: var Parser, root: Value) =
     p.values = @[root]
@@ -426,6 +567,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
     var topBlock: Value
     if isDeferred: topBlock = newBlock()
     else: topBlock = newInline()
+    let initial = p.bufpos-1
 
     while true:
         setLen(p.value, 0)
@@ -433,111 +575,107 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
 
         case p.buf[p.bufpos]
             of EOF:
-                if level!=0:
-                    p.status = missingClosingBracketError
-                    return nil
-                else:
-                    break
+                if level!=0: SyntaxError_MissingClosingBracket(p.lineNumber, getContext(p, initial))
+                break
             of Quote:
                 parseString(p)
-                if p.status != allOK: return nil
-
-                addChild(topBlock, newString(p.value))
+                AddToken newString(p.value)
             of BackTick:
                 parseString(p, stopper=BackTick)
-                if p.status != allOK: return nil
-
-                addChild(topBlock, newChar(p.value))
+                AddToken newChar(p.value)
             of Colon:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    addChild(topBlock,newSymbol(colon))
+                    if p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        AddToken newSymbol(doublecolon)
+                    else:
+                        AddToken newSymbol(colon)
                 else:
-                    addChild(topBlock, newType(p.value))
+                    AddToken newType(p.value)
             of PermittedNumbers_Start:
                 parseNumber(p)
-                if Dot in p.value: addChild(topBlock, newFloating(p.value))
-                else: addChild(topBlock, newInteger(p.value))
+                if Dot in p.value: 
+                    if p.value.count(Dot)>1:
+                        AddToken newVersion(p.value)
+                    else:
+                        AddToken newFloating(p.value)
+                else: AddToken newInteger(p.value)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
                 parseIdentifier(p)
                 if p.buf[p.bufpos] == Colon:
                     inc(p.bufpos)
-                    addChild(topBlock, newLabel(p.value))
+                    AddToken newLabel(p.value)
                 elif p.buf[p.bufpos] == Backslash:
                     if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or 
                        (p.buf[p.bufpos+1] in PermittedNumbers_Start):
                         parsePath(p, newWord(p.value))
                         if p.buf[p.bufpos]==Colon:
                             inc(p.bufpos)
-                            addChild(topBlock, newPathLabel(p.values))
+                            AddToken newPathLabel(p.values)
                         else:
-                            addChild(topBlock, newPath(p.values))
+                            AddToken newPath(p.values)
                     else:
                         inc(p.bufpos)
-                        addChild(topBlock,newSymbol(backslash))
+                        AddToken newSymbol(backslash)
                 else:
-                    addChild(topBlock, newWord(p.value))
+                    AddToken newWord(p.value)
             of Tick:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    p.status = emptyLiteralError
-                    return nil
+                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos))
                 else:
-                    addChild(topBlock, newLiteral(p.value))
+                    AddToken newLiteral(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos)
                     inc(p.bufpos)
-                    addChild(topBlock, newSymbol(ellipsis))
+                    AddToken newSymbol(ellipsis)
                 elif p.buf[p.bufpos+1] == '/':
                     inc(p.bufpos)
                     inc(p.bufpos)
-                    addChild(topBlock, newSymbol(dotslash))
+                    AddToken newSymbol(dotslash)
                 else:
                     parseLiteral(p)
                     if p.buf[p.bufpos] == Colon:
                         inc(p.bufpos)
-                        addChild(topBlock, newAttributeLabel(p.value))
+                        AddToken newAttributeLabel(p.value)
                     else:
-                        addChild(topBlock, newAttribute(p.value))
+                        AddToken newAttribute(p.value)
             of LBracket:
                 inc(p.bufpos)
                 var subblock = parseBlock(p,level+1)
-
-                if p.status!=allOK: return nil
-                else: addChild(topBlock, subblock)
+                AddToken subblock
             of RBracket:
                 inc(p.bufpos)
                 break
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isDeferred=false)
-                
-                if p.status!=allOK: return nil
-                else: addChild(topBlock, subblock)
+                AddToken subblock
             of RParen:
                 inc(p.bufpos)
                 break
             of LCurly:
                 parseCurlyString(p)
-                if p.status != allOK: return nil
-
-                addChild(topBlock, newString(p.value,strip=true))
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
                 if p.buf[p.bufpos+1]==chr(171): # got «
-                    parseFullLineString(p)
-                    if p.status != allOK: return nil
-                    addChild(topBlock, newString(unicode.strip(p.value)))
+                    if p.buf[p.bufpos+2]==chr(194) and p.buf[p.bufpos+3]==chr(171):
+                        parseSafeString(p)
+                        AddToken newString(p.value)
+                    else:
+                        parseFullLineString(p)
+                        AddToken newString(unicode.strip(p.value))
                 else:
                     inc(p.bufpos)
 
             of chr(195):
                 if p.buf[p.bufpos+1]==chr(184):
-                    addChild(topBlock, newSymbol(slashedzero))
+                    AddToken newSymbol(slashedzero)
                     inc(p.bufpos)
                     inc(p.bufpos)
                 else:
@@ -591,12 +729,16 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
-proc doParse*(input: string, isFile: bool = true): Value =
+proc doParseAll*(input: string, isFile: bool = true): ParseResult =
     var p: Parser
 
     # open stream
 
     if isFile:
+        when not defined(WEB):
+            if not fileExists(input):
+                CompilerError_ScriptNotExists(input)
+
         var stream = newFileStream(input)
         lexbase.open(p, stream)
     else:
@@ -610,20 +752,21 @@ proc doParse*(input: string, isFile: bool = true): Value =
     # initialize
 
     p.value = ""
-    p.status = allOK
+    ScriptConfig = ""
 
     # do parse
     
     let rootBlock = parseBlock(p, 0)
 
-    # if everything went fine, return result
+    # echo "found config:\n" & ScriptConfig
 
-    if p.status==allOK:
-        when defined(VERBOSE):
-            showDebugHeader("Parse")
-            rootBlock.dump(0,false)
+    # if everything went fine, return result
+    when defined(VERBOSE):
+        rootBlock.dump(0,false)
+
+    lexbase.close(p)
             
-        return rootBlock
-    else:
-        echo fmt("Error: {ParserStatusString[p.status]}")
-        return nil
+    return (rootBlock,ScriptConfig)
+
+template doParse*(input: string, isFile: bool = true): Value =
+    doParseAll(input, isFile)[0]

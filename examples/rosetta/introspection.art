@@ -1,0 +1,14 @@
+if not? sys\version > 0.9.0 -> panic "version too old!"
+
+bloop: 3 - 5
+
+if? set? 'bloop -> "variable 'bloop' is set"
+else            -> "variable 'bloop' is not set"
+
+if set? 'abs -> print ["the absolute value of bloop is:" abs bloop]
+
+print [
+    "The sum of all globally defined integers is:"
+    sum map select keys symbols 'sym -> integer? var sym
+                                'sym -> var sym
+]

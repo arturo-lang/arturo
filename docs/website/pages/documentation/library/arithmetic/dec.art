@@ -1,0 +1,30 @@
+name: "dec"
+type: :function
+module: "Arithmetic"
+returns: [
+        :integer
+         :floating
+         :nothing
+    ]
+description: "decrease given value by 1"
+example: {
+        print dec 5        ; 4
+        
+        a: 4
+        dec 'a             ; a: 3
+    }
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :integer
+             :floating
+             :literal
+        ]
+    ]
+related: [
+        "Arithmetic/inc"
+         "Numbers/sec"
+         "Arithmetic/div"
+         "Arithmetic/neg"
+    ]

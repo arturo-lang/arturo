@@ -1,0 +1,28 @@
+name: "size"
+type: :function
+module: "Collections"
+returns: [
+        :integer
+    ]
+description: "get size/length of given collection"
+example: {
+        str: "some text"      
+        print size str                ; 9
+        
+        print size "你好!"              ; 3
+    }
+attributes: #[
+    ]
+arguments: #[
+    collection: [
+            :string
+             :dictionary
+             :block
+        ]
+    ]
+related: [
+        "Collections/slice"
+         "Numbers/sin"
+         "Numbers/sinh"
+         "Arithmetic/div"
+    ]

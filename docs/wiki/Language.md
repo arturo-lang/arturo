@@ -99,7 +99,7 @@ print add 2 3
 ```
 and Arturo will print out `5` for you.
 
-Now, if you don't want to use the `add` function (and *prefix notation*, which is the standard for *all* function call), there is a *symbol-alias* for that: `+`
+Now, if you don't want to use the `add` function (and *prefix notation*, which is the standard for *all* function calls), there is a *symbol-alias* for that: `+`
 
 So, you could just as well write:
 
@@ -110,28 +110,36 @@ Only, this time you're expressing it more like you would in a normal math expres
 
 Some of the existing *aliases* in the built-in dictionary:
 
-|Symbol| Aliased word |
-|--|--|
-| `+` | add |
-| `-` | sub |
-| `*` | mul |
-| `/` | div |
-| `%` | mod |
-| `^` | pow |
-| `=` | equal? |
-| `>` | greater? |
-| `<` | less? |
-| `>=` | greaterOrEqual? |
-| `=<` | lessOrEqual? |
-| `<>` | notEqual? |
-| `@` | array |
-| `#` | dictionary |
-| `$` | function |
-| `~` | render |
-| `<<` | read |
-| `>>` | write |
-| `++` | append |
-| `--` | remove |
+<table>
+<tr><th>Symbol</th><th>Aliased word</th></tr>
+<tr><td><code>+</code></td><td>add</td></tr>
+<tr><td><code>++</code></td><td>append</td></tr>
+<tr><td><code>@</code></td><td>array</td></tr>
+<tr><td><code>#</code></td><td>dictionary</td></tr>
+<tr><td><code>/</code></td><td>div</td></tr>
+<tr><td><code>&lt;=</code></td><td>dup</td></tr>
+<tr><td><code>=</code></td><td>equal?</td></tr>
+<tr><td><code>//</code></td><td>fdiv</td></tr>
+<tr><td><code>$</code></td><td>function</td></tr>
+<tr><td><code>\</code></td><td>get</td></tr>
+<tr><td><code>&gt;</code></td><td>greater?</td></tr>
+<tr><td><code>&gt;=</code></td><td>greaterOrEqual?</td></tr>
+<tr><td><code>&lt;</code></td><td>less?</td></tr>
+<tr><td><code>=&lt;</code></td><td>lessOrEqual?</td></tr>
+<tr><td><code>:</code></td><td>let</td></tr>
+<tr><td><code>%</code></td><td>mod</td></tr>
+<tr><td><code>*</code></td><td>mul</td></tr>
+<tr><td><code>&lt;&gt;</code></td><td>notEqual?</td></tr>
+<tr><td><code>^</code></td><td>pow</td></tr>
+<tr><td><code>..</code></td><td>range</td></tr>
+<tr><td><code>&lt;&lt;</code></td><td>read</td></tr>
+<tr><td><code>./</code></td><td>relative</td></tr>
+<tr><td><code>--</code></td><td>remove</td></tr>
+<tr><td><code>~</code></td><td>render</td></tr>
+<tr><td><code>-</code></td><td>sub</td></tr>
+<tr><td><code>?</code></td><td>switch</td></tr>
+<tr><td><code>&gt;&gt;</code></td><td>write</td></tr>
+</table>
 
 ### Values
 
@@ -199,21 +207,14 @@ ch: `a`
 
 A string is nothing but a series of characters, seen as one unit. In Arturo, in order to define a string, there are various ways:
 
-- using double quotes: ```x: "this is a string"```
-- using right *smart-quote* notation ```x: » This is a string``` (in this case, everything following `»` till the end of the line, will be considered a string)
-- using triple-dash blocks for literal, what-you-see-is-what-you-get, multi-line strings:
-  ```red
-  x: 
-  ---
-  this is a very
-  long string
-  that spans more
-  than
-  one
-  line
-  ---
-  ```
-- using curly-brace blocks again for stripped (read as: *spaces at the beginning and end of each line are ignored*) multi-line strings:
+**Single-line strings**
+
+- using double quotes: ```x: "this is a string"``` (with escaped characters)
+- using right *smart-quote* notation ```x: » This is a string``` (in this case, everything following `»` till the end of the line, will be stripped and considered one string)
+
+**Multi-line strings**
+
+- using curly-brace blocks (the result will be stripped and un-indented):
   ```red
   x: {
       this is yet
@@ -225,6 +226,31 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, in 
       one
       line
   }
+  ```
+
+- using verbatim curly-brace blocks (the result will remain exactly as-is):
+  ```red
+  x: {:
+    this is yet
+      another
+      very
+    long string
+    that spans more
+        than
+            one
+            line
+  :}
+  ```
+- using dash notation (where everything after the line, until the end of the file, is a string - stripped and un-indented):
+  ```red
+  x: 
+  ------
+  this is the last very
+  long string
+  that spans more
+  than
+  one
+  line
   ```
 
 > 💡 If you want your string to contain sub-expressions that will be evaluated on-the-fly - that is *string interpolation* - all you have to do is include your code inside the string within pipe-bars and then call the function `render` (or `~`) to process it accordingly: e.g. 

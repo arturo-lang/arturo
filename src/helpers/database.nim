@@ -15,7 +15,7 @@ import sequtils, sqlite3, strutils
 #import db_mysql as mysql
 import db_sqlite as sqlite
 
-import vm/value
+import vm/values/value
 
 #=======================================
 # Types
@@ -55,12 +55,12 @@ type
 proc openSqliteDb*(name: string): sqlite.DbConn =
     sqlite.open(name, "", "", "")
 
-proc execSqliteDb*(db: sqlite.DbConn, command: string): QueryResult =
+proc execSqliteDb*(db: sqlite.DbConn, command: string, with: seq[string] = @[]): QueryResult =
     var ret: ValueArray = @[]
 
     #echo "executing SQL:" & $(command)
 
-    for row in db.rows(sql(command)):
+    for row in db.rows(sql(command), with):
         ret.add(newStringBlock(row))
 
     if ret.len>0 or command.toLowerAscii.contains("select"):
@@ -68,7 +68,7 @@ proc execSqliteDb*(db: sqlite.DbConn, command: string): QueryResult =
     else:
         result = (EmptyQueryResult, ret)
 
-proc execManySqliteDb*(db: sqlite.DbConn, commands: seq[string]): QueryResult =
+proc execManySqliteDb*(db: sqlite.DbConn, commands: seq[string], with: seq[string] = @[]): QueryResult =
     var ret: ValueArray = @[]
 
     #echo "executing SQL:" & $(commands)
@@ -76,7 +76,7 @@ proc execManySqliteDb*(db: sqlite.DbConn, commands: seq[string]): QueryResult =
     db.exec(sql"BEGIN")
 
     for command in commands:
-        ret = concat(ret, execSqliteDb(db, command)[1])
+        ret = concat(ret, execSqliteDb(db, command, with)[1])
 
     db.exec(sql"COMMIT")
 

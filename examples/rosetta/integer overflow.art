@@ -1,0 +1,11 @@
+big32bit: 2147483646
+big64bit: 9223372036854775808
+
+print type big32bit
+print type big64bit
+
+print big32bit + 1
+print big64bit + 1
+
+print big32bit * 2
+print big64bit * 2

@@ -1,0 +1,34 @@
+postprocess: #.raw [
+    {!html <h2 id="([^"]*)">}   {!html <h2 id="$1" class="title is-size-3-touch is-size-2 is-spaced mt-6">}
+    {!html <h2>}                {!html <h2 class="title is-size-3-touch is-size-2 is-spaced mt-6">}
+
+    {!html <h3 id="([^"]*)">}   {!html <h3 id="$1" class="title is-size-4-touch is-size-3 is-spaced mt-6">}
+    {!html <h3>}                {!html <h3 class="title is-size-4-touch is-size-3 is-spaced mt-6">}
+
+    {!html <h4 id="([^"]*)">}   {!html <h4 id="$1" class="subtitle is-size-5-touch is-size-4 is-spaced mt-6">}
+    {!html <h4>}                {!html <h4 class="subtitle is-size-5-touch is-size-4 is-spaced mt-6">}
+
+    {!html <p>}                 {!html <p class="pt-1 pb-1">}
+    {!html <table>}             {!html <table class="table is-stripped is-hoverable is-fullwidth">}
+    {!html <ulbd>}              {!html <div class="content"><ul>}
+    {!html </ulbd>}             {!html </ul></div>}
+    {!html <blockquote>}        {!html <div class="content mt-3 mb-3"><blockquote>}
+    {!html </blockquote>}       {!html </blockquote></div>}
+    {!html <code class="language-red">}  {!html <code class="language-arturo">}
+    {!html <pre><code}          {!html <pre class="mt-4 mb-4 is-size-7-touch is-size-6"><code}
+]
+
+routes: #.raw [
+    {documentation/examples\.art}           "examplepage.html"
+    {playground/_index\.art}                "playground.html"
+    {examples/_index\.art}                  "docpage.html"
+    {rosetta code/_index\.art}              "docpage.html"
+    {rosetta code/[^/]+/_index\.art}        "examples_index.html"
+    {rosetta code/[^/]+/[^/]+\.art}         "example.html"
+    {documentation/_index\.art}             "docpage.html"
+    {library/_index\.art}                   "docpage.html"
+    {library/[^/]+/_index\.art}             "module_index.html"
+    {library/[^/]+/[^/]+\.art}              "function.html"
+    {_index\.art}                           "index.html"
+    {documentation/[^/]+\.art}              "docpage.html"
+]

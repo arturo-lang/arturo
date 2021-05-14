@@ -1,0 +1,28 @@
+name: "symbols"
+type: :function
+module: "Reflection"
+returns: [
+        :dictionary
+    ]
+description: "get currently defined symbols"
+example: {
+        a: 2
+        b: "hello"
+        
+        print symbols
+        
+        ; [
+        ;    a: 2
+        ;    b: "hello"
+        ;_]
+    }
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Reflection/symbol?"
+         "Collections/sample"
+         "Files/symlink"
+         "System/sys"
+    ]

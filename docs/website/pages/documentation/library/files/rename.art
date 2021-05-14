@@ -1,0 +1,33 @@
+name: "rename"
+type: :function
+module: "Files"
+returns: [
+        :nothing
+    ]
+description: "rename file at path using given new path name"
+example: {
+        rename "README.md" "READIT.md"
+        ; file renamed
+    }
+attributes: #[
+    directory: #[
+        types: [
+                :boolean
+            ]
+        description: "path is a directory"
+        ]
+    ]
+arguments: #[
+    file: [
+            :string
+        ]
+    name: [
+            :string
+        ]
+    ]
+related: [
+        "Collections/remove"
+         "Files/read"
+         "Numbers/range"
+         "Strings/render"
+    ]

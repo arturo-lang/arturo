@@ -1,0 +1,13 @@
+lastFridayForMonth: function [m][
+    ensure -> in? m 1..12
+
+    daysOfMonth: [0 31 27 31 30 31 30 31 31 30 31 30 31]
+    loop range get daysOfMonth m 1 [d][
+        dt: to :date.format:"yyyy-M-dd" ~"2012-|m|-|d|"
+        if dt\Day = "Friday" -> return dt
+    ]
+]
+
+loop 1..12 'month [
+    print to :string.format:"yyyy-MM-dd" lastFridayForMonth month
+]

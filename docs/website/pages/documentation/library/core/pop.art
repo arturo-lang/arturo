@@ -1,0 +1,36 @@
+name: "pop"
+type: :function
+module: "Core"
+returns: [
+        :any
+    ]
+description: "pop top <number> values from stack"
+example: {
+        1 2 3
+        a: pop 1        ; a: 3
+        
+        1 2 3
+        b: pop 2        ; b: [3 2]
+        
+        1 2 3
+        pop.discard 1   ; popped 3 from the stack
+    }
+attributes: #[
+    discard: #[
+        types: [
+                :boolean
+            ]
+        description: "do not return anything"
+        ]
+    ]
+arguments: #[
+    number: [
+            :integer
+        ]
+    ]
+related: [
+        "Arithmetic/pow"
+         "Arithmetic/mod"
+         "Binary/nor"
+         "Binary/not"
+    ]

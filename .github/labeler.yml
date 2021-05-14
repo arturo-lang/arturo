@@ -1,8 +1,17 @@
 3rd-party:
   - src/extras/*
 
+documentation:
+  - examples/projecteuler/*
+  - examples/rosetta/*
+  - docs/*
+  - docs/wiki/*
+
 evaluator:
-  - src/translator/eval.nim
+  - src/vm/eval.nim
+
+execution:
+  - src/vm/exec.nim
 
 helpers:
   - src/helpers/*
@@ -10,22 +19,29 @@ helpers:
 installer:
   - arturo.nimble
   - install
-  - src/system/update.art
+  - src/scripts/update.art
 
 library:
   - src/library/*
 
 package-manager:
-  - src/system/module.art
+  - src/scripts/module.art
 
 parser:
-  - src/translator/parse.nim
+  - src/vm/parse.nim
 
 repl:
-  - src/system/console.art
+  - src/scripts/console.art
 
 unit-test:
-  - tests/*
+  - tests/benchmarks/*
+  - tests/unittests/*
+
+error handling: 
+  - src/vm/errors.nim
+
+values:
+  - src/vm/value.nim
 
 vm:
   - src/vm/*

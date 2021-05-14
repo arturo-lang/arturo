@@ -1,0 +1,1 @@
+[date:8/27/1883 place:Krakatoa magnitude:8.8]

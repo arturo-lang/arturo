@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import vm/[common, globals, stack, value]
+import vm/lib
 
 #=======================================
 # Methods
@@ -44,8 +44,8 @@ proc defineSymbols*() =
             and 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] &&= y
-            else               : stack.push(x && y)
+            if x.kind==Literal : InPlace &&= y
+            else               : push(x && y)
 
 
     builtin "nand",
@@ -65,8 +65,8 @@ proc defineSymbols*() =
             nand 'a 3          ; a: -3
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] &&= y; !!= Syms[x.s]
-            else               : stack.push(!! (x && y))
+            if x.kind==Literal : InPlace &&= y; !!= InPlaced
+            else               : push(!! (x && y))
 
     builtin "nor",
         alias       = unaliased, 
@@ -85,8 +85,8 @@ proc defineSymbols*() =
             nor 'a 3           ; a: -4
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ||= y; !!= Syms[x.s]
-            else               : stack.push(!! (x || y))
+            if x.kind==Literal : InPlace ||= y; !!= InPlaced
+            else               : push(!! (x || y))
 
     builtin "not",
         alias       = unaliased, 
@@ -104,8 +104,8 @@ proc defineSymbols*() =
             not 'a             ; a: -124
         """:
             ##########################################################
-            if x.kind==Literal : !!= Syms[x.s] 
-            else               : stack.push(!! x)
+            if x.kind==Literal : !!= InPlace 
+            else               : push(!! x)
 
     builtin "or",
         alias       = unaliased, 
@@ -124,8 +124,8 @@ proc defineSymbols*() =
             or 'a 3            ; a: 3
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ||= y
-            else               : stack.push(x || y)
+            if x.kind==Literal : InPlace ||= y
+            else               : push(x || y)
 
     builtin "shl",
         alias       = unaliased, 
@@ -135,7 +135,9 @@ proc defineSymbols*() =
             "value" : {Integer,Literal},
             "bits"  : {Integer}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "safe"  : ({Boolean},"check for overflows")
+        },
         returns     = {Integer,Nothing},
         example     = """
             print shl 2 3      ; 16
@@ -144,8 +146,17 @@ proc defineSymbols*() =
             shl 'a 3           ; a: 16
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] <<= y
-            else               : stack.push(x << y)
+            if x.kind==Literal : 
+                let valBefore = InPlace
+                InPlaced <<= y
+                if InPlaced < valBefore and (popAttr("safe")!=VNULL):
+                    SetInPlace(newBigInteger(valBefore.i) << y)
+                    
+            else               : 
+                var res = x << y
+                if res < x and (popAttr("safe")!=VNULL):
+                    res = newBigInteger(x.i) << y
+                push(res)
 
     builtin "shr",
         alias       = unaliased, 
@@ -164,8 +175,8 @@ proc defineSymbols*() =
             shr 'a 3           ; a: 2
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] >>= y
-            else               : stack.push(x >> y)
+            if x.kind==Literal : InPlace >>= y
+            else               : push(x >> y)
 
     builtin "xnor",
         alias       = unaliased, 
@@ -184,8 +195,8 @@ proc defineSymbols*() =
             xnor 'a 3          ; a: -2
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ^^= y; !!= Syms[x.s]
-            else               : stack.push(!! (x ^^ y))
+            if x.kind==Literal : InPlace ^^= y; !!= InPlaced
+            else               : push(!! (x ^^ y))
         
     builtin "xor",
         alias       = unaliased, 
@@ -204,8 +215,8 @@ proc defineSymbols*() =
             xor 'a 3           ; a: 1
         """:
             ##########################################################
-            if x.kind==Literal : Syms[x.s] ^^= y
-            else               : stack.push(x ^^ y)
+            if x.kind==Literal : InPlace ^^= y
+            else               : push(x ^^ y)
 
 #=======================================
 # Add Library

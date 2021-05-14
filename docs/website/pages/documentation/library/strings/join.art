@@ -1,0 +1,51 @@
+name: "join"
+type: :function
+module: "Strings"
+returns: [
+        :string
+         :nothing
+    ]
+description: "join collection of values into string"
+example: {
+        arr: ["one" "two" "three"]
+        print join arr
+        ; onetwothree
+        
+        print join.with:"," arr
+        ; one,two,three
+        
+        join 'arr
+        ; arr: "onetwothree"
+        
+        print join [`H` `e` `l` `l` `o` `!`]
+        ; Hello!
+        
+        print join @["1 + 2 = " 1+2]
+        ; 1 + 2 = 3
+    }
+attributes: #[
+    with: #[
+        types: [
+                :string
+            ]
+        description: "use given separator"
+        ]
+    path: #[
+        types: [
+                :boolean
+            ]
+        description: "join as path components"
+        ]
+    ]
+arguments: #[
+    collection: [
+            :literal
+             :block
+        ]
+    ]
+related: [
+        "Collections/min"
+         "Numbers/asin"
+         "Numbers/sin"
+         "Arithmetic/div"
+    ]
