@@ -1,0 +1,12 @@
+ackermann: function [m,n][
+    (m=0)? -> n+1 [
+        (n=0)? -> ackermann m-1 1
+               -> ackermann m-1 ackermann m n-1
+    ]
+]
+
+loop 0..3 'a [
+    loop 0..4 'b [
+        print ["ackermann" a b "=>" ackermann a b]
+    ]
+]
