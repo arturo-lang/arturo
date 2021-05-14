@@ -219,6 +219,7 @@ type
                         imports*: Value
                         exports*: Value
                         exportable*: bool
+                        memoize*: bool
                     of BuiltinFunction:
                         fname*  : string
                         alias*  : SymbolKind
@@ -293,6 +294,7 @@ var
 
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
 proc `$`(v: Value): string {.inline.}
+proc hash*(v: Value): Hash {.inline.}
 
 #=======================================
 # Helpers
@@ -488,8 +490,8 @@ proc newBinary*(n: ByteArray = @[]): Value {.inline.} =
 proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false): Value {.inline.} =
-    Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable)
+proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
+    Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
 proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
     Value(
@@ -570,7 +572,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Dictionary:  result = newDictionary(v.d)
 
-        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable)
+        of Function:    result = newFunction(v.params, v.main, v.imports, v.exports, v.exportable, v.memoize)
 
         of Database:    
             when not defined(NOSQLITE):
@@ -1741,7 +1743,7 @@ proc hash*(v: Value): Hash {.inline.}=
         of Binary       : discard
 
         of Inline,
-           Block        : 
+           Block        :
             result = 1
             for i in v.a:
                 result = result !& hash(i)
@@ -1753,7 +1755,18 @@ proc hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(k)
                 result = result !& hash(v)
         of Function     : 
-            result = cast[Hash](unsafeAddr v)
+            if v.fnKind==UserFunction:
+                result = 1
+                result = result !& hash(v.params)
+                result = result !& hash(v.main)
+                result = result !& hash(v.imports)
+                result = result !& hash(v.exports)
+                result = result !& hash(v.exportable)
+                result = result !& hash(v.memoize)
+                result = !$ result
+                #echo "result is:" & $(result)
+            else:
+                result = cast[Hash](unsafeAddr v)
             # result = hash(v.params) !& hash(v.main)
             # result = !$ result
         of Database:
