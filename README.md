@@ -264,7 +264,7 @@ FAQ
 
 In case you're wondering why I went for a Programming Language with a... Spanish male name, let me shed some light: Arturo was the name of my little pet [Emperor Scorpion](https://en.wikipedia.org/wiki/Emperor_scorpion) - hence the logo -, or *Pandinus Imperator*, who passed away in early 2020. 
 
-Despite being seemingly intimidating - as most scorpions do to those who don't know about the species - he was a very quiet, easy-going and noble creature. 
+Despite being seemingly intimidating - as most scorpions do to those who don't know about the species - he was a very quiet, totally docile, easy-going and noble creature. 
 
 So, the name is a subtle hommage to him; and also a hint as to what this programming language aspires to be.
 
