@@ -27,6 +27,7 @@
       * [The Compiler](#the-compiler)
         * [General schema](#general-schema)
    * [Community](#community)
+   * [FAQ](#faq)
    * [License](#license)
 <!--te-->
 
@@ -255,6 +256,17 @@ For that, the most convenient place for me would be the [GitHub Issues](https://
 For questions, quick ideas, and discussing generally the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
 
 [![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
+
+FAQ
+------------------------------
+
+**What's in a name?**
+
+In case you're wondering why I went for a Programming Language with a... Spanish male name, let me shed some light: Arturo was the name of my little pet Emperor Scorpion (hence the logo) who passed away in early 2020. 
+
+Despite being seemingly intimidating - as most scorpions do to those who don't know about the species - he was a very quiet, easy-going and noble creature. 
+
+So, the name is a subtle hommage to him; and also a hint as to what this programming language aspires to be.
 
 License
 ------------------------------
