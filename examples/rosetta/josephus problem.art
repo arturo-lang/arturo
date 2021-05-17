@@ -5,7 +5,7 @@ josephus: function [n,k][
 
     while [0 < size p][
         i: (i+k-1) % size p
-        append 'seq p \ i
+        append 'seq p\[i]
         remove 'p .index i
     ]
     print ["Prisoner killing order:" chop seq]

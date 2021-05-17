@@ -3,7 +3,7 @@ selectionSort: function [items][
     tmp: new items
     while [not? empty? tmp][
         minIndex: index tmp min tmp
-        'sorted ++ tmp \ minIndex
+        'sorted ++ tmp\[minIndex]
         remove 'tmp .index minIndex
     ]
     return sorted

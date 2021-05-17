@@ -8,6 +8,6 @@ invlist:  @[var 'asin, var 'acos, var 'croot]
 num: 0.5
 
 loop 0..2 'f [
-    result: call funclist \ f @[num]
-    print [names \ f "=>" call invlist \ f @[result]]
+    result: call funclist\[f] @[num]
+    print [names\[f] "=>" call invlist\[f] @[result]]
 ]
