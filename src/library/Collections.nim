@@ -32,6 +32,7 @@ import helpers/unisort
 when defined(WEB):
     import helpers/js
 
+import vm/exec
 import vm/lib
 
 #=======================================
@@ -402,16 +403,22 @@ proc defineSymbols*() =
             print str \ 1                 ; e
         """:
             ##########################################################
+            var key: Value
+            if y.kind==String or y.kind==Integer: 
+                key = y
+            elif y.kind==Block:
+                discard execBlock(y)
+                key = pop()
+            else:
+                key = newString($(y))
+
             case x.kind:
-                of Block: push(GetArrayIndex(x.a, y.i))
+                of Block: push(GetArrayIndex(x.a, key.i))
                 of Dictionary: 
-                    if y.kind==String:
-                        push(GetKey(x.d, y.s))
-                    else:
-                        push(GetKey(x.d, $(y)))
-                of String: push(newChar(x.s.runeAtPos(y.i)))
+                    push(GetKey(x.d, $(key)))
+                of String: push(newChar(x.s.runeAtPos(key.i)))
                 of Date: 
-                    push(GetKey(x.e, y.s))
+                    push(GetKey(x.e, key.s))
                 else: discard
 
     builtin "in?",
