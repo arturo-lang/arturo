@@ -371,7 +371,7 @@ proc defineSymbols*() =
     #  since paths and pathLabels now support variable block components, this is more confusing than helpful
     #  labels: language, enhancement, documentation
     builtin "get",
-        alias       = backslash, 
+        alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
