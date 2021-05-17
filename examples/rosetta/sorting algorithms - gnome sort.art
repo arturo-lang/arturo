@@ -3,15 +3,15 @@ gnomeSort: function [items][
     j: 2
     arr: new items 
     while [i < size arr][
-        if? (arr \ i-1) =< arr \ i [
+        if? arr\[i-1] =< arr\[i] [
             i: j
             j: j + 1
         ]
         else [
-            tmp: arr \ i
-            set arr i get arr i-1
-            set arr i-1 tmp
-
+            tmp: arr\[i]
+            arr\[i]: arr\[i-1]
+            arr\[i-1]: tmp
+            
             i: i-1
             if i=0 [
                 i: j

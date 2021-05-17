@@ -32,6 +32,7 @@ import helpers/unisort
 when defined(WEB):
     import helpers/js
 
+import vm/exec
 import vm/lib
 
 #=======================================
@@ -367,7 +368,7 @@ proc defineSymbols*() =
                 push(x.flattened(once = popAttr("once")!=VNULL))
 
     builtin "get",
-        alias       = backslash, 
+        alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "get collection's item by given index",
         args        = {
@@ -385,33 +386,41 @@ proc defineSymbols*() =
             print user\name               ; John
             
             print get user 'surname       ; Doe
-            print user \ 'username        ; Doe
+            print user\["username"]       ; Doe
             
             arr: ["zero" "one" "two"]
             
             print arr\1                   ; one
             
             print get arr 2               ; two
-            print arr \ 2                 ; two
+            y: 2
+            print arr\[y]                 ; two
             
             str: "Hello world!"
             
             print str\0                   ; H
             
             print get str 1               ; e
-            print str \ 1                 ; e
+            z: 0
+            print str\[z+1]               ; e
         """:
             ##########################################################
+            var key: Value
+            if y.kind==String or y.kind==Integer: 
+                key = y
+            elif y.kind==Block:
+                discard execBlock(y)
+                key = pop()
+            else:
+                key = newString($(y))
+
             case x.kind:
-                of Block: push(GetArrayIndex(x.a, y.i))
+                of Block: push(GetArrayIndex(x.a, key.i))
                 of Dictionary: 
-                    if y.kind==String:
-                        push(GetKey(x.d, y.s))
-                    else:
-                        push(GetKey(x.d, $(y)))
-                of String: push(newChar(x.s.runeAtPos(y.i)))
+                    push(GetKey(x.d, $(key)))
+                of String: push(newChar(x.s.runeAtPos(key.i)))
                 of Date: 
-                    push(GetKey(x.e, y.s))
+                    push(GetKey(x.e, key.s))
                 else: discard
 
     builtin "in?",
@@ -894,16 +903,27 @@ proc defineSymbols*() =
             
             arr: [1 2 3 4]
             set arr 0 "one"                   ; => ["one" 2 3 4]
+
+            arr\1: "dos"                      ; => ["one" "dos" 3 4]
+
+            x: 2    
+            arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
         """:
             ##########################################################
+            var key: Value
+            if y.kind==String or y.kind==Integer: 
+                key = y
+            elif y.kind==Block:
+                discard execBlock(y)
+                key = pop()
+            else:
+                key = newString($(y))
+
             case x.kind:
                 of Block: 
-                    SetArrayIndex(x.a, y.i, z)
+                    SetArrayIndex(x.a, key.i, z)
                 of Dictionary:
-                    if y.kind==String:
-                        x.d[y.s] = z
-                    else:
-                        x.d[$(y)] = z
+                    x.d[$(key)] = z
                 else: discard
 
     builtin "shuffle",

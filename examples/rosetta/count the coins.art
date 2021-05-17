@@ -7,7 +7,7 @@ changes: function [amount coins][
 			set ways j (get ways j) + get ways j-coin
 	]
 
-	ways \ amount
+	ways\[amount]
 ]
  
 print changes 100 [1 5 10 25]

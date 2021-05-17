@@ -3,7 +3,7 @@ key: {:]kYV}(!7P$n5_0i R:?jOWtF/=-pe'AD&@r6%ZXs"v*N[#wSl9zq2^+g;LoB`aGh{3.HIu4fb
 encode: function [str][
     bs: new []
     loop split str 'ch ->
-        'bs ++ to :string key \ (to :integer to :char ch)-32
+        'bs ++ to :string key\[(to :integer to :char ch)-32]
     return join bs
 ]
 
