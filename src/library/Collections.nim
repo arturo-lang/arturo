@@ -389,21 +389,23 @@ proc defineSymbols*() =
             print user\name               ; John
             
             print get user 'surname       ; Doe
-            print user \ 'username        ; Doe
+            print user\["username"]       ; Doe
             
             arr: ["zero" "one" "two"]
             
             print arr\1                   ; one
             
             print get arr 2               ; two
-            print arr \ 2                 ; two
+            y: 2
+            print arr\[y]                 ; two
             
             str: "Hello world!"
             
             print str\0                   ; H
             
             print get str 1               ; e
-            print str \ 1                 ; e
+            z: 0
+            print str\[z+1]               ; e
         """:
             ##########################################################
             var key: Value
@@ -904,6 +906,11 @@ proc defineSymbols*() =
             
             arr: [1 2 3 4]
             set arr 0 "one"                   ; => ["one" 2 3 4]
+
+            arr\1: "dos"                      ; => ["one" "dos" 3 4]
+
+            x: 2    
+            arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
         """:
             ##########################################################
             var key: Value
