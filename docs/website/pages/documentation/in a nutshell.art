@@ -288,10 +288,7 @@ print arr\3                 ; three
 
 x: 2
 print get arr x             ; two
-print arr \ 2               ; two
-                            ; (using the `\` infix alias for get -
-                            ;  notice space between the operands! 
-                            ;  otherwise, it'll be parsed as a path)
+print arr\[x]               ; two
 
 ; setting an array element
 arr\0: "nada"
