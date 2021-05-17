@@ -2,7 +2,7 @@ tokenize: function [s sep esc][
 	escaping: 0
 
 	loop 0..(size s)-1 [i][
-		chr: (split s)\i
+		chr: get split s i
 
 		if? escaping=1 [
 			prints chr

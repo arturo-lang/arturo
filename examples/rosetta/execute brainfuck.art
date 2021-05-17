@@ -22,8 +22,8 @@ precomputeJumps: function [][
             if command="]" [
                 target: last vstack
                 chop 'vstack
-                set jumphash target instrPointer
-                set jumphash instrPointer target
+                jumphash\[target]: instrPointer
+                jumphash\[instrPointer]: target
             ]
         ]
         instrPointer: instrPointer+1
@@ -48,14 +48,14 @@ interpret: function [].export:[DataPointer,InstructionPointer,Tape][
     while [StateIsValid][
         command: get split Code InstructionPointer
         case [command=]
-            when? ["+"] -> set Tape DataPointer (Tape \ DataPointer)+1
-            when? ["-"] -> set Tape DataPointer (Tape \ DataPointer)-1
+            when? ["+"] -> Tape\[DataPointer]: Tape\[DataPointer]+1
+            when? ["-"] -> Tape\[DataPointer]: Tape\[DataPointer]-1
             when? [">"] [
                 inc 'DataPointer
                 if DataPointer = size Tape -> Tape: Tape ++ 0
             ]
             when? ["<"] -> dec 'DataPointer
-            when? ["."] -> prints to :string to :char Tape \ DataPointer
+            when? ["."] -> prints to :string to :char Tape\[DataPointer]
             when? [","][
                 inp: to :integer input ""
                 if inp=13 -> inp: 10
