@@ -19,9 +19,9 @@ loop strings 'str [
         i: 0
         while [and? i<size chars
                     not? done][
-            ch: chars \ i
+            ch: chars\[i]
             if? not? key? seen ch [
-                set seen ch i
+                seen\[ch]: i
             ]
             else [
                 print ~"has duplicate char `|ch|` on |get seen ch| and |i|"

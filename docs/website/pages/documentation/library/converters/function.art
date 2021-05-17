@@ -49,6 +49,12 @@ attributes: #[
             ]
         description: "export all symbols to parent"
         ]
+    memoize: #[
+        types: [
+                :boolean
+            ]
+        description: "store results of function calls"
+        ]
     ]
 arguments: #[
     arguments: [

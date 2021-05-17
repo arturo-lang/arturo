@@ -5,8 +5,8 @@ cycle: function [arr][
     loop lastIndex..1 'i [
         j: random 0 i-1
 
-        tmp: result \ i
-        set result i result \ j
+        tmp: result\[i]
+        set result i result\[j]
         set result j tmp
     ]
     return result

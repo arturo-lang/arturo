@@ -3,7 +3,7 @@ suffixes: ["th" "st" "nd" "rd" "th" "th" "th" "th" "th" "th"]
 nth: function [n][
     if? or? 100 >= n%100
             20 < n%100 
-            -> (to :string n) ++ "'" ++ suffixes \ n%10
+            -> (to :string n) ++ "'" ++ suffixes\[n%10]
     else    -> (to :string n) ++ "'th"
 ]
 
