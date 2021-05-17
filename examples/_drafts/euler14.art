@@ -16,7 +16,7 @@ loop 2..1000000 'n [
 			count: count + 2
 		]
 	]
-	count: count + collatzLength \ to :string x
+	count: count + collatzLength\[x]
 	if count>maxLength [
 		maxInitial: n
 		maxLength: count

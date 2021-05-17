@@ -54,11 +54,11 @@ shellSort: function [items][
         loop (ink+1)..len-1 'i [
             print ["i:" i "ink:" ink]
             j: i
-            temp: arr \ i
+            temp: arr\[i]
 
-            print ["j:" j "ink+1:" ink+1 "temp:" temp "arr \ (j-ink):" arr \ (j-ink)]
+            print ["j:" j "ink+1:" ink+1 "temp:" temp "arr\[j-ink]:" arr\[j-ink]]
             while [and? j >= ink+1
-                        temp < arr \ (j-ink)]
+                        temp < arr\[j-ink]]
             [
                 print ["while"]
                 set arr j get arr j-ink
