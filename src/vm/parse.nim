@@ -537,7 +537,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         p.bufpos = pos
         AddToken newSymbol(p.symbol)
 
-template parsePath(p: var Parser, root: Value) =
+template parsePath(p: var Parser, root: Value, curLevel: int) =
     p.values = @[root]
 
     while p.buf[p.bufpos]==Backslash:
@@ -552,6 +552,11 @@ template parsePath(p: var Parser, root: Value) =
                 parseNumber(p)
                 if Dot in p.value: p.values.add(newFloating(p.value))
                 else: p.values.add(newInteger(p.value))
+            of LBracket:
+                inc(p.bufpos)
+                setLen(p.value,0)
+                var subblock = parseBlock(p,curLevel+1)
+                p.values.add(subblock)
             else:
                 break
 
@@ -610,8 +615,9 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     AddToken newLabel(p.value)
                 elif p.buf[p.bufpos] == Backslash:
                     if (p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or 
-                       (p.buf[p.bufpos+1] in PermittedNumbers_Start):
-                        parsePath(p, newWord(p.value))
+                       (p.buf[p.bufpos+1] in PermittedNumbers_Start) or
+                       p.buf[p.bufpos+1]==LBracket:
+                        parsePath(p, newWord(p.value), level)
                         if p.buf[p.bufpos]==Colon:
                             inc(p.bufpos)
                             AddToken newPathLabel(p.values)
