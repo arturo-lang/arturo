@@ -10,7 +10,8 @@ uno
 4 5 6 
 4
 first array [cuatro 5 6] 
-three
+two
+zero uno two three 
 [name:Joe age:999 details:[city:Someplace country:Somewhere]]
 Joe
 999

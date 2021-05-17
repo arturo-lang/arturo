@@ -1,10 +1,10 @@
 bellTriangle: function[n][
     tri: map 0..n-1 'x [ map 0..n 'y -> 0 ]
-    set tri \ 1 0 1
+    set get tri 1 0 1
     loop 2..n-1 'i [
-        set tri \ i 0  (tri \ i-1) \ i-2
+        set get tri i 0  get (get tri i-1) i-2
         loop 1..i-1 'j [
-            set tri \ i j ((tri \ i)\j-1) + ((tri \ i-1)\j-1)
+            set get tri i j (get (get tri i) j-1) + ( get (get tri i-1) j-1)
         ]
     ]
     return tri
@@ -12,10 +12,10 @@ bellTriangle: function[n][
 bt: bellTriangle 51
 
 loop 1..15 'x ->
-    print [x "=>" first bt \ x]
+    print [x "=>" first bt\[x]]
 print ["50 =>" first last bt]
 print ""
 print "The first ten rows of Bell's triangle:"
 
 loop 1..10 'i ->
-    print filter bt \ i => zero?
+    print filter bt\[i] => zero?

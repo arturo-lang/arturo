@@ -4,8 +4,8 @@ knuth: function [arr][
  	loop ((size arr)-1)..0 'i [
  		j: random 0 i
 
- 		tmp: arr \ i
- 		set arr i arr \ j
+ 		tmp: arr\[i]
+ 		set arr i arr\[j]
  		set arr j tmp
  	]
 

@@ -18,7 +18,7 @@ print "summing..."
 summum: 0
 i: 0
 while [i<size canBeWrittenAsSum][
-	if not? canBeWrittenAsSum \ i [
+	if not? canBeWrittenAsSum\[i] [
 		summum: summum + i
 	]
 	i: i+1

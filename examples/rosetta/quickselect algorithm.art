@@ -2,7 +2,7 @@ quickselect: function [a k][
     arr: new a
     while ø [
         indx: random 0 (size arr)-1
-        pivot: arr \ indx
+        pivot: arr\[indx]
         remove 'arr .index indx
         left: select arr 'item -> item<pivot
         right: select arr 'item -> item>pivot

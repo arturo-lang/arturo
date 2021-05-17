@@ -3,7 +3,7 @@ dotProduct: function [a,b][
 
     result: 0
     loop 0..(size a)-1 'i [
-        result: result + (a \ i) * (b \ i)
+        result: result + a\[i] * b\[i]
     ]
     return result
 ]

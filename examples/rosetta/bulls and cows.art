@@ -10,7 +10,7 @@ while [bulls <> 4][
             4 <> size got -> print "Malformed answer. Try again!"
     else [
         loop.with:'i split got 'digit [
-            if? (to :integer digit) = rand \ i -> inc 'bulls
+            if? (to :integer digit) = rand\[i] -> inc 'bulls
             else [
                 if contains? rand to :integer digit -> inc 'cows
             ]

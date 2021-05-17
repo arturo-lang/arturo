@@ -28,7 +28,7 @@ str: "hello world 2019"
 out: ""
 
 loop split str 'ch [
-    if not? whitespace? ch -> 'out ++ code \ ch
+    if not? whitespace? ch -> 'out ++ code\[ch]
     'out ++ " "
 ]
  
