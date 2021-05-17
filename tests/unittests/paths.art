@@ -27,10 +27,12 @@ b\1\0: "cuatro"
 print b
 
 ; array access with variables
-c: ["one" "two" "three"]
+c: ["zero" "one" "two" "three"]
 indx: 2
 
-print c \ indx
+print c\[indx]
+c\[indx-1]: "uno"
+print c
 
 ; dictionaries
 
