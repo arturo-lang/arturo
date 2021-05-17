@@ -903,14 +903,20 @@ proc defineSymbols*() =
             set arr 0 "one"                   ; => ["one" 2 3 4]
         """:
             ##########################################################
+            var key: Value
+            if y.kind==String or y.kind==Integer: 
+                key = y
+            elif y.kind==Block:
+                discard execBlock(y)
+                key = pop()
+            else:
+                key = newString($(y))
+
             case x.kind:
                 of Block: 
-                    SetArrayIndex(x.a, y.i, z)
+                    SetArrayIndex(x.a, key.i, z)
                 of Dictionary:
-                    if y.kind==String:
-                        x.d[y.s] = z
-                    else:
-                        x.d[$(y)] = z
+                    x.d[$(key)] = z
                 else: discard
 
     builtin "shuffle",
