@@ -80,8 +80,8 @@ mergeSort: function [items][
         right: new []
 
         middle: (size items)/2
-        loop 0..middle-1 'x -> 'left ++ items \ x
-        loop middle..(size items)-1 'x -> 'right ++ items \ x
+        loop 0..middle-1 'x -> 'left ++ items\[x]
+        loop middle..(size items)-1 'x -> 'right ++ items\[x]
 
         left: mergeSort left
         right: mergeSort right

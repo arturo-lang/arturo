@@ -6,17 +6,17 @@ hamming: function [limit][
     
     loop 1..limit-1 'n [
         set h n min @[x2 x3 x5]
-        if x2 = h \ n [
+        if x2 = h\[n] [
             i: i + 1
-            x2: 2 * h \ i
+            x2: 2 * h\[i]
         ]
-        if x3 = h \ n [
+        if x3 = h\[n] [
             j: j + 1
-            x3: 3 * h \ j
+            x3: 3 * h\[j]
         ]
-        if x5 = h \ n [
+        if x5 = h\[n] [
             k: k + 1
-            x5: 5 * h \ k
+            x5: 5 * h\[k]
         ]
     ]
     last h

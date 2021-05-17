@@ -10,7 +10,7 @@
 
 stoogeSort: function [items, i, j][
     print ["stooge sorting:" items]
-    if (items \ j) < items \ i [
+    if (items\[j]) < items\[i] [
         tmp: get items i
         set items i get items j
         set items j tmp

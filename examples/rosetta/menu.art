@@ -6,7 +6,7 @@ menu: function [items][
         if numeric? inp ->
             selection: to :integer inp
     ]
-	print items \ selection-1
+	print items\[selection-1]
 ]
 
 menu ["fee fie" "huff and puff" "mirror mirror" "tick tock"]
