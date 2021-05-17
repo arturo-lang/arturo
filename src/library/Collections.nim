@@ -367,9 +367,6 @@ proc defineSymbols*() =
             else:
                 push(x.flattened(once = popAttr("once")!=VNULL))
 
-    # TODO(Collections\get) unalias backslash symbol
-    #  since paths and pathLabels now support variable block components, this is more confusing than helpful
-    #  labels: language, enhancement, documentation
     builtin "get",
         alias       = unaliased, 
         rule        = InfixPrecedence,
