@@ -2,8 +2,8 @@ binarySearch: function [arr,val,low,high][
     if high < low -> return ø
     mid: shr low+high 1
     case [val]
-        when? [< arr \ mid] -> return binarySearch arr val low mid-1
-        when? [> arr \ mid] -> return binarySearch arr val mid+1 high
+        when? [< arr\[mid]] -> return binarySearch arr val low mid-1
+        when? [> arr\[mid]] -> return binarySearch arr val mid+1 high
         else                -> return mid
 ]
 
