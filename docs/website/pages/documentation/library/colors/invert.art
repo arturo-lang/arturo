@@ -5,7 +5,11 @@ returns: [
         :color
     ]
 description: "get complement for given color"
-example: ""
+example: {
+        print #orange               ; #FFA500
+        
+        invert #orange              ; => #0059FF
+    }
 attributes: #[
     ]
 arguments: #[

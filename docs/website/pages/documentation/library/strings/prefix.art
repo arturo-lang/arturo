@@ -25,7 +25,7 @@ arguments: #[
     ]
 related: [
         "Strings/prefix?"
-         "Strings/replace"
          "Strings/suffix"
          "Converters/define"
+         "Core/break"
     ]
