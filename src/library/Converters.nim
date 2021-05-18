@@ -682,8 +682,6 @@ proc defineSymbols*() =
             "memoize"   : ({Boolean},"store results of function calls")
         },
         returns     = {Function},
-        # TODO(Converters\function) add documentation example for `.memoize`
-        #  labels: documentation,library,easy
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
@@ -706,6 +704,16 @@ proc defineSymbols*() =
             
             print x
             ; 5
+
+            ; memoization
+            fib: $[x].memoize[
+                if? x<2 [1]
+                else [(fib x-1) + (fib x-2)]
+            ]
+
+            loop 1..25 [x][
+                print ["Fibonacci of" x "=" fib x]
+            ]
         """:
             ##########################################################
             var imports = VNULL
