@@ -4,7 +4,7 @@ module: "Strings"
 returns: [
         :string
     ]
-description: "check if given string consists only of whitespace"
+description: "align string by adding given padding"
 example: {
         pad "good" 10                 ; => "      good"
         pad.right "good" 10           ; => "good      "
@@ -46,8 +46,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/whitespace?"
-         "Arithmetic/add"
+        "Arithmetic/add"
          "Arithmetic/mod"
          "Arithmetic/pow"
+         "Binary/and"
     ]

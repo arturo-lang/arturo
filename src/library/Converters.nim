@@ -682,8 +682,6 @@ proc defineSymbols*() =
             "memoize"   : ({Boolean},"store results of function calls")
         },
         returns     = {Function},
-        # TODO(Converters\function) add documentation example for `.memoize`
-        #  labels: documentation,library,easy
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
@@ -706,6 +704,16 @@ proc defineSymbols*() =
             
             print x
             ; 5
+
+            ; memoization
+            fib: $[x].memoize[
+                if? x<2 [1]
+                else [(fib x-1) + (fib x-2)]
+            ]
+
+            loop 1..25 [x][
+                print ["Fibonacci of" x "=" fib x]
+            ]
         """:
             ##########################################################
             var imports = VNULL
@@ -738,8 +746,6 @@ proc defineSymbols*() =
             "hsl"   : ({Boolean},"convert HSL block to color")
         },
         returns     = {Any},
-        # TODO(Converters\to) add documentation for block to color conversion
-        #  labels: documentation, library, easy
         example     = """
             to :string 2020               ; "2020"
             to :integer "2020"            ; 2020
@@ -781,6 +787,12 @@ proc defineSymbols*() =
             define :person [name surname age][]
             to :person ["John" "Doe" 35]
             ; [name:John surname:Doe age:35]
+
+            to :color [255 0 10]
+            ; => #FF000A
+
+            to :color .hsl [255 0.2 0.4]
+            ; => #5C527A
         """:
             ##########################################################
             if x.kind==Type:
