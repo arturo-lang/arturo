@@ -757,7 +757,7 @@ proc defineSymbols*() =
 
     constant "pi",
         alias       = unaliased,
-        description = "the number π, mathematical constant":
+        description = "the number pi, mathematical constant":
             newFloating(PI)
 
     builtin "positive?",
