@@ -421,7 +421,7 @@ proc defineSymbols*() =
     builtin "pad",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if given string consists only of whitespace",
+        description = "align string by adding given padding",
         args        = {
             "string"    : {String,Literal},
             "padding"   : {Integer}
