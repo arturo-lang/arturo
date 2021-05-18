@@ -63,9 +63,15 @@ proc defineSymbols*() =
             "sample"    : ({Boolean},"calculate the sample standard deviation")
         },
         returns     = {Floating},
-        # TODO(Statistics\deviation) add documentation example
-        #  labels: documentation, library, easy
         example     = """
+            arr:  [1 2 3 4]
+            arr2: [3 120 4 7 87 2 6 34]
+
+            print deviation arr         ; 1.118033988749895
+            print deviation arr2        ; 42.70959347734417
+
+            deviation.sample arr        ; => 1.290994448735806
+            deviation.sample arr2       ; => 45.65847597731914
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
@@ -84,9 +90,15 @@ proc defineSymbols*() =
             "sample"    : ({Boolean},"calculate the sample kurtosis")
         },
         returns     = {Floating},
-        # TODO(Statistics\kurtosis) add documentation example
-        #  labels: documentation, library, easy
         example     = """
+            arr:  [1 2 3 4]
+            arr2: [3 120 4 7 87 2 6 34]
+
+            print kurtosis arr          ; -1.36
+            print kurtosis arr2         ; -0.3863717894076322
+
+            kurtosis.sample arr         ; => -1.200000000000001
+            kurtosis.sample arr2        ; => 0.5886192422439724
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
@@ -133,9 +145,15 @@ proc defineSymbols*() =
             "sample"    : ({Boolean},"calculate the sample skewness")
         },
         returns     = {Floating},
-        # TODO(Statistics\skewness) add documentation example
-        #  labels: documentation, library, easy
         example     = """
+            arr:  [1 2 3 4]
+            arr2: [3 120 4 7 87 2 6 34]
+
+            print skewness arr          ; 0.0
+            print skewness arr2         ; 1.127950016816592
+
+            skewness.sample arr         ; => 0.0
+            skewness.sample arr2        ; => 1.40680083744453
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
@@ -154,9 +172,15 @@ proc defineSymbols*() =
             "sample"    : ({Boolean},"calculate the sample variance")
         },
         returns     = {Floating},
-        # TODO(Statistics\variance) add documentation example
-        #  labels: documentation, library, easy
         example     = """
+            arr:  [1 2 3 4]
+            arr2: [3 120 4 7 87 2 6 34]
+
+            print variance arr          ; 1.25
+            print variance arr2         ; 1824.109375
+
+            variance.sample arr         ; => 1.666666666666667
+            variance.sample arr2        ; => 2084.696428571428
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
