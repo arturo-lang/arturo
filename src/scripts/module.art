@@ -19,14 +19,14 @@ LOCAL:  « |path\home|/.arturo/lib
 
 getFileUrl: function [initial,pa][
 	release: read.json (replace initial "github.com" "api.github.com/repos") ++ "/releases/latest"
-	release: get release "tag_name"
+	release: release\["tag_name"]
 
 	return ~"|initial|/releases/download/|release|/|pa|"
 ]
 
 printInfo: function [name,remote][
 	print color #cyan ~"> Info for |name|: "
-	src: remote \ name
+	src: remote\[name]
 
 	print # getFileUrl src "info.art"
 ]
@@ -36,7 +36,7 @@ installModule: function [name,remote][
 		-> prints color #cyan ~"> Updating: |name|... "
 	else
 		-> prints color #cyan ~"> Installing: |name|... "
-	src: remote \ name
+	src: remote\[name]
 	write ~"|LOCAL|/|name|.art" read getFileUrl src "main.art"
 	print "[ DONE ]"
 ]
@@ -50,7 +50,7 @@ uninstallModule: function [name][
 ; Main
 
 print color #green "- Launching Arturo module manager..."
-
+arg: args\values
 if 0=size arg [
 	print [color #red.bold "\nError:" "Not enough arguments."]
 	exit
