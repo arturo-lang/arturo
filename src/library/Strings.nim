@@ -259,8 +259,6 @@ proc defineSymbols*() =
             "with"  : ({Char},"use given filler for alignment (default: -)")
         },
         returns     = {Integer,Block},
-        # TODO(Strings\levenshtein) add documentation example for `.align`
-        #  labels: documentation, easy, library
         example     = """
             print levenshtein "for" "fur"         ; 1
             print levenshtein "one" "one"         ; 0
