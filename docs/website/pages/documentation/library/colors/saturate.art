@@ -5,7 +5,14 @@ returns: [
         :color
     ]
 description: "saturate color by given percentage (0.0-1.0)"
-example: ""
+example: {
+        print #lightblue            ; #ADD8E6
+        
+        saturate #lightblue 0.2     ; => #A7DBEC
+        saturate #lightblue 0.5     ; => #9FDFF4
+        
+        saturate #9944CC 0.3        ; => #A030E0
+    }
 attributes: #[
     ]
 arguments: #[

@@ -18,8 +18,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/pad"
-         "Reflection/literal?"
+        "Reflection/literal?"
          "Strings/lower?"
          "Core/when?"
+         "Core/while"
     ]
