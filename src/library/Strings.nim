@@ -259,8 +259,6 @@ proc defineSymbols*() =
             "with"  : ({Char},"use given filler for alignment (default: -)")
         },
         returns     = {Integer,Block},
-        # TODO(Strings\levenshtein) add documentation example for `.align`
-        #  labels: documentation, easy, library
         example     = """
             print levenshtein "for" "fur"         ; 1
             print levenshtein "one" "one"         ; 0
@@ -421,7 +419,7 @@ proc defineSymbols*() =
     builtin "pad",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if given string consists only of whitespace",
+        description = "align string by adding given padding",
         args        = {
             "string"    : {String,Literal},
             "padding"   : {Integer}
@@ -606,7 +604,7 @@ proc defineSymbols*() =
     builtin "replace",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "add given suffix to string",
+        description = "replace every matched substring by given replacement string and return result",
         args        = {
             "string"        : {String,Literal},
             "match"         : {String},

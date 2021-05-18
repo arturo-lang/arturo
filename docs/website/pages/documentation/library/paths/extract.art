@@ -30,6 +30,18 @@ example: {
         
         print extract url
         ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
+        
+        extract #magenta
+        ; => [red:255 green:0 blue:255]
+        
+        extract.red #FF126D
+        ; => 255
+        
+        extract.hsl #magenta
+        ; => [hue:300 saturation:1.0 luminosity:0.5]
+        
+        extract.hue #magenta
+        ; => 300
     }
 attributes: #[
     directory: #[

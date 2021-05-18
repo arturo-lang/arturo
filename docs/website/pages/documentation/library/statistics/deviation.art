@@ -5,7 +5,16 @@ returns: [
         :floating
     ]
 description: "get population standard deviation of given collection of numbers"
-example: ""
+example: {
+        arr:  [1 2 3 4]
+        arr2: [3 120 4 7 87 2 6 34]
+        
+        print deviation arr         ; 1.118033988749895
+        print deviation arr2        ; 42.70959347734417
+        
+        deviation.sample arr        ; => 1.290994448735806
+        deviation.sample arr2       ; => 45.65847597731914
+    }
 attributes: #[
     sample: #[
         types: [

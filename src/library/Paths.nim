@@ -73,8 +73,6 @@ proc defineSymbols*() =
                 "luminosity": ({Boolean},"get luminosity component from color")
             },
             returns     = {String,Dictionary},
-            # TODO(Paths\extract) add documentation for RGB extraction from Color values
-            #  labels: documentation, library, easy
             example     = """
             path: "/this/is/some/path.txt"
 
@@ -100,6 +98,17 @@ proc defineSymbols*() =
             print extract url
             ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
 
+            extract #magenta
+            ; => [red:255 green:0 blue:255]
+
+            extract.red #FF126D
+            ; => 255
+
+            extract.hsl #magenta
+            ; => [hue:300 saturation:1.0 luminosity:0.5]
+
+            extract.hue #magenta
+            ; => 300
             """:
                 ##########################################################
                 if x.kind==Color:
