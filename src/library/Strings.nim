@@ -606,7 +606,7 @@ proc defineSymbols*() =
     builtin "replace",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "add given suffix to string",
+        description = "replace every matched substring by given replacement string and return result",
         args        = {
             "string"        : {String,Literal},
             "match"         : {String},
