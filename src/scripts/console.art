@@ -13,11 +13,12 @@ hints: #[]
 
 loop symbols [k,v][
     if function? var k [
-        ats: keys get info.get k 'attrs
+        att: get info.get k 'attrs
+        ats: keys att
 
         if not? empty? ats [
             'completions ++ map ats 'at [
-                if? :boolean = first get get get info.get k 'attrs at 'types ->
+                if? :boolean = first att\[at]\types ->
                     join @[k "." at " "]
                 else ->
                     join @[k "." at ": "]
@@ -27,8 +28,9 @@ loop symbols [k,v][
 ]
 
 loop symbols [k,v][
-    if function? var k ->
-        set hints k (join.with:" " keys get info.get k 'args)
+    if function? var k [
+        hints\[k]: join.with:" " keys get info.get k 'args
+    ]
 ]
 
 historyPath: join.path @[path\home ".arturo" "history.lst"]
