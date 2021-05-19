@@ -23,15 +23,16 @@ when not defined(WEB):
     when not defined(NOPARSERS):
         import sugar
         import extras/miniz
-        
+
         import helpers/html
-        import helpers/io
         import helpers/markdown
         import helpers/toml
 
     import helpers/csv
     import helpers/datasource
     import helpers/jsonobject
+
+import helpers/io
 
 import vm/lib
 when defined(SAFE):
