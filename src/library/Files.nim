@@ -25,6 +25,7 @@ when not defined(WEB):
         import extras/miniz
         
         import helpers/html
+        import helpers/io
         import helpers/markdown
         import helpers/toml
 
@@ -376,6 +377,7 @@ proc defineSymbols*() =
                 "content"   : {Any}
             },
             attrs       = {
+                "append"        : ({Boolean},"append to given file"),
                 "directory"     : ({Boolean},"create directory at path"),
                 "json"          : ({Boolean},"write value as Json"),
                 "binary"        : ({Boolean},"write as binary")
@@ -387,6 +389,9 @@ proc defineSymbols*() =
 
             ; we can also write any type of data as JSON
             write.json "data.json" myData
+
+            ; append to an existing file
+            write.append "somefile.txt" "Yes, Hello again!"
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("write")
@@ -394,20 +399,16 @@ proc defineSymbols*() =
                     createDir(x.s)
                 else:
                     if (popAttr("binary") != VNULL):
-                        var f: File
-                        discard f.open(x.s, mode=fmWrite)
-                        discard f.writeBytes(y.n, 0, y.n.len)
-
-                        f.close()
+                        writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
                     else:
                         if (popAttr("json") != VNULL):
                             let rez = jsonFromValue(y)
                             if x.kind==String:
-                                writeFile(x.s, rez)
+                                writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
                             else:
                                 push(newString(rez))
                         else:
-                            writeFile(x.s, y.s)
+                            writeToFile(x.s, y.s, append = (popAttr("append")!=VNULL))
 
         when not defined(NOUNZIP):
             builtin "zip",
