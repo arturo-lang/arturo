@@ -1312,7 +1312,7 @@ proc `$`(v: Value): string {.inline.} =
             return $(v.m)
 
         of Date     : return $(v.eobj)
-        of Binary   : discard
+        of Binary   : return v.n.map((child) => fmt"{child:X}").join(" ")
         of Inline,
            Block     :
             # result = "["
@@ -1364,6 +1364,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
     proc dumpSymbol(v: Value) =
         if not muted:   stdout.write fmt("{resetColor}{v.m}{fg(grayColor)} :{($(v.kind)).toLowerAscii()}{resetColor}")
         else:           stdout.write fmt("{v.m} :{($(v.kind)).toLowerAscii()}")
+
+    proc dumpBinary(b: Byte) =
+        if not muted:   stdout.write fmt("{resetColor}{fg(grayColor)}{b:X} {resetColor}")
+        else:           stdout.write fmt("{b:X} ")
 
     proc dumpBlockStart(v: Value) =
         var tp = ($(v.kind)).toLowerAscii()
@@ -1436,7 +1440,19 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
             dumpBlockEnd()
 
-        of Binary       : discard
+        of Binary       : 
+            dumpBlockStart(v)
+
+            for i in 0..level: stdout.write "\t"
+            for i,child in v.n:
+                dumpBinary(child)
+                if (i+1) mod 20 == 0:
+                    stdout.write "\n"
+                    for i in 0..level: stdout.write "\t"
+            
+            stdout.write "\n"
+
+            dumpBlockEnd()
 
         of Inline,
             Block        :
