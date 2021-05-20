@@ -6,17 +6,20 @@ returns: [
          :nothing
     ]
 description: "get collection\'s items that fulfil given condition"
-example: {
-        print select 1..10 [x][
-            even? x
-        ]
-        ; 2 4 6 8 10
-        
-        arr: 1..10
-        select 'arr 'x -> even? x
-        print arr
-        ; 2 4 6 8 10
-    }
+examples: [
+        {
+            print select 1..10 [x][
+                even? x
+            ]
+            ; 2 4 6 8 10
+        }
+         {
+            arr: 1..10
+            select 'arr 'x -> even? x
+            print arr
+            ; 2 4 6 8 10
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

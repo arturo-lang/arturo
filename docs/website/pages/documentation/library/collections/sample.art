@@ -5,11 +5,13 @@ returns: [
         :any
     ]
 description: "get a random element from given collection"
-example: {
-        sample [1 2 3]        ; (return a random number from 1 to 3)
-        print sample ["apple" "appricot" "banana"]
-        ; apple
-    }
+examples: [
+        {
+            sample [1 2 3]        ; (return a random number from 1 to 3)
+            print sample ["apple" "appricot" "banana"]
+            ; apple
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

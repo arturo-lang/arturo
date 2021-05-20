@@ -69,7 +69,7 @@ proc defineSymbols*() =
 
             print deviation arr         ; 1.118033988749895
             print deviation arr2        ; 42.70959347734417
-
+            
             deviation.sample arr        ; => 1.290994448735806
             deviation.sample arr2       ; => 45.65847597731914
         """:

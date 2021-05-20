@@ -5,12 +5,14 @@ returns: [
         :nothing
     ]
 description: "perform action, if given condition is not false or null"
-example: {
-        x: 2
-        
-        if x=2 -> print "yes, that's right!"
-        ; yes, that's right!
-    }
+examples: [
+        {
+            x: 2
+            
+            if x=2 -> print "yes, that's right!"
+            ; yes, that's right!
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

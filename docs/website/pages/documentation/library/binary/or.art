@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "calculate the binary OR for the given values"
-example: {
-        print or 2 3       ; 3
-        
-        a: 2
-        or 'a 3            ; a: 3
-    }
+examples: [
+        "print or 2 3       ; 3"
+         {
+            a: 2
+            or 'a 3            ; a: 3
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

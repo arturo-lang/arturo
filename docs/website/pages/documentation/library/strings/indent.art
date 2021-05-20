@@ -6,19 +6,21 @@ returns: [
          :nothing
     ]
 description: "indent each line of given text"
-example: {
-        str: "one\ntwo\nthree"
-        
-        print indent str
-        ;     one
-        ;     two
-        ;     three
-        
-        print indent .n:10 .with:"#" str
-        ; ##########one
-        ; ##########two
-        ; ##########three
-    }
+examples: [
+        {
+            str: "one\ntwo\nthree"
+            
+            print indent str
+            ;     one
+            ;     two
+            ;     three
+            
+            print indent .n:10 .with:"#" str
+            ; ##########one
+            ; ##########two
+            ; ##########three
+        }
+    ]
 attributes: #[
     n: #[
         types: [

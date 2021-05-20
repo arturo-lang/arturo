@@ -5,13 +5,15 @@ returns: [
         :boolean
     ]
 description: "returns true if given value is true; otherwise, it returns false"
-example: {
-        print true? 1 = 2           ; false
-        print true? 1 <> 2          ; true
-        print true? even? 2         ; true
-        
-        print true? [1 2 3]         ; false
-    }
+examples: [
+        {
+            print true? 1 = 2           ; false
+            print true? 1 <> 2          ; true
+            print true? even? 2         ; true
+            
+            print true? [1 2 3]         ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

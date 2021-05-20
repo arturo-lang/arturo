@@ -62,6 +62,7 @@ proc defineSymbols*() =
         returns     = {Boolean},
         example     = """
             ascii? `d`              ; true
+            ;;;;
             ascii? `😀`             ; false
 
             ascii? "hello world"    ; true
@@ -93,7 +94,7 @@ proc defineSymbols*() =
         returns     = {String,Nothing},
         example     = """
             print capitalize "hello World"      ; "Hello World"
-            
+            ;;;;
             str: "hello World"
             capitalize 'str                     ; str: "Hello World"
         """:
@@ -223,7 +224,7 @@ proc defineSymbols*() =
             
             join 'arr
             ; arr: "onetwothree"
-
+            ;;;;
             print join [`H` `e` `l` `l` `o` `!`]
             ; Hello!
 
@@ -262,7 +263,7 @@ proc defineSymbols*() =
         example     = """
             print levenshtein "for" "fur"         ; 1
             print levenshtein "one" "one"         ; 0
-
+            ;;;;
             print join.with:"\n" levenshtein .align "ACTGCACTGAC" "GCATGACTAT"
             ; AC-TGCACTGAC
             ; GCATG-ACT-AT
@@ -287,7 +288,7 @@ proc defineSymbols*() =
         returns     = {String,Nothing},
         example     = """
             print lower "hello World, 你好!"      ; "hello world, 你好!"
-            
+            ;;;;
             str: "hello World, 你好!"
             lower 'str                           ; str: "hello world, 你好!"
         """:
@@ -385,7 +386,7 @@ proc defineSymbols*() =
             ; one
             ;     two
             ;     three
-
+            ;;;;
             print outdent.n:1 {:
                 one
                     two
@@ -434,10 +435,10 @@ proc defineSymbols*() =
             pad "good" 10                 ; => "      good"
             pad.right "good" 10           ; => "good      "
             pad.center "good" 10          ; => "   good   "
-            
+            ;;;;
             a: "hello"
             pad 'a 10                     ; a: "     hello"
-
+            ;;;;
             pad.with:`0` to :string 123 5   
             ; => 00123
         """:
@@ -468,7 +469,7 @@ proc defineSymbols*() =
         returns     = {String,Nothing},
         example     = """
             prefix "ello" "h"                  ; => "hello"
-            
+            ;;;;
             str: "ello"
             prefix 'str                        ; str: "hello"
         """:
@@ -521,16 +522,6 @@ proc defineSymbols*() =
             x: 2
             greeting: "hello"
             print ~"|greeting|, your number is |x|"       ; hello, your number is 2
-            
-            data: #[
-                name: "John"
-                age: 34
-            ]
-            
-            print render.with: data 
-                "Hello, your name is |name| and you are |age| years old"
-            
-            ; Hello, your name is John and you are 34 years old
             """:
                 ##########################################################
                 let recursive = not (popAttr("single") != VNULL)
@@ -616,7 +607,7 @@ proc defineSymbols*() =
         returns     = {String,Nothing},
         example     = """
             replace "hello" "l" "x"           ; => "hexxo"
-            
+            ;;;;
             str: "hello"
             replace 'str "l" "x"              ; str: "hexxo"
         """:
@@ -678,7 +669,7 @@ proc defineSymbols*() =
         returns     = {String,Nothing},
         example     = """
             suffix "hell" "o"                  ; => "hello"
-            
+            ;;;;
             str: "hell"
             suffix 'str                        ; str: "hello"
         """:
@@ -762,7 +753,7 @@ proc defineSymbols*() =
         returns     = {String,Nothing},
         example     = """
             print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
-            
+            ;;;;
             str: "hello World, 你好!"
             upper 'str                           ; str: "HELLO WORLD, 你好!"
         """:
@@ -816,7 +807,7 @@ proc defineSymbols*() =
             ; sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus
             ; non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam
             ; ac nisi justo.
-
+            ;;;;
             print wordwrap.at: 10 "one two three four five six seven eight nine ten"
             ; one two
             ; three four

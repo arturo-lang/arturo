@@ -5,14 +5,16 @@ returns: [
         :nothing
     ]
 description: "perform action and catch possible errors"
-example: {
-        try [
-            ; let's try something dangerous
-            print 10 / 0
-        ]
-        
-        ; we catch the exception but do nothing with it
-    }
+examples: [
+        {
+            try [
+                ; let's try something dangerous
+                print 10 / 0
+            ]
+            
+            ; we catch the exception but do nothing with it
+        }
+    ]
 attributes: #[
     import: #[
         types: [

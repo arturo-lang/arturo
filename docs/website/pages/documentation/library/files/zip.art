@@ -5,9 +5,11 @@ returns: [
         :nothing
     ]
 description: "zip given files to file at destination"
-example: {
-        zip "dest.zip" ["file1.txt" "img.png"]
-    }
+examples: [
+        {
+            zip "dest.zip" ["file1.txt" "img.png"]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -6,12 +6,13 @@ returns: [
          :floating
     ]
 description: "calculate the sum of all values in given list"
-example: {
-        print sum [3 4]           ; 7
-        print sum [1 2 4 6]       ; 13
-        
-        print sum 1..10           ; 55
-    }
+examples: [
+        {
+            print sum [3 4]           ; 7
+            print sum [1 2 4 6]       ; 13
+        }
+         "print sum 1..10           ; 55"
+    ]
 attributes: #[
     ]
 arguments: #[

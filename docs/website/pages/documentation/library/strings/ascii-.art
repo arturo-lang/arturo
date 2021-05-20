@@ -5,14 +5,16 @@ returns: [
         :boolean
     ]
 description: "check if given character/string is in ASCII"
-example: {
-        ascii? `d`              ; true
-        ascii? `😀`             ; false
-        
-        ascii? "hello world"    ; true
-        ascii? "Hællø wœrld"    ; false
-        ascii? "Γειά!"          ; false
-    }
+examples: [
+        "ascii? `d`              ; true"
+         {
+            ascii? `😀`             ; false
+            
+            ascii? "hello world"    ; true
+            ascii? "Hællø wœrld"    ; false
+            ascii? "Γειά!"          ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

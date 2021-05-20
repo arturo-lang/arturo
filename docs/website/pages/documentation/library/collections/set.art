@@ -5,22 +5,25 @@ returns: [
         :nothing
     ]
 description: "set collection\'s item at index to given value"
-example: {
-        myDict: #[ 
-            name: "John"
-            age: 34
-        ]
-        
-        set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
-        
-        arr: [1 2 3 4]
-        set arr 0 "one"                   ; => ["one" 2 3 4]
-        
-        arr\1: "dos"                      ; => ["one" "dos" 3 4]
-        
-        x: 2    
-        arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
-    }
+examples: [
+        {
+            myDict: #[ 
+                name: "John"
+                age: 34
+            ]
+            
+            set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
+        }
+         {
+            arr: [1 2 3 4]
+            set arr 0 "one"                   ; => ["one" 2 3 4]
+            
+            arr\1: "dos"                      ; => ["one" "dos" 3 4]
+            
+            x: 2    
+            arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

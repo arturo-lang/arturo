@@ -5,18 +5,20 @@ returns: [
         :boolean
     ]
 description: "check if dictionary contains given key"
-example: {
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        key? user 'age            ; => false
-        if key? user 'name [
-            print ["Hello" user\name]
-        ]
-        ; Hello John
-    }
+examples: [
+        {
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            key? user 'age            ; => false
+            if key? user 'name [
+                print ["Hello" user\name]
+            ]
+            ; Hello John
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

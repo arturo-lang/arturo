@@ -5,12 +5,15 @@ returns: [
         :any
     ]
 description: "return the first item of the given collection"
-example: {
-        print first "this is some text"       ; t
-        print first ["one" "two" "three"]     ; one
-        
-        print first.n:2 ["one" "two" "three"] ; one two
-    }
+examples: [
+        {
+            print first "this is some text"       ; t
+            print first ["one" "two" "three"]     ; one
+        }
+         {
+            print first.n:2 ["one" "two" "three"] ; one two
+        }
+    ]
 attributes: #[
     n: #[
         types: [

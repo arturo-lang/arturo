@@ -5,16 +5,18 @@ returns: [
         :boolean
     ]
 description: "checks if current script runs from the command-line"
-example: {
-        doSomething: function [x][
-            print ["I'm doing something with" x]
-        ]
-        
-        if standalone? [
-            print "It's running from command line and not included."
-            print "Nothing to do!"
-        ]
-    }
+examples: [
+        {
+            doSomething: function [x][
+                print ["I'm doing something with" x]
+            ]
+            
+            if standalone? [
+                print "It's running from command line and not included."
+                print "Nothing to do!"
+            ]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

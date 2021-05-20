@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "check if given string is lowercase"
-example: {
-        lower? "ñ"               ; => true
-        lower? "X"               ; => false
-        lower? "Hello World"     ; => false
-        lower? "hello"           ; => true
-    }
+examples: [
+        {
+            lower? "ñ"               ; => true
+            lower? "X"               ; => false
+            lower? "Hello World"     ; => false
+            lower? "hello"           ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

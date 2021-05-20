@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :symbol"
-example: {
-        symbol? first [+ x]
-        ; => true
-    }
+examples: [
+        {
+            symbol? first [+ x]
+            ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -6,12 +6,15 @@ returns: [
          :nothing
     ]
 description: "add given suffix to string"
-example: {
-        suffix "hell" "o"                  ; => "hello"
-        
-        str: "hell"
-        suffix 'str                        ; str: "hello"
-    }
+examples: [
+        {
+            suffix "hell" "o"                  ; => "hello"
+        }
+         {
+            str: "hell"
+            suffix 'str                        ; str: "hello"
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

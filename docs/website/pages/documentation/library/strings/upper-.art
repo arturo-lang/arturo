@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "check if given string is uppercase"
-example: {
-        upper? "Ñ"               ; => true
-        upper? "x"               ; => false
-        upper? "Hello World"     ; => false
-        upper? "HELLO"           ; => true
-    }
+examples: [
+        {
+            upper? "Ñ"               ; => true
+            upper? "x"               ; => false
+            upper? "Hello World"     ; => false
+            upper? "HELLO"           ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

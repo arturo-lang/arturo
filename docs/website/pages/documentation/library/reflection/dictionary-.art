@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :dictionary"
-example: {
-        print dictionary? #[name: "John"]   ; true
-        print dictionary? 123               ; false
-    }
+examples: [
+        {
+            print dictionary? #[name: "John"]   ; true
+            print dictionary? 123               ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

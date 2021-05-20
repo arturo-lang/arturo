@@ -6,14 +6,17 @@ returns: [
          :complex
     ]
 description: "calculate the hyperbolic secant of given angle"
-example: {
-        print sech 0                ; 1.0
-        print sech 0.3              ; 0.9566279119002483
-        print sech 1.0              ; 0.6480542736638855
-        
-        sech to :complex [1 1]
-        ; => 0.4983370305551868-0.5910838417210451i
-    }
+examples: [
+        {
+            print sech 0                ; 1.0
+            print sech 0.3              ; 0.9566279119002483
+            print sech 1.0              ; 0.6480542736638855
+        }
+         {
+            sech to :complex [1 1]
+            ; => 0.4983370305551868-0.5910838417210451i
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

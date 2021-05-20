@@ -43,7 +43,7 @@ proc defineSymbols*() =
         returns     = {ValueKind.Color},
         example     = """
             blend #red #CCCCCC                  ; => #E66666
-
+            ;;;;
             blend .balance: 0.75 #red #CCCCCC   
             ; => #D99999
         """:

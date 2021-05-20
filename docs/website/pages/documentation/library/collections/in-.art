@@ -8,24 +8,28 @@ returns: [
          :nothing
     ]
 description: "check if value exists in given collection"
-example: {
-        arr: [1 2 3 4]
-        
-        in? 5 arr             ; => false
-        in? 2 arr             ; => true
-        
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        in? "John" dict       ; => true
-        in? "Paul" dict       ; => false
-        
-        in? "name" keys dict  ; => true
-        
-        in? "x" "hello"       ; => false
-    }
+examples: [
+        {
+            arr: [1 2 3 4]
+            
+            in? 5 arr             ; => false
+            in? 2 arr             ; => true
+        }
+         {
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            in? "John" dict       ; => true
+            in? "Paul" dict       ; => false
+            
+            in? "name" keys dict  ; => true
+        }
+         {
+            in? "x" "hello"       ; => false
+        }
+    ]
 attributes: #[
     regex: #[
         types: [

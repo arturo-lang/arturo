@@ -6,14 +6,17 @@ returns: [
          :complex
     ]
 description: "calculate the inverse cotangent of given angle"
-example: {
-        print actan 0                   ; 1.570796326794897
-        print actan 1                   ; 0.7853981633974483
-        print actan 10.0                ; 0.09966865249116204
-        
-        actan to :complex @[pi 1]
-        ; => 0.2834557524705047-0.08505998507745414i
-    }
+examples: [
+        {
+            print actan 0                   ; 1.570796326794897
+            print actan 1                   ; 0.7853981633974483
+            print actan 10.0                ; 0.09966865249116204
+        }
+         {
+            actan to :complex @[pi 1]
+            ; => 0.2834557524705047-0.08505998507745414i
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

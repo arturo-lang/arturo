@@ -5,10 +5,12 @@ returns: [
         :nothing
     ]
 description: "rename file at path using given new path name"
-example: {
-        rename "README.md" "READIT.md"
-        ; file renamed
-    }
+examples: [
+        {
+            rename "README.md" "READIT.md"
+            ; file renamed
+        }
+    ]
 attributes: #[
     directory: #[
         types: [

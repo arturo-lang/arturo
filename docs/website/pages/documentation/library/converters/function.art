@@ -7,39 +7,44 @@ returns: [
 alias: "$"
 infix?: false
 description: "create function with given arguments and body"
-example: {
-        f: function [x][ x + 2 ]
-        print f 10                ; 12
-        
-        f: $[x][x+2]
-        print f 10                ; 12
-        
-        multiply: function [x,y][
-            x * y
-        ]
-        print multiply 3 5        ; 15
-        
-        publicF: function .export['x] [z][
-            print ["z =>" z]
-            x: 5
-        ]
-        
-        publicF 10
-        ; z => 10
-        
-        print x
-        ; 5
-        
-        ; memoization
-        fib: $[x].memoize[
-            if? x<2 [1]
-            else [(fib x-1) + (fib x-2)]
-        ]
-        
-        loop 1..25 [x][
-            print ["Fibonacci of" x "=" fib x]
-        ]
-    }
+examples: [
+        {
+            f: function [x][ x + 2 ]
+            print f 10                ; 12
+            
+            f: $[x][x+2]
+            print f 10                ; 12
+        }
+         {
+            multiply: function [x,y][
+                x * y
+            ]
+            print multiply 3 5        ; 15
+        }
+         {
+            publicF: function .export['x] [z][
+                print ["z =>" z]
+                x: 5
+            ]
+            
+            publicF 10
+            ; z => 10
+            
+            print x
+            ; 5
+        }
+         {
+            ; memoization
+            fib: $[x].memoize[
+                if? x<2 [1]
+                else [(fib x-1) + (fib x-2)]
+            ]
+            
+            loop 1..25 [x][
+                print ["Fibonacci of" x "=" fib x]
+            ]
+        }
+    ]
 attributes: #[
     import: #[
         types: [

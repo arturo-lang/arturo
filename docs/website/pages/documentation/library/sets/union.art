@@ -6,15 +6,18 @@ returns: [
          :nothing
     ]
 description: "return the union of given sets"
-example: {
-        print union [1 2 3 4] [3 4 5 6]
-        ; 1 2 3 4 5 6
-        
-        a: [1 2 3 4]
-        b: [3 4 5 6]
-        union 'a b
-        ; a: [1 2 3 4 5 6]
-    }
+examples: [
+        {
+            print union [1 2 3 4] [3 4 5 6]
+            ; 1 2 3 4 5 6
+        }
+         {
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            union 'a b
+            ; a: [1 2 3 4 5 6]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

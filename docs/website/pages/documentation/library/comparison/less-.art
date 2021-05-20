@@ -7,12 +7,14 @@ returns: [
 alias: "<"
 infix?: true
 description: "check if valueA < valueB (less than)"
-example: {
-        less? 5 2             ; => false
-        less? 5 6+1           ; => true
-        
-        print 2<3             ; true
-    }
+examples: [
+        {
+            less? 5 2             ; => false
+            less? 5 6+1           ; => true
+            
+            print 2<3             ; true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -109,7 +109,7 @@ proc defineSymbols*() =
         example     = """
             print now
             ; 2021-03-22T11:27:00+01:00
-
+            
             print before.weeks:2 now
             ; 2021-03-08T11:27:14+01:00
 

@@ -5,18 +5,20 @@ returns: [
         :nothing
     ]
 description: "send mail using given message and configuration"
-example: {
-        mail "recipient@somemail.com"
-            #[
-                title: "Hello from Arturo"
-                content: "Arturo rocks!"
-            ]
-            #[
-                server: "mymailserver.com"
-                username: "myusername"
-                password: "mypass123"
-            ]
-    }
+examples: [
+        {
+            mail "recipient@somemail.com"
+                #[
+                    title: "Hello from Arturo"
+                    content: "Arturo rocks!"
+                ]
+                #[
+                    server: "mymailserver.com"
+                    username: "myusername"
+                    password: "mypass123"
+                ]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

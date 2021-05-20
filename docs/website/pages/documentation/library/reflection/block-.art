@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :block"
-example: {
-        print block? [1 2 3]            ; true
-        print block? #[name: "John"]    ; false
-        print block? "hello"            ; false
-        print block? 123                ; false
-    }
+examples: [
+        {
+            print block? [1 2 3]            ; true
+            print block? #[name: "John"]    ; false
+            print block? "hello"            ; false
+            print block? 123                ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :word"
-example: {
-        word? first [something x]
-        ; => true
-    }
+examples: [
+        {
+            word? first [something x]
+            ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

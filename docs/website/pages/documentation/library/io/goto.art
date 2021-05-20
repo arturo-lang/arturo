@@ -5,10 +5,12 @@ returns: [
         :nothing
     ]
 description: "move cursor to given coordinates"
-example: {
-        goto 10 15      ; (move cursor to column 10, line 15)
-        goto 10 ø       ; (move cursor to column 10, same line)
-    }
+examples: [
+        {
+            goto 10 15      ; (move cursor to column 10, line 15)
+            goto 10 ø       ; (move cursor to column 10, same line)
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

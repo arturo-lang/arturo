@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :attributeLabel"
-example: {
-        attributeLabel? first [.something: x]
-        ; => true
-    }
+examples: [
+        {
+            attributeLabel? first [.something: x]
+            ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

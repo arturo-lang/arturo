@@ -5,13 +5,15 @@ returns: [
         :nothing
     ]
 description: "assert given condition is true, or exit"
-example: {
-        num: input "give me a positive number"
-        
-        ensure [num > 0]
-        
-        print "good, the number is positive indeed. let's continue..."
-    }
+examples: [
+        {
+            num: input "give me a positive number"
+            
+            ensure [num > 0]
+            
+            print "good, the number is positive indeed. let's continue..."
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

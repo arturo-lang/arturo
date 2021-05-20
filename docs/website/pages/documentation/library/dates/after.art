@@ -5,13 +5,15 @@ returns: [
         :date
     ]
 description: "get date after given one using interval"
-example: {
-        print now
-        ; 2021-03-22T11:25:30+01:00
-        
-        print after.weeks:2 now
-        ; 2021-04-05T11:25:42+02:00
-    }
+examples: [
+        {
+            print now
+            ; 2021-03-22T11:25:30+01:00
+            
+            print after.weeks:2 now
+            ; 2021-04-05T11:25:42+02:00
+        }
+    ]
 attributes: #[
     nanoseconds: #[
         types: [

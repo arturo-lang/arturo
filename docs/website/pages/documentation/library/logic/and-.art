@@ -5,16 +5,18 @@ returns: [
         :boolean
     ]
 description: "return the logical AND for the given values"
-example: {
-        x: 2
-        y: 5
-        
-        if and? x=2 y>5 [
-            print "yep, that's correct!"]
-        ]
-        
-        ; yep, that's correct!
-    }
+examples: [
+        {
+            x: 2
+            y: 5
+            
+            if and? x=2 y>5 [
+                print "yep, that's correct!"]
+            ]
+            
+            ; yep, that's correct!
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -5,17 +5,19 @@ returns: [
         :nothing
     ]
 description: "perform action, if last condition was not true"
-example: {
-        x: 2
-        z: 3
-        
-        if? x>z [
-            print "x was greater than z"
-        ]
-        else [
-            print "nope, x was not greater than z"
-        ]
-    }
+examples: [
+        {
+            x: 2
+            z: 3
+            
+            if? x>z [
+                print "x was greater than z"
+            ]
+            else [
+                print "nope, x was not greater than z"
+            ]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -10,13 +10,16 @@ returns: [
 alias: "/"
 infix?: true
 description: "perform integer division between given values and return result"
-example: {
-        print div 5 2      ; 2
-        print 9 / 3        ; 3
-        
-        a: 6
-        div 'a 3           ; a: 2
-    }
+examples: [
+        {
+            print div 5 2      ; 2
+            print 9 / 3        ; 3
+        }
+         {
+            a: 6
+            div 'a 3           ; a: 2
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

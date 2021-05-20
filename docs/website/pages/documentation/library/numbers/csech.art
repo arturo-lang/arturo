@@ -6,14 +6,17 @@ returns: [
          :complex
     ]
 description: "calculate the hyperbolic cosecant of given angle"
-example: {
-        print csech 0               ; inf
-        print csech 0.3             ; 3.283853396698424
-        print csech 1.0             ; 0.8509181282393216
-        
-        csech to :complex [1 1]
-        ; => 0.3039310016284264-0.6215180171704283i
-    }
+examples: [
+        {
+            print csech 0               ; inf
+            print csech 0.3             ; 3.283853396698424
+            print csech 1.0             ; 0.8509181282393216
+        }
+         {
+            csech to :complex [1 1]
+            ; => 0.3039310016284264-0.6215180171704283i
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

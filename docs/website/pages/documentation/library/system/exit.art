@@ -5,11 +5,10 @@ returns: [
         :nothing
     ]
 description: "exit program"
-example: {
-        exit              ; (terminates the program)
-        
-        exit.with: 3      ; (terminates the program with code 3)
-    }
+examples: [
+        "exit              ; (terminates the program)"
+         "exit.with: 3      ; (terminates the program with code 3)"
+    ]
 attributes: #[
     ]
 arguments: #[

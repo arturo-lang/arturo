@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "calculate the binary XOR for the given values"
-example: {
-        print xor 2 3      ; 1
-        
-        a: 2
-        xor 'a 3           ; a: 1
-    }
+examples: [
+        "print xor 2 3      ; 1"
+         {
+            a: 2
+            xor 'a 3           ; a: 1
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :binary"
-example: {
-        binary? to :binary "string"
-        ; => true
-    }
+examples: [
+        {
+            binary? to :binary "string"
+            ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

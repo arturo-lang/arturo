@@ -6,14 +6,17 @@ returns: [
          :complex
     ]
 description: "calculate the inverse hyperbolic cotangent of given angle"
-example: {
-        print actanh 0                  ; nan
-        print actanh 1                  ; inf
-        print actanh 10.0               ; 0.1003353477310756
-        
-        actanh to :complex @[pi 1]
-        ; => 0.2946214403408572-0.09996750087543603i
-    }
+examples: [
+        {
+            print actanh 0                  ; nan
+            print actanh 1                  ; inf
+            print actanh 10.0               ; 0.1003353477310756
+        }
+         {
+            actanh to :complex @[pi 1]
+            ; => 0.2946214403408572-0.09996750087543603i
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

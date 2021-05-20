@@ -6,12 +6,15 @@ returns: [
          :nothing
     ]
 description: "replace every matched substring by given replacement string and return result"
-example: {
-        replace "hello" "l" "x"           ; => "hexxo"
-        
-        str: "hello"
-        replace 'str "l" "x"              ; str: "hexxo"
-    }
+examples: [
+        {
+            replace "hello" "l" "x"           ; => "hexxo"
+        }
+         {
+            str: "hello"
+            replace 'str "l" "x"              ; str: "hexxo"
+        }
+    ]
 attributes: #[
     regex: #[
         types: [

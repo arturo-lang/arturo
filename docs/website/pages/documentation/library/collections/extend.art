@@ -5,12 +5,14 @@ returns: [
         :dictionary
     ]
 description: "get new dictionary by merging given ones"
-example: {
-        person: #[ name: "john" surname: "doe" ]
-        
-        print extend person #[ age: 35 ]
-        ; [name:john surname:doe age:35]
-    }
+examples: [
+        {
+            person: #[ name: "john" surname: "doe" ]
+            
+            print extend person #[ age: 35 ]
+            ; [name:john surname:doe age:35]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

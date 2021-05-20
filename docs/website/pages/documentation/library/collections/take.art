@@ -7,13 +7,16 @@ returns: [
          :nothing
     ]
 description: "keep first <number> of elements from given collection and return the remaining ones"
-example: {
-        str: take "some text" 5
-        print str                     ; some
-        
-        arr: 1..10
-        take 'arr 3                   ; arr: [1 2 3]
-    }
+examples: [
+        {
+            str: take "some text" 5
+            print str                     ; some
+        }
+         {
+            arr: 1..10
+            take 'arr 3                   ; arr: [1 2 3]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

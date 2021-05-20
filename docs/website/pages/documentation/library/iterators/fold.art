@@ -7,19 +7,24 @@ returns: [
          :nothing
     ]
 description: "flatten given collection by eliminating nested blocks"
-example: {
-        fold 1..10 [x,y]-> x + y
-        ; => 55 (1+2+3+4..) 
-        
-        fold 1..10 .seed:1 [x,y][ x * y ]
-        ; => 3628800 (10!) 
-        
-        fold 1..3 [x y]-> x - y
-        ; => -6
-        
-        fold.right 1..3 [x y]-> x - y
-        ; => 2
-    }
+examples: [
+        {
+            fold 1..10 [x,y]-> x + y
+            ; => 55 (1+2+3+4..) 
+        }
+         {
+            fold 1..10 .seed:1 [x,y][ x * y ]
+            ; => 3628800 (10!) 
+        }
+         {
+            fold 1..3 [x y]-> x - y
+            ; => -6
+        }
+         {
+            fold.right 1..3 [x y]-> x - y
+            ; => 2
+        }
+    ]
 attributes: #[
     seed: #[
         types: [

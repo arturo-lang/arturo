@@ -5,11 +5,13 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :floating"
-example: {
-        print floating? 3.14        ; true
-        print floating? 123         ; false
-        print floating? "hello"     ; false
-    }
+examples: [
+        {
+            print floating? 3.14        ; true
+            print floating? 123         ; false
+            print floating? "hello"     ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

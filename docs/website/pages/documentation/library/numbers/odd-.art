@@ -5,12 +5,13 @@ returns: [
         :boolean
     ]
 description: "check if given number is odd"
-example: {
-        odd? 4            ; => false
-        odd? 3            ; => true
-        
-        print select 1..10 => odd?       ; 1 3 5 7 9
-    }
+examples: [
+        {
+            odd? 4            ; => false
+            odd? 3            ; => true
+        }
+         "print select 1..10 => odd?       ; 1 3 5 7 9"
+    ]
 attributes: #[
     ]
 arguments: #[

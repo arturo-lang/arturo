@@ -5,15 +5,19 @@ returns: [
         :floating
     ]
 description: "round given value"
-example: {
-        print round 2.1         ; 2.0
-        print round 2.9         ; 3.0
-        print round 6           ; 6.0
-        
-        print round pi          ; 3.0
-        print round.to:5 pi     ; 3.14159
-        print round.to:2 pi     ; 3.14
-    }
+examples: [
+        {
+            print round 2.1         ; 2.0
+            print round 2.9         ; 3.0
+            print round 6           ; 6.0
+            
+            print round pi          ; 3.0
+        }
+         {
+            print round.to:5 pi     ; 3.14159
+            print round.to:2 pi     ; 3.14
+        }
+    ]
 attributes: #[
     to: #[
         types: [

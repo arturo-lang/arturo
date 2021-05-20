@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "calculate the binary XNOR for the given values"
-example: {
-        print xnor 2 3     ; -2
-        
-        a: 2
-        xnor 'a 3          ; a: -2
-    }
+examples: [
+        "print xnor 2 3     ; -2"
+         {
+            a: 2
+            xnor 'a 3          ; a: -2
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

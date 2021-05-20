@@ -6,12 +6,15 @@ returns: [
          :nothing
     ]
 description: "convert given string to capitalized"
-example: {
-        print capitalize "hello World"      ; "Hello World"
-        
-        str: "hello World"
-        capitalize 'str                     ; str: "Hello World"
-    }
+examples: [
+        {
+            print capitalize "hello World"      ; "Hello World"
+        }
+         {
+            str: "hello World"
+            capitalize 'str                     ; str: "Hello World"
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

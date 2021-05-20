@@ -8,20 +8,23 @@ returns: [
          :nothing
     ]
 description: "insert value in collection at given index"
-example: {
-        insert [1 2 3 4] 0 "zero"
-        ; => ["zero" 1 2 3 4]
-        
-        print insert "heo" 2 "ll"
-        ; hello
-        
-        dict: #[
-            name: John
-        ]
-        
-        insert 'dict 'name "Jane"
-        ; dict: [name: "Jane"]
-    }
+examples: [
+        {
+            insert [1 2 3 4] 0 "zero"
+            ; => ["zero" 1 2 3 4]
+            
+            print insert "heo" 2 "ll"
+            ; hello
+        }
+         {
+            dict: #[
+                name: John
+            ]
+            
+            insert 'dict 'name "Jane"
+            ; dict: [name: "Jane"]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

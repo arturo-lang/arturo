@@ -5,10 +5,12 @@ returns: [
         :string
     ]
 description: "get colored version of given string"
-example: {
-        print color #green "Hello!"                ; Hello! (in green)
-        print color #red.bold "Some text"          ; Some text (in red/bold)
-    }
+examples: [
+        {
+            print color #green "Hello!"                ; Hello! (in green)
+            print color #red.bold "Some text"          ; Some text (in red/bold)
+        }
+    ]
 attributes: #[
     rgb: #[
         types: [

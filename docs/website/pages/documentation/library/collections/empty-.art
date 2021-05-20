@@ -5,13 +5,15 @@ returns: [
         :boolean
     ]
 description: "check if given collection is empty"
-example: {
-        empty? ""             ; => true
-        empty? []             ; => true
-        empty? #[]            ; => true
-        
-        empty [1 "two" 3]     ; => false
-    }
+examples: [
+        {
+            empty? ""             ; => true
+            empty? []             ; => true
+            empty? #[]            ; => true
+            
+            empty? [1 "two" 3]    ; => false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

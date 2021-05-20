@@ -6,17 +6,20 @@ returns: [
          :nothing
     ]
 description: "map collection\'s items by applying given action"
-example: {
-        print map 1..5 [x][
-            2*x
-        ]
-        ; 2 4 6 8 10
-        
-        arr: 1..5
-        map 'arr 'x -> 2*x
-        print arr
-        ; 2 4 6 8 10
-    }
+examples: [
+        {
+            print map 1..5 [x][
+                2*x
+            ]
+            ; 2 4 6 8 10
+        }
+         {
+            arr: 1..5
+            map 'arr 'x -> 2*x
+            print arr
+            ; 2 4 6 8 10
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

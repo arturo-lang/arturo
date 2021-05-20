@@ -5,13 +5,15 @@ returns: [
         :boolean
     ]
 description: "check if a specific condition is fulfilled and, if so, execute given action"
-example: {
-        a: 2
-        case [a]
-            when? [<2] -> print "a is less than 2"
-            when? [=2] -> print "a is 2"
-            else       -> print "a is greater than 2"
-    }
+examples: [
+        {
+            a: 2
+            case [a]
+                when? [<2] -> print "a is less than 2"
+                when? [=2] -> print "a is 2"
+                else       -> print "a is greater than 2"
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

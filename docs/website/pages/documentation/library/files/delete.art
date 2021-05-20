@@ -5,10 +5,12 @@ returns: [
         :nothing
     ]
 description: "delete file at given path"
-example: {
-        delete "testscript.art"
-        ; file deleted
-    }
+examples: [
+        {
+            delete "testscript.art"
+            ; file deleted
+        }
+    ]
 attributes: #[
     directory: #[
         types: [

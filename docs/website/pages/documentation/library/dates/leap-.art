@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "check if given year is a leap year"
-example: {
-        print leap? now     ; false
-        
-        print map 2019..2021 => leap? 
-        ; false true false
-    }
+examples: [
+        {
+            print leap? now     ; false
+            
+            print map 2019..2021 => leap? 
+            ; false true false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

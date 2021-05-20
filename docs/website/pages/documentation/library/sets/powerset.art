@@ -6,10 +6,12 @@ returns: [
          :nothing
     ]
 description: "return the powerset of given set"
-example: {
-        powerset [1 2 3]
-        ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
-    }
+examples: [
+        {
+            powerset [1 2 3]
+            ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "calculate the binary NAND for the given values"
-example: {
-        print nand 2 3     ; -3
-        
-        a: 2
-        nand 'a 3          ; a: -3
-    }
+examples: [
+        "print nand 2 3     ; -3"
+         {
+            a: 2
+            nand 'a 3          ; a: -3
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

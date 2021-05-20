@@ -5,25 +5,27 @@ returns: [
         :block
     ]
 description: "immediately continue with next iteration"
-example: {
-        loop 1..5 'x [
-            print ["x:" x]
-            if x=3 -> continue
-            print "after check"
-        ]
-        print "after loop"
-        
-        ; x: 1 
-        ; after check
-        ; x: 2 
-        ; after check
-        ; x: 3 
-        ; x: 4 
-        ; after check
-        ; x: 5 
-        ; after check
-        ; after loop
-    }
+examples: [
+        {
+            loop 1..5 'x [
+                print ["x:" x]
+                if x=3 -> continue
+                print "after check"
+            ]
+            print "after loop"
+            
+            ; x: 1 
+            ; after check
+            ; x: 2 
+            ; after check
+            ; x: 3 
+            ; x: 4 
+            ; after check
+            ; x: 5 
+            ; after check
+            ; after loop
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

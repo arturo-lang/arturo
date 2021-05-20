@@ -7,12 +7,14 @@ returns: [
 alias: "./"
 infix?: false
 description: "get relative path for given path, based on current script\'s location"
-example: {
-        ; we are in folder: /Users/admin/Desktop
-        
-        print relative "test.txt"
-        ; /Users/admin/Desktop/test.txt
-    }
+examples: [
+        {
+            ; we are in folder: /Users/admin/Desktop
+            
+            print relative "test.txt"
+            ; /Users/admin/Desktop/test.txt
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

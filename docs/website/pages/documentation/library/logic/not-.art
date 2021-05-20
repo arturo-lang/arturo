@@ -5,14 +5,16 @@ returns: [
         :boolean
     ]
 description: "return the logical complement of the given value"
-example: {
-        ready: false
-        if not? ready [
-            print "we're still not ready!"
-        ]
-        
-        ; we're still not ready!
-    }
+examples: [
+        {
+            ready: false
+            if not? ready [
+                print "we're still not ready!"
+            ]
+            
+            ; we're still not ready!
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

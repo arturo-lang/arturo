@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "check if string starts with given prefix"
-example: {
-        prefix? "hello" "he"          ; => true
-        prefix? "boom" "he"           ; => false
-    }
+examples: [
+        {
+            prefix? "hello" "he"          ; => true
+            prefix? "boom" "he"           ; => false
+        }
+    ]
 attributes: #[
     regex: #[
         types: [

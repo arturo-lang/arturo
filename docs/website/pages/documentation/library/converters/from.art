@@ -5,11 +5,13 @@ returns: [
         :any
     ]
 description: "get value from string, using given representation"
-example: {
-        print from.binary "1011"        ; 11
-        print from.octal "1011"         ; 521
-        print from.hex "0xDEADBEEF"     ; 3735928559
-    }
+examples: [
+        {
+            print from.binary "1011"        ; 11
+            print from.octal "1011"         ; 521
+            print from.hex "0xDEADBEEF"     ; 3735928559
+        }
+    ]
 attributes: #[
     binary: #[
         types: [

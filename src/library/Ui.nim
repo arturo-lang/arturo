@@ -56,7 +56,7 @@ proc defineSymbols*() =
             example     = """
                 webview "Hello world!"
                 ; (opens a webview windows with "Hello world!")
-                
+                ;;;;
                 webview .width:  200 
                         .height: 300
                         .title:  "My webview app"

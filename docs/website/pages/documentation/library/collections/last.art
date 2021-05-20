@@ -5,12 +5,15 @@ returns: [
         :any
     ]
 description: "return the last item of the given collection"
-example: {
-        print last "this is some text"       ; t
-        print last ["one" "two" "three"]     ; three
-        
-        print last.n:2 ["one" "two" "three"] ; two three
-    }
+examples: [
+        {
+            print last "this is some text"       ; t
+            print last ["one" "two" "three"]     ; three
+        }
+         {
+            print last.n:2 ["one" "two" "three"] ; two three
+        }
+    ]
 attributes: #[
     n: #[
         types: [

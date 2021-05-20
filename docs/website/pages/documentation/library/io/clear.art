@@ -5,7 +5,9 @@ returns: [
         :nothing
     ]
 description: "clear terminal"
-example: "clear             ; (clears the screen)"
+examples: [
+        "clear             ; (clears the screen)"
+    ]
 attributes: #[
     ]
 arguments: #[

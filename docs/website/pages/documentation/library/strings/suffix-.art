@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "check if string ends with given suffix"
-example: {
-        suffix? "hello" "lo"          ; => true
-        suffix? "boom" "lo"           ; => false
-    }
+examples: [
+        {
+            suffix? "hello" "lo"          ; => true
+            suffix? "boom" "lo"           ; => false
+        }
+    ]
 attributes: #[
     regex: #[
         types: [

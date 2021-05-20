@@ -5,20 +5,22 @@ returns: [
         :boolean
     ]
 description: "check if given attribute exists"
-example: {
-        greet: function [x][
-            if? not? attr? 'later [
-                print ["Hello" x "!"]
+examples: [
+        {
+            greet: function [x][
+                if? not? attr? 'later [
+                    print ["Hello" x "!"]
+                ]
+                else [
+                    print [x "I'm afraid I'll greet you later!"]
+                ]
             ]
-            else [
-                print [x "I'm afraid I'll greet you later!"]
-            ]
-        ]
-        
-        greet.later "John"
-        
-        ; John I'm afraid I'll greet you later!
-    }
+            
+            greet.later "John"
+            
+            ; John I'm afraid I'll greet you later!
+        }
+    ]
 attributes: #[
     ]
 arguments: #[
