@@ -1,0 +1,29 @@
+; by @Krenium
+
+digits: function [n][
+    res: new []
+    while -> n > 0 [
+        'res ++ n % 10
+        n: n / 10
+    ]
+    res
+]
+
+luhn?: function [n][
+    s1: new 0
+    s2: new 0
+    loop.with: 'i digits n 'd [
+        if? even? i -> 's1 + d
+        else [
+            'd * 2
+            if d > 9 -> 'd - 9
+            's2 + d
+        ]
+    ]
+    zero? (s1 + s2) % 10
+]
+
+print luhn? 49927398716
+print luhn? 49927398717
+print luhn? 1234567812345678
+print luhn? 1234567812345670
