@@ -5,13 +5,16 @@ returns: [
         :nothing
     ]
 description: "empty given collection"
-example: {
-        a: [1 2 3]
-        empty 'a              ; a: []
-        
-        str: "some text"
-        empty 'str            ; str: ""
-    }
+examples: [
+        {
+            a: [1 2 3]
+            empty 'a              ; a: []
+        }
+         {
+            str: "some text"
+            empty 'str            ; str: ""
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

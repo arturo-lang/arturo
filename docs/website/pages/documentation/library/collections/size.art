@@ -5,12 +5,22 @@ returns: [
         :integer
     ]
 description: "get size/length of given collection"
-example: {
-        str: "some text"      
-        print size str                ; 9
-        
-        print size "你好!"              ; 3
-    }
+examples: [
+        {
+            arr: ["one" "two" "three"]
+            print size arr                ; 3
+        }
+         {
+            dict: #[name: "John", surname: "Doe"]
+            print size dict               ; 2
+        }
+         {
+            str: "some text"      
+            print size str                ; 9
+            
+            print size "你好!"              ; 3
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

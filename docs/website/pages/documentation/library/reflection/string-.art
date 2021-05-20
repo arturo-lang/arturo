@@ -5,11 +5,13 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :string"
-example: {
-        print string? "x"           ; true
-        print string? 'x            ; false
-        print string? 123           ; false
-    }
+examples: [
+        {
+            print string? "x"           ; true
+            print string? 'x            ; false
+            print string? 123           ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

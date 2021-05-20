@@ -5,14 +5,16 @@ returns: [
         :color
     ]
 description: "lighten color by given percentage (0.0-1.0)"
-example: {
-        print #lightblue            ; #ADD8E6
-        
-        lighten #lightblue 0.2      ; => #D0FFFF
-        lighten #lightblue 0.5      ; => #FFFFFF
-        
-        lighten #9944CC 0.3         ; => #C758FF
-    }
+examples: [
+        {
+            print #lightblue            ; #ADD8E6
+            
+            lighten #lightblue 0.2      ; => #D0FFFF
+            lighten #lightblue 0.5      ; => #FFFFFF
+            
+            lighten #9944CC 0.3         ; => #C758FF
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

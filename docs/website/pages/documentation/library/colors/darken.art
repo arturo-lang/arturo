@@ -5,12 +5,14 @@ returns: [
         :color
     ]
 description: "darken color by given percentage (0.0-1.0)"
-example: {
-        darken #red 0.2         ; => #CC0000
-        darken #red 0.5         ; => #7F0000
-        
-        darken #9944CC 0.3      ; => #6B308F
-    }
+examples: [
+        {
+            darken #red 0.2         ; => #CC0000
+            darken #red 0.5         ; => #7F0000
+            
+            darken #9944CC 0.3      ; => #6B308F
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

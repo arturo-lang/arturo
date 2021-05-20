@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :date"
-example: {
-        print date? now             ; true
-        print date? "hello"         ; false
-    }
+examples: [
+        {
+            print date? now             ; true
+            print date? "hello"         ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

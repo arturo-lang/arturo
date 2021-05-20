@@ -46,10 +46,10 @@ proc defineSymbols*() =
             if every? [2 4 6 8] 'x [even? x] 
                 -> print "every number is an even integer"
             ; every number is an even integer
-
+            ;;;;
             print every? 1..10 'x -> x < 11
             ; true
-
+            ;;;;
             print every? [2 3 5 7 11 14] 'x [prime? x]
             ; false
         """:
@@ -98,7 +98,7 @@ proc defineSymbols*() =
                 even? x
             ]
             ; 1 3 5 7 9
-            
+            ;;;;
             arr: 1..10
             filter 'arr 'x -> even? x
             print arr
@@ -155,13 +155,13 @@ proc defineSymbols*() =
         example     = """
             fold 1..10 [x,y]-> x + y
             ; => 55 (1+2+3+4..) 
-            
+            ;;;;
             fold 1..10 .seed:1 [x,y][ x * y ]
             ; => 3628800 (10!) 
-            
+            ;;;;
             fold 1..3 [x y]-> x - y
             ; => -6
-            
+            ;;;;
             fold.right 1..3 [x y]-> x - y
             ; => 2
         """:
@@ -291,21 +291,21 @@ proc defineSymbols*() =
             ; 1
             ; 2
             ; 3
-            
+            ;;;;
             loop 1..3 [x][
                 print ["x =>" x]
             ]
             ; x => 1
             ; x => 2
             ; x => 3
-            
+            ;;;;
             loop [A a B b C c] [x y][
                 print [x "=>" y]
             ]
             ; A => a
             ; B => b
             ; C => c
-            
+            ;;;;
             user: #[
                 name: "John"
                 surname: "Doe"
@@ -316,14 +316,14 @@ proc defineSymbols*() =
             ]
             ; name => John
             ; surname => Doe
-            
+            ;;;;
             loop.with:'i ["zero" "one" "two"] 'x [
                 print ["item at:" i "=>" x]
             ]
             ; 0 => zero
             ; 1 => one
             ; 2 => two
-
+            ;;;;
             loop.forever [1 2 3] => print 
             ; 1 2 3 1 2 3 1 2 3 ...
         """:
@@ -435,7 +435,7 @@ proc defineSymbols*() =
                 2*x
             ]
             ; 2 4 6 8 10
-            
+            ;;;;
             arr: 1..5
             map 'arr 'x -> 2*x
             print arr
@@ -487,7 +487,7 @@ proc defineSymbols*() =
                 even? x
             ]
             ; 2 4 6 8 10
-            
+            ;;;;
             arr: 1..10
             select 'arr 'x -> even? x
             print arr
@@ -542,10 +542,10 @@ proc defineSymbols*() =
             if some? [1 3 5 6 7] 'x [even? x] 
                 -> print "at least one number is an even integer"
             ; at least one number is an even integer
-
+            ;;;;
             print some? 1..10 'x -> x > 9
             ; true
-
+            ;;;;
             print some? [4 6 8 10] 'x [prime? x]
             ; false
         """:

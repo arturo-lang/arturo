@@ -5,15 +5,18 @@ returns: [
         :nothing
     ]
 description: "download file from url to disk"
-example: {
-        download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
-        ; (downloads file as "logo.png")
-        
-        download.as:"arturoLogo.png"
-                    "https://github.com/arturo-lang/arturo/raw/master/logo.png"
-        
-        ; (downloads file with a different name)
-    }
+examples: [
+        {
+            download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
+            ; (downloads file as "logo.png")
+        }
+         {
+            download.as:"arturoLogo.png"
+                        "https://github.com/arturo-lang/arturo/raw/master/logo.png"
+            
+            ; (downloads file with a different name)
+        }
+    ]
 attributes: #[
     as: #[
         types: [

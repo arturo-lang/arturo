@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :boolean"
-example: {
-        print boolean? true         ; true
-        print boolean? false        ; true
-        print boolean? 1=1          ; true
-        print boolena? 123          ; false
-    }
+examples: [
+        {
+            print boolean? true         ; true
+            print boolean? false        ; true
+            print boolean? 1=1          ; true
+            print boolena? 123          ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

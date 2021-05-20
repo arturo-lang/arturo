@@ -6,22 +6,24 @@ returns: [
          :any
     ]
 description: "get given attribute, if it exists"
-example: {
-        multiply: function [x][
-            if? attr? "with" [ 
-                x * attr "with"
-            ] 
-            else [ 
-                2*x 
+examples: [
+        {
+            multiply: function [x][
+                if? attr? "with" [ 
+                    x * attr "with"
+                ] 
+                else [ 
+                    2*x 
+                ]
             ]
-        ]
-        
-        print multiply 5
-        ; 10
-        
-        print multiply.with: 6 5
-        ; 60
-    }
+            
+            print multiply 5
+            ; 10
+            
+            print multiply.with: 6 5
+            ; 60
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

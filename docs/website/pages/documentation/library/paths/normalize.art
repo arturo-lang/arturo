@@ -6,22 +6,26 @@ returns: [
          :nothing
     ]
 description: "get normalized version of given path"
-example: {
-        normalize "one/../two/../../three"
-        ; => ../three
-        
-        normalize "~/one/../two/../../three"
-        ; => three
-        
-        normalize.tilde "~/one/../two/../../three"
-        ; => /Users/three
-        
-        normalize.tilde "~/Documents"
-        ; => /Users/drkameleon/Documents
-        
-        normalize.executable "myscript"
-        ; => ./myscript
-    }
+examples: [
+        {
+            normalize "one/../two/../../three"
+            ; => ../three
+            
+            normalize "~/one/../two/../../three"
+            ; => three
+        }
+         {
+            normalize.tilde "~/one/../two/../../three"
+            ; => /Users/three
+            
+            normalize.tilde "~/Documents"
+            ; => /Users/drkameleon/Documents
+        }
+         {
+            normalize.executable "myscript"
+            ; => ./myscript
+        }
+    ]
 attributes: #[
     executable: #[
         types: [

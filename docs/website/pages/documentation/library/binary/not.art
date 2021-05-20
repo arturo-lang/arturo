@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "calculate the binary complement the given value"
-example: {
-        print not 123      ; -124
-        
-        a: 123
-        not 'a             ; a: -124
-    }
+examples: [
+        "print not 123      ; -124"
+         {
+            a: 123
+            not 'a             ; a: -124
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

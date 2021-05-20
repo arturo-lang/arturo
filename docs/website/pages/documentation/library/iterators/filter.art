@@ -6,17 +6,20 @@ returns: [
          :nothing
     ]
 description: "get collection\'s items by filtering those that do not fulfil given condition"
-example: {
-        print filter 1..10 [x][
-            even? x
-        ]
-        ; 1 3 5 7 9
-        
-        arr: 1..10
-        filter 'arr 'x -> even? x
-        print arr
-        ; 1 3 5 7 9
-    }
+examples: [
+        {
+            print filter 1..10 [x][
+                even? x
+            ]
+            ; 1 3 5 7 9
+        }
+         {
+            arr: 1..10
+            filter 'arr 'x -> even? x
+            print arr
+            ; 1 3 5 7 9
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

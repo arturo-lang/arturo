@@ -6,7 +6,9 @@ returns: [
          :any
     ]
 description: "get maximum element in given collection"
-example: "print max [4 2 8 5 1 9]       ; 9"
+examples: [
+        "print max [4 2 8 5 1 9]       ; 9"
+    ]
 attributes: #[
     ]
 arguments: #[

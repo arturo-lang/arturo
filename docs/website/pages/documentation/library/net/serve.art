@@ -5,14 +5,16 @@ returns: [
         :nothing
     ]
 description: "start web server using given routes"
-example: {
-        serve .port:18966 [
-            "/":                          [ "This is the homepage" ]
-            "/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
-        ]
-        
-        ; (run the app and go to localhost:18966 - that was it!)
-    }
+examples: [
+        {
+            serve .port:18966 #[
+                "/":                          [ "This is the homepage" ]
+                "/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
+            ]
+            
+            ; (run the app and go to localhost:18966 - that was it!)
+        }
+    ]
 attributes: #[
     port: #[
         types: [

@@ -6,23 +6,26 @@ returns: [
          :nothing
     ]
 description: "join collection of values into string"
-example: {
-        arr: ["one" "two" "three"]
-        print join arr
-        ; onetwothree
-        
-        print join.with:"," arr
-        ; one,two,three
-        
-        join 'arr
-        ; arr: "onetwothree"
-        
-        print join [`H` `e` `l` `l` `o` `!`]
-        ; Hello!
-        
-        print join @["1 + 2 = " 1+2]
-        ; 1 + 2 = 3
-    }
+examples: [
+        {
+            arr: ["one" "two" "three"]
+            print join arr
+            ; onetwothree
+            
+            print join.with:"," arr
+            ; one,two,three
+            
+            join 'arr
+            ; arr: "onetwothree"
+        }
+         {
+            print join [`H` `e` `l` `l` `o` `!`]
+            ; Hello!
+            
+            print join @["1 + 2 = " 1+2]
+            ; 1 + 2 = 3
+        }
+    ]
 attributes: #[
     with: #[
         types: [

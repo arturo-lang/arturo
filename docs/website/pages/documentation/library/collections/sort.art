@@ -6,16 +6,18 @@ returns: [
          :nothing
     ]
 description: "sort given block in ascending order"
-example: {
-        a: [3 1 6]
-        print sort a                  ; 1 3 6
-        
-        print sort.descending a       ; 6 3 1
-        
-        b: ["one" "two" "three"]
-        sort 'b
-        print b                       ; one three two
-    }
+examples: [
+        {
+            a: [3 1 6]
+            print sort a                  ; 1 3 6
+        }
+         "print sort.descending a       ; 6 3 1"
+         {
+            b: ["one" "two" "three"]
+            sort 'b
+            print b                       ; one three two
+        }
+    ]
 attributes: #[
     as: #[
         types: [

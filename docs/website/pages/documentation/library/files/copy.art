@@ -5,13 +5,16 @@ returns: [
         :nothing
     ]
 description: "copy file at path to given destination"
-example: {
-        copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
-        ; copied file
-        
-        copy "testfolder" normalize.tilde "~/Desktop/testfolder"
-        ; copied whole folder
-    }
+examples: [
+        {
+            copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
+            ; copied file
+        }
+         {
+            copy "testfolder" normalize.tilde "~/Desktop/testfolder"
+            ; copied whole folder
+        }
+    ]
 attributes: #[
     directory: #[
         types: [

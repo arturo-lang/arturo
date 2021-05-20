@@ -5,18 +5,20 @@ returns: [
         :block
     ]
 description: "create closure-style block by embedding given words"
-example: {
-        f: function [x][ 
-            with [x][ 
-                "the multiple of" x "is" 2*x 
-            ] 
-        ]
-        
-        multiplier: f 10
-        
-        print multiplier
-        ; the multiple of 10 is 20
-    }
+examples: [
+        {
+            f: function [x][ 
+                with [x][ 
+                    "the multiple of" x "is" 2*x 
+                ] 
+            ]
+            
+            multiplier: f 10
+            
+            print multiplier
+            ; the multiple of 10 is 20
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -6,15 +6,18 @@ returns: [
          :nothing
     ]
 description: "return the intersection of given sets"
-example: {
-        print intersection [1 2 3 4] [3 4 5 6]
-        ; 3 4
-        
-        a: [1 2 3 4]
-        b: [3 4 5 6]
-        intersection 'a b
-        ; a: [3 4]
-    }
+examples: [
+        {
+            print intersection [1 2 3 4] [3 4 5 6]
+            ; 3 4
+        }
+         {
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            intersection 'a b
+            ; a: [3 4]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

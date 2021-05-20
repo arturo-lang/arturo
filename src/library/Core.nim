@@ -81,7 +81,7 @@ proc defineSymbols*() =
             ]
             
             call 'multiply [3 5]          ; => 15
-            
+            ;;;;
             call $[x][x+2] [5]            ; 7
         """:
             ##########################################################
@@ -172,17 +172,17 @@ proc defineSymbols*() =
         returns     = {Any,Nothing},
         example     = """
             do "print 123"                ; 123
-            
+            ;;;;
             do [
                 x: 3
                 print ["x =>" x]          ; x => 3
             ]
-            
+            ;;;;
             do.import [
                 x: 3
             ]
             print ["x =>" x]              ; x => 3
-            
+            ;;;;
             print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
             ; 233168
         """:
@@ -329,7 +329,8 @@ proc defineSymbols*() =
             
             print result
             ; true
-            
+            ;;;;
+            x: 2
             z: 3
             
             if? x>z [
@@ -360,24 +361,24 @@ proc defineSymbols*() =
         example     = """
             let 'x 10               ; x: 10
             print x                 ; 10
-
+            ;;;;
             ; variable assignments
             "a": 2                  ; a: 2
             
             {_someValue}: 3
             print var {_someValue}  ; 3
-
+            ;;;;
             ; multiple assignments
             [a b]: [1 2]
             print a                 ; 1
             print b                 ; 2
-
+            ;;;;
             ; multiple assignment to single value
             [a b c]: 5
             print a                 ; 5
             print b                 ; 5
             print c                 ; 5
-
+            ;;;;
             ; tuple unpacking
             divmod: function [x,y][
                 @[x/y x%y]
@@ -442,7 +443,7 @@ proc defineSymbols*() =
 
             1 2 3
             b: pop 2        ; b: [3 2]
-
+            ;;;;
             1 2 3
             pop.discard 1   ; popped 3 from the stack
         """:

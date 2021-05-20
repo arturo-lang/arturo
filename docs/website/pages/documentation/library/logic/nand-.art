@@ -5,19 +5,21 @@ returns: [
         :boolean
     ]
 description: "return the logical NAND for the given values"
-example: {
-        x: 2
-        y: 3
-        
-        if? nand? x=2 y=3 [
-            print "yep, that's correct!"]
-        ]
-        else [
-            print "nope, that's not correct"
-        ]
-        
-        ; nope, that's not correct
-    }
+examples: [
+        {
+            x: 2
+            y: 3
+            
+            if? nand? x=2 y=3 [
+                print "yep, that's correct!"]
+            ]
+            else [
+                print "nope, that's not correct"
+            ]
+            
+            ; nope, that's not correct
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

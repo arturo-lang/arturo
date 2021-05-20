@@ -5,24 +5,26 @@ returns: [
         :nothing
     ]
 description: "execute action until the given condition is not false or null"
-example: {
-        i: 0 
-        until [
-            print ["i =>" i] 
-            i: i + 1
-        ][i = 10]
-        
-        ; i => 0 
-        ; i => 1 
-        ; i => 2 
-        ; i => 3 
-        ; i => 4 
-        ; i => 5 
-        ; i => 6 
-        ; i => 7 
-        ; i => 8 
-        ; i => 9
-    }
+examples: [
+        {
+            i: 0 
+            until [
+                print ["i =>" i] 
+                i: i + 1
+            ][i = 10]
+            
+            ; i => 0 
+            ; i => 1 
+            ; i => 2 
+            ; i => 3 
+            ; i => 4 
+            ; i => 5 
+            ; i => 6 
+            ; i => 7 
+            ; i => 8 
+            ; i => 9
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

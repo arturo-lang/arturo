@@ -7,33 +7,39 @@ returns: [
 alias: ":"
 infix?: true
 description: "set symbol to given value"
-example: {
-        let 'x 10               ; x: 10
-        print x                 ; 10
-        
-        ; variable assignments
-        "a": 2                  ; a: 2
-        
-        {_someValue}: 3
-        print var {_someValue}  ; 3
-        
-        ; multiple assignments
-        [a b]: [1 2]
-        print a                 ; 1
-        print b                 ; 2
-        
-        ; multiple assignment to single value
-        [a b c]: 5
-        print a                 ; 5
-        print b                 ; 5
-        print c                 ; 5
-        
-        ; tuple unpacking
-        divmod: function [x,y][
-            @[x/y x%y]
-        ]
-        [d,m]: divmod 10 3      ; d: 3, m: 1
-    }
+examples: [
+        {
+            let 'x 10               ; x: 10
+            print x                 ; 10
+        }
+         {
+            ; variable assignments
+            "a": 2                  ; a: 2
+            
+            {_someValue}: 3
+            print var {_someValue}  ; 3
+        }
+         {
+            ; multiple assignments
+            [a b]: [1 2]
+            print a                 ; 1
+            print b                 ; 2
+        }
+         {
+            ; multiple assignment to single value
+            [a b c]: 5
+            print a                 ; 5
+            print b                 ; 5
+            print c                 ; 5
+        }
+         {
+            ; tuple unpacking
+            divmod: function [x,y][
+                @[x/y x%y]
+            ]
+            [d,m]: divmod 10 3      ; d: 3, m: 1
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

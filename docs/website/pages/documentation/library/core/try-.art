@@ -5,17 +5,19 @@ returns: [
         :boolean
     ]
 description: "perform action, catch possible errors and return status"
-example: {
-        try? [
-            ; let's try something dangerous
-            print 10 / 0
-        ]
-        else [
-            print "something went terribly wrong..."
-        ]
-        
-        ; something went terribly wrong...
-    }
+examples: [
+        {
+            try? [
+                ; let's try something dangerous
+                print 10 / 0
+            ]
+            else [
+                print "something went terribly wrong..."
+            ]
+            
+            ; something went terribly wrong...
+        }
+    ]
 attributes: #[
     import: #[
         types: [

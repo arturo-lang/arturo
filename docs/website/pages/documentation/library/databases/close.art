@@ -5,13 +5,15 @@ returns: [
         :nothing
     ]
 description: "close given database"
-example: {
-        db: open "my.db"    ; opens an SQLite database named 'my.db'
-        
-        print query db "SELECT * FROM users"
-        
-        close db            ; and close it
-    }
+examples: [
+        {
+            db: open "my.db"    ; opens an SQLite database named 'my.db'
+            
+            print query db "SELECT * FROM users"
+            
+            close db            ; and close it
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -7,24 +7,26 @@ returns: [
 alias: "#"
 infix?: false
 description: "create dictionary from given block or file, by getting all internal symbols"
-example: {
-        none: #[]               ; none: []
-        a: #[
-            name: "John"
-            age: 34
-        ]             
-        ; a: [name: "John", age: 34]
-        
-        d: #[
-            name: "John"
-            print "we are in the block"
-            age: 34
-            print "yep"
-        ]
-        ; we are in the block
-        ; yep
-        ; => [name: "John", age: 34]
-    }
+examples: [
+        {
+            none: #[]               ; none: []
+            a: #[
+                name: "John"
+                age: 34
+            ]             
+            ; a: [name: "John", age: 34]
+            
+            d: #[
+                name: "John"
+                print "we are in the block"
+                age: 34
+                print "yep"
+            ]
+            ; we are in the block
+            ; yep
+            ; => [name: "John", age: 34]
+        }
+    ]
 attributes: #[
     with: #[
         types: [

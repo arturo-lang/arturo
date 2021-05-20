@@ -5,14 +5,17 @@ returns: [
         :boolean
     ]
 description: "check if all values in given block are true"
-example: {
-        if all? @[2>1 "DONE"=upper "done" true] 
-            -> print "yes, all are true"
-        ; yes, all are true
-        
-        print all? @[true false true true]
-        ; false
-    }
+examples: [
+        {
+            if all? @[2>1 "DONE"=upper "done" true] 
+                -> print "yes, all are true"
+            ; yes, all are true
+        }
+         {
+            print all? @[true false true true]
+            ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

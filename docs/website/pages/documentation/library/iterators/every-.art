@@ -5,17 +5,21 @@ returns: [
         :boolean
     ]
 description: "check if every single item in collection satisfy given condition"
-example: {
-        if every? [2 4 6 8] 'x [even? x] 
-            -> print "every number is an even integer"
-        ; every number is an even integer
-        
-        print every? 1..10 'x -> x < 11
-        ; true
-        
-        print every? [2 3 5 7 11 14] 'x [prime? x]
-        ; false
-    }
+examples: [
+        {
+            if every? [2 4 6 8] 'x [even? x] 
+                -> print "every number is an even integer"
+            ; every number is an even integer
+        }
+         {
+            print every? 1..10 'x -> x < 11
+            ; true
+        }
+         {
+            print every? [2 3 5 7 11 14] 'x [prime? x]
+            ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

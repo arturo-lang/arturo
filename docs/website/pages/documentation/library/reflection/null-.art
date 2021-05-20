@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :null"
-example: {
-        print null? null            ; true
-        print null? ø               ; true
-        
-        print null? 123             ; false
-    }
+examples: [
+        {
+            print null? null            ; true
+            print null? ø               ; true
+            
+            print null? 123             ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

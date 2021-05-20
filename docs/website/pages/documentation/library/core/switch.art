@@ -7,13 +7,15 @@ returns: [
 alias: "?"
 infix?: true
 description: "if condition is not false or null perform given action, otherwise perform alternative action"
-example: {
-        x: 2
-        
-        switch x=2 -> print "yes, that's right!"
-                   -> print "nope, that's not right!
-        ; yes, that's right!
-    }
+examples: [
+        {
+            x: 2
+            
+            switch x=2 -> print "yes, that's right!"
+                       -> print "nope, that's not right!
+            ; yes, that's right!
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

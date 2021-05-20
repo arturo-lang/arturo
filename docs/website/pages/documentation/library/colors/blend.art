@@ -5,12 +5,13 @@ returns: [
         :color
     ]
 description: "blend given colors and get result"
-example: {
-        blend #red #CCCCCC                  ; => #E66666
-        
-        blend .balance: 0.75 #red #CCCCCC   
-        ; => #D99999
-    }
+examples: [
+        "blend #red #CCCCCC                  ; => #E66666"
+         {
+            blend .balance: 0.75 #red #CCCCCC   
+            ; => #D99999
+        }
+    ]
 attributes: #[
     balance: #[
         types: [

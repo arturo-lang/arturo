@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :integer"
-example: {
-        print integer? 123          ; true
-        print integer? "hello"      ; false
-    }
+examples: [
+        {
+            print integer? 123          ; true
+            print integer? "hello"      ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

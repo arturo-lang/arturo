@@ -7,12 +7,13 @@ returns: [
          :nothing
     ]
 description: "decrease given value by 1"
-example: {
-        print dec 5        ; 4
-        
-        a: 4
-        dec 'a             ; a: 3
-    }
+examples: [
+        "print dec 5        ; 4"
+         {
+            a: 4
+            dec 'a             ; a: 3
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

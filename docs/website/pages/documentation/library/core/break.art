@@ -5,21 +5,23 @@ returns: [
         :block
     ]
 description: "break out of current block or loop"
-example: {
-        loop 1..5 'x [
-            print ["x:" x]
-            if x=3 -> break
-            print "after check"
-        ]
-        print "after loop"
-        
-        ; x: 1
-        ; after check
-        ; x: 2
-        ; after check
-        ; x: 3
-        ; after loop
-    }
+examples: [
+        {
+            loop 1..5 'x [
+                print ["x:" x]
+                if x=3 -> break
+                print "after check"
+            ]
+            print "after loop"
+            
+            ; x: 1
+            ; after check
+            ; x: 2
+            ; after check
+            ; x: 3
+            ; after loop
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

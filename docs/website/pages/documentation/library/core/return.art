@@ -5,17 +5,19 @@ returns: [
         :nothing
     ]
 description: "return given value from current function"
-example: {
-        f: function [x][ 
-            loop 1..x 'y [ 
-                if y=5 [ return y*2 ] 
-            ] 
-            return x*2
-        ]
-        
-        print f 3         ; 6
-        print f 6         ; 10
-    }
+examples: [
+        {
+            f: function [x][ 
+                loop 1..x 'y [ 
+                    if y=5 [ return y*2 ] 
+                ] 
+                return x*2
+            ]
+            
+            print f 3         ; 6
+            print f 6         ; 10
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

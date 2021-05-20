@@ -5,9 +5,11 @@ returns: [
         :nothing
     ]
 description: "unzip given archive to destination"
-example: {
-        unzip "folder" "archive.zip"
-    }
+examples: [
+        {
+            unzip "folder" "archive.zip"
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

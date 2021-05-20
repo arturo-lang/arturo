@@ -5,7 +5,9 @@ returns: [
         :integer
     ]
 description: "calculate greatest common divisor for given collection of integers"
-example: "print gcd [48 60 120]         ; 12"
+examples: [
+        "print gcd [48 60 120]         ; 12"
+    ]
 attributes: #[
     ]
 arguments: #[

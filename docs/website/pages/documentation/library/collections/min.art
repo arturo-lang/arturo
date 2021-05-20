@@ -6,7 +6,9 @@ returns: [
          :any
     ]
 description: "get minimum element in given collection"
-example: "print min [4 2 8 5 1 9]       ; 1"
+examples: [
+        "print min [4 2 8 5 1 9]       ; 1"
+    ]
 attributes: #[
     ]
 arguments: #[

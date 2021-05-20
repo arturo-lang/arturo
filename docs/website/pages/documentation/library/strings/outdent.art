@@ -6,25 +6,28 @@ returns: [
          :nothing
     ]
 description: "outdent each line of given text, by using minimum shared indentation"
-example: {
-        print outdent {:
-            one
-                two
-                three
-        :}
-        ; one
-        ;     two
-        ;     three
-        
-        print outdent.n:1 {:
-            one
-                two
-                three
-        :}
-        ;  one
-        ;      two
-        ;      three
-    }
+examples: [
+        {
+            print outdent {:
+                one
+                    two
+                    three
+            :}
+            ; one
+            ;     two
+            ;     three
+        }
+         {
+            print outdent.n:1 {:
+                one
+                    two
+                    three
+            :}
+            ;  one
+            ;      two
+            ;      three
+        }
+    ]
 attributes: #[
     n: #[
         types: [

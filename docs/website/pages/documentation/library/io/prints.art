@@ -5,13 +5,15 @@ returns: [
         :nothing
     ]
 description: "print given value to screen"
-example: {
-        prints "Hello "
-        prints "world"
-        print "!"             
-        
-        ; Hello world!
-    }
+examples: [
+        {
+            prints "Hello "
+            prints "world"
+            print "!"             
+            
+            ; Hello world!
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -6,20 +6,27 @@ returns: [
          :nothing
     ]
 description: "split collection to components"
-example: {
-        split "hello"                 ; => [`h` `e` `l` `l` `o`]
-        split.words "hello world"     ; => ["hello" "world"]
-        
-        split.every: 2 "helloworld"
-        ; => ["he" "ll" "ow" "or" "ld"]
-        
-        split.at: 4 "helloworld"
-        ; => ["hell" "oworld"]
-        
-        arr: 1..9
-        split.at:3 'arr
-        ; => [ [1 2 3 4] [5 6 7 8 9] ]
-    }
+examples: [
+        {
+            split "hello"                 ; => [`h` `e` `l` `l` `o`]
+        }
+         {
+            split.words "hello world"     ; => ["hello" "world"]
+        }
+         {
+            split.every: 2 "helloworld"
+            ; => ["he" "ll" "ow" "or" "ld"]
+        }
+         {
+            split.at: 4 "helloworld"
+            ; => ["hell" "oworld"]
+        }
+         {
+            arr: 1..9
+            split.at:3 'arr
+            ; => [ [1 2 3 4] [5 6 7 8 9] ]
+        }
+    ]
 attributes: #[
     words: #[
         types: [

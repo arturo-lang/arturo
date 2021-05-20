@@ -7,14 +7,27 @@ returns: [
 alias: ">>"
 infix?: false
 description: "write content to file at given path"
-example: {
-        ; write some string data to given file path
-        write "somefile.txt" "Hello world!"
-        
-        ; we can also write any type of data as JSON
-        write.json "data.json" myData
-    }
+examples: [
+        {
+            ; write some string data to given file path
+            write "somefile.txt" "Hello world!"
+        }
+         {
+            ; we can also write any type of data as JSON
+            write.json "data.json" myData
+        }
+         {
+            ; append to an existing file
+            write.append "somefile.txt" "Yes, Hello again!"
+        }
+    ]
 attributes: #[
+    append: #[
+        types: [
+                :boolean
+            ]
+        description: "append to given file"
+        ]
     directory: #[
         types: [
                 :boolean

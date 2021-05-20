@@ -9,19 +9,24 @@ returns: [
 alias: "<<"
 infix?: false
 description: "read file from given path"
-example: {
-        ; reading a simple local file
-        str: read "somefile.txt"
-        
-        ; also works with remote urls
-        page: read "http://www.somewebsite.com/page.html"
-        
-        ; we can also "read" JSON data as an object
-        data: read.json "mydata.json"
-        
-        ; or even convert Markdown to HTML on-the-fly
-        html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
-    }
+examples: [
+        {
+            ; reading a simple local file
+            str: read "somefile.txt"
+        }
+         {
+            ; also works with remote urls
+            page: read "http://www.somewebsite.com/page.html"
+        }
+         {
+            ; we can also "read" JSON data as an object
+            data: read.json "mydata.json"
+        }
+         {
+            ; or even convert Markdown to HTML on-the-fly
+            html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
+        }
+    ]
 attributes: #[
     lines: #[
         types: [

@@ -7,12 +7,14 @@ returns: [
 alias: ">"
 infix?: true
 description: "check if valueA > valueB (greater than)"
-example: {
-        greater? 5 2          ; => true
-        greater? 5 6-1        ; => false
-        
-        print 3>2             ; true
-    }
+examples: [
+        {
+            greater? 5 2          ; => true
+            greater? 5 6-1        ; => false
+            
+            print 3>2             ; true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

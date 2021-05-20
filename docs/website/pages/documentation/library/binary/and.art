@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "calculate the binary AND for the given values"
-example: {
-        print and 2 3      ; 2
-        
-        a: 2
-        and 'a 3           ; a: 2
-    }
+examples: [
+        "print and 2 3      ; 2"
+         {
+            a: 2
+            and 'a 3           ; a: 2
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

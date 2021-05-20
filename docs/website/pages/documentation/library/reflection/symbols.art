@@ -5,17 +5,19 @@ returns: [
         :dictionary
     ]
 description: "get currently defined symbols"
-example: {
-        a: 2
-        b: "hello"
-        
-        print symbols
-        
-        ; [
-        ;    a: 2
-        ;    b: "hello"
-        ;_]
-    }
+examples: [
+        {
+            a: 2
+            b: "hello"
+            
+            print symbols
+            
+            ; [
+            ;    a: 2
+            ;    b: "hello"
+            ;_]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "shift-left first value bits by second value"
-example: {
-        print shl 2 3      ; 16
-        
-        a: 2
-        shl 'a 3           ; a: 16
-    }
+examples: [
+        "print shl 2 3      ; 16"
+         {
+            a: 2
+            shl 'a 3           ; a: 16
+        }
+    ]
 attributes: #[
     safe: #[
         types: [

@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "check if given number is zero"
-example: {
-        zero? 5-5         ; => true
-        zero? 4           ; => false
-    }
+examples: [
+        {
+            zero? 5-5         ; => true
+            zero? 4           ; => false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

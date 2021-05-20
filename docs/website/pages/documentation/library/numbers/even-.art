@@ -5,12 +5,13 @@ returns: [
         :boolean
     ]
 description: "check if given number is even"
-example: {
-        even? 4           ; => true
-        even? 3           ; => false
-        
-        print select 1..10 => even?       ; 2 4 6 8 10
-    }
+examples: [
+        {
+            even? 4           ; => true
+            even? 3           ; => false
+        }
+         "print select 1..10 => even?       ; 2 4 6 8 10"
+    ]
 attributes: #[
     ]
 arguments: #[

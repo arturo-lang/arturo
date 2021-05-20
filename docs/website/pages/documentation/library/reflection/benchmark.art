@@ -5,14 +5,16 @@ returns: [
         :nothing
     ]
 description: "benchmark given code"
-example: {
-        benchmark [ 
-            ; some process that takes some time
-            loop 1..10000 => prime? 
-        ]
-        
-        ; [benchmark] time: 0.065s
-    }
+examples: [
+        {
+            benchmark [ 
+                ; some process that takes some time
+                loop 1..10000 => prime? 
+            ]
+            
+            ; [benchmark] time: 0.065s
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

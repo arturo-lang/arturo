@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :inline"
-example: {
-        inline? first [(something) x]
-        ; => true
-    }
+examples: [
+        {
+            inline? first [(something) x]
+            ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

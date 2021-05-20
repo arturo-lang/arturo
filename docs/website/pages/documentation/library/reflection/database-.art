@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :database"
-example: {
-        database? open "my.db"
-        ; => true
-    }
+examples: [
+        {
+            database? open "my.db"
+            ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

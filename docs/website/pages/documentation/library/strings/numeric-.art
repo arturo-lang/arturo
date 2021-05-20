@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "check if given string is numeric"
-example: {
-        numeric? "hello"           ; => false
-        numeric? "3.14"            ; => true
-        numeric? "18966"           ; => true
-        numeric? "123xxy"          ; => false
-    }
+examples: [
+        {
+            numeric? "hello"           ; => false
+            numeric? "3.14"            ; => true
+            numeric? "18966"           ; => true
+            numeric? "123xxy"          ; => false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

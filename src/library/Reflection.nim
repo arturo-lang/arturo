@@ -343,7 +343,7 @@ proc defineSymbols*() =
             ; |
             ; |        returns  :nothing
             ; |--------------------------------------------------------------------------------
-
+            ;;;;
             print info.get 'print
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:

@@ -6,12 +6,15 @@ returns: [
          :nothing
     ]
 description: "convert given string to uppercase"
-example: {
-        print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
-        
-        str: "hello World, 你好!"
-        upper 'str                           ; str: "HELLO WORLD, 你好!"
-    }
+examples: [
+        {
+            print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
+        }
+         {
+            str: "hello World, 你好!"
+            upper 'str                           ; str: "HELLO WORLD, 你好!"
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

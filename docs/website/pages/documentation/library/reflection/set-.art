@@ -5,12 +5,14 @@ returns: [
         :boolean
     ]
 description: "check if given variable is defined"
-example: {
-        boom: 12
-        print set? 'boom          ; true
-        
-        print set? 'zoom          ; false
-    }
+examples: [
+        {
+            boom: 12
+            print set? 'boom          ; true
+            
+            print set? 'zoom          ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

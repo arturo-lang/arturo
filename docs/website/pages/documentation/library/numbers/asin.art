@@ -6,14 +6,17 @@ returns: [
          :complex
     ]
 description: "calculate the inverse sine of given angle"
-example: {
-        print asin 0                ; 0.0
-        print asin 0.3              ; 0.3046926540153975
-        print asin 1.0              ; 1.570796326794897
-        
-        asin to :complex @[pi 1]
-        ; => 1.248543032813438+1.867114393160262i
-    }
+examples: [
+        {
+            print asin 0                ; 0.0
+            print asin 0.3              ; 0.3046926540153975
+            print asin 1.0              ; 1.570796326794897
+        }
+         {
+            asin to :complex @[pi 1]
+            ; => 1.248543032813438+1.867114393160262i
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

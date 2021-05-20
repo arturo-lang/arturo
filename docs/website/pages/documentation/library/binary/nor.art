@@ -6,12 +6,13 @@ returns: [
          :nothing
     ]
 description: "calculate the binary NOR for the given values"
-example: {
-        print nor 2 3      ; -4
-        
-        a: 2
-        nor 'a 3           ; a: -4
-    }
+examples: [
+        "print nor 2 3      ; -4"
+         {
+            a: 2
+            nor 'a 3           ; a: -4
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -7,12 +7,14 @@ returns: [
 alias: "="
 infix?: true
 description: "check if valueA = valueB (equality)"
-example: {
-        equal? 5 2            ; => false
-        equal? 5 6-1          ; => true
-        
-        print 3=3             ; true
-    }
+examples: [
+        {
+            equal? 5 2            ; => false
+            equal? 5 6-1          ; => true
+            
+            print 3=3             ; true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

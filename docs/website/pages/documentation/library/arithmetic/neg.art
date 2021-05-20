@@ -8,12 +8,13 @@ returns: [
          :nothing
     ]
 description: "reverse sign of given value and return it"
-example: {
-        print neg 1        ; -1
-        
-        a: 5
-        neg 'a             ; a: -5
-    }
+examples: [
+        "print neg 1        ; -1"
+         {
+            a: 5
+            neg 'a             ; a: -5
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

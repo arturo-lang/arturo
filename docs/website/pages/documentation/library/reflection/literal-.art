@@ -5,11 +5,13 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :literal"
-example: {
-        print literal? 'x           ; true
-        print literal? "x"          ; false
-        print literal? 123          ; false
-    }
+examples: [
+        {
+            print literal? 'x           ; true
+            print literal? "x"          ; false
+            print literal? 123          ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

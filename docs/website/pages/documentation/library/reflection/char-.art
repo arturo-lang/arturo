@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :char"
-example: {
-        print char? `a`         ; true
-        print char? 123         ; false
-    }
+examples: [
+        {
+            print char? `a`         ; true
+            print char? 123         ; false
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

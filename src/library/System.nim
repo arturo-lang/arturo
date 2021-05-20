@@ -108,7 +108,7 @@ proc defineSymbols*() =
         returns     = {Nothing},
         example     = """
             exit              ; (terminates the program)
-            
+            ;;;;
             exit.with: 3      ; (terminates the program with code 3)
         """:
             ##########################################################

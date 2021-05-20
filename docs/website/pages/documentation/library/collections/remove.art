@@ -10,19 +10,22 @@ returns: [
 alias: "--"
 infix?: true
 description: "remove value from given collection"
-example: {
-        remove "hello" "l"        ; => "heo"
-        print "hello" -- "l"      ; heo
-        
-        str: "mystring"
-        remove 'str "str"         
-        print str                 ; mying
-        
-        print remove.once "hello" "l"
-        ; helo
-        
-        remove [1 2 3 4] 4        ; => [1 2 3]
-    }
+examples: [
+        {
+            remove "hello" "l"        ; => "heo"
+            print "hello" -- "l"      ; heo
+        }
+         {
+            str: "mystring"
+            remove 'str "str"         
+            print str                 ; mying
+        }
+         {
+            print remove.once "hello" "l"
+            ; helo
+        }
+         "remove [1 2 3 4] 4        ; => [1 2 3]"
+    ]
 attributes: #[
     key: #[
         types: [

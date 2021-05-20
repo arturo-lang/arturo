@@ -6,11 +6,10 @@ returns: [
          :string
     ]
 description: "get path for given module name"
-example: {
-        print module 'html        ; /usr/local/lib/arturo/html.art
-        
-        do.import module 'html    ; (imports given module)
-    }
+examples: [
+        "print module \'html        ; /usr/local/lib/arturo/html.art"
+         "do.import module \'html    ; (imports given module)"
+    ]
 attributes: #[
     ]
 arguments: #[

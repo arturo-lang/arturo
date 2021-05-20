@@ -5,11 +5,13 @@ returns: [
         :boolean
     ]
 description: "check if given file exists"
-example: {
-        if exists? "somefile.txt" [ 
-            print "file exists!" 
-        ]
-    }
+examples: [
+        {
+            if exists? "somefile.txt" [ 
+                print "file exists!" 
+            ]
+        }
+    ]
 attributes: #[
     directory: #[
         types: [

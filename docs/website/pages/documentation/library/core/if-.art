@@ -5,24 +5,28 @@ returns: [
         :boolean
     ]
 description: "perform action, if given condition is not false or null and return condition result"
-example: {
-        x: 2
-        
-        result: if? x=2 -> print "yes, that's right!"
-        ; yes, that's right!
-        
-        print result
-        ; true
-        
-        z: 3
-        
-        if? x>z [
-            print "x was greater than z"
-        ]
-        else [
-            print "nope, x was not greater than z"
-        ]
-    }
+examples: [
+        {
+            x: 2
+            
+            result: if? x=2 -> print "yes, that's right!"
+            ; yes, that's right!
+            
+            print result
+            ; true
+        }
+         {
+            x: 2
+            z: 3
+            
+            if? x>z [
+                print "x was greater than z"
+            ]
+            else [
+                print "nope, x was not greater than z"
+            ]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

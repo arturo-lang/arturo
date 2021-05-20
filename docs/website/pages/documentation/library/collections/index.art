@@ -7,15 +7,17 @@ returns: [
          :string
     ]
 description: "return first index of value in given collection"
-example: {
-        ind: index "hello" "e"
-        print ind                 ; 1
-        
-        print index [1 2 3] 3     ; 2
-        
-        type index "hello" "x"
-        ; :null
-    }
+examples: [
+        {
+            ind: index "hello" "e"
+            print ind                 ; 1
+        }
+         "print index [1 2 3] 3     ; 2"
+         {
+            type index "hello" "x"
+            ; :null
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

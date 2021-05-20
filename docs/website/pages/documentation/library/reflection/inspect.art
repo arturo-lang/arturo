@@ -5,12 +5,14 @@ returns: [
         :nothing
     ]
 description: "print full dump of given value to screen"
-example: {
-        inspect 3                 ; 3 :integer
-        
-        a: "some text"
-        inspect a                 ; some text :string
-    }
+examples: [
+        {
+            inspect 3                 ; 3 :integer
+            
+            a: "some text"
+            inspect a                 ; some text :string
+        }
+    ]
 attributes: #[
     muted: #[
         types: [

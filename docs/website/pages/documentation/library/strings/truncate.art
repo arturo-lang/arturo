@@ -6,21 +6,23 @@ returns: [
          :nothing
     ]
 description: "truncate string at given length"
-example: {
-        str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
-        
-        truncate str 30
-        ; => "Lorem ipsum dolor sit amet, con..."
-        
-        truncate.preserve str 30
-        ; => "Lorem ipsum dolor sit amet,..."
-        
-        truncate.with:"---" str 30
-        ; => "Lorem ipsum dolor sit amet, con---"
-        
-        truncate.preserve.with:"---" str 30
-        ; => "Lorem ipsum dolor sit amet,---"
-    }
+examples: [
+        {
+            str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
+            
+            truncate str 30
+            ; => "Lorem ipsum dolor sit amet, con..."
+            
+            truncate.preserve str 30
+            ; => "Lorem ipsum dolor sit amet,..."
+            
+            truncate.with:"---" str 30
+            ; => "Lorem ipsum dolor sit amet, con---"
+            
+            truncate.preserve.with:"---" str 30
+            ; => "Lorem ipsum dolor sit amet,---"
+        }
+    ]
 attributes: #[
     with: #[
         types: [

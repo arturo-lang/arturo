@@ -5,15 +5,17 @@ returns: [
         :block
     ]
 description: "get files in given path"
-example: {
-        loop list "." 'file [
-        ___print file
-        ]
-        
-        ; tests
-        ; var
-        ; data.txt
-    }
+examples: [
+        {
+            loop list "." 'file [
+            ___print file
+            ]
+            
+            ; tests
+            ; var
+            ; data.txt
+        }
+    ]
 attributes: #[
     recursive: #[
         types: [

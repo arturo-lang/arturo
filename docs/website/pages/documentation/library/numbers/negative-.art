@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "check if given number is negative"
-example: {
-        negative? 5       ; => false
-        negative? 6-7     ; => true
-    }
+examples: [
+        {
+            negative? 5       ; => false
+            negative? 6-7     ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

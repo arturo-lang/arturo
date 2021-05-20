@@ -5,10 +5,12 @@ returns: [
         :dictionary
     ]
 description: "get info about terminal"
-example: {
-        print terminal      ; [width:107 height:34]
-        terminal\width      ; => 107
-    }
+examples: [
+        {
+            print terminal      ; [width:107 height:34]
+            terminal\width      ; => 107
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

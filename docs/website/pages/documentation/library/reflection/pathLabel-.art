@@ -5,10 +5,12 @@ returns: [
         :boolean
     ]
 description: "checks if given value is of type :pathLabel"
-example: {
-        pathLabel? first [a\b\c: x]
-        ; => true
-    }
+examples: [
+        {
+            pathLabel? first [a\b\c: x]
+            ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

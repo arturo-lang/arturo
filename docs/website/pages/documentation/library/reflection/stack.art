@@ -5,12 +5,14 @@ returns: [
         :dictionary
     ]
 description: "get current stack"
-example: {
-        1 2 3 "done"
-        
-        print stack
-        ; 1 2 3 done
-    }
+examples: [
+        {
+            1 2 3 "done"
+            
+            print stack
+            ; 1 2 3 done
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

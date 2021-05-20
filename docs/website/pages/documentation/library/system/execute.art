@@ -5,13 +5,15 @@ returns: [
         :string
     ]
 description: "execute given shell command"
-example: {
-        print execute "pwd"
-        ; /Users/admin/Desktop
-        
-        split.lines execute "ls"
-        ; => ["tests" "var" "data.txt"]
-    }
+examples: [
+        {
+            print execute "pwd"
+            ; /Users/admin/Desktop
+            
+            split.lines execute "ls"
+            ; => ["tests" "var" "data.txt"]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

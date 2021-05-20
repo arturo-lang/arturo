@@ -6,12 +6,15 @@ returns: [
          :nothing
     ]
 description: "add given prefix to string"
-example: {
-        prefix "ello" "h"                  ; => "hello"
-        
-        str: "ello"
-        prefix 'str                        ; str: "hello"
-    }
+examples: [
+        {
+            prefix "ello" "h"                  ; => "hello"
+        }
+         {
+            str: "ello"
+            prefix 'str                        ; str: "hello"
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

@@ -5,10 +5,12 @@ returns: [
         :type
     ]
 description: "get type of given value"
-example: {
-        print type 18966          ; :integer
-        print type "hello world"  ; :string
-    }
+examples: [
+        {
+            print type 18966          ; :integer
+            print type "hello world"  ; :string
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

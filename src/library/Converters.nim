@@ -423,7 +423,7 @@ proc defineSymbols*() =
             print as.binary 123           ; 1111011
             print as.octal 123            ; 173
             print as.hex 123              ; 7b
-            
+            ;;;;
             print as.ascii "thís ìß ñot à tést"
             ; this iss not a test
         """:
@@ -688,12 +688,12 @@ proc defineSymbols*() =
             
             f: $[x][x+2]
             print f 10                ; 12
-            
+            ;;;;
             multiply: function [x,y][
                 x * y
             ]
             print multiply 3 5        ; 15
-            
+            ;;;;
             publicF: function .export['x] [z][
                 print ["z =>" z]
                 x: 5
@@ -704,7 +704,7 @@ proc defineSymbols*() =
             
             print x
             ; 5
-
+            ;;;;
             ; memoization
             fib: $[x].memoize[
                 if? x<2 [1]
@@ -762,11 +762,10 @@ proc defineSymbols*() =
             to :boolean 0                 ; false
             to :boolean 1                 ; true
             to :boolean "true"            ; true
-            
+            ;;;;
             to :literal "symbol"          ; 'symbol
             to :string 'symbol            ; "symbol"
             to :string :word              ; "word"
-            
             to :block "one two three"     ; [one two three]
 
             to :string .format:"dd/MM/yy" now

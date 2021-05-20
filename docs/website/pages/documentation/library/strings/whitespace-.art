@@ -5,11 +5,13 @@ returns: [
         :boolean
     ]
 description: "check if given string consists only of whitespace"
-example: {
-        whitespace? "hello"           ; => false
-        whitespace? " "               ; => true
-        whitespace? "\n \n"           ; => true
-    }
+examples: [
+        {
+            whitespace? "hello"           ; => false
+            whitespace? " "               ; => true
+            whitespace? "\n \n"           ; => true
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

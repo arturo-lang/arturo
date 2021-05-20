@@ -5,15 +5,17 @@ returns: [
         :block
     ]
 description: "get list of keys for given dictionary"
-example: {
-        user: #[
-            name: "John"
-            surname: "Doe"
-        ]
-        
-        keys user
-        => ["name" "surname"]
-    }
+examples: [
+        {
+            user: #[
+                name: "John"
+                surname: "Doe"
+            ]
+            
+            keys user
+            => ["name" "surname"]
+        }
+    ]
 attributes: #[
     ]
 arguments: #[

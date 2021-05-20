@@ -5,16 +5,18 @@ returns: [
         :floating
     ]
 description: "get population variance of given collection of numbers"
-example: {
-        arr:  [1 2 3 4]
-        arr2: [3 120 4 7 87 2 6 34]
-        
-        print variance arr          ; 1.25
-        print variance arr2         ; 1824.109375
-        
-        variance.sample arr         ; => 1.666666666666667
-        variance.sample arr2        ; => 2084.696428571428
-    }
+examples: [
+        {
+            arr:  [1 2 3 4]
+            arr2: [3 120 4 7 87 2 6 34]
+            
+            print variance arr          ; 1.25
+            print variance arr2         ; 1824.109375
+            
+            variance.sample arr         ; => 1.666666666666667
+            variance.sample arr2        ; => 2084.696428571428
+        }
+    ]
 attributes: #[
     sample: #[
         types: [

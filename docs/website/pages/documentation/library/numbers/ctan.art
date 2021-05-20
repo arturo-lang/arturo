@@ -6,14 +6,17 @@ returns: [
          :complex
     ]
 description: "calculate the cotangent of given angle"
-example: {
-        print ctan 0                ; inf
-        print ctan 0.3              ; 3.232728143765828
-        print ctan 1.0              ; 0.6420926159343308
-        
-        ctan to :complex [1 1]
-        ; => 0.2176215618544027-0.8680141428959249i
-    }
+examples: [
+        {
+            print ctan 0                ; inf
+            print ctan 0.3              ; 3.232728143765828
+            print ctan 1.0              ; 0.6420926159343308
+        }
+         {
+            ctan to :complex [1 1]
+            ; => 0.2176215618544027-0.8680141428959249i
+        }
+    ]
 attributes: #[
     ]
 arguments: #[
