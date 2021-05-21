@@ -99,8 +99,8 @@ proc dumpStack*() =
 
         i += 1
 
-when defined(VERBOSE):
+# when defined(VERBOSE):
 
-    proc printAttrs*() =
-        for k,v in pairs(Attrs):
-            echo k & " => " & $(v)
+#     proc printAttrs*() =
+#         for k,v in pairs(Attrs):
+#             echo k & " => " & $(v)
