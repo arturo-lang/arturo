@@ -1,0 +1,33 @@
+mulInv: function [a0, b0][
+    [a b x0]: @[a0 b0 0]
+    result: 1
+    if b = 1 -> return result
+    while [a > 1][
+        q: a / b
+        a: a % b
+        tmp: a
+        a: b
+        b: tmp
+        result: result - q * x0
+        tmp: x0
+        x0: result
+        result: tmp
+    ]
+    if result < 0 -> result: result + b0
+    return result
+]
+
+chineseRemainder: function [N, A][
+    prod: 1
+    s: 0
+
+    loop N 'x -> prod: prod * x
+
+    loop.with:'i N 'x [
+        p: prod / x
+        s: s + (mulInv p x) * p * A\[i]
+    ]
+    return s % prod
+]
+
+print chineseRemainder [3 5 7] [2 3 2]
