@@ -1,0 +1,24 @@
+latinSquare: function [n][
+    square: new []
+    variants: shuffle permutate 0..n-1
+    while -> n > size square [
+        row: sample variants
+        'square ++ @[row]
+        filter 'variants 'variant [
+            reject: false
+            loop.with:'i variant 'col [
+                if col = row\[i] ->
+                    reject: true
+            ]
+            reject
+        ]
+    ]
+    return square
+]
+
+loop 2 'x [
+    ls: latinSquare 5
+    loop ls 'row ->
+        print row
+    print "---------"
+]
