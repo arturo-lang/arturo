@@ -282,19 +282,28 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert given string to lowercase",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Char,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {String,Nothing},
+        returns     = {String,Char,Nothing},
         example     = """
             print lower "hello World, 你好!"      ; "hello world, 你好!"
             ;;;;
             str: "hello World, 你好!"
             lower 'str                           ; str: "hello world, 你好!"
+            ;;;;
+            ch: `A`
+            lower ch    
+            ; => `a`  
         """:
             ##########################################################
             if x.kind==String: push(newString(x.s.toLower()))
-            else: InPlace.s = InPlaced.s.toLower()
+            elif x.kind==Char: push(newChar(x.c.toLower()))
+            else: 
+                if InPlace.kind==String:
+                    InPlaced.s = InPlaced.s.toLower()
+                else:
+                    InPlaced.c = InPlaced.c.toLower()
 
     builtin "lower?",
         alias       = unaliased, 
@@ -747,19 +756,28 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "convert given string to uppercase",
         args        = {
-            "string": {String,Literal}
+            "string": {String,Char,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {String,Nothing},
+        returns     = {String,Char,Nothing},
         example     = """
             print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"
             ;;;;
             str: "hello World, 你好!"
             upper 'str                           ; str: "HELLO WORLD, 你好!"
+            ;;;;
+            ch: `a`
+            upper ch    
+            ; => `A`                     
         """:
             ##########################################################
             if x.kind==String: push(newString(x.s.toUpper()))
-            else: InPlace.s = InPlaced.s.toUpper()
+            elif x.kind==Char: push(newChar(x.c.toUpper()))
+            else: 
+                if InPlace.kind==String:
+                    InPlace.s = InPlaced.s.toUpper()
+                else:
+                    InPlaced.c = InPlaced.c.toUpper()
 
     builtin "upper?",
         alias       = unaliased, 
