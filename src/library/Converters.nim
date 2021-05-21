@@ -16,7 +16,7 @@
 # Libraries
 #=======================================
 
-import sequtils, strformat, sugar, times, unicode
+import algorithm, sequtils, strformat, sugar, times, unicode
 when not defined(NOGMP):
     import extras/bignum
 
@@ -349,9 +349,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "create array from given block, by reducing/calculating all internal values",
         args        = {
-            "source": {String,Block}
+            "source": {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "of"    : ({Integer,Block},"initialize an empty n-dimensional array with given dimensions")
+        },
         returns     = {Block},
         example     = """
             none: @[]               ; none: []
@@ -369,24 +371,52 @@ proc defineSymbols*() =
             ; we are in the block
             ; yep
             ; => [4 123]
+            ;;;;
+            ; initializing empty array with initial value
+            x: array.of: 2 "done"
+            inspect.muted x
+            ; [ :block
+            ;     done :string
+            ;     done :string
+            ; ]
+            ;;;;
+            ; initializing empty n-dimensional array with initial value
+            x: array.of: [3 4] 0          ; initialize a 3x4 2D array
+                                            ; with zeros
+            ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             ##########################################################
-            let stop = SP
-
-            if x.kind==Block:
-                discard execBlock(x)
-            elif x.kind==String:
-                let (_{.inject.}, tp) = getSource(x.s)
-
-                if tp!=TextData:
-                    discard execBlock(doParse(x.s, isFile=false))#, isIsolated=true)
+            if (let aOf = popAttr("of"); aOf != VNULL):
+                if aOf.kind == Integer:
+                    let size = aOf.i
+                    let blk:ValueArray = repeat(x, size)
+                    push newBlock(blk)
                 else:
-                    echo "file does not exist"
+                    var val: Value = x
+                    var blk: Value = newBlock(@[])
 
-            let arr: ValueArray = sTopsFrom(stop)
-            SP = stop
+                    for item in aOf.a.reversed:
+                        blk.a = repeat(val, item.i)
+                        val = copyValue(blk)
 
-            push(newBlock(arr))
+                    push blk
+            else:
+                let stop = SP
+
+                if x.kind==Block:
+                    discard execBlock(x)
+                elif x.kind==String:
+                    let (_{.inject.}, tp) = getSource(x.s)
+
+                    if tp!=TextData:
+                        discard execBlock(doParse(x.s, isFile=false))#, isIsolated=true)
+                    else:
+                        echo "file does not exist"
+
+                let arr: ValueArray = sTopsFrom(stop)
+                SP = stop
+
+                push(newBlock(arr))
 
     builtin "as",
         alias       = unaliased, 
