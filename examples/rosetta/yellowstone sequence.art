@@ -1,0 +1,24 @@
+yellowstone: function [n][
+    result: new [1 2 3]
+    present: new [1 2 3]
+    start: new 4
+    while [n > size result][
+        candidate: new start
+        while ø [
+            if all? @[
+                not? contains? present candidate
+                1 = gcd @[candidate last result]
+                1 <> gcd @[candidate get result (size result)-2]
+            ][
+                'result ++ candidate
+                'present ++ candidate
+                while [contains? present start] -> inc 'start
+                break
+            ]
+            inc 'candidate
+        ]
+    ]
+    return result
+]
+
+print yellowstone 30
