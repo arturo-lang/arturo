@@ -1,0 +1,7 @@
+harmonicSum: function [variable, lo, hi, term][
+    result: new 0.0
+    loop lo..hi 'n ->
+        'result + do ~"|variable|: |n| |term|"
+    result
+]
+print ["harmonicSum 1->100:" harmonicSum 'i 1 100 {1.0 / i}]
