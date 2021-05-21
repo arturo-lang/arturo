@@ -1,0 +1,7 @@
+text: "你好"
+
+print ["text:" text]
+print ["length:" size text]
+print ["contains string '好'?:" contains? text "好"]
+print ["contains character '平'?:" contains? text `平`]
+print ["text as ascii:" as.ascii text]
