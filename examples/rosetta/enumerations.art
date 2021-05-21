@@ -1,0 +1,15 @@
+enum: [apple banana cherry]
+print "as a block of words:"
+inspect.muted enum
+
+enum: ['apple 'banana 'cherry]
+print "\nas a block of literals:"
+print enum
+
+enum: #[
+    apple: 1
+    banana: 2
+    cherry: 3
+]
+print "\nas a dictionary:"
+print enum
