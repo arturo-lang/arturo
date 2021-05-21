@@ -25,13 +25,34 @@ examples: [
             ; yep
             ; => [4 123]
         }
+         {
+            ; initializing empty array with initial value
+            x: array.of: 2 "done"
+            inspect.muted x
+            ; [ :block
+            ;     done :string
+            ;     done :string
+            ; ]
+        }
+         {
+            ; initializing empty n-dimensional array with initial value
+            x: array.of: [3 4] 0          ; initialize a 3x4 2D array
+                                            ; with zeros
+            ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
+        }
     ]
 attributes: #[
+    of: #[
+        types: [
+                :integer
+                 :block
+            ]
+        description: "initialize an empty n-dimensional array with given dimensions"
+        ]
     ]
 arguments: #[
     source: [
-            :string
-             :block
+            :any
         ]
     ]
 related: [
