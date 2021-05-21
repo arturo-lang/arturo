@@ -1,0 +1,11 @@
+proc: function [x]->
+    ((abs x) ^ 0.5) + 5 * x ^ 3
+
+ask: function [msg][
+    to [:floating] first.n: 11 split.words strip input msg
+]
+
+loop reverse ask "11 numbers: " 'n [
+    result: proc n
+    print [n ":" (result > 400)? -> "TOO LARGE!" -> result]
+]
