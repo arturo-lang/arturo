@@ -2,7 +2,8 @@ name: "upper"
 type: :function
 module: "Strings"
 returns: [
-        :string
+        :char
+         :string
          :nothing
     ]
 description: "convert given string to uppercase"
@@ -14,12 +15,18 @@ examples: [
             str: "hello World, 你好!"
             upper 'str                           ; str: "HELLO WORLD, 你好!"
         }
+         {
+            ch: `a`
+            upper ch    
+            ; => `A`
+        }
     ]
 attributes: #[
     ]
 arguments: #[
     string: [
-            :string
+            :char
+             :string
              :literal
         ]
     ]
