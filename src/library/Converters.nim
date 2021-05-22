@@ -76,6 +76,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                         else:
                             when not defined(NOGMP): 
                                 return newString($(y.bi))
+                    of Date:
+                        return newDate(local(fromUnix(y.i)))
                     of Binary:
                         let str = $(y.i)
                         var ret: ByteArray = newSeq[byte](str.len)
@@ -312,6 +314,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
 
             of Date:
                 case tp:
+                    of Integer:
+                        return newInteger(toUnix(toTime(y.eobj)))
                     of String:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
                         if (let aFormat = popAttr("format"); aFormat != VNULL):
@@ -777,7 +781,6 @@ proc defineSymbols*() =
         },
         returns     = {Any},
         example     = """
-            to :string 2020               ; "2020"
             to :integer "2020"            ; 2020
             
             to :integer `A`               ; 65
@@ -792,31 +795,42 @@ proc defineSymbols*() =
             to :boolean 0                 ; false
             to :boolean 1                 ; true
             to :boolean "true"            ; true
-            ;;;;
+
             to :literal "symbol"          ; 'symbol
+            ;;;;
+            to :string 2020               ; "2020"
             to :string 'symbol            ; "symbol"
             to :string :word              ; "word"
-            to :block "one two three"     ; [one two three]
-
+        
             to :string .format:"dd/MM/yy" now
             ; 22/03/21
 
-            to :date .format:"dd/MM/yyyy" "22/03/2021"
-            ; 2021-03-22T00:00:00+01:00
-
             to :string .format:".2f" 123.12345
             ; 123.12
+            ;;;;
+            to :block "one two three"       ; [one two three]
 
+            do to :block "print 123"        ; 123
+            ;;;;
+            to :date 0          ; => 1970-01-01T01:00:00+01:00
+
+            print now           ; 2021-05-22T07:39:10+02:00
+            to :integer now     ; => 1621661950
+
+            to :date .format:"dd/MM/yyyy" "22/03/2021"
+            ; 2021-03-22T00:00:00+01:00
+            ;;;;
             to [:string] [1 2 3 4]         
             ; ["1" "2" "3" "4"]
 
             to [:char] "hello"
             ; [`h` `e` `l` `l` `o`]
-
+            ;;;;
             define :person [name surname age][]
+
             to :person ["John" "Doe" 35]
             ; [name:John surname:Doe age:35]
-
+            ;;;;
             to :color [255 0 10]
             ; => #FF000A
 
