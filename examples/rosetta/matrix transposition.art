@@ -18,9 +18,5 @@ arr: [
 ]
 
 loop arr 'row -> print row
-
-transposed: transpose arr 
-
 print "-------------"
-
-loop transposed 'row -> print row
+loop transpose arr 'row -> print row
