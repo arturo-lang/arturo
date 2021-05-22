@@ -1,0 +1,76 @@
+printMatrix: function [m][
+    loop m 'row -> print map row 'val [pad to :string .format:".2f" val 6]
+    print "--------------------------------"
+]
+
+permutations: function [arr][
+    d: 1
+    c: array.of: size arr 0
+    xs: new arr
+    sign: 1
+
+    ret: new @[@[xs, sign]]
+
+    while [true][
+        while [d > 1][
+            d: d-1
+            c\[d]: 0
+        ]
+
+        while [c\[d] >= d][
+            d: d+1
+            if d >= size arr -> return ret
+        ]
+
+        i: (1 = and d 1)? -> c\[d] -> 0
+        tmp: xs\[i]
+        xs\[i]: xs\[d]
+        xs\[d]: tmp
+
+        sign: neg sign
+        'ret ++ @[new @[xs, sign]]
+        c\[d]: c\[d] + 1
+    ]
+
+    return ret
+]
+
+perm: function [a][
+    n: 0..dec size a
+    result: new 0.0
+    loop permutate n 'sigma [
+        x: 1.0
+        loop n 'i -> x: x * get a\[i] sigma\[i]
+        'result + x
+    ]
+    return result
+]
+
+det: function [a][
+    n: 0..dec size a
+    result: new 0.0
+    loop.with:'i permutations n 'p[
+        x: p\1
+        loop n 'i -> x: x * get a\[i] p\0\[i]
+        'result + x
+    ]
+    return result
+]
+
+A: [[1.0 2.0]
+    [3.0 4.0]]
+
+B: [[ 1.0  2  3  4]
+    [ 4.0  5  6  7]
+    [ 7.0  8  9 10]
+    [10.0 11 12 13]]
+
+C: [[ 0.0  1  2  3  4]
+    [ 5.0  6  7  8  9]
+    [10.0 11 12 13 14]
+    [15.0 16 17 18 19]
+    [20.0 21 22 23 24]]
+
+print ["A: perm ->" perm A "det ->" det A]
+print ["B: perm ->" perm B "det ->" det B]
+print ["C: perm ->" perm C "det ->" det C]
