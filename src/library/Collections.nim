@@ -825,9 +825,9 @@ proc defineSymbols*() =
                 if x.kind==String:
                     push(newString(x.s.repeat(y.i)))
                 elif x.kind==Block:
-                    push(newBlock(x.a.cycle(y.i)))
+                    push(newBlock(safeCycle(x.a, y.i)))
                 else:
-                    push(newBlock(x.repeat(y.i)))
+                    push(newBlock(safeRepeat(x, y.i)))
 
     builtin "reverse",
         alias       = unaliased, 
