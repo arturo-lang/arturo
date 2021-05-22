@@ -1,0 +1,4 @@
+print to :date 0            ; convert UNIX timestamp: 0 to date
+
+print now
+print to :integer now       ; convert current date to UNIX timestamp
