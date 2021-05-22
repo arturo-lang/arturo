@@ -568,7 +568,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Binary:      result = newBinary(v.n)
 
         of Inline:      result = newInline(v.a)
-        of Block:       result = newBlock(v.a)
+        of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)))
 
         of Dictionary:  result = newDictionary(v.d)
 
