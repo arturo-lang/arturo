@@ -126,3 +126,8 @@ proc powerset*(s: HashSet[Value]): HashSet[HashSet[Value]] =
             var newSet = aSet
             newSet.incl(val)
             result.incl(newSet)
+
+proc safeRepeat*(v: Value, times: int): ValueArray =
+    result = newSeq[Value](times)
+    for i in 0 ..< times:
+        result[i] = copyValue(v)
