@@ -2,7 +2,8 @@ name: "lower"
 type: :function
 module: "Strings"
 returns: [
-        :string
+        :char
+         :string
          :nothing
     ]
 description: "convert given string to lowercase"
@@ -14,12 +15,18 @@ examples: [
             str: "hello World, 你好!"
             lower 'str                           ; str: "hello world, 你好!"
         }
+         {
+            ch: `A`
+            lower ch    
+            ; => `a`
+        }
     ]
 attributes: #[
     ]
 arguments: #[
     string: [
-            :string
+            :char
+             :string
              :literal
         ]
     ]
