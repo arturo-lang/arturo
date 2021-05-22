@@ -131,3 +131,11 @@ proc safeRepeat*(v: Value, times: int): ValueArray =
     result = newSeq[Value](times)
     for i in 0 ..< times:
         result[i] = copyValue(v)
+
+proc safeCycle*(va: ValueArray, times: int): ValueArray =
+    result = newSeq[Value](times * va.len)
+    var o = 0
+    for i in 0 ..< times:
+        for e in va: 
+            result[o] = copyValue(e)
+            inc o
