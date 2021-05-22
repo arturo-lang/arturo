@@ -397,14 +397,14 @@ proc defineSymbols*() =
                     let blk:ValueArray = safeRepeat(x, size)
                     push newBlock(blk)
                 else:
-                    var val: Value = x
-                    var blk: Value = newBlock(@[])
+                    var val: Value = copyValue(x)
+                    var blk: ValueArray = @[]
 
                     for item in aOf.a.reversed:
-                        blk.a = safeRepeat(val, item.i)
-                        val = copyValue(blk)
+                        blk = safeRepeat(val, item.i)
+                        val = newBlock(blk.map((v)=>copyValue(v)))
 
-                    push blk
+                    push newBlock(blk)
             else:
                 let stop = SP
 
