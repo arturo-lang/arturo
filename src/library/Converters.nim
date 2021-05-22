@@ -20,6 +20,7 @@ import algorithm, sequtils, strformat, sugar, times, unicode
 when not defined(NOGMP):
     import extras/bignum
 
+import helpers/arrays
 import helpers/colors
 import helpers/datasource
 when not defined(NOASCIIDECODE):
@@ -393,14 +394,14 @@ proc defineSymbols*() =
             if (let aOf = popAttr("of"); aOf != VNULL):
                 if aOf.kind == Integer:
                     let size = aOf.i
-                    let blk:ValueArray = repeat(x, size)
+                    let blk:ValueArray = safeRepeat(x, size)
                     push newBlock(blk)
                 else:
                     var val: Value = x
                     var blk: Value = newBlock(@[])
 
                     for item in aOf.a.reversed:
-                        blk.a = repeat(val, item.i)
+                        blk.a = safeRepeat(val, item.i)
                         val = copyValue(blk)
 
                     push blk
