@@ -1,0 +1,39 @@
+permutations: function [arr][
+    d: 1
+    c: array.of: size arr 0
+    xs: new arr
+    sign: 1
+
+    ret: new @[@[xs, sign]]
+
+    while [true][
+        while [d > 1][
+            d: d-1
+            c\[d]: 0
+        ]
+
+        while [c\[d] >= d][
+            d: d+1
+            if d >= size arr -> return ret
+        ]
+
+        i: (1 = and d 1)? -> c\[d] -> 0
+        tmp: xs\[i]
+        xs\[i]: xs\[d]
+        xs\[d]: tmp
+
+        sign: neg sign
+        'ret ++ @[new @[xs, sign]]
+        c\[d]: c\[d] + 1
+    ]
+
+    return ret
+]
+
+loop permutations 0..2 'row ->
+    print [row\0 "-> sign:" row\1]
+
+print ""
+
+loop permutations 0..3 'row ->
+    print [row\0 "-> sign:" row\1]
