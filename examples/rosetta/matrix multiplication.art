@@ -1,0 +1,33 @@
+printMatrix: function [m][
+    loop m 'row -> print map row 'val [pad to :string .format:".2f" val 6]
+    print "--------------------------------"
+]
+
+multiply: function [a,b][
+    X: size a
+    Y: size first b
+    result: array.of: @[X Y] 0
+
+    loop 0..X-1 'i [
+        loop 0..Y-1 'j [
+            loop 0..(size first a)-1 'k ->
+                result\[i]\[j]: result\[i]\[j] + a\[i]\[k] * b\[k]\[j]
+        ]
+    ]
+    return result
+]
+ 
+A: [[1.0  1.0  1.0   1.0]
+    [2.0  4.0  8.0  16.0]
+    [3.0  9.0 27.0  81.0]
+    [4.0 16.0 64.0 256.0]]
+
+B: @[@[     4.0  0-3.0   4/3.0 0-1/4.0]
+     @[0-13/3.0 19/4.0 0-7/3.0 11/24.0]
+     @[   3/2.0  0-2.0   7/6.0 0-1/4.0]
+     @[ 0-1/6.0  1/4.0 0-1/6.0  1/24.0]]
+
+printMatrix A
+printMatrix B 
+printMatrix multiply A B
+printMatrix multiply B A
