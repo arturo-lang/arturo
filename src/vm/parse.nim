@@ -79,6 +79,7 @@ const
 #  labels: enhancement,unit-test,vm,parser
 var
     ScriptConfig : string
+    CurrentLine: int
 
 #=======================================
 # Forward declarations
@@ -759,6 +760,7 @@ proc doParseAll*(input: string, isFile: bool = true): ParseResult =
 
     p.value = ""
     ScriptConfig = ""
+    CurrentLine = 0
 
     # do parse
     
