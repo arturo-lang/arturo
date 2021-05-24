@@ -125,8 +125,9 @@ type
         Database        = 24
         Bytecode        = 25
 
-        Nothing         = 26
-        Any             = 27
+        Newline         = 26
+        Nothing         = 27
+        Any             = 28
 
     ValueSpec* = set[ValueKind]
 
@@ -243,6 +244,9 @@ type
             of Bytecode:
                 consts*: ValueArray
                 instrs*: ByteArray
+
+            of Newline:
+                line*: int
 
 #=======================================
 # Constants
@@ -535,6 +539,10 @@ proc newStringBlock*(a: seq[string]): Value {.inline.} =
 proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
+proc newNewline*(l: int): Value {.inline.} =
+    #echo "VALUE: adding newline: " & $(l)
+    Value(kind: Newline, line: l)
+
 proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
         of Null:        result = VNULL
@@ -596,6 +604,18 @@ proc getArity*(x: Value): int =
         return x.arity
     else:
         return x.params.a.len
+
+template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
+    when not defined(NOERRORLINES):
+        when inplace:
+            va.keepIf((vv) => vv.kind != Newline)
+        else:
+            @(va.filter((vv) => vv.kind != Newline))
+    else:
+        when inplace:
+            discard
+        else:
+            va
 
 #=======================================
 # Methods
@@ -1320,7 +1340,7 @@ proc `$`(v: Value): string {.inline.} =
             #     result &= $(child) & " "
             # result &= "]"
 
-            result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
+            result = "[" & cleanBlock(v.a).map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
             var items: seq[string] = @[]
@@ -1344,7 +1364,8 @@ proc `$`(v: Value): string {.inline.} =
 
         of Bytecode:
             result = "<bytecode>"
-            
+        
+        of Newline: discard
         of Nothing: discard
         of ANY: discard
 
@@ -1457,9 +1478,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of Inline,
             Block        :
             dumpBlockStart(v)
-
-            for i,child in v.a:
-                dump(child, level+1, i==(v.a.len-1), muted=muted)
+            let blk = cleanBlock(v.a)
+            for i,child in blk:
+                dump(child, level+1, i==(blk.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -1502,6 +1523,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         
         of Bytecode     : stdout.write("<bytecode>")
 
+        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
@@ -1566,8 +1588,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string] = @[]
-            for i,child in v.a:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
+            let blk = cleanBlock(v.a)
+            for i,child in blk:
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(blk.len-1), safeStrings=safeStrings))
 
             result &= parts.join(" ")
 
@@ -1674,10 +1697,12 @@ proc sameValue*(x: Value, y: Value): bool {.inline.}=
             of Color: return x.l == y.l
             of Inline,
                Block:
-                if x.a.len != y.a.len: return false
+                let cleanX = cleanBlock(x.a)
+                let cleanY = cleanBlock(y.a)
+                if cleanX.len != cleanY.len: return false
 
-                for i,child in x.a:
-                    if not (sameValue(child,y.a[i])): return false
+                for i,child in cleanX:
+                    if not (sameValue(child,cleanY[i])): return false
 
                 return true
             of Dictionary:
@@ -1793,5 +1818,6 @@ proc hash*(v: Value): Hash {.inline.}=
         of Bytecode:
             result = cast[Hash](unsafeAddr v)
 
+        of Newline      : result = 0
         of Nothing      : result = 0
         of ANY          : result = 0

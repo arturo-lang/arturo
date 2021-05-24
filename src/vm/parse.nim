@@ -161,8 +161,12 @@ template skip(p: var Parser) =
             inc(pos)
         of CR:
             pos = lexbase.handleCR(p, pos)
+            when not defined(NOERRORLINES):
+                AddToken newNewline(p.lineNumber)
         of LF:
             pos = lexbase.handleLF(p, pos)
+            when not defined(NOERRORLINES):
+                AddToken newNewline(p.lineNumber)
             # if p.buf[pos] == Tab:
             #     echo "next one is tab!"
         of '#':

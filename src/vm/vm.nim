@@ -133,6 +133,9 @@ when not defined(WEB):
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation {.exportc:"run".} =
         handleVMErrors:
+
+            if isFile:
+                CurrentFile = lastPathPart(code)
             
             let (mainCode, scriptInfo) = doParseAll(code, isFile)
 
