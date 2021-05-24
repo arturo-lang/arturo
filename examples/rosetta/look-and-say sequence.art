@@ -1,0 +1,24 @@
+lookAndSay: function [n][
+    if n=0 -> return "1"
+    previous: lookAndSay n-1
+
+    result: new ""
+    currentCounter: 0
+    currentCh: first previous
+    loop previous 'ch [
+        if? currentCh <> ch [
+            if not? zero? currentCounter ->
+                'result ++ (to :string currentCounter) ++ currentCh
+            currentCounter: 1
+            currentCh: ch
+        ]
+        else ->
+            currentCounter: currentCounter + 1
+    ]
+    'result ++ (to :string currentCounter) ++ currentCh
+    return result
+]
+
+loop 0..10 'x [
+    print [x "->" lookAndSay x]
+]
