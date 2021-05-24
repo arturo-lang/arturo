@@ -605,9 +605,12 @@ proc getArity*(x: Value): int =
     else:
         return x.params.a.len
 
-template cleanBlock*(va: ValueArray): untyped =
+template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
     when not defined(NOERRORLINES):
-        @(va.filter((vv) => vv.kind != Newline))
+        when inplace:
+            va.keepIf((vv) => vv.kind != Newline)
+        else:
+            @(va.filter((vv) => vv.kind != Newline))
     else:
         va
 
