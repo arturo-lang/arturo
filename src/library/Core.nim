@@ -167,9 +167,12 @@ proc defineSymbols*() =
             "code"  : {String,Block,Bytecode}
         },
         attrs       = {
-            "import": ({Boolean},"execute at root level")
+            "import": ({Boolean},"execute at root level"),
+            "times" : ({Integer},"repeat block execution given number of times")
         },
         returns     = {Any,Nothing},
+        # TODO(Core\do) add documentation example for `.times`
+        #  labels: library, documentation, easy
         example     = """
             do "print 123"                ; 123
             ;;;;
@@ -187,38 +190,47 @@ proc defineSymbols*() =
             ; 233168
         """:
             ##########################################################
+            var times = 1
+            var currentTime = 0
+
+            if (let aTimes = popAttr("times"); aTimes != VNULL):
+                times = aTimes.i
+
             var execInParent = (popAttr("import") != VNULL)
 
-            if x.kind==Block:
-                # discard executeBlock(x)
-                if execInParent:
-                    discard execBlock(x, execInParent=true)
-                else:
-                    discard execBlock(x)
-            elif x.kind==Bytecode:
-                if execInParent:
-                    discard execBlock(x, evaluated=(x.consts, x.instrs), execInParent=true)
-                else:
-                    discard execBlock(x, evaluated=(x.consts, x.instrs))
+            while currentTime < times:
+                if x.kind==Block:
+                    # discard executeBlock(x)
+                    if execInParent:
+                        discard execBlock(x, execInParent=true)
+                    else:
+                        discard execBlock(x)
+                elif x.kind==Bytecode:
+                    if execInParent:
+                        discard execBlock(x, evaluated=(x.consts, x.instrs), execInParent=true)
+                    else:
+                        discard execBlock(x, evaluated=(x.consts, x.instrs))
+                    
+                else: # string
+                    let (src, tp) = getSource(x.s)
+
+                    if tp==FileData:
+                        addPath(x.s)
+
+                    if execInParent:
+                        let parsed = doParse(src, isFile=false)
+
+                        if not isNil(parsed):
+                            discard execBlock(parsed, execInParent=true)
+                    else:
+                        let parsed = doParse(src, isFile=false)
+                        if not isNil(parsed):
+                            discard execBlock(parsed)
+
+                    if tp==FileData:
+                        discard popPath()
                 
-            else: # string
-                let (src, tp) = getSource(x.s)
-
-                if tp==FileData:
-                    addPath(x.s)
-
-                if execInParent:
-                    let parsed = doParse(src, isFile=false)
-
-                    if not isNil(parsed):
-                        discard execBlock(parsed, execInParent=true)
-                else:
-                    let parsed = doParse(src, isFile=false)
-                    if not isNil(parsed):
-                        discard execBlock(parsed)
-
-                if tp==FileData:
-                    discard popPath()
+                currentTime += 1
 
     builtin "dup",
         alias       = thickarrowleft, 
