@@ -480,7 +480,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Bytecode: discard
 
             of Newline: 
-                echo "EVAL: found newline: " & $(node.line)
+                #echo "EVAL: found newline: " & $(node.line)
                 it.add((byte)opEol)
                 it.add((byte)node.line shr 8)
                 it.add((byte)node.line)
