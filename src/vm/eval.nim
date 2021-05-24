@@ -111,6 +111,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         addToCommand((byte)indx)
         addToCommand((byte)opAttr)
 
+    proc addEol(line: int) =
+        addToCommand((byte)l)
+        addToCommand((byte)l shr 8)
+        addToCommand((byte)opEol)
+
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
         block:
             ## Check for potential Infix operator ahead
@@ -478,6 +483,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Database: discard
 
             of Bytecode: discard
+
+            of Newline: addEol(node.line)
 
             of Nothing: discard
             of Any: discard
