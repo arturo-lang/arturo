@@ -647,8 +647,9 @@ proc defineSymbols*() =
                     if (popAttr("raw") != VNULL):
                         dict = initOrderedTable[string,Value]()
                         var idx = 0
-                        while idx < x.a.len:
-                            dict[x.a[idx].s] = x.a[idx+1]
+                        let blk = cleanBlock(x.a)
+                        while idx < blk.len:
+                            dict[blk[idx].s] = blk[idx+1]
                             idx += 2
                     else:
                         dict = execBlock(x,dictionary=true)
