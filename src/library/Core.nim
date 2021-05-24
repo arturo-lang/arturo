@@ -400,10 +400,11 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Block:
                 if y.kind==Block:
-                    for i,w in x.a:
-                        SetSym(w.s, y.a[i])
+                    let blk = cleanBlock(y.a)
+                    for i,w in cleanBlock(x.a):
+                        SetSym(w.s, blk[i])
                 else:
-                    for i,w in x.a:
+                    for i,w in cleanBlock(x.a):
                         SetSym(w.s, y)
             else:
                 SetInPlace(y)
@@ -748,7 +749,7 @@ proc defineSymbols*() =
                 var newb: Value = newBlock()
                 for old in top.a:
                     newb.a.add(old)
-                for cond in x.a:
+                for cond in cleanBlock(x.a):
                     newb.a.add(cond)
 
                 discard execBlock(newb)
