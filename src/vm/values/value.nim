@@ -1585,8 +1585,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string] = @[]
-            for i,child in v.a:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
+            let blk = cleanBlock(v.a)
+            for i,child in blk:
+                parts.add(codify(child,pretty,unwrapped,level+1, i==(blk.len-1), safeStrings=safeStrings))
 
             result &= parts.join(" ")
 
