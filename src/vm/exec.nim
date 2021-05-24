@@ -256,8 +256,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         #     OpStack.rotateLeft(1)
         #     OpStack[0] = op
 
-        when defined(VERBOSE):
-            echo "exec: " & $(op)
+        #when defined(VERBOSE):
+        echo "exec: " & $(op)
 
         case op:
             # [0x00-0x0F]
@@ -332,6 +332,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opNop                : discard
 
             of opEol                :
+                i += 2
                 CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
                 echo "found EOL: " & $(CurrentLine)
 
