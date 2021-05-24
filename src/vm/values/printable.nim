@@ -119,7 +119,7 @@ proc `$`*(v: Value): string {.inline.} =
             #     result &= $(child) & " "
             # result &= "]"
 
-            result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
+            result = "[" & cleanBlock(v.a).map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
             if not v.custom.isNil and v.custom.methods.d.hasKey("print"):

@@ -1337,7 +1337,7 @@ proc `$`(v: Value): string {.inline.} =
             #     result &= $(child) & " "
             # result &= "]"
 
-            result = "[" & v.a.map((child) => $(child)).join(" ") & "]"
+            result = "[" & cleanBlock(v.a).map((child) => $(child)).join(" ") & "]"
 
         of Dictionary   :
             var items: seq[string] = @[]
@@ -1475,9 +1475,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of Inline,
             Block        :
             dumpBlockStart(v)
-
-            for i,child in v.a:
-                dump(child, level+1, i==(v.a.len-1), muted=muted)
+            let blk = cleanBlock(v.a)
+            for i,child in blk:
+                dump(child, level+1, i==(blk.len-1), muted=muted)
 
             stdout.write "\n"
 
@@ -1635,9 +1635,6 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             result &= codify(v.params,pretty,unwrapped,level+1, false, safeStrings=safeStrings)
             result &= " "
             result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
-
-        of Newline:
-            result &= "\n"
 
         else:
             result &= ""
