@@ -149,5 +149,6 @@ proc `$`*(v: Value): string {.inline.} =
         of Bytecode:
             result = "<bytecode>"
             
+        of Newline: discard
         of Nothing: discard
         of ANY: discard
