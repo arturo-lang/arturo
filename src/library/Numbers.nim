@@ -637,23 +637,24 @@ proc defineSymbols*() =
             print gcd [48 60 120]         ; 12
         """:
             ##########################################################
-            var current = x.a[0]
+            let blk = cleanBlock(x.a)
+            var current = blk[0]
 
             var i = 1
 
-            while i<x.a.len:
+            while i<blk.len:
                 if current.iKind==NormalInteger:
-                    if x.a[i].iKind==BigInteger:
+                    if blk[i].iKind==BigInteger:
                         when not defined(NOGMP):
-                            current = newInteger(gcd(current.i, x.a[i].bi))
+                            current = newInteger(gcd(current.i, blk[i].bi))
                     else:
-                        current = newInteger(gcd(current.i, x.a[i].i))
+                        current = newInteger(gcd(current.i, blk[i].i))
                 else:
                     when not defined(NOGMP):
-                        if x.a[i].iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, x.a[i].bi))
+                        if blk[i].iKind==BigInteger:
+                            current = newInteger(gcd(current.bi, blk[i].bi))
                         else:
-                            current = newInteger(gcd(current.bi, x.a[i].i))
+                            current = newInteger(gcd(current.bi, blk[i].i))
                 inc(i)
 
             push(current)
@@ -853,8 +854,9 @@ proc defineSymbols*() =
             ##########################################################
             var i = 0
             var product = I1.copyValue
-            while i<x.a.len:
-                product *= x.a[i]
+            let blk = cleanBlock(x.a)
+            while i<blk.len:
+                product *= blk[i]
                 i += 1
 
             push(product)
@@ -1088,8 +1090,9 @@ proc defineSymbols*() =
             ##########################################################
             var i = 0
             var sum = I0.copyValue
-            while i<x.a.len:
-                sum += x.a[i]
+            let blk = cleanBlock(x.a)
+            while i<blk.len:
+                sum += blk[i]
                 i += 1
 
             push(sum)
