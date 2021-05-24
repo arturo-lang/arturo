@@ -112,8 +112,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
         addToCommand((byte)opAttr)
 
     proc addEol(line: int) =
-        addToCommand((byte)l)
-        addToCommand((byte)l shr 8)
+        addToCommand((byte)line)
+        addToCommand((byte)line shr 8)
         addToCommand((byte)opEol)
 
     template addTerminalValue(inArrowBlock: bool, code: untyped) =
