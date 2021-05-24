@@ -333,6 +333,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                Function,
                Color,
                Database,
+               Newline,
                Nothing,
                Any,
                Path,
