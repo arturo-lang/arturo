@@ -612,7 +612,10 @@ template cleanBlock*(va: ValueArray, inplace: bool = false): untyped =
         else:
             @(va.filter((vv) => vv.kind != Newline))
     else:
-        va
+        when inplace:
+            discard
+        else:
+            va
 
 #=======================================
 # Methods
