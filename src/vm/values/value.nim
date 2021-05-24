@@ -539,6 +539,9 @@ proc newStringBlock*(a: seq[string]): Value {.inline.} =
 proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
+proc newNewline*(l: int): Value {.inline.} =
+    Value(kind: Newline, line: l)
+
 proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
         of Null:        result = VNULL
