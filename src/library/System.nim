@@ -114,8 +114,6 @@ proc defineSymbols*() =
             ##########################################################
             quit()
 
-    # TODO(System\panic) Verify VM errors work right
-    #  labels: library,unit-test
     builtin "panic",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -131,14 +129,11 @@ proc defineSymbols*() =
             panic.code:1 "something went terribly wrong. quitting..."
         """:
             ##########################################################
-            # vmPanic = true
-            # vmError = x.s
-            discard x
-
+            var code = 0
             if (let aCode = popAttr("code"); aCode != VNULL):
-                quit(aCode.i)
-            else:
-                quit()    
+                code = aCode.i
+
+            ProgramError_panic(x.s.replace("\n",";"), code)
 
     when not defined(WEB):
         # TODO(System\pause) implement for Web/JS builds

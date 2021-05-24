@@ -86,7 +86,13 @@ proc showVMErrors*(e: ref Exception) =
     let indent = repeat(" ", header.len + marker.len + 2)
 
     when not defined(WEB):
-        var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        var message = ""
+        
+        if $(header)==ProgramError:
+            let msg = e.msg.split("<:>")[1]
+            message = msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        else:
+            message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
     else:
         var message = "MESSAGE"
 
@@ -224,6 +230,12 @@ proc RuntimeError_OperationNotPermitted*(operation: string) =
     panic RuntimeError,
           "unsafe operation: " & operation & ";" &
           "not permitted in online playground"
+
+## Program errors
+
+proc ProgramError_panic*(message: string, code: int) =
+    panic ProgramError,
+          $(code) & "<:>" & message
 
 # TODO Re-establish stack trace debug reports
 #  labels: vm, error handling
