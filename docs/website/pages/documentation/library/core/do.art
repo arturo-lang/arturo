@@ -34,6 +34,12 @@ attributes: #[
             ]
         description: "execute at root level"
         ]
+    times: #[
+        types: [
+                :integer
+            ]
+        description: "repeat block execution given number of times"
+        ]
     ]
 arguments: #[
     code: [
