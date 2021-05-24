@@ -540,6 +540,7 @@ proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
 proc newNewline*(l: int): Value {.inline.} =
+    echo "VALUE: adding newline: " & $(l)
     Value(kind: Newline, line: l)
 
 proc copyValue*(v: Value): Value {.inline.} =
