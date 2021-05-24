@@ -331,8 +331,13 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
             of opNop                : discard
 
+            of opEol                :
+                i += 2
+                CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                #echo "found EOL: " & $(CurrentLine)
+
             # reserved
-            of opRsrv1..opRsrv3     : discard
+            of opRsrv1..opRsrv2     : discard
 
             # [0xA0-AF] #
             # arithmetic & logical operators
@@ -350,7 +355,7 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
                opShl, opShr         : discard
 
             # reserved
-            of opRsrv4..opRsrv5     : discard
+            of opRsrv3..opRsrv4     : discard
 
             # TODO(VM\exec) re-add missing bytecode opCodes in main loop
             #  labels: execution,vm,enhancement,cleanup

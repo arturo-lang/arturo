@@ -59,15 +59,17 @@ proc defineSymbols*() =
             if y.kind==Literal: args = @[y]
             else: args = y.a
 
+            let blk = cleanBlock(x.a)
+
             # check if empty
-            if x.a.len==0: 
+            if blk.len==0: 
                 push(newBoolean(false))
                 return
 
             let preevaled = doEval(z)
             var all = true
 
-            for item in x.a:
+            for item in blk:
                 handleBranching:
                     push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -116,7 +118,7 @@ proc defineSymbols*() =
 
             if x.kind==Literal:
                 discard InPlace
-                for i,item in InPlaced.a:
+                for i,item in cleanBlock(InPlaced.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -127,7 +129,7 @@ proc defineSymbols*() =
 
                 InPlaced.a = res
             else:
-                for item in x.a:
+                for item in cleanBlock(x.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -170,21 +172,24 @@ proc defineSymbols*() =
             let preevaled = doEval(z)
 
             var seed = I0
+            var blk: ValueArray
             if x.kind==Literal:
+                blk = cleanBlock(InPlaced.a)
                 # check if empty
-                if InPlaced.a.len==0: 
+                if blk.len==0: 
                     push(VNULL)
                     return
 
-                if InPlaced.a[0].kind == String:
+                if blk[0].kind == String:
                     seed = newString("")
             else:
+                blk = cleanBlock(x.a)
                 # check if empty
-                if x.a.len==0: 
+                if blk.len==0: 
                     push(VNULL)
                     return
 
-                if x.a[0].kind == String:
+                if blk[0].kind == String:
                     seed = newString("")
 
             if (let aSeed = popAttr("seed"); aSeed != VNULL):
@@ -192,9 +197,9 @@ proc defineSymbols*() =
 
             let doRightFold = (popAttr("right")!=VNULL)
 
-            if (x.kind==Literal and InPlace.a.len==0):
+            if (x.kind==Literal and blk.len==0):
                 discard
-            elif (x.kind!=Literal and x.a.len==0):
+            elif (x.kind!=Literal and blk.len==0):
                 push(x)
             else:
                 if (doRightFold):
@@ -202,9 +207,9 @@ proc defineSymbols*() =
 
                     if x.kind == Literal:
                         var res: Value = seed
-                        for i in countdown(InPlaced.a.len-1,0):
+                        for i in countdown(blk.len-1,0):
                             handleBranching:
-                                let a = InPlaced.a[i]
+                                let a = blk[i]
                                 let b = res
 
                                 push(b)
@@ -219,9 +224,9 @@ proc defineSymbols*() =
 
                     else:
                         var res: Value = seed
-                        for i in countdown(x.a.len-1,0):
+                        for i in countdown(blk.len-1,0):
                             handleBranching:
-                                let a = x.a[i]
+                                let a = blk[i]
                                 let b = res
 
                                 push(b)
@@ -238,7 +243,7 @@ proc defineSymbols*() =
 
                     if x.kind == Literal:
                         var res: Value = seed
-                        for i in x.a:
+                        for i in blk:
                             handleBranching:
                                 let a = res
                                 let b = i
@@ -255,7 +260,7 @@ proc defineSymbols*() =
 
                     else:
                         var res: Value = seed
-                        for i in x.a:
+                        for i in blk:
                             handleBranching:
                                 let a = res
                                 let b = i
@@ -338,7 +343,7 @@ proc defineSymbols*() =
                 withIndex = true
 
             if y.kind==Literal: args = @[y]
-            else: args = y.a
+            else: args = cleanBlock(y.a)
 
             var allArgs = args
 
@@ -392,7 +397,7 @@ proc defineSymbols*() =
                 if x.kind==Integer:
                     arr = (toSeq(1..x.i)).map((x) => newInteger(x))
                 else:
-                    arr = x.a
+                    arr = cleanBlock(x.a)
 
                 # check if empty
                 if arr.len==0: return
@@ -453,7 +458,7 @@ proc defineSymbols*() =
 
             if x.kind==Literal:
                 discard InPlace
-                for i,item in InPlaced.a:
+                for i,item in cleanBlock(InPlaced.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -461,7 +466,7 @@ proc defineSymbols*() =
                     do:
                         discard
             else:
-                for item in x.a:
+                for item in cleanBlock(x.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -505,7 +510,7 @@ proc defineSymbols*() =
 
             if x.kind==Literal:
                 discard InPlace
-                for i,item in InPlaced.a:
+                for i,item in cleanBlock(InPlaced.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -516,7 +521,7 @@ proc defineSymbols*() =
 
                 InPlaced.a = res
             else:
-                for item in x.a:
+                for item in cleanBlock(x.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -555,15 +560,17 @@ proc defineSymbols*() =
             if y.kind==Literal: args = @[y]
             else: args = y.a
 
+            let blk = cleanBlock(x.a)
+
             # check if empty
-            if x.a.len==0: 
+            if blk.len==0: 
                 push(newBoolean(false))
                 return
 
             let preevaled = doEval(z)
             var one = false
 
-            for item in x.a:
+            for item in blk:
                 handleBranching:
                     push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
