@@ -607,7 +607,7 @@ proc getArity*(x: Value): int =
 
 template cleanBlock*(va: ValueArray): untyped =
     when not defined(NOERRORLINES):
-        filter(va, (F) => F.kind != Newline)
+        @(va.filter((vv) => vv.kind != Newline))
     else:
         va
 
