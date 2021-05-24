@@ -211,10 +211,9 @@ type
         opEnd           = 0x9B
 
         opNop           = 0x9C
+        opEol           = 0x9D
         
         # reserved
-
-        opRsrv1         = 0x9D
         opRsrv2         = 0x9E
         opRsrv3         = 0x9F
 
