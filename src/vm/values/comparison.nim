@@ -71,10 +71,13 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
             of Symbol: return x.m == y.m
             of Inline,
                Block:
-                if x.a.len != y.a.len: return false
+                let cleanX = cleanBlock(x.a)
+                let cleanY = cleanBlock(y.a)
 
-                for i,child in x.a:
-                    if not (child==y.a[i]): return false
+                if cleanX.len != cleanY.len: return false
+
+                for i,child in cleanX:
+                    if not (child==cleanY[i]): return false
 
                 return true
             of Dictionary:
@@ -160,7 +163,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Symbol: return false
             of Inline,
                Block:
-                return x.a.len < y.a.len
+                return cleanBlock(x.a).len < cleanBlock(y.a).len
             of Dictionary:
                 if not x.custom.isNil and x.custom.methods.d.hasKey("compare"):
                     push y
