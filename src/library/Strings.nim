@@ -236,7 +236,7 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     SetInPlace(newString(joinPath(InPlace.a.map(proc (v:Value):string = $(v)))))
                 else:
-                    push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
+                    push(newString(joinPath(cleanBlock(x.a).map(proc (v:Value):string = $(v)))))
             else:
                 var sep = ""
                 if (let aWith = popAttr("with"); aWith != VNULL):
@@ -245,7 +245,7 @@ proc defineSymbols*() =
                 if x.kind==Literal:
                     SetInPlace(newString(InPlace.a.map(proc (v:Value):string = $(v)).join(sep)))
                 else:
-                    push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
+                    push(newString(cleanBlock(x.a).map(proc (v:Value):string = $(v)).join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 

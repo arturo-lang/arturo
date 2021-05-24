@@ -431,15 +431,16 @@ proc defineSymbols*() =
                 if x.kind == Type:
                     push(newBoolean(x.t == y.kind))
                 else:
-                    let tp = x.a[0].t
+                    let tp = cleanBlock(x.a)[0].t
                     var res = true
                     if y.kind != Block: 
                         res = false
                     else:
-                        if y.a.len==0: 
+                        let blk = cleanBlock(y.a)
+                        if blk.len==0: 
                             res = false
                         else:
-                            for item in y.a:
+                            for item in blk:
                                 if tp != item.kind:
                                     res = false
                                     break

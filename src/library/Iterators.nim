@@ -57,7 +57,7 @@ proc defineSymbols*() =
             var args: ValueArray
 
             if y.kind==Literal: args = @[y]
-            else: args = y.a
+            else: args = cleanBlock(y.a)
 
             let blk = cleanBlock(x.a)
 
@@ -110,7 +110,7 @@ proc defineSymbols*() =
             var args: ValueArray
 
             if y.kind==Literal: args = @[y]
-            else: args = y.a
+            else: args = cleanBlock(y.a)
 
             let preevaled = doEval(z)
 
@@ -168,7 +168,7 @@ proc defineSymbols*() =
             ; => 2
         """:
             ##########################################################
-            var args = y.a
+            var args = cleanBlock(y.a)
             let preevaled = doEval(z)
 
             var seed = I0
@@ -450,7 +450,7 @@ proc defineSymbols*() =
             var args: ValueArray
 
             if y.kind==Literal: args = @[y]
-            else: args = y.a
+            else: args = cleanBlock(y.a)
 
             let preevaled = doEval(z)
 
@@ -502,7 +502,7 @@ proc defineSymbols*() =
             var args: ValueArray
 
             if y.kind==Literal: args = @[y]
-            else: args = y.a
+            else: args = cleanBlock(y.a)
 
             let preevaled = doEval(z)
 
@@ -558,7 +558,7 @@ proc defineSymbols*() =
             var args: ValueArray
 
             if y.kind==Literal: args = @[y]
-            else: args = y.a
+            else: args = cleanBlock(y.a)
 
             let blk = cleanBlock(x.a)
 

@@ -44,11 +44,11 @@ proc defineSymbols*() =
         """:
             ##########################################################
             var res = F0.copyValue
-
-            for num in x.a:
+            let blk = cleanBlock(x.a)
+            for num in blk:
                 res += num
 
-            res //= newFloating(x.a.len)
+            res //= newFloating(blk.len)
 
             push(res)
 
@@ -75,9 +75,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
-                push newFloating(standardDeviationS(x.a.map((z)=>asFloat(z))))
+                push newFloating(standardDeviationS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
-                push newFloating(standardDeviation(x.a.map((z)=>asFloat(z))))
+                push newFloating(standardDeviation(cleanBlock(x.a).map((z)=>asFloat(z))))
 
     builtin "kurtosis",
         alias       = unaliased, 
@@ -102,9 +102,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
-                push newFloating(kurtosisS(x.a.map((z)=>asFloat(z))))
+                push newFloating(kurtosisS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
-                push newFloating(kurtosis(x.a.map((z)=>asFloat(z))))
+                push newFloating(kurtosis(cleanBlock(x.a).map((z)=>asFloat(z))))
 
     builtin "median",
         alias       = unaliased, 
@@ -123,13 +123,14 @@ proc defineSymbols*() =
             ; 3.5
         """:
             ##########################################################
-            if x.a.len==0: 
+            let blk = cleanBlock(x.a)
+            if blk.len==0: 
                 push(VNULL)
             else:
-                let first = x.a[(x.a.len-1) div 2]
-                let second = x.a[((x.a.len-1) div 2)+1]
+                let first = blk[(blk.len-1) div 2]
+                let second = blk[((blk.len-1) div 2)+1]
 
-                if x.a.len mod 2 == 1:
+                if blk.len mod 2 == 1:
                     push(first) 
                 else:
                     push((first + second)//I2)
@@ -157,9 +158,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
-                push newFloating(skewnessS(x.a.map((z)=>asFloat(z))))
+                push newFloating(skewnessS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
-                push newFloating(skewness(x.a.map((z)=>asFloat(z))))
+                push newFloating(skewness(cleanBlock(x.a).map((z)=>asFloat(z))))
     
     builtin "variance",
         alias       = unaliased, 
@@ -184,9 +185,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("sample") != VNULL):
-                push newFloating(varianceS(x.a.map((z)=>asFloat(z))))
+                push newFloating(varianceS(cleanBlock(x.a).map((z)=>asFloat(z))))
             else:
-                push newFloating(variance(x.a.map((z)=>asFloat(z))))
+                push newFloating(variance(cleanBlock(x.a).map((z)=>asFloat(z))))
 
 #=======================================
 # Add Library

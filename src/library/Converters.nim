@@ -225,16 +225,18 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
             of Inline:
                 case tp:
                     of Block:
-                        return newBlock(y.a)
+                        return newBlock(cleanBlock(y.a))
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Block:
                 case tp:
                     of Complex:
-                        return newComplex(y.a[0], y.a[1])
+                        let blk = cleanBlock(y.a)
+                        return newComplex(blk[0], blk[1])
                     of Inline:
-                        return newInline(y.a)
+                        let blk = cleanBlock(y.a)
+                        return newInline(blk)
                     of Dictionary:
                         if x.tpKind==BuiltinType:
                             let stop = SP
@@ -275,13 +277,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                             return(res)
 
                     of Color:
+                        let blk = cleanBlock(y.a)
                         if (popAttr("hsl") != VNULL):
-                            return newColor(HSLtoRGB((y.a[0].i, y.a[1].f, y.a[2].f)))
+                            return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f)))
                         else:
-                            return newColor((y.a[0].i, y.a[1].i, y.a[2].i))
+                            return newColor((blk[0].i, blk[1].i, blk[2].i))
 
                     of Bytecode:
-                        return(newBytecode(y.a[0].a, y.a[1].a.map(proc (x:Value):byte = (byte)(x.i))))
+                        let blk = cleanBlock(y.a)
+                        return(newBytecode(blk[0].a, blk[1].a.map(proc (x:Value):byte = (byte)(x.i))))
                     else:
                         discard
 
@@ -471,7 +475,7 @@ proc defineSymbols*() =
             elif (popAttr("octal") != VNULL):
                 push(newString(fmt"{x.i:o}"))
             elif (popAttr("agnostic") != VNULL):
-                let res = x.a.map(proc(v:Value):Value =
+                let res = cleanBlock(x.a).map(proc(v:Value):Value =
                     if v.kind == Word and not SymExists(v.s): newLiteral(v.s)
                     else: v
                 )
@@ -846,13 +850,14 @@ proc defineSymbols*() =
                 push convertedValueToType(x, y, tp)
             else:
                 var ret: ValueArray = @[]
-                let tp = x.a[0].t
+                let blk = cleanBlock(x.a)
+                let tp = blk[0].t
                     
                 if y.kind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
-                    for item in y.a:
-                        ret.add(convertedValueToType(x.a[0], item, tp))
+                    for item in cleanBlock(y.a):
+                        ret.add(convertedValueToType(blk[0], item, tp))
 
                 push newBlock(ret)
             
@@ -880,12 +885,12 @@ proc defineSymbols*() =
             ; the multiple of 10 is 20 
         """:
             ##########################################################
-            var blk: ValueArray = y.a
+            var blk: ValueArray = cleanBlock(y.a)
             if x.kind == Literal:
                 blk.insert(GetSym(x.s))
                 blk.insert(newLabel(x.s))
             else:
-                for item in x.a:
+                for item in cleanBlock(x.a):
                     blk.insert(GetSym(item.s))
                     blk.insert(newLabel(item.s))
 

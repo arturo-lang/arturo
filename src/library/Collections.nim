@@ -84,7 +84,7 @@ proc defineSymbols*() =
                         SetInPlace(newString($(InPlaced.c) & $(y.c)))
                 else:
                     if y.kind==Block:
-                        for item in y.a:
+                        for item in cleanBlock(y.a):
                             InPlaced.a.add(item)
                     else:
                         InPlaced.a.add(y)
