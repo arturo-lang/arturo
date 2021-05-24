@@ -53,10 +53,18 @@ var
 # Main
 #=======================================
 
+proc getLineError*(): string =
+    result = ""
+    if CurrentFile != "<repl>":
+        result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
+
 proc panic*(context: string, error: string) =
     var errorMsg = error
-    # if $(context) notin [AssertionError, SyntaxError, CompilerError]:
-    #    errorMsg &= getOpStack()
+    if $(context) notin [AssertionError, SyntaxError, CompilerError]:
+        when not defined(NOERRORLINES):
+            errorMsg = getLineError() & errorMsg
+        else:
+            discard 
     raise VMError(name: context, msg:move errorMsg)
 
 #=======================================
@@ -79,20 +87,13 @@ proc showVMErrors*(e: ref Exception) =
 
     when not defined(WEB):
         var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
-
-        when not defined(NOERRORLINES):
-            message = CurrentFile & " @ " & $(CurrentLine) & ";" & message
     else:
         var message = "MESSAGE"
 
     let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
     let alignedError = align("error", header.len)
     
-    var errMsg = fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
-    when not defined(NOERRORLINES):
-        errMsg = fmt("{fg(grayColor)}") & errMsgParts[0] & fmt("{resetColor}") & errMsg
-    else:
-        errMsg = errMsgParts[0] & errMsg
+    var errMsg = errMsgParts[0] & fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
 
     if errMsgParts.len > 1:
         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
