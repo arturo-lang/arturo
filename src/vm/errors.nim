@@ -78,14 +78,14 @@ proc showVMErrors*(e: ref Exception) =
     let indent = repeat(" ", header.len + marker.len + 2)
 
     when not defined(WEB):
-        var message = fmt("@ ") & CurrentFile & " : " & $(CurrentLine) & ";" & 
+        var message = CurrentFile & " @ " & $(CurrentLine) & ";" & 
                       e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
     else:
         var message = "MESSAGE"
 
     let errMsgParts = message.split(";").map((x)=>(strutils.strip(x)).replace("~%"," ").replace("%&",";").replace("T@B","\t"))
     let alignedError = align("error", header.len)
-    var errMsg = fmt("{bold(grayColor)}") & errMsgParts[0] & fmt("{resetColor}") &
+    var errMsg = fmt("{fg(grayColor)}") & errMsgParts[0] & fmt("{resetColor}") &
                  fmt("\n{bold(redColor)}{repeat(' ',marker.len)} {alignedError} {separator}{resetColor} ")
     if errMsgParts.len > 1:
         errMsg &= errMsgParts[1..^1].join(fmt("\n{indent}{bold(redColor)}{separator}{resetColor} "))
