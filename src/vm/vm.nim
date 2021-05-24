@@ -115,7 +115,11 @@ template handleVMErrors*(blk: untyped): untyped =
     except:
         let e = getCurrentException()
         showVMErrors(e)
-        quit(1)
+        if e.name == ProgramError:
+            let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
+            quit(code)
+        else:
+            quit(1)
 
 #=======================================
 # Methods
