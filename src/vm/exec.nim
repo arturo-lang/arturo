@@ -256,8 +256,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
         #     OpStack.rotateLeft(1)
         #     OpStack[0] = op
 
-        #when defined(VERBOSE):
-        echo "exec: " & $(op)
+        when defined(VERBOSE):
+            echo "exec: " & $(op)
 
         case op:
             # [0x00-0x0F]
