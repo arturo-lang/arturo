@@ -125,8 +125,9 @@ type
         Database        = 24
         Bytecode        = 25
 
-        Nothing         = 26
-        Any             = 27
+        Newline         = 26
+        Nothing         = 27
+        Any             = 28
 
     ValueSpec* = set[ValueKind]
 
@@ -243,6 +244,9 @@ type
             of Bytecode:
                 consts*: ValueArray
                 instrs*: ByteArray
+
+            of Newline:
+                line*: int
 
 #=======================================
 # Constants
