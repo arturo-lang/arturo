@@ -78,7 +78,8 @@ proc showVMErrors*(e: ref Exception) =
     let indent = repeat(" ", header.len + marker.len + 2)
 
     when not defined(WEB):
-        var message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+        var message = "File: " & CurrentFile & ", Line: " & $(CurrentLine) & ";" & 
+                      e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
     else:
         var message = "MESSAGE"
 
