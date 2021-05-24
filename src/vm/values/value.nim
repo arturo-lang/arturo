@@ -1697,10 +1697,12 @@ proc sameValue*(x: Value, y: Value): bool {.inline.}=
             of Color: return x.l == y.l
             of Inline,
                Block:
-                if x.a.len != y.a.len: return false
+                let cleanX = cleanBlock(x.a)
+                let cleanY = cleanBlock(y.a)
+                if cleanX.len != cleanY.len: return false
 
-                for i,child in x.a:
-                    if not (sameValue(child,y.a[i])): return false
+                for i,child in cleanX:
+                    if not (sameValue(child,cleanY[i])): return false
 
                 return true
             of Dictionary:
