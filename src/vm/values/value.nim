@@ -1348,7 +1348,8 @@ proc `$`(v: Value): string {.inline.} =
 
         of Bytecode:
             result = "<bytecode>"
-            
+        
+        of Newline: discard
         of Nothing: discard
         of ANY: discard
 
@@ -1506,6 +1507,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         
         of Bytecode     : stdout.write("<bytecode>")
 
+        of Newline      : discard
         of Nothing      : discard
         of ANY          : discard
 
@@ -1620,6 +1622,9 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             result &= codify(v.params,pretty,unwrapped,level+1, false, safeStrings=safeStrings)
             result &= " "
             result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+
+        of Newline:
+            result &= "\n"
 
         else:
             result &= ""
@@ -1797,5 +1802,6 @@ proc hash*(v: Value): Hash {.inline.}=
         of Bytecode:
             result = cast[Hash](unsafeAddr v)
 
+        of Newline      : result = 0
         of Nothing      : result = 0
         of ANY          : result = 0
