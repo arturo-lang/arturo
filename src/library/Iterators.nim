@@ -453,7 +453,7 @@ proc defineSymbols*() =
 
             if x.kind==Literal:
                 discard InPlace
-                for i,item in InPlaced.a:
+                for i,item in cleanBlock(InPlaced.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
@@ -461,7 +461,7 @@ proc defineSymbols*() =
                     do:
                         discard
             else:
-                for item in x.a:
+                for item in cleanBlock(x.a):
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
