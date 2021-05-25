@@ -1,0 +1,11 @@
+width: to :integer input "give me the array's width: "
+height: to :integer input "give me the array's height: "
+
+arr: array.of: @[width height] 0
+
+x: random 0 dec width
+y: random 0 dec height
+
+arr\[x]\[y]: 123
+
+print ["item at [" x "," y "] =" arr\[x]\[y]]
