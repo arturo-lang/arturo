@@ -108,7 +108,11 @@ proc getContext*(p: var Parser, curPos: int): string =
 
     result = ""
 
+    while p.buf[startPos]==' ':
+        startPos += 1
+
     var i = startPos
+
     while i<endPos and p.buf[i]!=EOF:
         result &= p.buf[i]
         i += 1
