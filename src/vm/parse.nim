@@ -272,10 +272,18 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     inc(pos)
             of CR:
                 pos = lexbase.handleCR(p, pos)
-                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos+2))
+                when defined(windows):
+                    let passedPos = pos+3
+                else:
+                    let passedPos = pos+2
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, passedPos))
             of LF:
                 pos = lexbase.handleLF(p, pos)
-                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos+2))
+                when defined(windows):
+                    let passedPos = pos+3
+                else:
+                    let passedPos = pos+2
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, passedPos))
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
