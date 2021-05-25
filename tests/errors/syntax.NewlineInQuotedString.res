@@ -6,4 +6,3 @@
           | curly blocks {..} or triple "-" templates
           | 
           | near: "something else  "  print "hel...
-          |                      ^
