@@ -36,7 +36,7 @@ runSet: function [title,location].export:[supersuccess,supertotal][
             print "------------------->"
             prints color #red "[ Error ]"
         ]
-    ]
+    ] 
 
     print "\n"
     print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 64
