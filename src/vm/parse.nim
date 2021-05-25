@@ -114,7 +114,10 @@ proc getContext*(p: var Parser, curPos: int): string =
     var i = startPos
 
     while i<endPos and p.buf[i]!=EOF:
-        result &= p.buf[i]
+        if p.buf[i] in {CR,LF}:
+            result &= ' '
+        else:
+            result &= p.buf[i]
         i += 1
 
     if p.buf[i]!=EOF:
