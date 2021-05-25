@@ -113,16 +113,24 @@ proc getContext*(p: var Parser, curPos: int): string =
 
     var i = startPos
     while i<endPos and p.buf[i]!=EOF:
-        # if p.buf[i]==CR:
-        #     i = lexbase.handleCR(p, i)
-        #     nls += 1
-        #     result &= ' '
-        # elif p.buf[i]==LF:
-        #     i = lexbase.handleLF(p, i)
-        #     result &= ' '
-        # else:
-        result &= p.buf[i]
-        i += 1
+        if p.buf[i]==CR:
+            i = lexbase.handleCR(p, i)
+            when not defined(windows):
+                add(result, LF)
+            else:    
+                add(result, CR)
+                add(result, LF)
+        elif p.buf[i]==LF:
+            i = lexbase.handleLF(p, i)
+            when defined(windows):
+                add(result, CR)
+                add(result, LF)
+            else:
+                add(result, LF)
+            result &= ' '
+        else:
+            result &= p.buf[i]
+            i += 1
 
     if p.buf[i]!=EOF:
         result &= "..."
