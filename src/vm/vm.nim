@@ -92,8 +92,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptInf
         arguments = args, 
         version = ArturoVersion,
         build = ArturoBuild,
-        script = scriptInfo,
-        muted = mutedColors
+        script = scriptInfo
     )
 
     when not defined(WEB):
@@ -135,7 +134,7 @@ when not defined(WEB):
 
             discard doExec(code)
 
-    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, muted: bool = false): Translation {.exportc:"run".} =
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true): Translation {.exportc:"run".} =
         handleVMErrors:
 
             if isFile:
@@ -148,8 +147,7 @@ when not defined(WEB):
                     args, 
                     code, 
                     isFile=isFile, 
-                    parseData(doParse(scriptInfo, false)).d,
-                    muted
+                    parseData(doParse(scriptInfo, false)).d
                 )
 
             let evaled = mainCode.doEval()
@@ -176,8 +174,7 @@ else:
                     @[""], 
                     code, 
                     isFile=false, 
-                    parseData(doParse(scriptInfo, false)).d,
-                    mutedColors = true
+                    parseData(doParse(scriptInfo, false)).d
                 )
 
             let evaled = mainCode.doEval()

@@ -111,7 +111,7 @@ proc addPath*(newPath: string) =
 proc popPath*(): string =
     PathStack.pop()
 
-proc initEnv*(arguments: seq[string], version: string, build: string, script: ValueDict, muted: bool = false) =
+proc initEnv*(arguments: seq[string], version: string, build: string, script: ValueDict) =
     Arguments = newStringBlock(arguments)
     ArturoVersion = version
     ArturoBuild = build
@@ -123,4 +123,5 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
         HomeDir = getHomeDir()
         TmpDir  = getTempDir()
 
+proc setColors*(muted: bool = false) =
     NoColors = muted
