@@ -1,0 +1,7 @@
+doSth: function [x][
+    ensure -> integer? x
+    return x+10
+]
+
+print ["doing sth:" doSth 2]
+print ["doing sth:" doSth [1 2 3]]

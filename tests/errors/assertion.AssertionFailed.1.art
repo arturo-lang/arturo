@@ -1,0 +1,5 @@
+x: 2
+
+ensure -> x = 2
+ensure -> x < 2
+print "done"
