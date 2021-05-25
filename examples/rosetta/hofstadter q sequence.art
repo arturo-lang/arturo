@@ -1,0 +1,9 @@
+q: new [1 1]
+n: 2 
+while [n<1001][
+    'q ++ (get q n-q\[n-1]) + get q n-q\[n-2]
+    n: n+1
+]
+
+print ["First ten items:" first.n: 10 q]
+print ["1000th item:" q\[999]]
