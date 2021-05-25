@@ -122,7 +122,7 @@ proc getContext*(p: var Parser, curPos: int): string =
             result &= ' '
         else:
             result &= p.buf[i]
-        i += 1
+            i += 1
 
     if p.buf[i]!=EOF:
         result &= "..."
