@@ -60,11 +60,11 @@ proc getLineError*(): string =
 
 proc panic*(context: string, error: string) =
     var errorMsg = error
-    #if $(context) notin [AssertionError, SyntaxError, CompilerError]:
-    when not defined(NOERRORLINES):
-        errorMsg = getLineError() & errorMsg
-    else:
-        discard 
+    if $(context) notin [CompilerError]:
+        when not defined(NOERRORLINES):
+            errorMsg = getLineError() & errorMsg
+        else:
+            discard 
     raise VMError(name: context, msg:move errorMsg)
 
 #=======================================
