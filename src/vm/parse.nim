@@ -114,7 +114,11 @@ proc getContext*(p: var Parser, curPos: int): string =
     var i = startPos
 
     while i<endPos and p.buf[i]!=EOF:
-        if p.buf[i] in {CR,LF}:
+        if p.buf[i]==CR:
+            i = lexbase.handleCR(p, i)
+            result &= ' '
+        elif p.buf[i]==LF:
+            i = lexbase.handleLF(p, i)
             result &= ' '
         else:
             result &= p.buf[i]
