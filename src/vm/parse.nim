@@ -11,7 +11,7 @@
 #=======================================
 
 import lexbase, os, sequtils
-import streams, strutils, unicode
+import streams, strutils, sugar, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug
@@ -112,24 +112,23 @@ proc getContext*(p: var Parser, curPos: int): string =
         startPos += 1
 
     var i = startPos
-    var nls = 0
     while i<endPos and p.buf[i]!=EOF:
-        if p.buf[i]==CR:
-            i = lexbase.handleCR(p, i)
-            nls += 1
-            result &= ' '
-        elif p.buf[i]==LF:
-            i = lexbase.handleLF(p, i)
-            result &= ' '
-        else:
-            result &= p.buf[i]
-            i += 1
+        # if p.buf[i]==CR:
+        #     i = lexbase.handleCR(p, i)
+        #     nls += 1
+        #     result &= ' '
+        # elif p.buf[i]==LF:
+        #     i = lexbase.handleLF(p, i)
+        #     result &= ' '
+        # else:
+        result &= p.buf[i]
+        i += 1
 
     if p.buf[i]!=EOF:
         result &= "..."
 
-    result = join(toSeq(splitLines(result))," ")
-    result &= ";" & repeat("~%",6 + curPos-startPos-nls) & "_^_"
+    result = join(toSeq(splitLines(result)).map((ln)=>unicode.strip(ln))," ")
+    result &= ";" & repeat("~%",6 + curPos-startPos) & "_^_"
 
 ## Lexer/parser
 
@@ -647,7 +646,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of Tick:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos))
+                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
                     AddToken newLiteral(p.value)
             of Dot:
