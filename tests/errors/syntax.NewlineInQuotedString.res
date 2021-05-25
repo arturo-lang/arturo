@@ -1,5 +1,5 @@
 >> Syntax | File: syntax.NewlineInQuotedString.art
-    error | Line: 4
+    error | Line: 5
           | 
           | newline in quoted string
           | for multiline strings, you could use either:
