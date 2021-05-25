@@ -555,6 +555,8 @@ proc defineSymbols*() =
         """:
             ##########################################################
             x.prototype = y
+            cleanBlock(x.prototype.a, inplace=true)
+            
             x.methods = newDictionary(execBlock(z,dictionary=true))
             if x.methods.d.hasKey("init"):
                 x.methods.d["init"] = newFunction(
