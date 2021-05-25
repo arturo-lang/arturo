@@ -32,7 +32,7 @@ runSet: function [title,location].export:[supersuccess,supertotal][
         ]
         else [
             print "<-------------------"
-            print result
+            print join.with:"\n" result
             print "------------------->"
             prints color #red "[ Error ]"
         ]
