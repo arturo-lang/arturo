@@ -155,10 +155,14 @@ template skip(p: var Parser) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             ScriptConfig &= "\n"
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             ScriptConfig &= "\n"
                             break
                         else:
@@ -170,9 +174,13 @@ template skip(p: var Parser) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             break
                         else:
                             inc(pos)
