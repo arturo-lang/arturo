@@ -3,5 +3,5 @@
           | 
           | empty literal value
           | 
-          | near: : "hello" lit: ' print "done"
-          |                      ^
+          | near: r: "hello" lit: ' print "done"
+          |                       ^

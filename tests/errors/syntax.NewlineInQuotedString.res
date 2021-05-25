@@ -5,5 +5,5 @@
           | for multiline strings, you could use either:
           | curly blocks {..} or triple "-" templates
           | 
-          | near: "something else  "  print "hello"
-          |                      ^
+          | near: something else  "  print "hello"
+          |                       ^

@@ -3,5 +3,5 @@
           | 
           | missing closing bracket
           | 
-          | near: t "done" print [ this is ...
-          |                      ^
+          | near: nt "done" print [ this is...
+          |                       ^
