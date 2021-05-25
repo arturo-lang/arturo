@@ -1,0 +1,3 @@
+str: "hello"
+lit: ' 
+print "done"

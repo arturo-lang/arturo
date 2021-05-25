@@ -1,4 +1,4 @@
->> Syntax | File: syntax.unterminated curly string.art
+>> Syntax | File: syntax.UnterminatedString.1.art
     error | Line: 5
           | 
           | unterminated curly string
