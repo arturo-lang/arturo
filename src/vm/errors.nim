@@ -56,6 +56,8 @@ var
 proc getLineError*(): string =
     result = ""
     if CurrentFile != "<repl>":
+        if CurrentLine==0: CurrentLine = 1
+        
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
 
 proc panic*(context: string, error: string) =
