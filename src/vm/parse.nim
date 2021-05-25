@@ -102,7 +102,6 @@ template AddToken*(token: untyped): untyped =
 
 proc getContext*(p: var Parser, curPos: int): string =
     var startPos = curPos-15
-    var endPos = curPos+15
 
     if startPos < 0: startPos = 0
 
@@ -112,23 +111,17 @@ proc getContext*(p: var Parser, curPos: int): string =
         startPos += 1
 
     var i = startPos
-    while i<endPos and p.buf[i]!=EOF:
+    var charCount = 0
+    while charCount<30 and p.buf[i]!=EOF:
         if p.buf[i]==CR:
             i = lexbase.handleCR(p, i)
-            when not defined(windows):
-                add(result, LF)
-            else:    
-                add(result, CR)
-                add(result, LF)
+            add(result, "\n")
         elif p.buf[i]==LF:
             i = lexbase.handleLF(p, i)
-            when defined(windows):
-                add(result, CR)
-                add(result, LF)
-            else:
-                add(result, LF)
+            add(result, "\n")
             result &= ' '
         else:
+            charCount += 1
             result &= p.buf[i]
             i += 1
 
