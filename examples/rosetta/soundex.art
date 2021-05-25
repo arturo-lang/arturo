@@ -1,0 +1,42 @@
+code: #[
+    "aeiouy": `W`
+    "bfpv": `1`
+    "cgjkqsxz": `2`
+    "dt": `3`
+    "l": `4`
+    "mn": `5`
+    "r": `6`
+]
+
+getCode: function [ch][
+    loop keys code 'k [
+        if contains? k lower to :string ch -> return code\[k]
+    ]
+    return ` `
+]
+
+soundex: function [str][
+    result: new to :string first str
+
+    prev: getCode first str
+    loop.with:'i str 'c [
+        curr: getCode c
+        if curr <> ` ` [
+            if and? curr <> `W`
+                    curr <> prev -> 'result ++ curr
+            prev: curr
+        ]
+    ]
+
+    if? 4 < size result ->
+        result: new slice result 0 3
+    else [
+        do.times: 4-size result ->
+            'result ++ `0`
+    ]
+    return result
+]
+
+loop ["Robert", "Rupert", "Rubin", "Ashcraft", "Ashcroft", "Tymczak",
+      "Pfister", "Honeyman", "Moses", "O'Mally", "O'Hara", "D day"] 'name ->
+    print [pad name 10 "->" soundex name]
