@@ -4,5 +4,5 @@
 >> Runtime | File: runtime.UncaughtError.1.art
      error | Line: 4
            | 
-           | Uncaught system exception:
+           | uncaught system exception:
            | division by zero
