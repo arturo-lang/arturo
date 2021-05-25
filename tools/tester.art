@@ -41,7 +41,6 @@ runSet: function [title,location].export:[supersuccess,supertotal][
     print "\n"
     print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 64
     print ""
-    ; print "=====================================================================\n"
 
     supersuccess: supersuccess + success
     supertotal: supertotal + size tests
@@ -50,12 +49,6 @@ runSet: function [title,location].export:[supersuccess,supertotal][
         panic.code: 1 "testing failed"
     ]
 ]
-
-; print color #white.bold {
-;     =====================================================================
-;       Arturo Tester
-;     =====================================================================
-; }
 
 print color #white.bold "\n  Arturo:\n  Unit Tester tool\n"
 
@@ -74,7 +67,8 @@ print [color #cyan "|" "Tests executed:" supertotal color #cyan pad "|" 50 - siz
 print [color #cyan "|" "Tests succeeded:" supersuccess color #cyan pad "|" 49 - size to :string supertotal]
 rate: to :string .format:".1f" 100 * supersuccess//supertotal
 print color #cyan "====================================================================="
-print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
+if? supersuccess=supertotal -> print [color #cyan "|" "Success rate:" color #green append rate "%" color #cyan pad "|" 51 - size rate]
+else -> print [color #cyan "|" "Success rate:" append rate "%" color #cyan pad "|" 51 - size rate]
 print [color #cyan "|" "Total time:" append supertime "s" color #cyan pad "|" 53 - size supertime]
 print color #cyan "====================================================================="
 
