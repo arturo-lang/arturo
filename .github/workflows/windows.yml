@@ -99,13 +99,13 @@ jobs:
         if: matrix.version == 'full'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art
+          arturo tools/tester.art 5
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art 6
+          arturo tools/tester.art 11
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
