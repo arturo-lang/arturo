@@ -170,7 +170,9 @@ proc defineSymbols*() =
         args        = {
             "action": {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "get"   : ({Boolean},"get benchmark time")
+        },
         returns     = {Nothing},
         example     = """
             benchmark [ 
@@ -181,8 +183,14 @@ proc defineSymbols*() =
             ; [benchmark] time: 0.065s
         """:
             ##########################################################
-            benchmark "":
-                discard execBlock(x)
+            if (popAttr("get")!=VNULL):
+                let time = getBenchmark:
+                    discard execBlock(x)
+
+                push newFloating(time)
+            else:
+                benchmark "":
+                    discard execBlock(x)
 
     builtin "binary?",
         alias       = unaliased, 
