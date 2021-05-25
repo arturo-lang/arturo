@@ -29,6 +29,7 @@ runSet: function [title,location].export:[supersuccess,supertotal][
         if? result=expected [
             prints color #green.bold "[ OK ]"
             success: success + 1
+            supersuccess: supersuccess + 1
         ]
         else [
             print "<-------------------"
@@ -42,7 +43,7 @@ runSet: function [title,location].export:[supersuccess,supertotal][
     print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 64
     print ""
 
-    supersuccess: supersuccess + success
+    ; supersuccess: supersuccess + success
     supertotal: supertotal + size tests
 ]
 
