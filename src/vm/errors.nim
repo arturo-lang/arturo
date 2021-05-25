@@ -57,7 +57,7 @@ proc getLineError*(): string =
     result = ""
     if CurrentFile != "<repl>":
         if CurrentLine==0: CurrentLine = 1
-        
+
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
 
 proc panic*(context: string, error: string) =
@@ -79,6 +79,7 @@ proc showVMErrors*(e: ref Exception) =
         header = $(e.name)
 
         if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
+            e.msg = getLineError() & "uncaught system exception:;" & e.msg
             header = RuntimeError
     except:
         header = "HEADER"
