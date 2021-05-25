@@ -173,7 +173,7 @@ proc defineSymbols*() =
         attrs       = {
             "get"   : ({Boolean},"get benchmark time")
         },
-        returns     = {Nothing},
+        returns     = {Nothing,Floating},
         example     = """
             benchmark [ 
                 ; some process that takes some time
@@ -181,6 +181,11 @@ proc defineSymbols*() =
             ]
             
             ; [benchmark] time: 0.065s
+            ;;;;
+            benchmark.get [
+                loop 1..10000 => prime?
+            ]
+            ; => 0.3237628936767578
         """:
             ##########################################################
             if (popAttr("get")!=VNULL):
