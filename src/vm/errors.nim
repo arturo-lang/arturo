@@ -119,31 +119,31 @@ proc CompilerError_ScriptNotExists*(name: string) =
 ## Syntax errors
 
 proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
+    CurrentLine = lineno
     panic SyntaxError,
           "missing closing bracket" & ";;" & 
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
     if strt!="": strt &= " "
+    CurrentLine = lineno
     panic SyntaxError,
           "unterminated " & strt & "string;;" & 
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 proc SyntaxError_NewlineInQuotedString*(lineno: int, context: string) =
+    CurrentLine = lineno
     panic SyntaxError,
           "newline in quoted string;" & 
           "for multiline strings, you could use either:;" &
           "curly blocks _{..}_ or _triple \"-\"_ templates;;" &
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
+    CurrentLine = lineno
     panic SyntaxError,
           "empty literal value;;" & 
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 ## Assertion errors
