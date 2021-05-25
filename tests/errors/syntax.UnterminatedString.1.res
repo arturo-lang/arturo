@@ -3,5 +3,5 @@
           | 
           | unterminated curly string
           | 
-          | near: done } this { something else
-          |                   ^
+          | near: t { done } this { something el...
+          |                       ^
