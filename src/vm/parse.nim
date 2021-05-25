@@ -112,10 +112,11 @@ proc getContext*(p: var Parser, curPos: int): string =
         startPos += 1
 
     var i = startPos
-
+    var nls = 0
     while i<endPos and p.buf[i]!=EOF:
         if p.buf[i]==CR:
             i = lexbase.handleCR(p, i)
+            nls += 1
             result &= ' '
         elif p.buf[i]==LF:
             i = lexbase.handleLF(p, i)
@@ -128,7 +129,7 @@ proc getContext*(p: var Parser, curPos: int): string =
         result &= "..."
 
     result = join(toSeq(splitLines(result))," ")
-    result &= ";" & repeat("~%",6 + curPos-startPos) & "_^_"
+    result &= ";" & repeat("~%",6 + curPos-startPos-nls) & "_^_"
 
 ## Lexer/parser
 
