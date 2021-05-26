@@ -2,7 +2,8 @@ name: "benchmark"
 type: :function
 module: "Reflection"
 returns: [
-        :nothing
+        :floating
+         :nothing
     ]
 description: "benchmark given code"
 examples: [
@@ -14,8 +15,20 @@ examples: [
             
             ; [benchmark] time: 0.065s
         }
+         {
+            benchmark.get [
+                loop 1..10000 => prime?
+            ]
+            ; => 0.3237628936767578
+        }
     ]
 attributes: #[
+    get: #[
+        types: [
+                :boolean
+            ]
+        description: "get benchmark time"
+        ]
     ]
 arguments: #[
     action: [
