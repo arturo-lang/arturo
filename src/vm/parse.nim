@@ -10,8 +10,8 @@
 # Libraries
 #=======================================
 
-import lexbase, os, sequtils
-import streams, strutils, sugar, unicode
+import lexbase, os, streams
+import strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug
