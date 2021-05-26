@@ -1,0 +1,4 @@
+print "done"
+x: 2
+if x = 2 -> panic.unstyled color #red "System crashed"
+print "system didn't crash"
