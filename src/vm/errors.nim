@@ -92,8 +92,9 @@ proc showVMErrors*(e: ref Exception) =
         var message = ""
         
         if $(header)==ProgramError:
+            let liner = e.msg.split("<:>")[0].split(";;")[0]
             let msg = e.msg.split("<:>")[1]
-            message = msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+            message = liner & ";;" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
         else:
             message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
     else:
