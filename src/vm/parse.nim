@@ -103,9 +103,6 @@ template AddToken*(token: untyped): untyped =
 proc getContext*(p: var Parser, curPos: int): string =
     result = ""
 
-    var before = ""
-    var after = ""
-
     var i = curPos
 
     while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
@@ -121,56 +118,6 @@ proc getContext*(p: var Parser, curPos: int): string =
         inc(i)
 
     result &= ";" & repeat("~%",6 + curPos-initial) & "_^_"
-    # var i = curPos-20
-    # if i < 0: i = 0
-
-    # while p.buf[i]!=EOF and i < curPos + 20:
-    #     if p.buf[i]==CR:
-    #         i = lexbase.handleCR(p, i)
-    #         result.add("\n")
-    #     elif p.buf[i]==LF:
-    #         i = lexbase.handleLF(p, i)
-    #         result.add("\n")
-    #     else:
-
-
-
-    # var startPos = curPos
-    # var adjustments = 0
-    # var linesbefore = -1
-    # while adjustments < 15:
-    #     startPos -= 1
-    #     if p.buf[startPos] notin {'\c', '\l', '\n'}:
-    #         adjustments += 1
-    #     else:
-    #         linesbefore += 1
-    # if startPos < 0: startPos = 0
-
-    # result = ""
-
-    # while p.buf[startPos]==' ':
-    #     startPos += 1
-
-    # var i = startPos
-    # var charCount = 0
-    # while charCount<30 and p.buf[i]!=EOF:
-    #     if p.buf[i]==CR:
-    #         i = lexbase.handleCR(p, i)
-    #         add(result, "\n")
-    #     elif p.buf[i]==LF:
-    #         i = lexbase.handleLF(p, i)
-    #         add(result, "\n")
-    #         result &= ' '
-    #     else:
-    #         charCount += 1
-    #         result &= p.buf[i]
-    #         i += 1
-
-    # if p.buf[i]!=EOF:
-    #     result &= "..."
-
-    # result = join(toSeq(splitLines(result)).map((ln)=>unicode.strip(ln))," ")
-    #result &= ";" & repeat("~%",6 + curPos-startPos-linesbefore) & "_^_"
 
 ## Lexer/parser
 
