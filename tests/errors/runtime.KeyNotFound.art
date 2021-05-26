@@ -1,0 +1,10 @@
+dict: #[
+    name: "John"
+    surname: "Doe"
+    age: 34
+]
+
+print dict\name
+print dict\surname
+print dict\country
+print dict\age

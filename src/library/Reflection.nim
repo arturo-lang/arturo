@@ -170,8 +170,10 @@ proc defineSymbols*() =
         args        = {
             "action": {Block}
         },
-        attrs       = NoAttrs,
-        returns     = {Nothing},
+        attrs       = {
+            "get"   : ({Boolean},"get benchmark time")
+        },
+        returns     = {Nothing,Floating},
         example     = """
             benchmark [ 
                 ; some process that takes some time
@@ -179,10 +181,21 @@ proc defineSymbols*() =
             ]
             
             ; [benchmark] time: 0.065s
+            ;;;;
+            benchmark.get [
+                loop 1..10000 => prime?
+            ]
+            ; => 0.3237628936767578
         """:
             ##########################################################
-            benchmark "":
-                discard execBlock(x)
+            if (popAttr("get")!=VNULL):
+                let time = getBenchmark:
+                    discard execBlock(x)
+
+                push newFloating(time)
+            else:
+                benchmark "":
+                    discard execBlock(x)
 
     builtin "binary?",
         alias       = unaliased, 

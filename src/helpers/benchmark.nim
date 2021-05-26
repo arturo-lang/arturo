@@ -23,3 +23,9 @@ template benchmark*(benchmarkName: string, code: untyped) =
         let elapsed = epochTime() - t0
         let elapsedStr = elapsed.formatFloat(format = ffDecimal, precision = 3)
         echo "[benchmark] time: ", elapsedStr, "s"
+
+template getBenchmark*(code: untyped): float =
+    let t0 = epochTime()
+    code
+    epochTime() - t0
+    

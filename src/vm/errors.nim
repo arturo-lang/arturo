@@ -56,11 +56,13 @@ var
 proc getLineError*(): string =
     result = ""
     if CurrentFile != "<repl>":
+        if CurrentLine==0: CurrentLine = 1
+
         result &= (bold(grayColor)).replace(";","%&") & "File: " & resetColor & (fg(grayColor)).replace(";","%&") & CurrentFile & ";" & (bold(grayColor)).replace(";","%&") & "Line: " & resetColor & (fg(grayColor)).replace(";","%&") & $(CurrentLine) & resetColor & ";;"
 
 proc panic*(context: string, error: string) =
     var errorMsg = error
-    if $(context) notin [AssertionError, SyntaxError, CompilerError]:
+    if $(context) notin [CompilerError]:
         when not defined(NOERRORLINES):
             errorMsg = getLineError() & errorMsg
         else:
@@ -77,6 +79,7 @@ proc showVMErrors*(e: ref Exception) =
         header = $(e.name)
 
         if $(header) notin [RuntimeError, AssertionError, SyntaxError, ProgramError, CompilerError]:
+            e.msg = getLineError() & "uncaught system exception:;" & e.msg
             header = RuntimeError
     except:
         header = "HEADER"
@@ -89,8 +92,9 @@ proc showVMErrors*(e: ref Exception) =
         var message = ""
         
         if $(header)==ProgramError:
+            let liner = e.msg.split("<:>")[0].split(";;")[0]
             let msg = e.msg.split("<:>")[1]
-            message = msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+            message = liner & ";;" & msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
         else:
             message = e.msg.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
     else:
@@ -119,31 +123,31 @@ proc CompilerError_ScriptNotExists*(name: string) =
 ## Syntax errors
 
 proc SyntaxError_MissingClosingBracket*(lineno: int, context: string) =
+    CurrentLine = lineno
     panic SyntaxError,
           "missing closing bracket" & ";;" & 
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 proc SyntaxError_UnterminatedString*(strtype: string, lineno: int, context: string) =
     var strt = strtype
     if strt!="": strt &= " "
+    CurrentLine = lineno
     panic SyntaxError,
           "unterminated " & strt & "string;;" & 
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 proc SyntaxError_NewlineInQuotedString*(lineno: int, context: string) =
+    CurrentLine = lineno
     panic SyntaxError,
           "newline in quoted string;" & 
           "for multiline strings, you could use either:;" &
           "curly blocks _{..}_ or _triple \"-\"_ templates;;" &
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 proc SyntaxError_EmptyLiteral*(lineno: int, context: string) =
+    CurrentLine = lineno
     panic SyntaxError,
           "empty literal value;;" & 
-          "line: " & $(lineno) & ";" &
           "near: " & context
 
 ## Assertion errors

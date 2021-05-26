@@ -26,7 +26,7 @@ when defined(PROFILE):
 when not defined(WEB):
     import vm/[bytecode, version]
 
-import vm/[values/value, vm]
+import vm/[env, values/value, vm]
 
 when not defined(WEB):
 
@@ -140,6 +140,8 @@ when isMainModule and not defined(WEB):
 
         arguments = token.remainingArgs()
 
+        setColors(muted = muted)
+
         case action:
             of execFile, evalCode:
                 if code=="":
@@ -147,9 +149,9 @@ when isMainModule and not defined(WEB):
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        discard run(code, arguments, action==execFile, muted=muted)
+                        discard run(code, arguments, action==execFile)
                 else:
-                    discard run(code, arguments, action==execFile, muted=muted)
+                    discard run(code, arguments, action==execFile)
                     
             of writeBcode:
                 let filename = code

@@ -17,6 +17,12 @@ attributes: #[
             ]
         description: "return given exit code"
         ]
+    unstyled: #[
+        types: [
+                :boolean
+            ]
+        description: "don\'t use default error template"
+        ]
     ]
 arguments: #[
     message: [
