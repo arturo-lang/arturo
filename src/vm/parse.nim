@@ -312,8 +312,8 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             of LF:
-                var prepos = pos-1
-                var = lexbase.handleLF(p, pos)
+                let prepos = pos-1
+                pos = lexbase.handleLF(p, pos)
                 when defined(windows):
                     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
