@@ -3,5 +3,5 @@
           | 
           | unterminated string
           | 
-          | near: t { done } this "something el...
-          |                       ^
+          | near: this "something else
+          |             ^
