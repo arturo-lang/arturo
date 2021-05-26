@@ -171,8 +171,6 @@ proc defineSymbols*() =
             "times" : ({Integer},"repeat block execution given number of times")
         },
         returns     = {Any,Nothing},
-        # TODO(Core\do) add documentation example for `.times`
-        #  labels: library, documentation, easy
         example     = """
             do "print 123"                ; 123
             ;;;;
@@ -188,6 +186,13 @@ proc defineSymbols*() =
             ;;;;
             print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
             ; 233168
+            ;;;;
+            do.times: 3 [
+                print "Hello!"
+            ]
+            ; Hello!
+            ; Hello!
+            ; Hello!
         """:
             ##########################################################
             var times = 1
