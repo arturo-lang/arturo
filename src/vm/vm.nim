@@ -138,7 +138,10 @@ when not defined(WEB):
         handleVMErrors:
 
             if isFile:
-                CurrentFile = lastPathPart(code)
+                when defined(SAFE):
+                    CurrentFile = "main.art"
+                else:
+                    CurrentFile = lastPathPart(code)
             
             let (mainCode, scriptInfo) = doParseAll(code, isFile)
 
