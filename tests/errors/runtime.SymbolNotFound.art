@@ -1,0 +1,3 @@
+x: 2
+print y + x
+print "hello!"

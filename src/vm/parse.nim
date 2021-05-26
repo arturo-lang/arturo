@@ -11,7 +11,7 @@
 #=======================================
 
 import lexbase, os, sequtils
-import streams, strutils, unicode
+import streams, strutils, sugar, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug
@@ -101,23 +101,42 @@ template AddToken*(token: untyped): untyped =
 ## Error reporting
 
 proc getContext*(p: var Parser, curPos: int): string =
-    var startPos = curPos-15
-    var endPos = curPos+15
-
+    var startPos = curPos
+    var adjustments = 0
+    var linesbefore = -1
+    while adjustments < 15:
+        startPos -= 1
+        if p.buf[startPos] notin {'\c', '\l', '\n'}:
+            adjustments += 1
+        else:
+            linesbefore += 1
     if startPos < 0: startPos = 0
 
     result = ""
 
+    while p.buf[startPos]==' ':
+        startPos += 1
+
     var i = startPos
-    while i<endPos and p.buf[i]!=EOF:
-        result &= p.buf[i]
-        i += 1
+    var charCount = 0
+    while charCount<30 and p.buf[i]!=EOF:
+        if p.buf[i]==CR:
+            i = lexbase.handleCR(p, i)
+            add(result, "\n")
+        elif p.buf[i]==LF:
+            i = lexbase.handleLF(p, i)
+            add(result, "\n")
+            result &= ' '
+        else:
+            charCount += 1
+            result &= p.buf[i]
+            i += 1
 
     if p.buf[i]!=EOF:
         result &= "..."
 
-    result = join(toSeq(splitLines(result))," ")
-    result &= ";" & repeat("~%",6 + curPos-startPos) & "_^_"
+    result = join(toSeq(splitLines(result)).map((ln)=>unicode.strip(ln))," ")
+    result &= ";" & repeat("~%",6 + curPos-startPos-linesbefore) & "_^_"
 
 ## Lexer/parser
 
@@ -136,10 +155,14 @@ template skip(p: var Parser) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             ScriptConfig &= "\n"
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             ScriptConfig &= "\n"
                             break
                         else:
@@ -151,9 +174,13 @@ template skip(p: var Parser) =
                             break
                         of CR:
                             pos = lexbase.handleCR(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
+                            when not defined(NOERRORLINES):
+                                AddToken newNewline(p.lineNumber)
                             break
                         else:
                             inc(pos)
@@ -198,7 +225,7 @@ template parseString(p: var Parser, stopper: char = Quote) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos-2))
             of stopper:
                 inc(pos)
                 break
@@ -244,9 +271,19 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
-                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
+                pos = lexbase.handleCR(p, pos)
+                when defined(windows):
+                    let passedPos = pos+3
+                else:
+                    let passedPos = pos+2
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, passedPos))
             of LF:
-                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, pos))
+                pos = lexbase.handleLF(p, pos)
+                when defined(windows):
+                    let passedPos = pos+3
+                else:
+                    let passedPos = pos+2
+                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, passedPos))
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -297,7 +334,7 @@ template parseCurlyString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("curly", p.lineNumber, getContext(p, p.bufpos))
+                SyntaxError_UnterminatedString("curly", p.lineNumber, getContext(p, p.bufpos-2))
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -372,7 +409,7 @@ template parseSafeString(p: var Parser) =
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos))
+                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos-2))
                 break
             of CR:
                 pos = lexbase.handleCR(p, pos)
@@ -576,7 +613,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
     var topBlock: Value
     if isDeferred: topBlock = newBlock()
     else: topBlock = newInline()
-    let initial = p.bufpos-1
+    let initial = p.bufpos
 
     while true:
         setLen(p.value, 0)
@@ -584,7 +621,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
 
         case p.buf[p.bufpos]
             of EOF:
-                if level!=0: SyntaxError_MissingClosingBracket(p.lineNumber, getContext(p, initial))
+                if level!=0: SyntaxError_MissingClosingBracket(p.lineNumber, getContext(p, initial-1))
                 break
             of Quote:
                 parseString(p)
@@ -635,7 +672,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of Tick:
                 parseLiteral(p)
                 if p.value == Empty: 
-                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos))
+                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
                     AddToken newLiteral(p.value)
             of Dot:

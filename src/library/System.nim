@@ -122,9 +122,12 @@ proc defineSymbols*() =
             "message"   : {String}
         },
         attrs       = {
-            "code"  : ({Integer},"return given exit code")
+            "code"      : ({Integer},"return given exit code"),
+            "unstyled"  : ({Boolean},"don't use default error template")
         },
         returns     = {Boolean},
+        # TODO(System\panic) add documentation example for `.unstyled`
+        #  labels: library, documentation, easy
         example     = """
             panic.code:1 "something went terribly wrong. quitting..."
         """:
@@ -133,7 +136,11 @@ proc defineSymbols*() =
             if (let aCode = popAttr("code"); aCode != VNULL):
                 code = aCode.i
 
-            ProgramError_panic(x.s.replace("\n",";"), code)
+            if (popAttr("unstyled")!=VNULL):
+                echo $(x)
+                quit(code)
+            else:
+                ProgramError_panic(x.s.replace("\n",";"), code)
 
     when not defined(WEB):
         # TODO(System\pause) implement for Web/JS builds
