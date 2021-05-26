@@ -126,10 +126,14 @@ proc defineSymbols*() =
             "unstyled"  : ({Boolean},"don't use default error template")
         },
         returns     = {Boolean},
-        # TODO(System\panic) add documentation example for `.unstyled`
-        #  labels: library, documentation, easy
         example     = """
             panic.code:1 "something went terribly wrong. quitting..."
+            ; quits with the given code and 
+            ; prints a properly format error with the given message
+            ;;;;
+            panic.unstyled "oops! that was wrong"
+            ; quits with the default exit code (= 0) and
+            ; just outputs a simple - unformatted - message
         """:
             ##########################################################
             var code = 0
