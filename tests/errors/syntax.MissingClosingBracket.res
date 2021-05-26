@@ -1,7 +1,7 @@
 >> Syntax | File: syntax.MissingClosingBracket.art
-    error | Line: 6
+    error | Line: 2
           | 
           | missing closing bracket
           | 
-          | near: nt "done" print [ this is...
-          |                       ^
+          | near: print [
+          |              ^
