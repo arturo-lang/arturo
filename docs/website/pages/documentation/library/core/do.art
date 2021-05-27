@@ -26,6 +26,14 @@ examples: [
             print do "https://raw.githubusercontent.com/arturo-lang/arturo/master/examples/projecteuler/euler1.art"
             ; 233168
         }
+         {
+            do.times: 3 [
+                print "Hello!"
+            ]
+            ; Hello!
+            ; Hello!
+            ; Hello!
+        }
     ]
 attributes: #[
     import: #[
