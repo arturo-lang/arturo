@@ -24,6 +24,7 @@ import vm/[bytecode, errors, eval, globals, parse, stack, values/value]
 
 var
     Memoizer*  = initOrderedTable[Hash,Value]()
+    CurrentDump*: Translation = NoTranslation
 
 #=======================================
 # Forward Declarations
@@ -246,6 +247,11 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             # pop argument and set it
             Syms[symIndx] = stack.pop()
 
+    when not defined(PORTABLE):
+        if DoDebug: 
+            ExecStack.add(CurrentLine)
+            CurrentDump = (input[0], input[1])
+
     while true:
         # if vmBreak:
         #     break
@@ -391,5 +397,8 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
     let newSyms = Syms
     Syms = oldSyms
+
+    when not defined(PORTABLE):
+        if DoDebug: discard ExecStack.pop()
 
     return newSyms

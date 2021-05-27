@@ -114,6 +114,9 @@ template handleVMErrors*(blk: untyped): untyped =
     except:
         let e = getCurrentException()
         showVMErrors(e)
+        when not defined(PORTABLE):
+            if DoDebug:
+                dump(CurrentDump)
         if e.name == ProgramError:
             let code = parseInt(e.msg.split(";;")[1].split("<:>")[0])
             quit(code)
@@ -134,14 +137,17 @@ when not defined(WEB):
 
             discard doExec(code)
 
-    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true): Translation {.exportc:"run".} =
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false): Translation {.exportc:"run".} =
         handleVMErrors:
+
+            DoDebug = debug
 
             if isFile:
                 when defined(SAFE):
                     CurrentFile = "main.art"
                 else:
                     CurrentFile = lastPathPart(code)
+                    CurrentPath = code
             
             let (mainCode, scriptInfo) = doParseAll(code, isFile)
 
