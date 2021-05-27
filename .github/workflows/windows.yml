@@ -105,10 +105,11 @@ jobs:
         if: matrix.version == 'mini'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art 6
+          arturo tools/tester.art
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
           name: "arturo-${{matrix.version}}-${{matrix.os}}"
           path: bin/arturo.exe
+ 

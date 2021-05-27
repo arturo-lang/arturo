@@ -1,0 +1,7 @@
+fun: function [x][
+    print x/0
+]
+
+loop [10 9 8 7 6 5 4] 'z [
+    print ["fun" z "->" fun z]
+]

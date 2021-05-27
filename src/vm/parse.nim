@@ -10,8 +10,8 @@
 # Libraries
 #=======================================
 
-import lexbase, os, sequtils
-import streams, strutils, sugar, unicode
+import lexbase, os, streams
+import strutils, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug
@@ -101,42 +101,23 @@ template AddToken*(token: untyped): untyped =
 ## Error reporting
 
 proc getContext*(p: var Parser, curPos: int): string =
-    var startPos = curPos
-    var adjustments = 0
-    var linesbefore = -1
-    while adjustments < 15:
-        startPos -= 1
-        if p.buf[startPos] notin {'\c', '\l', '\n'}:
-            adjustments += 1
-        else:
-            linesbefore += 1
-    if startPos < 0: startPos = 0
-
     result = ""
 
-    while p.buf[startPos]==' ':
-        startPos += 1
+    var i = curPos
 
-    var i = startPos
-    var charCount = 0
-    while charCount<30 and p.buf[i]!=EOF:
-        if p.buf[i]==CR:
-            i = lexbase.handleCR(p, i)
-            add(result, "\n")
-        elif p.buf[i]==LF:
-            i = lexbase.handleLF(p, i)
-            add(result, "\n")
-            result &= ' '
-        else:
-            charCount += 1
-            result &= p.buf[i]
-            i += 1
+    while i > 0 and p.buf[i] notin {CR,LF,'\n'}:
+        result.add(p.buf[i])
+        dec(i)
 
-    if p.buf[i]!=EOF:
-        result &= "..."
+    result = reversed(result)
+    let initial = i
+    i = curPos+1
 
-    result = join(toSeq(splitLines(result)).map((ln)=>unicode.strip(ln))," ")
-    result &= ";" & repeat("~%",6 + curPos-startPos-linesbefore) & "_^_"
+    while p.buf[i]!=EOF and p.buf[i] notin {CR,LF,'\n'}:
+        result.add(p.buf[i])
+        inc(i)
+
+    result &= ";" & repeat("~%",6 + curPos-initial) & "_^_"
 
 ## Lexer/parser
 
@@ -221,11 +202,12 @@ template skip(p: var Parser) =
 template parseString(p: var Parser, stopper: char = Quote) =
     var pos = p.bufpos + 1
     var inCode = false
-
+    let initialLine = p.lineNumber
+    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("", p.lineNumber, getContext(p, p.bufpos-2))
+                SyntaxError_UnterminatedString("", initialLine, getContext(p, initialPoint))
             of stopper:
                 inc(pos)
                 break
@@ -271,19 +253,17 @@ template parseString(p: var Parser, stopper: char = Quote) =
                     add(p.value, p.buf[pos])
                     inc(pos)
             of CR:
+                var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
-                when defined(windows):
-                    let passedPos = pos+3
-                else:
-                    let passedPos = pos+2
-                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, passedPos))
+                # when defined(windows):
+                #     prepos += 1
+                SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             of LF:
+                var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
-                when defined(windows):
-                    let passedPos = pos+3
-                else:
-                    let passedPos = pos+2
-                SyntaxError_NewlineInQuotedString(p.lineNumber, getContext(p, passedPos))
+                # when defined(windows):
+                #     prepos += 1
+                SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -331,10 +311,12 @@ template parseCurlyString(p: var Parser) =
     if p.buf[pos]==':':
         inc(pos)
         verbatimString = true
+    let initialLine = p.lineNumber
+    let initialPoint = p.bufpos
     while true:
         case p.buf[pos]:
             of EOF: 
-                SyntaxError_UnterminatedString("curly", p.lineNumber, getContext(p, p.bufpos-2))
+                SyntaxError_UnterminatedString("curly", initialLine, getContext(p, initialPoint))
             of LCurly:
                 curliesExpected += 1
                 add(p.value, p.buf[pos])
@@ -614,14 +596,14 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
     if isDeferred: topBlock = newBlock()
     else: topBlock = newInline()
     let initial = p.bufpos
-
+    let initialLine = p.lineNumber
     while true:
         setLen(p.value, 0)
         skip(p)
 
         case p.buf[p.bufpos]
             of EOF:
-                if level!=0: SyntaxError_MissingClosingBracket(p.lineNumber, getContext(p, initial-1))
+                if level!=0: SyntaxError_MissingClosingBracket(initialLine, getContext(p, initial-1))
                 break
             of Quote:
                 parseString(p)
@@ -646,7 +628,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                         AddToken newVersion(p.value)
                     else:
                         AddToken newFloating(p.value)
-                else: AddToken newInteger(p.value)
+                else: AddToken newInteger(p.value, p.lineNumber)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:

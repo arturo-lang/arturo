@@ -1,0 +1,2 @@
+got: execute "arturo -d --no-color tests/errors/trace-vm.art"
+print got

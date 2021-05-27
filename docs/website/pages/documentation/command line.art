@@ -10,6 +10,7 @@ The command line is where the whole journey starts: whether you want to try out 
    * [Run a script](#run-a-script)
    * [Start the interactive console](#start-the-interactive-console)
    * [Working with bytecode](#working-with-bytecode)
+   * [Debugging a script](#debugging-a-script)
 - [Package manager](#package-manager)
    * [List available modules](#list-available-modules)
    * [List remote modules](#list-remote-modules)
@@ -60,6 +61,59 @@ This will output a `path/to/your/script.art.bcode` file.
 
 ```bash
 arturo -x path/to/your/script.art.bcode
+```
+
+<h4 id="debugging-a-script">Debugging a script</h4>
+
+Apart from the built-in error checker and messages, for better debugging, Arturo offers the `-d` (or `--debug`) flag.
+
+What it does is - with some obvious overhead being added - add full stack traces and bytecode dumps in case of a runtime error.
+
+Let's take this example code:
+
+```red
+fun: function [x][
+    print x/0
+]
+
+loop [10 9 8 7 6 5 4] 'z [
+    print ["fun" z "->" fun z]
+]
+```
+
+Let's say we name our file `divbyzero.art`.
+
+If we run this with:
+
+```bash
+arturo -d divbyzero.art
+```
+
+...this is the output we are going to get:
+
+```
+>> Runtime | File: divbyzero.art
+     error | Line: 2
+           | 
+           | uncaught system exception:
+           | division by zero
+
+>>   Trace | 2> print x/0
+           | 6> print ["fun" z "->" fun z]
+           | 6> print ["fun" z "->" fun z]
+           | 5> loop [10 9 8 7 6 5 4] 'z [
+
+>>      VM | EOL
+           | CONSTI0
+           | CONSTI2
+           | CONSTI0
+           | LOAD2
+           | CALL1
+           | CALL0
+           | EOL
+           | CONSTI0
+           | CONSTI3
+           | END
 ```
 
 <h3 id="package-manager">Package manager</h3>
