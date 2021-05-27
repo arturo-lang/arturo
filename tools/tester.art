@@ -10,6 +10,7 @@ errorMargin: 0
 if 1 = size arg -> errorMargin: to :integer first arg
 
 supersuccess: 0
+superskipped: 0
 supertotal: 0
 
 canExecute?: function [scr][
@@ -35,7 +36,7 @@ canExecute?: function [scr][
     return true
 ]
 
-runSet: function [title,location].export:[supersuccess,supertotal][
+runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     print "====================================================================="
     print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
     print "====================================================================="
@@ -65,6 +66,7 @@ runSet: function [title,location].export:[supersuccess,supertotal][
         ]
         else [
             prints color #orange.bold "[ SKIPPED ]"
+            superskipped: superskipped + 1
             success: success + 1
             supersuccess: supersuccess + 1
         ]
@@ -78,7 +80,9 @@ runSet: function [title,location].export:[supersuccess,supertotal][
     supertotal: supertotal + size tests
 ]
 
-print color #white.bold "\n  Arturo:\n  Unit Tester tool\n"
+print color #green.bold "\n  Arturo"
+print color #white.bold "  Unit Tester\n"
+print color #gray ~"  Release: @|sys\release|\n"
 
 supertime: to :string .format: ".2f" benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
@@ -95,7 +99,7 @@ print color #cyan "=============================================================
 
 print [color #cyan "|" color #white.bold "ANALYSIS                                                         " color #cyan "|"]
 print color #cyan "====================================================================="
-print [color #cyan "|" "Tests executed:" supertotal color #cyan pad "|" 50 - size to :string supertotal]
+print [color #cyan "|" "Tests executed:" supertotal "( skipped:" superskipped ")" color #cyan pad "|" 36 - (size to :string supertotal)+size to :string superskipped]
 print [color #cyan "|" "Tests succeeded:" supersuccess color #cyan pad "|" 49 - size to :string supertotal]
 rate: to :string .format:".1f" 100 * supersuccess//supertotal
 print color #cyan "====================================================================="
