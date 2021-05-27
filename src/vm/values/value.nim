@@ -341,14 +341,14 @@ proc newInteger*(i: int): Value {.inline.} =
 proc newInteger*(i: int64): Value {.inline.} =
     newInteger((int)(i))
 
-proc newInteger*(i: string): Value {.inline.} =
+proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
     try:
         return newInteger(parseInt(i))
     except ValueError:
         when not defined(NOGMP):
             return newInteger(newInt(i))
         else:
-            RuntimeError_IntegerParsingOverflow(i)
+            RuntimeError_IntegerParsingOverflow(lineno, i)
 
 proc newBigInteger*(i: int): Value {.inline.} =
     when not defined(NOGMP):

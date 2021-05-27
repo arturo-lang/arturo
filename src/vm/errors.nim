@@ -158,7 +158,8 @@ proc AssertionError_AssertionFailed*(context: string) =
 
 ## Runtime errors
 
-proc RuntimeError_IntegerParsingOverflow*(number: string) =
+proc RuntimeError_IntegerParsingOverflow*(lineno: int, number: string) =
+    CurrentLine = lineno
     panic RuntimeError,
           "number parsing overflow - up to " & $(sizeof(int) * 8) & "-bit integers supported" & ";" &
           "given: " & truncate(number, 20)
