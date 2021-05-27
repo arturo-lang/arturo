@@ -69,4 +69,4 @@ jobs:
         if: matrix.version == 'mini'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art 6
+          arturo tools/tester.art
