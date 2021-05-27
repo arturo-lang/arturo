@@ -27,13 +27,17 @@ The command line is where the whole journey starts: whether you want to try out 
 
 To run an Arturo script, all you have to do is pass the main script's path to Arturo:
 
-    arturo <script>
+```bash
+arturo <script>
+```
 
 <h4 id="start-the-interactive-console">Start the interactive console</h4>
 
 To start the interactive console (see: *REPL*), just open up your terminal and type:
 
-    arturo
+```bash
+arturo
+```
 
 This is is what Arturo's interactive console looks like:
 
@@ -124,7 +128,9 @@ Although Arturo's philosophy is batteries-included - so you'll most likely need 
 
 To list all available modules, just type:
 
+```bash
     arturo -m list
+```
 
 This will show you all the modules you have installed locally.
 
@@ -136,31 +142,41 @@ It looks like this:
 
 If you want to fetch a list of *all* modules available to download from the [official repository](https://github.com/arturo-lang/art-modules), just type:
 
+```bash
     arturo -m remote
+```
 
 <h4 id="get-module-info">Get module info</h4>
 
 Have you spotted a module you like and want to know more about it? That's easy:
 
+```bash
     arturo -m info html
+```
 
 <h4 id="install-a-new-module">Install a new module</h4>
 
 When you have finally decided you want to install a module, it's also easy:
 
+```bash
     arturo -m install html
+```
 
 <h4 id="uninstall-a-module">Uninstall a module</h4>
 
 In order to uninstall a module you have previously, you just have to type:
 
+```bash
     arturo -m uninstall html
+```
 
 <h4 id="update-existing-modules">Update existing modules</h4>
 
 If you want to update all of your local modules, there's no reason to uninstall/re-install anything. Just type:
 
+```bash
     arturo -m update
+```
 
 And *all* of your modules will be automatically up-to-date.
 }
