@@ -628,7 +628,7 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                         AddToken newVersion(p.value)
                     else:
                         AddToken newFloating(p.value)
-                else: AddToken newInteger(p.value)
+                else: AddToken newInteger(p.value, p.lineNumber)
             of Symbols:
                 parseAndAddSymbol(p,topBlock)
             of PermittedIdentifiers_Start:
