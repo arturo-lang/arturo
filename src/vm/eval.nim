@@ -15,9 +15,9 @@ import algorithm, tables, unicode
 when not defined(NOGMP):
     import extras/bignum
 
-when defined(VERBOSE):
+when not defined(PORTABLE):
     import strformat, strutils
-    import helpers/debug
+    import helpers/colors
 
 import vm/[bytecode, globals, values/value]
 
@@ -558,44 +558,50 @@ proc doEval*(root: Value, isDictionary=false): Translation =
 # Inspection
 #=======================================
 
-when defined(VERBOSE):
+when not defined(PORTABLE):
     proc dump*(evaled: Translation) =
-        showDebugHeader("Constants")
+        var lines: seq[string] = @[] 
+        # for l in showDebugHeader("Constants"):
+        #     lines.add(l)
+
+        # var i = 0
+
+        # let consts = evaled[0]
+        let it = evaled[1]
+
+        # while i < consts.len:
+        #     var cnst = consts[i]
+        #     lines.add(fmt("{i}: "))
+        #     # stdout.write fmt("{i}: ")
+        #     # cnst.dump(0, false)
+
+        #     i += 1
+        
+        # for l in showDebugHeader("Instruction Table"):
+        #     lines.add(l)
 
         var i = 0
 
-        let consts = evaled[0]
-        let it = evaled[1]
-
-        while i < consts.len:
-            var cnst = consts[i]
-
-            stdout.write fmt("{i}: ")
-            cnst.dump(0, false)
-
-            i += 1
-        
-        showDebugHeader("Instruction Table")
-
-        i = 0
-
         while i < it.len:
-            stdout.write fmt("{i}: ")
+            #stdout.write fmt("{i}: ")
             var instr = (OpCode)(it[i])
 
-            stdout.write ($instr).replace("op").toLowerAscii()
+            #stdout.write ($instr).replace("op").toLowerAscii()
 
             case instr:
                 of opPush, opStore, opLoad, opCall, opAttr:
                     i += 1
                     let indx = it[i]
-                    stdout.write fmt("\t#{indx}\n")
+                    lines.add(($instr).replace("op").toUpperAscii() & fmt("\t#{indx}"))
                 # of opExtra:
                 #     i += 1
                 #     let extra = ($((OpCode)((int)(it[i])+(int)(opExtra)))).replace("op").toLowerAscii()
                 #     stdout.write fmt("\t%{extra}\n")
                 else:
-                    discard
+                    lines.add(($instr).replace("op").toUpperAscii())
 
-            stdout.write "\n"
             i += 1
+ 
+        echo ""
+        echo bold(grayColor) & ">>      VM | " & fg(grayColor) & 
+             lines.join(bold(grayColor) & "\n           | " & fg(grayColor)) & resetColor
