@@ -117,7 +117,8 @@ do
                           -d:NOPARSERS \
                           -d:NOSQLITE \
                           -d:NOUNZIP \
-                          -d:NOWEBVIEW";;
+                          -d:NOWEBVIEW \
+                          -d:MINI";;
 
         safe)
             FLAGS="$FLAGS -d:SAFE";;
