@@ -14,7 +14,7 @@ superskipped: 0
 supertotal: 0
 
 canExecute?: function [scri][
-    scr: extract.filename scr
+    scr: extract.filename scri
     if sys\release='mini [
         if in? scr [
             "runtime.NumberOutOfPermittedRange.art"
