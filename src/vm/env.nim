@@ -81,7 +81,12 @@ proc getSystemInfo*(): ValueDict =
         "build"     : newInteger(parseInt(ArturoBuild)),
         "buildDate" : newDate(now()),
         "cpu"       : newString(hostCPU),
-        "os"        : newString(hostOS)
+        "os"        : newString(hostOS),
+        "release"   : 
+            when defined(MINI):
+                newLiteral("mini")
+            else:
+                newLiteral("full")
     }.toOrderedTable
 
 proc getPathInfo*(): ValueDict =
