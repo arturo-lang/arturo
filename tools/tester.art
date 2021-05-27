@@ -17,20 +17,20 @@ canExecute?: function [scri][
     scr: extract.filename scri
     if sys\release='mini [
         if in? scr [
-            "runtime.NumberOutOfPermittedRange.art"
-            "iban.art"
-            "integer overflow.art"
-            "integer roots.art"
-            "lucas-lehmer test.art"
-            "modular exponentation.art"
-            "unicode strings.art"
+            "runtime.NumberOutOfPermittedRange"
+            "iban"
+            "integer overflow"
+            "integer roots"
+            "lucas-lehmer test"
+            "modular exponentation"
+            "unicode strings"
         ] -> return false
     ]
 
     if sys\release='full [
         if in? scr [
-            "runtime.IntegerOperationOverflow.art"
-            "runtime.IntegerParsingOverflow.art"
+            "runtime.IntegerOperationOverflow"
+            "runtime.IntegerParsingOverflow"
         ] -> return false
     ]
 
