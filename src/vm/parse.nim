@@ -255,14 +255,14 @@ template parseString(p: var Parser, stopper: char = Quote) =
             of CR:
                 var prepos = pos-1
                 pos = lexbase.handleCR(p, pos)
-                when defined(windows):
-                    prepos += 1
+                # when defined(windows):
+                #     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             of LF:
                 var prepos = pos-1
                 pos = lexbase.handleLF(p, pos)
-                when defined(windows):
-                    prepos += 1
+                # when defined(windows):
+                #     prepos += 1
                 SyntaxError_NewlineInQuotedString(p.lineNumber-1, getContext(p, prepos))
             else:
                 add(p.value, p.buf[pos])
