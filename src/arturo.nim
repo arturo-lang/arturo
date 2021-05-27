@@ -91,6 +91,7 @@ when isMainModule and not defined(WEB):
     var code: string = ""
     var arguments: seq[string] = @[]
     var muted: bool = false
+    var debug: bool = false
 
     when not defined(PORTABLE):
 
@@ -125,8 +126,7 @@ when isMainModule and not defined(WEB):
                             action = evalCode
                             code = runModule
                         of "d","debug":
-                            # DoDebug = true
-                            discard
+                            debug = true
                         of "no-color":
                             muted = true
                         of "h","help":
@@ -149,9 +149,9 @@ when isMainModule and not defined(WEB):
 
                 when defined(BENCHMARK):
                     benchmark "doParse / doEval":
-                        discard run(code, arguments, action==execFile)
+                        discard run(code, arguments, action==execFile, debug=debug)
                 else:
-                    discard run(code, arguments, action==execFile)
+                    discard run(code, arguments, action==execFile, debug=debug)
                     
             of writeBcode:
                 let filename = code

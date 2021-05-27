@@ -10,11 +10,36 @@ errorMargin: 0
 if 1 = size arg -> errorMargin: to :integer first arg
 
 supersuccess: 0
+superskipped: 0
 supertotal: 0
 
-runSet: function [title,location].export:[supersuccess,supertotal][
+canExecute?: function [scri][
+    scr: extract.filename scri
+    if sys\release='mini [
+        if in? scr [
+            "runtime.NumberOutOfPermittedRange"
+            "iban"
+            "integer overflow"
+            "integer roots"
+            "lucas-lehmer test"
+            "modular exponentation"
+            "unicode strings"
+        ] -> return false
+    ]
+
+    if sys\release='full [
+        if in? scr [
+            "runtime.IntegerOperationOverflow"
+            "runtime.IntegerParsingOverflow"
+        ] -> return false
+    ]
+
+    return true
+]
+
+runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     print "====================================================================="
-    print color #cyan.bold ~"  |title|"
+    print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
     print "====================================================================="
     tests: sort select list relative location => [in? ".res"]
     success: 0
@@ -24,30 +49,41 @@ runSet: function [title,location].export:[supersuccess,supertotal][
         expected: split.lines strip read test
 
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
-        result: split.lines strip execute ~{arturo --no-color "|script|"}
+        if? canExecute? script [
+            result: split.lines strip execute ~{arturo --no-color "|script|"}
 
-        if? result=expected [
-            prints color #green.bold "[ OK ]"
-            success: success + 1
-            supersuccess: supersuccess + 1
+            if? result=expected [
+
+                prints color #green.bold "[   YES   ]"
+                success: success + 1
+                supersuccess: supersuccess + 1
+            ]
+            else [
+                print "<-------------------"
+                print join.with:"\n" result
+                print "------------------->"
+                prints color #red "[  ERROR  ]"
+            ]
         ]
         else [
-            print "<-------------------"
-            print join.with:"\n" result
-            print "------------------->"
-            prints color #red "[ Error ]"
+            prints color #orange.bold "[ SKIPPED ]"
+            superskipped: superskipped + 1
+            success: success + 1
+            supersuccess: supersuccess + 1
         ]
     ] 
 
     print "\n"
-    print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 64
+    print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 69
     print ""
 
     ; supersuccess: supersuccess + success
     supertotal: supertotal + size tests
 ]
 
-print color #white.bold "\n  Arturo:\n  Unit Tester tool\n"
+print color #green.bold "\n  Arturo"
+print color #white.bold "  Unit Tester\n"
+print color #gray ~"  Release: @|sys\release|\n"
 
 supertime: to :string .format: ".2f" benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
@@ -64,7 +100,7 @@ print color #cyan "=============================================================
 
 print [color #cyan "|" color #white.bold "ANALYSIS                                                         " color #cyan "|"]
 print color #cyan "====================================================================="
-print [color #cyan "|" "Tests executed:" supertotal color #cyan pad "|" 50 - size to :string supertotal]
+print [color #cyan "|" "Tests executed:" supertotal "( skipped:" superskipped ")" color #cyan pad "|" 36 - (size to :string supertotal)+size to :string superskipped]
 print [color #cyan "|" "Tests succeeded:" supersuccess color #cyan pad "|" 49 - size to :string supertotal]
 rate: to :string .format:".1f" 100 * supersuccess//supertotal
 print color #cyan "====================================================================="
