@@ -13,23 +13,24 @@ supersuccess: 0
 superskipped: 0
 supertotal: 0
 
-canExecute?: function [scr][
+canExecute?: function [scri][
+    scr: extract.filename scr
     if sys\release='mini [
         if in? scr [
-            "tests/errors/runtime.NumberOutOfPermittedRange.art"
-            "examples/rosetta/iban.art"
-            "examples/rosetta/integer overflow.art"
-            "examples/rosetta/integer roots.art"
-            "examples/rosetta/lucas-lehmer test.art"
-            "examples/rosetta/modular exponentation.art"
-            "examples/rosetta/unicode strings.art"
+            "runtime.NumberOutOfPermittedRange.art"
+            "iban.art"
+            "integer overflow.art"
+            "integer roots.art"
+            "lucas-lehmer test.art"
+            "modular exponentation.art"
+            "unicode strings.art"
         ] -> return false
     ]
 
     if sys\release='full [
         if in? scr [
-            "tests/errors/runtime.IntegerOperationOverflow.art"
-            "tests/errors/runtime.IntegerParsingOverflow.art"
+            "runtime.IntegerOperationOverflow.art"
+            "runtime.IntegerParsingOverflow.art"
         ] -> return false
     ]
 
