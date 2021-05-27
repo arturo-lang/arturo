@@ -12,9 +12,32 @@ if 1 = size arg -> errorMargin: to :integer first arg
 supersuccess: 0
 supertotal: 0
 
+canExecute?: function [scr][
+    if sys\release='mini [
+        if in? scr [
+            "tests/errors/runtime.NumberOutOfPermittedRange.art"
+            "examples/rosetta/iban.art"
+            "examples/rosetta/integer overflow.art"
+            "examples/rosetta/integer roots.art"
+            "examples/rosetta/lucas-lehmer test.art"
+            "examples/rosetta/modular exponentation.art"
+            "examples/rosetta/unicode strings.art"
+        ] -> return false
+    ]
+
+    if sys\release='full [
+        if in? scr [
+            "tests/errors/runtime.IntegerOperationOverflow.art"
+            "tests/errors/runtime.IntegerParsingOverflow.art"
+        ] -> return false
+    ]
+
+    return true
+]
+
 runSet: function [title,location].export:[supersuccess,supertotal][
     print "====================================================================="
-    print color #cyan.bold ~"  |title|"
+    print (color #cyan.bold ~"  |title|") ++ pad "passed?" 65 - size title
     print "====================================================================="
     tests: sort select list relative location => [in? ".res"]
     success: 0
@@ -24,23 +47,31 @@ runSet: function [title,location].export:[supersuccess,supertotal][
         expected: split.lines strip read test
 
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve extract.filename script 40) 70 
-        result: split.lines strip execute ~{arturo --no-color "|script|"}
+        if? canExecute? script [
+            result: split.lines strip execute ~{arturo --no-color "|script|"}
 
-        if? result=expected [
-            prints color #green.bold "[ OK ]"
-            success: success + 1
-            supersuccess: supersuccess + 1
+            if? result=expected [
+
+                prints color #green.bold "[   YES   ]"
+                success: success + 1
+                supersuccess: supersuccess + 1
+            ]
+            else [
+                print "<-------------------"
+                print join.with:"\n" result
+                print "------------------->"
+                prints color #red "[  ERROR  ]"
+            ]
         ]
         else [
-            print "<-------------------"
-            print join.with:"\n" result
-            print "------------------->"
-            prints color #red "[ Error ]"
+            prints color #orange.bold "[ SKIPPED ]"
+            success: success + 1
+            supersuccess: supersuccess + 1
         ]
     ] 
 
     print "\n"
-    print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 64
+    print pad.left render.template "<||= success ||> of <||= size tests ||> tasks succeeded ◀" 69
     print ""
 
     ; supersuccess: supersuccess + success
