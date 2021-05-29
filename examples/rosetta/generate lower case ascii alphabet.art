@@ -1,3 +1,1 @@
-lcase: map 97..122 [x][to :char x]
-
-print lcase
+print to [:char] 97..122
