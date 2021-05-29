@@ -1,0 +1,4 @@
+factorial: function [n]-> product 1..n
+binomial:  function [x,y]-> (factorial x) / (factorial y) * factorial x-y
+
+print binomial 5 3
