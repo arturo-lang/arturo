@@ -1,0 +1,11 @@
+rot13: function [c][
+    case [in? lower c]
+        when? -> `a`..`m` -> return to :char (to :integer c) + 13
+        when? -> `n`..`z` -> return to :char (to :integer c) - 13
+        else  -> return c
+]
+
+loop "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" 'ch 
+    -> prints rot13 ch
+
+print ""
