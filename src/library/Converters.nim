@@ -62,7 +62,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                 case tp:
                     of Boolean: return newBoolean(y.i!=0)
                     of Floating: return newFloating((float)y.i)
-                    of Char: return newChar(chr(y.i))
+                    of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
                         if y.iKind==NormalInteger: 
                             if (let aFormat = popAttr("format"); aFormat != VNULL):
