@@ -1,0 +1,14 @@
+radians: function [x]-> x * pi // 180
+
+haversine: function [src,tgt][
+    dLat: radians tgt\0 - src\0
+    dLon: radians tgt\1 - src\1
+    lat1: radians src\0
+    lat2: radians tgt\0
+
+    a: add product @[cos lat1, cos lat2, sin dLon/2, sin dLon/2] (sin dLat/2) ^ 2
+    c: 2 * asin sqrt a
+    return 6372.8 * c
+]
+
+print haversine @[36.12 neg 86.67] @[33.94, neg 118.40]
