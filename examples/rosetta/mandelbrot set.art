@@ -1,0 +1,28 @@
+inMandelbrot?: function [c][
+    z: to :complex [0 0]
+    do.times: 50 [
+        z: c + z*z
+        if 4 < abs z -> return false
+    ]
+    return true
+]
+
+mandelbrot: function [settings][
+    y: 0
+    while [y < settings\height][
+        Y: settings\yStart + y * settings\yStep
+        x: 0
+        while [x < settings\width][
+            X: settings\xStart + x * settings\xStep
+            if? inMandelbrot? to :complex @[X Y] -> prints "*"
+            else -> prints " "
+            x: x + 1
+        ]
+        print ""
+        y: y + 1
+    ]
+]
+
+mandelbrot #[ yStart: 1.0 yStep: neg 0.05 
+              xStart: neg 2.0 xStep: 0.0315
+              height: 40 width: 80 ]
