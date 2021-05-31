@@ -1103,7 +1103,7 @@ proc defineSymbols*() =
             "words"     : ({Boolean},"split string by whitespace"),
             "lines"     : ({Boolean},"split string by lines"),
             "by"        : ({String,Block},"split using given separator"),
-            "regex"     : ({Boolean},"match against a regular expression"),
+            "regex"     : ({String},"split using given regular expression"),
             "at"        : ({Integer},"split collection at given position"),
             "every"     : ({Integer},"split collection every <n> elements"),
             "path"      : ({Boolean},"split path components in string")
