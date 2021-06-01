@@ -27,6 +27,7 @@ when not defined(WEB):
         import helpers/html
         import helpers/markdown
         import helpers/toml
+        import helpers/xml
 
     import helpers/csv
     import helpers/datasource
@@ -224,7 +225,8 @@ proc defineSymbols*() =
                         "json"          : ({Boolean},"read Json into value"),
                         "csv"           : ({Boolean},"read CSV file into a block of rows"),
                         "withHeaders"   : ({Boolean},"read CSV headers"),
-                        "html"          : ({Boolean},"read HTML file into node dictionary"),
+                        "html"          : ({Boolean},"read HTML into node dictionary"),
+                        "xml"           : ({Booleam},"read XML into node dictionary"),
                         "markdown"      : ({Boolean},"read Markdown and convert to HTML"),
                         "toml"          : ({Boolean},"read TOML into value"),
                         "binary"        : ({Boolean},"read as binary")
@@ -278,6 +280,8 @@ proc defineSymbols*() =
                                 push(parseMarkdownInput(src))
                             elif (popAttr("html") != VNULL):
                                 push(parseHtmlInput(src))
+                            elif (popAttr("xml") != VNULL):
+                                push(parseXMLInput(src))
                             else:
                                 push(newString(src))
                         else:
