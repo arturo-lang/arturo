@@ -24,6 +24,7 @@ canExecute?: function [scri][
             "lucas-lehmer test"
             "modular exponentation"
             "unicode strings"
+            "xml - input"
         ] -> return false
     ]
 
