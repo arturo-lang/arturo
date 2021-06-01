@@ -1,0 +1,20 @@
+words: read.lines relative "unixdict.txt"
+vowels: [`a` `e` `i` `o` `u`]
+alternatingVC?: function [w][
+    lookForConsonant: true
+    if contains? vowels first w -> lookForConsonant: false
+
+    loop w 'c [
+        if xnor? lookForConsonant 
+                 contains? vowels c -> return false
+        lookForConsonant: not? lookForConsonant
+    ]
+    return true
+]
+
+loop words 'word [
+    if 9 < size word [
+        if alternatingVC? word ->
+            print word
+    ]
+]
