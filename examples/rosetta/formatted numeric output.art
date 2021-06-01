@@ -1,0 +1,4 @@
+r: 7.125
+
+print r
+print to :string .format: "09.3f" r
