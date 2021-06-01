@@ -754,7 +754,7 @@ proc defineSymbols*() =
                     elif (popAttr("suffix") != VNULL):
                         InPlace.s.removeSuffix(y.s)
                     else:
-                        SetInPlace(newString(InPlaced.s.replace(y.s)))
+                        SetInPlace(newString(InPlaced.s.removeAll(y)))
                 elif InPlaced.kind==Block: 
                     if (popAttr("once") != VNULL):
                         SetInPlace(newBlock(InPlaced.a.removeFirst(y)))
@@ -781,7 +781,7 @@ proc defineSymbols*() =
                         ret.removeSuffix(y.s)
                         push(newString(ret))
                     else:
-                        push(newString(x.s.replace(y.s)))
+                        push(newString(x.s.removeAll(y)))
                 elif x.kind==Block: 
                     if (popAttr("once") != VNULL):
                         push(newBlock(cleanBlock(x.a).removeFirst(y)))
