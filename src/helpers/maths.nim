@@ -177,6 +177,29 @@ proc primeFactorization*(n: int): seq[int] =
 proc primeFactors*(n: int): seq[int] =   
     factors(n).filter((x)=>isPrime(x.uint64)) 
 
+proc getDigits*(n: int, base: int = 10): seq[int] =
+    if n == 0: return @[0]
+
+    var num = n
+    if num < 0: num = num * (-1)
+
+    while num > 0:
+        result.add(num mod base)
+        num = num div base
+
+    result.reverse()
+
+proc getDigits*(n: Int, base: int = 10): seq[int] =
+    if n == 0: return @[0]
+
+    var num = n
+    if num < 0: num = num * (-1)
+    while num > 0:
+        result.add(toCLong(num mod base))
+        num = num div base
+
+    result.reverse()
+
 when not defined(NOGMP):
     proc primeFactors*(num: Int): seq[Int] =
         result = @[]
@@ -272,3 +295,4 @@ when not defined(NOGMP):
             newInteger(exp(X.bi, (culong)(y.i), Z.bi))
         else:
             newInteger(exp(X.bi, y.bi, Z.bi))
+
