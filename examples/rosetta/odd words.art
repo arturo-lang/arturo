@@ -1,0 +1,15 @@
+words: read.lines relative "unixdict.txt"
+
+getOdd: function [w][
+    odd: new ""
+    loop.with:'i w 'ch [
+        if even? i -> 'odd ++ ch
+    ]
+    odd
+]
+
+loop words 'word [
+    ow: getOdd word
+    if and? [4 < size ow][contains? words ow] ->
+        print [word "=>" ow]
+]
