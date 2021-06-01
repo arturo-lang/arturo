@@ -1,0 +1,28 @@
+trySwap: function [arr,i][
+    if arr\[i] < arr\[i-1] [
+        tmp: arr\[i]
+        arr\[i]: arr\[i-1]
+        arr\[i-1]: tmp
+        return null
+    ]
+    return true
+]
+cocktailSort: function [items][
+    t: false
+    l: size items
+    while [not? t][
+        t: true
+        loop 1..dec l 'i [
+            if null? trySwap items i ->
+                t: false
+        ]
+        if t -> break
+        loop (l-1)..1 'i [
+            if null? trySwap items i ->
+                t: false
+        ]
+    ]
+    return items
+]
+
+print cocktailSort [3 1 2 8 5 7 9 4 6]
