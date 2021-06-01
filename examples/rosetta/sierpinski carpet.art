@@ -1,0 +1,25 @@
+inCarpet?: function [x,y][
+    X: x
+    Y: y
+    while [true][
+        if or? zero? X 
+               zero? Y -> return true
+        if and? 1 = X % 3 
+                1 = Y % 3 -> return false
+
+        X: X / 3
+        Y: Y / 3
+    ]
+]
+
+carpet: function [n][
+    loop 0..dec 3^n 'i [
+        loop 0..dec 3^n 'j [
+            prints (inCarpet? i j)? -> "# " 
+                                    -> "  "
+        ]
+        print ""
+    ]
+]
+
+carpet 3
