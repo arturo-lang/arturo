@@ -17,7 +17,7 @@
 #=======================================
 
 import complex except Complex
-import math, random, sequtils, sugar
+import algorithm, math, random, sequtils, sugar
 
 when not defined(NOGMP):
     import extras/bignum
@@ -507,6 +507,30 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Complex: push(newComplex(coth(x.z)))
             else: push(newFloating(coth(asFloat(x))))
+
+    builtin "digits",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "get array of digits of given number",
+        args        = {
+            "number" : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {Block},
+        # TODO(Numbers\digits) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            var n = x.i
+            let base = 10
+            var ret: ValueArray = @[]
+
+            while n > 0:
+                ret.add(newInteger(n mod base))
+                n = n div base
+
+            push newBlock(ret.reversed())
 
     constant "epsilon",
         alias       = unaliased,
