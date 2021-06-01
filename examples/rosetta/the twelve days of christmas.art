@@ -18,12 +18,10 @@ days: ["first" "second" "third" "fourth" "fifth" "sixth"
 
 loop.with:'n days 'day [
     g: reverse slice gifts 0 n
-    print [
-        "On the" day "day of Christmas\n" 
-        "\bMy true love gave to me:\n"
-        "\b" ++ join.with:"\n\b" chop g
-        (n>0)? -> "and \n" ++ last g
-               -> "\b" ++ capitalize last g
-    ]
+    print ~"On the |day| day of Christmas\n" ++
+          "My true love gave to me:\n" ++
+          (join.with:"\n" chop g) ++
+          (n>0)? -> " and \n" ++ last g
+                 -> capitalize last g
     print ""
 ]
