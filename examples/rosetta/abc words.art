@@ -1,0 +1,18 @@
+words: read.lines relative "unixdict.txt"
+
+isABC?: function [w][
+    a: index w "a"
+    if null? a -> return false
+    b: index w "b"
+    if null? b -> return false
+    if b < a -> return false
+    c: index w "c"
+    if null? c -> return false
+    if c < b -> return false
+    return true 
+]
+
+loop words 'word [
+    if isABC? word ->
+        print word
+]
