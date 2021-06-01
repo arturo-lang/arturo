@@ -1,0 +1,8 @@
+antiperspirant
+calendrical
+einstein
+hotshot
+murmur
+oshkosh
+tartar
+testes
