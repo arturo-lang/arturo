@@ -1,0 +1,12 @@
+f: function [n]->
+    n + floor 0.5 + sqrt n
+
+loop 1..22 'i ->
+    print [i "->" f i]
+
+i: new 1, nonSquares: new []
+while [i<1000000][ 'nonSquares ++ f i, inc 'i]
+squares: map 1..1001 'x -> x ^ 2
+
+if? empty? intersection squares nonSquares -> print "Didn't find any squares!"
+                                      else -> print "Ooops! Something went wrong!"
