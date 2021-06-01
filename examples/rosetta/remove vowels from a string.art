@@ -1,0 +1,3 @@
+str: "Remove vowels from a string"
+
+print str -- split "aeiouAEIOU"
