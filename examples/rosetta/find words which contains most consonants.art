@@ -1,0 +1,29 @@
+words: read.lines relative "unixdict.txt"
+vowels: ["a" "e" "i" "o" "u"]
+
+nofConsonants: function [w][
+    cons: (split w) -- vowels
+    if? cons = unique cons -> return size cons
+    else -> return 0
+]
+
+freqs: array.of: 20 []
+
+loop words 'word [
+    if 10 < size word [
+        noc: nofConsonants word
+        if noc > 0 [
+            freqs\[noc]: freqs\[noc] ++ word
+        ]
+    ]
+]
+
+loop.with:'i reverse freqs 'freq [
+    if not? empty? freq [
+        print "-----------------------------------------------"
+        print ~"Found |size freq| words with |dec 20-i| different consonants"
+        print "-----------------------------------------------"
+        print join.with:"\n" freq
+        print ""
+    ]
+]
