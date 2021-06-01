@@ -1,0 +1,10 @@
+arr: ["1a3c52debeffd" "2b6178c97a938stf" "3ycxdb1fgxa2yz"]
+uniques: split first arr
+
+loop arr 'str [
+    uniques: intersection uniques 
+        select split str 'x -> 
+            1 = size match str x 
+]
+
+print sort uniques
