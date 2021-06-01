@@ -49,9 +49,9 @@ attributes: #[
         ]
     regex: #[
         types: [
-                :boolean
+                :string
             ]
-        description: "match against a regular expression"
+        description: "split using given regular expression"
         ]
     at: #[
         types: [
