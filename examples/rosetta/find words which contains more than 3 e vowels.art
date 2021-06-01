@@ -1,0 +1,15 @@
+words: read.lines relative "unixdict.txt"
+otherVowels: ["a" "i" "o" "u"]
+containsMoreThan3Es?: function [w][
+    if 4 > size match w "e" -> return false
+
+    loop otherVowels 'v [
+        if contains? w v -> return false
+    ]
+    return true
+]
+
+loop words 'word [
+    if containsMoreThan3Es? word ->
+        print word
+]
