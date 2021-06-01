@@ -1,0 +1,35 @@
+name: "digits"
+type: :function
+module: "Numbers"
+returns: [
+        :block
+    ]
+description: "get array of digits of given number"
+examples: [
+        {
+            digits 123
+            ; => [1 2 3]
+            
+            digits 0
+            ; => [0]
+            
+            digits neg 12345
+            ; => [1 2 3 4 5]
+            
+            ; digits 1231231231231231231231231231023
+            ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    number: [
+            :integer
+        ]
+    ]
+related: [
+        "Crypto/digest"
+         "Arithmetic/div"
+         "Collections/first"
+         "Collections/get"
+    ]

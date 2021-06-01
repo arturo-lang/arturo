@@ -13,6 +13,22 @@ examples: [
             print ["Hello" name "!"]
             ; Hello Bob!
         }
+         {
+            ; creating a simple REPL
+            while [true][ 
+                inp: input.repl 
+                          .history: "myhistory.txt"
+                          .complete:["Hello there", "Hello world!"] 
+                          .hint:#[he: "perhaps you want to say hello?"] 
+                          "## "
+            
+                print ["got:" inp] 
+            ]
+            ; will show a REPL-like interface, with arrow navigation enabled
+            ; show previous entries with arrow-up, store entries in
+            ; a recoverable file and also use autocompletions and hints
+            ; based on give reference
+        }
     ]
 attributes: #[
     repl: #[

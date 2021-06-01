@@ -33,6 +33,6 @@ arguments: #[
 related: [
         "Collections/first"
          "Collections/get"
+         "Numbers/digits"
          "Paths/list"
-         "Arithmetic/dec"
     ]

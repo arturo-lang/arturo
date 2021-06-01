@@ -149,6 +149,8 @@
  	"sets/difference"
  	"digest"
  	"crypto/digest"
+ 	"digits"
+ 	"numbers/digits"
  	"div"
  	"arithmetic/div"
  	"do"
