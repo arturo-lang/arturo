@@ -534,7 +534,8 @@ proc defineSymbols*() =
             if x.iKind == NormalInteger:
                 push newBlock(getDigits(x.i).map((z)=>newInteger(z)))
             else:
-                push newBlock(getDigits(x.bi).map((z)=>newInteger(z)))
+                when not defined(NOGMP):
+                    push newBlock(getDigits(x.bi).map((z)=>newInteger(z)))
 
     constant "epsilon",
         alias       = unaliased,
