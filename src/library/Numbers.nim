@@ -517,20 +517,24 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Block},
-        # TODO(Numbers\digits) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            digits 123
+            ; => [1 2 3]
+
+            digits 0
+            ; => [0]
+
+            digits neg 12345
+            ; => [1 2 3 4 5]
+
+            ; digits 1231231231231231231231231231023
+            ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
         """:
             ##########################################################
-            var n = x.i
-            let base = 10
-            var ret: ValueArray = @[]
-
-            while n > 0:
-                ret.add(newInteger(n mod base))
-                n = n div base
-
-            push newBlock(ret.reversed())
+            if x.iKind == NormalInteger:
+                push newBlock(getDigits(x.i).map((z)=>newInteger(z)))
+            else:
+                push newBlock(getDigits(x.bi).map((z)=>newInteger(z)))
 
     constant "epsilon",
         alias       = unaliased,
