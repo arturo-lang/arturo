@@ -1,0 +1,29 @@
+gifts: [
+    "A partridge in a pear tree."
+    "Two turtle doves"
+    "Three french hens"
+    "Four calling birds"
+    "Five golden rings"
+    "Six geese a-laying"
+    "Seven swans a-swimming"
+    "Eight maids a-milking"
+    "Nine ladies dancing"
+    "Ten lords a-leaping"
+    "Eleven pipers piping"
+    "Twelve drummers drumming"
+]
+
+days: ["first" "second" "third" "fourth" "fifth" "sixth"
+       "seventh" "eighth" "ninth" "tenth" "eleventh" "twelfth"]
+
+loop.with:'n days 'day [
+    g: reverse slice gifts 0 n
+    print [
+        "On the" day "day of Christmas\n" 
+        "\bMy true love gave to me:\n"
+        "\b" ++ join.with:"\n\b" chop g
+        (n>0)? -> "and \n" ++ last g
+               -> "\b" ++ capitalize last g
+    ]
+    print ""
+]
