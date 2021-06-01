@@ -1,0 +1,16 @@
+words: read.lines relative "unixdict.txt"
+vowels: ["a" "e" "i" "o" "u"]
+containsAllVowels?: function [w][
+    loop vowels 'v [
+        if not? contains? w v -> return false
+        if 1 < size match w v -> return false
+    ]
+    return true
+]
+
+loop words 'word [
+    if 10 < size word [
+        if containsAllVowels? word ->
+            print word
+    ]
+]
