@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes, sets, strutils, tables
+import hashes, sets, strutils, tables, unicode
 
 import vm/values/comparison
 import vm/values/value
@@ -89,6 +89,20 @@ proc removeAll*(dict: ValueDict, what: Value, key: bool): ValueDict =
             if v!=what:
                 result[k] = v
 
+proc removeAll*(str: string, what: Value): string =
+    if what.kind == String:
+        return str.replace(what.s)
+    elif what.kind == Char:
+        return str.replace($(what.c))
+    else:
+        result = str
+
+        for item in what.a:
+            if item.kind == String:
+                result = result.replace(item.s)
+            elif item.kind == Char:
+                result = result.replace($(item.c))
+
 proc permutate*(s: ValueArray, emit: proc(emit:ValueArray) ) =
     var s = @s
     if s.len == 0: 
@@ -139,3 +153,4 @@ proc safeCycle*(va: ValueArray, times: int): ValueArray =
         for e in va: 
             result[o] = copyValue(e)
             inc o
+
