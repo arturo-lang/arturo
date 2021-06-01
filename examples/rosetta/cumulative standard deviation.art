@@ -1,0 +1,5 @@
+arr: new []
+loop [2 4 4 4 5 5 7 9] 'value [
+    'arr ++ value
+    print [value "->" deviation arr]
+]
