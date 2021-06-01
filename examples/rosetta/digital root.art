@@ -1,0 +1,13 @@
+droot: function [num][
+    persistence: 0
+    until [
+        num: sum to [:integer] split to :string num
+        persistence: persistence + 1
+    ][ num < 10 ]
+    return @[num, persistence]
+]
+
+loop [627615, 39390, 588225, 393900588225] 'i [
+    a: droot i
+    print [i "has additive persistence" a\0 "and digital root of" a\1]
+]
