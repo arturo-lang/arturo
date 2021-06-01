@@ -226,7 +226,7 @@ proc defineSymbols*() =
                         "csv"           : ({Boolean},"read CSV file into a block of rows"),
                         "withHeaders"   : ({Boolean},"read CSV headers"),
                         "html"          : ({Boolean},"read HTML into node dictionary"),
-                        "xml"           : ({Booleam},"read XML into node dictionary"),
+                        "xml"           : ({Boolean},"read XML into node dictionary"),
                         "markdown"      : ({Boolean},"read Markdown and convert to HTML"),
                         "toml"          : ({Boolean},"read TOML into value"),
                         "binary"        : ({Boolean},"read as binary")
