@@ -1,0 +1,11 @@
+words: read.lines relative "unixdict.txt"
+equalHeadTail?: function [w][
+    equal? first.n: 3 w last.n: 3 w
+]
+
+loop words 'word [
+    if 5 < size word [
+        if equalHeadTail? word ->
+            print word
+    ]
+]
