@@ -1,99 +1,190 @@
-; function mergesort(m)
-;    var list left, right, result
-;    if length(m) ≤ 1
-;        return m
-;    else
-;        var middle = length(m) / 2
-;        for each x in m up to middle - 1
-;            add x to left
-;        for each x in m at and after middle
-;            add x to right
-;        left = mergesort(left)
-;        right = mergesort(right)
-;        if last(left) ≤ first(right) 
-;           append right to left
-;           return left
-;        result = merge(left, right)
-;        return result
+; ; function mergesort(m)
+; ;    var list left, right, result
+; ;    if length(m) ≤ 1
+; ;        return m
+; ;    else
+; ;        var middle = length(m) / 2
+; ;        for each x in m up to middle - 1
+; ;            add x to left
+; ;        for each x in m at and after middle
+; ;            add x to right
+; ;        left = mergesort(left)
+; ;        right = mergesort(right)
+; ;        if last(left) ≤ first(right) 
+; ;           append right to left
+; ;           return left
+; ;        result = merge(left, right)
+; ;        return result
 
-; function merge(left,right)
-;    var list result
-;    while length(left) > 0 and length(right) > 0
-;        if first(left) ≤ first(right)
-;            append first(left) to result
-;            left = rest(left)
-;        else
-;            append first(right) to result
-;            right = rest(right)
-;    if length(left) > 0 
-;        append rest(left) to result
-;    if length(right) > 0 
-;        append rest(right) to result
-;    return result
+; ; function merge(left,right)
+; ;    var list result
+; ;    while length(left) > 0 and length(right) > 0
+; ;        if first(left) ≤ first(right)
+; ;            append first(left) to result
+; ;            left = rest(left)
+; ;        else
+; ;            append first(right) to result
+; ;            right = rest(right)
+; ;    if length(left) > 0 
+; ;        append rest(left) to result
+; ;    if length(right) > 0 
+; ;        append rest(right) to result
+; ;    return result
 
-; function mergesort(m)
-;    var list left, right, result
-;    if length(m) ≤ 1
-;        return m
-;    else
-;        var middle = length(m) / 2
-;        for each x in m up to middle - 1
-;            add x to left
-;        for each x in m at and after middle
-;            add x to right
-;        left = mergesort(left)
-;        right = mergesort(right)
-;        if last(left) ≤ first(right) 
-;           append right to left
-;           return left
-;        result = merge(left, right)
-;        return result
+; ; function mergesort(m)
+; ;    var list left, right, result
+; ;    if length(m) ≤ 1
+; ;        return m
+; ;    else
+; ;        var middle = length(m) / 2
+; ;        for each x in m up to middle - 1
+; ;            add x to left
+; ;        for each x in m at and after middle
+; ;            add x to right
+; ;        left = mergesort(left)
+; ;        right = mergesort(right)
+; ;        if last(left) ≤ first(right) 
+; ;           append right to left
+; ;           return left
+; ;        result = merge(left, right)
+; ;        return result
 
-merge: function [l,r][
-    result: new []
-    left: new l
-    right: new r
-    while [and? 0 < size left 
-                0 < size right][
-        if? (first left) =< first right [
-            'result ++ first right
-            left: new slice left 1 (size left)-1
+; merge: function [l,r][
+;     result: new []
+;     left: new l
+;     right: new r
+;     while [and? 0 < size left 
+;                 0 < size right][
+;         if? (first left) =< first right [
+;             'result ++ first right
+;             left: new slice left 1 (size left)-1
+;         ]
+;         else [
+;             'result ++ first right
+;             right: new slice right 1 (size right)-1
+;         ]
+;         if 0 < size left -> 'result ++ left
+;         if 0 < size right -> 'result ++ right
+
+;     ]
+;     result
+; ]
+
+; mergeSort: function [items][
+;     print ["mergeSort:" items]
+;     if? 1 >= size items [
+;         items
+;     ]
+;     else [
+;         left: new []
+;         right: new []
+
+;         middle: (size items)/2
+;         loop 0..middle-1 'x -> 'left ++ items\[x]
+;         loop middle..(size items)-1 'x -> 'right ++ items\[x]
+
+;         left: mergeSort left
+;         right: mergeSort right
+
+;         print ["got left:" left "right:" right]
+
+;         if? empty? right [left]
+;         else [
+;             if? (last left) =< first right [ left ++ right ]
+;             else [merge left right]
+;         ]
+;     ]
+; ]
+
+; print mergeSort [3 1 2 8 5 7 9 4 6]
+
+; ; mergeSort: function [items][
+; ;     a: new items
+; ;     h: size a
+
+; ;     while [h > 0][
+; ;         h: h / 2
+; ;         loop h..dec size a 'i [
+; ;             k: a\[i]
+; ;             j: i
+
+; ;             while [and? [j >= h] [k < a\[j-h]]][
+; ;                 a\[j]: a\[j-h]
+; ;                 j: j - h
+; ;             ]
+; ;             a\[j]: k
+; ;         ]
+; ;     ]
+; ;     return a
+; ; ]
+
+merge: function [a,b,left,middle,right][
+    print ["MERGING: " a "with" b "using:" left middle right]
+    leftLen: middle - left
+    rightLen: right - middle
+    l: 0
+    r: leftLen
+    merged: new a
+    bm: new b
+ 
+    loop left..dec middle 'i [
+        bm\[l]: merged\[i]
+        l: l+1
+    ]
+    loop middle..dec right 'i [
+        bm\[r]: merged\[i]
+        r: r+1
+    ]
+
+    l: 0
+    r: leftLen
+    i: left
+ 
+    while [and? l < leftLen r < leftLen + rightLen][
+        if? bm\[l] < bm\[r] [
+            merged\[i]: bm\[l]
+            l: l+1
         ]
         else [
-            'result ++ first right
-            right: new slice right 1 (size right)-1
+            merged\[i]: bm\[r]
+            r: r+1
         ]
-        if 0 < size left -> 'result ++ left
-        if 0 < size right -> 'result ++ right
-
+        i: i + 1
     ]
-    result
+
+    while [l < leftLen][
+        merged\[i]: bm\[l]
+        l: l+1
+        i: i+1
+    ]
+
+    while [r < leftLen + rightLen][
+        merged\[i]: bm\[r]
+        r: r+1
+        i: i+1
+    ]
+ 
+    return @[merged,bm]
+]
+
+submergeSort: function [a,b,left,right][
+    if 1 >= right - left -> return new a
+
+    middle: (left + right) / 2
+
+    got: submergeSort a b left middle
+    result: got\0
+    bresult: got\1
+    got: submergeSort result bresult middle right
+    result: got\0
+    bresult: got\1
+    got: merge result bresult left middle right
+    return got
 ]
 
 mergeSort: function [items][
-    print ["mergeSort:" items]
-    if? 1 >= size items [
-        items
-    ]
-    else [
-        left: new []
-        right: new []
-
-        middle: (size items)/2
-        loop 0..middle-1 'x -> 'left ++ items\[x]
-        loop middle..(size items)-1 'x -> 'right ++ items\[x]
-
-        left: mergeSort left
-        right: mergeSort right
-
-        print ["got left:" left "right:" right]
-
-        if? empty? right [left]
-        else [
-            if? (last left) =< first right [ left ++ right ]
-            else [merge left right]
-        ]
-    ]
+    b: array.of: size items 0
+    return submergeSort items b 0 size items
 ]
 
 print mergeSort [3 1 2 8 5 7 9 4 6]
