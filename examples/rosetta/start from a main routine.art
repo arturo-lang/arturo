@@ -1,0 +1,5 @@
+main: function [][
+    print "Yes, we are in main!"
+]
+
+main
