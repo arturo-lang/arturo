@@ -362,10 +362,12 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given string is numeric",
         args        = {
-            "string": {String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Strings\numeric?) add documentation example for `:char`s
+        #  labels: library, documentation, easy
         example     = """
             numeric? "hello"           ; => false
             numeric? "3.14"            ; => true
@@ -374,7 +376,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             try:
-                discard x.s.parseFloat()
+                if x.kind==Char:
+                    discard parseFloat($(x.c))
+                else:
+                    discard x.s.parseFloat()
                 push(VTRUE)
             except ValueError:
                 push(VFALSE)
