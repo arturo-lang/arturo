@@ -1,0 +1,38 @@
+
+ludicGen: function [nmax][
+    result: [1]
+    lst: new 2..nmax+1
+    i: 0
+    worked: false
+    while [and? [not? empty? lst] [i < size lst]][
+        item: lst\[i]
+        result: result ++ item
+        del: 0
+        worked: false
+        while [del < size lst][
+            worked: true
+            remove 'lst .index del
+            del: dec del + item
+        ]
+        if not? worked -> i: i + 1
+    ]
+    return result
+]
+
+ludics: ludicGen 25000
+
+print "The first 25 ludic numbers:"
+print first.n: 25 ludics
+
+leThan1000: select ludics => [& =< 1000]
+print ["\nThere are" size leThan1000 "ludic numbers less than/or equal to 1000\n"]
+
+print ["The ludic numbers from 2000th to 2005th are:" slice ludics 1999 2004 "\n"]
+
+print "The triplets of ludic numbers less than 250 are:"
+print map select ludics 'x [
+    all? @[ x < 250
+            contains? ludics x+2
+            contains? ludics x+6
+    ]
+] 't -> @[t, t+2, t+6]
