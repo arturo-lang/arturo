@@ -1,0 +1,9 @@
+rect: function [r,phi][
+    to :complex @[ r * cos phi, r * sin phi ]
+]
+roots: function [n][
+    map 0..dec n 'k -> rect 1.0 2 * k * pi / n
+]
+
+loop 2..10 'nr ->
+    print [pad to :string nr 3 "=>" join.with:", " to [:string] .format:".3f" roots nr]
