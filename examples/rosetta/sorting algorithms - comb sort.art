@@ -1,0 +1,25 @@
+combSort: function [items][
+    a: new items
+    gap: size a
+    swapped: true
+
+    while [or? gap > 1 swapped][
+        gap: (gap * 10) / 13
+        if or? gap=9 gap=10 -> gap: 11
+        if gap<1 -> gap: 1
+        swapped: false
+        i: 0
+        loop gap..dec size items 'j [
+            if a\[i] > a\[j] [
+                tmp: a\[i]
+                a\[i]: a\[j]
+                a\[j]: tmp
+                swapped: true
+            ]
+            i: i + 1
+        ]
+    ]
+    return a
+]
+
+print combSort [3 1 2 8 5 7 9 4 6]
