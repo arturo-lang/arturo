@@ -1,28 +1,62 @@
-; algorithm stoogesort(array L, i = 0, j = length(L)-1)
-;      if L[j] < L[i] then
-;          L[i] ↔ L[j]
-;      if j - i > 1 then
-;          t := (j - i + 1)/3
-;          stoogesort(L, i  , j-t)
-;          stoogesort(L, i+t, j  )
-;          stoogesort(L, i  , j-t)
-;      return L
+; ; algorithm stoogesort(array L, i = 0, j = length(L)-1)
+; ;      if L[j] < L[i] then
+; ;          L[i] ↔ L[j]
+; ;      if j - i > 1 then
+; ;          t := (j - i + 1)/3
+; ;          stoogesort(L, i  , j-t)
+; ;          stoogesort(L, i+t, j  )
+; ;          stoogesort(L, i  , j-t)
+; ;      return L
+; proc stoogeSort[T](a: var openarray[T], i, j: int) =
+;   if a[j] < a[i]: swap a[i], a[j]
+;   if j - i > 1:
+;     let t = (j - i + 1) div 3
+;     stoogeSort(a, i, j - t)
+;     stoogeSort(a, i + t, j)
+;     stoogeSort(a, i, j - t)
+ 
+; var a = @[4, 65, 2, -31, 0, 99, 2, 83, 782]
+; stoogeSort a, 0, a.high
+; echo a
 
-stoogeSort: function [items, i, j][
-    print ["stooge sorting:" items]
-    if (items\[j]) < items\[i] [
-        tmp: get items i
-        set items i get items j
-        set items j tmp
+stoogeSort: function [a, i, j][
+    print ["stooging:" a "with:" i "and:" j]
+    if a\[j] < a\[i] [
+        tmp: a\[i]
+        a\[i]: a\[j]
+        a\[j]: tmp
     ]
-    if 1 < j - i [
-        t: ((j-1)+1)/3
-        stoogeSort items i j-t
-        stoogeSort items i+t j
-        stoogeSort items i j-t
+    if 1 < j - 1 [
+        t: (1 + j - 1) / 3
+        diff: j-t
+        addi: i+t
+        stoogeSort a i diff
+        if addi < size a ->
+        stoogeSort a addi j
+        stoogeSort a i diff
     ]
 ]
 
 arr: [3 1 2 8 5 7 9 4 6]
-stoogeSort arr 0 (size arr)-1
+stoogeSort arr 0 dec size arr
+
 print arr
+
+; stoogeSort: function [items, i, j][
+;     print ["stooge sorting:" items]
+;     if (items\[j]) < items\[i] [
+;         tmp: get items i
+;         set items i get items j
+;         set items j tmp
+;     ]
+;     if 1 < j - i [
+;         t: ((j-1)+1)/3
+;         stoogeSort items i j-t
+;         stoogeSort items i+t j
+;         stoogeSort items i j-t
+;     ]
+; ]
+
+; arr: [3 1 2 8 5 7 9 4 6]
+; stoogeSort arr 0 (size arr)-1
+; print arr
