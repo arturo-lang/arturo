@@ -1,0 +1,13 @@
+k?: function [n][
+    n2: to :string n*n
+    loop 0..dec size n2 'i [
+        a: (i > 0)? -> to :integer slice n2 0 dec i -> 0
+        b: to :integer slice n2 i dec size n2
+        if and? b > 0 n = a + b -> return true
+    ]
+    return false
+]
+
+loop 1..10000 'x [
+    if k? x -> print x
+]
