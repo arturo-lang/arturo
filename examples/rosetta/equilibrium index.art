@@ -1,0 +1,23 @@
+eqIndex: function [row][
+    suml: 0
+    delayed: 0
+    sumr: sum row
+    result: new []
+    loop.with:'i row 'r [
+        suml: suml + delayed
+        sumr: sumr - r
+        delayed: r
+        if suml = sumr -> 'result ++ i
+    ]
+    return result
+]
+
+data: @[
+    @[neg 7, 1, 5, 2, neg 4, 3, 0]
+    @[2 4 6]
+    @[2 9 2]
+    @[1 neg 1 1 neg 1 1 neg 1 1]
+]
+
+loop data 'd ->
+    print [pad.right join.with:", " to [:string] d 25 "=> equilibrium index:" eqIndex d]
