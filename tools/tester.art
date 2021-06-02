@@ -24,7 +24,6 @@ canExecute?: function [scri][
             "long multiplication"
             "lucas-lehmer test"
             "modular exponentation"
-            "pell's equation"
             "unicode strings"
             "xml - input"
         ] -> return false
