@@ -1,0 +1,7 @@
+bogoSort: function [items][
+    a: new items
+    while [not? sorted? a]-> shuffle 'a
+    return a
+]
+
+print bogoSort [3 1 2 8 5 7 9 4 6]
