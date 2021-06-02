@@ -1,0 +1,16 @@
+floyd: function [rowcount][
+    result: new [[1]]
+    while [rowcount > size result][
+        n: inc last last result
+        row: new []
+        loop n..n+size last result 'k -> 'row ++ @[k]
+        'result ++ @[row]
+    ]
+    return result
+]
+
+loop [5 14] 'j [
+    f: floyd j
+    loop f 'row -> print map row 'r [pad to :string r 3]
+    print ""
+]
