@@ -154,3 +154,17 @@ proc safeCycle*(va: ValueArray, times: int): ValueArray =
             result[o] = copyValue(e)
             inc o
 
+proc isSorted*(s: ValueArray, ascending: bool = true): bool =
+    if s.len == 0: return true
+    var last = s[0]
+    if ascending:
+        for c in s:
+            if c < last:
+                return false
+            last = c
+    else:
+        for c in s:
+            if c > last:
+                return false
+            last = c
+    return true
