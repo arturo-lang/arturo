@@ -879,7 +879,7 @@ proc defineSymbols*() =
                         ret.add(convertedValueToType(blk[0], item, tp, aFormat))
 
                 push newBlock(ret)
-            
+        
 
     builtin "with",
         alias       = unaliased, 
