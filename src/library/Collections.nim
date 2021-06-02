@@ -1088,7 +1088,30 @@ proc defineSymbols*() =
                     else:
                         InPlaced.d.sort(system.cmp, order=sortOrdering)
 
+    builtin "sorted?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given collection is already sorted",
+        args        = {
+            "collection"    : {Block}
+        },
+        attrs       = {
+            "descending": ({Boolean},"check for sorting in ascending order")
+        },
+        returns     = {Boolean},
+        # TODO(Collections\sorted?) add documentation example
+        #  labels: library, documentation, easy
+        example     = """
+        """:
+            ##########################################################
+            var ascending = true
 
+            if (popAttr("descending")!=VNULL):
+                ascending = false
+
+            push newBoolean(isSorted(x.a, ascending = ascending))
+
+            
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
     #  labels: library,bug
