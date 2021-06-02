@@ -1,0 +1,15 @@
+sortDisjoint: function [data, indices][
+    result: new data
+    inds: new indices
+    sort 'inds
+
+    vals: new []
+    loop inds 'i -> 'vals ++ result\[i]
+    sort 'vals
+
+    loop.with:'j inds 'i -> result\[i]: vals\[j]
+    return result
+]
+ 
+d: [7 6 5 4 3 2 1 0]
+print sortDisjoint d [6 1 7]
