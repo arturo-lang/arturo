@@ -1,0 +1,29 @@
+name: "sorted?"
+type: :function
+module: "Collections"
+returns: [
+        :boolean
+    ]
+description: "check if given collection is already sorted"
+examples: [
+        ""
+    ]
+attributes: #[
+    descending: #[
+        types: [
+                :boolean
+            ]
+        description: "check for sorting in ascending order"
+        ]
+    ]
+arguments: #[
+    collection: [
+            :block
+        ]
+    ]
+related: [
+        "Collections/sort"
+         "Iterators/some?"
+         "Reflection/word?"
+         "Collections/empty?"
+    ]
