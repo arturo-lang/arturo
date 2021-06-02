@@ -1,0 +1,13 @@
+jortSort?: function [a]->
+    a = sort a
+
+test: function [a]->
+    print [a "is" (jortSort? a)? -> "sorted" -> "not sorted"]
+
+test [1 2 3]
+test [2 3 1]
+
+print ""
+
+test ["a" "b" "c"]
+test ["c" "a" "b"]
