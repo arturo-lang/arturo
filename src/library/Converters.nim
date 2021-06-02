@@ -33,7 +33,7 @@ import vm/[errors, exec, parse]
 # Helpers
 #=======================================
 
-proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
+proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value =
     if y.kind == tp and y.kind!=Dictionary:
         return y
     else:
@@ -65,7 +65,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
                         if y.iKind==NormalInteger: 
-                            if (let aFormat = popAttr("format"); aFormat != VNULL):
+                            if (aFormat != VNULL):
                                 try:
                                     var ret = ""
                                     formatValue(ret, y.i, aFormat.s)
@@ -93,7 +93,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                     of Integer: return newInteger((int)y.f)
                     of Char: return newChar(chr((int)y.f))
                     of String: 
-                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                        if (aFormat != VNULL):
                             try:
                                 var ret = ""
                                 formatValue(ret, y.f, aFormat.s)
@@ -113,7 +113,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
             of Complex:
                 case tp:
                     of String: 
-                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                        if (aFormat != VNULL):
                             try:
                                 var ret = ""
                                 formatValue(ret, y.z.re, aFormat.s)
@@ -203,7 +203,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                             RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     of Date:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
-                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                        if (aFormat != VNULL):
                             dateFormat = aFormat.s
                         
                         let timeFormat = initTimeFormat(dateFormat)
@@ -340,7 +340,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                         return newInteger(toUnix(toTime(y.eobj)))
                     of String:
                         var dateFormat = "yyyy-MM-dd'T'HH:mm:sszzz"
-                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                        if (aFormat != VNULL):
                             dateFormat = aFormat.s
                         
                         try:
@@ -865,7 +865,7 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Type:
                 let tp = x.t
-                push convertedValueToType(x, y, tp)
+                push convertedValueToType(x, y, tp, popAttr("format"))
             else:
                 var ret: ValueArray = @[]
                 let blk = cleanBlock(x.a)
@@ -874,8 +874,9 @@ proc defineSymbols*() =
                 if y.kind==String:
                     ret = toSeq(runes(y.s)).map((c) => newChar(c))
                 else:
+                    let aFormat = popAttr("format")
                     for item in cleanBlock(y.a):
-                        ret.add(convertedValueToType(blk[0], item, tp))
+                        ret.add(convertedValueToType(blk[0], item, tp, aFormat))
 
                 push newBlock(ret)
             
