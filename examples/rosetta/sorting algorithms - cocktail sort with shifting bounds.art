@@ -1,0 +1,35 @@
+cocktailShiftSort: function [items][
+    a: new items
+    beginIdx: 0
+    endIdx: (size a)-2
+
+    while [beginIdx =< endIdx][
+        newBeginIdx: endIdx
+        newEndIdx: beginIdx
+
+        loop beginIdx..endIdx 'i [
+            if a\[i] > a\[i+1] [
+                tmp: a\[i]
+                a\[i]: a\[i+1]
+                a\[i+1]: tmp
+                newEndIdx: i
+            ]
+        ]
+
+        endIdx: newEndIdx - 1
+
+        loop endIdx..beginIdx 'i [
+            if a\[i] > a\[i+1] [
+                tmp: a\[i]
+                a\[i]: a\[i+1]
+                a\[i+1]: tmp
+                newBeginIdx: i
+            ]
+        ]
+
+        beginIdx: newBeginIdx - 1
+    ]
+    return a
+]
+
+print cocktailShiftSort [3 1 2 8 5 7 9 4 6]
