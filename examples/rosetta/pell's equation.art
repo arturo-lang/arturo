@@ -1,0 +1,23 @@
+solvePell: function [n][
+    x: to :integer sqrt n
+    [y, z, r]: @[x, 1, shl x 1]
+    [e1, e2]: [1, 0]
+    [f1, f2]: [0, 1]
+
+    while [true][
+        y: (r * z) - y
+        z: (n - y * y) / z
+        r: (x + y) / z
+
+        [e1, e2]: @[e2, e1 + e2 * r]
+        [f1, f2]: @[f2, f1 + f2 * r]
+        [a, b]: @[e2 + f2 * x, f2]
+        if 1 = (a*a) - n*b*b -> 
+            return @[a, b]
+    ]
+]
+
+loop [61 109 181 277] 'n [
+    [x, y]: solvePell n
+    print ["x² -" n "* y² = 1 for (x,y) =" x "," y]
+]
