@@ -110,6 +110,23 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                         return newBinary(ret)
                     else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
+            of Complex:
+                case tp:
+                    of String: 
+                        if (let aFormat = popAttr("format"); aFormat != VNULL):
+                            try:
+                                var ret = ""
+                                formatValue(ret, y.z.re, aFormat.s)
+                                var ret2 = ""
+                                formatValue(ret2, y.z.im, aFormat.s)
+
+                                return newString($(ret) & (if y.z.im >= 0: "+" else: "") & $(ret2) & "i")
+                            except:
+                                RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                        else:
+                            return newString($(y))
+                    else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
             of Version:
                 if tp==String: return newString($(y))
                 else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
@@ -333,8 +350,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind): Value =
                     else: 
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
-            of Complex,
-               Function,
+            of Function,
                Color,
                Database,
                Newline,
