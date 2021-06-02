@@ -1,0 +1,32 @@
+cycleSort: function [items][
+    a: new items
+    position: 0
+    loop 0..dec dec size a 'cycleStart [
+        item: a\[cycleStart]
+        position: cycleStart
+        loop (cycleStart+1)..dec size a 'i [
+            if (get a i) < item -> position: position + 1
+        ]
+        if position = cycleStart -> continue
+        while [item = a\[position]] -> position: position + 1
+
+        tmp: a\[position]
+        a\[position]: item
+        item: tmp
+
+        while [position <> cycleStart][
+            position: cycleStart
+            loop (cycleStart+1)..dec size a 'i [
+                if a\[i] < item -> position: position + 1
+            ]
+            while [item = a\[position]] -> position: position + 1
+
+            tmp: a\[position]
+            a\[position]: item
+            item: tmp
+        ]
+    ]
+    return a
+]
+
+print cycleSort [3 1 2 8 5 7 9 4 6]
