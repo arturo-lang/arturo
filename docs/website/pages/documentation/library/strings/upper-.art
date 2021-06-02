@@ -17,7 +17,8 @@ attributes: #[
     ]
 arguments: #[
     string: [
-            :string
+            :char
+             :string
         ]
     ]
 related: [

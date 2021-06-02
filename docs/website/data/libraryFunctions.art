@@ -471,6 +471,8 @@
  	"iterators/some-"
  	"sort"
  	"collections/sort"
+ 	"sorted?"
+ 	"collections/sorted-"
  	"split"
  	"collections/split"
  	"sqrt"

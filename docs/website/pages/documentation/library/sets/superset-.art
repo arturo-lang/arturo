@@ -43,5 +43,5 @@ related: [
         "Sets/subset?"
          "Sets/powerset"
          "Collections/reverse"
-         "Net/serve"
+         "Collections/sorted?"
     ]

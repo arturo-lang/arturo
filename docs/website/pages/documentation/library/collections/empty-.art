@@ -28,5 +28,5 @@ related: [
         "Collections/empty"
          "Iterators/every?"
          "Collections/key?"
-         "Comparison/equal?"
+         "Collections/sorted?"
     ]
