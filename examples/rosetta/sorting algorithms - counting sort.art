@@ -1,0 +1,21 @@
+countingSort: function [items, minimum, maximum][
+    a: new items
+    rng: inc maximum - minimum
+    cnt: array.of: rng 0 
+    z: 0
+
+    loop 0..dec size a 'i [
+        mm: a\[i]-minimum
+        cnt\[mm]: cnt\[mm] + 1
+    ]
+
+    loop minimum..maximum 'i [
+        loop 0..dec cnt\[i-minimum] 'j [
+            a\[z]: i
+            z: z + 1
+        ]
+    ]
+    return a
+]
+
+print countingSort [3 1 2 8 5 7 9 4 6] 1 9
