@@ -1,0 +1,21 @@
+triples: new []
+loop 1..50 'x [
+    loop 1..50 'y [
+        loop (max @[x y])..100 'z [
+            if 100 > sum @[x y z] [
+                if (z^2) = add x^2 y^2 ->
+                    'triples ++ @[sort @[x y z]]
+            ]
+        ]
+    ]
+]
+unique 'triples
+
+print ["Found" size triples "pythagorean triples with a perimeter no larger than 100:"]
+print triples
+
+primitive: select triples => [1 = gcd]
+
+print ""
+print [size primitive "of them are primitive:"]
+print primitive
