@@ -1,0 +1,24 @@
+stay: 0
+swit: 0
+
+loop 1..1000 'i [
+    lst: shuffle new [1 0 0]
+    rand: random 0 2
+    user: lst\[rand]
+    remove 'lst rand
+    
+    huh: 0
+    loop lst 'i [
+        if zero? i [
+            remove 'lst huh
+            break
+        ]
+        huh: huh + 1
+    ]
+
+    if user=1 -> stay: stay+1
+    if and? [0 < size lst] [1 = first lst] -> swit: swit+1
+]
+
+print ["Stay:" stay]
+print ["Switch:" swit]
