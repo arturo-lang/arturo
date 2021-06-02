@@ -1,0 +1,74 @@
+N: 2200
+N2: 2 * N * N
+r: array.of: N+1 false
+
+ab: array.of: N2+1 false
+
+loop 1..N 'a [
+    aa: a*a
+    loop a..N 'b [
+        print [a b]
+        ab\[add aa b*b]: true
+    ]
+]
+
+s: 3
+loop 1..N 'c [
+    s1: s
+    s: s+2
+    s3: s
+    loop (c+1)..N 'd [
+        if ab\[s1] -> r\[d]: true
+        s1: s1 + s2
+        s2: s2 + 2
+    ]
+]
+; var r = newSeq[bool](N + 1)
+ 
+; var ab = newSeq[bool](N2 + 1)
+; for a in 1..N:
+;   let a2 = a * a
+;   for b in a..N:
+;     ab[a2 + b * b] = true
+ 
+; var s = 3
+; for c in 1..N:
+;   var s1 = s
+;   s += 2
+;   var s2 = s
+;   for d in (c+1)..N:
+;     if ab[s1]: r[d] = true
+;     s1 += s2
+;     s2 += 2
+ 
+; for d in 1..N:
+;   if not r[d]: stdout.write d, " "
+
+
+ 
+; loop 1..N 'a [
+;     loop a..N 'b [
+;         if and? [odd? a] [odd? b] -> continue
+;         aabb: add a*a b*b
+;         loop b..N 'c [
+;             print [a b c]
+;             aabbcc: add aabb c*c
+;             d: to :integer sqrt aabbcc
+;             if and? [aabbcc=d*d] [d =< N] -> r\[d]: true
+;         ]
+;     ]
+; ]
+
+print select 1..N 'x -> r\[x]
+; for a in 1..N:
+;   for b in a..N:
+;     if a.isOdd and b.isOdd: continue
+;     let aabb = a * a + b * b
+;     for c in b..N:
+;       let aabbcc = aabb + c * c
+;       d = sqrt(aabbcc.float).int
+;       if aabbcc == d * d and d <= N: r[d] = true
+ 
+; for i in 1..N:
+;   if not r[I]: stdout.write i, " "
+; echo()
