@@ -1,0 +1,28 @@
+almostPrime: function [k, listLen][
+    result: new []
+    test: 2
+    c: 0
+
+    while [c < listLen][
+        i: 2
+        m: 0
+        n: test
+
+        while [i =< n][
+            if? zero? n % i [
+                n: n / i
+                m: m + 1
+            ]
+            else -> i: i + 1
+        ]
+        if m = k [
+            'result ++ test
+            c: c + 1
+        ]
+        test: test + 1
+    ]
+    return result
+]
+
+loop 1..5 'x ->
+    print ["k:" x "=>" almostPrime x 10]
