@@ -310,10 +310,12 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given string is lowercase",
         args        = {
-            "string": {String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Strings\lower?) add documentation example for `:char`s
+        #  labels: library, documentation, easy
         example     = """
             lower? "ñ"               ; => true
             lower? "X"               ; => false
@@ -321,15 +323,18 @@ proc defineSymbols*() =
             lower? "hello"           ; => true
         """:
             ##########################################################
-            var broken = false
-            for c in runes(x.s):
-                if not c.isLower():
-                    push(VFALSE)
-                    broken = true
-                    break
+            if x.kind==Char:
+                push(newBoolean(x.c.isLower()))
+            else:
+                var broken = false
+                for c in runes(x.s):
+                    if not c.isLower():
+                        push(VFALSE)
+                        broken = true
+                        break
 
-            if not broken:
-                push(VTRUE)
+                if not broken:
+                    push(VTRUE)
 
     builtin "match",
         alias       = unaliased, 
@@ -784,10 +789,12 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "check if given string is uppercase",
         args        = {
-            "string": {String}
+            "string": {String,Char}
         },
         attrs       = NoAttrs,
         returns     = {Boolean},
+        # TODO(Strings\upper?) add documentation example for `:char`s
+        #  labels: library, documentation, easy
         example     = """
             upper? "Ñ"               ; => true
             upper? "x"               ; => false
@@ -795,15 +802,18 @@ proc defineSymbols*() =
             upper? "HELLO"           ; => true
         """:
             ##########################################################
-            var broken = false
-            for c in runes(x.s):
-                if not c.isUpper():
-                    push(VFALSE)
-                    broken = true
-                    break
+            if x.kind==Char:
+                push(newBoolean(x.c.isUpper()))
+            else:
+                var broken = false
+                for c in runes(x.s):
+                    if not c.isUpper():
+                        push(VFALSE)
+                        broken = true
+                        break
 
-            if not broken:
-                push(VTRUE)
+                if not broken:
+                    push(VTRUE)
 
     builtin "wordwrap",
         alias       = unaliased, 
