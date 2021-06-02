@@ -1,0 +1,66 @@
+Codes: #[
+    a: "AAAAA" b: "AAAAB" c: "AAABA" d: "AAABB" e: "AABAA"
+    f: "AABAB" g: "AABBA" h: "AABBB" i: "ABAAA" j: "ABAAB"
+    k: "ABABA" l: "ABABB" m: "ABBAA" n: "ABBAB" o: "ABBBA"
+    p: "ABBBB" q: "BAAAA" r: "BAAAB" s: "BAABA" t: "BAABB"
+    u: "BABAA" v: "BABAB" w: "BABBA" x: "BABBB" y: "BBAAA"
+    z: "BBAAB"
+]
+space: "BBBAA"
+
+RevCodes: #[]
+loop Codes [k,v]-> RevCodes\[v]: k
+
+encodeBacon: function [plaintext,message][
+    et: new ""
+    result: new ""
+    loop lower plaintext 'c [
+        'et ++ (lower? c)? -> Codes\[c] -> space
+    ]
+    cnt: 0
+    loop lower message 'c [
+        if? lower? c [
+            'result ++ (et\[cnt] = `A`)? -> c -> upper c
+            cnt: cnt + 1
+            if cnt = size et -> break
+        ]
+        else -> 'result ++ c
+    ]
+    return result
+]
+
+decodeBacon: function [message][
+    et: new ""
+    result: new ""
+    loop message 'c [
+        if or? lower? c upper? c [
+            if? lower? c -> 'et ++ `A`
+            else -> 'et ++ `B`
+
+            if 5 = size et [
+                if? key? RevCodes et -> 'result ++ RevCodes\[et]
+                else -> 'result ++ " "
+                et: new ""
+            ]
+        ]
+    ]
+    return result
+]
+
+PlainText: "the quick brown fox jumps over the lazy dog"
+Message: join [
+    "bacon's cipher is a method of steganography created by francis bacon. "
+    "this task is to implement a program for encryption and decryption of "
+    "plaintext using the simple alphabet of the baconian cipher or some "
+    "other kind of representation of this alphabet (make anything signify anything). "
+    "the baconian alphabet may optionally be extended to encode all lower "
+    "case characters individually and/or adding a few punctuation characters "
+    "such as the space."
+]
+
+cipherText: encodeBacon PlainText Message
+print "Cipher text:"
+print cipherText
+print ""
+print "Message:"
+print decodeBacon cipherText
