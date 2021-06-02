@@ -1,0 +1,21 @@
+shellSort: function [items][
+    a: new items
+    h: size a
+
+    while [h > 0][
+        h: h / 2
+        loop h..dec size a 'i [
+            k: a\[i]
+            j: i
+
+            while [and? [j >= h] [k < a\[j-h]]][
+                a\[j]: a\[j-h]
+                j: j - h
+            ]
+            a\[j]: k
+        ]
+    ]
+    return a
+]
+
+print shellSort [3 1 2 8 5 7 9 4 6]
