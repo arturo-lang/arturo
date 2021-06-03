@@ -51,10 +51,12 @@
                             <h4 class="title is-size-6-touch is-size-5 is-spaced mt-6">Attributes</h4>
                             
                             <table class="table is-stripped is-hoverable is-fullwidth">
-                                <||= loop W\attributes [k,v][||>
+                                <||= loop W\attributes [k,v][
+                                    types: join.with: ", " map filter v\types 'tp [tp = :logical] 'tp ["<i>:" ++ (to :string tp) ++ "</i>"]
+                                ||>
                                     <tr>
-                                        <td><||= k ||></td>
-                                        <td><||= join.with: ", " map v\types 'tp ["<i>:" ++ (to :string tp) ++ "</i>"] ||></td>
+                                        <td><span class="semibold"><||= types ||></span></td>
+                                        <td><||= types ||></td>
                                         <td><||= v\description ||></td>
                                     </tr>
                                 <||]||>
@@ -67,8 +69,9 @@
 
                     <div class="content">
                         <ul>
+                        
                             <|| loop W\returns 'ret [||>
-                                <li><em>:<||= ret ||></em></li>
+                                <li><||= (ret=:nothing)? -> "or &nbsp;" -> "" ||><em>:<||= ret ||></em></li>
                             <||]||>
                         </ul>
                     </div>
