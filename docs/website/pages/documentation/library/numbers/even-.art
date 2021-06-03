@@ -2,7 +2,7 @@ name: "even?"
 type: :function
 module: "Numbers"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given number is even"
 examples: [

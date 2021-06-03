@@ -29,31 +29,31 @@ examples: [
 attributes: #[
     key: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "remove dictionary key"
         ]
     once: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "remove only first occurence"
         ]
     index: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "remove specific index"
         ]
     prefix: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "remove first matching prefix from string"
         ]
     suffix: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "remove first matching suffix from string"
         ]

@@ -56,7 +56,7 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
 
         case x.kind:
             of Null: return true
-            of Boolean: return x.b == y.b
+            of Logical: return x.b == y.b
             of Complex: return x.z == y.z
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch
@@ -142,7 +142,7 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         if x.kind != y.kind: return false
         case x.kind:
             of Null: return false
-            of Boolean: return false
+            of Logical: return false
             of Version:
                 if x.major < y.major: return true
                 elif x.major > y.major: return false
@@ -208,7 +208,7 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
         if x.kind != y.kind: return false
         case x.kind:
             of Null: return false
-            of Boolean: return false
+            of Logical: return false
             of Version:
                 if x.major > y.major: return true
                 elif x.major < y.major: return false

@@ -60,13 +60,13 @@ attributes: #[
         ]
     exportable: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "export all symbols to parent"
         ]
     memoize: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "store results of function calls"
         ]

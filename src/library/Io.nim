@@ -78,8 +78,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "rgb"       : ({Integer},"use specific RGB color"),
-            "bold"      : ({Boolean},"bold font"),
-            "underline" : ({Boolean},"show underlined")
+            "bold"      : ({Logical},"bold font"),
+            "underline" : ({Logical},"show underlined")
         },
         returns     = {String},
         example     = """
@@ -130,7 +130,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "turn cursor visibility on/off",
             args        = {
-                "visible"   : {Boolean}
+                "visible"   : {Logical}
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
@@ -139,7 +139,7 @@ proc defineSymbols*() =
             cursor true     ; (shows the cursor)
             """:
                 ##########################################################
-                if x.b:
+                if x.b==True:
                     stdout.showCursor()
                 else:
                     stdout.hideCursor()
@@ -181,7 +181,7 @@ proc defineSymbols*() =
                 "prompt": {String}
             },
             attrs       = {
-                "repl"      : ({Boolean},"get input as if in a REPL"),
+                "repl"      : ({Logical},"get input as if in a REPL"),
                 "history"   : ({String},"set path for saving history"),
                 "complete"  : ({Block},"use given array for auto-completions"),
                 "hint"      : ({Dictionary},"use given dictionary for typing hints")

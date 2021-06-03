@@ -2,7 +2,7 @@ name: "panic"
 type: :function
 module: "System"
 returns: [
-        :boolean
+        :logical
     ]
 description: "exit program with error message"
 examples: [
@@ -26,7 +26,7 @@ attributes: #[
         ]
     unstyled: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "don\'t use default error template"
         ]

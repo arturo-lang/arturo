@@ -2,7 +2,7 @@ name: "suffix?"
 type: :function
 module: "Strings"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if string ends with given suffix"
 examples: [
@@ -14,7 +14,7 @@ examples: [
 attributes: #[
     regex: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "match against a regular expression"
         ]

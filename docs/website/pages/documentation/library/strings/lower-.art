@@ -2,7 +2,7 @@ name: "lower?"
 type: :function
 module: "Strings"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given string is lowercase"
 examples: [

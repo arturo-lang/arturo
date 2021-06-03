@@ -123,9 +123,9 @@ proc defineSymbols*() =
         },
         attrs       = {
             "code"      : ({Integer},"return given exit code"),
-            "unstyled"  : ({Boolean},"don't use default error template")
+            "unstyled"  : ({Logical},"don't use default error template")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             panic.code:1 "something went terribly wrong. quitting..."
             ; quits with the given code and 

@@ -2,7 +2,7 @@ name: "floating?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "checks if given value is of type :floating"
 examples: [
@@ -23,5 +23,5 @@ related: [
         "Reflection/function?"
          "Reflection/string?"
          "Reflection/block?"
-         "Reflection/boolean?"
+         "Reflection/date?"
     ]

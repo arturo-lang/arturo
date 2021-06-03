@@ -12,7 +12,7 @@ Here, you'll find everything you may need to know about the language (and perhap
    * [Symbols](#symbols)
    * [Values](#values)
        - [:null](#null)
-       - [:boolean](#boolean)
+       - [:logical](#logical)
        - [:integer](#integer)
        - [:floating](#floating)
        - [:complex](#complex)
@@ -84,7 +84,7 @@ In Arturo, a *word* may have 3 main different uses:
 
 <h3 id="labels">Labels</h3>
 
-A label is nothing but Arturo's way of assigning meaning (to be read as: a value) to a word - what you would normally call *variable assignment* or *variable initialization*. (In Arturo, these two terms can be used invariably, since there is practically no difference: you can set and re-define a word/variable as many times as you wish).
+A label is nothing but Arturo's way of assigning meaning (to be read as a value) to a word - what you would normally call *variable assignment* or *variable initialization*. (In Arturo, these two terms can be used invariably, since there is practically no difference: you can set and re-define a word/variable as many times as you wish).
 
 So, let's say you want to give a new meaning to the word `x`:
 
@@ -142,13 +142,14 @@ Null values generally denote *nothing* and it's mostly used as a return value by
 x: null
 ```
 
-<h4 id="boolean">:boolean</h4>
+<h4 id="Logical">:logical</h4>
 
-Booleans are Arturo's logical values. And they can have a value of either `true` or `false`
+Logicals are Arturo's logical values. They are like normal boolean values (true, false), with a twist: they fully support ternary logic and an additional `maybe` value.
 
 ```red
 x: true
 y: false
+z: maybe
 ```
 
 <h4 id="integer">:integer</h4>
@@ -610,13 +611,13 @@ a: sort a
 
 And now, yes, `a` does contain the sorted version of the initial array.
 
-But, what if you want to perform the mofication in-place, which is normally faster and without the need of intermediate variables? Literals come to the rescue!
+But, what if you want to perform the modification in-place, which is normally faster and without the need for intermediate variables? Literals come to the rescue!
 
 <h3 id="using-literals">Using literals</h3>
 
 As we've already said, "literals" (`'i 'am 'a 'literal`) are nothing but string representations of a word, that is... the word itself. For that reason, they may come in very handy when you want to modify a variable in-place.
 
-Let's re-visit the above example and what the syntax of `sort` is:
+Let's revisit the above example and what the syntax of `sort` is:
 
 ```red
 sort collection :literal :dictionary :block
@@ -791,7 +792,7 @@ print select map 1..10 'x [2*x] 'x [even? x]
 
 <h2 id="conclusion">Conclusion</h2>
 
-If you made it till here, then I can assure you: you've already learned more than you need in order to be fully proficient in Arturo.
+If you made it here, then I can assure you: you've already learned more than you need in order to be fully proficient in Arturo.
 
 Just head to the [Library Reference](https://github.com/arturo-lang/arturo/wiki/Library) and have a look at the built-in functions (with explanations and example code) and see what's already available for you or - if you want to see the language in action - just browse through the [examples/](https://github.com/arturo-lang/arturo/tree/master/examples) folder in the main source repo: there are many many *working* examples, to get more than just an idea.
 

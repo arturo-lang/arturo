@@ -19,7 +19,7 @@ examples: [
 attributes: #[
     sha: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "use SHA1"
         ]

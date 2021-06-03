@@ -35,7 +35,7 @@ attributes: #[
         ]
     path: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "join as path components"
         ]

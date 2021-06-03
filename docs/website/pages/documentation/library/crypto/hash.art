@@ -20,7 +20,7 @@ examples: [
 attributes: #[
     string: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get as a string"
         ]

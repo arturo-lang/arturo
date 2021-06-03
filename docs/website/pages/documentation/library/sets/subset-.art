@@ -2,7 +2,7 @@ name: "subset?"
 type: :function
 module: "Sets"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given set is a subset of second set"
 examples: [
@@ -26,7 +26,7 @@ examples: [
 attributes: #[
     proper: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "check if proper subset"
         ]
