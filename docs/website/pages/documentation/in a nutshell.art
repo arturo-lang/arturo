@@ -59,9 +59,10 @@ g2: #0077BF
 ; dates
 h: now              ; 2021-05-03T17:10:48+02:00
 
-; booleans
+; logical values
 i1: true
 i2: false
+i3: maybe
 
 ;---------------------------------
 ; BASIC OPERATORS
