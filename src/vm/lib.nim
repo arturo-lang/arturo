@@ -13,8 +13,8 @@
 import sequtils, sets, strutils, tables
 export strutils, tables
 
-import vm/[globals, errors, stack, values/comparison, values/printable, values/value]
-export comparison, globals, printable, stack, value
+import vm/[globals, errors, stack, values/comparison, values/logic, values/printable, values/value]
+export comparison, globals, logic, printable, stack, value
 
 #=======================================
 # Constants
