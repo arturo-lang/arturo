@@ -12,7 +12,7 @@ Here, you'll find everything you may need to know about the language (and perhap
    * [Symbols](#symbols)
    * [Values](#values)
        - [:null](#null)
-       - [:boolean](#boolean)
+       - [:logical](#logical)
        - [:integer](#integer)
        - [:floating](#floating)
        - [:complex](#complex)
@@ -142,13 +142,14 @@ Null values generally denote *nothing* and it's mostly used as a return value by
 x: null
 ```
 
-<h4 id="boolean">:boolean</h4>
+<h4 id="Logical">:logical</h4>
 
-Booleans are Arturo's logical values. And they can have a value of either `true` or `false`
+Logicals are Arturo's logical values. They are like normal boolean values (true, false), with a twist: they fully support ternary logic and an additional `maybe` value.
 
 ```red
 x: true
 y: false
+z: maybe
 ```
 
 <h4 id="integer">:integer</h4>
