@@ -703,14 +703,14 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     inc(p.bufpos)
 
             of chr(195):
-                if p.buf[p.bufpos+1]==chr(184):
+                if p.buf[p.bufpos+1]==chr(184): # ø
                     AddToken newSymbol(slashedzero)
                     inc(p.bufpos)
                     inc(p.bufpos)
                 else:
                     inc(p.bufpos)
             of chr(226):
-                if p.buf[p.bufpos+1]==chr(136):
+                if p.buf[p.bufpos+1]==chr(136): # ∞
                     AddToken newSymbol(infinite)
                     inc(p.bufpos)
                     inc(p.bufpos)
