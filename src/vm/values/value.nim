@@ -1413,7 +1413,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
             else: 
                 when not defined(NOGMP):
                     dumpPrimitive($(v.bi), v)
-        of Floating     : dumpPrimitive($(v.f), v)
+        of Floating     : 
+            if v.f==Inf: dumpPrimitive("∞", v)
+            elif v.f==NegInf: dumpPrimitive("-∞", v)
+            else: dumpPrimitive($(v.f), v)
         of Complex      : dumpPrimitive($(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i", v)
         of Version      : dumpPrimitive(fmt("{v.major}.{v.minor}.{v.patch}{v.extra}"), v)
         of Type         : 
