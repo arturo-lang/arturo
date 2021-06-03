@@ -1,0 +1,18 @@
+vals: @[true maybe false]
+
+loop vals 'v -> print ["NOT" v "=>" not? v]
+print ""
+loop vals 'v1 [
+    loop vals 'v2 
+        -> print [v1 "AND" v2 "=>" and? v1 v2]
+]
+print ""
+loop vals 'v1 [
+    loop vals 'v2 
+        -> print [v1 "OR" v2 "=>" or? v1 v2]
+]
+print ""
+loop vals 'v1 [
+    loop vals 'v2 
+        -> print [v1 "XOR" v2 "=>" xor? v1 v2]
+]
