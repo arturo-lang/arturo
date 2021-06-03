@@ -692,6 +692,8 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of RCurly:
                 inc(p.bufpos)
             of chr(194):
+                echo "got 194"
+                echo "next:" & $(ord(p.buf[p.bufpos+1]))
                 if p.buf[p.bufpos+1]==chr(171): # got «
                     if p.buf[p.bufpos+2]==chr(194) and p.buf[p.bufpos+3]==chr(171):
                         parseSafeString(p)
@@ -705,6 +707,13 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of chr(195):
                 if p.buf[p.bufpos+1]==chr(184):
                     AddToken newSymbol(slashedzero)
+                    inc(p.bufpos)
+                    inc(p.bufpos)
+                else:
+                    inc(p.bufpos)
+            of chr(226):
+                if p.buf[p.bufpos+1]==chr(136):
+                    AddToken newSymbol(infinite)
                     inc(p.bufpos)
                     inc(p.bufpos)
                 else:
