@@ -97,7 +97,7 @@ type
 
     ValueKind* = enum
         Null            = 0
-        Boolean         = 1
+        Logical         = 1
         Integer         = 2
         Floating        = 3
         Complex         = 4
@@ -156,6 +156,11 @@ type
 
     SymbolDict*   = OrderedTable[SymbolKind,AliasBinding]
 
+    logical* = enum
+        False = 0, 
+        True = 1,
+        Maybe = 2
+
     Value* {.acyclic.} = ref object 
         info*: string
         custom*: Value
@@ -164,7 +169,7 @@ type
                Nothing,
                Any:        discard 
 
-            of Boolean:     b*  : bool
+            of Logical:     b*  : logical
             of Integer:  
                 case iKind*: IntegerKind:
                     of NormalInteger:   i*  : int
