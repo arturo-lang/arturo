@@ -86,7 +86,10 @@ proc `$`*(v: Value): string {.inline.} =
             else:
                 when not defined(NOGMP): 
                     return $(v.bi)
-        of Floating     : return $(v.f)
+        of Floating     : 
+            if v.f==Inf return "∞"
+            elif v.f==NegInf return "-∞"
+            else return $(v.f)
         of Complex      : 
             return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
