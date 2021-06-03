@@ -30,55 +30,55 @@ examples: [
 attributes: #[
     lines: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read file lines into block"
         ]
     json: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read Json into value"
         ]
     csv: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read CSV file into a block of rows"
         ]
     withHeaders: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read CSV headers"
         ]
     html: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read HTML into node dictionary"
         ]
     xml: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read XML into node dictionary"
         ]
     markdown: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read Markdown and convert to HTML"
         ]
     toml: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read TOML into value"
         ]
     binary: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "read as binary"
         ]

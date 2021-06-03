@@ -2,7 +2,7 @@ name: "prefix?"
 type: :function
 module: "Strings"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if string starts with given prefix"
 examples: [
@@ -14,7 +14,7 @@ examples: [
 attributes: #[
     regex: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "match against a regular expression"
         ]

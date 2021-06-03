@@ -37,11 +37,11 @@ type
         opConstI9       = 0x09      # 9
         opConstI10      = 0x0A      # 10
 
-        opConstI1M      = 0x0B      # -1
-        opConstF1       = 0x0C      # 1.0
+        opConstF1       = 0x0B      # 1.0
 
-        opConstBT       = 0x0D      # true
-        opConstBF       = 0x0E      # false
+        opConstBT       = 0x0C      # true
+        opConstBF       = 0x0D      # false
+        opConstBM       = 0x0E      # maybe
 
         opConstN        = 0x0F      # null
  

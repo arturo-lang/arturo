@@ -29,13 +29,13 @@ examples: [
 attributes: #[
     executable: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "treat path as executable"
         ]
     tilde: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "expand tildes in path"
         ]

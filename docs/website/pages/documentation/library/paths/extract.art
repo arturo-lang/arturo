@@ -50,115 +50,115 @@ examples: [
 attributes: #[
     directory: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get path directory"
         ]
     basename: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get path basename (filename+extension)"
         ]
     filename: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get path filename"
         ]
     extension: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get path extension"
         ]
     scheme: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get scheme field from URL"
         ]
     host: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get host field from URL"
         ]
     port: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get port field from URL"
         ]
     user: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get user field from URL"
         ]
     password: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get password field from URL"
         ]
     path: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get path field from URL"
         ]
     query: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get query field from URL"
         ]
     anchor: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get anchor field from URL"
         ]
     red: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get red component from color"
         ]
     green: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get green component from color"
         ]
     blue: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get blue component from color"
         ]
     hsl: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get HSL representation from color"
         ]
     hue: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get hue component from color"
         ]
     saturation: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get saturation component from color"
         ]
     luminosity: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get luminosity component from color"
         ]

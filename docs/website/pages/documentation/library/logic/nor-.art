@@ -2,7 +2,7 @@ name: "nor?"
 type: :function
 module: "Logic"
 returns: [
-        :boolean
+        :logical
     ]
 description: "return the logical NAND for the given values"
 examples: [
@@ -24,11 +24,11 @@ attributes: #[
     ]
 arguments: #[
     valueA: [
-            :boolean
+            :logical
              :block
         ]
     valueB: [
-            :boolean
+            :logical
              :block
         ]
     ]

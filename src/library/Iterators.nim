@@ -41,7 +41,7 @@ proc defineSymbols*() =
             "condition"     : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             if every? [2 4 6 8] 'x [even? x] 
                 -> print "every number is an even integer"
@@ -63,7 +63,7 @@ proc defineSymbols*() =
 
             # check if empty
             if blk.len==0: 
-                push(newBoolean(false))
+                push(newLogical(false))
                 return
 
             let preevaled = doEval(z)
@@ -74,15 +74,15 @@ proc defineSymbols*() =
                     push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
                     let popped = pop()
-                    if popped.kind==Boolean and not popped.b:
-                        push(newBoolean(false))
+                    if popped.kind==Logical and Not(popped.b)==True:
+                        push(newLogical(false))
                         all = false
                         break
                 do:
                     discard
 
             if all:
-                push(newBoolean(true))
+                push(newLogical(true))
 
     builtin "filter",
         alias       = unaliased, 
@@ -122,7 +122,7 @@ proc defineSymbols*() =
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if not pop().b:
+                        if Not(pop().b)==True:
                             res.add(item)
                     do:
                         discard
@@ -133,7 +133,7 @@ proc defineSymbols*() =
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if not pop().b:
+                        if Not(pop().b)==True:
                             res.add(item)
                     do:
                         discard
@@ -151,7 +151,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "seed"  : ({Any},"use specific seed value"),
-            "right" : ({Boolean},"perform right folding")
+            "right" : ({Logical},"perform right folding")
         },
         returns     = {Block,Null,Nothing},
         example     = """
@@ -286,7 +286,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "forever"   : ({Boolean},"cycle through collection infinitely")
+            "forever"   : ({Logical},"cycle through collection infinitely")
         },
         returns     = {Nothing},
         example     = """
@@ -514,7 +514,7 @@ proc defineSymbols*() =
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if pop().b:
+                        if pop().b==True:
                             res.add(item)
                     do:
                         discard
@@ -525,7 +525,7 @@ proc defineSymbols*() =
                     handleBranching:
                         push(item)
                         discard execBlock(VNULL, evaluated=preevaled, args=args)
-                        if pop().b:
+                        if pop().b==True:
                             res.add(item)
                     do:
                         discard
@@ -542,7 +542,7 @@ proc defineSymbols*() =
             "condition"     : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             if some? [1 3 5 6 7] 'x [even? x] 
                 -> print "at least one number is an even integer"
@@ -564,7 +564,7 @@ proc defineSymbols*() =
 
             # check if empty
             if blk.len==0: 
-                push(newBoolean(false))
+                push(newLogical(false))
                 return
 
             let preevaled = doEval(z)
@@ -575,15 +575,15 @@ proc defineSymbols*() =
                     push(item)
                     discard execBlock(VNULL, evaluated=preevaled, args=args)
                     let popped = pop()
-                    if popped.kind==Boolean and popped.b:
-                        push(newBoolean(true))
+                    if popped.kind==Logical and popped.b==True:
+                        push(newLogical(true))
                         one = true
                         break
                 do:
                     discard
 
             if not one:
-                push(newBoolean(false))
+                push(newLogical(false))
 
 #=======================================
 # Add Library

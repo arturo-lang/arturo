@@ -27,19 +27,19 @@ attributes: #[
         ]
     sensitive: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "case-sensitive sorting"
         ]
     descending: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "sort in ascending order"
         ]
     values: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "sort dictionary by values"
         ]

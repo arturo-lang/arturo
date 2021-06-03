@@ -16,7 +16,7 @@ examples: [
 attributes: #[
     safe: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "check for overflows"
         ]

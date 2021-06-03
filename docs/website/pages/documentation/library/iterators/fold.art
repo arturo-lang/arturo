@@ -34,7 +34,7 @@ attributes: #[
         ]
     right: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "perform right folding"
         ]

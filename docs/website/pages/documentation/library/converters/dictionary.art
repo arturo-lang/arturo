@@ -36,13 +36,13 @@ attributes: #[
         ]
     raw: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "create dictionary from raw block"
         ]
     data: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "parse input as data"
         ]
@@ -57,5 +57,5 @@ related: [
         "Reflection/dictionary?"
          "Converters/function"
          "Numbers/factors"
-         "Reflection/binary?"
+         "Numbers/infinity"
     ]

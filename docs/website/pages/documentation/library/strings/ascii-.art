@@ -2,7 +2,7 @@ name: "ascii?"
 type: :function
 module: "Strings"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given character/string is in ASCII"
 examples: [

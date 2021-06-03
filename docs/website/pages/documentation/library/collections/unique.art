@@ -20,7 +20,7 @@ examples: [
 attributes: #[
     id: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "generate unique id using given prefix"
         ]

@@ -136,7 +136,7 @@ proc defineSymbols*() =
             "bits"  : {Integer}
         },
         attrs       = {
-            "safe"  : ({Boolean},"check for overflows")
+            "safe"  : ({Logical},"check for overflows")
         },
         returns     = {Integer,Nothing},
         example     = """

@@ -166,7 +166,7 @@ proc defineSymbols*() =
             "value"         : {Any}
         },
         attrs       = {
-            "regex" : ({Boolean},"match against a regular expression")
+            "regex" : ({Logical},"match against a regular expression")
         },
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
@@ -192,16 +192,16 @@ proc defineSymbols*() =
                 of String:
                     if (popAttr("regex") != VNULL):
                         when not defined(WEB):
-                            push(newBoolean(nre.contains(x.s, nre.re(y.s))))
+                            push(newLogical(nre.contains(x.s, nre.re(y.s))))
                         else:
-                            push(newBoolean(test(newRegExp(y.s,""), x.s)))
+                            push(newLogical(test(newRegExp(y.s,""), x.s)))
                     else:
-                        push(newBoolean(y.s in x.s))
+                        push(newLogical(y.s in x.s))
                 of Block:
-                    push(newBoolean(y in cleanBlock(x.a)))
+                    push(newLogical(y in cleanBlock(x.a)))
                 of Dictionary: 
                     let values = toSeq(x.d.values)
-                    push(newBoolean(y in values))
+                    push(newLogical(y in values))
                 else:
                     discard
 
@@ -265,7 +265,7 @@ proc defineSymbols*() =
             "collection"    : {String,Block,Dictionary,Null}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             empty? ""             ; => true
             empty? []             ; => true
@@ -276,9 +276,9 @@ proc defineSymbols*() =
             ##########################################################
             case x.kind:
                 of Null: push(VTRUE)
-                of String: push(newBoolean(x.s==""))
-                of Block: push(newBoolean(cleanBlock(x.a).len==0))
-                of Dictionary: push(newBoolean(x.d.len==0))
+                of String: push(newLogical(x.s==""))
+                of Block: push(newLogical(cleanBlock(x.a).len==0))
+                of Dictionary: push(newLogical(x.d.len==0))
                 else: discard
 
     builtin "extend",
@@ -343,7 +343,7 @@ proc defineSymbols*() =
 
         },
         attrs       = {
-            "once"  : ({Boolean},"do not perform recursive flattening")
+            "once"  : ({Logical},"do not perform recursive flattening")
         },
         returns     = {Block},
         example     = """
@@ -432,7 +432,7 @@ proc defineSymbols*() =
             "collection"    : {String,Block,Dictionary}
         },
         attrs       = {
-            "regex" : ({Boolean},"match against a regular expression")
+            "regex" : ({Logical},"match against a regular expression")
         },
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
@@ -458,16 +458,16 @@ proc defineSymbols*() =
                 of String:
                     if (popAttr("regex") != VNULL):
                         when not defined(WEB):
-                            push(newBoolean(nre.contains(y.s, nre.re(x.s))))
+                            push(newLogical(nre.contains(y.s, nre.re(x.s))))
                         else:
-                            push(newBoolean(test(newRegExp(x.s,""), y.s)))
+                            push(newLogical(test(newRegExp(x.s,""), y.s)))
                     else:
-                        push(newBoolean(x.s in y.s))
+                        push(newLogical(x.s in y.s))
                 of Block:
-                    push(newBoolean(x in y.a))
+                    push(newLogical(x in y.a))
                 of Dictionary: 
                     let values = toSeq(y.d.values)
-                    push(newBoolean(x in values))
+                    push(newLogical(x in values))
                 else:
                     discard
 
@@ -570,7 +570,7 @@ proc defineSymbols*() =
             "key"           : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             user: #[
                 name: "John"
@@ -589,7 +589,7 @@ proc defineSymbols*() =
                 needle = y.s
             else:
                 needle = $(y)
-            push(newBoolean(x.d.hasKey(needle)))
+            push(newLogical(x.d.hasKey(needle)))
 
     builtin "keys",
         alias       = unaliased, 
@@ -724,11 +724,11 @@ proc defineSymbols*() =
             "value"         : {Any}
         },
         attrs       = {
-            "key"   : ({Boolean},"remove dictionary key"),
-            "once"  : ({Boolean},"remove only first occurence"),
-            "index" : ({Boolean},"remove specific index"),
-            "prefix": ({Boolean},"remove first matching prefix from string"),
-            "suffix": ({Boolean},"remove first matching suffix from string")
+            "key"   : ({Logical},"remove dictionary key"),
+            "once"  : ({Logical},"remove only first occurence"),
+            "index" : ({Logical},"remove specific index"),
+            "prefix": ({Logical},"remove first matching prefix from string"),
+            "suffix": ({Logical},"remove first matching suffix from string")
         },
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
@@ -1015,9 +1015,9 @@ proc defineSymbols*() =
         },
         attrs       = {
             "as"        : ({Literal},"localized by ISO 639-1 language code"),
-            "sensitive" : ({Boolean},"case-sensitive sorting"),
-            "descending": ({Boolean},"sort in ascending order"),
-            "values"    : ({Boolean},"sort dictionary by values"),
+            "sensitive" : ({Logical},"case-sensitive sorting"),
+            "descending": ({Logical},"sort in ascending order"),
+            "values"    : ({Logical},"sort dictionary by values"),
             "by"        : ({String,Literal},"sort array of dictionaries by given key")
         },
         returns     = {Block,Nothing},
@@ -1096,9 +1096,9 @@ proc defineSymbols*() =
             "collection"    : {Block}
         },
         attrs       = {
-            "descending": ({Boolean},"check for sorting in ascending order")
+            "descending": ({Logical},"check for sorting in ascending order")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         # TODO(Collections\sorted?) add documentation example
         #  labels: library, documentation, easy
         example     = """
@@ -1109,7 +1109,7 @@ proc defineSymbols*() =
             if (popAttr("descending")!=VNULL):
                 ascending = false
 
-            push newBoolean(isSorted(x.a, ascending = ascending))
+            push newLogical(isSorted(x.a, ascending = ascending))
 
             
     # TODO(Collections\split) Add better support for unicode strings
@@ -1123,13 +1123,13 @@ proc defineSymbols*() =
             "collection"    : {String,Block,Literal}
         },
         attrs       = {
-            "words"     : ({Boolean},"split string by whitespace"),
-            "lines"     : ({Boolean},"split string by lines"),
+            "words"     : ({Logical},"split string by whitespace"),
+            "lines"     : ({Logical},"split string by lines"),
             "by"        : ({String,Block},"split using given separator"),
             "regex"     : ({String},"split using given regular expression"),
             "at"        : ({Integer},"split collection at given position"),
             "every"     : ({Integer},"split collection every <n> elements"),
-            "path"      : ({Boolean},"split path components in string")
+            "path"      : ({Logical},"split path components in string")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1343,7 +1343,7 @@ proc defineSymbols*() =
             "collection"    : {String,Block,Literal}
         },
         attrs       = {
-            "id"    : ({Boolean},"generate unique id using given prefix"),
+            "id"    : ({Logical},"generate unique id using given prefix"),
         },
         returns     = {Block,Nothing},
         example     = """

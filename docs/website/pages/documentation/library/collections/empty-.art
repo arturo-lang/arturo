@@ -2,7 +2,7 @@ name: "empty?"
 type: :function
 module: "Collections"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given collection is empty"
 examples: [

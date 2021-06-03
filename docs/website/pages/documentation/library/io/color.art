@@ -20,13 +20,13 @@ attributes: #[
         ]
     bold: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "bold font"
         ]
     underline: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "show underlined"
         ]

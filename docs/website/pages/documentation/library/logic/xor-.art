@@ -2,7 +2,7 @@ name: "xor?"
 type: :function
 module: "Logic"
 returns: [
-        :boolean
+        :logical
     ]
 description: "return the logical XOR for the given values"
 examples: [
@@ -24,11 +24,11 @@ attributes: #[
     ]
 arguments: #[
     valueA: [
-            :boolean
+            :logical
              :block
         ]
     valueB: [
-            :boolean
+            :logical
              :block
         ]
     ]

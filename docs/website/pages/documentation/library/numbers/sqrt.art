@@ -19,7 +19,7 @@ examples: [
 attributes: #[
     integer: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get the integer square root"
         ]

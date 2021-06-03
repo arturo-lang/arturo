@@ -29,25 +29,25 @@ examples: [
 attributes: #[
     json: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "for literal use in JSON strings"
         ]
     regex: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "for literal use in regular expression"
         ]
     shell: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "for use in a shell command"
         ]
     xml: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "for use in an XML document"
         ]

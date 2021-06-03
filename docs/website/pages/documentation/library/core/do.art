@@ -38,7 +38,7 @@ examples: [
 attributes: #[
     import: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "execute at root level"
         ]

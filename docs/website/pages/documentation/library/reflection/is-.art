@@ -2,7 +2,7 @@ name: "is?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check whether value is of given type"
 examples: [

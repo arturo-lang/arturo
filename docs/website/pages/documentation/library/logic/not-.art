@@ -2,7 +2,7 @@ name: "not?"
 type: :function
 module: "Logic"
 returns: [
-        :boolean
+        :logical
     ]
 description: "return the logical complement of the given value"
 examples: [
@@ -19,7 +19,7 @@ attributes: #[
     ]
 arguments: #[
     value: [
-            :boolean
+            :logical
              :block
         ]
     ]
