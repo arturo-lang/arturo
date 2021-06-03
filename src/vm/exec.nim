@@ -16,7 +16,7 @@ when defined(VERBOSE):
     import strformat
     import helpers/debug
 
-import vm/[bytecode, errors, eval, globals, parse, stack, values/value]
+import vm/[bytecode, errors, eval, globals, parse, stack, values/logic, values/value]
 
 #=======================================
 # Variables
@@ -327,10 +327,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opJump               : 
                 i = (int)(it[i+1])-1
             of opJumpIf             : 
-                if stack.pop().b: 
+                if stack.pop().b==True: 
                     i = (int)(it[i+1])-1
             of opJumpIfNot          : 
-                if not stack.pop().b: 
+                if Not(stack.pop().b)==True: 
                     i = (int)(it[i+1])-1
             of opRet                : discard    
             of opEnd                : break 
