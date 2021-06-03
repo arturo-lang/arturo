@@ -77,8 +77,6 @@
  	"colors/blend"
  	"block?"
  	"reflection/block-"
- 	"boolean?"
- 	"reflection/boolean-"
  	"break"
  	"core/break"
  	"call"
