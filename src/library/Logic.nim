@@ -36,7 +36,7 @@ proc defineSymbols*() =
             "conditions"    : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             if all? @[2>1 "DONE"=upper "done" true] 
                 -> print "yes, all are true"
@@ -49,7 +49,7 @@ proc defineSymbols*() =
             let blk = cleanBlock(x.a)
             # check if empty
             if blk.len==0: 
-                push(newBoolean(false))
+                push(newLogical(false))
                 return
 
             var allOK = true
@@ -64,22 +64,22 @@ proc defineSymbols*() =
 
                 if val!=VTRUE:
                     allOK = false
-                    push(newBoolean(false))
+                    push(newLogical(false))
                     break
 
             if allOK:
-                push(newBoolean(true))
+                push(newLogical(true))
 
     builtin "and?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical AND for the given values",
         args        = {
-            "valueA": {Boolean,Block},
-            "valueB": {Boolean,Block}
+            "valueA": {Logical,Block},
+            "valueB": {Logical,Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             y: 5
@@ -91,31 +91,31 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             ##########################################################
-            if x.kind==Boolean and y.kind==Boolean:
-                push(newBoolean(x.b and y.b))
+            if x.kind==Logical and y.kind==Logical:
+                push(newLogical(And(x.b,y.b)))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
                         # block block
                         discard execBlock(x)
-                        if not pop().b:
-                            push(newBoolean(false))
+                        if Not(pop().b)==True:
+                            push(newLogical(false))
                             return
 
                         discard execBlock(y)
-                        push(newBoolean(pop().b))
+                        push(newLogical(pop().b))
                     else:
-                        # block boolean
+                        # block logical
                         discard execBlock(x)
-                        push(newBoolean(pop().b and y.b))
+                        push(newLogical(And(pop().b,y.b)))
                 else:
-                    # boolean block
-                    if not x.b:
-                        push(newBoolean(false))
+                    # logical block
+                    if Not(x.b)==True:
+                        push(newLogical(false))
                         return
 
                     discard execBlock(y)
-                    push(newBoolean(pop().b))
+                    push(newLogical(pop().b))
 
 
     builtin "any?",
@@ -126,7 +126,7 @@ proc defineSymbols*() =
             "conditions"    : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             if any? @[false 3=4 2>1] 
                 -> print "yes, one (or more) of the values is true"
@@ -139,7 +139,7 @@ proc defineSymbols*() =
             let blk = cleanBlock(x.a)
             # check if empty
             if blk.len==0: 
-                push(newBoolean(false))
+                push(newLogical(false))
                 return
             
             var anyOK = false
@@ -153,11 +153,11 @@ proc defineSymbols*() =
 
                 if val==VTRUE:
                     anyOK = true
-                    push(newBoolean(true))
+                    push(newLogical(true))
                     break
                 
             if not anyOK:
-                push(newBoolean(false))
+                push(newLogical(false))
 
     constant "false",
         alias       = unaliased,
@@ -172,7 +172,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print false? 1 = 2          ; true
             print false? 1 <> 2         ; false
@@ -181,8 +181,8 @@ proc defineSymbols*() =
             print false? [1 2 3]        ; false
         """:
             ##########################################################
-            if x.kind != Boolean: push(newBoolean(false))
-            else: push(newBoolean(not x.b))
+            if x.kind != Logical: push(newLogical(false))
+            else: push(newLogical(Not(x.b)))
 
     constant "maybe",
         alias       = unaliased,
@@ -194,11 +194,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "return the logical NAND for the given values",
         args        = {
-            "valueA": {Boolean,Block},
-            "valueB": {Boolean,Block}
+            "valueA": {Logical,Block},
+            "valueB": {Logical,Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             y: 3
@@ -213,42 +213,42 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            if x.kind==Boolean and y.kind==Boolean:
-                push(newBoolean(not (x.b and y.b)))
+            if x.kind==Logical and y.kind==Logical:
+                push(newLogical(Not(And(x.b, y.b))))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
                         # block block
                         discard execBlock(x)
-                        if not pop().b:
-                            push(newBoolean(true))
+                        if Not(pop().b)==True:
+                            push(newLogical(true))
                             return
 
                         discard execBlock(y)
-                        push(newBoolean(not pop().b))
+                        push(newLogical(Not(pop().b)))
                     else:
-                        # block boolean
+                        # block logical
                         discard execBlock(x)
-                        push(newBoolean(not (pop().b and y.b)))
+                        push(newLogical(Not(And(pop().b, y.b))))
                 else:
-                    # boolean block
-                    if not x.b:
-                        push(newBoolean(true))
+                    # logical block
+                    if Not(x.b)==True:
+                        push(newLogical(true))
                         return
 
                     discard execBlock(y)
-                    push(newBoolean(not pop().b))
+                    push(newLogical(Not(pop().b)))
 
     builtin "nor?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical NAND for the given values",
         args        = {
-            "valueA": {Boolean,Block},
-            "valueB": {Boolean,Block}
+            "valueA": {Logical,Block},
+            "valueB": {Logical,Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             y: 3
@@ -263,41 +263,41 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            if x.kind==Boolean and y.kind==Boolean:
-                push(newBoolean(not(x.b or y.b)))
+            if x.kind==Logical and y.kind==Logical:
+                push(newLogical(Not(Or(x.b, y.b))))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
                         # block block
                         discard execBlock(x)
-                        if pop().b:
-                            push(newBoolean(false))
+                        if pop().b==True:
+                            push(newLogical(false))
                             return
 
                         discard execBlock(y)
-                        push(newBoolean(not pop().b))
+                        push(newLogical(Not(pop().b)))
                     else:
-                        # block boolean
+                        # block logical
                         discard execBlock(x)
-                        push(newBoolean(not(pop().b or y.b)))
+                        push(newLogical(Not(Or(pop().b, y.b))))
                 else:
-                    # boolean block
-                    if x.b:
-                        push(newBoolean(false))
+                    # logical block
+                    if x.b==True:
+                        push(newLogical(false))
                         return
 
                     discard execBlock(y)
-                    push(newBoolean(not pop().b))
+                    push(newLogical(Not(pop().b)))
 
     builtin "not?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical complement of the given value",
         args        = {
-            "value" : {Boolean,Block}
+            "value" : {Logical,Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             ready: false
             if not? ready [
@@ -307,22 +307,22 @@ proc defineSymbols*() =
             ; we're still not ready!
         """:
             ##########################################################
-            if x.kind==Boolean:
-                push(newBoolean(not x.b))
+            if x.kind==Logical:
+                push(newLogical(Not(x.b)))
             else:
                 discard execBlock(x)
-                push(newBoolean(not pop().b))
+                push(newLogical(Not(pop().b)))
 
     builtin "or?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical OR for the given values",
         args        = {
-            "valueA": {Boolean,Block},
-            "valueB": {Boolean,Block}
+            "valueA": {Logical,Block},
+            "valueB": {Logical,Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             y: 4
@@ -334,31 +334,31 @@ proc defineSymbols*() =
             ; yep, that's correct!
         """:
             ##########################################################
-            if x.kind==Boolean and y.kind==Boolean:
-                push(newBoolean(x.b or y.b))
+            if x.kind==Logical and y.kind==Logical:
+                push(newLogical(Or(x.b, y.b)))
             else:
                 if x.kind==Block:
                     if y.kind==Block:
                         # block block
                         discard execBlock(x)
-                        if pop().b:
-                            push(newBoolean(true))
+                        if pop().b==True:
+                            push(newLogical(true))
                             return
 
                         discard execBlock(y)
-                        push(newBoolean(pop().b))
+                        push(newLogical(pop().b))
                     else:
-                        # block boolean
+                        # block logical
                         discard execBlock(x)
-                        push(newBoolean(pop().b or y.b))
+                        push(newLogical(Or(pop().b, y.b)))
                 else:
-                    # boolean block
-                    if x.b:
-                        push(newBoolean(true))
+                    # logical block
+                    if x.b==True:
+                        push(newLogical(true))
                         return
 
                     discard execBlock(y)
-                    push(newBoolean(pop().b))
+                    push(newLogical(pop().b))
 
     constant "true",
         alias       = unaliased,
@@ -373,7 +373,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print true? 1 = 2           ; false
             print true? 1 <> 2          ; true
@@ -382,7 +382,7 @@ proc defineSymbols*() =
             print true? [1 2 3]         ; false
         """:
             ##########################################################
-            if x.kind != Boolean: push(newBoolean(false))
+            if x.kind != Logical: push(newLogical(false))
             else: push(x)
 
     builtin "xnor?",
@@ -390,11 +390,11 @@ proc defineSymbols*() =
         rule        = InfixPrecedence,
         description = "return the logical XNOR for the given values",
         args        = {
-            "valueA": {Boolean,Block},
-            "valueB": {Boolean,Block}
+            "valueA": {Logical,Block},
+            "valueB": {Logical,Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             y: 3
@@ -409,32 +409,32 @@ proc defineSymbols*() =
             ; yep, that's not correct
         """:
             ##########################################################
-            var a: bool
-            var b: bool
-            if x.kind == Boolean: 
+            var a: logical
+            var b: logical
+            if x.kind == Logical: 
                 a = x.b
             else:
                 discard execBlock(x)
                 a = pop().b
 
-            if y.kind == Boolean: 
+            if y.kind == Logical: 
                 b = y.b
             else:
                 discard execBlock(y)
                 b = pop().b
 
-            push(newBoolean(not (a xor b)))
+            push(newLogical(Not(Xor(a, b))))
 
     builtin "xor?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
         description = "return the logical XOR for the given values",
         args        = {
-            "valueA": {Boolean,Block},
-            "valueB": {Boolean,Block}
+            "valueA": {Logical,Block},
+            "valueB": {Logical,Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             y: 3
@@ -449,21 +449,21 @@ proc defineSymbols*() =
             ; nope, that's not correct
         """:
             ##########################################################
-            var a: bool
-            var b: bool
-            if x.kind == Boolean: 
+            var a: logical
+            var b: logical
+            if x.kind == Logical: 
                 a = x.b
             else:
                 discard execBlock(x)
                 a = pop().b
 
-            if y.kind == Boolean: 
+            if y.kind == Logical: 
                 b = y.b
             else:
                 discard execBlock(y)
                 b = pop().b
 
-            push(newBoolean(a xor b))
+            push(newLogical(Xor(a, b)))
             
 #=======================================
 # Add Library

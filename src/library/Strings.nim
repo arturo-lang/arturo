@@ -59,7 +59,7 @@ proc defineSymbols*() =
             "string": {Char,String}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             ascii? `d`              ; true
             ;;;;
@@ -71,7 +71,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Char:
-                push(newBoolean(ord(x.c)<128))
+                push(newLogical(ord(x.c)<128))
             else:
                 var allOK = true
                 for ch in runes(x.s):
@@ -110,10 +110,10 @@ proc defineSymbols*() =
             "string": {String,Literal}
         },
         attrs       = {
-            "json"  : ({Boolean},"for literal use in JSON strings"),
-            "regex" : ({Boolean},"for literal use in regular expression"),
-            "shell" : ({Boolean},"for use in a shell command"),
-            "xml"   : ({Boolean},"for use in an XML document")
+            "json"  : ({Logical},"for literal use in JSON strings"),
+            "regex" : ({Logical},"for literal use in regular expression"),
+            "shell" : ({Logical},"for use in a shell command"),
+            "xml"   : ({Logical},"for use in an XML document")
         },
         returns     = {String,Nothing},
         example     = """
@@ -211,7 +211,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({String},"use given separator"),
-            "path"  : ({Boolean},"join as path components")
+            "path"  : ({Logical},"join as path components")
         },
         returns     = {String,Nothing},
         example     = """
@@ -256,7 +256,7 @@ proc defineSymbols*() =
             "stringB"   : {String}
         },
         attrs       = {
-            "align" : ({Boolean},"return aligned strings"),
+            "align" : ({Logical},"return aligned strings"),
             "with"  : ({Char},"use given filler for alignment (default: -)")
         },
         returns     = {Integer,Block},
@@ -313,7 +313,7 @@ proc defineSymbols*() =
             "string": {String,Char}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         # TODO(Strings\lower?) add documentation example for `:char`s
         #  labels: library, documentation, easy
         example     = """
@@ -324,7 +324,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Char:
-                push(newBoolean(x.c.isLower()))
+                push(newLogical(x.c.isLower()))
             else:
                 var broken = false
                 for c in runes(x.s):
@@ -365,7 +365,7 @@ proc defineSymbols*() =
             "string": {String,Char}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         # TODO(Strings\numeric?) add documentation example for `:char`s
         #  labels: library, documentation, easy
         example     = """
@@ -445,8 +445,8 @@ proc defineSymbols*() =
             "padding"   : {Integer}
         },
         attrs       = {
-            "center"    : ({Boolean},"add padding to both sides"),
-            "right"     : ({Boolean},"add right padding"),
+            "center"    : ({Logical},"add padding to both sides"),
+            "right"     : ({Logical},"add right padding"),
             "with"      : ({Char},"pad with given character")
         },
         returns     = {String},
@@ -505,9 +505,9 @@ proc defineSymbols*() =
             "prefix": {String}
         },
         attrs       = {
-            "regex" : ({Boolean},"match against a regular expression")
+            "regex" : ({Logical},"match against a regular expression")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             prefix? "hello" "he"          ; => true
             prefix? "boom" "he"           ; => false
@@ -515,11 +515,11 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("regex") != VNULL):
                 when not defined(WEB):
-                    push(newBoolean(re.startsWith(x.s, re.re(y.s))))
+                    push(newLogical(re.startsWith(x.s, re.re(y.s))))
                 else:
-                    push newBoolean(x.s.startsWith(newRegExp(y.s,"")))
+                    push newLogical(x.s.startsWith(newRegExp(y.s,"")))
             else:
-                push(newBoolean(x.s.startsWith(y.s)))
+                push(newLogical(x.s.startsWith(y.s)))
 
     when not defined(WEB):
         # TODO(Strings\render) function should also work for Web/JS builds
@@ -533,8 +533,8 @@ proc defineSymbols*() =
                 "template"  : {String}
             },
             attrs       = {
-                "single"    : ({Boolean},"don't render recursively"),
-                "template"  : ({Boolean},"render as a template")
+                "single"    : ({Logical},"don't render recursively"),
+                "template"  : ({Logical},"render as a template")
             },
             returns     = {String,Nothing},
             example     = """
@@ -621,7 +621,7 @@ proc defineSymbols*() =
             "replacement"   : {String}
         },
         attrs       = {
-            "regex" : ({Boolean},"match against a regular expression")
+            "regex" : ({Logical},"match against a regular expression")
         },
         returns     = {String,Nothing},
         example     = """
@@ -650,8 +650,8 @@ proc defineSymbols*() =
             "string": {String,Literal}
         },
         attrs       = {
-            "start" : ({Boolean},"strip leading whitespace"),
-            "end"   : ({Boolean},"strip trailing whitespace")
+            "start" : ({Logical},"strip leading whitespace"),
+            "end"   : ({Logical},"strip trailing whitespace")
         },
         returns     = {String,Nothing},
         example     = """
@@ -705,9 +705,9 @@ proc defineSymbols*() =
             "suffix": {String}
         },
         attrs       = {
-            "regex" : ({Boolean},"match against a regular expression")
+            "regex" : ({Logical},"match against a regular expression")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             suffix? "hello" "lo"          ; => true
             suffix? "boom" "lo"           ; => false
@@ -715,11 +715,11 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("regex") != VNULL):
                 when not defined(WEB):
-                    push(newBoolean(re.endsWith(x.s, re.re(y.s))))
+                    push(newLogical(re.endsWith(x.s, re.re(y.s))))
                 else:
-                    push newBoolean(x.s.endsWith(newRegExp(y.s,"")))
+                    push newLogical(x.s.endsWith(newRegExp(y.s,"")))
             else:
-                push(newBoolean(x.s.endsWith(y.s)))
+                push(newLogical(x.s.endsWith(y.s)))
 
     builtin "truncate",
         alias       = unaliased, 
@@ -731,7 +731,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"      : ({String},"use given filler"),
-            "preserve"  : ({Boolean},"preserve word boundaries")
+            "preserve"  : ({Logical},"preserve word boundaries")
         },
         returns     = {String,Nothing},
         example     = """
@@ -797,7 +797,7 @@ proc defineSymbols*() =
             "string": {String,Char}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         # TODO(Strings\upper?) add documentation example for `:char`s
         #  labels: library, documentation, easy
         example     = """
@@ -808,7 +808,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Char:
-                push(newBoolean(x.c.isUpper()))
+                push(newLogical(x.c.isUpper()))
             else:
                 var broken = false
                 for c in runes(x.s):
@@ -830,7 +830,7 @@ proc defineSymbols*() =
         attrs       = {
             "at"    : ({Integer},"use given max line width (default: 80)")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
             ; Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non
@@ -867,14 +867,14 @@ proc defineSymbols*() =
             "string": {String}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             whitespace? "hello"           ; => false
             whitespace? " "               ; => true
             whitespace? "\n \n"           ; => true
         """:
             ##########################################################
-            push(newBoolean(x.s.isEmptyOrWhitespace()))
+            push(newLogical(x.s.isEmptyOrWhitespace()))
 
 #=======================================
 # Add Library

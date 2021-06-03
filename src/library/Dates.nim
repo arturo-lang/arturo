@@ -156,7 +156,7 @@ proc defineSymbols*() =
             "year"  : {Integer,Date}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print leap? now     ; false
 
@@ -165,9 +165,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer:
-                push(newBoolean(isLeapYear(x.i)))
+                push(newLogical(isLeapYear(x.i)))
             else:
-                push(newBoolean(isLeapYear(x.e["year"].i)))
+                push(newLogical(isLeapYear(x.e["year"].i)))
 
     builtin "now",
         alias       = unaliased, 
