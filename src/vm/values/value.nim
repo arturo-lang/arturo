@@ -330,12 +330,16 @@ proc newLogical*(b: logical): Value {.inline.} =
     elif b==False: VFALSE
     else: VMAYBE
 
+proc newLogical*(b: bool): Value {.inline.} =
+    if b: VTRUE
+    else: VFALSE
+
 proc newLogical*(s: string): Value {.inline.} =
     if s=="true": newLogical(True)
     elif s=="false": newLogical(False)
     else: newLogical(Maybe)
 
-proc newBoolean*(i: int): Value {.inline.} =
+proc newLogical*(i: int): Value {.inline.} =
     if i==1: newLogical(True)
     elif i==0: newLogical(False)
     else: newLogical(Maybe)
