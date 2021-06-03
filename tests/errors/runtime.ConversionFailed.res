@@ -5,4 +5,4 @@ false
            | 
            | conversion failed: "boom"
            | from :string
-           | to   :boolean
+           | to   :logical

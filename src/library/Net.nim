@@ -128,17 +128,17 @@ proc defineSymbols*() =
                 "data"  : {Dictionary, Null}
             },
             attrs       = {
-                "get"       : ({Boolean},"perform a GET request (default)"),
-                "post"      : ({Boolean},"perform a POST request"),
-                "patch"     : ({Boolean},"perform a PATCH request"),
-                "put"       : ({Boolean},"perform a PUT request"),
-                "delete"    : ({Boolean},"perform a DELETE request"),
-                "json"      : ({Boolean},"send data as Json"),
+                "get"       : ({Logical},"perform a GET request (default)"),
+                "post"      : ({Logical},"perform a POST request"),
+                "patch"     : ({Logical},"perform a PATCH request"),
+                "put"       : ({Logical},"perform a PUT request"),
+                "delete"    : ({Logical},"perform a DELETE request"),
+                "json"      : ({Logical},"send data as Json"),
                 "headers"   : ({Dictionary},"send custom HTTP headers"),
                 "agent"     : ({String},"use given user agent"),
                 "timeout"   : ({Integer},"set a timeout"),
                 "proxy"     : ({String},"use given proxy url"),
-                "raw"       : ({Boolean},"return raw response without processing")
+                "raw"       : ({Logical},"return raw response without processing")
             },
             returns     = {Dictionary},
             example     = """
@@ -261,7 +261,7 @@ proc defineSymbols*() =
                                     except:
                                         val = newString(v[0])
                                 of "access-control-allow-credentials":
-                                    val = newBoolean(v[0])
+                                    val = newLogical(v[0])
                                 of "date", "expires", "last-modified":
                                     let dateParts = v[0].splitWhitespace()
                                     let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
@@ -288,8 +288,8 @@ proc defineSymbols*() =
             },
             attrs       = {
                 "port"      : ({Integer},"use given port"),
-                "verbose"   : ({Boolean},"print info log"),
-                "chrome"    : ({Boolean},"open in Chrome windows as an app")
+                "verbose"   : ({Logical},"print info log"),
+                "chrome"    : ({Logical},"open in Chrome windows as an app")
             },
             returns     = {Nothing},
             example     = """

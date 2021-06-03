@@ -2,7 +2,7 @@ name: "greater?"
 type: :function
 module: "Comparison"
 returns: [
-        :boolean
+        :logical
     ]
 alias: ">"
 infix?: true

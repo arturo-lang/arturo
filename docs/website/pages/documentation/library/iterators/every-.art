@@ -2,7 +2,7 @@ name: "every?"
 type: :function
 module: "Iterators"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if every single item in collection satisfy given condition"
 examples: [

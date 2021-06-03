@@ -18,13 +18,13 @@ examples: [
 attributes: #[
     single: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "don\'t render recursively"
         ]
     template: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "render as a template"
         ]

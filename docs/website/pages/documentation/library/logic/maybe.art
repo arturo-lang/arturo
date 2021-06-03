@@ -1,0 +1,13 @@
+name: "maybe"
+type: :logical
+description: "the MAYBE logical constant"
+module: "Logic"
+returns: [
+        :logical
+    ]
+related: [
+        "Logic/false"
+         "Logic/true"
+         "Collections/max"
+         "Collections/take"
+    ]

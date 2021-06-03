@@ -33,7 +33,7 @@ examples: [
 attributes: #[
     regex: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "match against a regular expression"
         ]

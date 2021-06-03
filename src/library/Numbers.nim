@@ -550,7 +550,7 @@ proc defineSymbols*() =
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             even? 4           ; => true
             even? 3           ; => false
@@ -558,7 +558,7 @@ proc defineSymbols*() =
             print select 1..10 => even?       ; 2 4 6 8 10
         """:
             ##########################################################
-            push(newBoolean(x % I2 == I0))
+            push(newLogical(x % I2 == I0))
 
     builtin "exp",
         alias       = unaliased, 
@@ -589,7 +589,7 @@ proc defineSymbols*() =
             "number"    : {Integer}
         },
         attrs       = {
-            "prime" : ({Boolean},"prime factorization")
+            "prime" : ({Logical},"prime factorization")
         },
         returns     = {Block},
         example     = """
@@ -761,7 +761,7 @@ proc defineSymbols*() =
             "number"    : {Integer,Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             negative? 5       ; => false
             negative? 6-7     ; => true 
@@ -769,9 +769,9 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
                 when not defined(NOGMP):
-                    push(newBoolean(negative(x.bi)))
+                    push(newLogical(negative(x.bi)))
             else:
-                push(newBoolean(x < I0))
+                push(newLogical(x < I0))
 
     builtin "odd?",
         alias       = unaliased, 
@@ -781,7 +781,7 @@ proc defineSymbols*() =
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             odd? 4            ; => false
             odd? 3            ; => true
@@ -789,7 +789,7 @@ proc defineSymbols*() =
             print select 1..10 => odd?       ; 1 3 5 7 9
         """:
             ##########################################################
-            push(newBoolean(x % I2 == I1))
+            push(newLogical(x % I2 == I1))
 
     constant "pi",
         alias       = unaliased,
@@ -804,7 +804,7 @@ proc defineSymbols*() =
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             positive? 5       ; => true
             positive? 6-7     ; => false
@@ -812,9 +812,9 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
                 when not defined(NOGMP):
-                    push(newBoolean(positive(x.bi)))
+                    push(newLogical(positive(x.bi)))
             else:
-                push(newBoolean(x > I0))
+                push(newLogical(x > I0))
     
     when not defined(NOGMP):
         builtin "powmod",
@@ -850,7 +850,7 @@ proc defineSymbols*() =
             "number"    : {Integer}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             prime? 2          ; => true
             prime? 6          ; => false
@@ -865,10 +865,10 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.iKind==NormalInteger:
-                push(newBoolean(isPrime(x.i.uint64)))
+                push(newLogical(isPrime(x.i.uint64)))
             else:
                 when not defined(NOGMP):
-                    push(newBoolean(probablyPrime(x.bi,25)>0))
+                    push(newLogical(probablyPrime(x.bi,25)>0))
 
     builtin "product",
         alias       = unaliased, 
@@ -1083,7 +1083,7 @@ proc defineSymbols*() =
         attrs       = 
         when not defined(NOGMP):
             {
-                "integer"   : ({Boolean},"get the integer square root")
+                "integer"   : ({Logical},"get the integer square root")
             }
         else:
             NoAttrs,
@@ -1181,7 +1181,7 @@ proc defineSymbols*() =
             "number"    : {Integer,Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             zero? 5-5         ; => true
             zero? 4           ; => false
@@ -1189,9 +1189,9 @@ proc defineSymbols*() =
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
                 when not defined(NOGMP):
-                    push(newBoolean(isZero(x.bi)))
+                    push(newLogical(isZero(x.bi)))
             else:
-                push(newBoolean(x == I0))
+                push(newLogical(x == I0))
 
 #=======================================
 # Add Library

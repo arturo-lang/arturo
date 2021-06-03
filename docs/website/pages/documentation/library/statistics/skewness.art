@@ -20,7 +20,7 @@ examples: [
 attributes: #[
     sample: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "calculate the sample skewness"
         ]

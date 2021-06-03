@@ -80,7 +80,7 @@ proc `$`*(s: SymbolKind): string =
 proc `$`*(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
-        of Boolean      : return $(v.b)
+        of Logical      : return $(v.b)
         of Integer      : 
             if v.iKind==NormalInteger: return $(v.i)
             else:

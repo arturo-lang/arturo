@@ -46,37 +46,37 @@ examples: [
 attributes: #[
     get: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "perform a GET request (default)"
         ]
     post: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "perform a POST request"
         ]
     patch: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "perform a PATCH request"
         ]
     put: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "perform a PUT request"
         ]
     delete: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "perform a DELETE request"
         ]
     json: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "send data as Json"
         ]
@@ -106,7 +106,7 @@ attributes: #[
         ]
     raw: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "return raw response without processing"
         ]

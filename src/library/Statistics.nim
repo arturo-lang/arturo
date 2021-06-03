@@ -60,7 +60,7 @@ proc defineSymbols*() =
             "collection"    : {Block}
         },
         attrs       = {
-            "sample"    : ({Boolean},"calculate the sample standard deviation")
+            "sample"    : ({Logical},"calculate the sample standard deviation")
         },
         returns     = {Floating},
         example     = """
@@ -87,7 +87,7 @@ proc defineSymbols*() =
             "collection"    : {Block}
         },
         attrs       = {
-            "sample"    : ({Boolean},"calculate the sample kurtosis")
+            "sample"    : ({Logical},"calculate the sample kurtosis")
         },
         returns     = {Floating},
         example     = """
@@ -143,7 +143,7 @@ proc defineSymbols*() =
             "collection"    : {Block}
         },
         attrs       = {
-            "sample"    : ({Boolean},"calculate the sample skewness")
+            "sample"    : ({Logical},"calculate the sample skewness")
         },
         returns     = {Floating},
         example     = """
@@ -170,7 +170,7 @@ proc defineSymbols*() =
             "collection"    : {Block}
         },
         attrs       = {
-            "sample"    : ({Boolean},"calculate the sample variance")
+            "sample"    : ({Logical},"calculate the sample variance")
         },
         returns     = {Floating},
         example     = """

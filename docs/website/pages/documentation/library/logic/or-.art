@@ -2,7 +2,7 @@ name: "or?"
 type: :function
 module: "Logic"
 returns: [
-        :boolean
+        :logical
     ]
 description: "return the logical OR for the given values"
 examples: [
@@ -21,11 +21,11 @@ attributes: #[
     ]
 arguments: #[
     valueA: [
-            :boolean
+            :logical
              :block
         ]
     valueB: [
-            :boolean
+            :logical
              :block
         ]
     ]

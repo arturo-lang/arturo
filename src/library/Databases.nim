@@ -77,7 +77,7 @@ proc defineSymbols*() =
                 "commands"  : {String,Block}
             },
             attrs       = {
-                "id"    : ({Boolean},"return last INSERT id"),
+                "id"    : ({Logical},"return last INSERT id"),
                 "with"  : ({Block},"use arguments for parametrized statement")
             },
             returns     = {Integer,Block,Null},
@@ -121,8 +121,8 @@ proc defineSymbols*() =
                 "name"  : {String}
             },
             attrs       = {
-                "sqlite": ({Boolean},"support for SQLite databases"),
-                "mysql" : ({Boolean},"support for MySQL databases")
+                "sqlite": ({Logical},"support for SQLite databases"),
+                "mysql" : ({Logical},"support for MySQL databases")
             },
             returns     = {Database},
             example     = """

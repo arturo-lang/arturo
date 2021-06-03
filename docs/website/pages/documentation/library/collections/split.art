@@ -30,13 +30,13 @@ examples: [
 attributes: #[
     words: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "split string by whitespace"
         ]
     lines: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "split string by lines"
         ]
@@ -67,7 +67,7 @@ attributes: #[
         ]
     path: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "split path components in string"
         ]

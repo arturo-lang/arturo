@@ -13,13 +13,13 @@ examples: [
 attributes: #[
     sqlite: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "support for SQLite databases"
         ]
     mysql: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "support for MySQL databases"
         ]

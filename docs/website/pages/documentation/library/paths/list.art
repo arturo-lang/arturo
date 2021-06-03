@@ -19,13 +19,13 @@ examples: [
 attributes: #[
     recursive: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "perform recursive search"
         ]
     relative: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get relative paths"
         ]
