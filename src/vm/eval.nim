@@ -204,7 +204,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             case subnode.kind:
                 of Null, 
-                   Boolean: discard
+                   Logical: discard
                 of Integer,
                    Floating,
                    Type,
@@ -268,9 +268,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
         case node.kind:
             of Null:    addToCommand((byte)opConstN)
-            of Boolean: 
-                    if node.b: addToCommand((byte)opConstBT)
-                    else: addToCommand((byte)opConstBF)
+            of Logical: 
+                    if node.b==True: addToCommand((byte)opConstBT)
+                    elif node.b==False: addToCommand((byte)opConstBF)
+                    else: addToCommand((byte)opConstBM)
 
             of Integer:
                 addTerminalValue(false):
