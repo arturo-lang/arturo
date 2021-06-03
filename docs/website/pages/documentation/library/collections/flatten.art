@@ -28,7 +28,7 @@ examples: [
 attributes: #[
     once: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "do not perform recursive flattening"
         ]

@@ -21,7 +21,7 @@ examples: [
 attributes: #[
     discard: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "do not return anything"
         ]

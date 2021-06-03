@@ -2,7 +2,7 @@ name: "sorted?"
 type: :function
 module: "Collections"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given collection is already sorted"
 examples: [
@@ -11,7 +11,7 @@ examples: [
 attributes: #[
     descending: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "check for sorting in ascending order"
         ]

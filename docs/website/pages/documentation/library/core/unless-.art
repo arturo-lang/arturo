@@ -2,7 +2,7 @@ name: "unless?"
 type: :function
 module: "Core"
 returns: [
-        :boolean
+        :logical
     ]
 description: "perform action, if given condition is false or null and return condition result"
 examples: [

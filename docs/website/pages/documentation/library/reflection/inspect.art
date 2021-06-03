@@ -16,7 +16,7 @@ examples: [
 attributes: #[
     muted: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "don\'t use color output"
         ]

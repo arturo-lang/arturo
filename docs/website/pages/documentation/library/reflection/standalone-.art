@@ -2,7 +2,7 @@ name: "standalone?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "checks if current script runs from the command-line"
 examples: [

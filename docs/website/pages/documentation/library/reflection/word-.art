@@ -2,7 +2,7 @@ name: "word?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "checks if given value is of type :word"
 examples: [

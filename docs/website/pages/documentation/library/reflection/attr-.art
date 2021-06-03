@@ -2,7 +2,7 @@ name: "attr?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given attribute exists"
 examples: [

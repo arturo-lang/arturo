@@ -2,7 +2,7 @@ name: "wordwrap"
 type: :function
 module: "Strings"
 returns: [
-        :boolean
+        :logical
     ]
 description: "word wrap a given string"
 examples: [

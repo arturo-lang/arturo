@@ -28,7 +28,7 @@ examples: [
 attributes: #[
     get: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get information as dictionary"
         ]

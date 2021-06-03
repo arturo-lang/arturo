@@ -2,7 +2,7 @@ name: "key?"
 type: :function
 module: "Collections"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if dictionary contains given key"
 examples: [

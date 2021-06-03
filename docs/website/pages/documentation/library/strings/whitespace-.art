@@ -2,7 +2,7 @@ name: "whitespace?"
 type: :function
 module: "Strings"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given string consists only of whitespace"
 examples: [

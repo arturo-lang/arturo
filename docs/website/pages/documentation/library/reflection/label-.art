@@ -2,7 +2,7 @@ name: "label?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "checks if given value is of type :label"
 examples: [

@@ -2,7 +2,7 @@ name: "false?"
 type: :function
 module: "Logic"
 returns: [
-        :boolean
+        :logical
     ]
 description: "returns true if given value is false; otherwise, it returns false"
 examples: [

@@ -2,7 +2,7 @@ name: "block?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "checks if given value is of type :block"
 examples: [
@@ -23,6 +23,6 @@ arguments: #[
 related: [
         "Reflection/word?"
          "Reflection/binary?"
-         "Reflection/boolean?"
          "Reflection/char?"
+         "Reflection/date?"
     ]
