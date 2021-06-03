@@ -73,6 +73,7 @@ proc `$`*(s: SymbolKind): string =
         of doublepipe       : result = "||"
 
         of slashedzero      : result = "ø"
+        of infinite         : result = "∞"
 
         of unaliased        : discard
 
