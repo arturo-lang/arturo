@@ -1,0 +1,72 @@
+define :graph [vertices, neighbours][]
+
+initGraph: function [edges][
+    vs: []
+    ns: #[]
+    loop edges 'e [
+        [src, dst, cost]: e
+        vs: sort unique append vs src
+        vs: sort unique append vs dst
+        if not? key? ns src -> ns\[src]: []
+
+        ns\[src]: ns\[src] ++ @[@[dst, cost]]
+    ]
+    to :graph @[vs ns]
+]
+
+Inf: 1234567890
+
+dijkstraPath: function [gr, fst, lst][
+    dist: #[]
+    prev: #[]
+    result: new []
+    notSeen: new gr\vertices
+    loop gr\vertices 'vertex ->
+        dist\[vertex]: Inf
+
+    dist\[fst]: 0
+
+    while [0 < size notSeen][
+        vertex1: ""
+        mindist: Inf
+        loop notSeen 'vertex [
+            if dist\[vertex] < mindist [
+                vertex1: vertex
+                mindist: dist\[vertex]
+            ]
+        ]
+        if vertex1 = lst -> break
+        'notSeen -- vertex1
+
+        if key? gr\neighbours vertex1 [
+            loop gr\neighbours\[vertex1] 'v [
+                [vertex2, cost]: v
+
+                if contains? notSeen vertex2 [
+                    altdist: dist\[vertex1] + cost
+                    if altdist < dist\[vertex2][
+                        dist\[vertex2]: altdist
+                        prev\[vertex2]: vertex1
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+    vertex: lst
+    while [not? empty? vertex][
+        'result ++ vertex
+        vertex: (key? prev vertex)? -> prev\[vertex] -> null
+    ]
+    reverse 'result
+    return result
+]
+
+graph: initGraph [
+    ["a" "b" 7]     ["a" "c" 9]     ["a" "f" 14]
+    ["b" "c" 10]    ["b" "d" 15]    ["c" "d" 11]
+    ["c" "f" 2]     ["d" "e" 6]     ["e" "f" 9]
+]
+
+print ["Shortest path from 'a' to 'e': " join.with:" -> " dijkstraPath graph "a" "e"] 
+print ["Shortest path from 'a' to 'f': " join.with:" -> " dijkstraPath graph "a" "f"]
