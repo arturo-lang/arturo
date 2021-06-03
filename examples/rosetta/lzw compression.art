@@ -1,0 +1,52 @@
+compress: function [str][
+    dict: #[]
+    loop 0..255 'i -> dict\[to :string to :char i]: i
+
+    w: ""
+    result: new []
+    loop str 'c [
+        wc: w ++ c
+        if? key? dict wc -> w: wc
+        else [
+            'result ++ dict\[w]
+            dict\[wc]: size dict
+            w: to :string c
+        ]
+    ]
+
+    if 0 < size w -> 'result ++ dict\[w]
+    return result
+]
+
+
+decompress: function [compressed][
+    dict: #[]
+    arr: new compressed
+    loop 0..255 'i -> dict\[i]: to :string to :char i
+
+    w: dict\[first arr]
+    remove 'arr .index 0
+
+    result: w
+    loop arr 'k [
+        entry: ""
+        if? key? dict k -> entry: dict\[k]
+        else [
+            if? k = size dict -> entry: w ++ first w
+            else -> panic ~"Error with compressed: |k|"
+        ]
+        'result ++ entry
+        dict\[size dict]: w ++ first entry
+        w: entry
+    ]
+    return result
+]
+
+compressed: compress "TOBEORNOTTOBEORTOBEORNOT"
+print "Compressed:"
+print compressed
+print ""
+
+decompressed: decompress compressed
+print "Decompressed:"
+print decompressed
