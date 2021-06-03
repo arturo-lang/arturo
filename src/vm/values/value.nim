@@ -1308,9 +1308,9 @@ proc `$`(v: Value): string {.inline.} =
                     return $(v.bi)
         of Version      : return fmt("{v.major}.{v.minor}.{v.patch}{v.extra}")
         of Floating     : 
-            if v.f==Inf return "∞"
-            elif v.f==NegInf return "-∞"
-            else return $(v.f)
+            if v.f==Inf: return "∞"
+            elif v.f==NegInf: return "-∞"
+            else: return $(v.f)
         of Complex      : return $(v.z.re) & (if v.z.im >= 0: "+" else: "") & $(v.z.im) & "i"
         of Type         : 
             if v.tpKind==BuiltinType:
