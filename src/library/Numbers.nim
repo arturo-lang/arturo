@@ -708,6 +708,11 @@ proc defineSymbols*() =
             ##########################################################
             push(newFloating(hypot(asFloat(x), asFloat(y))))
 
+    constant "infinity",
+        alias       = unaliased,
+        description = "the IEEE floating point value of positive infinity":
+            newFloating(Inf)
+
     builtin "ln",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
