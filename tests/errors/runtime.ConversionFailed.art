@@ -1,3 +1,3 @@
-print to :boolean "true"
-print to :boolean "false"
-print to :boolean "boom"
+print to :logical "true"
+print to :logical "false"
+print to :logical "boom"
