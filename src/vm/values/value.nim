@@ -91,6 +91,7 @@ type
         doublepipe      # ||
 
         slashedzero     # ø
+        infinite        # ∞
 
         unaliased       # used only for builtins
 
@@ -1292,6 +1293,7 @@ proc `$`(s: SymbolKind): string =
         of doublepipe       : result = "||"
 
         of slashedzero      : result = "ø"
+        of infinite         : result = "∞"
 
         of unaliased        : discard
 
