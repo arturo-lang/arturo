@@ -19,49 +19,49 @@ examples: [
 attributes: #[
     binary: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "format integer as binary"
         ]
     hex: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "format integer as hexadecimal"
         ]
     octal: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "format integer as octal"
         ]
     ascii: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "transliterate string to ASCII"
         ]
     agnostic: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "convert words in block to literals, if not in context"
         ]
     code: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "convert value to valid Arturo code"
         ]
     pretty: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "prettify generated code"
         ]
     unwrapped: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "omit external block notation"
         ]

@@ -23,13 +23,13 @@ examples: [
 attributes: #[
     center: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "add padding to both sides"
         ]
     right: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "add right padding"
         ]

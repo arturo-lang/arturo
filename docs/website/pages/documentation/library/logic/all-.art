@@ -2,7 +2,7 @@ name: "all?"
 type: :function
 module: "Logic"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if all values in given block are true"
 examples: [

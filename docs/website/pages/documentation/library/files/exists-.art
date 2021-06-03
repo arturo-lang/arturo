@@ -2,7 +2,7 @@ name: "exists?"
 type: :function
 module: "Files"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given file exists"
 examples: [
@@ -15,7 +15,7 @@ examples: [
 attributes: #[
     directory: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "check for directory"
         ]

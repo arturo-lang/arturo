@@ -32,7 +32,7 @@ attributes: #[
         ]
     preserve: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "preserve word boundaries"
         ]

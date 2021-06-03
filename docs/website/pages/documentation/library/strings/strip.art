@@ -22,13 +22,13 @@ examples: [
 attributes: #[
     start: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "strip leading whitespace"
         ]
     end: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "strip trailing whitespace"
         ]

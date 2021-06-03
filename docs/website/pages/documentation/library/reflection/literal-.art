@@ -2,7 +2,7 @@ name: "literal?"
 type: :function
 module: "Reflection"
 returns: [
-        :boolean
+        :logical
     ]
 description: "checks if given value is of type :literal"
 examples: [
@@ -21,7 +21,7 @@ arguments: #[
     ]
 related: [
         "Reflection/label?"
+         "Reflection/logical?"
          "Reflection/binary?"
          "Reflection/date?"
-         "Reflection/integer?"
     ]

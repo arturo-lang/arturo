@@ -64,7 +64,7 @@ attributes: #[
         ]
     forever: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "cycle through collection infinitely"
         ]

@@ -24,13 +24,13 @@ attributes: #[
         ]
     verbose: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "print info log"
         ]
     chrome: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "open in Chrome windows as an app"
         ]

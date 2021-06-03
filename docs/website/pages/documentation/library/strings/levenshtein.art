@@ -20,7 +20,7 @@ examples: [
 attributes: #[
     align: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "return aligned strings"
         ]

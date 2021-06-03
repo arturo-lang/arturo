@@ -33,7 +33,7 @@ examples: [
 attributes: #[
     repl: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get input as if in a REPL"
         ]

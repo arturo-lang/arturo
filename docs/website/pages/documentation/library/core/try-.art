@@ -2,7 +2,7 @@ name: "try?"
 type: :function
 module: "Core"
 returns: [
-        :boolean
+        :logical
     ]
 description: "perform action, catch possible errors and return status"
 examples: [
@@ -21,13 +21,13 @@ examples: [
 attributes: #[
     import: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "execute at root level"
         ]
     verbose: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "print all error messages as usual"
         ]

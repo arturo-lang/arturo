@@ -2,7 +2,7 @@ name: "when?"
 type: :function
 module: "Core"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if a specific condition is fulfilled and, if so, execute given action"
 examples: [

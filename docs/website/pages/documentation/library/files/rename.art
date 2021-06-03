@@ -14,7 +14,7 @@ examples: [
 attributes: #[
     directory: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "path is a directory"
         ]
