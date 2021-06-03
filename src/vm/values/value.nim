@@ -168,7 +168,6 @@ type
             of Null,
                Nothing,
                Any:        discard 
-
             of Logical:     b*  : logical
             of Integer:  
                 case iKind*: IntegerKind:
@@ -280,8 +279,9 @@ let I1M* = Value(kind: Integer, iKind: NormalInteger, i: -1)
 let F0*  = Value(kind: Floating, f: 0.0)
 let F1*  = Value(kind: Floating, f: 1.0)
 
-let VTRUE*  = Value(kind: Boolean, b: true)
-let VFALSE* = Value(kind: Boolean, b: false)
+let VTRUE*  = Value(kind: Logical, b: True)
+let VFALSE* = Value(kind: Logical, b: False)
+let VMAYBE* = Value(kind: Logical, b: Maybe)
 
 let VNULL* = Value(kind: Null)
 
@@ -325,17 +325,20 @@ proc newNull*(): Value {.inline.} =
 proc newNothing*(): Value {.inline.} =
     VNOTHING
 
-proc newBoolean*(b: bool): Value {.inline.} =
-    if b: VTRUE
-    else: VFALSE
+proc newLogical*(b: logical): Value {.inline.} =
+    if b==True: VTRUE
+    elif b==False: VFALSE
+    else: VMAYBE
 
-proc newBoolean*(s: string): Value {.inline.} =
-    if s=="true": newBoolean(true)
-    else: newBoolean(false)
+proc newLogical*(s: string): Value {.inline.} =
+    if s=="true": newLogical(True)
+    elif s=="false": newLogical(False)
+    else: newLogical(Maybe)
 
 proc newBoolean*(i: int): Value {.inline.} =
-    if i==0: newBoolean(false)
-    else: newBoolean(true)
+    if i==1: newLogical(True)
+    elif i==0: newLogical(False)
+    else: newLogical(Maybe)
 
 when not defined(NOGMP):
     proc newInteger*(bi: Int): Value {.inline.} =
@@ -549,7 +552,7 @@ proc newNewline*(l: int): Value {.inline.} =
 proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
         of Null:        result = VNULL
-        of Boolean:     result = newBoolean(v.b)
+        of Logical:     result = newLogical(v.b)
         of Integer:     
             if v.iKind == NormalInteger: result = newInteger(v.i)
             else:
@@ -1250,6 +1253,11 @@ proc `!!=`*(x: var Value) =
 # proc `!=`*[T](x,y:ref T){.error.}
 # proc cmp*[T](x,y:ref T){.error.}
 
+proc `$`*(b: logical): string =
+    if b==True: return "true"
+    elif b==False: return "false"
+    else: return "maybe"
+
 proc `$`(s: SymbolKind): string =
     case s:
         of thickarrowleft   : result = "<="
@@ -1305,7 +1313,7 @@ proc `$`(s: SymbolKind): string =
 proc `$`(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
-        of Boolean      : return $(v.b)
+        of Logical      : return $(v.b)
         of Integer      : 
             if v.iKind==NormalInteger: return $(v.i)
             else:
@@ -1412,7 +1420,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
     case v.kind:
         of Null         : dumpPrimitive("null",v)
-        of Boolean      : dumpPrimitive($(v.b), v)
+        of Logical      : dumpPrimitive($(v.b), v)
         of Integer      : 
             if v.iKind==NormalInteger: dumpPrimitive($(v.i), v)
             else: 
@@ -1555,9 +1563,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
     case v.kind:
         of Null         : result &= "null"
-        of Boolean      : 
-            if v.b: result &= "true"
-            else:   result &= "false"
+        of Logical      : result &= $(v.b)
         of Integer      :
             if v.iKind==NormalInteger: result &= $(v.i)
             else: 
@@ -1691,7 +1697,7 @@ proc sameValue*(x: Value, y: Value): bool {.inline.}=
 
         case x.kind:
             of Null: return true
-            of Boolean: return x.b == y.b
+            of Logical: return x.b == y.b
             of Complex: return x.z == y.z
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
@@ -1749,7 +1755,7 @@ proc sameValue*(x: Value, y: Value): bool {.inline.}=
 proc hash*(v: Value): Hash {.inline.}=
     case v.kind:
         of Null         : result = 0
-        of Boolean      : result = cast[Hash](v.b)
+        of Logical      : result = cast[Hash](v.b)
         of Integer      : 
             if v.iKind==NormalInteger: result = cast[Hash](v.i)
             else: 
