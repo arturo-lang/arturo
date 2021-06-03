@@ -1,6 +1,6 @@
 compress: function [str][
     dict: #[]
-    loop 0..255 'i -> dict\[to :string to :char i]: i
+    loop 0..255 'i -> dict\[to :char i]: i
 
     w: ""
     result: new []
