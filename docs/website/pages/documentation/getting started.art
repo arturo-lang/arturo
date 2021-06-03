@@ -24,7 +24,7 @@ curl -sSL https://get.arturo-lang.io | sh
 Copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
 To get the most recent (nightly) build, just use: `curl -sSL https://get.arturo-lang.io/latest | sh`
 
-*If there is any issue with the installation, just let me know and I'll try to fix it. In this case, try one of the methods below.*
+*If there is an issue with the installation, just let me know and I'll try to fix it. In this case, try one of the methods below.*
 
 <h3 id="manually">Manually</h3>
  
@@ -59,7 +59,7 @@ cd arturo
 
 After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the aforementioned path is in your `$PATH` as per the installation script instructions.
 
-> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./install mini`
+> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit fewer library functions - just install via `./install mini`
 
 <h3 id="pre-built-binaries">Pre-built binaries</h3>
 

@@ -1,5 +1,5 @@
 ; TODO(Documentation\Command line) update terminal flags
-;  The current list of command line flags should be updated. Some are missing completely (e.g. `--no-color` option), and some are not up-to-date, e.g. everything related to compilation from/to bytecode.
+;  The current list of command-line flags should be updated. Some are missing completely (e.g. `--no-color` option), and some are not up-to-date, e.g. everything related to the compilation from/to bytecode.
 ;  labels: documentation,easy
 content:{!md
 The command line is where the whole journey starts: whether you want to try out something fast in the REPL, or run a script. Or even install extern packages directly.
@@ -172,7 +172,7 @@ arturo -m uninstall html
 
 <h4 id="update-existing-modules">Update existing modules</h4>
 
-If you want to update all of your local modules, there's no reason to uninstall/re-install anything. Just type:
+If you want to update all of your local modules, there's no reason to uninstall/reinstall anything. Just type:
 
 ```bash
 arturo -m update
