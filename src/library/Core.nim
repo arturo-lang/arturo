@@ -128,7 +128,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(x)
-            push(newBoolean(false))
+            push(newLogical(false))
 
     builtin "continue",
         alias       = unaliased, 
@@ -167,7 +167,7 @@ proc defineSymbols*() =
             "code"  : {String,Block,Bytecode}
         },
         attrs       = {
-            "import": ({Boolean},"execute at root level"),
+            "import": ({Logical},"execute at root level"),
             "times" : ({Integer},"repeat block execution given number of times")
         },
         returns     = {Any,Nothing},
@@ -284,7 +284,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let y = pop() # pop the value of the previous operation (hopefully an 'if?' or 'when?')
-            if not y.b: discard execBlock(x)
+            if Not(y.b)==True: discard execBlock(x)
             
     builtin "ensure",
         alias       = unaliased, 
@@ -304,7 +304,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             discard execBlock(x)
-            if not pop().b:
+            if Not(pop().b)==True:
                 AssertionError_AssertionFailed(x.codify())
 
     builtin "if",
@@ -324,7 +324,7 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             ##########################################################
-            let condition = not (x.kind==Null or (x.kind==Boolean and x.b==false))
+            let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 discard execBlock(y)
 
@@ -337,7 +337,7 @@ proc defineSymbols*() =
             "action"    : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             
@@ -358,12 +358,12 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            let condition = not (x.kind==Null or (x.kind==Boolean and x.b==false))
+            let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 discard execBlock(y)
                 # if vmReturn:
                 #     return ReturnResult
-            push(newBoolean(condition))
+            push(newLogical(condition))
 
     builtin "let",
         alias       = colon, 
@@ -452,7 +452,7 @@ proc defineSymbols*() =
             "number"    : {Integer}
         },
         attrs       = {
-            "discard"   : ({Boolean},"do not return anything")
+            "discard"   : ({Logical},"do not return anything")
         },
         returns     = {Any},
         example     = """
@@ -535,7 +535,7 @@ proc defineSymbols*() =
             ; yes, that's right!
         """:
             ##########################################################
-            let condition = not (x.kind==Null or (x.kind==Boolean and x.b==false))
+            let condition = not (x.kind==Null or (x.kind==Logical and x.b==False))
             if condition: 
                 discard execBlock(y)
             else:
@@ -549,8 +549,8 @@ proc defineSymbols*() =
             "action": {Block}
         },
         attrs       = {
-            "import"    : ({Boolean},"execute at root level"),
-            "verbose"   : ({Boolean},"print all error messages as usual")
+            "import"    : ({Logical},"execute at root level"),
+            "verbose"   : ({Logical},"print all error messages as usual")
         },
         returns     = {Nothing},
         example     = """
@@ -579,10 +579,10 @@ proc defineSymbols*() =
             "action": {Block}
         },
         attrs       = {
-            "import"    : ({Boolean},"execute at root level"),
-            "verbose"   : ({Boolean},"print all error messages as usual")
+            "import"    : ({Logical},"execute at root level"),
+            "verbose"   : ({Logical},"print all error messages as usual")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             try? [
                 ; let's try something dangerous
@@ -623,7 +623,7 @@ proc defineSymbols*() =
             ; yep, x is not 1!
         """:
             ##########################################################
-            let condition = x.kind==Null or (x.kind==Boolean and x.b==false)
+            let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 discard execBlock(y)
 
@@ -636,7 +636,7 @@ proc defineSymbols*() =
             "action"    : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             x: 2
             
@@ -657,12 +657,12 @@ proc defineSymbols*() =
             ; x was greater than z
         """:
             ##########################################################
-            let condition = x.kind==Null or (x.kind==Boolean and x.b==false)
+            let condition = x.kind==Null or (x.kind==Logical and x.b==False)
             if condition: 
                 discard execBlock(y)
                 # if vmReturn:
                 #     return ReturnResult
-            push(newBoolean(condition))
+            push(newLogical(condition))
 
     builtin "until",
         alias       = unaliased, 
@@ -701,7 +701,7 @@ proc defineSymbols*() =
                     discard execBlock(VNULL, evaluated=preevaledX)
                     discard execBlock(VNULL, evaluated=preevaledY)
                     let popped = pop()
-                    let condition = not (popped.kind==Null or (popped.kind==Boolean and popped.b==false))
+                    let condition = not (popped.kind==Null or (popped.kind==Logical and popped.b==False))
                     if condition:
                         break
                 do:
@@ -738,7 +738,7 @@ proc defineSymbols*() =
             "action"    : {Block}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             a: 2
             case [a]
@@ -748,7 +748,7 @@ proc defineSymbols*() =
         """:
             ##########################################################
             let z = pop()
-            if not z.b:
+            if Not(z.b)==True:
                 let top = sTop()
 
                 var newb: Value = newBlock()
@@ -760,11 +760,11 @@ proc defineSymbols*() =
                 discard execBlock(newb)
 
                 let res = sTop()
-                if res.b: 
+                if (res.b)==True: 
                     discard execBlock(y)
                     discard pop()
                     discard pop()
-                    push(newBoolean(true))
+                    push(newLogical(true))
             else:
                 push(z)
 
@@ -777,7 +777,7 @@ proc defineSymbols*() =
             "action"    : {Block}
         },
         attrs       = {
-            "import": ({Boolean},"execute at root level")
+            "import": ({Logical},"execute at root level")
         },
         returns     = {Nothing},
         example     = """
@@ -812,7 +812,7 @@ proc defineSymbols*() =
                 discard execBlock(VNULL, evaluated=preevaledX)
                 var popped = pop()
 
-                while not (popped.kind==Null or (popped.kind==Boolean and popped.b==false)):
+                while not (popped.kind==Null or (popped.kind==Logical and popped.b==False)):
                     handleBranching:
                         if execInParent:
                             discard execBlock(VNULL, evaluated=preevaledY, execInParent=true)

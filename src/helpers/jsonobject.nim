@@ -25,7 +25,7 @@ import vm/values/[printable, value]
 proc generateJsonNode*(n: Value): JsonNode =
     case n.kind
         of Null         : result = newJNull()
-        of Boolean      : result = newJBool(n.b)
+        of Logical      : result = newJBool(if n.b==True: true else: false)
         of Integer      : result = newJInt(n.i)
         of Floating     : result = newJFloat(n.f)
         of Version      : result = newJString($(n))
@@ -70,7 +70,7 @@ proc parseJsonNode*(n: JsonNode): Value =
         of JString  : result = newString(n.str)
         of JInt     : result = newInteger(int(n.num))
         of JFloat   : result = newFloating(n.fnum)
-        of JBool    : result = newBoolean(n.bval)
+        of JBool    : result = newLogical(n.bval)
         of JNull    : result = VNULL
         of JArray   : result = newBlock(n.elems.map((x) => parseJsonNode(x)))
         of JObject  : 
@@ -85,7 +85,7 @@ when defined(WEB):
     proc generateJsObject*(n: Value): JsObject =
         case n.kind
             of Null         : result = toJs(nil)
-            of Boolean      : result = toJs(n.b)
+            of Logical      : result = toJs(n.b)
             of Integer      : result = toJs(n.i)
             of Floating     : result = toJs(n.f)
             of Version      : result = toJs($(n))
@@ -130,7 +130,7 @@ when defined(WEB):
     proc parseJsObject*(n: JsObject): Value =
         if n.isNull() or n.isUndefined(): return VNULL
         case $(jsTypeOf(n)):
-            of "boolean"    : result = newBoolean($(jsonified(n)))
+            of "boolean"    : result = newLogical($(jsonified(n)))
             of "number"     : 
                 let got = $(jsonified(n))
                 if got.contains("."):

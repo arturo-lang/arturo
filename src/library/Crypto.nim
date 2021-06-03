@@ -44,7 +44,7 @@ proc defineSymbols*() =
             "value" : {String,Literal}
         },
         attrs       = {
-            "url"   : ({Boolean},"decode URL based on RFC3986")
+            "url"   : ({Logical},"decode URL based on RFC3986")
         },
         returns     = {String,Nothing},
         example     = """
@@ -77,9 +77,9 @@ proc defineSymbols*() =
             "value" : {String,Literal}
         },
         attrs       = {
-            "url"       : ({Boolean},"encode URL based on RFC3986"),
-            "spaces"    : ({Boolean},"also encode spaces"),
-            "slashes"   : ({Boolean},"also encode slashes"),
+            "url"       : ({Logical},"encode URL based on RFC3986"),
+            "spaces"    : ({Logical},"also encode spaces"),
+            "slashes"   : ({Logical},"also encode slashes"),
             "from"      : ({String},"source character encoding (default: CP1252)"),
             "to"        : ({String},"target character encoding (default: UTF-8)")
         },
@@ -146,7 +146,7 @@ proc defineSymbols*() =
                 "value" : {String,Literal}
             },
             attrs       = {
-                "sha"   : ({Boolean},"use SHA1")
+                "sha"   : ({Logical},"use SHA1")
             },
             returns     = {String,Nothing},
             example     = """                
@@ -176,7 +176,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = {
-            "string": ({Boolean},"get as a string")
+            "string": ({Logical},"get as a string")
         },
         returns     = {Integer,String},
         example     = """

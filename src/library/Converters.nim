@@ -40,27 +40,30 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
         case y.kind:
             of Null:
                 case tp:
-                    of Boolean: return VFALSE
+                    of Logical: return VFALSE
                     of Integer: return I0
                     of String: return newString("null")
                     else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
-            of Boolean:
+            of Logical:
                 case tp:
                     of Integer:
-                        if y.b: return I1
-                        else: return I0
+                        if y.b==True: return I1
+                        elif y.b==False: return I0
+                        else: return VNULL
                     of Floating:
-                        if y.b: return F1
-                        else: return F0
+                        if y.b==True: return F1
+                        elif y.b==False: return F0
+                        else: return VNULL
                     of String:
-                        if y.b: return newString("true")
-                        else: return newString("false")
+                        if y.b==True: return newString("true")
+                        elif y.b==False: return newString("false")
+                        else: return newString("maybe")
                     else: RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Integer:
                 case tp:
-                    of Boolean: return newBoolean(y.i!=0)
+                    of Logical: return newLogical(y.i!=0)
                     of Floating: return newFloating((float)y.i)
                     of Char: return newChar(toUTF8(Rune(y.i)))
                     of String: 
@@ -89,7 +92,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
 
             of Floating:
                 case tp:
-                    of Boolean: return newBoolean(y.f!=0.0)
+                    of Logical: return newLogical(y.f!=0.0)
                     of Integer: return newInteger((int)y.f)
                     of Char: return newChar(chr((int)y.f))
                     of String: 
@@ -145,7 +148,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
 
             of String:
                 case tp:
-                    of Boolean: 
+                    of Logical: 
                         if y.s=="true": return VTRUE
                         elif y.s=="false": return VFALSE
                         else: RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
@@ -454,24 +457,24 @@ proc defineSymbols*() =
         attrs       = 
         when not defined(NOASCIIDECODE):
             {
-                "binary"    : ({Boolean},"format integer as binary"),
-                "hex"       : ({Boolean},"format integer as hexadecimal"),
-                "octal"     : ({Boolean},"format integer as octal"),
-                "ascii"     : ({Boolean},"transliterate string to ASCII"),
-                "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
-                "code"      : ({Boolean},"convert value to valid Arturo code"),
-                "pretty"    : ({Boolean},"prettify generated code"),
-                "unwrapped" : ({Boolean},"omit external block notation")
+                "binary"    : ({Logical},"format integer as binary"),
+                "hex"       : ({Logical},"format integer as hexadecimal"),
+                "octal"     : ({Logical},"format integer as octal"),
+                "ascii"     : ({Logical},"transliterate string to ASCII"),
+                "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
+                "code"      : ({Logical},"convert value to valid Arturo code"),
+                "pretty"    : ({Logical},"prettify generated code"),
+                "unwrapped" : ({Logical},"omit external block notation")
             }
         else:
             {
-                "binary"    : ({Boolean},"format integer as binary"),
-                "hex"       : ({Boolean},"format integer as hexadecimal"),
-                "octal"     : ({Boolean},"format integer as octal"),
-                "agnostic"  : ({Boolean},"convert words in block to literals, if not in context"),
-                "code"      : ({Boolean},"convert value to valid Arturo code"),
-                "pretty"    : ({Boolean},"prettify generated code"),
-                "unwrapped" : ({Boolean},"omit external block notation")
+                "binary"    : ({Logical},"format integer as binary"),
+                "hex"       : ({Logical},"format integer as hexadecimal"),
+                "octal"     : ({Logical},"format integer as octal"),
+                "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
+                "code"      : ({Logical},"convert value to valid Arturo code"),
+                "pretty"    : ({Logical},"prettify generated code"),
+                "unwrapped" : ({Logical},"omit external block notation")
             }
         ,
         returns     = {Any},
@@ -626,8 +629,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Block},"embed given symbols"),
-            "raw"   : ({Boolean},"create dictionary from raw block"),
-            "data"  : ({Boolean},"parse input as data")
+            "raw"   : ({Logical},"create dictionary from raw block"),
+            "data"  : ({Logical},"parse input as data")
         },
         returns     = {Dictionary},
         example     = """
@@ -697,9 +700,9 @@ proc defineSymbols*() =
             "value" : {String}
         },
         attrs       = {
-            "binary"    : ({Boolean},"get integer from binary representation"),
-            "hex"       : ({Boolean},"get integer from hexadecimal representation"),
-            "octal"     : ({Boolean},"get integer from octal representation")
+            "binary"    : ({Logical},"get integer from binary representation"),
+            "hex"       : ({Logical},"get integer from hexadecimal representation"),
+            "octal"     : ({Logical},"get integer from octal representation")
         },
         returns     = {Any},
         example     = """
@@ -737,8 +740,8 @@ proc defineSymbols*() =
         attrs       = {
             "import"    : ({Block},"import/embed given list of symbols from current environment"),
             "export"    : ({Block},"export given symbols to parent"),
-            "exportable": ({Boolean},"export all symbols to parent"),
-            "memoize"   : ({Boolean},"store results of function calls")
+            "exportable": ({Logical},"export all symbols to parent"),
+            "memoize"   : ({Logical},"store results of function calls")
         },
         returns     = {Function},
         example     = """
@@ -802,7 +805,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "format": ({String},"use given format (for dates)"),
-            "hsl"   : ({Boolean},"convert HSL block to color")
+            "hsl"   : ({Logical},"convert HSL block to color")
         },
         returns     = {Any},
         example     = """
