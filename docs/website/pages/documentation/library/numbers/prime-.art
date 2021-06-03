@@ -2,7 +2,7 @@ name: "prime?"
 type: :function
 module: "Numbers"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given integer is prime"
 examples: [

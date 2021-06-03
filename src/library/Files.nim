@@ -59,7 +59,7 @@ proc defineSymbols*() =
                 "destination"   : {String}
             },
             attrs       = {
-                "directory" : ({Boolean},"path is a directory")
+                "directory" : ({Logical},"path is a directory")
             },
             returns     = {Nothing},
             example     = """
@@ -92,7 +92,7 @@ proc defineSymbols*() =
                 "file"  : {String}
             },
             attrs       = {
-                "directory" : ({Boolean},"path is a directory")
+                "directory" : ({Logical},"path is a directory")
             },
             returns     = {Nothing},
             example     = """
@@ -118,9 +118,9 @@ proc defineSymbols*() =
                 "file"  : {String}
             },
             attrs       = {
-                "directory" : ({Boolean},"check for directory")
+                "directory" : ({Logical},"check for directory")
             },
-            returns     = {Boolean},
+            returns     = {Logical},
             example     = """
             if exists? "somefile.txt" [ 
                 print "file exists!" 
@@ -128,9 +128,9 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 if (popAttr("directory") != VNULL): 
-                    push(newBoolean(dirExists(x.s)))
+                    push(newLogical(dirExists(x.s)))
                 else: 
-                    push(newBoolean(fileExists(x.s)))
+                    push(newLogical(fileExists(x.s)))
 
         builtin "permissions",
             alias       = unaliased, 
@@ -190,19 +190,19 @@ proc defineSymbols*() =
                         let perms = getFilePermissions(x.s)
                         var permsDict: ValueDict = {
                             "user": newDictionary({
-                                "read"      : newBoolean(fpUserRead in perms),
-                                "write"     : newBoolean(fpUserWrite in perms),
-                                "execute"   : newBoolean(fpUserExec in perms)
+                                "read"      : newLogical(fpUserRead in perms),
+                                "write"     : newLogical(fpUserWrite in perms),
+                                "execute"   : newLogical(fpUserExec in perms)
                             }.toOrderedTable),
                             "group": newDictionary({
-                                "read"      : newBoolean(fpGroupRead in perms),
-                                "write"     : newBoolean(fpGroupWrite in perms),
-                                "execute"   : newBoolean(fpGroupExec in perms)
+                                "read"      : newLogical(fpGroupRead in perms),
+                                "write"     : newLogical(fpGroupWrite in perms),
+                                "execute"   : newLogical(fpGroupExec in perms)
                             }.toOrderedTable),
                             "others": newDictionary({
-                                "read"      : newBoolean(fpOthersRead in perms),
-                                "write"     : newBoolean(fpOthersWrite in perms),
-                                "execute"   : newBoolean(fpOthersExec in perms)
+                                "read"      : newLogical(fpOthersRead in perms),
+                                "write"     : newLogical(fpOthersWrite in perms),
+                                "execute"   : newLogical(fpOthersExec in perms)
                             }.toOrderedTable)
                         }.toOrderedTable
 
@@ -221,23 +221,23 @@ proc defineSymbols*() =
             attrs       = 
                 when not defined(NOPARSERS): 
                     {
-                        "lines"         : ({Boolean},"read file lines into block"),
-                        "json"          : ({Boolean},"read Json into value"),
-                        "csv"           : ({Boolean},"read CSV file into a block of rows"),
-                        "withHeaders"   : ({Boolean},"read CSV headers"),
-                        "html"          : ({Boolean},"read HTML into node dictionary"),
-                        "xml"           : ({Boolean},"read XML into node dictionary"),
-                        "markdown"      : ({Boolean},"read Markdown and convert to HTML"),
-                        "toml"          : ({Boolean},"read TOML into value"),
-                        "binary"        : ({Boolean},"read as binary")
+                        "lines"         : ({Logical},"read file lines into block"),
+                        "json"          : ({Logical},"read Json into value"),
+                        "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "withHeaders"   : ({Logical},"read CSV headers"),
+                        "html"          : ({Logical},"read HTML into node dictionary"),
+                        "xml"           : ({Logical},"read XML into node dictionary"),
+                        "markdown"      : ({Logical},"read Markdown and convert to HTML"),
+                        "toml"          : ({Logical},"read TOML into value"),
+                        "binary"        : ({Logical},"read as binary")
                     }
                 else:
                     {
-                        "lines"         : ({Boolean},"read file lines into block"),
-                        "json"          : ({Boolean},"read Json into value"),
-                        "csv"           : ({Boolean},"read CSV file into a block of rows"),
-                        "withHeaders"   : ({Boolean},"read CSV headers"),
-                        "binary"        : ({Boolean},"read as binary")
+                        "lines"         : ({Logical},"read file lines into block"),
+                        "json"          : ({Logical},"read Json into value"),
+                        "csv"           : ({Logical},"read CSV file into a block of rows"),
+                        "withHeaders"   : ({Logical},"read CSV headers"),
+                        "binary"        : ({Logical},"read as binary")
                     },
             returns     = {String,Block,Binary},
             example     = """
@@ -299,7 +299,7 @@ proc defineSymbols*() =
                 "name"  : {String}
             },
             attrs       = {
-                "directory" : ({Boolean},"path is a directory")
+                "directory" : ({Logical},"path is a directory")
             },
             returns     = {Nothing},
             example     = """
@@ -330,7 +330,7 @@ proc defineSymbols*() =
                 "destination"   : {String}
             },
             attrs       = {
-                "hard"  : ({Boolean},"create a hard link")
+                "hard"  : ({Logical},"create a hard link")
             },
             returns     = {Nothing},
             example     = """
@@ -382,10 +382,10 @@ proc defineSymbols*() =
                 "content"   : {Any}
             },
             attrs       = {
-                "append"        : ({Boolean},"append to given file"),
-                "directory"     : ({Boolean},"create directory at path"),
-                "json"          : ({Boolean},"write value as Json"),
-                "binary"        : ({Boolean},"write as binary")
+                "append"        : ({Logical},"append to given file"),
+                "directory"     : ({Logical},"create directory at path"),
+                "json"          : ({Logical},"write value as Json"),
+                "binary"        : ({Logical},"write as binary")
             },
             returns     = {Nothing},
             example     = """

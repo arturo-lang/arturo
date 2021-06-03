@@ -1,13 +1,13 @@
 name: "false"
-type: :boolean
-description: "the FALSE boolean constant"
+type: :logical
+description: "the FALSE logical constant"
 module: "Logic"
 returns: [
-        :boolean
+        :logical
     ]
 related: [
         "Logic/false?"
+         "Logic/maybe"
          "Logic/true"
          "Core/case"
-         "Core/else"
     ]

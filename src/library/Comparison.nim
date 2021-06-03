@@ -40,7 +40,7 @@ proc defineSymbols*() =
             "valueB": {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             equal? 5 2            ; => false
             equal? 5 6-1          ; => true
@@ -48,7 +48,7 @@ proc defineSymbols*() =
             print 3=3             ; true
         """:
             ##########################################################
-            push(newBoolean(x == y))
+            push(newLogical(x == y))
 
     builtin "greater?",
         alias       = greaterthan, 
@@ -59,7 +59,7 @@ proc defineSymbols*() =
             "valueB": {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             greater? 5 2          ; => true
             greater? 5 6-1        ; => false
@@ -67,7 +67,7 @@ proc defineSymbols*() =
             print 3>2             ; true
         """:
             ##########################################################
-            push(newBoolean(x > y))
+            push(newLogical(x > y))
 
     builtin "greaterOrEqual?",
         alias       = greaterequal, 
@@ -78,7 +78,7 @@ proc defineSymbols*() =
             "valueB": {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             greaterOrEqual? 5 2   ; => true
             greaterOrEqual? 5 4-1 ; => false
@@ -86,7 +86,7 @@ proc defineSymbols*() =
             print 2>=2            ; true
         """:
             ##########################################################
-            push(newBoolean(x >= y))
+            push(newLogical(x >= y))
 
     builtin "less?",
         alias       = lessthan, 
@@ -97,7 +97,7 @@ proc defineSymbols*() =
             "valueB": {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             less? 5 2             ; => false
             less? 5 6+1           ; => true
@@ -105,7 +105,7 @@ proc defineSymbols*() =
             print 2<3             ; true
         """:
             ##########################################################
-            push(newBoolean(x < y))
+            push(newLogical(x < y))
 
     builtin "lessOrEqual?",
         alias       = equalless, 
@@ -116,7 +116,7 @@ proc defineSymbols*() =
             "valueB": {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             lessOrEqual? 5 2      ; => false
             lessOrEqual? 5 6-1    ; => true
@@ -124,7 +124,7 @@ proc defineSymbols*() =
             print 2=<3            ; true
         """:
             ##########################################################
-            push(newBoolean(x <= y))
+            push(newLogical(x <= y))
                 
     builtin "notEqual?",
         alias       = lessgreater, 
@@ -135,7 +135,7 @@ proc defineSymbols*() =
             "valueB": {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             notEqual? 5 2         ; => true
             notEqual? 5 6-1       ; => false
@@ -143,7 +143,7 @@ proc defineSymbols*() =
             print 2<>3            ; true
         """:
             ##########################################################
-            push(newBoolean(x != y))
+            push(newLogical(x != y))
             
 #=======================================
 # Add Library

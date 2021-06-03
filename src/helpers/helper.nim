@@ -205,7 +205,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             let alias = getAlias(n, aliases)
             if alias[0]!="":
                 result["alias"] = newString(alias[0])
-                result["infix?"] = newBoolean(alias[1]==InfixPrecedence)
+                result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
             result["description"] = newString(v.fdesc)
             result["example"] = newString(v.example)

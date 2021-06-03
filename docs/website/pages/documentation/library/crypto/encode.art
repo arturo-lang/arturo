@@ -19,19 +19,19 @@ examples: [
 attributes: #[
     url: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "encode URL based on RFC3986"
         ]
     spaces: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "also encode spaces"
         ]
     slashes: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "also encode slashes"
         ]

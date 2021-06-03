@@ -2,7 +2,7 @@ name: "leap?"
 type: :function
 module: "Dates"
 returns: [
-        :boolean
+        :logical
     ]
 description: "check if given year is a leap year"
 examples: [

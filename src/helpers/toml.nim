@@ -24,7 +24,7 @@ proc parseTomlNode*(n: TomlValueRef): Value =
         of TomlValueKind.String  : result = newString(n.stringVal)
         of TomlValueKind.Int     : result = newInteger(n.intVal)
         of TomlValueKind.Float   : result = newFloating(n.floatVal)
-        of TomlValueKind.Bool    : result = newBoolean(n.boolVal)
+        of TomlValueKind.Bool    : result = newLogical(n.boolVal)
         of TomlValueKind.None    : result = VNULL
         of TomlValueKind.Array   : result = newBlock(n.arrayVal.map((x) => parseTomlNode(x)))
         of TomlValueKind.Table   : 

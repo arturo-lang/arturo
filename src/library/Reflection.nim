@@ -87,7 +87,7 @@ proc defineSymbols*() =
             "name"  : {String,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             greet: function [x][
                 if? not? attr? 'later [
@@ -116,13 +116,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             attribute? first [.something x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Attribute))
+            push(newLogical(x.kind==Attribute))
 
     builtin "attributeLabel?",
         alias       = unaliased, 
@@ -132,13 +132,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             attributeLabel? first [.something: x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==AttributeLabel))
+            push(newLogical(x.kind==AttributeLabel))
 
     builtin "attrs",
         alias       = unaliased, 
@@ -171,7 +171,7 @@ proc defineSymbols*() =
             "action": {Block}
         },
         attrs       = {
-            "get"   : ({Boolean},"get benchmark time")
+            "get"   : ({Logical},"get benchmark time")
         },
         returns     = {Nothing,Floating},
         example     = """
@@ -205,13 +205,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             binary? to :binary "string"
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Binary))
+            push(newLogical(x.kind==Binary))
 
     builtin "block?",
         alias       = unaliased, 
@@ -221,7 +221,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print block? [1 2 3]            ; true
             print block? #[name: "John"]    ; false
@@ -229,25 +229,7 @@ proc defineSymbols*() =
             print block? 123                ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Block))
-
-    builtin "boolean?",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "checks if given value is of type :boolean",
-        args        = {
-            "value" : {Any}
-        },
-        attrs       = NoAttrs,
-        returns     = {Boolean},
-        example     = """
-            print boolean? true         ; true
-            print boolean? false        ; true
-            print boolean? 1=1          ; true
-            print boolena? 123          ; false
-        """:
-            ##########################################################
-            push(newBoolean(x.kind==Boolean))
+            push(newLogical(x.kind==Block))
 
     builtin "char?",
         alias       = unaliased, 
@@ -257,13 +239,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print char? `a`         ; true
             print char? 123         ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Char))
+            push(newLogical(x.kind==Char))
 
     builtin "database?",
         alias       = unaliased, 
@@ -273,13 +255,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             database? open "my.db"
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Database))
+            push(newLogical(x.kind==Database))
 
     builtin "date?",
         alias       = unaliased, 
@@ -289,13 +271,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print date? now             ; true
             print date? "hello"         ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Date))
+            push(newLogical(x.kind==Date))
 
     builtin "dictionary?",
         alias       = unaliased, 
@@ -305,13 +287,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print dictionary? #[name: "John"]   ; true
             print dictionary? 123               ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Dictionary))
+            push(newLogical(x.kind==Dictionary))
 
     when not defined(WEB):
         builtin "help",
@@ -341,7 +323,7 @@ proc defineSymbols*() =
                 "symbol": {String,Literal}
             },
             attrs       = {
-                "get"   : ({Boolean},"get information as dictionary")
+                "get"   : ({Logical},"get information as dictionary")
             },
             returns     = {Dictionary,Nothing},
             example     = """
@@ -374,13 +356,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             inline? first [(something) x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Inline))
+            push(newLogical(x.kind==Inline))
 
     builtin "inspect",
         alias       = unaliased, 
@@ -390,7 +372,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = {
-            "muted" : ({Boolean},"don't use color output")
+            "muted" : ({Logical},"don't use color output")
         },
         returns     = {Nothing},
         example     = """
@@ -413,13 +395,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print integer? 123          ; true
             print integer? "hello"      ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Integer))
+            push(newLogical(x.kind==Integer))
 
     builtin "is?",
         alias       = unaliased, 
@@ -430,7 +412,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             is? :string "hello"       ; => true
             is? :block [1 2 3]        ; => true
@@ -442,7 +424,7 @@ proc defineSymbols*() =
             ##########################################################
             if y.custom.isNil():
                 if x.kind == Type:
-                    push(newBoolean(x.t == y.kind))
+                    push(newLogical(x.t == y.kind))
                 else:
                     let tp = cleanBlock(x.a)[0].t
                     var res = true
@@ -457,9 +439,9 @@ proc defineSymbols*() =
                                 if tp != item.kind:
                                     res = false
                                     break
-                    push newBoolean(res)
+                    push newLogical(res)
             else:
-                push(newBoolean(x.name == y.custom.name))
+                push(newLogical(x.name == y.custom.name))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -469,14 +451,14 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print floating? 3.14        ; true
             print floating? 123         ; false
             print floating? "hello"     ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Floating))
+            push(newLogical(x.kind==Floating))
 
     builtin "function?",
         alias       = unaliased, 
@@ -486,7 +468,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print function? $[x][2*x]       ; true
             print function? var 'print      ; true
@@ -494,7 +476,7 @@ proc defineSymbols*() =
             print function? 123             ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Function))
+            push(newLogical(x.kind==Function))
 
     builtin "label?",
         alias       = unaliased, 
@@ -504,13 +486,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             label? first [something: x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Label))
+            push(newLogical(x.kind==Label))
 
     builtin "literal?",
         alias       = unaliased, 
@@ -520,14 +502,34 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print literal? 'x           ; true
             print literal? "x"          ; false
             print literal? 123          ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Literal))
+            push(newLogical(x.kind==Literal))
+
+    builtin "logical?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :logical",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print logical? true         ; true
+            print logical? false        ; true
+            print logical? maybe        ; true
+            ;;;;
+            print logical? 1=1          ; true
+            print logical? 123          ; false
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Logical))
 
     builtin "null?",
         alias       = unaliased, 
@@ -537,7 +539,7 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print null? null            ; true
             print null? ø               ; true
@@ -545,7 +547,7 @@ proc defineSymbols*() =
             print null? 123             ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Null))
+            push(newLogical(x.kind==Null))
 
     builtin "path?",
         alias       = unaliased, 
@@ -555,13 +557,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             path? first [a\b\c x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Path))
+            push(newLogical(x.kind==Path))
 
     builtin "pathLabel?",
         alias       = unaliased, 
@@ -571,13 +573,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             pathLabel? first [a\b\c: x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==PathLabel))
+            push(newLogical(x.kind==PathLabel))
 
     builtin "set?",
         alias       = unaliased, 
@@ -587,7 +589,7 @@ proc defineSymbols*() =
             "symbol"    : {String,Literal}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             boom: 12
             print set? 'boom          ; true
@@ -595,7 +597,7 @@ proc defineSymbols*() =
             print set? 'zoom          ; false
         """:
             ##########################################################
-            push(newBoolean(SymExists(x.s)))
+            push(newLogical(SymExists(x.s)))
 
     builtin "stack",
         alias       = unaliased, 
@@ -619,7 +621,7 @@ proc defineSymbols*() =
         description = "checks if current script runs from the command-line",
         args        = NoArgs,
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             doSomething: function [x][
                 print ["I'm doing something with" x]
@@ -631,7 +633,7 @@ proc defineSymbols*() =
             ]
         """:
             ##########################################################
-            push(newBoolean(PathStack.len == 1))
+            push(newLogical(PathStack.len == 1))
 
     builtin "string?",
         alias       = unaliased, 
@@ -641,14 +643,14 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print string? "x"           ; true
             print string? 'x            ; false
             print string? 123           ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==String))
+            push(newLogical(x.kind==String))
 
     builtin "symbol?",
         alias       = unaliased, 
@@ -658,13 +660,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             symbol? first [+ x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Symbol))
+            push(newLogical(x.kind==Symbol))
 
     builtin "symbols",
         alias       = unaliased, 
@@ -718,14 +720,14 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             print type? :string         ; true
             print type? "string"        ; false
             print type? 123             ; false
         """:
             ##########################################################
-            push(newBoolean(x.kind==Type))
+            push(newLogical(x.kind==Type))
 
     builtin "word?",
         alias       = unaliased, 
@@ -735,13 +737,13 @@ proc defineSymbols*() =
             "value" : {Any}
         },
         attrs       = NoAttrs,
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             word? first [something x]
             ; => true
         """:
             ##########################################################
-            push(newBoolean(x.kind==Word))
+            push(newLogical(x.kind==Word))
 
 #=======================================
 # Add Library

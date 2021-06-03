@@ -15,19 +15,19 @@ examples: [
 attributes: #[
     binary: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get integer from binary representation"
         ]
     hex: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get integer from hexadecimal representation"
         ]
     octal: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "get integer from octal representation"
         ]

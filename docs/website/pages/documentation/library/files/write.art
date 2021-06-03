@@ -24,25 +24,25 @@ examples: [
 attributes: #[
     append: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "append to given file"
         ]
     directory: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "create directory at path"
         ]
     json: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "write value as Json"
         ]
     binary: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "write as binary"
         ]

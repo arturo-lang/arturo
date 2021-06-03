@@ -22,7 +22,7 @@ examples: [
 attributes: #[
     hard: #[
         types: [
-                :boolean
+                :logical
             ]
         description: "create a hard link"
         ]

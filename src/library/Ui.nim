@@ -49,8 +49,8 @@ proc defineSymbols*() =
                 "title"     : ({String},"set window title"),
                 "width"     : ({Integer},"set window width"),
                 "height"    : ({Integer},"set window height"),
-                "fixed"     : ({Boolean},"window shouldn't be resizable"),
-                "debug"     : ({Boolean},"add inspector console")
+                "fixed"     : ({Logical},"window shouldn't be resizable"),
+                "debug"     : ({Logical},"add inspector console")
             },
             returns     = {String,Nothing},
             example     = """

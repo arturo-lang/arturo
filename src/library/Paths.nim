@@ -52,25 +52,25 @@ proc defineSymbols*() =
                 "path"  : {String,Color}
             },
             attrs       = {
-                "directory" : ({Boolean},"get path directory"),
-                "basename"  : ({Boolean},"get path basename (filename+extension)"),
-                "filename"  : ({Boolean},"get path filename"),
-                "extension" : ({Boolean},"get path extension"),
-                "scheme"    : ({Boolean},"get scheme field from URL"),
-                "host"      : ({Boolean},"get host field from URL"),
-                "port"      : ({Boolean},"get port field from URL"),
-                "user"      : ({Boolean},"get user field from URL"),
-                "password"  : ({Boolean},"get password field from URL"),
-                "path"      : ({Boolean},"get path field from URL"),
-                "query"     : ({Boolean},"get query field from URL"),
-                "anchor"    : ({Boolean},"get anchor field from URL"),
-                "red"       : ({Boolean},"get red component from color"),
-                "green"     : ({Boolean},"get green component from color"),
-                "blue"      : ({Boolean},"get blue component from color"),
-                "hsl"       : ({Boolean},"get HSL representation from color"),
-                "hue"       : ({Boolean},"get hue component from color"),
-                "saturation": ({Boolean},"get saturation component from color"),
-                "luminosity": ({Boolean},"get luminosity component from color")
+                "directory" : ({Logical},"get path directory"),
+                "basename"  : ({Logical},"get path basename (filename+extension)"),
+                "filename"  : ({Logical},"get path filename"),
+                "extension" : ({Logical},"get path extension"),
+                "scheme"    : ({Logical},"get scheme field from URL"),
+                "host"      : ({Logical},"get host field from URL"),
+                "port"      : ({Logical},"get port field from URL"),
+                "user"      : ({Logical},"get user field from URL"),
+                "password"  : ({Logical},"get password field from URL"),
+                "path"      : ({Logical},"get path field from URL"),
+                "query"     : ({Logical},"get query field from URL"),
+                "anchor"    : ({Logical},"get anchor field from URL"),
+                "red"       : ({Logical},"get red component from color"),
+                "green"     : ({Logical},"get green component from color"),
+                "blue"      : ({Logical},"get blue component from color"),
+                "hsl"       : ({Logical},"get HSL representation from color"),
+                "hue"       : ({Logical},"get hue component from color"),
+                "saturation": ({Logical},"get saturation component from color"),
+                "luminosity": ({Logical},"get luminosity component from color")
             },
             returns     = {String,Dictionary},
             example     = """
@@ -186,8 +186,8 @@ proc defineSymbols*() =
                 "path"  : {String}
             },
             attrs       = {
-                "recursive" : ({Boolean}, "perform recursive search"),
-                "relative"  : ({Boolean}, "get relative paths"),
+                "recursive" : ({Logical}, "perform recursive search"),
+                "relative"  : ({Logical}, "get relative paths"),
             },
             returns     = {Block},
             example     = """
@@ -239,8 +239,8 @@ proc defineSymbols*() =
                 "path"  : {String,Literal}
             },
             attrs       = {
-                "executable"    : ({Boolean},"treat path as executable"),
-                "tilde"         : ({Boolean},"expand tildes in path")
+                "executable"    : ({Logical},"treat path as executable"),
+                "tilde"         : ({Logical},"expand tildes in path")
             },
             returns     = {String,Nothing},
             example     = """

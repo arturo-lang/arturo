@@ -40,7 +40,7 @@ proc defineSymbols*() =
             "setB"  : {Block}
         },
         attrs       = {
-            "symmetric" : ({Boolean},"get the symmetric difference")
+            "symmetric" : ({Logical},"get the symmetric difference")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -120,9 +120,9 @@ proc defineSymbols*() =
             "setB"  : {Block}
         },
         attrs       = {
-            "proper": ({Boolean},"check if proper subset")
+            "proper": ({Logical},"check if proper subset")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             subset? [1 3] [1 2 3 4]
             ; => true
@@ -142,7 +142,7 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("proper")!=VNULL):
                 if x == y: 
-                    push(newBoolean(false))
+                    push(newLogical(false))
                 else:
                     var contains = true
                     let xblk = cleanBlock(x.a)
@@ -152,10 +152,10 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    push(newBoolean(contains))
+                    push(newLogical(contains))
             else:
                 if x == y:
-                    push(newBoolean(true))
+                    push(newLogical(true))
                 else:
                     var contains = true
                     let xblk = cleanBlock(x.a)
@@ -165,7 +165,7 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    push(newBoolean(contains))
+                    push(newLogical(contains))
 
     builtin "superset?",
         alias       = unaliased, 
@@ -176,9 +176,9 @@ proc defineSymbols*() =
             "setB"  : {Block}
         },
         attrs       = {
-            "proper": ({Boolean},"check if proper superset")
+            "proper": ({Logical},"check if proper superset")
         },
-        returns     = {Boolean},
+        returns     = {Logical},
         example     = """
             superset? [1 2 3 4] [1 3]
             ; => true
@@ -198,7 +198,7 @@ proc defineSymbols*() =
             ##########################################################
             if (popAttr("proper")!=VNULL):
                 if x == y: 
-                    push(newBoolean(false))
+                    push(newLogical(false))
                 else:
                     var contains = true
                     let xblk = cleanBlock(x.a)
@@ -208,10 +208,10 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    push(newBoolean(contains))
+                    push(newLogical(contains))
             else:
                 if x == y:
-                    push(newBoolean(true))
+                    push(newLogical(true))
                 else:
                     var contains = true
                     let xblk = cleanBlock(x.a)
@@ -221,7 +221,7 @@ proc defineSymbols*() =
                             contains = false
                             break
 
-                    push(newBoolean(contains))
+                    push(newLogical(contains))
 
     builtin "union",
         alias       = unaliased, 
