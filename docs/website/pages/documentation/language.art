@@ -142,7 +142,7 @@ Null values generally denote *nothing* and it's mostly used as a return value by
 x: null
 ```
 
-<h4 id="Logical">:logical</h4>
+<h4 id="logical">:logical</h4>
 
 Logicals are Arturo's logical values. They are like normal boolean values (true, false), with a twist: they fully support ternary logic and an additional `maybe` value.
 
