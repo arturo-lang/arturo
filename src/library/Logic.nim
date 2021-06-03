@@ -184,6 +184,11 @@ proc defineSymbols*() =
             if x.kind != Boolean: push(newBoolean(false))
             else: push(newBoolean(not x.b))
 
+    constant "maybe",
+        alias       = unaliased,
+        description = "the MAYBE logical constant":
+            VMAYBE
+
     builtin "nand?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
