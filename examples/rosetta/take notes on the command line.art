@@ -1,0 +1,9 @@
+notes: "notes.txt"
+if? empty? arg [
+    if exists? notes -> print read notes
+]
+else [
+    output: (to :string now) ++ "\n" ++
+            "\t" ++ (join.with:" " to [:string] arg) ++ "\n"
+    write.append notes output
+]
