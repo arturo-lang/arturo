@@ -1,0 +1,68 @@
+define :point [x y][]
+
+orientation: function [P Q R][
+    val: sub (Q\y - P\y)*(R\x - Q\x) (Q\x - P\x)*(R\y - Q\y)
+    if val=0 -> return 0
+    if val>0 -> return 1
+    return 2
+]
+
+calculateConvexHull: function [points][
+    result: new []
+
+    if 3 > size points [
+        loop points 'p -> 'result ++ p
+    ]
+
+    indexMinX: 0
+    loop.with:'i points 'p [
+        if p\x < get points\[indexMinX] 'x ->
+            indexMinX: i
+    ]
+
+    p: indexMinX
+    q: 0
+
+    while [true][
+        'result ++ points\[p]
+
+        q: (p + 1) % size points
+
+        loop 0..dec size points 'i [
+            if 2 = orientation points\[p] points\[i] points\[q] ->
+                q: i
+        ]
+
+        p: q
+
+        if p=indexMinX -> break
+    ]
+
+    return result
+]
+ 
+points: @[
+    to :point [16 3],
+    to :point [12 17],
+    to :point [0 6],
+    to :point @[neg 4 neg 6],
+    to :point [16 6],
+    to :point @[16 neg 7],
+    to :point @[17 neg 4],
+    to :point [5 19],
+    to :point @[19 neg 8],
+    to :point [3 16],
+    to :point [12 13],
+    to :point @[3 neg 4],
+    to :point [17 5],
+    to :point @[neg 3 15],
+    to :point @[neg 3 neg 9],
+    to :point [0 11],
+    to :point @[neg 9 neg 3],
+    to :point @[neg 4 neg 2],
+    to :point [12 10]
+]
+
+hull: calculateConvexHull points
+loop hull 'i ->
+    print i
