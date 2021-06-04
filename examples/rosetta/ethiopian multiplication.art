@@ -1,7 +1,7 @@
 ; By @Krenium
 
-halve: $ => [shr & 1]
-double: $ => [shl & 1]
+halve: function [x]-> shr x 1
+double: function [x]-> shl x 1
 
 ; even? already exists
 
