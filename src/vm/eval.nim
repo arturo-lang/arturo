@@ -324,7 +324,7 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 let funcIndx = node.s
                 if (n.a[i+1].kind == Word and n.a[i+1].s == "function") or
                    (n.a[i+1].kind == Symbol and n.a[i+1].m == dollar):
-                    TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type)#n.a[i+2].a.len
+                    TmpArities[funcIndx] = n.a[i+2].a.countIt(it.kind != Type) #n.a[i+2].a.len
                 else:
                     if not isDictionary:
                         TmpArities.del(funcIndx)
