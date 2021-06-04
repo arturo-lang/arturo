@@ -809,8 +809,7 @@ proc defineSymbols*() =
 
                 var i = 0
                 while i < x.a.len:
-                    if x.a[i].kind == Word:
-                        args.add(x.a[i])
+                    args.add(x.a[i])
                     if i+1 < x.a.len and x.a[i+1].kind == Type:
                         body.add(newWord("ensure"))
                         body.add(newBlock(@[
