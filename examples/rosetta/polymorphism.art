@@ -1,0 +1,30 @@
+define :point [x,y][
+    init: [
+        ensure -> is? :floating this\x
+        ensure -> is? :floating this\y
+    ]
+
+    print: [
+        render "point (x: |this\x|, y: |this\y|)"
+    ]
+]
+
+define :circle [center,radius][
+    init: [
+        ensure -> is? :point this\center
+        ensure -> is? :floating this\radius
+    ]
+    
+    print: [
+        render "circle (center: |this\center|, radius: |this\radius|)"
+    ]
+]
+
+p: to :point [10.0, 20.0]
+c: to :circle @[p, 10.0]
+
+inspect p
+inspect c
+
+print p
+print c
