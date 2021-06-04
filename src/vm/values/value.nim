@@ -191,6 +191,7 @@ type
                         name*       : string
                         prototype*  : Value
                         methods*    : Value
+                        inherits*   : Value
                     of BuiltinType:
                         discard
 
@@ -421,7 +422,7 @@ proc newUserType*(n: string, p: Value = VNULL): Value {.inline.} =
     if TypeLookup.hasKey(n):
         return TypeLookup[n]
     else:
-        result = Value(kind: Type, tpKind: UserType, t: Dictionary, name: n, prototype: p)
+        result = Value(kind: Type, tpKind: UserType, t: Dictionary, name: n, prototype: p, inherits: VNULL)
         TypeLookup[n] = result
 
 proc newType*(t: string): Value {.inline.} =
