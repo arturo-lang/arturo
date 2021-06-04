@@ -218,7 +218,7 @@ type
             of Function:    
                 case fnKind*: FunctionKind:
                     of UserFunction:
-                        params* : Value         
+                        params* : Value
                         main*   : Value
                         imports*: Value
                         exports*: Value

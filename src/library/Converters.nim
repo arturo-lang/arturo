@@ -35,7 +35,7 @@ import vm/[errors, exec, parse]
 
 proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
     var dict = initOrderedTable[string,Value]()
-    
+
     var i = 0
     while i<arguments.len and i<customType.prototype.a.len:
         let k = customType.prototype.a[i]
@@ -803,8 +803,32 @@ proc defineSymbols*() =
                 exports = aExport
 
             var memoize = (popAttr("memoize")!=VNULL)
+            
+            cleanBlock(x.a, inplace=true)
 
-            push(newFunction(x,y,imports,exports,exportable,memoize))
+            if x.a.countIt(it.kind == Type) > 0:
+                var args: ValueArray = @[]
+                var body: ValueArray = @[]
+
+                var i = 0
+                while i < x.a.len:
+                    args.add(x.a[i])
+                    if i+1 < x.a.len and x.a[i+1].kind == Type:
+                        body.add(newWord("ensure"))
+                        body.add(newBlock(@[
+                            newWord("is?"),
+                            x.a[i+1],
+                            x.a[i]
+                        ]))
+                        i += 1
+                    i += 1
+                
+                var mainBody: ValueArray = y.a
+                mainBody.insert(body)
+
+                push(newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize))
+            else:
+                push(newFunction(x,y,imports,exports,exportable,memoize))
 
     builtin "to",
         alias       = unaliased, 
