@@ -803,6 +803,9 @@ proc defineSymbols*() =
                 exports = aExport
 
             var memoize = (popAttr("memoize")!=VNULL)
+            
+            cleanBlock(x.a, inplace=true)
+
             if x.a.countIt(it.kind == Type) > 0:
                 var args: ValueArray = @[]
                 var body: ValueArray = @[]
