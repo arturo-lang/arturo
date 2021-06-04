@@ -1,6 +1,6 @@
 ; by @krenium
 
-factorial: $ => [product 1..&]
+factorial: function [x]-> product 1..x
 
 wprime?: function [n][
     if n < 2 -> return false
