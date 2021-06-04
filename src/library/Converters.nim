@@ -33,6 +33,24 @@ import vm/[errors, exec, parse]
 # Helpers
 #=======================================
 
+proc generateCustomObject*(customType: Value, arguments: ValueArray): Value =
+    var dict = initOrderedTable[string,Value]()
+    
+    var i = 0
+    while i<arguments.len and i<customType.prototype.a.len:
+        let k = customType.prototype.a[i]
+        dict[k.s] = arguments[i]
+        i += 1
+
+    var res = newDictionary(dict)
+    res.custom = customType
+
+    if customType.methods.d.hasKey("init"):
+        push res
+        callFunction(customType.methods.d["init"])
+
+    return res
+
 proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value =
     if y.kind == tp and y.kind!=Dictionary:
         return y
@@ -278,23 +296,9 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                             discard execBlock(y)
 
                             let arr: ValueArray = sTopsFrom(stop)
-                            var dict = initOrderedTable[string,Value]()
                             SP = stop
 
-                            var i = 0
-                            while i<arr.len and i<x.prototype.a.len:
-                                let k = x.prototype.a[i]
-                                dict[k.s] = arr[i]
-                                i += 1
-
-                            var res = newDictionary(dict)
-                            res.custom = x
-
-                            if x.methods.d.hasKey("init"):
-                                push res
-                                callFunction(x.methods.d["init"])
-
-                            return(res)
+                            return generateCustomObject(x, arr)
 
                     of Color:
                         let blk = cleanBlock(y.a)
@@ -519,8 +523,12 @@ proc defineSymbols*() =
             "prototype" : {Block},
             "methods"   : {Block}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "as"    : ({Type}, "inherit given type")
+        },
         returns     = {Nothing},
+        # TODO(Converters\define) add documentation example for `.as`
+        #  labels: library, documentation, easy
         example     = """
             define :person [name surname age][  
 
@@ -575,7 +583,10 @@ proc defineSymbols*() =
             ##########################################################
             x.prototype = y
             cleanBlock(x.prototype.a, inplace=true)
-            
+
+            if (let aAs = popAttr("as"); aAs != VNULL):
+                x.inherits = aAs
+
             x.methods = newDictionary(execBlock(z,dictionary=true))
             if x.methods.d.hasKey("init"):
                 x.methods.d["init"] = newFunction(
