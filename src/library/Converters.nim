@@ -811,7 +811,7 @@ proc defineSymbols*() =
                 while i < x.a.len:
                     if x.a[i].kind == Word:
                         args.add(x.a[i])
-                    if i+1 < x.a.len and x.a[i+i].kind == Type:
+                    if i+1 < x.a.len and x.a[i+1].kind == Type:
                         body.add(newWord("ensure"))
                         body.add(newBlock(@[
                             newWord("is?"),
@@ -823,6 +823,7 @@ proc defineSymbols*() =
                 
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
+
                 push(newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize))
             else:
                 push(newFunction(x,y,imports,exports,exportable,memoize))
