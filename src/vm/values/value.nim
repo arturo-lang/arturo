@@ -1705,7 +1705,12 @@ proc sameValue*(x: Value, y: Value): bool {.inline.}=
             of Complex: return x.z == y.z
             of Version:
                 return x.major == y.major and x.minor == y.minor and x.patch == y.patch and x.extra == y.extra
-            of Type: return x.t == y.t
+            of Type: 
+                if x.tpKind != y.tpKind: return false
+                if x.tpKind==BuiltinType:
+                    return x.t == y.t
+                else:
+                    return x.name == y.name
             of Char: return x.c == y.c
             of String,
                Word,
