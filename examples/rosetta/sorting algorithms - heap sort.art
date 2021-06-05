@@ -1,0 +1,33 @@
+siftDown: function [items, start, ending][
+    root: start
+    a: new items
+    while [ending > 1 + 2 * root][
+        child: 1 + 2 * root
+        if and? ending > child + 1
+                a\[child+1] > a\[child] -> child: child + 1
+
+        if? a\[root] < a\[child][
+            tmp: a\[child]
+            a\[child]: a\[root]
+            a\[root]: tmp
+            root: child
+        ]
+        else -> return a
+    ]
+    return a
+]
+
+heapSort: function [items][
+    b: new items
+    count: size b
+    loop ((count-2)/2) .. 0 'start -> b: siftDown b start count
+    loop (count-1) .. 1 'ending [
+        tmp: b\[ending]
+        b\[ending]: b\0
+        b\0: tmp
+        b: siftDown b 0 ending
+    ]
+    return b
+]
+
+print heapSort [3 1 2 8 5 7 9 4 6]
