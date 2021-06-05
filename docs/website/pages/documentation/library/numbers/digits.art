@@ -21,6 +21,12 @@ examples: [
         }
     ]
 attributes: #[
+    base: #[
+        types: [
+                :integer
+            ]
+        description: "use given based (default: 10)"
+        ]
     ]
 arguments: #[
     number: [
