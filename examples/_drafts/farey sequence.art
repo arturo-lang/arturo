@@ -1,0 +1,68 @@
+farey: function [n][
+    f1: [0 1]
+    f2: @[1 n]
+    prints ~"0/1 1/|n|"
+    while [1 < last f2][
+        k: (n + last f1) / last f2
+        aux: f1
+        f1: f2
+        f2: @[(k * first f2) - first aux, (k * last f2) - last aux]
+        prints ~" |first f2|/|last f2|"
+    ]
+    print ""
+]
+
+fareyLength: function [n, cache][
+    if cache\[n] <> 0 -> return cache\[n]
+
+    length: (n * (n+3)) / 2
+    p: 2
+    q: 0
+    while [p =< n][
+        print [p q n]
+        q: inc n / n / p
+        length: length - (fareyLength n/p cache)*(q-p)
+        p: q
+    ]
+    cache\[n]: length
+    return length
+]
+
+; proc fareyLength(n: int, cache: var seq[int]): int =
+;   if n >= cache.len:
+;     var newLen = cache.len
+;     if newLen == 0:
+;       newLen = 16
+;     while newLen <= n:
+;       newLen *= 2
+;     cache.setLen(newLen)
+;   elif cache[n] != 0:
+;     return cache[n]
+ 
+;   var length = n * (n + 3) div 2
+;   var p = 2
+;   var q = 0
+;   while p <= n:
+;     q = n div (n div p) + 1
+;     dec length, fareyLength(n div p, cache) * (q - p)
+;     p = q
+;   cache[n] = length
+;   return length
+
+loop 1..11 'n ->
+    farey n
+
+cache: new array.of: 1000 0
+
+loop range 100 .step: 100 1000 'z ->
+    print [z "=>" fareyLength z cache "items"]
+; for n in 1..11:
+;   write(stdout, fmt"{n:>8}: ")
+;   farey(n)
+ 
+; var cache: seq[int] = @[]
+; for n in countup(100, 1000, step=100):
+;   echo fmt"{n:>8}: {fareyLength(n, cache):14} items"
+ 
+; let n = 10_000_000
+; echo fmt"{n}: {fareyLength(n, cache):14} items"
