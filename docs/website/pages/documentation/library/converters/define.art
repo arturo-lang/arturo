@@ -59,6 +59,12 @@ examples: [
         }
     ]
 attributes: #[
+    as: #[
+        types: [
+                :type
+            ]
+        description: "inherit given type"
+        ]
     ]
 arguments: #[
     type: [
