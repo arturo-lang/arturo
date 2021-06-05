@@ -1,0 +1,39 @@
+
+count: function [s1 s2][
+    res: 0
+    loop.with:'i s1 'c [
+        if c = s2\[i] -> res: res + 1
+    ]
+    return res
+] 
+
+shuff: function [str]->
+    join shuffle split str
+
+bestShuffle: function [s][
+    shuffled: shuff s
+    loop 0..dec size shuffled 'i [
+        if shuffled\[i] <> s\[i] -> continue
+        loop 0..dec size shuffled 'j [
+            if all? @[
+                shuffled\[i] <> shuffled\[j]
+                shuffled\[i] <> s\[j]
+                shuffled\[j] <> s\[i]
+            ] [
+                tmp: shuffled\[i]
+                shuffled\[i]: shuffled\[j]
+                shuffled\[j]: tmp
+                break
+            ]
+        ]
+    ]
+    return shuffled
+]
+
+words: ["abracadabra" "seesaw" "grrrrrr" "pop"
+        "up" "a" "antidisestablishmentarianism"]
+
+loop words 'w [
+    sf: bestShuffle w
+    print [w "->" sf "| count:" count w sf]
+]
