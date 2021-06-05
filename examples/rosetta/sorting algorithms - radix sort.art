@@ -1,0 +1,20 @@
+ 
+radixSort: function [items][
+    base: 10
+    a: new items
+    
+    rounds: inc floor (ln max a)/ln base
+    loop rounds 'i [
+        buckets: array.of: 2*base []
+        baseI: base ^ i
+        loop a 'n [
+            digit: last digits n
+            if n >= 0 -> digit: digit + base
+            buckets\[digit]: buckets\[digit] ++ n
+        ]
+        a: new flatten buckets
+    ]
+    return a
+]
+
+print radixSort [3 1 2 8 5 7 9 4 6]
