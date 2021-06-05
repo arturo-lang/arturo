@@ -1,0 +1,20 @@
+lst: ["violet" "red" "green" "indigo" "blue" "yellow" "orange"]
+count: 0
+
+findSpot: function [l,e][
+    if empty? l -> return 0
+
+    loop.with:'i l 'item [
+        answer: input ~"Is |item| greater than |e| [y/n]? "
+        if answer="y" -> return i
+    ]
+    return dec size l
+]
+ 
+sortedLst: new []
+
+loop lst 'element ->
+    insert 'sortedLst findSpot sortedLst element element
+
+print ""
+print ["sorted =>" sortedLst]
