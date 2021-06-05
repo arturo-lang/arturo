@@ -515,7 +515,9 @@ proc defineSymbols*() =
         args        = {
             "number" : {Integer}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "base"  : ({Integer},"use given based (default: 10)")
+        },
         returns     = {Block},
         example     = """
             digits 123
@@ -531,11 +533,15 @@ proc defineSymbols*() =
             ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
         """:
             ##########################################################
+            var base = 10
+            if (let aBase = popAttr("base"); aBase != VNULL):
+                base = aBase.i
+
             if x.iKind == NormalInteger:
-                push newBlock(getDigits(x.i).map((z)=>newInteger(z)))
+                push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
             else:
                 when not defined(NOGMP):
-                    push newBlock(getDigits(x.bi).map((z)=>newInteger(z)))
+                    push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
     constant "epsilon",
         alias       = unaliased,
