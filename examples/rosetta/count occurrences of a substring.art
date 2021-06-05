@@ -1,0 +1,7 @@
+countOccurrences: function [str, substr]-> size match str substr
+
+loop [["the three truths" "th"] ["ababababab" "abab"]] 'pair ->
+    print [
+        ~"occurrences of '|last pair|' in '|first pair|':" 
+        countOccurrences first pair last pair
+    ]
