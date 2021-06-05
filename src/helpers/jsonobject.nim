@@ -122,6 +122,7 @@ when defined(WEB):
                Database,
                Bytecode,
                Nothing,
+               Newline,
                Any          : discard
 
     proc isArray(x: JsObject): bool {.noSideEffect, importcpp: "(Array.isArray(#))".}
