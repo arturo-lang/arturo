@@ -1,0 +1,21 @@
+width: 81
+height: 5
+
+lines: array.of: height repeat `*` width
+
+cantor: function [start length idx].export:[lines][
+    seg: length / 3
+    if seg = 0 -> return null
+
+    loop idx..dec height 'i [
+        loop (start + seg).. dec start + 2 * seg 'j 
+            -> set lines\[i] j ` `
+    ]
+    cantor start seg idx+1
+    cantor start + 2 * seg seg idx+1
+]
+
+cantor 0 width 1
+
+loop lines 'line 
+    -> print join line
