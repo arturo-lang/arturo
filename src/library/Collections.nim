@@ -1113,9 +1113,14 @@ proc defineSymbols*() =
             "descending": ({Logical},"check for sorting in ascending order")
         },
         returns     = {Logical},
-        # TODO(Collections\sorted?) add documentation example
-        #  labels: library, documentation, easy
         example     = """
+            sorted? [1 2 3 4 5]         ; => true
+            sorted? [4 3 2 1 5]         ; => false
+            sorted? [5 4 3 2 1]         ; => false
+            ;;;;
+            sorted?.descending [5 4 3 2 1]      ; => true
+            sorted?.descending [4 3 2 1 5]      ; => false
+            sorted?.descending [1 2 3 4 5]      ; => false
         """:
             ##########################################################
             var ascending = true
