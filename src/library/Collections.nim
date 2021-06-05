@@ -914,6 +914,11 @@ proc defineSymbols*() =
 
             x: 2    
             arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
+            ;;;;
+            str: "hello"
+            str\0: `x`
+            print str
+            ; xello
         """:
             ##########################################################
             var key: Value
@@ -931,6 +936,15 @@ proc defineSymbols*() =
                     SetArrayIndex(x.a, key.i, z)
                 of Dictionary:
                     x.d[$(key)] = z
+                of String:
+                    var res: string = ""
+                    var idx = 0
+                    for r in x.s.runes:
+                        if idx!=key.i: res.add r
+                        else: res.add z.c
+                        idx += 1
+
+                    x.s = res
                 else: discard
 
     builtin "shuffle",
