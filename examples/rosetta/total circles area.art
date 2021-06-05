@@ -1,6 +1,4 @@
-define :circle [x y r][]
-
-circles: to [:circle] @[
+circles: @[
     @[    1.6417233788     1.6121789534 0.0848270516]
     @[neg 1.4944608174     1.2077959613 1.1039549836]
     @[    0.6110294452 neg 0.6907087527 0.9089162485]
@@ -28,12 +26,10 @@ circles: to [:circle] @[
     @[    0.0152957411     0.0638919221 0.9771215985]
 ]
  
-sqr: function [x]-> x*x
-
-xMin: min map circles 'c -> c\x - c\r
-xMax: max map circles 'c -> c\x + c\r 
-yMin: min map circles 'c -> c\y - c\r
-yMax: max map circles 'c -> c\y + c\r
+xMin: min map circles 'c -> c\0 - c\2
+xMax: max map circles 'c -> c\0 + c\2 
+yMin: min map circles 'c -> c\1 - c\2
+yMax: max map circles 'c -> c\1 + c\2
 
 boxSide: 500
  
@@ -47,7 +43,7 @@ loop 0..dec boxSide 'r [
     loop 0..dec boxSide 'c [
         x: xMin + c * dx
         loop circles 'circle [
-            if (add (sqr x - circle\x) (sqr y - circle\y)) =< sqr circle\r [
+            if (add (x - first circle)*(x - first circle) (y - circle\1)*(y - circle\1)) =< (last circle)*(last circle) [
                 count: count + 1
                 break
             ]
