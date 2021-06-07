@@ -1,0 +1,5 @@
+coprimes?: function [a b] -> 1 = gcd @[a b]
+
+loop [[21 15] [17 23] [36 12] [18 29] [60 15]] 'pair [
+    print [pair\0 "and" pair\1 "ara" (coprimes? pair\0 pair\1)? -> "coprimes." -> "not coprimes."]
+]
