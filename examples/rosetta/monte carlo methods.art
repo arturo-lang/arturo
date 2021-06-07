@@ -1,0 +1,10 @@
+Pi: function [throws][
+    inside: new 0.0
+    do.times: throws [
+        if 1 > hypot random 0 1.0 random 0 1.0 -> inc 'inside
+    ]
+    return 4 * inside / throws
+]
+ 
+loop [100 1000 10000 100000 1000000] 'n ->
+    print [pad to :string n 8 "=>" Pi n]
