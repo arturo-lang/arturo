@@ -1,0 +1,13 @@
+primes: select 0..10000 => prime?
+frobenius: function [n] -> sub sub primes\[n] * primes\[n+1] primes\[n] primes\[n+1]
+
+frob: 0
+lst: new []
+j: new 0
+while [frob < 10000] [
+    'lst ++ frob: <= frobenius j
+    inc 'j
+]
+
+loop split.every:10 chop lst 'a ->
+    print map a => [pad to :string & 5]
