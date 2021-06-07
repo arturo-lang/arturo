@@ -1,0 +1,13 @@
+factorials: map 1..20 => [product 1..&]
+erdos?: function [x][
+    if not? prime? x -> return false
+
+    loop factorials 'f [
+        if f >= x -> break
+        if prime? x - f -> return false
+    ]
+    return true
+]
+
+loop split.every:10 select 2..2500 => erdos? 'a ->
+    print map a => [pad to :string & 5]
