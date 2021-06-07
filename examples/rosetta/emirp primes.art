@@ -1,0 +1,26 @@
+emirps: function [upto][
+    result: new []
+    loop range .step: 2 11 upto 'x [
+        if prime? x [
+            reversed: to :integer reverse to :string x
+            if x <> reversed [
+                if prime? reversed ->
+                    'result ++ x
+            ]
+        ]
+    ]
+    return result
+]
+
+lst: emirps 1000000
+
+print "The first 20 emirps:"
+print first.n: 20 lst
+
+print ""
+print "Emirps between 7700 and 8000:"
+print select lst 'x -> and? x > 7700 x < 8000
+
+print ""
+print "The 10000th emirp:"
+print lst\9999
