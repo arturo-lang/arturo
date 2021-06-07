@@ -1,0 +1,4 @@
+loop split.every: 10 select 2..1000 'x [
+    and? prime? x
+         x = to :integer reverse to :string x
+] 'a -> print map a => [pad to :string & 4]
