@@ -906,16 +906,19 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "get a random integer between given limits",
         args        = {
-            "lowerLimit"    : {Integer},
-            "upperLimit"    : {Integer}
+            "lowerLimit"    : {Integer, Floating},
+            "upperLimit"    : {Integer, Floating}
         },
         attrs       = NoAttrs,
-        returns     = {Integer},
+        returns     = {Integer, Floating},
         example     = """
             rnd: random 0 60          ; rnd: (a random number between 0 and 60)
         """:
             ##########################################################
-            push(newInteger(rand(x.i..y.i)))
+            if x.kind==Integer and y.kind==Integer:
+                push(newInteger(rand(x.i..y.i)))
+            else:
+                push(newFloating(rand(asFloat(x)..asFloat(y))))
 
     builtin "range",
         alias       = ellipsis, 
