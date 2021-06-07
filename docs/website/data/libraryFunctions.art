@@ -111,6 +111,8 @@
  	"numbers/cos"
  	"cosh"
  	"numbers/cosh"
+ 	"crc"
+ 	"crypto/crc"
  	"csec"
  	"numbers/csec"
  	"csech"

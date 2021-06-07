@@ -38,5 +38,5 @@ related: [
         "Core/try?"
          "Binary/or"
          "Converters/to"
-         "Logic/or?"
+         "Crypto/crc"
     ]
