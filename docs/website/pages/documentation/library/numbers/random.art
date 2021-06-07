@@ -3,6 +3,7 @@ type: :function
 module: "Numbers"
 returns: [
         :integer
+         :floating
     ]
 description: "get a random integer between given limits"
 examples: [
@@ -13,9 +14,11 @@ attributes: #[
 arguments: #[
     lowerLimit: [
             :integer
+             :floating
         ]
     upperLimit: [
             :integer
+             :floating
         ]
     ]
 related: [
