@@ -1,0 +1,5 @@
+lst: select 3..6000 'x
+    -> all? @[prime? x-1 prime? x+3 prime? x+5]
+
+loop split.every: 10 lst 'a -> 
+    print map a => [pad to :string & 5]
