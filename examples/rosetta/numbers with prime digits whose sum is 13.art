@@ -1,0 +1,23 @@
+pDigits: [2 3 5 7]
+ 
+lst: map pDigits 'd -> @[d]
+result: new []
+
+while [0 <> size lst][
+    nextList: new []
+    loop lst 'digitSeq [
+        currSum: sum digitSeq
+        loop pDigits 'n [
+            newSum: currSum + n
+            newDigitSeq: digitSeq ++ n
+            case [newSum]
+                when? [<13] -> 'nextList ++ @[newDigitSeq]
+                when? [=13] -> 'result ++ @[to :integer join to [:string] newDigitSeq]
+                else -> break
+        ]
+    ]
+    lst: new nextList
+]
+
+loop split.every: 10 result 'a -> 
+    print map a => [pad to :string & 6]
