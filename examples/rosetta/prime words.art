@@ -1,0 +1,6 @@
+words: read.lines relative "unixdict.txt"
+
+loop words 'word [
+    if every? split word 'ch -> prime? to :integer to :char ch ->
+        print word
+]
