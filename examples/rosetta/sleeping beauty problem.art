@@ -1,0 +1,15 @@
+sleepingBeauty: function [reps][
+    wakings: 0
+    heads: 0
+    do.times: reps [
+        coin: random 0 1
+        wakings: wakings + 1
+        if? coin = 0 -> heads: heads + 1
+        else -> wakings: wakings + 1
+    ]
+    print ["Wakings over" reps "repetitions =" wakings]
+    return 100.0 * heads//wakings
+]
+ 
+pc: sleepingBeauty 100000
+print ["Percentage probability of heads on waking =" pc "%"]
