@@ -1,0 +1,4 @@
+primes: select 1..5000 => prime?
+
+loop split.every: 3 select primes 'p [25 = sum digits p] 'a -> 
+    print map a => [pad to :string & 5]
