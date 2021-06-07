@@ -1,0 +1,17 @@
+print (pad "index" 6) ++ " | " ++
+      (pad "prime" 6) ++ " | " ++
+      (pad "prime sum" 11)
+print "------------------------------"
+
+s: 0
+idx: 0
+loop 2..999 'n [
+    if prime? n [
+        idx: idx + 1
+        s: s + n
+        if prime? s ->
+            print (pad to :string idx 6) ++ " | " ++
+                  (pad to :string n 6) ++ " | " ++
+                  (pad to :string s 11)
+    ]
+]
