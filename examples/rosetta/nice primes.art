@@ -1,0 +1,11 @@
+sumd: function [n][
+    s: sum digits n 
+    (1 = size digits s)? -> return s
+                         -> return sumd s
+]
+
+nice?: function [x] -> and? prime? x
+                            prime? sumd x
+
+loop split.every:10 select 500..1000 => nice? 'a ->
+    print map a => [pad to :string & 4]
