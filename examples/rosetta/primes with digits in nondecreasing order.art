@@ -1,0 +1,16 @@
+primes: select 1..1000 => prime?
+nondecreasing?: function [n][
+    ds: digits n
+    if 1 = size ds -> return true
+    lastDigit: first ds
+    loop 1..dec size ds 'i [
+        digit: ds\[i]
+        if digit < lastDigit -> return false
+        lastDigit: digit
+    ]
+
+    return true
+]
+
+loop split.every: 10 select primes => nondecreasing? 'a -> 
+    print map a => [pad to :string & 4]
