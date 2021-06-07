@@ -1,0 +1,8 @@
+lst: select select 2..5500 => prime? 'x 
+        -> and? [prime? x+2] [prime? x+6]
+
+loop split.every: 5 lst 'a -> 
+    print map a 'item [
+        pad join.with:", " 
+            to [:string] @[item item+2 item+6] 17
+    ]
