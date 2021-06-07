@@ -1,0 +1,4 @@
+loop split.every: 10 
+    select 1..199 'n [ and? prime? sum digits.base: 2 n
+                            prime? sum digits.base: 3 n ] 'a -> 
+        print map a => [pad to :string & 4]
