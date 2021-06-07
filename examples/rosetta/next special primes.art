@@ -1,0 +1,16 @@
+specials: new [2 3]
+lim: 1050
+lastP: 3
+lastGap: 1
+
+loop 5...step:2 lim 'n [
+    if not? prime? n -> continue
+    if lastGap < n - lastP [
+        lastGap: n - lastP
+        lastP: n
+        'specials ++ n
+    ]
+]
+
+print "List of next special primes less than 1050:"
+print specials
