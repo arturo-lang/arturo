@@ -23,6 +23,7 @@ import base64, uri
 when not defined(freebsd) and not defined(WEB):
     import encodings
 
+import helpers/strings
 import helpers/url
 
 import vm/lib
@@ -35,6 +36,25 @@ proc defineSymbols*() =
 
     when defined(VERBOSE):
         echo "- Importing: Crypto"
+
+    builtin "crc",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate the CRC32 polynomial of given string",
+        args        = {
+            "value" : {String,Literal}
+        },
+        attrs       = NoAttrs,
+        returns     = {String,Nothing},
+        example     = """
+            print crc "The quick brown fox jumps over the lazy dog"
+            ; 414FA339
+        """:
+            ##########################################################
+            if x.kind==Literal:
+                InPlace.s = InPlaced.s.crc32()
+            else:
+                push(newString(x.s.crc32()))
 
     builtin "decode",
         alias       = unaliased, 
