@@ -94,3 +94,24 @@ proc levenshteinAlign*(astr, bstr: string, filler: Rune): tuple[a, b: string] =
             discard
  
     result = (reversed(aPathRev).join(), reversed(bPathRev).join())
+ 
+type TCrc32* = uint32
+const InitCrc32* = TCrc32(0xffffffff)
+ 
+proc createCrcTable(): array[0..255, TCrc32] =
+    for i in 0..255:
+        var rem = TCrc32(i)
+        for j in 0..7:
+            if (rem and 1) > 0: rem = (rem shr 1) xor TCrc32(0xedb88320)
+            else: rem = rem shr 1
+        result[i] = rem
+ 
+# Table created at compile time
+const crc32table = createCrcTable()
+ 
+proc crc32*(s: string): string =
+    var res = InitCrc32
+    for c in s:
+        res = (res shr 8) xor crc32table[(res and 0xff) xor byte(c)]
+    res = not res
+    return res.toHex(8)
