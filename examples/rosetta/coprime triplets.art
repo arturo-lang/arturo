@@ -1,0 +1,19 @@
+lst: [1 2]
+
+while [true][
+    n: 3
+    prev2: lst\[dec dec size lst]
+    prev1: last lst
+
+    while -> any? @[
+        contains? lst n
+        1 <> gcd @[n prev2]
+        1 <> gcd @[n prev1]
+    ] -> n: n + 1
+
+    if n >= 50 -> break
+    'lst ++ n
+]
+
+loop split.every:10 lst 'a ->
+    print map a => [pad to :string & 3]
