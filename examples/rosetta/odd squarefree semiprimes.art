@@ -1,0 +1,6 @@
+primes: select 0..1000 => prime?
+lst: sort unique flatten map primes 'p [
+    map select primes 'q -> all? @[odd? p*q p<>q 1000>p*q]=>[p*&]
+]
+loop split.every:10 lst 'a ->
+    print map a => [pad to :string & 4]
