@@ -1,0 +1,5 @@
+loop 1..30 'x [
+    fs: [1]
+    if x<>1 -> fs: factors.prime x
+    print [pad to :string x 3 "=" join.with:" x " to [:string] fs]
+]
