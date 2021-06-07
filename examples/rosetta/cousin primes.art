@@ -1,0 +1,6 @@
+cousins: function [upto][
+    primesUpto: select 0..upto => prime?
+    return select primesUpto => [prime? & + 4]
+]
+
+print map cousins 1000 'c -> @[c, c + 4]
