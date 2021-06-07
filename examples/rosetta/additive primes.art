@@ -1,0 +1,6 @@
+additives: select 2..500 'x -> and? prime? x prime? sum digits x
+
+loop split.every:10 additives 'a ->
+    print map a => [pad to :string & 4]
+
+print ["\nFound" size additives "additive primes up to 500"]
