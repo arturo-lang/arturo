@@ -1,0 +1,36 @@
+mianChowla: function [n][
+    result: new [1]
+    sums: new [2]
+    candidate: 1
+
+    while [n > size result][
+        fit: false
+        'result ++ 0
+        while [not? fit][
+            candidate: candidate + 1
+            fit: true
+            result\[dec size result]: candidate
+            loop result 'val [
+                if contains? sums val + candidate [
+                    fit: false
+                    break
+                ]
+            ]
+        ]
+
+        loop result 'val [
+            'sums ++ val + candidate
+            unique 'sums
+        ]
+    ]
+    return result
+]
+
+seq100: mianChowla 100
+
+print "The first 30 terms of the Mian-Chowla sequence are:"
+print slice seq100 0 29
+print ""
+
+print "Terms 91 to 100 of the sequence are:"
+print slice seq100 90 99
