@@ -1,0 +1,37 @@
+egyptianDiv: function [dividend, divisor][
+    ensure -> and? dividend >= 0
+                   divisor > 0
+
+    if dividend < divisor -> return @[0, dividend]
+
+    powersOfTwo: new [1]
+    doublings: new @[divisor]
+    d: divisor
+    
+    while [true][
+        d: 2 * d
+        if d > dividend -> break
+        'powersOfTwo ++ 2 * last powersOfTwo
+        'doublings ++ d
+    ]
+
+    answer: 0
+    accumulator: 0
+
+    loop (dec size doublings)..0 'i [
+        if dividend >= accumulator + doublings\[i] [
+            accumulator: accumulator + doublings\[i]
+            answer: answer + powersOfTwo\[i]
+            if accumulator = dividend -> break
+        ]
+    ]
+
+    return @[answer, dividend - accumulator]
+]
+
+dividend: 580
+divisor: 34
+
+[quotient, remainder]: egyptianDiv dividend divisor
+
+print [dividend "divided by" divisor "is" quotient "with remainder" remainder]
