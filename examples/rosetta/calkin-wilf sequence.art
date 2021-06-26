@@ -1,0 +1,27 @@
+n: new 1
+d: new 1
+calkinWilf: function [] .export:[n,d] [
+    n: (d - n) + 2 * (n/d) * d 
+    tmp: d
+    d: n
+    n: tmp
+    return @[n d]
+]
+
+first20: [[1 1]] ++ map 1..19 => calkinWilf
+print "The first 20 terms of the Calkwin-Wilf sequence are:"
+print map first20 'f -> ~"|f\0|/|f\1|"
+
+n: new 1
+d: new 1
+indx: new 1
+
+target: [83116, 51639]
+
+while ø [
+    inc 'indx
+    if target = calkinWilf -> break
+]
+
+print ""
+print ["The element" ~"|target\0|/|target\1|" "is at position" indx "in the sequence."]
