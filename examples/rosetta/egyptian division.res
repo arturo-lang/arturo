@@ -1,0 +1,1 @@
+580 divided by 34 is 17 with remainder 2
