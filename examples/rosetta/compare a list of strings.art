@@ -1,0 +1,15 @@
+allEqual?: function [lst] -> 1 = size unique lst
+ascending?: function [lst] -> lst = sort lst
+
+lists: [
+    ["abc" "abc" "abc"]
+    ["abc" "abd" "abc"]
+    ["abc" "abd" "abe"]
+    ["abc" "abe" "abd"]
+]
+
+loop lists 'l [
+    print ["list:" l]
+    print ["allEqual?" allEqual? l]
+    print ["ascending?" ascending? l "\n"]
+]
