@@ -1,0 +1,21 @@
+lynchBell?: function [num][
+    hset: new []
+    loop digits num 'd [
+        if d=0 -> return false
+        if or? [0 <> mod num d]
+               [contains? hset d] -> return false
+        'hset ++ d
+        unique 'hset
+    ]
+    return true
+]
+
+Magic: 9 * 8 * 7
+High: ((from.hex "9876432") / Magic) * Magic
+
+loop range High .step: Magic Magic 'n [
+    if lynchBell? n [
+        print n
+        break
+    ]
+]
