@@ -1,0 +1,14 @@
+thueMorse: function [maxSteps][
+    result: new []
+    val: [0]
+    count: new 0
+    while [true][
+        'result ++ join to [:string] val
+        inc 'count
+        if count = maxSteps -> return result
+        val: val ++ map val 'v -> 1 - v
+    ]
+    return result
+]
+loop thueMorse 6 'bits ->
+    print bits
