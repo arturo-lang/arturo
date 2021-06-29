@@ -1,0 +1,17 @@
+sylvester: function [lim][
+    result: new [2]
+    loop 2..lim 'x [
+        'result ++ inc fold result .seed:1 [a b][a * b]
+    ]
+    return result
+]
+lst: sylvester 10
+
+print "First 10 terms of the Sylvester sequence:"
+print lst
+print ""
+
+sumRep: round sum map lst => [1 // &]
+
+print "Sum of the reciprocals of the first 10 items:"
+print sumRep
