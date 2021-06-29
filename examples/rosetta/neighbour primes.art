@@ -1,0 +1,15 @@
+primesUpTo500: select 1..500 => prime?
+
+print [pad "p" 5 pad "q" 4 pad "p*q+2" 7]
+print "--------------------"
+i: 0
+while [i < dec size primesUpTo500][
+    p: primesUpTo500\[i]
+    q: primesUpTo500\[i+1]
+    if prime? 2 + p * q [
+        prints pad to :string p 5
+        prints pad to :string q 5
+        print pad to :string 2 + p * q 8
+    ]
+    i: i + 1
+]
