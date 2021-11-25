@@ -17,8 +17,6 @@ else:
 
 when defined(PORTABLE):
     import os, sequtils
-else:
-    import tables
 
 when defined(PROFILE):
     import nimprof
@@ -26,7 +24,7 @@ when defined(PROFILE):
 when not defined(WEB):
     import vm/[bytecode, version]
 
-import vm/[env, values/value, vm]
+import vm/[env, vm]
 
 when not defined(WEB):
 
