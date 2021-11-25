@@ -168,3 +168,17 @@ proc isSorted*(s: ValueArray, ascending: bool = true): bool =
                 return false
             last = c
     return true
+
+proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
+  result = @[]
+  if s.len > 0:
+    if isSorted:
+      var prev = s[0]
+      result.add(prev)
+      for i in 1..s.high:
+        if s[i] != prev:
+          prev = s[i]
+          result.add(prev)
+    else:
+      for itm in items(s):
+        if not result.contains(itm): result.add(itm)
