@@ -143,7 +143,7 @@ proc defineSymbols*() =
     builtin "fold",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "flatten given collection by eliminating nested blocks",
+        description = "left-fold given collection returning accumulator",
         args        = {
             "collection"    : {Block,Literal},
             "params"        : {Literal,Block},
