@@ -130,7 +130,7 @@ proc defineSymbols*() =
     builtin "mod",
         alias       = percent, 
         rule        = InfixPrecedence,
-        description = "calculate the modulo given values and return result",
+        description = "calculate the modulo of given values and return result",
         args        = {
             "valueA": {Integer,Literal},
             "valueB": {Integer}
@@ -151,7 +151,7 @@ proc defineSymbols*() =
     builtin "mul",
         alias       = asterisk, 
         rule        = InfixPrecedence,
-        description = "calculate the modulo given values and return result",
+        description = "calculate the product of given values and return result",
         args        = {
             "valueA": {Integer,Floating,Complex,Literal},
             "valueB": {Integer,Floating,Complex}

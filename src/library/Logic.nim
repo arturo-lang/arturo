@@ -242,7 +242,7 @@ proc defineSymbols*() =
     builtin "nor?",
         alias       = unaliased, 
         rule        = InfixPrecedence,
-        description = "return the logical NAND for the given values",
+        description = "return the logical NOR for the given values",
         args        = {
             "valueA": {Logical,Block},
             "valueB": {Logical,Block}
