@@ -11,7 +11,7 @@ if 1 = size arg -> errorMargin: to :integer first arg
 
 supersuccess: 0
 superskipped: 0
-supertotal: 0
+supertotal: 0 
 
 canExecute?: function [scri][
     scr: extract.filename scri
