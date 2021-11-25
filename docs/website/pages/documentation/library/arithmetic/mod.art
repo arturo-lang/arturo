@@ -7,7 +7,7 @@ returns: [
     ]
 alias: "%"
 infix?: true
-description: "calculate the modulo given values and return result"
+description: "calculate the modulo of given values and return result"
 examples: [
         {
             print mod 5 2      ; 1
@@ -31,7 +31,7 @@ arguments: #[
     ]
 related: [
         "Arithmetic/mul"
-         "Arithmetic/add"
          "Arithmetic/pow"
+         "Arithmetic/add"
          "Binary/and"
     ]

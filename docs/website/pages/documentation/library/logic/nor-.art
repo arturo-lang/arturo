@@ -4,7 +4,7 @@ module: "Logic"
 returns: [
         :logical
     ]
-description: "return the logical NAND for the given values"
+description: "return the logical NOR for the given values"
 examples: [
         {
             x: 2
@@ -33,8 +33,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/nand?"
-         "Logic/and?"
+        "Logic/or?"
+         "Logic/xnor?"
+         "Logic/xor?"
          "Binary/nor"
-         "Logic/not?"
     ]

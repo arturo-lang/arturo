@@ -9,7 +9,7 @@ returns: [
     ]
 alias: "*"
 infix?: true
-description: "calculate the modulo given values and return result"
+description: "calculate the product of given values and return result"
 examples: [
         {
             print mul 1 2      ; 2
