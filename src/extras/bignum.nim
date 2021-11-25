@@ -1145,9 +1145,9 @@ proc mpn_gcdext*(a2: var mp_limb_t; a3: var mp_limb_t; a4: ptr mp_size_t;
                  a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t; 
                  a8: mp_size_t): mp_size_t {.importc: "mpn_gcdext", 
     header: "<gmp.h>".}
-proc mpn_get_str*(a2: ptr cuchar; a3: cint; a4: mp_ptr; a5: mp_size_t): csize_t {.
+proc mpn_get_str*(a2: ptr uint8; a3: cint; a4: mp_ptr; a5: mp_size_t): csize_t {.
     importc: "mpn_get_str", header: "<gmp.h>".}
-proc mpn_get_str*(a2: ptr cuchar; a3: cint; a4: var mp_limb_t; a5: mp_size_t): csize_t {.
+proc mpn_get_str*(a2: ptr uint8; a3: cint; a4: var mp_limb_t; a5: mp_size_t): csize_t {.
     importc: "mpn_get_str", header: "<gmp.h>".}
 proc mpn_hamdist*(a2: mp_srcptr; a3: mp_srcptr; a4: mp_size_t): mp_bitcnt_t {.
     importc: "mpn_hamdist", header: "<gmp.h>".}
@@ -1230,9 +1230,9 @@ proc mpn_scan1*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpn_scan1", header: "<gmp.h>".}
 proc mpn_scan1*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpn_scan1", header: "<gmp.h>".}
-proc mpn_set_str*(a2: mp_ptr; a3: ptr cuchar; a4: csize_t; a5: cint): mp_size_t {.
+proc mpn_set_str*(a2: mp_ptr; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.
     importc: "mpn_set_str", header: "<gmp.h>".}
-proc mpn_set_str*(a2: var mp_limb_t; a3: ptr cuchar; a4: csize_t; a5: cint): mp_size_t {.
+proc mpn_set_str*(a2: var mp_limb_t; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.
     importc: "mpn_set_str", header: "<gmp.h>".}
 proc mpn_sizeinbase*(a2: mp_srcptr; a3: mp_size_t; a4: cint): csize_t {.
     importc: "mpn_sizeinbase", header: "<gmp.h>".}
@@ -1569,7 +1569,7 @@ proc `$`*(z: Int, base: cint = 10): string =
   ## string in the given `base`.
   validBase(base)
   result = newString(digits(z, base) + 2)
-  result.setLen(mpz_get_str(result, base, z[]).len)
+  result.setLen(mpz_get_str((cstring)result, base, z[]).len)
 
 proc set*(z, x: Int): Int =
   ## Sets `z` to `x` and returns `z`.
