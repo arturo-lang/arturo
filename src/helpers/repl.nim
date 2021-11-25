@@ -95,7 +95,7 @@ when not defined(windows) and not defined(WEB):
                 if hints.hasKey(token):
                     color = 35
                     bold = 0
-                    return " " & hints[token].s
+                    return (cstring)" " & hints[token].s
             return nil
             
         if not ReplInitialized:

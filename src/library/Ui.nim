@@ -116,7 +116,7 @@ proc defineSymbols*() =
                     """:
                         ##########################################################
                         let query = "JSON.stringify(eval(\"" & x.s & "\"))"
-                        var ret: Value = newString($(wv.getEval(query)))
+                        var ret: Value = newString($(wv.getEval((cstring)query)))
                         push(ret)
 
                 wv.run()

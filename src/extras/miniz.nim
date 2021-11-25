@@ -856,7 +856,7 @@ proc unzip*(src, dst: string) =
       let dest = dst / $filename
       dest.parentDir.createDir()
       dest.writeFile("")
-      discard pZip.mz_zip_reader_extract_to_file(i, dest, 0)
+      discard pZip.mz_zip_reader_extract_to_file(i, (cstring)dest, 0)
   discard pZip.mz_zip_reader_end()
   dealloc(pZip)
 
@@ -898,9 +898,9 @@ proc close*(zip: var Zip) =
     doAssert zip.c.addr.mz_zip_reader_end() == MZ_TRUE
 
 proc get_file_name(zip: var Zip, i:int): string {.inline.} =
-  var size = zip.c.addr.mz_zip_reader_get_filename(i.mz_uint, result, 0)
+  var size = zip.c.addr.mz_zip_reader_get_filename(i.mz_uint, (cstring)result, 0)
   result.setLen(size.int)
-  doAssert zip.c.addr.mz_zip_reader_get_filename(i.mz_uint, result, size) > 0.mz_uint
+  doAssert zip.c.addr.mz_zip_reader_get_filename(i.mz_uint, (cstring)result, size) > 0.mz_uint
   # drop trailing byte.
   result = result[0..<result.high]
 
@@ -932,7 +932,7 @@ proc extract_file*(zip: var Zip, path: string, destDir:string=""): string =
   if destDir != "":
     result = destDir / zip.get_file_name(i)
   result.parentDir.createDir()
-  doAssert zip.c.addr.mz_zip_reader_extract_to_file(i.mz_uint, result, 0) == MZ_TRUE
+  doAssert zip.c.addr.mz_zip_reader_extract_to_file(i.mz_uint, (cstring)result, 0) == MZ_TRUE
 
 proc extract_file_to_string*(zip: var Zip, path: string): string =
   ## extract a single file at the given path from the zip archive and returns its content as string
