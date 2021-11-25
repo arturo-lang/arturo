@@ -1380,8 +1380,8 @@ proc defineSymbols*() =
                 when not defined(WEB):
                     push newString(x.s & $(genOid()))
             else:
-                if x.kind==Block: push(newBlock(cleanBlock(x.a).deduplicate()))
-                else: InPlace.a = InPlaced.a.deduplicate()
+                if x.kind==Block: push(newBlock(cleanBlock(x.a).deduplicated()))
+                else: InPlace.a = InPlaced.a.deduplicated()
 
     builtin "values",
         alias       = unaliased, 
