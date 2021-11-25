@@ -1,0 +1,32 @@
+result: new []
+
+queens: function [n, i, a, b, c][
+    if? i < n [
+        loop 1..n 'j [
+            if all? @[
+                not? contains? a j
+                not? contains? b i+j
+                not? contains? c i-j
+            ] ->
+                queens n, i+1, a ++ @[j], b ++ @[i+j], c ++ @[i-j]
+                
+        ]
+    ]
+    else [
+        if n = size a ->
+        'result ++ @[a]
+    ]
+]
+
+BoardSize: 6
+
+queens BoardSize, 0, [], [], []
+loop result 'solution [
+    loop solution 'col [
+       
+        line: new repeat "-" BoardSize
+        line\[col-1]: `Q`
+        print line
+    ]
+    print ""
+]
