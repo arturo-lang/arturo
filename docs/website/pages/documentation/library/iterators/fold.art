@@ -6,7 +6,7 @@ returns: [
          :block
          :nothing
     ]
-description: "flatten given collection by eliminating nested blocks"
+description: "left-fold given collection returning accumulator"
 examples: [
         {
             fold 1..10 [x,y]-> x + y
@@ -53,8 +53,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/flatten"
-         "Arithmetic/mod"
+        "Arithmetic/mod"
          "Arithmetic/add"
          "Arithmetic/fdiv"
+         "Arithmetic/mul"
     ]
