@@ -17,7 +17,7 @@
 #=======================================
 
 import complex except Complex
-import algorithm, math, random, sequtils, sugar
+import math, random, sequtils, sugar
 
 when not defined(NOGMP):
     import extras/bignum
