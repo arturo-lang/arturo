@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <script src="../bin/arturo.js"></script>
+    </head>
+    <body>
+        <h1>Arturo JS tester</h1>
+        <p>For now, we can use the JS Dev Console.</p>
+        <textarea id="code" rows="5"></textarea>
+        <a href="#" onclick="executeCode()">Execute</a>
+        <textarea id="result" rows="5"></textarea>
+        <script>
+            function executeCode() {
+                var code = document.getElementById('code').value;
+                console.log(code);
+                document.getElementById('result').value = A$(code);
+            }
+        </script>
+    </body>
+</html>
