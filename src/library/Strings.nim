@@ -314,8 +314,6 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Strings\lower?) add documentation example for `:char`s
-        #  labels: library, documentation, easy
         example     = """
             lower? "ñ"               ; => true
             lower? "X"               ; => false
@@ -798,8 +796,6 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Strings\upper?) add documentation example for `:char`s
-        #  labels: library, documentation, easy
         example     = """
             upper? "Ñ"               ; => true
             upper? "x"               ; => false
