@@ -364,8 +364,6 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Logical},
-        # TODO(Strings\numeric?) add documentation example for `:char`s
-        #  labels: library, documentation, easy
         example     = """
             numeric? "hello"           ; => false
             numeric? "3.14"            ; => true
