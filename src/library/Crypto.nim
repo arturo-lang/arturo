@@ -155,7 +155,7 @@ proc defineSymbols*() =
                     push(newString(x.s.encode()))
 
     when not defined(WEB):
-        # TODO(System\digest) could it be used for Web/JS builds too?
+        # TODO(Crypto\digest) could it be used for Web/JS builds too?
         #  would it be that useful to have md5/sha1 encoding capabilities through JavaScript?
         #  labels: library,enhancement,open discussion,web
         builtin "digest",
