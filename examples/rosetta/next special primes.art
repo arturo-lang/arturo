@@ -3,7 +3,7 @@ lim: 1050
 lastP: 3
 lastGap: 1
 
-loop 5...step:2 lim 'n [
+loop 5.. .step:2 lim 'n [
     if not? prime? n -> continue
     if lastGap < n - lastP [
         lastGap: n - lastP
