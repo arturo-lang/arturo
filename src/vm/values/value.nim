@@ -43,58 +43,73 @@ type
     BuiltinAction* = proc ()
 
     SymbolKind* = enum
-        thickarrowleft  # <=
-        thickarrowright # =>
-        arrowleft       # <-
-        arrowright      # ->
-        doublearrowleft # <<
-        doublearrowright# >>
+        thickarrowleft      # <=
+        thickarrowright     # =>
+        thickarrowboth      # <=>
+        arrowleft           # <-
+        arrowright          # ->
+        arrowboth           # <->
+        doublearrowleft     # <<
+        doublearrowright    # >>
+        triplearrowleft     # <<<
+        triplearrowright    # >>>
+        longarrowleft       # <--
+        longarrowright      # -->
+        longarrowboth       # <-->
+        longthickarrowleft  # <==
+        longthickarrowright # ==>
+        longthickarrowboth  # <==>
+        tilderight          # ~>
+        tildeleft           # <~
+        tildeboth           # <~>
 
-        equalless       # =<
-        greaterequal    # >=
-        lessgreater     # <>
+        equalless           # =<
+        greaterequal        # >=
+        lessgreater         # <>
 
-        lesscolon       # <:
-        minuscolon      # -:
-        greatercolon    # >:
+        lesscolon           # <:
+        minuscolon          # -:
+        greatercolon        # >:
         
-        tilde           # ~
-        exclamation     # !
-        question        # ?
-        doublequestion  # ??
-        at              # @
-        sharp           # #
-        dollar          # $
-        percent         # %
-        caret           # ^
-        ampersand       # &
-        asterisk        # *
-        minus           # -
-        doubleminus     # --
-        underscore      # _
-        equal           # =
-        plus            # +
-        doubleplus      # ++
+        tilde               # ~
+        exclamation         # !
+        question            # ?
+        doublequestion      # ??
+        at                  # @
+        sharp               # #
+        dollar              # $
+        percent             # %
+        caret               # ^
+        ampersand           # &
+        asterisk            # *
+        minus               # -
+        doubleminus         # --
+        underscore          # _
+        equal               # =
+        doubleequal         # ==
+        plus                # +
+        doubleplus          # ++
 
-        lessthan        # <
-        greaterthan     # >
+        lessthan            # <
+        greaterthan         # >
        
-        slash           # /
-        doubleslash     # //
-        backslash       #
-        doublebackslash #
-        pipe            # |     
+        slash               # /
+        doubleslash         # //
+        backslash           #
+        doublebackslash     #
+        pipe                # |     
 
-        ellipsis        # ..
-        dotslash        # ./
-        colon           # :
-        doublecolon     # ::
-        doublepipe      # ||
+        ellipsis            # ..
+        longellipsis        # ...
+        dotslash            # ./
+        colon               # :
+        doublecolon         # ::
+        doublepipe          # ||
 
-        slashedzero     # ø
-        infinite        # ∞
+        slashedzero         # ø
+        infinite            # ∞
 
-        unaliased       # used only for builtins
+        unaliased           # used only for builtins
 
     ValueKind* = enum
         Null            = 0
@@ -1266,56 +1281,71 @@ proc `$`*(b: logical): string =
 
 proc `$`(s: SymbolKind): string =
     case s:
-        of thickarrowleft   : result = "<="
-        of thickarrowright  : result = "=>"
-        of arrowleft        : result = "<-"
-        of arrowright       : result = "->"
-        of doublearrowleft  : result = "<<"
-        of doublearrowright : result = ">>"
+        of thickarrowleft       : result = "<="
+        of thickarrowright      : result = "=>"
+        of thickarrowboth       : result = "<=>"
+        of arrowleft            : result = "<-"
+        of arrowright           : result = "->"
+        of arrowboth            : result = "<->"
+        of doublearrowleft      : result = "<<"
+        of doublearrowright     : result = ">>"
+        of triplearrowleft      : result = "<<<"
+        of triplearrowright     : result = ">>>"
+        of longarrowleft        : result = "<--"
+        of longarrowright       : result = "-->"
+        of longarrowboth        : result = "<-->"
+        of longthickarrowleft   : result = "<=="
+        of longthickarrowright  : result = "==>"
+        of longthickarrowboth   : result = "<==>"
+        of tilderight           : result = "~>"
+        of tildeleft            : result = "<~"
+        of tildeboth            : result = "<~>"
 
-        of equalless        : result = "=<"
-        of greaterequal     : result = ">="
-        of lessgreater      : result = "<>"
+        of equalless            : result = "=<"
+        of greaterequal         : result = ">="
+        of lessgreater          : result = "<>"
 
-        of lesscolon        : result = "<:"
-        of minuscolon       : result = "-:"
-        of greatercolon     : result = ">:"
+        of lesscolon            : result = "<:"
+        of minuscolon           : result = "-:"
+        of greatercolon         : result = ">:"
 
-        of tilde            : result = "~"
-        of exclamation      : result = "!"
-        of question         : result = "?"
-        of doublequestion   : result = "??"
-        of at               : result = "@"
-        of sharp            : result = "#"
-        of dollar           : result = "$"
-        of percent          : result = "%"
-        of caret            : result = "^"
-        of ampersand        : result = "&"
-        of asterisk         : result = "*"
-        of minus            : result = "-"
-        of doubleminus      : result = "--"
-        of underscore       : result = "_"
-        of equal            : result = "="
-        of plus             : result = "+"
-        of doubleplus       : result = "++"
-        of lessthan         : result = "<"
-        of greaterthan      : result = ">"
-        of slash            : result = "/"
-        of doubleslash      : result = "//"
-        of backslash        : result = "\\"
-        of doublebackslash  : result = "\\\\"
-        of pipe             : result = "|"
+        of tilde                : result = "~"
+        of exclamation          : result = "!"
+        of question             : result = "?"
+        of doublequestion       : result = "??"
+        of at                   : result = "@"
+        of sharp                : result = "#"
+        of dollar               : result = "$"
+        of percent              : result = "%"
+        of caret                : result = "^"
+        of ampersand            : result = "&"
+        of asterisk             : result = "*"
+        of minus                : result = "-"
+        of doubleminus          : result = "--"
+        of underscore           : result = "_"
+        of equal                : result = "="
+        of doubleequal          : result = "=="
+        of plus                 : result = "+"
+        of doubleplus           : result = "++"
+        of lessthan             : result = "<"
+        of greaterthan          : result = ">"
+        of slash                : result = "/"
+        of doubleslash          : result = "//"
+        of backslash            : result = "\\"
+        of doublebackslash      : result = "\\\\"
+        of pipe                 : result = "|"
 
-        of ellipsis         : result = ".."
-        of dotslash         : result = "./"
-        of colon            : result = ":"
-        of doublecolon      : result = "::"
-        of doublepipe       : result = "||"
+        of ellipsis             : result = ".."
+        of longellipsis         : result = "..."
+        of dotslash             : result = "./"
+        of colon                : result = ":"
+        of doublecolon          : result = "::"
+        of doublepipe           : result = "||"
 
-        of slashedzero      : result = "ø"
-        of infinite         : result = "∞"
+        of slashedzero          : result = "ø"
+        of infinite             : result = "∞"
 
-        of unaliased        : discard
+        of unaliased            : discard
 
 proc `$`(v: Value): string {.inline.} =
     case v.kind:

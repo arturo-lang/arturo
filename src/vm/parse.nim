@@ -472,7 +472,12 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
     var pos = p.bufpos
     var isSymbol = true
     case p.buf[pos]:
-        of '~'  : p.symbol = tilde
+        of '~'  : 
+            if p.buf[pos+1]=='>':
+                inc(pos)
+                p.symbol = tilderight
+            else:
+                p.symbol = tilde
         of '!'  : p.symbol = exclamation
         of '?'  : 
             if p.buf[pos+1]=='?': inc(pos); p.symbol = doublequestion
@@ -532,25 +537,81 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     p.bufpos = pos+1
                     parseMultilineString(p)
                     AddToken newString(p.value, dedented=true)
+                elif p.buf[pos+1]=='>':
+                    inc(pos)
+                    p.symbol = longarrowright
                 else:
                     p.symbol = doubleminus
             else: p.symbol = minus
         of '=': 
             if p.buf[pos+1]=='>': inc(pos); p.symbol = thickarrowright
             elif p.buf[pos+1]=='<': inc(pos); p.symbol = equalless
-            else: p.symbol = equal
+            elif p.buf[pos+1]=='=':
+                inc(pos)
+                if p.buf[pos+1]=='>':
+                    inc(pos)
+                    p.symbol = longthickarrowright
+                else:
+                    p.symbol = doubleequal
+            else:
+                p.symbol = equal
         of '<':
             case p.buf[pos+1]:
-                of '=': inc(pos); p.symbol = thickarrowleft
-                of '-': inc(pos); p.symbol = arrowleft
+                of '=': 
+                    inc(pos)
+                    if p.buf[pos+1]=='=':
+                        inc(pos)
+                        if p.buf[pos+1]=='>':
+                            inc(pos)
+                            p.symbol = longthickarrowboth
+                        else:
+                            p.symbol = longthickarrowleft
+                    elif p.buf[pos+1]=='>':
+                        inc(pos)
+                        p.symbol = thickarrowboth
+                    else:
+                        p.symbol = thickarrowleft
+                of '-': 
+                    inc(pos)
+                    if p.buf[pos+1]=='-':
+                        inc(pos)
+                        if p.buf[pos+1]=='>':
+                            inc(pos)
+                            p.symbol = longarrowboth
+                        else:
+                            p.symbol = longarrowleft
+                    elif p.buf[pos+1]=='>':
+                        inc(pos)
+                        p.symbol = arrowboth
+                    else:
+                        p.symbol = arrowleft
+                of '~':
+                    inc(pos)
+                    if p.buf[pos+1]=='>':
+                        inc(pos)
+                        p.symbol = tildeboth
+                    else:
+                        p.symbol = tildeleft
                 of '>': inc(pos); p.symbol = lessgreater
-                of '<': inc(pos); p.symbol = doublearrowleft
+                of '<': 
+                    inc(pos)
+                    if p.buf[pos+1]=='<':
+                        inc(pos)
+                        p.symbol = triplearrowleft
+                    else:
+                        p.symbol = doublearrowleft
                 of ':': inc(pos); p.symbol = lesscolon
                 else: p.symbol = lessthan
         of '>':
             case p.buf[pos+1]:
                 of '=': inc(pos); p.symbol = greaterequal
-                of '>': inc(pos); p.symbol = doublearrowright
+                of '>': 
+                    inc(pos)
+                    if p.buf[pos+1]=='>':
+                        inc(pos)
+                        p.symbol = triplearrowright
+                    else:
+                        p.symbol = doublearrowright
                 of ':': inc(pos); p.symbol = greatercolon
                 else: p.symbol = greaterthan
         else: 
@@ -662,7 +723,11 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 if p.buf[p.bufpos+1] == Dot:
                     inc(p.bufpos)
                     inc(p.bufpos)
-                    AddToken newSymbol(ellipsis)
+                    if p.buf[p.bufpos] == Dot:
+                        inc(p.bufpos)
+                        AddToken newSymbol(longellipsis)
+                    else:
+                        AddToken newSymbol(ellipsis)
                 elif p.buf[p.bufpos+1] == '/':
                     inc(p.bufpos)
                     inc(p.bufpos)
