@@ -56,6 +56,7 @@ type
 
         lesscolon       # <:
         minuscolon      # -:
+        greatercolon    # >:
         
         tilde           # ~
         exclamation     # !
@@ -1278,6 +1279,7 @@ proc `$`(s: SymbolKind): string =
 
         of lesscolon        : result = "<:"
         of minuscolon       : result = "-:"
+        of greatercolon     : result = ">:"
 
         of tilde            : result = "~"
         of exclamation      : result = "!"
