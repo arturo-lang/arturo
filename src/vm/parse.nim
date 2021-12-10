@@ -551,6 +551,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             case p.buf[pos+1]:
                 of '=': inc(pos); p.symbol = greaterequal
                 of '>': inc(pos); p.symbol = doublearrowright
+                of ':': inc(pos); p.symbol = greatercolon
                 else: p.symbol = greaterthan
         else: 
             discard # shouldn't reach here
