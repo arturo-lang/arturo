@@ -41,16 +41,17 @@ printHeader: function [][
 
 runBenchmark: function [bench][
     dir: extract.directory bench
-    name: extract.filename bench 
-    prints color.bold.cyan pad.right ~{: |replace name "_" " "|:} bigPadding
+    name: extract.filename bench
+    prints color.bold #cyan pad.right ~{: |replace name "_" " "|:} bigPadding
     loop langs [lang,data][
-        script: join.path @[dir name++data\ext]
+        scr: join.path @[dir name++data\ext]
 
-        if? exists? script [
-            result: strip execute ~{/usr/bin/time -lp |data\bin| |script| 2>&1}
+        if? exists? scr [
+            result: strip execute ~{/usr/bin/time -lp |data\bin| |scr| 2>&1}
+            print result
         ]
         else [
-            prints "|" ++ color.red pad.center "-" padding
+            prints "|" ++ color #red pad.center "-" padding
         ]
     ]
     print "|"
