@@ -349,8 +349,7 @@ template parseCurlyString(p: var Parser) =
             of ':':
                 if verbatimString:
                     if p.buf[pos+1]==RCurly:
-                        inc(pos)
-                        inc(pos)
+                        inc(pos, 2)
                         break
                     else:
                         add(p.value, p.buf[pos])
@@ -410,12 +409,12 @@ template parseSafeString(p: var Parser) =
             of chr(194):
                 if p.buf[pos+1]==chr(187): # got »
                     if p.buf[pos+2]==chr(194) and p.buf[pos+3]==chr(187):
-                        inc(pos,4)
+                        inc(pos, 4)
                         break
                     else:
                         add(p.value, p.buf[pos])
                         add(p.value, p.buf[pos+1])
-                        inc(pos,2)
+                        inc(pos, 2)
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
@@ -721,16 +720,14 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                     AddToken newLiteral(p.value)
             of Dot:
                 if p.buf[p.bufpos+1] == Dot:
-                    inc(p.bufpos)
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                     if p.buf[p.bufpos] == Dot:
                         inc(p.bufpos)
                         AddToken newSymbol(longellipsis)
                     else:
                         AddToken newSymbol(ellipsis)
                 elif p.buf[p.bufpos+1] == '/':
-                    inc(p.bufpos)
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                     AddToken newSymbol(dotslash)
                 else:
                     parseLiteral(p)
@@ -771,15 +768,13 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             of chr(195):
                 if p.buf[p.bufpos+1]==chr(184): # ø
                     AddToken newSymbol(slashedzero)
-                    inc(p.bufpos)
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
             of chr(226):
                 if p.buf[p.bufpos+1]==chr(136): # ∞
                     AddToken newSymbol(infinite)
-                    inc(p.bufpos)
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                 else:
                     inc(p.bufpos)
             else:
