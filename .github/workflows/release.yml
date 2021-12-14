@@ -169,7 +169,7 @@ jobs:
 
       - name: Setup environment & Build Arturo
         id: test
-        uses: vmactions/freebsd-vm@v0.1.2
+        uses: vmactions/freebsd-vm@v0.1.5
         with:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
