@@ -817,13 +817,25 @@ proc defineSymbols*() =
                 while i < x.a.len:
                     args.add(x.a[i])
                     if i+1 < x.a.len and x.a[i+1].kind == Type:
+                        var typeArr: ValueArray = @[]
+
+                        let varName = x.a[i]
+
+                        while i+1 < x.a.len and x.a[i+1].kind == Type:
+                            typeArr.add(newWord("is?"))
+                            typeArr.add(x.a[i+1])
+                            typeArr.add(varName)
+                            i += 1
+
                         body.add(newWord("ensure"))
-                        body.add(newBlock(@[
-                            newWord("is?"),
-                            x.a[i+1],
-                            x.a[i]
-                        ]))
-                        i += 1
+                        if typeArr.len == 3:
+                            body.add(newBlock(typeArr))
+                        else:
+                            body.add(newBlock(@[
+                                newWord("any?"),
+                                newWord("array"),
+                                newBlock(typeArr)
+                            ]))
                     i += 1
                 
                 var mainBody: ValueArray = y.a
