@@ -752,7 +752,8 @@ proc defineSymbols*() =
             "import"    : ({Block},"import/embed given list of symbols from current environment"),
             "export"    : ({Block},"export given symbols to parent"),
             "exportable": ({Logical},"export all symbols to parent"),
-            "memoize"   : ({Logical},"store results of function calls")
+            "memoize"   : ({Logical},"store results of function calls"),
+            "info"      : ({String},"(documentation) set description string")
         },
         returns     = {Function},
         example     = """
@@ -806,6 +807,8 @@ proc defineSymbols*() =
             
             cleanBlock(x.a, inplace=true)
 
+            var ret: Value
+
             if x.a.countIt(it.kind == Type) > 0:
                 var args: ValueArray = @[]
                 var body: ValueArray = @[]
@@ -826,9 +829,14 @@ proc defineSymbols*() =
                 var mainBody: ValueArray = y.a
                 mainBody.insert(body)
 
-                push(newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize))
+                ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize)
             else:
-                push(newFunction(x,y,imports,exports,exportable,memoize))
+                ret = newFunction(x,y,imports,exports,exportable,memoize)
+            
+            if (let aInfo = popAttr("info"); aInfo != VNULL):
+              ret.info = aInfo.s
+            
+            push(ret)
 
     builtin "to",
         alias       = unaliased, 

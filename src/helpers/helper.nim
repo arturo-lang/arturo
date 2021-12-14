@@ -246,12 +246,17 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
             printOneData("",d)
         printLine()
     elif v.info!="":
-        let parts = v.info.split("]")
-        let desc = parts[1].strip()
+        var desc: string
+        if v.kind!=Function:
+            let parts = v.info.split("]")
+            desc = parts[1].strip()
+            
+        else:
+            desc = v.info
+        
         for d in getShortData(desc):
             printOneData("",d)
         printLine()
-        #echo v.info
 
     # If it's a function,
     # print more details
