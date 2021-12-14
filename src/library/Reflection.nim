@@ -424,21 +424,25 @@ proc defineSymbols*() =
             ##########################################################
             if y.custom.isNil():
                 if x.kind == Type:
-                    push(newLogical(x.t == y.kind))
+                    if x.t == Any:
+                        push(VTRUE)
+                    else:
+                        push(newLogical(x.t == y.kind))
                 else:
                     let tp = cleanBlock(x.a)[0].t
                     var res = true
-                    if y.kind != Block: 
-                        res = false
-                    else:
-                        let blk = cleanBlock(y.a)
-                        if blk.len==0: 
+                    if tp != Any:
+                        if y.kind != Block: 
                             res = false
                         else:
-                            for item in blk:
-                                if tp != item.kind:
-                                    res = false
-                                    break
+                            let blk = cleanBlock(y.a)
+                            if blk.len==0: 
+                                res = false
+                            else:
+                                for item in blk:
+                                    if tp != item.kind:
+                                        res = false
+                                        break
                     push newLogical(res)
             else:
                 push(newLogical(x.name == y.custom.name))
