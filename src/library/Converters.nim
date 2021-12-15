@@ -753,7 +753,10 @@ proc defineSymbols*() =
             "export"    : ({Block},"export given symbols to parent"),
             "exportable": ({Logical},"export all symbols to parent"),
             "memoize"   : ({Logical},"store results of function calls"),
-            "info"      : ({String},"(documentation) set description string")
+            "info"      : ({String},"(documentation) set description string"),
+            "returns"   : ({Block,Type},"(documentation) set return type"),
+            "attributes": ({Dictionary},"(documentation) set accepted attributes"),
+            "example"   : ({String},"(documentation) set example code")
         },
         returns     = {Function},
         example     = """
