@@ -857,6 +857,15 @@ proc defineSymbols*() =
             if (let aInfo = popAttr("info"); aInfo != VNULL):
                 ret.info = aInfo.s
 
+            if (let aReturns = popAttr("returns"); aReturns != VNULL):
+                if aReturns.kind == Type:
+                    ret.returns = {aReturns.t}
+                else:
+                    var returns: ValueSpec = {}
+                    for re in aReturns.a:
+                        returns.incl(re.t)
+                    ret.returns = returns
+
             if (let aExample = popAttr("example"); aExample != VNULL):
                 ret.example = aExample.s
 
