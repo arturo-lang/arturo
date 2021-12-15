@@ -238,20 +238,20 @@ type
                 example*: string
                 case fnKind*: FunctionKind:
                     of UserFunction:
-                        params* : Value
-                        main*   : Value
-                        imports*: Value
-                        exports*: Value
-                        exportable*: bool
-                        memoize*: bool
+                        params*     : Value
+                        main*       : Value
+                        imports*    : Value
+                        exports*    : Value
+                        exportable* : bool
+                        memoize*    : bool
                     of BuiltinFunction:
-                        fname*  : string
-                        alias*  : SymbolKind
-                        prec*   : PrecedenceKind
-                        module* : string
-                        fdesc*  : string
-                        arity*  : int
-                        action* : BuiltinAction
+                        fname*      : string
+                        alias*      : SymbolKind
+                        prec*       : PrecedenceKind
+                        module*     : string
+                        fdesc*      : string
+                        arity*      : int
+                        action*     : BuiltinAction
 
             of Database:
                 case dbKind*: DatabaseKind:
