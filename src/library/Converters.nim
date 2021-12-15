@@ -755,7 +755,7 @@ proc defineSymbols*() =
             "memoize"   : ({Logical},"store results of function calls"),
             "info"      : ({String},"(documentation) set description string"),
             "returns"   : ({Block,Type},"(documentation) set return type"),
-            "attributes": ({Dictionary},"(documentation) set accepted attributes"),
+            "options"   : ({Dictionary},"(documentation) set accepted attributes"),
             "example"   : ({String},"(documentation) set example code")
         },
         returns     = {Function},
