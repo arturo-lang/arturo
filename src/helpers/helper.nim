@@ -271,6 +271,6 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
             printEmptyLine()
             printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
         else:
-            printMultiData("usage",getUsageForUser(n,v),bold(greenColor))
+            printMultiData("usage",getUsageForBuiltin(n,v),bold(greenColor))
 
         printLine()
