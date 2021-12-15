@@ -808,22 +808,24 @@ proc defineSymbols*() =
             cleanBlock(x.a, inplace=true)
 
             var ret: Value
+            var argTypes = initOrderedTable[string,ValueSpec]()
 
             if x.a.countIt(it.kind == Type) > 0:
                 var args: ValueArray = @[]
                 var body: ValueArray = @[]
-
+                
                 var i = 0
                 while i < x.a.len:
+                    let varName = x.a[i]
                     args.add(x.a[i])
+                    argTypes[x.a[i].s] = {}
                     if i+1 < x.a.len and x.a[i+1].kind == Type:
                         var typeArr: ValueArray = @[]
-
-                        let varName = x.a[i]
 
                         while i+1 < x.a.len and x.a[i+1].kind == Type:
                             typeArr.add(newWord("is?"))
                             typeArr.add(x.a[i+1])
+                            argTypes[varName.s].incl(x.a[i+1].t)
                             typeArr.add(varName)
                             i += 1
 
@@ -836,6 +838,8 @@ proc defineSymbols*() =
                                 newWord("array"),
                                 newBlock(typeArr)
                             ]))
+                    else:
+                        argTypes[varName.s].incl(Any)
                     i += 1
                 
                 var mainBody: ValueArray = y.a
@@ -843,10 +847,17 @@ proc defineSymbols*() =
 
                 ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize)
             else:
+                for arg in x.a:
+                    argTypes[arg.s] = {Any}
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
             if (let aInfo = popAttr("info"); aInfo != VNULL):
-              ret.info = aInfo.s
+                ret.info = aInfo.s
+
+            if (let aExample = popAttr("example"); aExample != VNULL):
+                ret.example = aExample.s
+
+            ret.args = argTypes
             
             push(ret)
 
