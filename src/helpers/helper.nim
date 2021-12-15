@@ -71,6 +71,9 @@ proc getShortData(initial: string): seq[string] =
 proc getTypeString(vs: ValueSpec):string =
     var specs: seq[string] = @[]
 
+    if vs == {}:
+        return ":nothing"
+
     for s in vs:
         specs.add(":" & ($(s)).toLowerAscii())
 
@@ -270,7 +273,7 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
                 printEmptyLine()
                 printMultiData("options",opts,bold(greenColor))
             
-            printEmptyLine()
-            printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
+        printEmptyLine()
 
+        printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
         printLine()
