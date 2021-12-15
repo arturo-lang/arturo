@@ -232,6 +232,10 @@ type
                    #refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Function:    
+                args*   : OrderedTable[string,ValueSpec]
+                attrs*  : OrderedTable[string,(ValueSpec,string)]
+                returns*: ValueSpec
+                example*: string
                 case fnKind*: FunctionKind:
                     of UserFunction:
                         params* : Value
@@ -247,10 +251,6 @@ type
                         module* : string
                         fdesc*  : string
                         arity*  : int
-                        args*   : OrderedTable[string,ValueSpec]
-                        attrs*  : OrderedTable[string,(ValueSpec,string)]
-                        returns*: ValueSpec
-                        example*: string
                         action* : BuiltinAction
 
             of Database:
