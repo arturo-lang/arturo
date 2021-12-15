@@ -76,7 +76,7 @@ proc getTypeString(vs: ValueSpec):string =
 
     return specs.join(" ")
 
-proc getUsageForBuiltin(n: string, v: Value): seq[string] =
+proc getUsageForFunction(n: string, v: Value): seq[string] =
     let args = toSeq(v.args.pairs)
     result = @[]
     let lenBefore = n.len
@@ -94,22 +94,24 @@ proc getUsageForBuiltin(n: string, v: Value): seq[string] =
     for arg in args[1..^1]:
         result.add fmt("{spaceBefore} {arg[0]} {fg(grayColor)}{getTypeString(arg[1])}")
 
-proc getUsageForUser(n: string, v: Value): seq[string] =
-    let args = v.params.a
-    result = @[]
-    let lenBefore = n.len
-    var spaceBefore = ""
-    var j=0
-    while j<lenBefore:
-        spaceBefore &= " "
-        j+=1
+# TODO(helpers\helper) remove commented-code
+#  labels: cleanup, easy
+# proc getUsageForUser(n: string, v: Value): seq[string] =
+#     let args = v.params.a
+#     result = @[]
+#     let lenBefore = n.len
+#     var spaceBefore = ""
+#     var j=0
+#     while j<lenBefore:
+#         spaceBefore &= " "
+#         j+=1
 
-    if args.len==0:
-        result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}:nothing")
-    else:
-        result.add fmt("{bold()}{n}{resetColor} {args[0].s}")
-        for arg in args[1..^1]:
-            result.add fmt("{spaceBefore} {arg.s}")
+#     if args.len==0:
+#         result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}:nothing")
+#     else:
+#         result.add fmt("{bold()}{n}{resetColor} {args[0].s}")
+#         for arg in args[1..^1]:
+#             result.add fmt("{spaceBefore} {arg.s}")
 
 proc getOptionsForBuiltin(v: Value): seq[string] =
     var attrs = toSeq(v.attrs.pairs)
@@ -261,8 +263,8 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # If it's a function,
     # print more details
     if v.kind==Function:
+        printMultiData("usage", getUsageForFunction(n,v), bold(greenColor))
         if v.fnKind==BuiltinFunction:
-            printMultiData("usage",getUsageForBuiltin(n,v),bold(greenColor))
             let opts = getOptionsForBuiltin(v)
             if opts.len>0:
                 printEmptyLine()
@@ -270,7 +272,5 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
             
             printEmptyLine()
             printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
-        else:
-            printMultiData("usage",getUsageForBuiltin(n,v),bold(greenColor))
 
         printLine()
