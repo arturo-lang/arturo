@@ -97,25 +97,6 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
     for arg in args[1..^1]:
         result.add fmt("{spaceBefore} {arg[0]} {fg(grayColor)}{getTypeString(arg[1])}")
 
-# TODO(helpers\helper) remove commented-code
-#  labels: cleanup, easy
-# proc getUsageForUser(n: string, v: Value): seq[string] =
-#     let args = v.params.a
-#     result = @[]
-#     let lenBefore = n.len
-#     var spaceBefore = ""
-#     var j=0
-#     while j<lenBefore:
-#         spaceBefore &= " "
-#         j+=1
-
-#     if args.len==0:
-#         result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}:nothing")
-#     else:
-#         result.add fmt("{bold()}{n}{resetColor} {args[0].s}")
-#         for arg in args[1..^1]:
-#             result.add fmt("{spaceBefore} {arg.s}")
-
 proc getOptionsForFunction(v: Value): seq[string] =
     var attrs = toSeq(v.attrs.pairs)
     if attrs.len==1 and attrs[0][0]=="": return @[]
