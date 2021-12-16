@@ -71,12 +71,15 @@ proc getShortData(initial: string): seq[string] =
 proc getTypeString(vs: ValueSpec):string =
     var specs: seq[string] = @[]
 
+    if vs == {}:
+        return ":nothing"
+
     for s in vs:
         specs.add(":" & ($(s)).toLowerAscii())
 
     return specs.join(" ")
 
-proc getUsageForBuiltin(n: string, v: Value): seq[string] =
+proc getUsageForFunction(n: string, v: Value): seq[string] =
     let args = toSeq(v.args.pairs)
     result = @[]
     let lenBefore = n.len
@@ -94,31 +97,33 @@ proc getUsageForBuiltin(n: string, v: Value): seq[string] =
     for arg in args[1..^1]:
         result.add fmt("{spaceBefore} {arg[0]} {fg(grayColor)}{getTypeString(arg[1])}")
 
-proc getUsageForUser(n: string, v: Value): seq[string] =
-    let args = v.params.a
-    result = @[]
-    let lenBefore = n.len
-    var spaceBefore = ""
-    var j=0
-    while j<lenBefore:
-        spaceBefore &= " "
-        j+=1
+# TODO(helpers\helper) remove commented-code
+#  labels: cleanup, easy
+# proc getUsageForUser(n: string, v: Value): seq[string] =
+#     let args = v.params.a
+#     result = @[]
+#     let lenBefore = n.len
+#     var spaceBefore = ""
+#     var j=0
+#     while j<lenBefore:
+#         spaceBefore &= " "
+#         j+=1
 
-    if args.len==0:
-        result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}:nothing")
-    else:
-        result.add fmt("{bold()}{n}{resetColor} {args[0].s}")
-        for arg in args[1..^1]:
-            result.add fmt("{spaceBefore} {arg.s}")
+#     if args.len==0:
+#         result.add fmt("{bold()}{n}{resetColor} {fg(grayColor)}:nothing")
+#     else:
+#         result.add fmt("{bold()}{n}{resetColor} {args[0].s}")
+#         for arg in args[1..^1]:
+#             result.add fmt("{spaceBefore} {arg.s}")
 
-proc getOptionsForBuiltin(v: Value): seq[string] =
+proc getOptionsForFunction(v: Value): seq[string] =
     var attrs = toSeq(v.attrs.pairs)
     if attrs.len==1 and attrs[0][0]=="": return @[]
 
     var maxLen = 0
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
-        if ts!=":boolean":
+        if ts!=":logical":
             let len = fmt(".{attr[0]} {ts}").len
             if len>maxLen: maxLen = len
         else:
@@ -129,7 +134,7 @@ proc getOptionsForBuiltin(v: Value): seq[string] =
         let ts = getTypeString(attr[1][0])
         var leftSide = ""
         var myLen = maxLen
-        if ts!=":boolean":
+        if ts!=":logical":
             leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
             myLen += len(fmt("{fg(cyanColor)}{fg(grayColor)}"))
         else:
@@ -149,7 +154,7 @@ proc printHelp*(syms: ValueDict) =
         if v.kind==Function and v.fnKind==BuiltinFunction:
             var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
             
-            echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.fdesc
+            echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.info
 
 proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result = initOrderedTable[string,Value]()
@@ -159,27 +164,28 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["type"] = newType(v.kind)
 
     if v.info!="":
-        let parts = v.info.split("]")
-        let desc = parts[1].strip()
-        let modl = parts[0].strip().strip(chars={'['})
+        var desc = v.info
+        if desc.contains("]"):
+            let parts = desc.split("]")
+            desc = parts[1].strip()
+            let modl = parts[0].strip().strip(chars={'['})
+            result["module"] = newString(modl)
+
         result["description"] = newString(desc)
-        result["module"] = newString(modl)
 
     if v.kind==Function:
-        if v.fnKind==BuiltinFunction:
-            result["module"] = newString(v.module)
+        var args = initOrderedTable[string,Value]()
+        if (toSeq(v.args.keys))[0]!="":
+            for k,spec in v.args:
+                var specs:ValueArray = @[]
+                for s in spec:
+                    specs.add(newType(s))
 
-            var args = initOrderedTable[string,Value]()
-            if (toSeq(v.args.keys))[0]!="":
-                for k,spec in v.args:
-                    var specs:ValueArray = @[]
-                    for s in spec:
-                        specs.add(newType(s))
+                args[k] = newBlock(specs)
+        result["args"] = newDictionary(args)
 
-                    args[k] = newBlock(specs)
-            result["args"] = newDictionary(args)
-
-            var attrs = initOrderedTable[string,Value]()
+        var attrs = initOrderedTable[string,Value]()
+        if v.attrs.len > 0:
             if (toSeq(v.attrs.keys))[0]!="":
                 for k,dd in v.attrs:
                     let spec = dd[0]
@@ -195,24 +201,24 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
                     ss["description"] = newString(descr)
 
                     attrs[k] = newDictionary(ss)
-            result["attrs"] = newDictionary(attrs)
+        result["attrs"] = newDictionary(attrs)
 
-            var returns:ValueArray = @[]
+        var returns:ValueArray = @[]
+        if v.returns.len > 0:
             for ret in v.returns:
                 returns.add(newType(ret))
-            result["returns"] = newBlock(returns)
-
-            let alias = getAlias(n, aliases)
-            if alias[0]!="":
-                result["alias"] = newString(alias[0])
-                result["infix?"] = newLogical(alias[1]==InfixPrecedence)
-
-            result["description"] = newString(v.fdesc)
-            result["example"] = newString(v.example)
-
         else:
-            result["args"] = v.params
+            returns = @[newType(Nothing)]
 
+        result["returns"] = newBlock(returns)
+
+        let alias = getAlias(n, aliases)
+        if alias[0]!="":
+            result["alias"] = newString(alias[0])
+            result["infix?"] = newLogical(alias[1]==InfixPrecedence)
+
+        result["description"] = newString(v.info)
+        result["example"] = newString(v.example)
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
@@ -241,18 +247,10 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
 
     # If it's a function or builtin constant,
     # print its description/info
-    if v.kind==Function and v.fnKind==BuiltinFunction:
-        for d in getShortData(v.fdesc):
-            printOneData("",d)
-        printLine()
-    elif v.info!="":
-        var desc: string
-        if v.kind!=Function:
-            let parts = v.info.split("]")
-            desc = parts[1].strip()
-            
-        else:
-            desc = v.info
+    if v.info!="":
+        var desc: string = v.info
+        if desc.contains("]"):
+            desc = desc.split("]")[1].strip()
         
         for d in getShortData(desc):
             printOneData("",d)
@@ -261,16 +259,13 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # If it's a function,
     # print more details
     if v.kind==Function:
-        if v.fnKind==BuiltinFunction:
-            printMultiData("usage",getUsageForBuiltin(n,v),bold(greenColor))
-            let opts = getOptionsForBuiltin(v)
-            if opts.len>0:
-                printEmptyLine()
-                printMultiData("options",opts,bold(greenColor))
-            
+        printMultiData("usage", getUsageForFunction(n,v), bold(greenColor))
+        let opts = getOptionsForFunction(v)
+        if opts.len>0:
             printEmptyLine()
-            printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
-        else:
-            printMultiData("usage",getUsageForUser(n,v),bold(greenColor))
+            printMultiData("options",opts,bold(greenColor))
+            
+        printEmptyLine()
 
+        printOneData("returns",getTypeString(v.returns),bold(greenColor),fg(grayColor))
         printLine()

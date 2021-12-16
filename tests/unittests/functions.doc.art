@@ -1,0 +1,41 @@
+f: function [x][
+    x + 2
+]
+
+print f 10
+
+;;;
+
+g: function [y].info:[
+    description "does something"
+    returns :integer
+][
+    y + 3
+]
+
+gInf: info.get'g
+print gInf\description
+print gInf\returns
+
+;;;
+
+h: function [z :integer w :integer :floating].info:[
+    description "does something"
+    options [
+        .doSomething :integer "does something with extra argument"
+        .withoutAnythingElse "does something without anything else"
+    ]
+    returns :integer :floating
+    example {
+        h 10 20
+    }
+][
+    z + w
+]
+
+hInf: info.get'h
+print hInf\args
+print hInf\description
+print hInf\attrs
+print hInf\returns
+print hInf\example

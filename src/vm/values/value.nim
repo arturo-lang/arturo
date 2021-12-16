@@ -232,26 +232,24 @@ type
                    #refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Function:    
+                args*   : OrderedTable[string,ValueSpec]
+                attrs*  : OrderedTable[string,(ValueSpec,string)]
+                returns*: ValueSpec
+                example*: string
                 case fnKind*: FunctionKind:
                     of UserFunction:
-                        params* : Value
-                        main*   : Value
-                        imports*: Value
-                        exports*: Value
-                        exportable*: bool
-                        memoize*: bool
+                        params*     : Value
+                        main*       : Value
+                        imports*    : Value
+                        exports*    : Value
+                        exportable* : bool
+                        memoize*    : bool
                     of BuiltinFunction:
-                        fname*  : string
-                        alias*  : SymbolKind
-                        prec*   : PrecedenceKind
-                        module* : string
-                        fdesc*  : string
-                        arity*  : int
-                        args*   : OrderedTable[string,ValueSpec]
-                        attrs*  : OrderedTable[string,(ValueSpec,string)]
-                        returns*: ValueSpec
-                        example*: string
-                        action* : BuiltinAction
+                        fname*      : string
+                        alias*      : SymbolKind
+                        prec*       : PrecedenceKind
+                        arity*      : int
+                        action*     : BuiltinAction
 
             of Database:
                 case dbKind*: DatabaseKind:
@@ -524,15 +522,14 @@ proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.in
 proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
+proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
         fname   : name, 
         alias   : al, 
         prec    : pr,
-        module  : md, 
-        fdesc   : desc, 
+        info    : desc, 
         arity   : ar, 
         args    : ag, 
         attrs   : at, 

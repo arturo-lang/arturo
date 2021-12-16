@@ -753,9 +753,13 @@ proc defineSymbols*() =
             "export"    : ({Block},"export given symbols to parent"),
             "exportable": ({Logical},"export all symbols to parent"),
             "memoize"   : ({Logical},"store results of function calls"),
-            "info"      : ({String},"(documentation) set description string")
+            "info"      : ({Block},"(documentation) set extra info for function")
         },
         returns     = {Function},
+        # TODO(Converters\function) add documentation example for typed parameters
+        #  labels: library, documentation, easy
+        # TODO(Converters\function) add documentation example for `.info`
+        #  labels: library, documentation, easy
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
@@ -808,22 +812,24 @@ proc defineSymbols*() =
             cleanBlock(x.a, inplace=true)
 
             var ret: Value
+            var argTypes = initOrderedTable[string,ValueSpec]()
 
             if x.a.countIt(it.kind == Type) > 0:
                 var args: ValueArray = @[]
                 var body: ValueArray = @[]
-
+                
                 var i = 0
                 while i < x.a.len:
+                    let varName = x.a[i]
                     args.add(x.a[i])
+                    argTypes[x.a[i].s] = {}
                     if i+1 < x.a.len and x.a[i+1].kind == Type:
                         var typeArr: ValueArray = @[]
-
-                        let varName = x.a[i]
 
                         while i+1 < x.a.len and x.a[i+1].kind == Type:
                             typeArr.add(newWord("is?"))
                             typeArr.add(x.a[i+1])
+                            argTypes[varName.s].incl(x.a[i+1].t)
                             typeArr.add(varName)
                             i += 1
 
@@ -836,6 +842,8 @@ proc defineSymbols*() =
                                 newWord("array"),
                                 newBlock(typeArr)
                             ]))
+                    else:
+                        argTypes[varName.s].incl(Any)
                     i += 1
                 
                 var mainBody: ValueArray = y.a
@@ -843,10 +851,59 @@ proc defineSymbols*() =
 
                 ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize)
             else:
+                for arg in x.a:
+                    argTypes[arg.s] = {Any}
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
             if (let aInfo = popAttr("info"); aInfo != VNULL):
-              ret.info = aInfo.s
+                var i = 0
+                cleanBlock(aInfo.a, inplace=true)
+
+                while i < aInfo.a.len:
+                    var label: string
+                    if aInfo.a[i].kind == String:
+                        label = aInfo.a[i].s
+                    else:
+                        label = aInfo.a[i].r
+
+                    case label:
+                        of "description":
+                            ret.info = aInfo.a[i+1].s
+                            i += 1
+
+                        of "options":
+                            let optBlock = cleanBlock(aInfo.a[i+1].a)
+                            var options = initOrderedTable[string,(ValueSpec,string)]()
+                            var j = 0
+                            while j < optBlock.len:
+                                let optName = optBlock[j].s
+                                var vspec: ValueSpec
+                                j += 1
+                                if j < optBlock.len and optBlock[j].kind == Type:
+                                    while j < optBlock.len and optBlock[j].kind == Type:
+                                        vspec.incl(optBlock[j].t)
+                                        j += 1
+                                else:
+                                    vspec = {Logical}
+                                
+                                options[optName] = (vspec, optBlock[j].s)
+                                j += 1
+                            ret.attrs = options
+                            i += 1
+
+                        of "returns":
+                            var returns: ValueSpec
+                            while i+1 < aInfo.a.len and aInfo.a[i+1].kind == Type:
+                                returns.incl(aInfo.a[i+1].t)
+                                i += 1
+                            ret.returns = returns
+
+                        of "example":
+                            ret.example = aInfo.a[i+1].s
+                            i += 1
+                    i += 1
+    
+            ret.args = argTypes
             
             push(ret)
 
