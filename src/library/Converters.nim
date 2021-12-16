@@ -753,10 +753,7 @@ proc defineSymbols*() =
             "export"    : ({Block},"export given symbols to parent"),
             "exportable": ({Logical},"export all symbols to parent"),
             "memoize"   : ({Logical},"store results of function calls"),
-            "info"      : ({String},"(documentation) set description string"),
-            "returns"   : ({Block,Type},"(documentation) set return type"),
-            "options"   : ({Block},"(documentation) set accepted attributes"),
-            "example"   : ({String},"(documentation) set example code")
+            "info"      : ({Block},"add documentation information")
         },
         returns     = {Function},
         example     = """
@@ -855,36 +852,53 @@ proc defineSymbols*() =
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
             if (let aInfo = popAttr("info"); aInfo != VNULL):
-                ret.info = aInfo.s
-
-            if (let aOptions = popAttr("options"); aOptions != VNULL):
                 var i = 0
-                var opts = initOrderedTable[string,(ValueSpec,string)]()
-                cleanBlock(aOptions.a, inplace=true)
-                while i < aOptions.a.len:
-                    var vspec: ValueSpec
-                    if aOptions.a[i+1].kind == Type:
-                        vspec = {aOptions.a[i+1].t}
+                cleanBlock(aInfo.a, inplace=true)
+
+                while i < aInfo.a.len:
+                    var label: string
+                    if aInfo.a[i].kind == String:
+                        label = aInfo.a[i].s
                     else:
-                        for opt in aOptions.a[i+1].a:
-                            vspec.incl(opt.t)
+                        label = aInfo.a[i].r
 
-                    opts[aOptions.a[i].s] = (vspec, aOptions.a[i+2].s)
-                    i += 3
-                ret.attrs = opts
+                    case label:
+                        of "description":
+                            ret.info = aInfo.a[i+1].s
+                            i += 1
 
-            if (let aReturns = popAttr("returns"); aReturns != VNULL):
-                if aReturns.kind == Type:
-                    ret.returns = {aReturns.t}
-                else:
-                    var returns: ValueSpec
-                    for re in aReturns.a:
-                        returns.incl(re.t)
-                    ret.returns = returns
+                        of "options":
+                            let optBlock = cleanBlock(aInfo.a[i+1].a)
+                            var options = initOrderedTable[string,(ValueSpec,string)]()
+                            var j = 0
+                            while j < optBlock.len:
+                                let optName = optBlock[j].s
+                                var vspec: ValueSpec
+                                j += 1
+                                if j < optBlock.len and optBlock[j].kind == Type:
+                                    while j < optBlock.len and optBlock[j].kind == Type:
+                                        vspec.incl(optBlock[j].t)
+                                        j += 1
+                                else:
+                                    vspec = {Logical}
+                                
+                                options[optName] = (vspec, optBlock[j].s)
+                                j += 1
+                            ret.attrs = options
+                            i += 1
 
-            if (let aExample = popAttr("example"); aExample != VNULL):
-                ret.example = aExample.s
+                        of "returns":
+                            var returns: ValueSpec
+                            while i+1 < aInfo.a.len and aInfo.a[i+1].kind == Type:
+                                returns.incl(aInfo.a[i+1].t)
+                                i += 1
+                            ret.returns = returns
 
+                        of "example":
+                            ret.example = aInfo.a[i+1].s
+                            i += 1
+                    i += 1
+    
             ret.args = argTypes
             
             push(ret)
