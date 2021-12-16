@@ -752,8 +752,7 @@ proc defineSymbols*() =
             "import"    : ({Block},"import/embed given list of symbols from current environment"),
             "export"    : ({Block},"export given symbols to parent"),
             "exportable": ({Logical},"export all symbols to parent"),
-            "memoize"   : ({Logical},"store results of function calls"),
-            "info"      : ({Block},"(documentation) set extra info for function")
+            "memoize"   : ({Logical},"store results of function calls")
         },
         returns     = {Function},
         example     = """
@@ -896,7 +895,8 @@ proc defineSymbols*() =
                     argTypes[arg.s] = {Any}
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
-            if (let aInfo = popAttr("info"); aInfo != VNULL):
+            if y.script!="":
+                var aInfo = doParse(y.script, isFile=false)
                 var i = 0
                 cleanBlock(aInfo.a, inplace=true)
 

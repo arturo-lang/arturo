@@ -28,8 +28,6 @@ type
         values*: ValueArray
         symbol*: SymbolKind
 
-    ParseResult* = (Value, string) # (main, package)
-
 #=======================================
 # Constants
 #=======================================
@@ -71,20 +69,10 @@ const
     Empty                       = ""
 
 #=======================================
-# Variables
-#=======================================
-
-# TODO(Parser) ScriptConfig enhancement
-#  first, we should verify it works fine. (Should it recognize only 100% valid Arturo code?) Also, it could be parsed on a per-block basis - so that each block has its one config. Plus, keep one at the root level, as the global script information.
-#  labels: enhancement,unit-test,vm,parser
-var
-    ScriptConfig : string
-
-#=======================================
 # Forward declarations
 #=======================================
 
-proc doParseAll*(input: string, isFile: bool = true): ParseResult
+proc doParseAll*(input: string, isFile: bool = true): Value
 
 #=======================================
 # Templates
@@ -121,7 +109,7 @@ proc getContext*(p: var Parser, curPos: int): string =
 
 ## Lexer/parser
 
-template skip(p: var Parser) =
+template skip(p: var Parser, scriptStr: var string) =
   var pos = p.bufpos
   while true:
     case p.buf[pos]
@@ -130,7 +118,7 @@ template skip(p: var Parser) =
             if p.buf[pos]==Semicolon:
                 inc(pos)
                 while true:
-                    ScriptConfig &= p.buf[pos]
+                    scriptStr &= p.buf[pos]
                     case p.buf[pos]:
                         of EOF:
                             break
@@ -138,13 +126,13 @@ template skip(p: var Parser) =
                             pos = lexbase.handleCR(p, pos)
                             when not defined(NOERRORLINES):
                                 AddToken newNewline(p.lineNumber)
-                            ScriptConfig &= "\n"
+                            scriptStr &= "\n"
                             break
                         of LF:
                             pos = lexbase.handleLF(p, pos)
                             when not defined(NOERRORLINES):
                                 AddToken newNewline(p.lineNumber)
-                            ScriptConfig &= "\n"
+                            scriptStr &= "\n"
                             break
                         else:
                             inc(pos)
@@ -654,13 +642,14 @@ template parseLiteral(p: var Parser) =
 
 proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.inline.} =
     var topBlock: Value
+    var scriptStr: string = ""
     if isDeferred: topBlock = newBlock()
     else: topBlock = newInline()
     let initial = p.bufpos
     let initialLine = p.lineNumber
     while true:
         setLen(p.value, 0)
-        skip(p)
+        skip(p, scriptStr)
 
         case p.buf[p.bufpos]
             of EOF:
@@ -780,6 +769,8 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
             else:
                 inc(p.bufpos)
 
+    if scriptStr!="":
+        topBlock.script = scriptStr
     return topBlock
 
 #=======================================
@@ -826,11 +817,10 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
-proc doParseAll*(input: string, isFile: bool = true): ParseResult =
+proc doParseAll*(input: string, isFile: bool = true): Value =
     var p: Parser
 
     # open stream
-
     if isFile:
         when not defined(WEB):
             if not fileExists(input):
@@ -847,15 +837,10 @@ proc doParseAll*(input: string, isFile: bool = true): ParseResult =
         lexbase.open(p, stream)
 
     # initialize
-
     p.value = ""
-    ScriptConfig = ""
 
-    # do parse
-    
+    # do parse    
     let rootBlock = parseBlock(p, 0)
-
-    # echo "found config:\n" & ScriptConfig
 
     # if everything went fine, return result
     when defined(VERBOSE):
@@ -863,7 +848,7 @@ proc doParseAll*(input: string, isFile: bool = true): ParseResult =
 
     lexbase.close(p)
             
-    return (rootBlock,ScriptConfig)
+    return rootBlock
 
 template doParse*(input: string, isFile: bool = true): Value =
-    doParseAll(input, isFile)[0]
+    doParseAll(input, isFile)
