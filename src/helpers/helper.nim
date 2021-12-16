@@ -154,7 +154,7 @@ proc printHelp*(syms: ValueDict) =
         if v.kind==Function and v.fnKind==BuiltinFunction:
             var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
             
-            echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.fdesc
+            echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.info
 
 proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result = initOrderedTable[string,Value]()
@@ -164,11 +164,14 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result["type"] = newType(v.kind)
 
     if v.info!="":
-        let parts = v.info.split("]")
-        let desc = parts[1].strip()
-        let modl = parts[0].strip().strip(chars={'['})
+        var desc = v.info
+        if v.kind != Function:
+            let parts = desc.split("]")
+            desc = parts[1].strip()
+            let modl = parts[0].strip().strip(chars={'['})
+            result["module"] = newString(modl)
+
         result["description"] = newString(desc)
-        result["module"] = newString(modl)
 
     if v.kind==Function:
         if v.fnKind==BuiltinFunction:
@@ -212,7 +215,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
                 result["alias"] = newString(alias[0])
                 result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
-            result["description"] = newString(v.fdesc)
+            result["description"] = newString(v.info)
             result["example"] = newString(v.example)
 
         else:
@@ -246,18 +249,10 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
 
     # If it's a function or builtin constant,
     # print its description/info
-    if v.kind==Function and v.fnKind==BuiltinFunction:
-        for d in getShortData(v.fdesc):
-            printOneData("",d)
-        printLine()
-    elif v.info!="":
-        var desc: string
-        if v.kind!=Function:
-            let parts = v.info.split("]")
-            desc = parts[1].strip()
-            
-        else:
-            desc = v.info
+    if v.info!="":
+        var desc: string = v.info
+        if desc.contains("]"):
+            desc = desc.split("]")[1].strip()
         
         for d in getShortData(desc):
             printOneData("",d)

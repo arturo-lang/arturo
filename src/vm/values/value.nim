@@ -249,7 +249,6 @@ type
                         alias*      : SymbolKind
                         prec*       : PrecedenceKind
                         module*     : string
-                        fdesc*      : string
                         arity*      : int
                         action*     : BuiltinAction
 
@@ -532,7 +531,7 @@ proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, md: string, d
         alias   : al, 
         prec    : pr,
         module  : md, 
-        fdesc   : desc, 
+        info    : desc, 
         arity   : ar, 
         args    : ag, 
         attrs   : at, 
