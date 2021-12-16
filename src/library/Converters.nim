@@ -755,7 +755,7 @@ proc defineSymbols*() =
             "memoize"   : ({Logical},"store results of function calls"),
             "info"      : ({String},"(documentation) set description string"),
             "returns"   : ({Block,Type},"(documentation) set return type"),
-            "options"   : ({Dictionary},"(documentation) set accepted attributes"),
+            "options"   : ({Block},"(documentation) set accepted attributes"),
             "example"   : ({String},"(documentation) set example code")
         },
         returns     = {Function},
@@ -857,11 +857,27 @@ proc defineSymbols*() =
             if (let aInfo = popAttr("info"); aInfo != VNULL):
                 ret.info = aInfo.s
 
+            if (let aOptions = popAttr("options"); aOptions != VNULL):
+                var i = 0
+                var opts = initOrderedTable[string,(ValueSpec,string)]()
+                cleanBlock(aOptions.a, inplace=true)
+                while i < aOptions.a.len:
+                    var vspec: ValueSpec
+                    if aOptions.a[i+1].kind == Type:
+                        vspec = {aOptions.a[i+1].t}
+                    else:
+                        for opt in aOptions.a[i+1].a:
+                            vspec.incl(opt.t)
+
+                    opts[aOptions.a[i].s] = (vspec, aOptions.a[i+2].s)
+                    i += 3
+                ret.attrs = opts
+
             if (let aReturns = popAttr("returns"); aReturns != VNULL):
                 if aReturns.kind == Type:
                     ret.returns = {aReturns.t}
                 else:
-                    var returns: ValueSpec = {}
+                    var returns: ValueSpec
                     for re in aReturns.a:
                         returns.incl(re.t)
                     ret.returns = returns

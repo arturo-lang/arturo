@@ -116,7 +116,7 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
 #         for arg in args[1..^1]:
 #             result.add fmt("{spaceBefore} {arg.s}")
 
-proc getOptionsForBuiltin(v: Value): seq[string] =
+proc getOptionsForFunction(v: Value): seq[string] =
     var attrs = toSeq(v.attrs.pairs)
     if attrs.len==1 and attrs[0][0]=="": return @[]
 
@@ -199,6 +199,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
                         specs.add(newType(s))
 
                     ss["types"] = newBlock(specs)
+                    ss["description"] = newString(descr)
 
                     attrs[k] = newDictionary(ss)
             result["attrs"] = newDictionary(attrs)
@@ -260,11 +261,10 @@ proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # print more details
     if v.kind==Function:
         printMultiData("usage", getUsageForFunction(n,v), bold(greenColor))
-        if v.fnKind==BuiltinFunction:
-            let opts = getOptionsForBuiltin(v)
-            if opts.len>0:
-                printEmptyLine()
-                printMultiData("options",opts,bold(greenColor))
+        let opts = getOptionsForFunction(v)
+        if opts.len>0:
+            printEmptyLine()
+            printMultiData("options",opts,bold(greenColor))
             
         printEmptyLine()
 
