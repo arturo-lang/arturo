@@ -174,19 +174,18 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
         result["description"] = newString(desc)
 
     if v.kind==Function:
-        if v.fnKind==BuiltinFunction:
+        var args = initOrderedTable[string,Value]()
+        if (toSeq(v.args.keys))[0]!="":
+            for k,spec in v.args:
+                var specs:ValueArray = @[]
+                for s in spec:
+                    specs.add(newType(s))
 
-            var args = initOrderedTable[string,Value]()
-            if (toSeq(v.args.keys))[0]!="":
-                for k,spec in v.args:
-                    var specs:ValueArray = @[]
-                    for s in spec:
-                        specs.add(newType(s))
+                args[k] = newBlock(specs)
+        result["args"] = newDictionary(args)
 
-                    args[k] = newBlock(specs)
-            result["args"] = newDictionary(args)
-
-            var attrs = initOrderedTable[string,Value]()
+        var attrs = initOrderedTable[string,Value]()
+        if v.attrs.len > 0:
             if (toSeq(v.attrs.keys))[0]!="":
                 for k,dd in v.attrs:
                     let spec = dd[0]
@@ -202,24 +201,24 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
                     ss["description"] = newString(descr)
 
                     attrs[k] = newDictionary(ss)
-            result["attrs"] = newDictionary(attrs)
+        result["attrs"] = newDictionary(attrs)
 
-            var returns:ValueArray = @[]
+        var returns:ValueArray = @[]
+        if returns.len > 0:
             for ret in v.returns:
                 returns.add(newType(ret))
-            result["returns"] = newBlock(returns)
-
-            let alias = getAlias(n, aliases)
-            if alias[0]!="":
-                result["alias"] = newString(alias[0])
-                result["infix?"] = newLogical(alias[1]==InfixPrecedence)
-
-            result["description"] = newString(v.info)
-            result["example"] = newString(v.example)
-
         else:
-            result["args"] = v.params
+            returns = @[newType(Nothing)]
 
+        result["returns"] = newBlock(returns)
+
+        let alias = getAlias(n, aliases)
+        if alias[0]!="":
+            result["alias"] = newString(alias[0])
+            result["infix?"] = newLogical(alias[1]==InfixPrecedence)
+
+        result["description"] = newString(v.info)
+        result["example"] = newString(v.example)
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
