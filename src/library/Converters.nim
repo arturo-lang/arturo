@@ -756,8 +756,6 @@ proc defineSymbols*() =
             "info"      : ({Block},"(documentation) set extra info for function")
         },
         returns     = {Function},
-        # TODO(Converters\function) add documentation example for `.info`
-        #  labels: library, documentation, easy
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
@@ -777,6 +775,43 @@ proc defineSymbols*() =
             ][
                 x + y
             ]
+            ;;;;
+            ; adding complete documentation for user function
+            addThem: function [
+                x :integer :floating
+                y :integer :floating
+            ].info: [
+                description "takes two numbers and adds them up"
+                options [
+                    .mul :integer "also multiply by given number"
+                ]
+                returns :integer :floating
+                example {
+                    addThem 10 20
+                    addThem.mul:3 10 20
+                }
+            ][
+                mul?: attr 'mul
+                if? not? null? mul? ->
+                    return mul? * x + y
+                else ->
+                    return x + y
+            ]
+
+            info'addThem
+            
+            ; |--------------------------------------------------------------------------------
+            ; |        addThem  :function                                          0x10EF0E528
+            ; |--------------------------------------------------------------------------------
+            ; |                 takes two numbers and adds them up
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  addThem x :integer :floating
+            ; |                         y :integer :floating
+            ; |
+            ; |        options  .mul :integer -> also multiply by given number
+            ; |
+            ; |        returns  :integer :floating
+            ; |--------------------------------------------------------------------------------
             ;;;;
             publicF: function .export['x] [z][
                 print ["z =>" z]
