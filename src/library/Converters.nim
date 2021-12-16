@@ -756,6 +756,10 @@ proc defineSymbols*() =
             "info"      : ({Block},"(documentation) set extra info for function")
         },
         returns     = {Function},
+        # TODO(Converters\function) add documentation example for typed parameters
+        #  labels: library, documentation, easy
+        # TODO(Converters\function) add documentation example for `.info`
+        #  labels: library, documentation, easy
         example     = """
             f: function [x][ x + 2 ]
             print f 10                ; 12
