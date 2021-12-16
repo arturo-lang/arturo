@@ -123,7 +123,7 @@ proc getOptionsForFunction(v: Value): seq[string] =
     var maxLen = 0
     for attr in attrs:
         let ts = getTypeString(attr[1][0])
-        if ts!=":boolean":
+        if ts!=":logical":
             let len = fmt(".{attr[0]} {ts}").len
             if len>maxLen: maxLen = len
         else:
@@ -134,7 +134,7 @@ proc getOptionsForFunction(v: Value): seq[string] =
         let ts = getTypeString(attr[1][0])
         var leftSide = ""
         var myLen = maxLen
-        if ts!=":boolean":
+        if ts!=":logical":
             leftSide = fmt("{fg(cyanColor)}.{attr[0]} {fg(grayColor)}{ts}")
             myLen += len(fmt("{fg(cyanColor)}{fg(grayColor)}"))
         else:
