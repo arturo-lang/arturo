@@ -63,12 +63,12 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
         const cleanExample = replace(strutils.strip(example),"\n            ","\n")
         
     when not defined(WEB):
-        let b = newBuiltin(n, alias, rule, static (instantiationInfo().filename).replace(".nim"), description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
+        let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
             require(n, args)
             act
         )
     else:
-        let b = newBuiltin(n, alias, rule, static (instantiationInfo().filename).replace(".nim"), "", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
+        let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "]", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
             require(n, args)
             act
         )

@@ -165,7 +165,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
     if v.info!="":
         var desc = v.info
-        if v.kind != Function:
+        if desc.contains("]"):
             let parts = desc.split("]")
             desc = parts[1].strip()
             let modl = parts[0].strip().strip(chars={'['})
@@ -175,7 +175,6 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
     if v.kind==Function:
         if v.fnKind==BuiltinFunction:
-            result["module"] = newString(v.module)
 
             var args = initOrderedTable[string,Value]()
             if (toSeq(v.args.keys))[0]!="":
@@ -200,7 +199,6 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
                         specs.add(newType(s))
 
                     ss["types"] = newBlock(specs)
-                    ss["description"] = newString(descr)
 
                     attrs[k] = newDictionary(ss)
             result["attrs"] = newDictionary(attrs)
