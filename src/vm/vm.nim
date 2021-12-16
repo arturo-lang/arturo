@@ -149,14 +149,14 @@ when not defined(WEB):
                     CurrentFile = lastPathPart(code)
                     CurrentPath = code
             
-            let (mainCode, scriptInfo) = doParseAll(code, isFile)
+            let mainCode = doParseAll(code, isFile)
 
             if not initialized:
                 initialize(
                     args, 
                     code, 
                     isFile=isFile, 
-                    parseData(doParse(scriptInfo, false)).d
+                    parseData(doParse(mainCode.script, false)).d
                 )
 
             let evaled = mainCode.doEval()
