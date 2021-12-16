@@ -756,8 +756,6 @@ proc defineSymbols*() =
             "info"      : ({Block},"(documentation) set extra info for function")
         },
         returns     = {Function},
-        # TODO(Converters\function) add documentation example for typed parameters
-        #  labels: library, documentation, easy
         # TODO(Converters\function) add documentation example for `.info`
         #  labels: library, documentation, easy
         example     = """
@@ -771,6 +769,14 @@ proc defineSymbols*() =
                 x * y
             ]
             print multiply 3 5        ; 15
+            ;;;;
+            ; forcing typed parameters
+            addThem: function [
+                x :integer
+                y :integer :floating
+            ][
+                x + y
+            ]
             ;;;;
             publicF: function .export['x] [z][
                 print ["z =>" z]
