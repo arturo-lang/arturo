@@ -204,7 +204,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
         result["attrs"] = newDictionary(attrs)
 
         var returns:ValueArray = @[]
-        if returns.len > 0:
+        if v.returns.len > 0:
             for ret in v.returns:
                 returns.add(newType(ret))
         else:
