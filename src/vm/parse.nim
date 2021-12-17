@@ -829,7 +829,10 @@ proc parseAsBlock(blk: Value, start: int): Value =
         i += 1
     
     if values.len > 0:
-        result.a.add(values)
+        if result.a.len == 0 or values.len == 1:
+            result.a.add(values)
+        else:
+            result.a.add(newBlock(values))
 
 #=======================================
 # Methods
