@@ -925,52 +925,6 @@ proc defineSymbols*() =
 
                 if y.data.d.hasKey("example"):
                     ret.example = y.data.d["example"].s
-                # var i = 0
-                # cleanBlock(aInfo.a, inplace=true)
-
-                # while i < aInfo.a.len:
-                #     var label: string
-                #     if aInfo.a[i].kind == String:
-                #         label = aInfo.a[i].s
-                #     else:
-                #         label = aInfo.a[i].r
-
-                #     case label:
-                #         of "description":
-                #             ret.info = aInfo.a[i+1].s
-                #             i += 1
-
-                #         of "options":
-                #             let optBlock = cleanBlock(aInfo.a[i+1].a)
-                #             var options = initOrderedTable[string,(ValueSpec,string)]()
-                #             var j = 0
-                #             while j < optBlock.len:
-                #                 let optName = optBlock[j].s
-                #                 var vspec: ValueSpec
-                #                 j += 1
-                #                 if j < optBlock.len and optBlock[j].kind == Type:
-                #                     while j < optBlock.len and optBlock[j].kind == Type:
-                #                         vspec.incl(optBlock[j].t)
-                #                         j += 1
-                #                 else:
-                #                     vspec = {Logical}
-                                
-                #                 options[optName] = (vspec, optBlock[j].s)
-                #                 j += 1
-                #             ret.attrs = options
-                #             i += 1
-
-                #         of "returns":
-                #             var returns: ValueSpec
-                #             while i+1 < aInfo.a.len and aInfo.a[i+1].kind == Type:
-                #                 returns.incl(aInfo.a[i+1].t)
-                #                 i += 1
-                #             ret.returns = returns
-
-                #         of "example":
-                #             ret.example = aInfo.a[i+1].s
-                #             i += 1
-                #     i += 1
     
             ret.args = argTypes
             
