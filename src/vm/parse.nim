@@ -11,7 +11,7 @@
 #=======================================
 
 import lexbase, os, streams
-import strutils, unicode
+import strutils, tables, unicode
 
 when defined(BENCHMARK) or defined(VERBOSE):
     import helpers/debug
@@ -72,7 +72,8 @@ const
 # Forward declarations
 #=======================================
 
-proc doParseAll*(input: string, isFile: bool = true): Value
+proc doParse*(input: string, isFile: bool = true): Value
+proc parseDataBlock*(blk: Value): Value 
 
 #=======================================
 # Templates
@@ -770,12 +771,85 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 inc(p.bufpos)
 
     if scriptStr!="":
-        topBlock.script = scriptStr
+        topBlock.data = parseDataBlock(doParse(scriptStr,false))
     return topBlock
+
+proc parseAsDictionary(blk: Value, start: int): Value =
+    result = newDictionary()
+    var i = start
+    while i < blk.a.len:
+        case blk.a[i].kind:
+            of Label: 
+                let lbl = blk.a[i].s
+                i += 1
+                var values: ValueArray = @[]
+                while i < blk.a.len and blk.a[i].kind!=Newline and blk.a[i].kind!=Label:
+                    case blk.a[i].kind:
+                        of Block:
+                            values.add(parseDataBlock(blk.a[i]))
+                        of String, Literal, Word:
+                            values.add(newString(blk.a[i].s))
+                        else:
+                            values.add(blk.a[i])
+                    i += 1
+                if values.len > 1:
+                    result.d[lbl] = newBlock(values)
+                elif values.len == 1:
+                    result.d[lbl] = values[0]
+                else:
+                    result.d[lbl] = VNULL
+            else:
+                discard
+
+        if i < blk.a.len and blk.a[i].kind!=Label:
+            i += 1
+
+proc parseAsBlock(blk: Value, start: int): Value =
+    result = newBlock()
+    var i = start
+    var values: ValueArray = @[]
+    while i < blk.a.len:
+        case blk.a[i].kind:
+            of Block:
+                values.add(parseDataBlock(blk.a[i]))
+            of String, Literal, Word, Label:
+                values.add(newString(blk.a[i].s))
+            of Newline:
+                if values.len > 1:
+                    result.a.add(newBlock(values))
+                    values = @[]
+                elif values.len == 1:
+                    result.a.add(values[0])
+                    values = @[]
+                else:
+                    discard
+            else:
+                values.add(blk.a[i])
+        
+        i += 1
+    
+    if values.len > 0:
+        result.a.add(values)
 
 #=======================================
 # Methods
 #=======================================
+
+proc parseDataBlock*(blk: Value): Value =
+    if blk.kind != Block or blk.a.len == 0:
+        return VNULL
+
+    var i = 0
+    while i < blk.a.len and blk.a[i].kind==Newline:
+        i += 1
+
+    if i==blk.a.len:
+        return VNULL
+
+    if blk.a[i].kind==Label:
+        result = parseAsDictionary(blk, i)
+    else:
+        result = parseAsBlock(blk, i)
 
 when defined(PYTHONIC):
     proc doProcessPythonic(s: string): string =
@@ -817,7 +891,7 @@ when defined(PYTHONIC):
         
         lines.join("\n")
 
-proc doParseAll*(input: string, isFile: bool = true): Value =
+proc doParse*(input: string, isFile: bool = true): Value =
     var p: Parser
 
     # open stream
@@ -849,6 +923,3 @@ proc doParseAll*(input: string, isFile: bool = true): Value =
     lexbase.close(p)
             
     return rootBlock
-
-template doParse*(input: string, isFile: bool = true): Value =
-    doParseAll(input, isFile)
