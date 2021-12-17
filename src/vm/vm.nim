@@ -67,7 +67,7 @@ proc setupLibrary*() =
     for i,importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptInfo:ValueDict = initOrderedTable[string,Value](), mutedColors: bool = false) =
+template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false) =
     # function arity
     Arities = initTable[string,int]()
     # stack
@@ -92,7 +92,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptInf
         arguments = args, 
         version = ArturoVersion,
         build = ArturoBuild,
-        script = scriptInfo
+        script = scriptData
     )
 
     when not defined(WEB):
@@ -149,14 +149,14 @@ when not defined(WEB):
                     CurrentFile = lastPathPart(code)
                     CurrentPath = code
             
-            let mainCode = doParseAll(code, isFile)
+            let mainCode = doParse(code, isFile)
 
             if not initialized:
                 initialize(
                     args, 
                     code, 
                     isFile=isFile, 
-                    parseData(doParse(mainCode.script, false)).d
+                    mainCode.data
                 )
 
             let evaled = mainCode.doEval()
@@ -176,14 +176,14 @@ else:
                     let val = parseJsObject(param)
                     code &= " " & codify(val)
 
-            let (mainCode, scriptInfo) = doParseAll(code, isFile=false)
+            let mainCode = doParse(code, isFile=false)
 
             if not initialized:
                 initialize(
                     @[""], 
                     code, 
                     isFile=false, 
-                    parseData(doParse(scriptInfo, false)).d
+                    mainCode.data
                 )
 
             let evaled = mainCode.doEval()
