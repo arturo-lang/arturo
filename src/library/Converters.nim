@@ -770,23 +770,24 @@ proc defineSymbols*() =
             ]
             ;;;;
             ; adding complete documentation for user function
+            ; using data comments within the body
             addThem: function [
                 x :integer :floating
                 y :integer :floating
-            ].info: [
-                description "takes two numbers and adds them up"
-                options [
-                    .mul :integer "also multiply by given number"
-                ]
-                returns :integer :floating
-                example {
-                    addThem 10 20
-                    addThem.mul:3 10 20
-                }
             ][
-                mul?: attr 'mul
-                if? not? null? mul? ->
-                    return mul? * x + y
+                ;; description: « takes two numbers and adds them up
+                ;; options: [
+                ;;      mul: :integer « also multiply by given number
+                ;; ]
+                ;; returns: :integer :floating
+                ;; example: {
+                ;;      addThem 10 20
+                ;;      addThem.mult:3 10 20
+                ;; }
+
+                mult?: attr 'mult
+                if? not? null? mult? ->
+                    return mult? * x + y
                 else ->
                     return x + y
             ]
@@ -801,7 +802,7 @@ proc defineSymbols*() =
             ; |          usage  addThem x :integer :floating
             ; |                         y :integer :floating
             ; |
-            ; |        options  .mul :integer -> also multiply by given number
+            ; |        options  .mult :integer -> also multiply by given number
             ; |
             ; |        returns  :integer :floating
             ; |--------------------------------------------------------------------------------
