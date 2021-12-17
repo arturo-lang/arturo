@@ -901,7 +901,7 @@ proc defineSymbols*() =
                         if v.kind==Type:
                             options[k] = ({v.t}, "")
                         elif v.kind==String:
-                            options[k] = ({Any}, v.s)
+                            options[k] = ({Logical}, v.s)
                         elif v.kind==Block:
                             var vspec: ValueSpec
                             var i = 0
