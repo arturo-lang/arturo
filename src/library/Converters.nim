@@ -509,7 +509,7 @@ proc defineSymbols*() =
                 if x.kind==Block:
                     push(parseDataBlock(x))
                 elif x.kind==String:
-                    let (src, tp) = getSource(x.s)
+                    let (src, _) = getSource(x.s)
                     push(parseDataBlock(doParse(src, isFile=false)))
             elif (popAttr("code") != VNULL):
                 push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL), safeStrings = (popAttr("safe") != VNULL))))
