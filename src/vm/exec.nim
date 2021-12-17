@@ -78,10 +78,10 @@ template fetchAttributeByIndex(idx: int):untyped =
 
 ####
 
-proc parseData*(
-    blk             : Value
-): Value =
-    newDictionary(evalData(blk))
+# proc parseData*(
+#     blk             : Value
+# ): Value =
+#     newDictionary(evalData(blk))
 
 template execIsolated*(evaled:Translation): untyped =
     doExec(evaled, 1, NoValues)
