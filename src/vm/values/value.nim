@@ -229,7 +229,7 @@ type
             of Inline,
                Block:       
                    a*   : ValueArray
-                   script* : string
+                   data* : Value
                    #refs*: IntArray
             of Dictionary:  d*  : ValueDict
             of Function:    
@@ -552,8 +552,8 @@ proc newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
 proc newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)#, refs: refs)
 
-proc newBlock*(a: ValueArray = @[], script: string = ""): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
-    Value(kind: Block, a: a, script: script)#, refs: refs)
+proc newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
+    Value(kind: Block, a: a, data: data)#, refs: refs)
 
 proc newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
@@ -601,7 +601,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Binary:      result = newBinary(v.n)
 
         of Inline:      result = newInline(v.a)
-        of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), v.script)
+        of Block:       result = newBlock(v.a.map((vv)=>copyValue(vv)), copyValue(v.data))
 
         of Dictionary:  result = newDictionary(v.d)
 
