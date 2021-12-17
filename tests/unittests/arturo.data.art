@@ -1,0 +1,99 @@
+; Array blocks with numbers
+print as.data {1 2 3}
+print as.data {
+    1
+    2
+    3
+}
+
+; Array blocks with strings
+print as.data {"one" "two" "three"}
+print as.data {
+    "one"
+    "two"
+    "three"
+}
+
+; Array blocks with different types
+print as.data {one "two" three 4}
+print as.data {
+    one
+    "two"
+    three
+    4
+}
+
+; Array blocks with internal array blocks
+print as.data {one ["two" three] 4}
+print as.data {
+    one
+    ["two" three]
+    4
+}
+print as.data {
+    one
+    "two" three
+    4
+}
+print as.data {
+    one "two"
+    three 4
+}
+
+; Dictionary blocks
+print as.data {name: John surname: Doe}
+print as.data {
+    name: John
+    surname: Doe
+}
+
+; Dictionaries within dictionaries
+print as.data {
+    name: John
+    surname: Doe 
+    address: [
+        country: Spain
+        location: [
+            region: Andalucia
+            city: Granada
+        ]
+    ]
+    info: [
+        age: 35
+    ]
+}
+
+; Arrays within dictionaries
+print as.data {
+    name: John
+    surname: Doe 
+    address: [
+        country: Spain
+        location: [
+            region: Andalucia
+            city: Granada
+        ]
+    ]
+    info: [
+        age: 35
+        likes: [
+            pizza
+            spaghetti
+            steak
+        ]
+    ]
+}
+
+; Array of dictionaries
+print as.data {
+    [name: John surname: Doe]
+    [name: Jane surname: Doe]
+}
+; Array of dictionaries
+print as.data {
+    [
+        name: John 
+        surname: Doe
+    ]
+    [name: Jane surname: Doe]
+}
