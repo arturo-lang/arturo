@@ -466,6 +466,7 @@ proc defineSymbols*() =
                 "octal"     : ({Logical},"format integer as octal"),
                 "ascii"     : ({Logical},"transliterate string to ASCII"),
                 "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
+                "data"      : ({Logical},"parse input as Arturo data block"),
                 "code"      : ({Logical},"convert value to valid Arturo code"),
                 "pretty"    : ({Logical},"prettify generated code"),
                 "unwrapped" : ({Logical},"omit external block notation")
@@ -476,6 +477,7 @@ proc defineSymbols*() =
                 "hex"       : ({Logical},"format integer as hexadecimal"),
                 "octal"     : ({Logical},"format integer as octal"),
                 "agnostic"  : ({Logical},"convert words in block to literals, if not in context"),
+                "data"      : ({Logical},"parse input as Arturo data block"),
                 "code"      : ({Logical},"convert value to valid Arturo code"),
                 "pretty"    : ({Logical},"prettify generated code"),
                 "unwrapped" : ({Logical},"omit external block notation")
@@ -503,6 +505,12 @@ proc defineSymbols*() =
                     else: v
                 )
                 push(newBlock(res))
+            elif (popAttr("data") != VNULL):
+                if x.kind==Block:
+                    push(parseDataBlock(x))
+                elif x.kind==String:
+                    let (src, tp) = getSource(x.s)
+                    push(parseDataBlock(doParse(src, isFile=false)))
             elif (popAttr("code") != VNULL):
                 push(newString(codify(x,pretty = (popAttr("pretty") != VNULL), unwrapped = (popAttr("unwrapped") != VNULL), safeStrings = (popAttr("safe") != VNULL))))
             else:
@@ -640,8 +648,7 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Block},"embed given symbols"),
-            "raw"   : ({Logical},"create dictionary from raw block"),
-            "data"  : ({Logical},"parse input as data")
+            "raw"   : ({Logical},"create dictionary from raw block")
         },
         returns     = {Dictionary},
         example     = """
@@ -665,43 +672,30 @@ proc defineSymbols*() =
             ##########################################################
             var dict: ValueDict
 
-            if (popAttr("data") != VNULL):
-                if x.kind==Block:
-                    push(parseData(x))
-                elif x.kind==String:
-                    let (src, tp) = getSource(x.s)
+            if x.kind==Block:
+                #dict = execDictionary(x)
+                if (popAttr("raw") != VNULL):
+                    dict = initOrderedTable[string,Value]()
+                    var idx = 0
+                    let blk = cleanBlock(x.a)
+                    while idx < blk.len:
+                        dict[blk[idx].s] = blk[idx+1]
+                        idx += 2
+                else:
+                    dict = execBlock(x,dictionary=true)
+            elif x.kind==String:
+                let (src, tp) = getSource(x.s)
 
-                    if tp!=TextData:
-                        dict = parseData(doParse(src, isFile=false)).d
-                    else:
-                        echo "file does not exist"
+                if tp!=TextData:
+                    dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
+                else:
+                    echo "file does not exist"
 
-                    push(newDictionary(dict))
-            else:
-                if x.kind==Block:
-                    #dict = execDictionary(x)
-                    if (popAttr("raw") != VNULL):
-                        dict = initOrderedTable[string,Value]()
-                        var idx = 0
-                        let blk = cleanBlock(x.a)
-                        while idx < blk.len:
-                            dict[blk[idx].s] = blk[idx+1]
-                            idx += 2
-                    else:
-                        dict = execBlock(x,dictionary=true)
-                elif x.kind==String:
-                    let (src, tp) = getSource(x.s)
-
-                    if tp!=TextData:
-                        dict = execBlock(doParse(src, isFile=false), dictionary=true)#, isIsolated=true)
-                    else:
-                        echo "file does not exist"
-
-                if (let aWith = popAttr("with"); aWith != VNULL):
-                    for x in aWith.a:
-                        dict[x.s] = GetSym(x.s)
-                        
-                push(newDictionary(dict))
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                for x in aWith.a:
+                    dict[x.s] = GetSym(x.s)
+                    
+            push(newDictionary(dict))
 
     builtin "from",
         alias       = unaliased, 
@@ -895,54 +889,88 @@ proc defineSymbols*() =
                     argTypes[arg.s] = {Any}
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
-            if y.script!="":
-                var aInfo = doParse(y.script, isFile=false)
-                var i = 0
-                cleanBlock(aInfo.a, inplace=true)
+            if y.data.kind==Dictionary:
 
-                while i < aInfo.a.len:
-                    var label: string
-                    if aInfo.a[i].kind == String:
-                        label = aInfo.a[i].s
-                    else:
-                        label = aInfo.a[i].r
+                if y.data.d.hasKey("description"):
+                    ret.info = y.data.d["description"].s
 
-                    case label:
-                        of "description":
-                            ret.info = aInfo.a[i+1].s
-                            i += 1
-
-                        of "options":
-                            let optBlock = cleanBlock(aInfo.a[i+1].a)
-                            var options = initOrderedTable[string,(ValueSpec,string)]()
-                            var j = 0
-                            while j < optBlock.len:
-                                let optName = optBlock[j].s
-                                var vspec: ValueSpec
-                                j += 1
-                                if j < optBlock.len and optBlock[j].kind == Type:
-                                    while j < optBlock.len and optBlock[j].kind == Type:
-                                        vspec.incl(optBlock[j].t)
-                                        j += 1
-                                else:
-                                    vspec = {Logical}
-                                
-                                options[optName] = (vspec, optBlock[j].s)
-                                j += 1
-                            ret.attrs = options
-                            i += 1
-
-                        of "returns":
-                            var returns: ValueSpec
-                            while i+1 < aInfo.a.len and aInfo.a[i+1].kind == Type:
-                                returns.incl(aInfo.a[i+1].t)
+                if y.data.d.hasKey("options") and y.data.d["options"].kind==Dictionary:
+                    var options = initOrderedTable[string,(ValueSpec,string)]()
+                    for (k,v) in pairs(y.data.d["options"].d):
+                        if v.kind==Type:
+                            options[k] = ({v.t}, "")
+                        elif v.kind==String:
+                            options[k] = ({Any}, v.s)
+                        elif v.kind==Block:
+                            var vspec: ValueSpec
+                            var i = 0
+                            while i < v.a.len and v.a[i].kind==Type:
+                                vspec.incl(v.a[i].t)
                                 i += 1
-                            ret.returns = returns
+                            if v.a[i].kind==String:
+                                options[k] = (vspec, v.a[i].s)
+                            else:
+                                options[k] = (vspec, "")
 
-                        of "example":
-                            ret.example = aInfo.a[i+1].s
-                            i += 1
-                    i += 1
+                    ret.attrs = options
+
+                if y.data.d.hasKey("returns"):
+                    if y.data.d["returns"].kind==Type:
+                        ret.returns = {y.data.d["returns"].t}
+                    else:
+                        var returns: ValueSpec
+                        for tp in y.data.d["returns"].a:
+                            returns.incl(tp.t)
+                        ret.returns = returns
+
+                if y.data.d.hasKey("example"):
+                    ret.example = y.data.d["example"].s
+                # var i = 0
+                # cleanBlock(aInfo.a, inplace=true)
+
+                # while i < aInfo.a.len:
+                #     var label: string
+                #     if aInfo.a[i].kind == String:
+                #         label = aInfo.a[i].s
+                #     else:
+                #         label = aInfo.a[i].r
+
+                #     case label:
+                #         of "description":
+                #             ret.info = aInfo.a[i+1].s
+                #             i += 1
+
+                #         of "options":
+                #             let optBlock = cleanBlock(aInfo.a[i+1].a)
+                #             var options = initOrderedTable[string,(ValueSpec,string)]()
+                #             var j = 0
+                #             while j < optBlock.len:
+                #                 let optName = optBlock[j].s
+                #                 var vspec: ValueSpec
+                #                 j += 1
+                #                 if j < optBlock.len and optBlock[j].kind == Type:
+                #                     while j < optBlock.len and optBlock[j].kind == Type:
+                #                         vspec.incl(optBlock[j].t)
+                #                         j += 1
+                #                 else:
+                #                     vspec = {Logical}
+                                
+                #                 options[optName] = (vspec, optBlock[j].s)
+                #                 j += 1
+                #             ret.attrs = options
+                #             i += 1
+
+                #         of "returns":
+                #             var returns: ValueSpec
+                #             while i+1 < aInfo.a.len and aInfo.a[i+1].kind == Type:
+                #                 returns.incl(aInfo.a[i+1].t)
+                #                 i += 1
+                #             ret.returns = returns
+
+                #         of "example":
+                #             ret.example = aInfo.a[i+1].s
+                #             i += 1
+                #     i += 1
     
             ret.args = argTypes
             
