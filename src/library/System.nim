@@ -172,7 +172,7 @@ proc defineSymbols*() =
     constant "script",
         alias       = unaliased,
         description = "embedded information about the current script":
-            newDictionary(getScriptInfo())
+            getScriptInfo()
 
     constant "sys",
         alias       = unaliased,
