@@ -214,7 +214,7 @@ while [i<3][
 a: "tHis Is a stRinG"
 print upper a               ; THIS IS A STRING
 print lower a               ; this is a string
-print capitalize a          ; tHis Is a stRinG
+print capitalize a          ; THis Is a stRinG
 
 ; concatenation
 a: "Hello " ++ "World!"     ; a: "Hello World!"
