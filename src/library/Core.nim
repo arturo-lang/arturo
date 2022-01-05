@@ -413,6 +413,8 @@ proc defineSymbols*() =
                         SetSym(w.s, y)
             else:
                 SetInPlace(y)
+                if y.kind==Function:
+                    Arities[x.s] = y.params.a.len
 
     builtin "new",
         alias       = unaliased, 
