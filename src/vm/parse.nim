@@ -537,7 +537,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             elif p.buf[pos+1]=='=':
                 inc(pos)
                 p.symbol = doubleturnstile
-            elif p.buf[pos+1]==">":
+            elif p.buf[pos+1]=='>':
                 inc(pos)
                 p.symbol = triangleright
             else: 
