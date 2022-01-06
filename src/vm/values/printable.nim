@@ -43,9 +43,12 @@ proc `$`*(s: SymbolKind): string =
         of longthickarrowleft   : result = "<=="
         of longthickarrowright  : result = "==>"
         of longthickarrowboth   : result = "<==>"
-        of tilderight           : result = "~>"
         of tildeleft            : result = "<~"
+        of tilderight           : result = "~>"
         of tildeboth            : result = "<~>"
+        of triangleleft         : result = "<|"
+        of triangleright        : result = "|>"
+        of triangleboth         : result = "<|>"
 
         of equalless            : result = "=<"
         of greaterequal         : result = ">="
