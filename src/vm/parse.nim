@@ -564,7 +564,13 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             if p.buf[pos+1]=='+': inc(pos); p.symbol = doubleplus
             else: p.symbol = plus
         of '-'  : 
-            if p.buf[pos+1]=='>': inc(pos); p.symbol = arrowright
+            if p.buf[pos+1]=='>': 
+                inc(pos)
+                if p.buf[pos+1]=='>':
+                    inc(pos)
+                    p.symbol = arrowdoubleright
+                else:
+                    p.symbol = arrowright
             elif p.buf[pos+1]==':': inc(pos); p.symbol = minuscolon
             elif p.buf[pos+1]=='-': 
                 inc(pos)
@@ -580,7 +586,13 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     p.symbol = doubleminus
             else: p.symbol = minus
         of '=': 
-            if p.buf[pos+1]=='>': inc(pos); p.symbol = thickarrowright
+            if p.buf[pos+1]=='>': 
+                inc(pos)
+                if p.buf[pos+1]=='>':
+                    inc(pos)
+                    p.symbol = thickarrowdoubleright
+                else:
+                    p.symbol = thickarrowright
             elif p.buf[pos+1]=='<': inc(pos); p.symbol = equalless
             elif p.buf[pos+1]=='=':
                 inc(pos)
@@ -634,6 +646,20 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     if p.buf[pos+1]=='<':
                         inc(pos)
                         p.symbol = triplearrowleft
+                    elif p.buf[pos+1]=='-':
+                        inc(pos)
+                        if p.buf[pos+1]=='>' and p.buf[pos+2]=='>':
+                            inc(pos,2)
+                            p.symbol = arrowdoubleboth
+                        else:
+                            p.symbol = arrowdoubleleft
+                    elif p.buf[pos+1]=='=':
+                        inc(pos)
+                        if p.buf[pos+1]=='>' and p.buf[pos+2]=='>':
+                            inc(pos,2)
+                            p.symbol = thickarrowdoubleboth
+                        else:
+                            p.symbol = thickarrowdoubleleft
                     else:
                         p.symbol = doublearrowleft
                 of '|':
