@@ -537,6 +537,9 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             elif p.buf[pos+1]=='=':
                 inc(pos)
                 p.symbol = doubleturnstile
+            elif p.buf[pos+1]==">":
+                inc(pos)
+                p.symbol = triangleright
             else: 
                 p.symbol = pipe
         of '/'  : 
@@ -633,6 +636,13 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                         p.symbol = triplearrowleft
                     else:
                         p.symbol = doublearrowleft
+                of '|':
+                    inc (pos)
+                    if p.buf[pos+1]=='>':
+                        inc(pos)
+                        p.symbol = triangleboth
+                    else:
+                        p.symbol = triangleleft
                 of ':': inc(pos); p.symbol = lesscolon
                 else: p.symbol = lessthan
         of '>':
