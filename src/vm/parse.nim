@@ -571,6 +571,13 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     p.symbol = arrowdoubleright
                 else:
                     p.symbol = arrowright
+            elif p.buf[pos+1]=='<':
+                inc(pos)
+                if p.buf[pos+1]=='<':
+                    inc(pos)
+                    p.symbol = reversearrowdoubleleft
+                else:
+                    p.symbol = reversearrowleft
             elif p.buf[pos+1]==':': inc(pos); p.symbol = minuscolon
             elif p.buf[pos+1]=='-': 
                 inc(pos)
@@ -586,7 +593,10 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     p.symbol = doubleminus
             else: p.symbol = minus
         of '=': 
-            if p.buf[pos+1]=='>': 
+            if p.buf[pos+1]=='~':
+                inc(pos)
+                p.symbol = approxequal
+            elif p.buf[pos+1]=='>': 
                 inc(pos)
                 if p.buf[pos+1]=='>':
                     inc(pos)
@@ -674,11 +684,25 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         of '>':
             case p.buf[pos+1]:
                 of '=': inc(pos); p.symbol = greaterequal
+                of '-':
+                    inc(pos)
+                    if p.buf[pos+1]=='<':
+                        inc(pos)
+                        p.symbol = reversearrowboth
+                    else:
+                        p.symbol = reversearrowright
                 of '>': 
                     inc(pos)
                     if p.buf[pos+1]=='>':
                         inc(pos)
                         p.symbol = triplearrowright
+                    elif p.buf[pos+1]=='-':
+                        inc(pos)
+                        if p.buf[pos+1]=='<' and p.buf[pos+2]=='<':
+                            inc(pos,2)
+                            p.symbol = reversearrowdoubleboth
+                        else:
+                            p.symbol = reversearrowdoubleright
                     else:
                         p.symbol = doublearrowright
                 of ':': inc(pos); p.symbol = greatercolon
