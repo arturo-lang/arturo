@@ -88,6 +88,8 @@ proc `$`*(s: SymbolKind): string =
         of logicaland           : result = "/\\"
         of logicalor            : result = "\\/"
         of pipe                 : result = "|"
+        of turnstile            : result = "|-"
+        of doubleturnstile      : result = "|="
 
         of ellipsis             : result = ".."
         of longellipsis         : result = "..."
