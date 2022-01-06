@@ -163,6 +163,13 @@ https://github.com/xigoi/vim-arturo
 
 The font you use is a matter of personal taste. However, if you still want to know the "official" preference and make Arturo's symbols *shine*, then I'd strongly recommend you use [Fira Code](https://github.com/tonsky/FiraCode) with ligatures turned on. ;-)
 
+The recommended settings for using Fira Code along with Arturo in Visual Studio Code would be:
+
+```
+"editor.fontFamily": "'Fira Code'",
+"editor.fontLigatures": "'ss07','ss09','cv20','cv22','cv23'"
+```
+
 Showcase
 ------------------------------
 
