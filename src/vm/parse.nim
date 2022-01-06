@@ -531,11 +531,23 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             if p.buf[pos+1]=='|': inc(pos); p.symbol = doublepipe
             else: p.symbol = pipe
         of '/'  : 
-            if p.buf[pos+1]=='/': inc(pos); p.symbol = doubleslash
-            else: p.symbol = slash
+            if p.buf[pos+1]=='/': 
+                inc(pos)
+                p.symbol = doubleslash
+            elif p.buf[pos+1]==Backslash:
+                inc(pos)
+                p.symbol = logicaland
+            else: 
+                p.symbol = slash
         of '\\' : 
-            if p.buf[pos+1]=='\\': inc(pos); p.symbol = doublebackslash
-            else: p.symbol = backslash
+            if p.buf[pos+1]=='\\': 
+                inc(pos)
+                p.symbol = doublebackslash
+            elif p.buf[pos+1] == '/':
+                inc(pos)
+                p.symbol = logicalor
+            else: 
+                p.symbol = backslash
         of '+'  : 
             if p.buf[pos+1]=='+': inc(pos); p.symbol = doubleplus
             else: p.symbol = plus
