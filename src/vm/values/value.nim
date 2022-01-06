@@ -73,6 +73,7 @@ type
         
         tilde               # ~
         exclamation         # !
+        doubleexclamation   # !!
         question            # ?
         doublequestion      # ??
         at                  # @
@@ -1309,6 +1310,7 @@ proc `$`(s: SymbolKind): string =
 
         of tilde                : result = "~"
         of exclamation          : result = "!"
+        of doubleexclamation    : result = "!!"
         of question             : result = "?"
         of doublequestion       : result = "??"
         of at                   : result = "@"

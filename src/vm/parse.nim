@@ -466,7 +466,12 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 p.symbol = tilderight
             else:
                 p.symbol = tilde
-        of '!'  : p.symbol = exclamation
+        of '!'  : 
+            if p.buf[pos+1]=='!':
+                inc(pos)
+                p.symbol = doubleexclamation
+            else:
+                p.symbol = exclamation
         of '?'  : 
             if p.buf[pos+1]=='?': inc(pos); p.symbol = doublequestion
             else: p.symbol = question
