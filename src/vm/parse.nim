@@ -499,9 +499,28 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                     except:
                         p.symbol = sharp
                         pos = oldPos
-
-            else:
-                p.symbol = sharp
+            else: 
+                if p.buf[pos+1] == '#':
+                    inc pos
+                    if p.buf[pos+1] == '#':
+                        inc pos
+                        if p.buf[pos+1] == '#':
+                            inc pos 
+                            if p.buf[pos+1] == '#':
+                                inc pos
+                                if p.buf[pos+1] == '#':
+                                    inc pos
+                                    p.symbol = sextuplesharp
+                                else:
+                                    p.symbol = quintuplesharp
+                            else:
+                                p.symbol = quadruplesharp
+                        else:
+                            p.symbol = triplesharp
+                    else:
+                        p.symbol = doublesharp
+                else:
+                    p.symbol = sharp
         of '$'  : p.symbol = dollar
         of '%'  : p.symbol = percent
         of '^'  : p.symbol = caret

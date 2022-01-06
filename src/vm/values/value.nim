@@ -78,6 +78,11 @@ type
         doublequestion      # ??
         at                  # @
         sharp               # #
+        doublesharp         # ##
+        triplesharp         # ###
+        quadruplesharp      # ####
+        quintuplesharp      # #####
+        sextuplesharp       # ######
         dollar              # $
         percent             # %
         caret               # ^
@@ -1315,6 +1320,11 @@ proc `$`(s: SymbolKind): string =
         of doublequestion       : result = "??"
         of at                   : result = "@"
         of sharp                : result = "#"
+        of doublesharp          : result = "##"
+        of triplesharp          : result = "###"
+        of quadruplesharp       : result = "####"
+        of quintuplesharp       : result = "#####"
+        of sextuplesharp        : result = "######"
         of dollar               : result = "$"
         of percent              : result = "%"
         of caret                : result = "^"
