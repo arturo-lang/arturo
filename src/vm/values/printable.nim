@@ -85,6 +85,8 @@ proc `$`*(s: SymbolKind): string =
         of doubleslash          : result = "//"
         of backslash            : result = "\\"
         of doublebackslash      : result = "\\\\"
+        of logicaland           : result = "/\\"
+        of logicalor            : result = "\\/"
         of pipe                 : result = "|"
 
         of ellipsis             : result = ".."
