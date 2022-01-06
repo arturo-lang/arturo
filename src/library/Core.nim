@@ -34,6 +34,40 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Core"
 
+    builtin "alias",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "assign symbol to given function",
+        args        = {
+            "symbol"      : {Symbol, String, Block},
+            "function"    : {Word, Literal, String}
+        },
+        attrs       = {
+            "infix"  : ({Logical},"use infix precedence")
+        },
+        returns     = {Nothing},
+        # TODO(Core\alias) Add documentation example
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            var prec = PrefixPrecedence
+            if (popAttr("infix") != VNULL):
+                prec = InfixPrecedence
+
+            var sym: SymbolKind
+            if x.kind==String:
+                sym = doParse(x.s, isFile=false).a[0].m
+            elif x.kind==Block:
+                sym = x.a[0].m
+            else:
+                sym = x.m
+
+            Aliases[sym] = AliasBinding(
+                precedence: prec,
+                name: newWord(y.s)
+            )
+
     builtin "break",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
