@@ -43,86 +43,92 @@ type
     BuiltinAction* = proc ()
 
     SymbolKind* = enum
-        thickarrowleft      # <=
-        thickarrowright     # =>
-        thickarrowboth      # <=>
-        arrowleft           # <-
-        arrowright          # ->
-        arrowboth           # <->
-        doublearrowleft     # <<
-        doublearrowright    # >>
-        triplearrowleft     # <<<
-        triplearrowright    # >>>
-        longarrowleft       # <--
-        longarrowright      # -->
-        longarrowboth       # <-->
-        longthickarrowleft  # <==
-        longthickarrowright # ==>
-        longthickarrowboth  # <==>
-        tildeleft           # <~
-        tilderight          # ~>
-        tildeboth           # <~>
-        triangleleft        # <|
-        triangleright       # |>
-        triangleboth        # <|>
+        thickarrowleft          # <=
+        thickarrowright         # =>
+        thickarrowboth          # <=>
+        thickarrowdoubleleft    # <<=
+        thickarrowdoubleright   # =>>
+        thickarrowdoubleboth    # <<=>>
+        arrowleft               # <-
+        arrowright              # ->
+        arrowboth               # <->
+        arrowdoubleleft         # <<-
+        arrowdoubleright        # ->>
+        arrowdoubleboth         # <<->>
+        doublearrowleft         # <<
+        doublearrowright        # >>
+        triplearrowleft         # <<<
+        triplearrowright        # >>>
+        longarrowleft           # <--
+        longarrowright          # -->
+        longarrowboth           # <-->
+        longthickarrowleft      # <==
+        longthickarrowright     # ==>
+        longthickarrowboth      # <==>
+        tildeleft               # <~
+        tilderight              # ~>
+        tildeboth               # <~>
+        triangleleft            # <|
+        triangleright           # |>
+        triangleboth            # <|>
 
-        equalless           # =<
-        greaterequal        # >=
-        lessgreater         # <>
+        equalless               # =<
+        greaterequal            # >=
+        lessgreater             # <>
 
-        lesscolon           # <:
-        minuscolon          # -:
-        greatercolon        # >:
+        lesscolon               # <:
+        minuscolon              # -:
+        greatercolon            # >:
         
-        tilde               # ~
-        exclamation         # !
-        doubleexclamation   # !!
-        question            # ?
-        doublequestion      # ??
-        at                  # @
-        sharp               # #
-        doublesharp         # ##
-        triplesharp         # ###
-        quadruplesharp      # ####
-        quintuplesharp      # #####
-        sextuplesharp       # ######
-        dollar              # $
-        percent             # %
-        caret               # ^
-        ampersand           # &
-        asterisk            # *
-        minus               # -
-        doubleminus         # --
-        underscore          # _
-        equal               # =
-        doubleequal         # ==
-        plus                # +
-        doubleplus          # ++
+        tilde                   # ~
+        exclamation             # !
+        doubleexclamation       # !!
+        question                # ?
+        doublequestion          # ??
+        at                      # @
+        sharp                   # #
+        doublesharp             # ## 
+        triplesharp             # ###
+        quadruplesharp          # ####
+        quintuplesharp          # #####
+        sextuplesharp           # ######
+        dollar                  # $
+        percent                 # %
+        caret                   # ^
+        ampersand               # &
+        asterisk                # *
+        minus                   # -
+        doubleminus             # --
+        underscore              # _
+        equal                   # =
+        doubleequal             # ==
+        plus                    # +
+        doubleplus              # ++
 
-        lessthan            # <
-        greaterthan         # >
+        lessthan                # <
+        greaterthan             # >
        
-        slash               # /
-        doubleslash         # //
-        backslash           # 
-        doublebackslash     #
-        logicaland
-        logicalor
-        pipe                # |     
-        turnstile           # |-
-        doubleturnstile     # |=
+        slash                   # /
+        doubleslash             # //
+        backslash               # 
+        doublebackslash         #
+        logicaland              #
+        logicalor               #
+        pipe                    # |     
+        turnstile               # |-
+        doubleturnstile         # |=
 
-        ellipsis            # ..
-        longellipsis        # ...
-        dotslash            # ./
-        colon               # :
-        doublecolon         # ::
-        doublepipe          # ||
+        ellipsis                # ..
+        longellipsis            # ...
+        dotslash                # ./
+        colon                   # :
+        doublecolon             # ::
+        doublepipe              # ||
 
-        slashedzero         # ø
-        infinite            # ∞
+        slashedzero             # ø
+        infinite                # ∞
 
-        unaliased           # used only for builtins
+        unaliased               # used only for builtins
 
     ValueKind* = enum
         Null            = 0
@@ -1295,9 +1301,15 @@ proc `$`(s: SymbolKind): string =
         of thickarrowleft       : result = "<="
         of thickarrowright      : result = "=>"
         of thickarrowboth       : result = "<=>"
+        of thickarrowdoubleleft : result = "<<="
+        of thickarrowdoubleright: result = "=>>"
+        of thickarrowdoubleboth : result = "<<=>>"
         of arrowleft            : result = "<-"
         of arrowright           : result = "->"
         of arrowboth            : result = "<->"
+        of arrowdoubleleft      : result = "<<-"
+        of arrowdoubleright     : result = "->>"
+        of arrowdoubleboth      : result = "<<->>"
         of doublearrowleft      : result = "<<"
         of doublearrowright     : result = ">>"
         of triplearrowleft      : result = "<<<"
