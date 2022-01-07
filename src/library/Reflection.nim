@@ -189,12 +189,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("get")!=VNULL):
-                let time = getBenchmark:
+                let time = getBetterBenchmark:
                     discard execBlock(x)
 
                 push newFloating(time)
             else:
-                benchmark "":
+                betterBenchmark "":
                     discard execBlock(x)
 
     builtin "binary?",

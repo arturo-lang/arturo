@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import strutils, times
+import std/monotimes, strutils, times
 
 #=======================================
 # Templates
@@ -29,3 +29,15 @@ template getBenchmark*(code: untyped): float =
     code
     epochTime() - t0
     
+template betterBenchmark*(benchmarkName: string, code: untyped) =
+    block:
+        let t0 = getMonoTime()
+        code
+        let elapsed = (float)(ticks(getMonoTime()) - ticks(t0))
+        let elapsedStr = (elapsed/(float)1000000).formatFloat(format = ffDecimal, precision = 3)
+        echo "[benchmark] time: ", elapsedStr, "ms"
+
+template getBetterBenchmark*(code: untyped): float =
+    let t0 = getMonoTime()
+    code
+    ((float)(ticks(getMonoTime()) - ticks(t0)))/(float)(1000000)
