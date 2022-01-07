@@ -16,6 +16,10 @@ import std/monotimes, strutils, times
 # Templates
 #=======================================
 
+# TODO(helpers\benchmark) complete eliminate older benchmark utilities?
+#  We'll first have to verify that the newer ones (`betterBenchmark` & `getBetterBenchmark`) work - and work better.
+#  labels: cleanup
+
 template benchmark*(benchmarkName: string, code: untyped) =
     block:
         let t0 = epochTime()
