@@ -134,9 +134,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         
                         when not inArrowBlock:
                             addConst(consts, Aliases[symalias].name, opCall)
-                            argStack.add(symfunc.arity)
+                            if symfunc.fnKind == BuiltinFunction:
+                                argStack.add(symfunc.arity)
+                            else:
+                                argStack.add(symfunc.params.a.len)
                         else:
-                            subargStack.add(symfunc.arity)
+                            if symfunc.fnKind == BuiltinFunction:
+                                subargStack.add(symfunc.arity)
+                            else:
+                                argStack.add(symfunc.params.a.len)
 
                         when inArrowBlock: ret.add(n.a[i])
                 
@@ -234,8 +240,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         let symfunc = Syms[Aliases[symalias].name.s]
                         if symfunc.kind==Function:
                             if Aliases[symalias].precedence==PrefixPrecedence:
-                                if symfunc.arity!=0:
+                                if symfunc.fnKind==BuiltinFunction and symfunc.arity!=0:
                                     subargStack.add(symfunc.arity)
+                                elif symfunc.fnKind==UserFunction and symfunc.params.a.len!=0:
+                                    subargStack.add(symfunc.params.a.len)
                                 else:
                                     addTerminalValue(true):
                                         discard
@@ -451,9 +459,12 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         if Aliases.hasKey(symalias):
                             let symfunc = Syms[Aliases[symalias].name.s]
                             if symfunc.kind==Function:
-                                if symfunc.arity!=0:
+                                if symfunc.fnKind == BuiltinFunction and symfunc.arity!=0:
                                     addConst(consts, Aliases[symalias].name, opCall)
                                     argStack.add(symfunc.arity)
+                                elif symfunc.fnKind == UserFunction and symfunc.params.a.len!=0:
+                                    addConst(consts, Aliases[symalias].name, opCall)
+                                    argStack.add(symfunc.params.a.len)
                                 else:
                                     addTerminalValue(false):
                                         addConst(consts, Aliases[symalias].name, opCall)
