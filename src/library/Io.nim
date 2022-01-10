@@ -79,7 +79,8 @@ proc defineSymbols*() =
         attrs       = {
             "rgb"       : ({Integer},"use specific RGB color"),
             "bold"      : ({Logical},"bold font"),
-            "underline" : ({Logical},"show underlined")
+            "underline" : ({Logical},"show underlined"),
+            "keep"      : ({Logical},"don't reset color at string end")
         },
         returns     = {String},
         example     = """
@@ -122,7 +123,12 @@ proc defineSymbols*() =
             else:
                 finalColor = fg(color)
 
-            push(newString(finalColor & y.s & resetColor))
+            var res = finalColor & y.s
+
+            if (popAttr("keep") == VNULL):
+                res &= resetColor
+
+            push(newString(res))
     
     when not defined(WEB):
         builtin "cursor",
