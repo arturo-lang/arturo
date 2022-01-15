@@ -16,6 +16,9 @@ when not defined(WEB):
 
     import vm/values/value
 
+    when defined(WINDOWS):
+        {.compile: "linenoise.c".}
+
     #=======================================
     # Types
     #=======================================
