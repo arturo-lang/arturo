@@ -279,6 +279,8 @@ proc defineSymbols*() =
 
                 push newDictionary(ret)
 
+        # TODO(Net\serve) add documentation for `.kill`
+        #  labels: library,documentation,easy
         builtin "serve",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
