@@ -289,7 +289,8 @@ proc defineSymbols*() =
             attrs       = {
                 "port"      : ({Integer},"use given port"),
                 "verbose"   : ({Logical},"print info log"),
-                "chrome"    : ({Logical},"open in Chrome windows as an app")
+                "chrome"    : ({Logical},"open in Chrome windows as an app"),
+                "kill"      : ({String},"bind a kill signal to the server (default: '/exit')")
             },
             returns     = {Nothing},
             example     = """
@@ -311,6 +312,9 @@ proc defineSymbols*() =
                     if (let aPort = popAttr("port"); aPort != VNULL):
                         port = aPort.i
 
+                    var killPath = "/exit"
+                    if (let aKill = popAttr("kill"); aKill != VNULL):
+                        killPath = aKill.s
                 
                     if (let aChrome = popAttr("chrome"); aChrome != VNULL):
                         openChromeWindow(port)
@@ -339,6 +343,7 @@ proc defineSymbols*() =
                         var body: string
 
                         var routeFound = ""
+                
                         for k in routes.d.keys:
                             let route = req.url.path.match(nre.re(k & "$"))
 
@@ -365,7 +370,7 @@ proc defineSymbols*() =
                                     discard execBlock(routes.d[k], execInParent=true, args=args)
                                 except:
                                     let e = getCurrentException()
-                                    echo "Something went wrong." & e.msg
+                                    echo "Something went wrong: " & e.msg
                                 body = pop().s
                                 routeFound = k
                                 break
@@ -381,6 +386,9 @@ proc defineSymbols*() =
                         if verbose:
                             echo bold(greenColor) & ">> [" & $(status) & "] " & routeFound & resetColor
 
+                        if req.url.path==killPath:
+                            raise newException(Exception, "Received kill signal")
+
                         await req.respond(status.HttpCode, body, headers)
 
                     try:
@@ -389,7 +397,7 @@ proc defineSymbols*() =
                         waitFor server.serve(port = port.Port, callback = handler, address = "")
                     except:
                         let e = getCurrentException()
-                        echo "Something went wrong." & e.msg
+                        echo ":: Server message: " & e.msg
                         server.close()
                 {.push warning[GcUnsafe2]:on.}
 
