@@ -1,4 +1,4 @@
-print ["Euler:" epsilon]
+print ["Euler:" e]
 print ["Pi:" pi]
 
 print ["sqrt 2.0:" sqrt 2.0]
