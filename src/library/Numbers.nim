@@ -543,7 +543,7 @@ proc defineSymbols*() =
                 when not defined(NOGMP):
                     push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
-    constant "epsilon",
+    constant "e",
         alias       = unaliased,
         description = "the constant e, Euler's number":
             newFloating(E)
