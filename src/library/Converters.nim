@@ -648,7 +648,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Block},"embed given symbols"),
-            "raw"   : ({Logical},"create dictionary from raw block")
+            "raw"   : ({Logical},"create dictionary from raw block"),
+            "lower" : ({Logical},"automatically convert all keys to lowercase")
         },
         returns     = {Dictionary},
         example     = """
@@ -694,6 +695,12 @@ proc defineSymbols*() =
             if (let aWith = popAttr("with"); aWith != VNULL):
                 for x in aWith.a:
                     dict[x.s] = GetSym(x.s)
+
+            if (popAttr("lower") != VNULL):
+                var oldDict = dict
+                dict = initOrderedTable[string,Value]()
+                for k,v in pairs(oldDict):
+                    dict[k.toLower()] = v
                     
             push(newDictionary(dict))
 
