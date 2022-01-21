@@ -652,6 +652,8 @@ proc defineSymbols*() =
             "lower" : ({Logical},"automatically convert all keys to lowercase")
         },
         returns     = {Dictionary},
+        # TODO(Converters\dictionary) add documentation example for `.lower`
+        #  labels: library, documentation, easy
         example     = """
             none: #[]               ; none: []
             a: #[
