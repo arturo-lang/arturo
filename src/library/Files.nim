@@ -373,6 +373,24 @@ proc defineSymbols*() =
                     ##########################################################
                     miniz.unzip(y.s, x.s)
 
+        builtin "volume",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get file size for given path",
+            args        = {
+                "file"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Integer},
+            # TODO(Files\volume) add library documentation
+            #  labels: library,documentation,easy
+            example     = """
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
+
+                push newInteger(getFileSize(x.s))
+
         builtin "write",
             alias       = doublearrowright, 
             rule        = PrefixPrecedence,
