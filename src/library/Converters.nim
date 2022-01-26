@@ -356,9 +356,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                             RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     else: 
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+            
+            of Color:
+                case tp:
+                    of String:
+                        return newString($(y))
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Function,
-               Color,
                Database,
                Newline,
                Nothing,
