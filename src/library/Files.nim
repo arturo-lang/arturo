@@ -403,6 +403,7 @@ proc defineSymbols*() =
                 "append"        : ({Logical},"append to given file"),
                 "directory"     : ({Logical},"create directory at path"),
                 "json"          : ({Logical},"write value as Json"),
+                "compact"       : ({Logical},"produce compact, non-prettified Json code"),
                 "binary"        : ({Logical},"write as binary")
             },
             returns     = {Nothing},
@@ -425,7 +426,7 @@ proc defineSymbols*() =
                         writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
                     else:
                         if (popAttr("json") != VNULL):
-                            let rez = jsonFromValue(y)
+                            let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
                             if x.kind==String:
                                 writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
                             else:
