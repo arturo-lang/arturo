@@ -43,7 +43,7 @@ proc generateJsonNode*(n: Value): JsonNode =
            for v in n.p:
                 result.add(generateJsonNode(v))
         of Symbol       : result = newJString($(n.m))
-        of Color        : discard
+        of Color        : result = newJString($(n))
         of Date         : discard
         of Binary       : discard
         of Inline,
