@@ -37,7 +37,7 @@ when not defined(NOWEBVIEW):
 # Libraries
 #=======================================
 
-import os, osproc, strutils
+import os, osproc, sequtils, strutils, sugar
 
 #=======================================
 # Types
@@ -94,24 +94,52 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
     for flag in flags:
         args &= " " & flag.strip
 
-    var chromePath: string
+    var chromeBinaries: seq[string]
+    var chromePath = ""
 
     when hostOS == "macosx":
-        chromePath = r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-        if fileExists(absolutePath(chromePath)):
-            chromePath = chromePath.replace(" ", r"\ ")
+        chromeBinaries = @[
+            r"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+            r"/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+            r"/Applications/Chromium.app/Contents/MacOS/Chromium",
+            r"/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+            r"/usr/bin/google-chrome-stable",
+            r"/usr/bin/google-chrome",
+            r"/usr/bin/chromium",
+            r"/usr/bin/chromium-browser"
+        ]
     elif hostOS == "windows":
-        chromePath = r"\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+        chromeBinaries = @[
+            getEnv("LocalAppData") & r"/Google/Chrome/Application/chrome.exe",
+            getEnv("ProgramFiles") & r"/Google/Chrome/Application/chrome.exe",
+            getEnv("ProgramFiles(x86)") & r"/Google/Chrome/Application/chrome.exe",
+            getEnv("LocalAppData") & r"/Chromium/Application/chrome.exe",
+            getEnv("ProgramFiles") & r"/Chromium/Application/chrome.exe",
+            getEnv("ProgramFiles(x86)") & r"/Chromium/Application/chrome.exe",
+            getEnv("ProgramFiles(x86)") & r"/Microsoft/Edge/Application/msedge.exe",
+            getEnv("ProgramFiles") & r"/Microsoft/Edge/Application/msedge.exe"
+        ]
     elif hostOS == "linux":
-        const chromeNames = ["google-chrome", "chromium-browser", "chromium"]
-        for name in chromeNames:
-            if execCmd("which " & name) == 0:
-                chromePath = name
-                break
+        chromeBinaries = @[
+            r"/usr/bin/google-chrome-stable",
+            r"/usr/bin/google-chrome",
+            r"/usr/bin/chromium",
+            r"/usr/bin/chromium-browser",
+            r"/snap/bin/chromium"
+        ]
 
-    let command = chromePath & args
-    if execCmd(command) != 0:
-        echo "could not open a Chrome window"
+    for bin in chromeBinaries:
+        echo "checking: " & bin
+        if fileExists(bin):
+            chromePath = bin
+            break
+
+    if chromePath == "":
+        echo "could not find any Chrome-compatible browser installed"
+    else:
+        let command = chromePath.replace(" ", r"\ ") & args
+        if execCmd(command) != 0:
+            echo "could not open a Chrome window"
 
 when not defined(NOWEBVIEW):
     proc generalExternalInvokeCallback(w: Webview, arg: cstring) {.exportc.} =
