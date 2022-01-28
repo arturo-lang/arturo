@@ -10,11 +10,13 @@
 # Libraries
 #=======================================
 
-import os, random, strutils, tables
+import os, random, sequtils
+import strutils, sugar, tables
 
 when defined(WEB):
     import jsffi, std/json
-    import helpers/jsonobject
+
+import helpers/jsonobject
 
 import vm/[
     env, 
@@ -136,6 +138,22 @@ when not defined(WEB):
             initialize(args, filename, isFile=true)
 
             discard doExec(code)
+
+    proc writePortableInfo*(filepath: string) =
+        let mainCode = doParse(filepath, isFile=true)
+        var scriptData = mainCode.data.d
+        var portable = initOrderedTable[string,Value]()
+        if scriptData.hasKey("embed"):
+            let paths = scriptData["embed"].a[0].a
+            let permitted = scriptData["embed"].a[1].a.map((x)=>x.s)
+            for path in paths:
+                for subpath in walkDirRec(path.s):
+                    var (_, _, ext) = splitFile(subpath)
+                    if ext in permitted:
+                        portable[subpath] = newString(readFile(subpath))
+        scriptData["embed"] = newDictionary(portable)
+
+        echo jsonFromValue(newDictionary(portable))
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false): Translation {.exportc:"run".} =
         handleVMErrors:
