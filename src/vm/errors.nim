@@ -12,8 +12,10 @@
 
 when not defined(WEB):
     import re
-import algorithm, sequtils
-import strformat, strutils, sugar
+when not defined(PORTABLE):
+    import algorithm
+    
+import sequtils, strformat, strutils, sugar
 
 import helpers/colors
 import helpers/strings
