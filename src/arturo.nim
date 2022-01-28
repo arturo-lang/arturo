@@ -11,22 +11,26 @@
 #=======================================
 
 when not defined(WEB):
-    import parseopt, segFaults
+    import segFaults
 else:
     import jsffi
 
 when defined(PORTABLE):
-    import os, sequtils
+    import os
 
 when defined(PROFILE):
     import nimprof
 
-when not defined(WEB):
+when not defined(WEB) and not defined(PORTABLE):
+    import parseopt
     import vm/[bytecode, version]
 
-import vm/[env, vm]
+import vm/vm
 
-when not defined(WEB):
+when not defined(PORTABLE):
+    import vm/env
+
+when not defined(WEB) and not defined(PORTABLE):
 
     #=======================================
     # Types
@@ -38,6 +42,7 @@ when not defined(WEB):
             evalCode
             readBcode
             writeBcode
+            writePInfo
             showHelp
             showVersion
 
@@ -47,10 +52,10 @@ when not defined(WEB):
 
     const helpTxt = """
 
-    Usage:
+Usage:
     arturo [options] <path>
 
-    Options:
+Options:
     -c --compile              Compile script and write bytecode
     -x --execute              Execute script from bytecode
 
@@ -80,18 +85,18 @@ when not defined(WEB):
 
 when isMainModule and not defined(WEB):
 
-    var token = initOptParser()
-
-    var action: CmdAction = evalCode
-    var runConsole  = static readFile("src/scripts/console.art")
-    var runUpdate   = static readFile("src/scripts/update.art")
-    var runModule   = static readFile("src/scripts/module.art")
     var code: string = ""
     var arguments: seq[string] = @[]
-    var muted: bool = false
-    var debug: bool = false
 
     when not defined(PORTABLE):
+        var token = initOptParser()
+
+        var action: CmdAction = evalCode
+        var runConsole  = static readFile("src/scripts/console.art")
+        var runUpdate   = static readFile("src/scripts/update.art")
+        var runModule   = static readFile("src/scripts/module.art")
+        var muted: bool = false
+        var debug: bool = false
 
         while true:
             token.next()
@@ -113,6 +118,9 @@ when isMainModule and not defined(WEB):
                             code = token.val
                         of "c","compile":
                             action = writeBcode
+                            code = token.val
+                        of "pInfo":
+                            action = writePInfo
                             code = token.val
                         of "x","execute":
                             action = readBcode
@@ -159,6 +167,9 @@ when isMainModule and not defined(WEB):
                 let filename = code
                 runBytecode(readBytecode(code), filename, arguments)
 
+            of writePInfo:
+                writePortableInfo(code)
+
             of showHelp:
                 echo helpTxt
             of showVersion:
@@ -166,8 +177,9 @@ when isMainModule and not defined(WEB):
     else:
         arguments = commandLineParams()
         code = static readFile(getEnv("PORTABLE_INPUT"))
+        let portable = static readFile(getEnv("PORTABLE_DATA"))
 
-        discard run(code, arguments, isFile=false)
+        discard run(code, arguments, isFile=false, withData=portable)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)
