@@ -20,6 +20,7 @@ when not defined(WEB):
     import helpers/url
 
 when defined(PORTABLE):
+    import tables
     import vm/globals
 
 #=======================================
