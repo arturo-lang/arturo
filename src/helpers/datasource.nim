@@ -19,6 +19,9 @@ when defined(SAFE):
 when not defined(WEB):
     import helpers/url
 
+when defined(PORTABLE):
+    import vm/globals
+
 #=======================================
 # Types
 #=======================================
@@ -37,6 +40,10 @@ type
 
 proc getSource*(src: string): DataSource {.inline.} =
     when not defined(WEB):
+        when defined(PORTABLE):
+            if Syms.hasKey("_portable") and Syms["_portable"].d.hasKey("embed") and Syms["_portable"].d["embed"].d.hasKey(src):
+                return (Syms["_portable"].d["embed"].d[src], FileData)
+                            
         if src.isUrl():
             when defined(SAFE): RuntimeError_OperationNotPermitted("read")
             let content = waitFor (newAsyncHttpClient().getContent(src))
