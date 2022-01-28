@@ -38,6 +38,7 @@ when not defined(WEB):
             evalCode
             readBcode
             writeBcode
+            writePInfo
             showHelp
             showVersion
 
@@ -114,6 +115,9 @@ when isMainModule and not defined(WEB):
                         of "c","compile":
                             action = writeBcode
                             code = token.val
+                        of "pInfo":
+                            action = writePInfo
+                            code = token.val
                         of "x","execute":
                             action = readBcode
                             code = token.val
@@ -158,6 +162,9 @@ when isMainModule and not defined(WEB):
             of readBcode:
                 let filename = code
                 runBytecode(readBytecode(code), filename, arguments)
+
+            of writePInfo:
+                writePortableInfo(code)
 
             of showHelp:
                 echo helpTxt
