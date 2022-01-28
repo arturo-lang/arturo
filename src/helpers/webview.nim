@@ -129,7 +129,6 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
         ]
 
     for bin in chromeBinaries:
-        echo "checking: " & bin
         if fileExists(bin):
             chromePath = bin
             break
