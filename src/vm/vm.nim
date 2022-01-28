@@ -10,11 +10,13 @@
 # Libraries
 #=======================================
 
-import os, random, strutils, tables
+import os, random, sequtils
+import strutils, sugar, tables
 
 when defined(WEB):
     import jsffi, std/json
-    import helpers/jsonobject
+
+import helpers/jsonobject
 
 import vm/[
     env, 
@@ -67,7 +69,7 @@ proc setupLibrary*() =
     for i,importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false) =
+template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false, portableData = "") =
     # function arity
     Arities = initTable[string,int]()
     # stack
@@ -101,6 +103,9 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
         else: env.addPath(getCurrentDir())
 
     Syms = initOrderedTable[string,Value]()
+
+    if portableData != "":
+        Syms["_portable"] = valueFromJson(portableData)
 
     # library
     setupLibrary()
@@ -137,7 +142,29 @@ when not defined(WEB):
 
             discard doExec(code)
 
-    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false): Translation {.exportc:"run".} =
+    proc writePortableInfo*(filepath: string) =
+        let mainCode = doParse(filepath, isFile=true)
+        var scriptData = mainCode.data.d
+        var portable = initOrderedTable[string,Value]()
+        if scriptData.hasKey("embed"):
+            if scriptData["embed"].a[0].kind == Block:
+                let paths = scriptData["embed"].a[0].a
+                let permitted = scriptData["embed"].a[1].a.map((x)=>x.s)
+                for path in paths:
+                    for subpath in walkDirRec(path.s):
+                        var (_, _, ext) = splitFile(subpath)
+                        if ext in permitted:
+                            portable[subpath] = newString(readFile(subpath))
+            else:
+                let paths = scriptData["embed"].a
+                for path in paths:
+                    portable[path.s] = newString(readFile(path.s))
+
+        scriptData["embed"] = newDictionary(portable)
+
+        echo jsonFromValue(newDictionary(scriptData))
+
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=""): Translation {.exportc:"run".} =
         handleVMErrors:
 
             DoDebug = debug
@@ -156,7 +183,8 @@ when not defined(WEB):
                     args, 
                     code, 
                     isFile=isFile, 
-                    mainCode.data
+                    mainCode.data,
+                    portableData=withData
                 )
 
             let evaled = mainCode.doEval()

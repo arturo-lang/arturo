@@ -23,11 +23,20 @@ compressBinary(){
 }
 
 buildPackage(){
+    # generate portable data
+    arturo --pInfo $1 > "$1.data.json"
+
+    # set environment variables
     export PORTABLE_INPUT="$1"
+    export PORTABLE_DATA="$1.data.json"
+    
     FLAGS="$FLAGS --forceBuild:on --opt:size -d:PORTABLE"
     INPUT=$1
     BINARY="${INPUT/.art/}"
     nim c $FLAGS -o:$BINARY $MAIN # 2>/dev/null &
+    
+    # clean up
+    rm "$1.data.json"
     #animate_progress 
 }
 
