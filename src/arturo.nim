@@ -175,20 +175,6 @@ when isMainModule and not defined(WEB):
         code = static readFile(getEnv("PORTABLE_INPUT"))
         let portable = static readFile(getEnv("PORTABLE_DATA"))
 
-        if scriptData.d.hasKey("embed"):
-            Syms["_embedded"] = newDictionary()
-            let paths = scriptData.d["embed"].a[0].a
-            let permitted = scriptData.d["embed"].a[1].a.map((x)=>x.s)
-            for path in paths:
-                for subpath in walkDirRec(path.s):
-                    var (dir, name, ext) = splitFile(subpath)
-                    echo "ext is: " & ext
-                    if ext in permitted:
-                        Syms["_embedded"].d[subpath] = newString(readFile(subpath))
-                        dump(path)
-
-        dump(Syms["_embedded"])
-
         discard run(code, arguments, isFile=false)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
