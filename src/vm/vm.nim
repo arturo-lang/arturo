@@ -104,7 +104,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
 
     Syms = initOrderedTable[string,Value]()
 
-    if portableData != VNULL:
+    if portableData != "":
         Syms["_portable"] = valueFromJson(portableData)
 
     # library
@@ -147,16 +147,22 @@ when not defined(WEB):
         var scriptData = mainCode.data.d
         var portable = initOrderedTable[string,Value]()
         if scriptData.hasKey("embed"):
-            let paths = scriptData["embed"].a[0].a
-            let permitted = scriptData["embed"].a[1].a.map((x)=>x.s)
-            for path in paths:
-                for subpath in walkDirRec(path.s):
-                    var (_, _, ext) = splitFile(subpath)
-                    if ext in permitted:
-                        portable[subpath] = newString(readFile(subpath))
+            if scriptData["embed"].a[0].kind == Block:
+                let paths = scriptData["embed"].a[0].a
+                let permitted = scriptData["embed"].a[1].a.map((x)=>x.s)
+                for path in paths:
+                    for subpath in walkDirRec(path.s):
+                        var (_, _, ext) = splitFile(subpath)
+                        if ext in permitted:
+                            portable[subpath] = newString(readFile(subpath))
+            else:
+                let paths = scriptData["embed"].a
+                for path in paths:
+                    portable[path.s] = newString(readFile(path.s))
+
         scriptData["embed"] = newDictionary(portable)
 
-        echo jsonFromValue(newDictionary(portable))
+        echo jsonFromValue(newDictionary(scriptData))
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=""): Translation {.exportc:"run".} =
         handleVMErrors:
