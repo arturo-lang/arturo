@@ -173,6 +173,7 @@ when isMainModule and not defined(WEB):
     else:
         arguments = commandLineParams()
         code = static readFile(getEnv("PORTABLE_INPUT"))
+        let portable = static readFile(getEnv("PORTABLE_DATA"))
 
         if scriptData.d.hasKey("embed"):
             Syms["_embedded"] = newDictionary()
