@@ -175,7 +175,7 @@ when isMainModule and not defined(WEB):
         code = static readFile(getEnv("PORTABLE_INPUT"))
         let portable = static readFile(getEnv("PORTABLE_DATA"))
 
-        discard run(code, arguments, isFile=false)
+        discard run(code, arguments, isFile=false, withData=portable)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)
