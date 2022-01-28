@@ -69,7 +69,7 @@ proc setupLibrary*() =
     for i,importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false, portableData = VNULL) =
+template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false, portableData = "") =
     # function arity
     Arities = initTable[string,int]()
     # stack
@@ -105,7 +105,7 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
     Syms = initOrderedTable[string,Value]()
 
     if portableData != VNULL:
-        Syms["_portable"] = portableData
+        Syms["_portable"] = valueFromJson(portableData)
 
     # library
     setupLibrary()
@@ -158,7 +158,7 @@ when not defined(WEB):
 
         echo jsonFromValue(newDictionary(portable))
 
-    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=VNULL): Translation {.exportc:"run".} =
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=""): Translation {.exportc:"run".} =
         handleVMErrors:
 
             DoDebug = debug
