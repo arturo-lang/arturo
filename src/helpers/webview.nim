@@ -37,7 +37,7 @@ when not defined(NOWEBVIEW):
 # Libraries
 #=======================================
 
-import os, osproc, sequtils, strutils, sugar
+import os, osproc, strutils
 
 #=======================================
 # Types
