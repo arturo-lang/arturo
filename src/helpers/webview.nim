@@ -90,9 +90,38 @@ when not defined(NOWEBVIEW):
 #=======================================
 
 proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
-    var args = " --app=http://localhost:" & port.intToStr & "/ --disable-http-cache"
+    var args = @[
+        "--app=http://localhost:" & port.intToStr & "/ ",
+        "--disable-http-cache",
+        # "--disable-background-networking",
+        # "--disable-background-timer-throttling", 
+        # "--disable-backgrounding-occluded-windows", 
+        # "--disable-breakpad", 
+        # "--disable-client-side-phishing-detection", 
+        # "--disable-default-apps", 
+        # "--disable-dev-shm-usage", 
+        # "--disable-infobars", 
+        # "--disable-extensions", 
+        # "--disable-features=site-per-process", 
+        # "--disable-hang-monitor", 
+        # "--disable-ipc-flooding-protection", 
+        # "--disable-popup-blocking", 
+        # "--disable-prompt-on-repost", 
+        # "--disable-renderer-backgrounding", 
+        # "--disable-sync", 
+        # "--disable-translate", 
+        # "--disable-windows10-custom-titlebar", 
+        # "--metrics-recording-only", 
+        # "--no-first-run", 
+        # "--no-default-browser-check", 
+        # "--safebrowsing-disable-auto-update", 
+        # "--enable-automation", 
+        # "--password-store=basic", 
+        # "--use-mock-keychain"
+    ]
+
     for flag in flags:
-        args &= " " & flag.strip
+        args &= flag.strip
 
     var chromeBinaries: seq[string]
     var chromePath = ""
@@ -136,7 +165,7 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
     if chromePath == "":
         echo "could not find any Chrome-compatible browser installed"
     else:
-        let command = chromePath.replace(" ", r"\ ") & args
+        let command = chromePath.replace(" ", r"\ ") & " " & args.join(" ")
         if execCmd(command) != 0:
             echo "could not open a Chrome window"
 
