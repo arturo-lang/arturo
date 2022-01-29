@@ -174,7 +174,7 @@ if $MINI_BUILD; then
     FLAGS="$FLAGS --opt:size"
 else 
     CONFIG="@full $CONFIG"
-    FLAGS="$FLAGS --opt:speed --threads:on --tlsEmulation:off" 
+    FLAGS="$FLAGS --opt:speed" # also: "--threads:on --tlsEmulation:off" ?
 fi
 
 if $IS_DEV_BUILD; then
