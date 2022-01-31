@@ -10,11 +10,11 @@
 # Libraries
 #=======================================
 
-import os, random
+import macros, os, random
 import strutils, sugar, tables
 
 when defined(WEB):
-    import jsffi, std/json
+    import jsffi, json
 
 import helpers/jsonobject
 
@@ -30,6 +30,10 @@ import vm/[
     version
 ]
 
+#=======================================
+# Packaging setup
+#=======================================
+
 when defined(PORTABLE):
     import json, sequtils
 
@@ -40,74 +44,43 @@ else:
     let mods {.compileTime.}: seq[string] = @[]
     let compact {.compileTime.} = false
 
-when not defined(PORTABLE) or not compact or mods.contains("Arithmetic"):
-    import library/Arithmetic   as ArithmeticLib
+#=======================================
+# Macros
+#=======================================
 
-when not defined(PORTABLE) or not compact or mods.contains("Binary"):
-    import library/Binary       as BinaryLib
+macro importLib(name: static[string]): untyped =
+    let id = ident(name & "Lib")
+    result = quote do:
+        when not defined(PORTABLE) or not compact or mods.contains(`name`):
+            import library/`name` as `id`
 
-when not defined(PORTABLE) or not compact or mods.contains("Collections"):
-    import library/Collections  as CollectionsLib
+#=======================================
+# Standard library setup
+#=======================================
 
-when not defined(PORTABLE) or not compact or mods.contains("Colors"):
-    import library/Colors       as ColorsLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Comparison"):
-    import library/Comparison   as ComparisonLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Converters"):
-    import library/Converters   as ConvertersLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Core"):
-    import library/Core         as CoreLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Crypto"):
-    import library/Crypto       as CryptoLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Databases"):
-    import library/Databases    as DatabasesLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Dates"):
-    import library/Dates        as DatesLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Files"):
-    import library/Files        as FilesLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Io"):
-    import library/Io           as IoLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Iterators"):
-    import library/Iterators    as IteratorsLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Logic"):
-    import library/Logic        as LogicLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Net"):
-    import library/Net          as NetLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Numbers"):
-    import library/Numbers      as NumbersLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Paths"):
-    import library/Paths        as PathsLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Reflection"):
-    import library/Reflection   as ReflectionLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Sets"):
-    import library/Sets         as SetsLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Statistics"):
-    import library/Statistics   as StatisticsLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Strings"):
-    import library/Strings      as StringsLib
-
-when not defined(PORTABLE) or not compact or mods.contains("System"):
-    import library/System       as SystemLib
-
-when not defined(PORTABLE) or not compact or mods.contains("Ui"):
-    import library/Ui           as UiLib
+importLib "Arithmetic"
+importLib "Binary"
+importLib "Collections"
+importLib "Colors"
+importLib "Comparison"
+importLib "Converters"
+importLib "Core"
+importLib "Crypto"
+importLib "Databases"
+importLib "Dates"
+importLib "Files"
+importLib "Io"
+importLib "Iterators"
+importLib "Logic"
+importLib "Net"
+importLib "Numbers"
+importLib "Paths"
+importLib "Reflection"
+importLib "Sets"
+importLib "Statistics"
+importLib "Strings"
+importLib "System"
+importLib "Ui"
 
 #=======================================
 # Variables
