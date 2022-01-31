@@ -5,7 +5,7 @@
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2020 Arturo Contributors
-# (c) 2021 Yanis Zafirópulos
+# (c) 2022 Yanis Zafirópulos
 #
 # @file: config.nims
 ######################################################
