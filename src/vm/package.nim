@@ -67,14 +67,19 @@ proc getUsedLibraryModules(funcs: seq[string]): seq[string] =
 
 proc showPackageInfo*(filepath: string) =
     let mainCode = doParse(filepath, isFile=true)
-    
-    let usedFunctions = getUsedLibraryFunctions(mainCode)
+    var scriptData = mainCode.data.d
+
+    var usedFunctions = getUsedLibraryFunctions(mainCode)
+    if scriptData.hasKey("uses") and scriptData["uses"].kind==Block:
+        for item in scriptData["uses"].a:
+            usedFunctions.add(item.s)
+        usedFunctions = usedFunctions.deduplicate().sorted()
+
     let usedModules = getUsedLibraryModules(usedFunctions)
 
-    var scriptData = mainCode.data.d
     var package = initOrderedTable[string,Value]()
-    let mainPath = parentDir(joinPath(getCurrentDir(), filepath))
     if scriptData.hasKey("embed"):
+        let mainPath = parentDir(joinPath(getCurrentDir(), filepath))
         if scriptData["embed"].a[0].kind == Block:
             let paths = scriptData["embed"].a[0].a
             let permitted = scriptData["embed"].a[1].a.map((x)=>x.s)
@@ -90,10 +95,13 @@ proc showPackageInfo*(filepath: string) =
                 package[path.s] = newString(readFile(path.s))
 
     scriptData["embed"] = newDictionary(package)
-    scriptData["using"] = newDictionary({
+    scriptData["uses"] = newDictionary({
         "functions": newStringBlock(usedFunctions),
         "modules": newStringBlock(usedModules)
     }.toOrderedTable)
+
+    if not scriptData.hasKey("compact"):
+        scriptData["compact"] = newString("false")
 
     echo jsonFromValue(newDictionary(scriptData))
     
