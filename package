@@ -33,7 +33,7 @@ buildPackage(){
     FLAGS="$FLAGS --forceBuild:on --opt:size -d:PORTABLE"
     INPUT=$1
     BINARY="${INPUT/.art/}"
-    nim c $FLAGS -o:$BINARY $MAIN # 2>/dev/null &
+    nim c $FLAGS -o:$BINARY $MAIN 1>/dev/null 2>/dev/null
     
     # clean up
     rm "$1.data.json"
