@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import os, random, sequtils
+import os, random
 import strutils, sugar, tables
 
 when defined(WEB):
