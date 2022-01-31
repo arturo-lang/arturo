@@ -60,8 +60,8 @@ else:
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
     when not defined(PORTABLE) or not compact or funcs.contains(n):
         
-        when defined(DEV) or defined(PORTABLE):
-            static: echo "processing: " & n
+        when defined(DEV):
+            static: echo " -> " & n
 
         when args.len==1 and args==NoArgs:  
             const argsLen = 0
