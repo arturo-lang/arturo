@@ -142,30 +142,6 @@ when not defined(WEB):
 
             discard doExec(code)
 
-    proc writePortableInfo*(filepath: string) =
-        let mainCode = doParse(filepath, isFile=true)
-        var scriptData = mainCode.data.d
-        var portable = initOrderedTable[string,Value]()
-        let mainPath = parentDir(joinPath(getCurrentDir(), filepath))
-        if scriptData.hasKey("embed"):
-            if scriptData["embed"].a[0].kind == Block:
-                let paths = scriptData["embed"].a[0].a
-                let permitted = scriptData["embed"].a[1].a.map((x)=>x.s)
-                for path in paths:
-                    let searchPath = joinPath(mainPath, path.s)
-                    for subpath in walkDirRec(searchPath):
-                        var (_, _, ext) = splitFile(subpath)
-                        if ext in permitted:
-                            portable[relativePath(subpath, mainPath)] = newString(readFile(subpath))
-            else:
-                let paths = scriptData["embed"].a
-                for path in paths:
-                    portable[path.s] = newString(readFile(path.s))
-
-        scriptData["embed"] = newDictionary(portable)
-
-        echo jsonFromValue(newDictionary(scriptData))
-
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=""): Translation {.exportc:"run".} =
         handleVMErrors:
 

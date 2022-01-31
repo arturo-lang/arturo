@@ -23,7 +23,7 @@ when defined(PROFILE):
 
 when not defined(WEB) and not defined(PORTABLE):
     import parseopt
-    import vm/[bytecode, version]
+    import vm/[bytecode, package, version]
 
 import vm/vm
 
@@ -42,7 +42,7 @@ when not defined(WEB) and not defined(PORTABLE):
             evalCode
             readBcode
             writeBcode
-            writePInfo
+            showPInfo
             showHelp
             showVersion
 
@@ -119,8 +119,8 @@ when isMainModule and not defined(WEB):
                         of "c","compile":
                             action = writeBcode
                             code = token.val
-                        of "pInfo":
-                            action = writePInfo
+                        of "package-info":
+                            action = showPInfo
                             code = token.val
                         of "x","execute":
                             action = readBcode
@@ -167,8 +167,8 @@ when isMainModule and not defined(WEB):
                 let filename = code
                 runBytecode(readBytecode(code), filename, arguments)
 
-            of writePInfo:
-                writePortableInfo(code)
+            of showPInfo:
+                showPackageInfo(code)
 
             of showHelp:
                 echo helpTxt
