@@ -169,29 +169,29 @@ proc defineSymbols*() =
                 ##########################################################
                 sleep(x.i)
 
-    builtin "process",
-        alias       = unaliased, 
-        rule        = PrefixPrecedence,
-        description = "get information on current process/program",
-        args        = NoArgs,
-        attrs       = NoAttrs,
-        returns     = {Dictionary},
-        # TODO(System\process) add library documentation
-        #  labels: library,documentation,easy
-        example     = """
-        """:
-            ##########################################################
-            var ret = initOrderedTable[string,Value]()
+        builtin "process",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get information on current process/program",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {Dictionary},
+            # TODO(System\process) add library documentation
+            #  labels: library,documentation,easy
+            example     = """
+            """:
+                ##########################################################
+                var ret = initOrderedTable[string,Value]()
 
-            ret["id"] = newInteger(getCurrentProcessId())
-            ret["memory"] = newDictionary({
-                "occupied": newInteger(getOccupiedMem()),
-                "free": newInteger(getFreeMem()),
-                "total": newInteger(getTotalMem()),
-                "max": newInteger(getMaxMem())
-            }.toOrderedTable)
+                ret["id"] = newInteger(getCurrentProcessId())
+                ret["memory"] = newDictionary({
+                    "occupied": newInteger(getOccupiedMem()),
+                    "free": newInteger(getFreeMem()),
+                    "total": newInteger(getTotalMem()),
+                    "max": newInteger(getMaxMem())
+                }.toOrderedTable)
 
-            push newDictionary(ret)
+                push newDictionary(ret)
 
     constant "script",
         alias       = unaliased,
