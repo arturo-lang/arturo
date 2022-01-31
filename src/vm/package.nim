@@ -10,14 +10,56 @@
 # Libraries
 #=======================================
 
-import os, sequtils, sugar, tables
+import algorithm, os, sequtils
+import sets, sugar, tables
 
 import helpers/jsonobject
+import helpers/helper
 
 import vm/[
+    globals,
     parse,
-    values/value
+    values/value,
+    vm
 ]
+
+#=======================================
+# Helpers
+#=======================================
+
+proc getWordsInBlock*(bl: Value): seq[string] =
+    result = @[]
+    for item in bl.a:
+        case item.kind:
+            of Block:
+                result = concat(result, getWordsInBlock(item))
+            of Word:
+                result.add(item.s)
+            else:
+                discard
+
+proc getUsedLibraryFunctions(code: Value): seq[string] =
+    # make a test run
+    # so that the Syms table is initialized
+    var cd = ""
+    discard run(cd, @[""], isFile=false)
+    let declaredSyms = toSeq(keys(Syms))
+
+    # recursively get all the words
+    # in given code
+    let uniqueWords = deduplicate(getWordsInBlock(code))
+
+    # get only the common ones
+    # that is: the words that *are* library functions/constants
+    result = toSeq(intersection(toHashSet(declaredSyms), toHashSet(uniqueWords)).items)
+
+    # and sort them
+    result.sort()
+
+proc getUsedLibraryModules(funcs: seq[string]): seq[string] =
+    result = deduplicate(funcs.map((f) => getInfo(f, Syms[f], Aliases)["module"].s))
+
+    result.sort()
 
 #=======================================
 # Methods
@@ -25,6 +67,10 @@ import vm/[
 
 proc showPackageInfo*(filepath: string) =
     let mainCode = doParse(filepath, isFile=true)
+    
+    let usedFunctions = getUsedLibraryFunctions(mainCode)
+    let usedModules = getUsedLibraryModules(usedFunctions)
+
     var scriptData = mainCode.data.d
     var package = initOrderedTable[string,Value]()
     let mainPath = parentDir(joinPath(getCurrentDir(), filepath))
@@ -44,6 +90,10 @@ proc showPackageInfo*(filepath: string) =
                 package[path.s] = newString(readFile(path.s))
 
     scriptData["embed"] = newDictionary(package)
+    scriptData["using"] = newDictionary({
+        "functions": newStringBlock(usedFunctions),
+        "modules": newStringBlock(usedModules)
+    }.toOrderedTable)
 
     echo jsonFromValue(newDictionary(scriptData))
     
