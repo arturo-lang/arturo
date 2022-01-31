@@ -40,9 +40,6 @@ when defined(PORTABLE):
     let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
     let mods {.compileTime.} = toSeq(js["uses"]["modules"]).map((x) => x.getStr())
     let compact {.compileTime.} = js["compact"].getStr() == "true"
-else:
-    let mods {.compileTime.}: seq[string] = @[]
-    let compact {.compileTime.} = false
 
 #=======================================
 # Macros
@@ -51,7 +48,9 @@ else:
 macro importLib(name: static[string]): untyped =
     let id = ident(name & "Lib")
     result = quote do:
-        when not defined(PORTABLE) or not compact or mods.contains(`name`):
+        when not defined(PORTABLE):
+            import library/`name` as `id`
+        elif not compact or mods.contains(`name`):
             import library/`name` as `id`
 
 #=======================================
