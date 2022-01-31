@@ -51,12 +51,14 @@ when defined(PORTABLE):
     import json, os, sugar
 
     let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
-    let funcs {.compileTime.} = toSeq(js["using"]["functions"]).map((x) => x.getStr())
+    let funcs {.compileTime.} = toSeq(js["uses"]["functions"]).map((x) => x.getStr())
+    let compact {.compileTime.} = js["compact"].getStr() == "true"
 else:
     let funcs {.compileTime.}: seq[string] = @[]
+    let compact {.compileTime.} = false
 
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    when not defined(PORTABLE) or funcs.contains(n):
+    when not defined(PORTABLE) or not compact or funcs.contains(n):
         
         when defined(DEV) or defined(PORTABLE):
             static: echo "processing: " & n
