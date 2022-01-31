@@ -34,77 +34,79 @@ when defined(PORTABLE):
     import json, sequtils
 
     let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
-    let mods {.compileTime.} = toSeq(js["using"]["modules"]).map((x) => x.getStr())
+    let mods {.compileTime.} = toSeq(js["uses"]["modules"]).map((x) => x.getStr())
+    let compact {.compileTime.} = js["compact"].getStr() == "true"
 else:
     let mods {.compileTime.}: seq[string] = @[]
+    let compact {.compileTime.} = false
 
-when not defined(PORTABLE) or mods.contains("Arithmetic"):
+when not defined(PORTABLE) or not compact or mods.contains("Arithmetic"):
     import library/Arithmetic   as ArithmeticLib
 
-when not defined(PORTABLE) or mods.contains("Binary"):
+when not defined(PORTABLE) or not compact or mods.contains("Binary"):
     import library/Binary       as BinaryLib
 
-when not defined(PORTABLE) or mods.contains("Collections"):
+when not defined(PORTABLE) or not compact or mods.contains("Collections"):
     import library/Collections  as CollectionsLib
 
-when not defined(PORTABLE) or mods.contains("Colors"):
+when not defined(PORTABLE) or not compact or mods.contains("Colors"):
     import library/Colors       as ColorsLib
 
-when not defined(PORTABLE) or mods.contains("Comparison"):
+when not defined(PORTABLE) or not compact or mods.contains("Comparison"):
     import library/Comparison   as ComparisonLib
 
-when not defined(PORTABLE) or mods.contains("Converters"):
+when not defined(PORTABLE) or not compact or mods.contains("Converters"):
     import library/Converters   as ConvertersLib
 
-when not defined(PORTABLE) or mods.contains("Core"):
+when not defined(PORTABLE) or not compact or mods.contains("Core"):
     import library/Core         as CoreLib
 
-when not defined(PORTABLE) or mods.contains("Crypto"):
+when not defined(PORTABLE) or not compact or mods.contains("Crypto"):
     import library/Crypto       as CryptoLib
 
-when not defined(PORTABLE) or mods.contains("Databases"):
+when not defined(PORTABLE) or not compact or mods.contains("Databases"):
     import library/Databases    as DatabasesLib
 
-when not defined(PORTABLE) or mods.contains("Dates"):
+when not defined(PORTABLE) or not compact or mods.contains("Dates"):
     import library/Dates        as DatesLib
 
-when not defined(PORTABLE) or mods.contains("Files"):
+when not defined(PORTABLE) or not compact or mods.contains("Files"):
     import library/Files        as FilesLib
 
-when not defined(PORTABLE) or mods.contains("Io"):
+when not defined(PORTABLE) or not compact or mods.contains("Io"):
     import library/Io           as IoLib
 
-when not defined(PORTABLE) or mods.contains("Iterators"):
+when not defined(PORTABLE) or not compact or mods.contains("Iterators"):
     import library/Iterators    as IteratorsLib
 
-when not defined(PORTABLE) or mods.contains("Logic"):
+when not defined(PORTABLE) or not compact or mods.contains("Logic"):
     import library/Logic        as LogicLib
 
-when not defined(PORTABLE) or mods.contains("Net"):
+when not defined(PORTABLE) or not compact or mods.contains("Net"):
     import library/Net          as NetLib
 
-when not defined(PORTABLE) or mods.contains("Numbers"):
+when not defined(PORTABLE) or not compact or mods.contains("Numbers"):
     import library/Numbers      as NumbersLib
 
-when not defined(PORTABLE) or mods.contains("Paths"):
+when not defined(PORTABLE) or not compact or mods.contains("Paths"):
     import library/Paths        as PathsLib
 
-when not defined(PORTABLE) or mods.contains("Reflection"):
+when not defined(PORTABLE) or not compact or mods.contains("Reflection"):
     import library/Reflection   as ReflectionLib
 
-when not defined(PORTABLE) or mods.contains("Sets"):
+when not defined(PORTABLE) or not compact or mods.contains("Sets"):
     import library/Sets         as SetsLib
 
-when not defined(PORTABLE) or mods.contains("Statistics"):
+when not defined(PORTABLE) or not compact or mods.contains("Statistics"):
     import library/Statistics   as StatisticsLib
 
-when not defined(PORTABLE) or mods.contains("Strings"):
+when not defined(PORTABLE) or not compact or mods.contains("Strings"):
     import library/Strings      as StringsLib
 
-when not defined(PORTABLE) or mods.contains("System"):
+when not defined(PORTABLE) or not compact or mods.contains("System"):
     import library/System       as SystemLib
 
-when not defined(PORTABLE) or mods.contains("Ui"):
+when not defined(PORTABLE) or not compact or mods.contains("Ui"):
     import library/Ui           as UiLib
 
 #=======================================
