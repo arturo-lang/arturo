@@ -24,7 +24,7 @@ compressBinary(){
 
 buildPackage(){
     # generate portable data
-    arturo --pInfo $1 > "$1.data.json"
+    arturo --package-info $1 > "$1.data.json"
 
     # set environment variables
     export PORTABLE_INPUT="$1"
