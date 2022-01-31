@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import os, random, sequtils
+import os, random
 import strutils, sugar, tables
 
 when defined(WEB):
@@ -141,28 +141,6 @@ when not defined(WEB):
             initialize(args, filename, isFile=true)
 
             discard doExec(code)
-
-    proc writePortableInfo*(filepath: string) =
-        let mainCode = doParse(filepath, isFile=true)
-        var scriptData = mainCode.data.d
-        var portable = initOrderedTable[string,Value]()
-        if scriptData.hasKey("embed"):
-            if scriptData["embed"].a[0].kind == Block:
-                let paths = scriptData["embed"].a[0].a
-                let permitted = scriptData["embed"].a[1].a.map((x)=>x.s)
-                for path in paths:
-                    for subpath in walkDirRec(path.s):
-                        var (_, _, ext) = splitFile(subpath)
-                        if ext in permitted:
-                            portable[subpath] = newString(readFile(subpath))
-            else:
-                let paths = scriptData["embed"].a
-                for path in paths:
-                    portable[path.s] = newString(readFile(path.s))
-
-        scriptData["embed"] = newDictionary(portable)
-
-        echo jsonFromValue(newDictionary(scriptData))
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=""): Translation {.exportc:"run".} =
         handleVMErrors:
