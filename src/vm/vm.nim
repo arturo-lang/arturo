@@ -30,29 +30,82 @@ import vm/[
     version
 ]
 
-import library/Arithmetic   as ArithmeticLib
-import library/Binary       as BinaryLib
-import library/Collections  as CollectionsLib
-import library/Colors       as ColorsLib
-import library/Comparison   as ComparisonLib
-import library/Converters   as ConvertersLib
-import library/Core         as CoreLib
-import library/Crypto       as CryptoLib
-import library/Databases    as DatabasesLib
-import library/Dates        as DatesLib
-import library/Files        as FilesLib
-import library/Io           as IoLib
-import library/Iterators    as IteratorsLib
-import library/Logic        as LogicLib
-import library/Net          as NetLib
-import library/Numbers      as NumbersLib
-import library/Paths        as PathsLib
-import library/Reflection   as ReflectionLib
-import library/Sets         as SetsLib
-import library/Statistics   as StatisticsLib
-import library/Strings      as StringsLib
-import library/System       as SystemLib
-import library/Ui           as UiLib
+when defined(PORTABLE):
+    import json, sequtils
+
+    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
+    let mods {.compileTime.} = toSeq(js["using"]["modules"]).map((x) => x.getStr())
+else:
+    let mods {.compileTime.}: seq[string] = @[]
+
+when not defined(PORTABLE) or mods.contains("Arithmetic"):
+    import library/Arithmetic   as ArithmeticLib
+
+when not defined(PORTABLE) or mods.contains("Binary"):
+    import library/Binary       as BinaryLib
+
+when not defined(PORTABLE) or mods.contains("Collections"):
+    import library/Collections  as CollectionsLib
+
+when not defined(PORTABLE) or mods.contains("Colors"):
+    import library/Colors       as ColorsLib
+
+when not defined(PORTABLE) or mods.contains("Comparison"):
+    import library/Comparison   as ComparisonLib
+
+when not defined(PORTABLE) or mods.contains("Converters"):
+    import library/Converters   as ConvertersLib
+
+when not defined(PORTABLE) or mods.contains("Core"):
+    import library/Core         as CoreLib
+
+when not defined(PORTABLE) or mods.contains("Crypto"):
+    import library/Crypto       as CryptoLib
+
+when not defined(PORTABLE) or mods.contains("Databases"):
+    import library/Databases    as DatabasesLib
+
+when not defined(PORTABLE) or mods.contains("Dates"):
+    import library/Dates        as DatesLib
+
+when not defined(PORTABLE) or mods.contains("Files"):
+    import library/Files        as FilesLib
+
+when not defined(PORTABLE) or mods.contains("Io"):
+    import library/Io           as IoLib
+
+when not defined(PORTABLE) or mods.contains("Iterators"):
+    import library/Iterators    as IteratorsLib
+
+when not defined(PORTABLE) or mods.contains("Logic"):
+    import library/Logic        as LogicLib
+
+when not defined(PORTABLE) or mods.contains("Net"):
+    import library/Net          as NetLib
+
+when not defined(PORTABLE) or mods.contains("Numbers"):
+    import library/Numbers      as NumbersLib
+
+when not defined(PORTABLE) or mods.contains("Paths"):
+    import library/Paths        as PathsLib
+
+when not defined(PORTABLE) or mods.contains("Reflection"):
+    import library/Reflection   as ReflectionLib
+
+when not defined(PORTABLE) or mods.contains("Sets"):
+    import library/Sets         as SetsLib
+
+when not defined(PORTABLE) or mods.contains("Statistics"):
+    import library/Statistics   as StatisticsLib
+
+when not defined(PORTABLE) or mods.contains("Strings"):
+    import library/Strings      as StringsLib
+
+when not defined(PORTABLE) or mods.contains("System"):
+    import library/System       as SystemLib
+
+when not defined(PORTABLE) or mods.contains("Ui"):
+    import library/Ui           as UiLib
 
 #=======================================
 # Variables
