@@ -30,7 +30,7 @@ buildPackage(){
     export PORTABLE_INPUT="$1"
     export PORTABLE_DATA="$1.data.json"
     
-    FLAGS="$FLAGS --forceBuild:on --opt:size -d:PORTABLE"
+    FLAGS="$FLAGS --forceBuild:on --opt:size -d:NOEXAMPLES -d:PORTABLE"
     INPUT=$1
     BINARY="${INPUT/.art/}"
     nim c $FLAGS -o:$BINARY $MAIN 1>/dev/null 2>/dev/null
