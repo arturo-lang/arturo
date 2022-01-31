@@ -4,7 +4,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: utils.sh
 ######################################################
@@ -71,7 +71,7 @@ showHeader() {
     eecho "${CLEAR}"
     printf "     \e[1mArturo"
     printf " Programming Language\e[0m\n"
-    eecho "      (c)2021 Yanis Zafirópulos"
+    eecho "      (c)2022 Yanis Zafirópulos"
     eecho ""
 
     eecho "======================================"

@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/vm.nim
 ######################################################
@@ -10,11 +10,11 @@
 # Libraries
 #=======================================
 
-import os, random
+import macros, os, random
 import strutils, sugar, tables
 
 when defined(WEB):
-    import jsffi, std/json
+    import jsffi, json
 
 import helpers/jsonobject
 
@@ -30,29 +30,57 @@ import vm/[
     version
 ]
 
-import library/Arithmetic   as ArithmeticLib
-import library/Binary       as BinaryLib
-import library/Collections  as CollectionsLib
-import library/Colors       as ColorsLib
-import library/Comparison   as ComparisonLib
-import library/Converters   as ConvertersLib
-import library/Core         as CoreLib
-import library/Crypto       as CryptoLib
-import library/Databases    as DatabasesLib
-import library/Dates        as DatesLib
-import library/Files        as FilesLib
-import library/Io           as IoLib
-import library/Iterators    as IteratorsLib
-import library/Logic        as LogicLib
-import library/Net          as NetLib
-import library/Numbers      as NumbersLib
-import library/Paths        as PathsLib
-import library/Reflection   as ReflectionLib
-import library/Sets         as SetsLib
-import library/Statistics   as StatisticsLib
-import library/Strings      as StringsLib
-import library/System       as SystemLib
-import library/Ui           as UiLib
+#=======================================
+# Packaging setup
+#=======================================
+
+when defined(PORTABLE):
+    import json, sequtils
+
+    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
+    let mods {.compileTime.} = toSeq(js["uses"]["modules"]).map((x) => x.getStr())
+    let compact {.compileTime.} = js["compact"].getStr() == "true"
+else:
+    let mods {.compileTime.}: seq[string] = @[]
+    let compact {.compileTime.} = false
+
+#=======================================
+# Macros
+#=======================================
+
+macro importLib(name: static[string]): untyped =
+    let id = ident(name & "Lib")
+    result = quote do:
+        when not defined(PORTABLE) or not compact or mods.contains(`name`):
+            import library/`name` as `id`
+
+#=======================================
+# Standard library setup
+#=======================================
+
+importLib "Arithmetic"
+importLib "Binary"
+importLib "Collections"
+importLib "Colors"
+importLib "Comparison"
+importLib "Converters"
+importLib "Core"
+importLib "Crypto"
+importLib "Databases"
+importLib "Dates"
+importLib "Files"
+importLib "Io"
+importLib "Iterators"
+importLib "Logic"
+importLib "Net"
+importLib "Numbers"
+importLib "Paths"
+importLib "Reflection"
+importLib "Sets"
+importLib "Statistics"
+importLib "Strings"
+importLib "System"
+importLib "Ui"
 
 #=======================================
 # Variables

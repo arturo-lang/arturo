@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/env.nim
 ######################################################
@@ -76,7 +76,7 @@ proc parseCmdlineArguments*(): ValueDict =
 proc getSystemInfo*(): ValueDict =
     {
         "author"    : newString("Yanis Zafirópulos"),
-        "copyright" : newString("(c) 2019-2021"),
+        "copyright" : newString("(c) 2019-2022"),
         "version"   : newVersion(ArturoVersion),
         "build"     : newInteger(parseInt(ArturoBuild)),
         "buildDate" : newDate(now()),
