@@ -47,40 +47,49 @@ proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expec
 #=======================================
 # Templates
 #=======================================
+when defined(PORTABLE):
+    import json, os, sugar
+
+    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
+    let funcs {.compileTime.} = toSeq(js["using"]["functions"]).map((x) => x.getStr())
+else:
+    let funcs {.compileTime.}: seq[string] = @[]
 
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    when defined(DEV):
-        static: echo "processing: " & n
-
-    when args.len==1 and args==NoArgs:  
-        const argsLen = 0
-    else:                               
-        const argsLen = static args.len
-
-    when defined(NOEXAMPLES):
-        const cleanExample = ""
-    else:
-        const cleanExample = replace(strutils.strip(example),"\n            ","\n")
+    when not defined(PORTABLE) or funcs.contains(n):
         
-    when not defined(WEB):
-        let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
-            require(n, args)
-            act
-        )
-    else:
-        let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "]", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
-            require(n, args)
-            act
-        )
+        when defined(DEV) or defined(PORTABLE):
+            static: echo "processing: " & n
 
-    Arities[n] = static argsLen
-    Syms[n] = b
+        when args.len==1 and args==NoArgs:  
+            const argsLen = 0
+        else:                               
+            const argsLen = static args.len
 
-    when alias != unaliased:
-        Aliases[alias] = AliasBinding(
-            precedence: rule,
-            name: newWord(n)
-        )
+        when defined(NOEXAMPLES):
+            const cleanExample = ""
+        else:
+            const cleanExample = replace(strutils.strip(example),"\n            ","\n")
+            
+        when not defined(WEB):
+            let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
+                require(n, args)
+                act
+            )
+        else:
+            let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "]", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
+                require(n, args)
+                act
+            )
+
+        Arities[n] = static argsLen
+        Syms[n] = b
+
+        when alias != unaliased:
+            Aliases[alias] = AliasBinding(
+                precedence: rule,
+                name: newWord(n)
+            )
 
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
     Syms[n] = (v)
