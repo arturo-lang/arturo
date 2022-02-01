@@ -76,6 +76,9 @@ template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
 template rawRGB(r, g, b: int): stdColors.Color =
     stdColors.Color(r shl 16 or g shl 8 or b)
 
+template rawRGB(rgb: RGB): stdColors.Color =
+    stdColors.Color(rgb.r shl 16 or rgb.g shl 8 or rgb.b)
+
 #=======================================
 # Helpers
 #=======================================
@@ -206,3 +209,13 @@ proc blendColors*(c1: Color, c2: Color, balance: float): RGB =
     let b = (float)(rgb1.b) * w1 + (float)(rgb2.b) * w2
 
     return ((int)(r.round), (int)(g.round), (int)(b.round))
+
+func spinColor*(c: Color, amount: int): Color =
+    var hsl = RGBtoHSL(c)
+    let hue = (hsl.h + amount) mod 360
+    if hue < 0: 
+        hsl.h = hue + 360
+    else:
+        hsl.h = hue    
+    
+    return rawRGB(HSLtoRGB(hsl))
