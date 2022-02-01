@@ -16,6 +16,8 @@
 # Libraries
 #=======================================
 
+import sequtils, sugar
+
 import helpers/colors as colorsHelper
 
 import vm/lib
@@ -145,6 +147,33 @@ proc defineSymbols*() =
             else:
                 push newColor(alterColorValue(x.l, y.f))
 
+    builtin "palette",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "create palette using given base color",
+        args        = {
+            "color"     : {ValueKind.Color},
+        },
+        attrs       = {
+            "triad"     : ({Logical},"generate a triad palette"),
+            "tetrad"    : ({Logical},"generate a tetrad palette"),
+            "split"     : ({Logical},"generate a split complement palette")
+        },
+        returns     = {Block},
+        # TODO(Colors\palette) add library documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if (popAttr("triad") != VNULL):
+                push newBlock(@[0, 120, 240].map((m) => newColor(spinColor(x.l, m))))
+            elif (popAttr("tetrad") != VNULL):
+                push newBlock(@[0, 90, 180, 270].map((m) => newColor(spinColor(x.l, m))))
+            elif (popAttr("split") != VNULL):
+                push newBlock(@[0, 72, 216].map((m) => newColor(spinColor(x.l, m))))
+            else:
+                push newBlock(@[x])
+
     builtin "saturate",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
@@ -175,7 +204,7 @@ proc defineSymbols*() =
         description = "spin color around the hue wheel by given amount",
         args        = {
             "color"     : {ValueKind.Color},
-            "amount"   : {Integer}
+            "amount"    : {Integer}
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
