@@ -1,0 +1,6 @@
+loop [
+    ["MARTHA" "MARHTA"]
+    ["DIXON" "DICKSONX"]
+    ["JELLYFISH" "SMELLYFISH"]
+] 'pair ->
+    print [pair "-> Jaro similarity:" round.to: 3 jaro first pair last pair]
