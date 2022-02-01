@@ -258,6 +258,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         addTerminalValue(true):
                             discard
 
+                of AttributeLabel:
+                    subargStack[subargStack.len-1] += 1
+
                 else: discard
 
             
