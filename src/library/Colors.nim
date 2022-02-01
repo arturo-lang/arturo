@@ -169,6 +169,26 @@ proc defineSymbols*() =
             else:
                 push newColor(saturateColor(x.l, y.f))
 
+    builtin "spin",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "spin color around the hue wheel by given amount",
+        args        = {
+            "color"     : {ValueKind.Color},
+            "amount"   : {Integer}
+        },
+        attrs       = NoAttrs,
+        returns     = {ValueKind.Color},
+        # TODO(Colors\spin) add library documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            ##########################################################
+            if x.kind == Literal:
+                SetInPlace(newColor(spinColor(InPlace.l, y.i)))
+            else:
+                push newColor(spinColor(x.l, y.i))
+
 #=======================================
 # Add Library
 #=======================================
