@@ -401,8 +401,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addConst(consts, newBlock(subblock), opPush)
                             
                     of arrowright       : 
-                        # TODO: arrowright sugar `->` should support attributes
-                        # labels: vm, evaluator, bug, enhancement, critical
                         var subargStack: seq[int] = @[]
                         var ended = false
                         var ret: seq[Value] = @[]
