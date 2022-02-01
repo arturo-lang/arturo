@@ -200,7 +200,23 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newString(indent(InPlace.s, count, padding)))
             else:
-                push(newString(indent(x.s, count, padding)))            
+                push(newString(indent(x.s, count, padding)))      
+
+    builtin "jaro",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate Jaro similarity between given strings",
+        args        = {
+            "stringA"   : {String},
+            "stringB"   : {String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        # TODO(Strings\jaro) add library documentation
+        #  labels: library,documentation,easy
+        example     = """
+        """:
+            push(newFloating(jaro(x.s,y.s)))    
 
     builtin "join",
         alias       = unaliased, 
