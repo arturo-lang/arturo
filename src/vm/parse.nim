@@ -477,6 +477,9 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             else: p.symbol = question
         of '@'  : p.symbol = at
         of '#'  : 
+            # TODO(VM/parse) Properly recognize color values 
+            #  we could also integrate transparencies, but if it's a HEX color it should normally be limited to 6 characters
+            #  labels: bug,parser,language
             if p.buf[pos+1] in PermittedColorChars:
                 let oldPos = pos
                 inc pos
