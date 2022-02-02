@@ -29,19 +29,6 @@ type
 # Constants
 #=======================================
 
-const
-    noColor*     = "\e[0m"
-
-    blackColor*     = ";30"
-    redColor*       = ";31"
-    greenColor*     = ";32"
-    yellowColor*    = ";33"
-    blueColor*      = ";34"
-    magentaColor*   = ";35"
-    cyanColor*      = ";36"
-    whiteColor*     = ";37"
-    grayColor*      = ";90"
-
 #=======================================
 # Templates
 #=======================================
