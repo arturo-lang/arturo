@@ -481,27 +481,30 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             #  we could also integrate transparencies, but if it's a HEX color it should normally be limited to 6 characters
             # labels: bug,parser,language
             if p.buf[pos+1] in PermittedColorChars:
-                let oldPos = pos
                 inc pos
                 var colorCode = ""
                 while p.buf[pos] in PermittedColorChars:
                     colorCode &= p.buf[pos]
                     inc pos
-                var color: Value
-                try:
-                    color = newColor(colorCode)
-                    isSymbol = false
-                    AddToken color
-                    p.bufpos = pos
-                except:
-                    try:
-                        color = newColor("#" & colorCode)
-                        isSymbol = false
-                        AddToken color
-                        p.bufpos = pos
-                    except:
-                        p.symbol = sharp
-                        pos = oldPos
+
+                isSymbol = false
+                AddToken newColor(colorCode)
+                p.bufpos = pos
+                # var color: Value
+                # try:
+                #     color = newColor(colorCode)
+                #     isSymbol = false
+                #     AddToken color
+                #     p.bufpos = pos
+                # except:
+                #     try:
+                #         color = newColor("#" & colorCode)
+                #         isSymbol = false
+                #         AddToken color
+                #         p.bufpos = pos
+                #     except:
+                #         p.symbol = sharp
+                #         pos = oldPos
             else: 
                 if p.buf[pos+1] == '#':
                     inc pos
