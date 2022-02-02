@@ -68,6 +68,7 @@ proc defineSymbols*() =
                 "green"     : ({Logical},"get green component from color"),
                 "blue"      : ({Logical},"get blue component from color"),
                 "hsl"       : ({Logical},"get HSL representation from color"),
+                "hsv"       : ({Logical},"get HSV representation from color"),
                 "hue"       : ({Logical},"get hue component from color"),
                 "saturation": ({Logical},"get saturation component from color"),
                 "luminosity": ({Logical},"get luminosity component from color")
@@ -126,6 +127,13 @@ proc defineSymbols*() =
                             "hue"       : newInteger(hsl.h),
                             "saturation": newFloating(hsl.s),
                             "luminosity": newFloating(hsl.l)
+                        }.toOrderedTable)
+                    elif (popAttr("hsv") != VNULL):
+                        let hsv = RGBtoHSV(x.l)
+                        push newDictionary({
+                            "hue"       : newInteger(hsv.h),
+                            "saturation": newFloating(hsv.s),
+                            "value"     : newFloating(hsv.v)
                         }.toOrderedTable)
                     elif (popAttr("hue") != VNULL):
                         let hsl = RGBtoHSL(x.l)
