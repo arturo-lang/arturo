@@ -112,7 +112,8 @@ proc defineSymbols*() =
                 of clGray:
                     color = grayColor
                 else:
-                    color = rgb(extractRGB(x.l))
+                    let rgba = RGBfromColor(x.l)
+                    color = rgb((rgba.r, rgba.g, rgba.b))
 
             var finalColor = ""
 
