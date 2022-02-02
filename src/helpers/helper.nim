@@ -13,7 +13,7 @@
 import algorithm, sequtils, sets, strformat
 import strutils, tables
 
-import helpers/colors
+import helpers/terminal
 
 import vm/values/[printable, value]
 
