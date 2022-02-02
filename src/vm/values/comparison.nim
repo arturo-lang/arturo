@@ -10,9 +10,11 @@
 # Libraries
 #=======================================
 
-import colors, lenientops, tables, unicode
+import lenientops, tables, unicode
 when not defined(NOGMP):
     import extras/bignum
+
+import helpers/colors as ColorsHelper
  
 import vm/exec
 import vm/stack
