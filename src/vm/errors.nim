@@ -17,8 +17,8 @@ when not defined(PORTABLE):
     
 import sequtils, strformat, strutils, sugar
 
-import helpers/colors
 import helpers/strings
+import helpers/terminal
 
 #=======================================
 # Types
