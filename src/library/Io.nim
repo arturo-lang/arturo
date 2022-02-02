@@ -19,7 +19,6 @@
 when not defined(WEB):
     import rdstdin, terminal
 
-import std/colors except Color
 import algorithm, tables
 
 when not defined(windows) and not defined(WEB):
