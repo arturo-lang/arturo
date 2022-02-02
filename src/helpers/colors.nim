@@ -10,6 +10,8 @@
 # Libraries
 #=======================================
 
+from algorithm import binarySearch
+
 import math, random, sequtils
 import strutils, sugar
 
@@ -1352,9 +1354,6 @@ proc RGBtoHSV*(c: VColor): HSV =
 # Helpers
 #=======================================
 
-proc parseColor*(s: string): VColor =
-    result = VColor(0x88CC55FF)
-
 proc satPlus(a, b: int): int {.inline.} =
     result = a +% b
     if result > 255: result = 255
@@ -1362,6 +1361,9 @@ proc satPlus(a, b: int): int {.inline.} =
 proc satMinus(a, b: int): int {.inline.} =
     result = a -% b
     if result < 0: result = 0
+
+proc colorNameCmp(x: tuple[name: string, col: VColor], y: string): int =
+    result = cmpIgnoreCase(x.name, y)
 
 #=======================================
 # Overloads
@@ -1396,6 +1398,34 @@ proc `$`*(c: VColor): string =
         result = '#' & toHex(int(c), 8)
     else:
         result = '#' & toHex(c.int shr 8, 6)
+
+#=======================================
+# Constructors
+#=======================================
+
+proc colorFromShortHex*(s: string): VColor =
+    let token = s[0] & s[0] & s[1] & s[1] & s[2] & s[2] & "FF"
+    result = VColor(parseHexInt(token))
+
+proc colorFromHex*(s: string): VColor =
+    result = VColor(parseHexInt(s) shl 8 or 0xff)
+
+proc colorFromHexWithAlpha*(s: string): VColor =
+    result = VColor(parseHexInt(s))
+
+proc colorByName*(name: string): VColor =
+    var idx = binarySearch(colorNames, name, colorNameCmp)
+    if idx < 0: raise newException(ValueError, "unknown color: " & name)
+    result = colorNames[idx][1]
+
+proc parseColor*(s: string): VColor =
+    try:
+        if s.len==3:    result = colorFromShortHex(s)
+        elif s.len==6:  result = colorFromHex(s)
+        elif s.len==8:  result = colorFromHexWithAlpha(s)
+        else:           result = colorByName(s)
+    except:
+        result = colorByName(s)
 
 #=======================================
 # Methods
