@@ -17,7 +17,7 @@ when not defined(NOGMP):
 
 when not defined(PORTABLE):
     import strformat, strutils
-    import helpers/colors
+    import helpers/terminal as terminalHelper
 
 import vm/[bytecode, globals, values/value]
 
