@@ -20,6 +20,7 @@ import std/colors as stdColors
 type
     RGB* = tuple[r: int, g: int, b: int]
     HSL* = tuple[h: int, s: float, l: float]
+    HSV* = tuple[h: int, s: float, v: float]
 
 #=======================================
 # Global Variables
@@ -148,6 +149,34 @@ proc HSLtoRGB*(hsl: HSL): RGB =
 
     return ((int)r, (int)g, (int)b)
 
+proc HSVtoRGB*(hsv: HSV): RGB =
+    let h = (((float)hsv.h)/360)
+    let s = hsv.s
+    let v = hsv.v
+
+    var r = 0.0
+    var g = 0.0
+    var b = 0.0
+
+    let hI = (float)(h*6)
+    let f = (float)(h*6 - hI)
+    let p = v * (1 - s)
+    let q = v * (float)(1 - f*s)
+    let t = v * (float)(1 - (1 - f) * s)
+    
+    if hI==0: (r, g, b) = (v, t, p)
+    elif hI==1: (r, g, b) = (q, v, p)
+    elif hI==2: (r, g, b) = (p, v, t)
+    elif hI==3: (r, g, b) = (p, q, v)
+    elif hI==4: (r, g, b) = (t, p, v)
+    elif hI==5: (r, g, b) = (v, p, q)
+
+    r = 255*r
+    g = 255*g
+    b = 255*b
+
+    return ((int)r, (int)g, (int)b)
+
 proc RGBtoHSL*(c: Color): HSL =
     let rgb = extractRGB(c)
 
@@ -182,6 +211,39 @@ proc RGBtoHSL*(c: Color): HSL =
         s = D / (1 - abs(2*l - 1))
 
     return ((int)h,s,l)
+
+proc RGBtoHSV*(c: Color): HSV =
+    let rgb = extractRGB(c)
+
+    let R = rgb.r / 255
+    let G = rgb.g / 255
+    let B = rgb.b / 255
+
+    let cMax = max(@[R,G,B])
+    let cMin = min(@[R,G,B])
+    let D = cMax - cMin
+
+    var s = 0.0
+    var v = cMax*100.0
+
+    if cMax != 0.0:
+        s = D / cMax * 100
+    
+    var h = 0.0
+    if s != 0.0:
+        if R == cMax:
+            h = (G - B) / D
+        elif G == cMax:
+            h = 2 + (B - R) / D
+        elif B == cMax:
+            h = 4 + (R - G) / D
+
+        h *= 60.0
+
+        if h < 0:
+            h += 360.0
+
+    return ((int)h,s/100.0,v/100.0)
 
 proc invertColor*(c: Color): RGB =
     var hsl = RGBtoHSL(c)
