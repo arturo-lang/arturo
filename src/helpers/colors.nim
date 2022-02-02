@@ -1418,7 +1418,9 @@ proc colorByName*(name: string): VColor =
     if idx < 0: raise newException(ValueError, "unknown color: " & name)
     result = colorNames[idx][1]
 
-proc parseColor*(s: string): VColor =
+proc parseColor*(str: string): VColor =
+    var s = str
+    if s[0]=='#': s = str[1..^1]
     try:
         if s.len==3:    result = colorFromShortHex(s)
         elif s.len==6:  result = colorFromHex(s)
