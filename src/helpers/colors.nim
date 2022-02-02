@@ -21,8 +21,8 @@ type
     VColor* = distinct int
 
     RGB* = tuple[r: int, g: int, b: int, a: int]
-    HSL* = tuple[h: int, s: float, l: float, a: int]
-    HSV* = tuple[h: int, s: float, v: float, a: int]
+    HSL* = tuple[h: int, s: float, l: float, a: float]
+    HSV* = tuple[h: int, s: float, v: float, a: float]
     Palette = seq[VColor]
 
 #=======================================
@@ -69,7 +69,7 @@ proc HSLtoRGB*(hsl: HSL): RGB =
     let h = hsl.h/360
     let s = hsl.s
     let l = hsl.l
-    let a = hsl.a*255
+    let a = (hsl.a*255).round
 
     var r = 0.0
     var g = 0.0
@@ -89,13 +89,13 @@ proc HSLtoRGB*(hsl: HSL): RGB =
         g = (hueToRGB(p, q, h) * 255).round
         b = (hueToRGB(p, q, h - 1/3.0) * 255).round
 
-    return ((int)r, (int)g, (int)b, a)
+    return ((int)r, (int)g, (int)b, (int)a)
 
 proc HSVtoRGB*(hsv: HSV): RGB =
     let h = (((float)hsv.h)/360)
     let s = hsv.s
     let v = hsv.v
-    let a = hsv.a*255
+    let a = (hsv.a*255).round
 
     var r = 0.0
     var g = 0.0
@@ -118,7 +118,7 @@ proc HSVtoRGB*(hsv: HSV): RGB =
     g = 255*g
     b = 255*b
 
-    return ((int)r, (int)g, (int)b, a)
+    return ((int)r, (int)g, (int)b, (int)a)
 
 proc RGBtoHSL*(c: VColor): HSL =
     let rgb = RGBfromColor(c)
@@ -126,7 +126,7 @@ proc RGBtoHSL*(c: VColor): HSL =
     let R = rgb.r / 255
     let G = rgb.g / 255
     let B = rgb.b / 255
-    let a = rgb.a
+    let a = rgb.a / 255
 
     let cMax = max(@[R,G,B])
     let cMin = min(@[R,G,B])
@@ -162,7 +162,7 @@ proc RGBtoHSV*(c: VColor): HSV =
     let R = rgb.r / 255
     let G = rgb.g / 255
     let B = rgb.b / 255
-    let a = rgb.a
+    let a = rgb.a / 255
 
     let cMax = max(@[R,G,B])
     let cMin = min(@[R,G,B])
