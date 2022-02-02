@@ -10,12 +10,13 @@
 # Libraries
 #=======================================
 
-import colors except Color
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
 when not defined(NOGMP):
     import extras/bignum
+
+import helpers/colors as ColorsHelper
 
 import vm/exec
 import vm/stack

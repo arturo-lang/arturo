@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import colors, complex, hashes, lenientops
+import complex, hashes, lenientops
 import math, sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
@@ -247,9 +247,7 @@ type
             of Path,
                PathLabel:   p*  : ValueArray
             of Symbol:      m*  : SymbolKind
-            of Color:       
-                l*  : Color
-                alpha : float
+            of Color:       l*  : RGBColor
             of Date:        
                 e*     : ValueDict         
                 eobj*  : DateTime
@@ -517,11 +515,11 @@ proc newSymbol*(m: SymbolKind): Value {.inline.} =
 proc newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
-proc newColor*(l: colors.Color): Value {.inline.} =
+proc newColor*(l: RGBColor): Value {.inline.} =
     Value(kind: Color, l: l)
 
 proc newColor*(rgb: RGB): Value {.inline.} =
-    newColor(rgb(rgb.r, rgb.g, rgb.b))
+    newColor(colorFromRGB(rgb))
 
 proc newColor*(l: string): Value {.inline.} =
     newColor(parseColor(l))

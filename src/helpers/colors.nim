@@ -10,18 +10,20 @@
 # Libraries
 #=======================================
 
-import math, random, sequtils, sugar
-import std/colors as stdColors
+import math, random, sequtils
+import strutils, sugar
 
 #=======================================
 # Types
 #=======================================
 
 type
-    RGB* = tuple[r: int, g: int, b: int]
-    HSL* = tuple[h: int, s: float, l: float]
-    HSV* = tuple[h: int, s: float, v: float]
-    Palette = seq[Color]
+    VColor* = distinct int
+
+    RGB* = tuple[r: int, g: int, b: int, a: int]
+    HSL* = tuple[h: int, s: float, l: float, a: int]
+    HSV* = tuple[h: int, s: float, v: float, a: int]
+    Palette = seq[VColor]
 
 #=======================================
 # Global Variables
@@ -75,15 +77,32 @@ template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
 
-template rawRGB*(r, g, b: int): stdColors.Color =
-    stdColors.Color(r shl 16 or g shl 8 or b)
+template colorFromRGB*(r, g, b: int, a = 0xff): VColor =
+    VColor(r shl 24 or g shl 16 or b shl 8 or a)
 
-template rawRGB*(rgb: RGB): stdColors.Color =
-    stdColors.Color(rgb.r shl 16 or rgb.g shl 8 or rgb.b)
+template colorFromRGB*(rgb: RGB): VColor =
+    RGBColor(rgb.r shl 24 or rgb.g shl 16 or rgb.b shl 8 or rgb.a)
+
+proc RGBfromColor*(c: VColor): RGB =
+    result.r = c.int shr 24 and 0xff
+    result.g = c.int shr 16 and 0xff
+    result.b = c.int shr 8 and 0xff
+    result.a = c.int and 0xff
+
+proc RGBAfromColor*(c: VColor): RGB =
+    result.r = c.int shr 24 and 0xff
+    result.g = c.int shr 16 and 0xff
+    result.b = c.int shr 8 and 0xff
+    result.a = c.int and 0xff
+
+proc parseColor*(s: string): VColor =
+    result = VColor(0xff88cc55)
 
 #=======================================
 # Helpers
 #=======================================
+
+proc `==` *(a, b: RGBColor): bool {.borrow.}
 
 proc hueToRGB*(p, q, t: float): float =
     var T = t
@@ -103,25 +122,49 @@ proc satMinus(a, b: int): int {.inline.} =
     result = a -% b
     if result < 0: result = 0
 
+
+proc `+`*(a, b: RGBColor): RGBColor =
+    let ac = RGBfromColor(a)
+    let bc = RGBfromColor(b)
+
+    colorFromRGB(
+        satPlus(ac.r, bc.r),
+        satPlus(ac.g, bc.g),
+        satPlus(ac.b, bc.b)
+    )
+
+proc `-`*(a, b: RGBColor): RGBColor =
+    let ac = RGBfromColor(a)
+    let bc = RGBfromColor(b)
+
+    colorFromRGB(
+        satMinus(ac.r, bc.r),
+        satMinus(ac.g, bc.g),
+        satMinus(ac.b, bc.b)
+    )
+
+proc `$`*(c: RGBColor): string =
+    result = '#' & toHex(int(c), 8)
+
 #=======================================
 # Methods
 #=======================================
 
-proc alterColorValue*(c: stdColors.Color, f: float): stdColors.Color =
-    var (r,g,b) = extractRGB(c)
+proc alterColorValue*(c: RGBColor, f: float): RGBColor =
+    var (r,g,b) = RGBfromColor(c)
     var pcent: float
     if f > 0:
         pcent = f
         r = satPlus(r, toInt(toFloat(r) * pcent))
         g = satPlus(g, toInt(toFloat(g) * pcent))
         b = satPlus(b, toInt(toFloat(b) * pcent))
-        result = rawRGB(r, g, b)
+        result = colorFromRGB(r, g, b)
     elif f < 0:
         pcent = (-1) * f
         r = satMinus(r, toInt(toFloat(r) * pcent))
         g = satMinus(g, toInt(toFloat(g) * pcent))
         b = satMinus(b, toInt(toFloat(b) * pcent))
-        result = rawRGB(r, g, b)
+        result = colorFromRGB(r, g, b)
     else:
         return c
 
@@ -178,8 +221,8 @@ proc HSVtoRGB*(hsv: HSV): RGB =
 
     return ((int)r, (int)g, (int)b)
 
-proc RGBtoHSL*(c: Color): HSL =
-    let rgb = extractRGB(c)
+proc RGBtoHSL*(c: RGBColor): HSL =
+    let rgb = RGBfromColor(c)
 
     let R = rgb.r / 255
     let G = rgb.g / 255
@@ -213,8 +256,8 @@ proc RGBtoHSL*(c: Color): HSL =
 
     return ((int)h,s,l)
 
-proc RGBtoHSV*(c: Color): HSV =
-    let rgb = extractRGB(c)
+proc RGBtoHSV*(c: RGBColor): HSV =
+    let rgb = RGBfromColor(c)
 
     let R = rgb.r / 255
     let G = rgb.g / 255
@@ -246,23 +289,23 @@ proc RGBtoHSV*(c: Color): HSV =
 
     return ((int)h,s/100.0,v/100.0)
 
-proc invertColor*(c: Color): RGB =
+proc invertColor*(c: RGBColor): RGB =
     var hsl = RGBtoHSL(c)
     hsl.h += 180;
     if hsl.h > 360:
         hsl.h -= 360
     return HSLtoRGB(hsl)
 
-proc saturateColor*(c: Color, diff: float): RGB =
+proc saturateColor*(c: RGBColor, diff: float): RGB =
     var hsl = RGBtoHSL(c)
     hsl.s = hsl.s + hsl.s * diff
     if hsl.s > 1: hsl.s = 1
     if hsl.s < 0: hsl.s = 0
     return HSLtoRGB(hsl)
 
-proc blendColors*(c1: Color, c2: Color, balance: float): RGB =
-    let rgb1 = extractRGB(c1)
-    let rgb2 = extractRGB(c2)
+proc blendColors*(c1: RGBColor, c2: RGBColor, balance: float): RGB =
+    let rgb1 = RGBfromColor(c1)
+    let rgb2 = RGBfromColor(c2)
 
     let w1 = 1.0 - balance
     let w2 = balance
@@ -273,7 +316,7 @@ proc blendColors*(c1: Color, c2: Color, balance: float): RGB =
 
     return ((int)(r.round), (int)(g.round), (int)(b.round))
 
-func spinColor*(c: Color, amount: int): Color =
+func spinColor*(c: RGBColor, amount: int): RGBColor =
     var hsl = RGBtoHSL(c)
     let hue = (hsl.h + amount) mod 360
     if hue < 0: 
@@ -281,20 +324,20 @@ func spinColor*(c: Color, amount: int): Color =
     else:
         hsl.h = hue    
     
-    return rawRGB(HSLtoRGB(hsl))
+    return colorFromRGB(HSLtoRGB(hsl))
 
 # Palettes
 
-proc triadPalette*(c: Color): Palette =
+proc triadPalette*(c: RGBColor): Palette =
     result = @[0, 120, 240].map((x) => spinColor(c, x))
 
-proc tetradPalette*(c: Color): Palette =
+proc tetradPalette*(c: RGBColor): Palette =
     result = @[0, 90, 180, 270].map((x) => spinColor(c, x))
 
-proc splitPalette*(c: Color): Palette =
+proc splitPalette*(c: RGBColor): Palette =
     result = @[0, 72, 216].map((x) => spinColor(c, x))
 
-proc analogousPalette*(c: Color, size: int): Palette =
+proc analogousPalette*(c: RGBColor, size: int): Palette =
     let slices = 30
     let part = (int)(360 / slices)
 
@@ -303,20 +346,20 @@ proc analogousPalette*(c: Color, size: int): Palette =
                 
     var i = 0
     while i < size:
-        result.add(rawRGB(HSLtoRGB(hsl)))
+        result.add(colorFromRGB(HSLtoRGB(hsl)))
         hsl.h = (hsl.h + part) mod 360
         inc i
 
-proc monochromePalette*(c: Color, size: int): Palette =
+proc monochromePalette*(c: RGBColor, size: int): Palette =
     var hsv = RGBtoHSV(c)
     let modification = 1.0 / (float)(size)
     var i = 0
     while i < size:
-        result.add(rawRGB(HSVtoRGB(hsv)))
+        result.add(colorFromRGB(HSVtoRGB(hsv)))
         hsv.v = hsv.v - modification
         inc i
 
-proc randomPalette*(c: Color, size: int): Palette =
+proc randomPalette*(c: RGBColor, size: int): Palette =
     let threshold = 0.2
     result.add(c)
     while len(result) < size:
