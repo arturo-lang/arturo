@@ -102,8 +102,6 @@ proc parseColor*(s: string): VColor =
 # Helpers
 #=======================================
 
-proc `==` *(a, b: RGBColor): bool {.borrow.}
-
 proc hueToRGB*(p, q, t: float): float =
     var T = t
     if t<0: T += 1.0
@@ -122,28 +120,31 @@ proc satMinus(a, b: int): int {.inline.} =
     result = a -% b
     if result < 0: result = 0
 
+proc `==` *(a, b: VColor): bool {.borrow.}
 
-proc `+`*(a, b: RGBColor): RGBColor =
-    let ac = RGBfromColor(a)
-    let bc = RGBfromColor(b)
-
-    colorFromRGB(
-        satPlus(ac.r, bc.r),
-        satPlus(ac.g, bc.g),
-        satPlus(ac.b, bc.b)
-    )
-
-proc `-`*(a, b: RGBColor): RGBColor =
-    let ac = RGBfromColor(a)
-    let bc = RGBfromColor(b)
+proc `+`*(a, b: VColor): VColor =
+    let A = RGBfromColor(a)
+    let B = RGBfromColor(b)
 
     colorFromRGB(
-        satMinus(ac.r, bc.r),
-        satMinus(ac.g, bc.g),
-        satMinus(ac.b, bc.b)
+        satPlus(A.r, B.r),
+        satPlus(A.g, B.g),
+        satPlus(A.b, B.b),
+        satPlus(A.a, B.a)
     )
 
-proc `$`*(c: RGBColor): string =
+proc `-`*(a, b: VColor): VColor =
+    let A = RGBfromColor(a)
+    let B = RGBfromColor(b)
+
+    colorFromRGB(
+        satMinus(A.r, B.r),
+        satMinus(A.g, B.g),
+        satMinus(A.b, B.b),
+        satMinus(A.a, B.a)
+    )
+
+proc `$`*(c: VColor): string =
     result = '#' & toHex(int(c), 8)
 
 #=======================================
