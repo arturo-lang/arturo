@@ -199,6 +199,7 @@ proc HSVtoRGB*(hsv: HSV): RGB =
     let h = (((float)hsv.h)/360)
     let s = hsv.s
     let v = hsv.v
+    let a = hsv.a
 
     var r = 0.0
     var g = 0.0
@@ -221,7 +222,7 @@ proc HSVtoRGB*(hsv: HSV): RGB =
     g = 255*g
     b = 255*b
 
-    return ((int)r, (int)g, (int)b)
+    return ((int)r, (int)g, (int)b, a)
 
 proc RGBtoHSL*(c: VColor): HSL =
     let rgb = RGBfromColor(c)
