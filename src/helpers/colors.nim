@@ -1353,7 +1353,7 @@ proc RGBtoHSV*(c: VColor): HSV =
 #=======================================
 
 proc parseColor*(s: string): VColor =
-    result = VColor(0xff88cc55FF)
+    result = VColor(0x88CC55FF)
 
 proc satPlus(a, b: int): int {.inline.} =
     result = a +% b
@@ -1392,7 +1392,10 @@ proc `-`*(a, b: VColor): VColor =
     )
 
 proc `$`*(c: VColor): string =
-    result = '#' & toHex(int(c), 8)
+    if (c.int and 0xff) < 0xff:
+        result = '#' & toHex(int(c), 8)
+    else:
+        result = '#' & toHex(c.int shr 8, 6)
 
 #=======================================
 # Methods
