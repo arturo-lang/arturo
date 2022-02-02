@@ -1294,15 +1294,12 @@ proc RGBtoHSL*(c: VColor): HSL =
 
     var h,s,l : float
 
-    if D==0:
-        h = 0
+    if D==0:    h = 0
     elif cMax==R:
         h = (G-B)/D
         if G<B: h += 6.0
-    elif cMax==G:
-        h = (B-R)/D + 2
-    elif cMax==B:
-        h = ((R-G)/D) + 4
+    elif cMax==G:   h = (B-R)/D + 2
+    elif cMax==B:   h = ((R-G)/D) + 4
 
     h /= 6.0
     h = (360*h).round
@@ -1336,17 +1333,13 @@ proc RGBtoHSV*(c: VColor): HSV =
     
     var h = 0.0
     if s != 0.0:
-        if R == cMax:
-            h = (G - B) / D
-        elif G == cMax:
-            h = 2 + (B - R) / D
-        elif B == cMax:
-            h = 4 + (R - G) / D
+        if R == cMax:   h = (G - B) / D
+        elif G == cMax: h = 2 + (B - R) / D
+        elif B == cMax: h = 4 + (R - G) / D
 
         h *= 60.0
 
-        if h < 0:
-            h += 360.0
+        if h < 0:   h += 360.0
 
     return ((int)h,s/100.0,v/100.0,a)
 
