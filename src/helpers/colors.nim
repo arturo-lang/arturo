@@ -173,6 +173,7 @@ proc HSLtoRGB*(hsl: HSL): RGB =
     let h = hsl.h/360
     let s = hsl.s
     let l = hsl.l
+    let a = hsl.a
 
     var r = 0.0
     var g = 0.0
@@ -192,7 +193,7 @@ proc HSLtoRGB*(hsl: HSL): RGB =
         g = (hueToRGB(p, q, h) * 255).round
         b = (hueToRGB(p, q, h - 1/3.0) * 255).round
 
-    return ((int)r, (int)g, (int)b)
+    return ((int)r, (int)g, (int)b, a)
 
 proc HSVtoRGB*(hsv: HSV): RGB =
     let h = (((float)hsv.h)/360)
