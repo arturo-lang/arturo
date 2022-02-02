@@ -304,6 +304,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                         let blk = cleanBlock(y.a)
                         if (popAttr("hsl") != VNULL):
                             return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f)))
+                        elif (popAttr("hsv") != VNULL):
+                            return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f)))
                         else:
                             return newColor((blk[0].i, blk[1].i, blk[2].i))
 
@@ -956,7 +958,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "format": ({String},"use given format (for dates)"),
-            "hsl"   : ({Logical},"convert HSL block to color")
+            "hsl"   : ({Logical},"convert HSL block to color"),
+            "hsv"   : ({Logical},"convert HSV block to color")
         },
         returns     = {Any},
         example     = """
