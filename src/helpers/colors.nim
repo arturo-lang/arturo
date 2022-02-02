@@ -26,13 +26,6 @@ type
     Palette = seq[VColor]
 
 #=======================================
-# Global Variables
-#=======================================
-
-var
-    NoColors* = false
-
-#=======================================
 # Constants
 #=======================================
 
@@ -53,35 +46,15 @@ const
 # Templates
 #=======================================
 
-template resetColor*():string =
-    if NoColors: ""
-    else: noColor
-
-template fg*(color: string=""):string =
-    if NoColors: ""
-    else: "\e[0" & color & "m"
-
-template bold*(color: string=""):string =
-    if NoColors: ""
-    else: "\e[1" & color & "m"
-
-template underline*(color: string=""):string = 
-    if NoColors: ""
-    else: "\e[4" & color & "m"
-
-template rgb*(color: string=""):string =
-    if NoColors: ""
-    else: ";38;5;" & color
-
-template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
-    if NoColors: ""
-    else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
-
 template colorFromRGB*(r, g, b: int, a = 0xff): VColor =
     VColor(r shl 24 or g shl 16 or b shl 8 or a)
 
 template colorFromRGB*(rgb: RGB): VColor =
     VColor(rgb.r shl 24 or rgb.g shl 16 or rgb.b shl 8 or rgb.a)
+
+#=======================================
+# Converters
+#=======================================
 
 proc RGBfromColor*(c: VColor): RGB =
     result.r = c.int shr 24 and 0xff
@@ -95,81 +68,17 @@ proc RGBAfromColor*(c: VColor): RGB =
     result.b = c.int shr 8 and 0xff
     result.a = c.int and 0xff
 
-proc parseColor*(s: string): VColor =
-    result = VColor(0xff88cc55)
-
-#=======================================
-# Helpers
-#=======================================
-
-proc hueToRGB*(p, q, t: float): float =
-    var T = t
-    if t<0: T += 1.0
-    if t>1: T -= 1.0
-
-    if T < 1/6.0: return (p+(q-p)*6*T)
-    if T < 1/2.0: return q
-    if T < 2/3.0: return (p+(q-p)*(2/3.0-T)*6)
-    return p
-
-proc satPlus(a, b: int): int {.inline.} =
-    result = a +% b
-    if result > 255: result = 255
-
-proc satMinus(a, b: int): int {.inline.} =
-    result = a -% b
-    if result < 0: result = 0
-
-proc `==` *(a, b: VColor): bool {.borrow.}
-
-proc `+`*(a, b: VColor): VColor =
-    let A = RGBfromColor(a)
-    let B = RGBfromColor(b)
-
-    colorFromRGB(
-        satPlus(A.r, B.r),
-        satPlus(A.g, B.g),
-        satPlus(A.b, B.b),
-        satPlus(A.a, B.a)
-    )
-
-proc `-`*(a, b: VColor): VColor =
-    let A = RGBfromColor(a)
-    let B = RGBfromColor(b)
-
-    colorFromRGB(
-        satMinus(A.r, B.r),
-        satMinus(A.g, B.g),
-        satMinus(A.b, B.b),
-        satMinus(A.a, B.a)
-    )
-
-proc `$`*(c: VColor): string =
-    result = '#' & toHex(int(c), 8)
-
-#=======================================
-# Methods
-#=======================================
-
-proc alterColorValue*(c: VColor, f: float): VColor =
-    var (r,g,b,a) = RGBfromColor(c)
-    var pcent: float
-    if f > 0:
-        pcent = f
-        r = satPlus(r, toInt(toFloat(r) * pcent))
-        g = satPlus(g, toInt(toFloat(g) * pcent))
-        b = satPlus(b, toInt(toFloat(b) * pcent))
-        result = colorFromRGB(r, g, b, a)
-    elif f < 0:
-        pcent = (-1) * f
-        r = satMinus(r, toInt(toFloat(r) * pcent))
-        g = satMinus(g, toInt(toFloat(g) * pcent))
-        b = satMinus(b, toInt(toFloat(b) * pcent))
-        result = colorFromRGB(r, g, b, a)
-    else:
-        return c
-
 proc HSLtoRGB*(hsl: HSL): RGB =
+    proc hueToRGB(p, q, t: float): float =
+        var T = t
+        if t<0: T += 1.0
+        if t>1: T -= 1.0
+
+        if T < 1/6.0: return (p+(q-p)*6*T)
+        if T < 1/2.0: return q
+        if T < 2/3.0: return (p+(q-p)*(2/3.0-T)*6)
+        return p
+
     let h = hsl.h/360
     let s = hsl.s
     let l = hsl.l
@@ -293,6 +202,74 @@ proc RGBtoHSV*(c: VColor): HSV =
             h += 360.0
 
     return ((int)h,s/100.0,v/100.0,a)
+
+#=======================================
+# Helpers
+#=======================================
+
+proc parseColor*(s: string): VColor =
+    result = VColor(0xff88cc55)
+
+proc satPlus(a, b: int): int {.inline.} =
+    result = a +% b
+    if result > 255: result = 255
+
+proc satMinus(a, b: int): int {.inline.} =
+    result = a -% b
+    if result < 0: result = 0
+
+#=======================================
+# Overloads
+#=======================================
+
+proc `==` *(a, b: VColor): bool {.borrow.}
+
+proc `+`*(a, b: VColor): VColor =
+    let A = RGBfromColor(a)
+    let B = RGBfromColor(b)
+
+    colorFromRGB(
+        satPlus(A.r, B.r),
+        satPlus(A.g, B.g),
+        satPlus(A.b, B.b),
+        satPlus(A.a, B.a)
+    )
+
+proc `-`*(a, b: VColor): VColor =
+    let A = RGBfromColor(a)
+    let B = RGBfromColor(b)
+
+    colorFromRGB(
+        satMinus(A.r, B.r),
+        satMinus(A.g, B.g),
+        satMinus(A.b, B.b),
+        satMinus(A.a, B.a)
+    )
+
+proc `$`*(c: VColor): string =
+    result = '#' & toHex(int(c), 8)
+
+#=======================================
+# Methods
+#=======================================
+
+proc alterColorValue*(c: VColor, f: float): VColor =
+    var (r,g,b,a) = RGBfromColor(c)
+    var pcent: float
+    if f > 0:
+        pcent = f
+        r = satPlus(r, toInt(toFloat(r) * pcent))
+        g = satPlus(g, toInt(toFloat(g) * pcent))
+        b = satPlus(b, toInt(toFloat(b) * pcent))
+        result = colorFromRGB(r, g, b, a)
+    elif f < 0:
+        pcent = (-1) * f
+        r = satMinus(r, toInt(toFloat(r) * pcent))
+        g = satMinus(g, toInt(toFloat(g) * pcent))
+        b = satMinus(b, toInt(toFloat(b) * pcent))
+        result = colorFromRGB(r, g, b, a)
+    else:
+        return c
 
 proc invertColor*(c: VColor): RGB =
     var hsl = RGBtoHSL(c)
