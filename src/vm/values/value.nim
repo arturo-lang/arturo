@@ -22,6 +22,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/terminal as TerminalHelper
 
 import vm/errors
 
