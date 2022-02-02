@@ -247,7 +247,7 @@ type
             of Path,
                PathLabel:   p*  : ValueArray
             of Symbol:      m*  : SymbolKind
-            of Color:       l*  : RGBColor
+            of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
                 eobj*  : DateTime
