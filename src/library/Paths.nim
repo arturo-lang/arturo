@@ -16,8 +16,6 @@
 # Libraries
 #=======================================
 
-import std/colors except Color
-
 when not defined(WEB):
     import os, sequtils, sugar
 
@@ -67,6 +65,7 @@ proc defineSymbols*() =
                 "red"       : ({Logical},"get red component from color"),
                 "green"     : ({Logical},"get green component from color"),
                 "blue"      : ({Logical},"get blue component from color"),
+                "alpha"     : ({Logical},"get alpha component from color"),
                 "hsl"       : ({Logical},"get HSL representation from color"),
                 "hsv"       : ({Logical},"get HSV representation from color"),
                 "hue"       : ({Logical},"get hue component from color"),
@@ -113,14 +112,14 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 if x.kind==Color:
-                    let (r,g,b) = extractRGB(x.l)
-
                     if (popAttr("red") != VNULL):
-                        push newInteger(r)
+                        push newInteger(RGBfromColor(x.l).r)
                     elif (popAttr("green") != VNULL):
-                        push newInteger(g)
+                        push newInteger(RGBfromColor(x.l).g)
                     elif (popAttr("blue") != VNULL):
-                        push newInteger(b)
+                        push newInteger(RGBfromColor(x.l).b)
+                    elif (popAttr("alpha") != VNULL):
+                        push newInteger(RGBfromColor(x.l).a)
                     elif (popAttr("hsl") != VNULL):
                         let hsl = RGBtoHSL(x.l)
                         push newDictionary({
@@ -145,10 +144,12 @@ proc defineSymbols*() =
                         let hsl = RGBtoHSL(x.l)
                         push newFloating(hsl.l)
                     else:
+                        let rgb = RGBfromColor(x.l)
                         push newDictionary({
-                            "red"   : newInteger(r),
-                            "green" : newInteger(g),
-                            "blue"  : newInteger(b)
+                            "red"   : newInteger(rgb.r),
+                            "green" : newInteger(rgb.g),
+                            "blue"  : newInteger(rgb.b),
+                            "alpha" : newInteger(rgb.a)
                         }.toOrderedTable)
                 else:
                     if isUrl(x.s):

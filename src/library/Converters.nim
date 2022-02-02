@@ -302,12 +302,24 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
 
                     of Color:
                         let blk = cleanBlock(y.a)
-                        if (popAttr("hsl") != VNULL):
-                            return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f)))
-                        elif (popAttr("hsv") != VNULL):
-                            return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f)))
+                        if blk.len < 3 or blk.len > 4:
+                            echo "wrong number of attributes"
                         else:
-                            return newColor((blk[0].i, blk[1].i, blk[2].i))
+                            if (popAttr("hsl") != VNULL):
+                                if blk.len==3:
+                                    return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
+                                elif blk.len==4:
+                                    return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, blk[3].f)))
+                            elif (popAttr("hsv") != VNULL):
+                                if blk.len==3:
+                                    return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
+                                elif blk.len==4:
+                                    return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f, blk[3].f)))
+                            else:
+                                if blk.len==3:
+                                    return newColor((blk[0].i, blk[1].i, blk[2].i, 255))
+                                elif blk.len==4:
+                                    return newColor((blk[0].i, blk[1].i, blk[2].i, blk[3].i))
 
                     of Bytecode:
                         let blk = cleanBlock(y.a)
