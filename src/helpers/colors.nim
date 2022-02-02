@@ -152,20 +152,20 @@ proc `$`*(c: VColor): string =
 #=======================================
 
 proc alterColorValue*(c: VColor, f: float): VColor =
-    var (r,g,b) = RGBfromColor(c)
+    var (r,g,b,a) = RGBfromColor(c)
     var pcent: float
     if f > 0:
         pcent = f
         r = satPlus(r, toInt(toFloat(r) * pcent))
         g = satPlus(g, toInt(toFloat(g) * pcent))
         b = satPlus(b, toInt(toFloat(b) * pcent))
-        result = colorFromRGB(r, g, b)
+        result = colorFromRGB(r, g, b, a)
     elif f < 0:
         pcent = (-1) * f
         r = satMinus(r, toInt(toFloat(r) * pcent))
         g = satMinus(g, toInt(toFloat(g) * pcent))
         b = satMinus(b, toInt(toFloat(b) * pcent))
-        result = colorFromRGB(r, g, b)
+        result = colorFromRGB(r, g, b, a)
     else:
         return c
 
