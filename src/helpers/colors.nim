@@ -81,7 +81,7 @@ template colorFromRGB*(r, g, b: int, a = 0xff): VColor =
     VColor(r shl 24 or g shl 16 or b shl 8 or a)
 
 template colorFromRGB*(rgb: RGB): VColor =
-    RGBColor(rgb.r shl 24 or rgb.g shl 16 or rgb.b shl 8 or rgb.a)
+    VColor(rgb.r shl 24 or rgb.g shl 16 or rgb.b shl 8 or rgb.a)
 
 proc RGBfromColor*(c: VColor): RGB =
     result.r = c.int shr 24 and 0xff
@@ -151,7 +151,7 @@ proc `$`*(c: VColor): string =
 # Methods
 #=======================================
 
-proc alterColorValue*(c: RGBColor, f: float): RGBColor =
+proc alterColorValue*(c: VColor, f: float): VColor =
     var (r,g,b) = RGBfromColor(c)
     var pcent: float
     if f > 0:
@@ -222,7 +222,7 @@ proc HSVtoRGB*(hsv: HSV): RGB =
 
     return ((int)r, (int)g, (int)b)
 
-proc RGBtoHSL*(c: RGBColor): HSL =
+proc RGBtoHSL*(c: VColor): HSL =
     let rgb = RGBfromColor(c)
 
     let R = rgb.r / 255
@@ -257,7 +257,7 @@ proc RGBtoHSL*(c: RGBColor): HSL =
 
     return ((int)h,s,l)
 
-proc RGBtoHSV*(c: RGBColor): HSV =
+proc RGBtoHSV*(c: VColor): HSV =
     let rgb = RGBfromColor(c)
 
     let R = rgb.r / 255
@@ -290,21 +290,21 @@ proc RGBtoHSV*(c: RGBColor): HSV =
 
     return ((int)h,s/100.0,v/100.0)
 
-proc invertColor*(c: RGBColor): RGB =
+proc invertColor*(c: VColor): RGB =
     var hsl = RGBtoHSL(c)
     hsl.h += 180;
     if hsl.h > 360:
         hsl.h -= 360
     return HSLtoRGB(hsl)
 
-proc saturateColor*(c: RGBColor, diff: float): RGB =
+proc saturateColor*(c: VColor, diff: float): RGB =
     var hsl = RGBtoHSL(c)
     hsl.s = hsl.s + hsl.s * diff
     if hsl.s > 1: hsl.s = 1
     if hsl.s < 0: hsl.s = 0
     return HSLtoRGB(hsl)
 
-proc blendColors*(c1: RGBColor, c2: RGBColor, balance: float): RGB =
+proc blendColors*(c1: VColor, c2: VColor, balance: float): RGB =
     let rgb1 = RGBfromColor(c1)
     let rgb2 = RGBfromColor(c2)
 
@@ -317,7 +317,7 @@ proc blendColors*(c1: RGBColor, c2: RGBColor, balance: float): RGB =
 
     return ((int)(r.round), (int)(g.round), (int)(b.round))
 
-func spinColor*(c: RGBColor, amount: int): RGBColor =
+func spinColor*(c: VColor, amount: int): VColor =
     var hsl = RGBtoHSL(c)
     let hue = (hsl.h + amount) mod 360
     if hue < 0: 
@@ -329,16 +329,16 @@ func spinColor*(c: RGBColor, amount: int): RGBColor =
 
 # Palettes
 
-proc triadPalette*(c: RGBColor): Palette =
+proc triadPalette*(c: VColor): Palette =
     result = @[0, 120, 240].map((x) => spinColor(c, x))
 
-proc tetradPalette*(c: RGBColor): Palette =
+proc tetradPalette*(c: VColor): Palette =
     result = @[0, 90, 180, 270].map((x) => spinColor(c, x))
 
-proc splitPalette*(c: RGBColor): Palette =
+proc splitPalette*(c: VColor): Palette =
     result = @[0, 72, 216].map((x) => spinColor(c, x))
 
-proc analogousPalette*(c: RGBColor, size: int): Palette =
+proc analogousPalette*(c: VColor, size: int): Palette =
     let slices = 30
     let part = (int)(360 / slices)
 
@@ -351,7 +351,7 @@ proc analogousPalette*(c: RGBColor, size: int): Palette =
         hsl.h = (hsl.h + part) mod 360
         inc i
 
-proc monochromePalette*(c: RGBColor, size: int): Palette =
+proc monochromePalette*(c: VColor, size: int): Palette =
     var hsv = RGBtoHSV(c)
     let modification = 1.0 / (float)(size)
     var i = 0
@@ -360,7 +360,7 @@ proc monochromePalette*(c: RGBColor, size: int): Palette =
         hsv.v = hsv.v - modification
         inc i
 
-proc randomPalette*(c: RGBColor, size: int): Palette =
+proc randomPalette*(c: VColor, size: int): Palette =
     let threshold = 0.2
     result.add(c)
     while len(result) < size:
