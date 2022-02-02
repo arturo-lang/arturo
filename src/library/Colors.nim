@@ -157,7 +157,11 @@ proc defineSymbols*() =
         attrs       = {
             "triad"     : ({Logical},"generate a triad palette"),
             "tetrad"    : ({Logical},"generate a tetrad palette"),
-            "split"     : ({Logical},"generate a split complement palette")
+            "split"     : ({Logical},"generate a split complement palette"),
+            "analogous" : ({Logical},"generate an analogous palette"),
+            "monochrome": ({Logical},"generate a monochromatic palette"),
+            "random"    : ({Logical},"generate random palette based on color triads"),
+            "size"      : ({Integer},"specify the size of the generated palette")
         },
         returns     = {Block},
         # TODO(Colors\palette) add library documentation
@@ -166,11 +170,26 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("triad") != VNULL):
-                push newBlock(@[0, 120, 240].map((m) => newColor(spinColor(x.l, m))))
+                push newBlock(triadPalette(x.l).map((c) => newColor(c)))
             elif (popAttr("tetrad") != VNULL):
-                push newBlock(@[0, 90, 180, 270].map((m) => newColor(spinColor(x.l, m))))
+                push newBlock(tetradPalette(x.l).map((c) => newColor(c)))
             elif (popAttr("split") != VNULL):
-                push newBlock(@[0, 72, 216].map((m) => newColor(spinColor(x.l, m))))
+                push newBlock(splitPalette(x.l).map((c) => newColor(c)))
+            elif (popAttr("analogous") != VNULL):
+                var size = 6
+                if (let aSize = popAttr("size"); aSize != VNULL):
+                    size = aSize.i
+                push newBlock(analogousPalette(x.l, size).map((c) => newColor(c)))
+            elif (popAttr("monochrome") != VNULL):
+                var size = 6
+                if (let aSize = popAttr("size"); aSize != VNULL):
+                    size = aSize.i
+                push newBlock(monochromePalette(x.l, size).map((c) => newColor(c)))
+            elif (popAttr("random") != VNULL):
+                var size = 6
+                if (let aSize = popAttr("size"); aSize != VNULL):
+                    size = aSize.i
+                push newBlock(randomPalette(x.l, size).map((c) => newColor(c)))
             else:
                 push newBlock(@[x])
 
