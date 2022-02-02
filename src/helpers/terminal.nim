@@ -54,6 +54,6 @@ template rgb*(color: string=""):string =
     if NoColors: ""
     else: ";38;5;" & color
 
-template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
+template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
