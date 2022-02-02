@@ -91,25 +91,25 @@ proc defineSymbols*() =
             var color = ""
 
             case x.l:
-                of colBlack:
+                of clBlack:
                     color = blackColor
-                of colRed:
+                of clRed:
                     color = redColor
-                of colGreen:
+                of clGreen:
                     color = greenColor
-                of colYellow:
+                of clYellow:
                     color = yellowColor
-                of colBlue:
+                of clBlue:
                     color = blueColor
-                of colMagenta:
+                of clMagenta:
                     color = magentaColor
-                of colOrange:
+                of clOrange:
                     color = rgb("208")
-                of colCyan:
+                of clCyan:
                     color = cyanColor
-                of colWhite:
+                of clWhite:
                     color = whiteColor
-                of colGray:
+                of clGray:
                     color = grayColor
                 else:
                     color = rgb(extractRGB(x.l))
