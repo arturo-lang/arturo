@@ -515,7 +515,7 @@ proc newSymbol*(m: SymbolKind): Value {.inline.} =
 proc newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
-proc newColor*(l: RGBColor): Value {.inline.} =
+proc newColor*(l: VColor): Value {.inline.} =
     Value(kind: Color, l: l)
 
 proc newColor*(rgb: RGB): Value {.inline.} =
