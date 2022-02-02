@@ -266,6 +266,7 @@ proc RGBtoHSV*(c: VColor): HSV =
     let R = rgb.r / 255
     let G = rgb.g / 255
     let B = rgb.b / 255
+    let a = rgb.a
 
     let cMax = max(@[R,G,B])
     let cMin = min(@[R,G,B])
@@ -291,7 +292,7 @@ proc RGBtoHSV*(c: VColor): HSV =
         if h < 0:
             h += 360.0
 
-    return ((int)h,s/100.0,v/100.0)
+    return ((int)h,s/100.0,v/100.0,a)
 
 proc invertColor*(c: VColor): RGB =
     var hsl = RGBtoHSL(c)
