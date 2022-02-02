@@ -22,8 +22,8 @@ when not defined(WEB):
     import sequtils, smtp, strutils, times
     import nre except toSeq
 
-    import helpers/colors
     import helpers/jsonobject
+    import helpers/terminal
     import helpers/url
     import helpers/webview
 

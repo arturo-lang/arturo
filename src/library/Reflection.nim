@@ -20,7 +20,7 @@ import helpers/benchmark
 when not defined(WEB):
     import helpers/helper
 
-import helpers/colors
+import helpers/terminal as terminalHelper
 
 import vm/lib
 import vm/[env, exec]
