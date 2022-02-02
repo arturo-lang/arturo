@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import math
+import math, random, sequtils, sugar
 import std/colors as stdColors
 
 #=======================================
@@ -21,6 +21,7 @@ type
     RGB* = tuple[r: int, g: int, b: int]
     HSL* = tuple[h: int, s: float, l: float]
     HSV* = tuple[h: int, s: float, v: float]
+    Palette = seq[Color]
 
 #=======================================
 # Global Variables
@@ -74,10 +75,10 @@ template rgb*(color: tuple[r, g, b: range[0 .. 255]]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
 
-template rawRGB(r, g, b: int): stdColors.Color =
+template rawRGB*(r, g, b: int): stdColors.Color =
     stdColors.Color(r shl 16 or g shl 8 or b)
 
-template rawRGB(rgb: RGB): stdColors.Color =
+template rawRGB*(rgb: RGB): stdColors.Color =
     stdColors.Color(rgb.r shl 16 or rgb.g shl 8 or rgb.b)
 
 #=======================================
@@ -281,3 +282,46 @@ func spinColor*(c: Color, amount: int): Color =
         hsl.h = hue    
     
     return rawRGB(HSLtoRGB(hsl))
+
+# Palettes
+
+proc triadPalette*(c: Color): Palette =
+    result = @[0, 120, 240].map((x) => spinColor(c, x))
+
+proc tetradPalette*(c: Color): Palette =
+    result = @[0, 90, 180, 270].map((x) => spinColor(c, x))
+
+proc splitPalette*(c: Color): Palette =
+    result = @[0, 72, 216].map((x) => spinColor(c, x))
+
+proc analogousPalette*(c: Color, size: int): Palette =
+    let slices = 30
+    let part = (int)(360 / slices)
+
+    var hsl = RGBtoHSL(c)
+    hsl.h = ((hsl.h - (part * (size shr 1))) + 720) mod 360
+                
+    var i = 0
+    while i < size:
+        result.add(rawRGB(HSLtoRGB(hsl)))
+        hsl.h = (hsl.h + part) mod 360
+        inc i
+
+proc monochromePalette*(c: Color, size: int): Palette =
+    var hsv = RGBtoHSV(c)
+    let modification = 1.0 / (float)(size)
+    var i = 0
+    while i < size:
+        result.add(rawRGB(HSVtoRGB(hsv)))
+        hsv.v = hsv.v - modification
+        inc i
+
+proc randomPalette*(c: Color, size: int): Palette =
+    let threshold = 0.2
+    result.add(c)
+    while len(result) < size:
+        for col in triadPalette(c):
+            if len(result) == size: return
+            var r = rand(2*threshold) - threshold
+            result.add(alterColorValue(col, r))
+            result = result.deduplicate()
