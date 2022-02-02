@@ -14,7 +14,7 @@ when not defined(WEB):
 
 import os, strutils, tables, times
 
-import helpers/colors
+import helpers/terminal
 
 import vm/[parse,values/value]
 
