@@ -295,8 +295,9 @@ proc blendColors*(c1: VColor, c2: VColor, balance: float): RGB =
     let r = (float)(rgb1.r) * w1 + (float)(rgb2.r) * w2
     let g = (float)(rgb1.g) * w1 + (float)(rgb2.g) * w2
     let b = (float)(rgb1.b) * w1 + (float)(rgb2.b) * w2
+    let a = (float)(rgb1.a) * w1 + (float)(rgb2.a) * w2
 
-    return ((int)(r.round), (int)(g.round), (int)(b.round))
+    return ((int)(r.round), (int)(g.round), (int)(b.round), (int)(a.round))
 
 func spinColor*(c: VColor, amount: int): VColor =
     var hsl = RGBtoHSL(c)
