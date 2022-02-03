@@ -194,7 +194,7 @@ proc defineSymbols*() =
                         when not defined(WEB):
                             push(newLogical(nre.contains(x.s, nre.re(y.s))))
                         else:
-                            push(newLogical(test(newRegExp(cstring(y.s),""), cstring(x.s))))
+                            push(newLogical(cstring(x.s).contains(newRegExp(cstring(y.s),""))))
                     else:
                         push(newLogical(y.s in x.s))
                 of Block:
@@ -460,7 +460,7 @@ proc defineSymbols*() =
                         when not defined(WEB):
                             push(newLogical(nre.contains(y.s, nre.re(x.s))))
                         else:
-                            push(newLogical(test(newRegExp(cstring(x.s),""), cstring(y.s))))
+                            push(newLogical(cstring(y.s).contains(newRegExp(cstring(x.s),""))))
                     else:
                         push(newLogical(x.s in y.s))
                 of Block:
