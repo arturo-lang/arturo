@@ -12,6 +12,9 @@
 
 import lenientops, sequtils, strutils, unicode
 
+when defined(WEB):
+    import jsre
+
 when not defined(NOASCIIDECODE):
     import unidecode
 
@@ -22,7 +25,6 @@ when not defined(NOASCIIDECODE):
 when not defined(NOASCIIDECODE):
     proc convertToAscii*(input: string): string =
         return unidecode(input)
-
 
 proc truncatePreserving*(s: string, at: int, with: string = "..."): string =
     result = s
@@ -142,3 +144,29 @@ func jaro*(s1, s2: string): float =
         inc k
  
     result = (matches / s1.len + matches / s2.len + (matches - transpositions) / matches) / 3
+
+template replaceAll*(original, match, replacement: string, regex=false): string =
+    when regex:
+        when not defined(WEB):
+            original.replacef(re.re(match), replacement)
+        else:
+            $(jsre.replace(cstring(original), newRegExp(cstring(match),""), cstring(replacement)))
+    else:
+        original.replace(match, replacement)
+
+template multiReplaceAll*(original: string, matches: seq[string], replacement: string, regex=false): string =
+    var result = original
+    for m in matches:
+        result = result.replaceAll(m, replacement, regex)
+    result
+
+template multiReplaceAll*(original: string, matches: seq[string], replacements: seq[string], regex=false): string =
+    var result = original
+    let lim = min(len(matches), len(replacements))
+    var i = 0
+    while i < lim:
+        result = result.replaceAll(matches[i], replacements[i], regex)
+        inc i
+    result
+
+    
