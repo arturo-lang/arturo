@@ -116,7 +116,7 @@ when defined(WEB):
             of Dictionary   :
                 result = newJsObject()
                 for k,v in pairs(n.d):
-                    result[k] = generateJsObject(v)
+                    result[cstring(k)] = generateJsObject(v)
             of Complex,
                Function,
                Database,

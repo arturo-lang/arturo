@@ -194,7 +194,7 @@ proc defineSymbols*() =
                         when not defined(WEB):
                             push(newLogical(nre.contains(x.s, nre.re(y.s))))
                         else:
-                            push(newLogical(test(newRegExp(y.s,""), x.s)))
+                            push(newLogical(test(newRegExp(cstring(y.s),""), cstring(x.s))))
                     else:
                         push(newLogical(y.s in x.s))
                 of Block:
@@ -460,7 +460,7 @@ proc defineSymbols*() =
                         when not defined(WEB):
                             push(newLogical(nre.contains(y.s, nre.re(x.s))))
                         else:
-                            push(newLogical(test(newRegExp(x.s,""), y.s)))
+                            push(newLogical(test(newRegExp(cstring(x.s),""), cstring(y.s))))
                     else:
                         push(newLogical(x.s in y.s))
                 of Block:
@@ -1184,7 +1184,7 @@ proc defineSymbols*() =
                         when not defined(WEB):
                             SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
                         else:
-                            SetInPlace(newStringBlock(InPlaced.s.split(newRegExp(aRegex.s,""))))
+                            SetInPlace(newStringBlock(cstring(InPlaced.s).split(newRegExp(cstring(aRegex.s),""))))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1], InPlaced.s[aAt.i..^1]]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -1230,7 +1230,7 @@ proc defineSymbols*() =
                     when not defined(WEB):
                         push(newStringBlock(x.s.split(nre.re(aRegex.s))))
                     else:
-                        push(newStringBlock(x.s.split(newRegExp(aRegex.s,""))))
+                        push(newStringBlock(cstring(x.s).split(newRegExp(cstring(aRegex.s),""))))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):
