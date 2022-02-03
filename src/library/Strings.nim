@@ -23,7 +23,8 @@ else:
     import jsre
 
 import std/editdistance, json, os
-import sequtils, strutils, unicode, std/wordwrap, xmltree
+import sequtils, strutils, sugar
+import unicode, std/wordwrap, xmltree
 
 import helpers/strings
 
@@ -624,11 +625,11 @@ proc defineSymbols*() =
     builtin "replace",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "replace every matched substring by given replacement string and return result",
+        description = "replace every matched substring/s by given replacement string and return result",
         args        = {
             "string"        : {String,Literal},
-            "match"         : {String},
-            "replacement"   : {String}
+            "match"         : {String, Block},
+            "replacement"   : {String, Block}
         },
         attrs       = {
             "regex" : ({Logical},"match against a regular expression")
@@ -642,15 +643,27 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                when not defined(WEB):
-                    if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
-                    else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
+                if x.kind==String:
+                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s, regex=true))
+                    else:
+                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true))
+                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true))
                 else:
-                    if x.kind==String: push(newString(jsre.replace(cstring(x.s), newRegExp(cstring(y.s),""), cstring(z.s))))
-                    else: InPlace.s = $(jsre.replace(cstring(InPlaced.s), newRegExp(cstring(y.s),""), cstring(z.s)))
+                    if y.kind==String: InPlace.s = InPlaced.s.replaceAll(y.s, z.s, regex=true)
+                    else:
+                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true)
+                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true)
             else:
-                if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
-                else: InPlace.s = InPlaced.s.replace(y.s, z.s)
+                if x.kind==String:
+                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s))
+                    else:
+                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s))
+                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s)))
+                else:
+                    if y.kind==String: InPlace.s = InPlaced.s.replace(y.s, z.s)
+                    else:
+                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s)
+                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s))
 
     builtin "strip",
         alias       = unaliased, 
