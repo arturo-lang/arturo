@@ -29,8 +29,6 @@ import strutils, sugar, unicode
 import helpers/arrays
 import helpers/strings
 import helpers/unisort
-when defined(WEB):
-    import helpers/js
 
 import vm/exec
 import vm/lib
