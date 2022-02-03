@@ -31,10 +31,9 @@ when not defined(WEB):
 
     import helpers/csv
     import helpers/datasource
+    import helpers/io
     import helpers/jsonobject
-
-import helpers/io
-
+    
 import vm/lib
 when defined(SAFE):
     import vm/[errors]
