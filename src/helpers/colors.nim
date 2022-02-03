@@ -20,7 +20,7 @@ import strutils, sugar
 #=======================================
 
 type
-    VColor* = distinct int
+    VColor* = distinct uint32
 
     RGB* = tuple[r: int, g: int, b: int, a: int]
     HSL* = tuple[h: int, s: float, l: float, a: float]

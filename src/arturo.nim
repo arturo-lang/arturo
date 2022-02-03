@@ -23,12 +23,9 @@ when defined(PROFILE):
 
 when not defined(WEB) and not defined(PORTABLE):
     import parseopt
-    import vm/[bytecode, package, version]
+    import vm/[bytecode, env, package, version]
 
 import vm/vm
-
-when not defined(PORTABLE):
-    import vm/env
 
 when not defined(WEB) and not defined(PORTABLE):
 
