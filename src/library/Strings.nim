@@ -369,7 +369,7 @@ proc defineSymbols*() =
             when not defined(WEB):
                 push newStringBlock(x.s.findAll(re.re(y.s)))
             else:
-                push newStringBlock(x.s.match(newRegExp(y.s,"g")))
+                push newStringBlock(cstring(x.s).match(newRegExp(cstring(y.s),"g")))
  
     builtin "numeric?",
         alias       = unaliased, 
@@ -529,7 +529,7 @@ proc defineSymbols*() =
                 when not defined(WEB):
                     push(newLogical(re.startsWith(x.s, re.re(y.s))))
                 else:
-                    push newLogical(x.s.startsWith(newRegExp(y.s,"")))
+                    push newLogical(cstring(x.s).startsWith(newRegExp(cstring(y.s),"")))
             else:
                 push(newLogical(x.s.startsWith(y.s)))
 
@@ -648,8 +648,8 @@ proc defineSymbols*() =
                     if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
                     else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
                 else:
-                    if x.kind==String: push(newString(x.s.replace(newRegExp(y.s,""), z.s)))
-                    else: InPlace.s = $(InPlaced.s.replace(newRegExp(y.s,""), z.s))
+                    if x.kind==String: push(newString(jsre.replace(cstring(x.s), newRegExp(cstring(y.s),""), cstring(z.s))))
+                    else: InPlace.s = $(jsre.replace(cstring(InPlaced.s), newRegExp(cstring(y.s),""), cstring(z.s)))
             else:
                 if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
                 else: InPlace.s = InPlaced.s.replace(y.s, z.s)
@@ -729,7 +729,7 @@ proc defineSymbols*() =
                 when not defined(WEB):
                     push(newLogical(re.endsWith(x.s, re.re(y.s))))
                 else:
-                    push newLogical(x.s.endsWith(newRegExp(y.s,"")))
+                    push newLogical(cstring(x.s).endsWith(newRegExp(cstring(y.s),"")))
             else:
                 push(newLogical(x.s.endsWith(y.s)))
 
