@@ -635,6 +635,8 @@ proc defineSymbols*() =
             "regex" : ({Logical},"match against a regular expression")
         },
         returns     = {String,Nothing},
+        # TODO(Strings\replace) add library documentation for multiple replacements
+        #  labels: library,documentation,easy
         example     = """
             replace "hello" "l" "x"           ; => "hexxo"
             ;;;;
