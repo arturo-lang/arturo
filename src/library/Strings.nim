@@ -26,8 +26,6 @@ import std/editdistance, json, os
 import sequtils, strutils, unicode, std/wordwrap, xmltree
 
 import helpers/strings
-when defined(WEB):
-    import helpers/js
 
 import vm/lib
 
