@@ -114,7 +114,7 @@ type
 const
   defaultStringCapacity = 256
 
-proc newTomlError(location: ParserState, msg: string): ref TomlError =
+func newTomlError(location: ParserState, msg: string): ref TomlError =
   result = newException(TomlError, location.fileName & "(" & $location.line &
                         ":" & $location.column & ")" & " " & msg)
   result.location = location
@@ -141,7 +141,7 @@ proc getNextChar(state: var ParserState): char =
     elif result != '\r':
       inc(state.column)
 
-proc pushBackChar(state: var ParserState, c: char) {.inline.} =
+func pushBackChar(state: var ParserState, c: char) {.inline.} =
   state.pushback = c
 
 type
@@ -171,7 +171,7 @@ proc getNextNonWhitespace(state: var ParserState,
 
   result = nextChar
 
-proc charToInt(c: char, base: NumberBase): int {.inline, noSideEffect.} =
+func charToInt(c: char, base: NumberBase): int {.inline.} =
   case base
   of base10, base8, base2: result = int(c) - int('0')
   of base16:
@@ -293,7 +293,7 @@ proc parseDecimalPart(state: var ParserState): float64 =
     firstPos = false
 
 
-proc stringDelimiter(kind: StringType): char {.inline, noSideEffect.} =
+func stringDelimiter(kind: StringType): char {.inline.} =
   result = (case kind
             of StringType.Basic: '\"'
             of StringType.Literal: '\'')
@@ -966,7 +966,7 @@ proc parseTableName(state: var ParserState,
       raise(newTomlError(state,
                          "unexpected character " & escape($nextChar)))
 
-proc setEmptyTableVal(val: var TomlValueRef) =
+func setEmptyTableVal(val: var TomlValueRef) =
   val = TomlValueRef(kind: TomlValueKind.Table)
   new(val.tableVal)
   val.tableVal[] = initOrderedTable[string, TomlValueRef]()
@@ -1017,7 +1017,7 @@ proc parseInlineTable(state: var ParserState): TomlValueRef =
         state.pushBackChar(nextChar)
         curTable[key] = state.parseValue()
 
-proc createTableDef(state: var ParserState,
+func createTableDef(state: var ParserState,
                     tableNames: seq[string],
                     dotted = false)
 
@@ -1070,15 +1070,15 @@ proc parseKeyValuePair(state: var ParserState) =
 
   state.curTableRef = oldTableRef
 
-proc newParserState(s: streams.Stream,
+func newParserState(s: streams.Stream,
                     fileName: string = ""): ParserState =
   result = ParserState(fileName: fileName, line: 1, column: 1, stream: s)
 
-proc setArrayVal(val: var TomlValueRef, numOfElems: int = 0) =
+func setArrayVal(val: var TomlValueRef, numOfElems: int = 0) =
   val = TomlValueRef(kind: TomlValueKind.Array)
   val.arrayVal = newSeq[TomlValueRef](numOfElems)
 
-proc advanceToNextNestLevel(state: var ParserState,
+func advanceToNextNestLevel(state: var ParserState,
                             tableName: string) =
   let target = state.curTableRef[tableName]
   case target.kind
@@ -1112,7 +1112,7 @@ proc advanceToNextNestLevel(state: var ParserState,
 # array is created, and an empty table element is added in "c". In
 # either cases, curTableRef will refer to the last element of "c".
 
-proc createOrAppendTableArrayDef(state: var ParserState,
+func createOrAppendTableArrayDef(state: var ParserState,
                                  tableNames: seq[string]) =
   # This is a table array entry (e.g. "[[entry]]")
   for idx, tableName in tableNames:
@@ -1169,7 +1169,7 @@ proc createOrAppendTableArrayDef(state: var ParserState,
 # code will look for the "b" table that is child of "a" and it will
 # create a new table "c" which is "b"'s children.
 
-proc createTableDef(state: var ParserState,
+func createTableDef(state: var ParserState,
                     tableNames: seq[string],
                     dotted = false) =
   var newValue: TomlValueRef
@@ -1284,18 +1284,18 @@ proc parseFile*(fileName: string): TomlValueRef =
   let fStream = newFileStream(fileName, fmRead)
   result = parseStream(fStream, fileName)
 
-proc `$`*(val: TomlDate): string =
+func `$`*(val: TomlDate): string =
   ## Converts the TOML date object into the ISO format read by the parser
   result = ($val.year).align(4, '0') & "-" & ($val.month).align(2, '0') & "-" &
     ($val.day).align(2, '0')
 
-proc `$`*(val: TomlTime): string =
+func `$`*(val: TomlTime): string =
   ## Converts the TOML time object into the ISO format read by the parser
   result = ($val.hour).align(2, '0') & ":" &
     ($val.minute).align(2, '0') & ":" & ($val.second).align(2, '0') &
     (if val.subsecond > 0: ("." & $val.subsecond) else: "")
 
-proc `$`*(val: TomlDateTime): string =
+func `$`*(val: TomlDateTime): string =
   ## Converts the TOML date-time object into the ISO format read by the parser
   result = $val.date & "T" & $val.time &
     (if not val.shift: "" else: (
@@ -1306,9 +1306,9 @@ proc `$`*(val: TomlDateTime): string =
       ))
     ))
 
-proc toTomlString*(value: TomlValueRef): string
+func toTomlString*(value: TomlValueRef): string
 
-proc `$`*(val: TomlValueRef): string =
+func `$`*(val: TomlValueRef): string =
   ## Turns whatever value into a regular Nim value representtation
   case val.kind
   of TomlValueKind.None:
@@ -1334,7 +1334,7 @@ proc `$`*(val: TomlValueRef): string =
   of TomlValueKind.Table:
     result = val.toTomlString
 
-proc `$`*(val: TomlValue): string =
+func `$`*(val: TomlValue): string =
   ## Turns whatever value into a type and value representation, used by ``dump``
   case val.kind
   of TomlValueKind.None:
@@ -1379,9 +1379,9 @@ proc dump*(table: TomlTableRef, indentLevel: int = 0) =
 
 import json, sequtils
 
-proc toJson*(value: TomlValueRef): JsonNode
+func toJson*(value: TomlValueRef): JsonNode
 
-proc toJson*(table: TomlTableRef): JsonNode =
+func toJson*(table: TomlTableRef): JsonNode =
   ## Converts a TOML table to a JSON node. This uses the format specified in
   ## the validation suite for it's output:
   ## https://github.com/BurntSushi/toml-test#example-json-encoding
@@ -1389,7 +1389,7 @@ proc toJson*(table: TomlTableRef): JsonNode =
   for key, value in pairs(table):
     result[key] = value.toJson
 
-proc toJson*(value: TomlValueRef): JsonNode =
+func toJson*(value: TomlValueRef): JsonNode =
   ## Converts a TOML value to a JSON node. This uses the format specified in
   ## the validation suite for it's output:
   ## https://github.com/BurntSushi/toml-test#example-json-encoding
@@ -1435,14 +1435,14 @@ proc toJson*(value: TomlValueRef): JsonNode =
     of TomlValueKind.None:
       %*{"type": "ERROR"}
 
-proc toKey(str: string): string =
+func toKey(str: string): string =
   for c in str:
     if (c notin {'a'..'z', 'A'..'Z', '0'..'9', '_', '-'}):
       return "\"" & str & "\""
   str
 
 
-proc toTomlString*(value: TomlTableRef, parents = ""): string =
+func toTomlString*(value: TomlTableRef, parents = ""): string =
   ## Converts a TOML table to a TOML formatted string for output to a file.
   result = ""
   var subtables: seq[tuple[key: string, value: TomlValueRef]] = @[]
@@ -1467,7 +1467,7 @@ proc toTomlString*(value: TomlTableRef, parents = ""): string =
           break outer
       result = result & kv.value.tableVal.toTomlString(fullKey)
 
-proc toTomlString*(value: TomlValueRef): string =
+func toTomlString*(value: TomlValueRef): string =
   ## Converts a TOML value to a TOML formatted string for output to a file.
   case value.kind:
   of TomlValueKind.Int: $value.intVal
@@ -1486,58 +1486,58 @@ proc toTomlString*(value: TomlValueRef): string =
   else:
     "UNKNOWN"
 
-proc newTString*(s: string): TomlValueRef =
+func newTString*(s: string): TomlValueRef =
   ## Creates a new `TomlValueKind.String TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.String, stringVal: s)
 
-proc newTInt*(n: int64): TomlValueRef =
+func newTInt*(n: int64): TomlValueRef =
   ## Creates a new `TomlValueKind.Int TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.Int, intVal: n)
 
-proc newTFloat*(n: float): TomlValueRef =
+func newTFloat*(n: float): TomlValueRef =
   ## Creates a new `TomlValueKind.Float TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.Float, floatVal: n)
 
-proc newTBool*(b: bool): TomlValueRef =
+func newTBool*(b: bool): TomlValueRef =
   ## Creates a new `TomlValueKind.Bool TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.Bool, boolVal: b)
 
-proc newTNull*(): TomlValueRef =
+func newTNull*(): TomlValueRef =
   ## Creates a new `JNull TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.None)
 
-proc newTTable*(): TomlValueRef =
+func newTTable*(): TomlValueRef =
   ## Creates a new `TomlValueKind.Table TomlValueRef`
   result = TomlValueRef(kind: TomlValueKind.Table)
   new(result.tableVal)
   result.tableVal[] = initOrderedTable[string, TomlValueRef](4)
 
-proc newTArray*(): TomlValueRef =
+func newTArray*(): TomlValueRef =
   ## Creates a new `TomlValueKind.Array TomlValueRef`
   TomlValueRef(kind: TomlValueKind.Array, arrayVal: @[])
 
-proc getStr*(n: TomlValueRef, default: string = ""): string =
+func getStr*(n: TomlValueRef, default: string = ""): string =
   ## Retrieves the string value of a `TomlValueKind.String TomlValueRef`.
   ##
   ## Returns ``default`` if ``n`` is not a ``TomlValueKind.String``, or if ``n`` is nil.
   if n.isNil or n.kind != TomlValueKind.String: return default
   else: return n.stringVal
 
-proc getInt*(n: TomlValueRef, default: int = 0): int =
+func getInt*(n: TomlValueRef, default: int = 0): int =
   ## Retrieves the int value of a `TomlValueKind.Int TomlValueRef`.
   ##
   ## Returns ``default`` if ``n`` is not a ``TomlValueKind.Int``, or if ``n`` is nil.
   if n.isNil or n.kind != TomlValueKind.Int: return default
   else: return int(n.intVal)
 
-proc getBiggestInt*(n: TomlValueRef, default: int64 = 0): int64 =
+func getBiggestInt*(n: TomlValueRef, default: int64 = 0): int64 =
   ## Retrieves the int64 value of a `TomlValueKind.Int TomlValueRef`.
   ##
   ## Returns ``default`` if ``n`` is not a ``TomlValueKind.Int``, or if ``n`` is nil.
   if n.isNil or n.kind != TomlValueKind.Int: return default
   else: return n.intVal
 
-proc getFloat*(n: TomlValueRef, default: float = 0.0): float =
+func getFloat*(n: TomlValueRef, default: float = 0.0): float =
   ## Retrieves the float value of a `TomlValueKind.Float TomlValueRef`.
   ##
   ## Returns ``default`` if ``n`` is not a ``TomlValueKind.Float`` or ``TomlValueKind.Int``, or if ``n`` is nil.
@@ -1547,54 +1547,54 @@ proc getFloat*(n: TomlValueRef, default: float = 0.0): float =
   of TomlValueKind.Int: return float(n.intVal)
   else: return default
 
-proc getBool*(n: TomlValueRef, default: bool = false): bool =
+func getBool*(n: TomlValueRef, default: bool = false): bool =
   ## Retrieves the bool value of a `TomlValueKind.Bool TomlValueRef`.
   ##
   ## Returns ``default`` if ``n`` is not a ``TomlValueKind.Bool``, or if ``n`` is nil.
   if n.isNil or n.kind != TomlValueKind.Bool: return default
   else: return n.boolVal
 
-proc getTable*(n: TomlValueRef, default = new(TomlTableRef)): TomlTableRef =
+func getTable*(n: TomlValueRef, default = new(TomlTableRef)): TomlTableRef =
   ## Retrieves the key, value pairs of a `TomlValueKind.Table TomlValueRef`.
   ##
   ## Returns ``default`` if ``n`` is not a ``TomlValueKind.Table``, or if ``n`` is nil.
   if n.isNil or n.kind != TomlValueKind.Table: return default
   else: return n.tableVal
 
-proc getElems*(n: TomlValueRef, default: seq[TomlValueRef] = @[]): seq[TomlValueRef] =
+func getElems*(n: TomlValueRef, default: seq[TomlValueRef] = @[]): seq[TomlValueRef] =
   ## Retrieves the int value of a `TomlValueKind.Array TomlValueRef`.
   ##
   ## Returns ``default`` if ``n`` is not a ``TomlValueKind.Array``, or if ``n`` is nil.
   if n.isNil or n.kind != TomlValueKind.Array: return default
   else: return n.arrayVal
 
-proc add*(father, child: TomlValueRef) =
+func add*(father, child: TomlValueRef) =
   ## Adds `child` to a TomlValueKind.Array node `father`.
   assert father.kind == TomlValueKind.Array
   father.arrayVal.add(child)
 
-proc add*(obj: TomlValueRef, key: string, val: TomlValueRef) =
+func add*(obj: TomlValueRef, key: string, val: TomlValueRef) =
   ## Sets a field from a `TomlValueKind.Table`.
   assert obj.kind == TomlValueKind.Table
   obj.tableVal[key] = val
 
-proc `?`*(s: string): TomlValueRef =
+func `?`*(s: string): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.String TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.String, stringVal: s)
 
-proc `?`*(n: int64): TomlValueRef =
+func `?`*(n: int64): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.Int TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.Int, intVal: n)
 
-proc `?`*(n: float): TomlValueRef =
+func `?`*(n: float): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.Float TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.Float, floatVal: n)
 
-proc `?`*(b: bool): TomlValueRef =
+func `?`*(b: bool): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.Bool TomlValueRef`.
   TomlValueRef(kind: TomlValueKind.Bool, boolVal: b)
 
-proc `?`*(keyVals: openArray[tuple[key: string, val: TomlValueRef]]): TomlValueRef =
+func `?`*(keyVals: openArray[tuple[key: string, val: TomlValueRef]]): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.Table TomlValueRef`
   if keyvals.len == 0: return newTArray()
   result = newTTable()
@@ -1602,7 +1602,7 @@ proc `?`*(keyVals: openArray[tuple[key: string, val: TomlValueRef]]): TomlValueR
 
 template `?`*(j: TomlValueRef): TomlValueRef = j
 
-proc `?`*[T](elements: openArray[T]): TomlValueRef =
+func `?`*[T](elements: openArray[T]): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.Array TomlValueRef`
   result = newTArray()
   for elem in elements: result.add(?elem)
@@ -1620,26 +1620,26 @@ when false:
     assert false notin elements, "usage error: only empty sets allowed"
     assert true notin elements, "usage error: only empty sets allowed"
 
-proc `?`*(o: object): TomlValueRef =
+func `?`*(o: object): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.Table TomlValueRef`
   result = newTTable()
   for k, v in o.fieldPairs: result[k] = ?v
 
-proc `?`*(o: ref object): TomlValueRef =
+func `?`*(o: ref object): TomlValueRef =
   ## Generic constructor for TOML data. Creates a new `TomlValueKind.Table TomlValueRef`
   if o.isNil:
     result = newTNull()
   else:
     result = ?(o[])
 
-proc `?`*(o: enum): TomlValueRef =
+func `?`*(o: enum): TomlValueRef =
   ## Construct a TomlValueRef that represents the specified enum value as a
   ## string. Creates a new ``TomlValueKind.String TomlValueRef``.
   result = ?($o)
 
 import macros
 
-proc toToml(x: NimNode): NimNode {.compiletime.} =
+func toToml(x: NimNode): NimNode {.compiletime.} =
   case x.kind
   of nnkBracket: # array
     if x.len == 0: return newCall(bindSym"newTArray")
@@ -1668,7 +1668,7 @@ macro `?*`*(x: untyped): untyped =
   result = toToml(x)
   echo result.repr
 
-proc toTomlValue(x: NimNode): NimNode {.compileTime.} =
+func toTomlValue(x: NimNode): NimNode {.compileTime.} =
   newCall(bindSym("?", brOpen), x)
 
 proc toTomlNew(x: NimNode): NimNode {.compiletime.} =
@@ -1702,7 +1702,7 @@ macro `parseToml`*(x: untyped): untyped =
   result = toTomlNew(x)
   echo result.repr
 
-proc `==`* (a, b: TomlValueRef): bool =
+func `==`* (a, b: TomlValueRef): bool =
   ## Check two nodes for equality
   if a.isNil:
     if b.isNil: return true
@@ -1760,9 +1760,9 @@ proc `==`* (a, b: TomlValueRef): bool =
 
 import hashes
 
-proc hash*(n: OrderedTable[string, TomlValueRef]): Hash {.noSideEffect.}
+func hash*(n: OrderedTable[string, TomlValueRef]): Hash
 
-proc hash*(n: TomlValueRef): Hash =
+func hash*(n: TomlValueRef): Hash =
   ## Compute the hash for a TOML node
   case n.kind
   of TomlValueKind.Array:
@@ -1786,12 +1786,12 @@ proc hash*(n: TomlValueRef): Hash =
   of TomlValueKind.Time:
     result = hash($n.timeVal)
 
-proc hash*(n: OrderedTable[string, TomlValueRef]): Hash =
+func hash*(n: OrderedTable[string, TomlValueRef]): Hash =
   for key, val in n:
     result = result xor (hash(key) !& hash(val))
   result = !$result
 
-proc len*(n: TomlValueRef): int =
+func len*(n: TomlValueRef): int =
   ## If `n` is a `TomlValueKind.Array`, it returns the number of elements.
   ## If `n` is a `TomlValueKind.Table`, it returns the number of pairs.
   ## Else it returns 0.
@@ -1800,14 +1800,14 @@ proc len*(n: TomlValueRef): int =
   of TomlValueKind.Table: result = n.tableVal.len
   else: discard
 
-proc `[]`*(node: TomlValueRef, name: string): TomlValueRef {.inline.} =
+func `[]`*(node: TomlValueRef, name: string): TomlValueRef {.inline.} =
   ## Gets a field from a `TomlValueKind.Table`, which must not be nil.
   ## If the value at `name` does not exist, raises KeyError.
   assert(not isNil(node))
   assert(node.kind == TomlValueKind.Table)
   result = node.tableVal[name]
 
-proc `[]`*(node: TomlValueRef, index: int): TomlValueRef {.inline.} =
+func `[]`*(node: TomlValueRef, index: int): TomlValueRef {.inline.} =
   ## Gets the node at `index` in an Array. Result is undefined if `index`
   ## is out of bounds, but as long as array bound checks are enabled it will
   ## result in an exception.
@@ -1815,30 +1815,30 @@ proc `[]`*(node: TomlValueRef, index: int): TomlValueRef {.inline.} =
   assert(node.kind == TomlValueKind.Array)
   return node.arrayVal[index]
 
-proc hasKey*(node: TomlValueRef, key: string): bool =
+func hasKey*(node: TomlValueRef, key: string): bool =
   ## Checks if `key` exists in `node`.
   assert(node.kind == TomlValueKind.Table)
   result = node.tableVal.hasKey(key)
 
-proc contains*(node: TomlValueRef, key: string): bool =
+func contains*(node: TomlValueRef, key: string): bool =
   ## Checks if `key` exists in `node`.
   assert(node.kind == TomlValueKind.Table)
   node.tableVal.hasKey(key)
 
-proc contains*(node: TomlValueRef, val: TomlValueRef): bool =
+func contains*(node: TomlValueRef, val: TomlValueRef): bool =
   ## Checks if `val` exists in array `node`.
   assert(node.kind == TomlValueKind.Array)
   find(node.arrayVal, val) >= 0
 
-proc existsKey*(node: TomlValueRef, key: string): bool {.deprecated.} = node.hasKey(key)
+func existsKey*(node: TomlValueRef, key: string): bool {.deprecated.} = node.hasKey(key)
   ## Deprecated for `hasKey`
 
-proc `[]=`*(obj: TomlValueRef, key: string, val: TomlValueRef) {.inline.} =
+func `[]=`*(obj: TomlValueRef, key: string, val: TomlValueRef) {.inline.} =
   ## Sets a field from a `TomlValueKind.Table`.
   assert(obj.kind == TomlValueKind.Table)
   obj.tableVal[key] = val
 
-proc `{}`*(node: TomlValueRef, keys: varargs[string]): TomlValueRef =
+func `{}`*(node: TomlValueRef, keys: varargs[string]): TomlValueRef =
   ## Traverses the node and gets the given value. If any of the
   ## keys do not exist, returns ``nil``. Also returns ``nil`` if one of the
   ## intermediate data structures is not an object.
@@ -1848,7 +1848,7 @@ proc `{}`*(node: TomlValueRef, keys: varargs[string]): TomlValueRef =
       return nil
     result = result.tableVal.getOrDefault(key)
 
-proc getOrDefault*(node: TomlValueRef, key: string): TomlValueRef =
+func getOrDefault*(node: TomlValueRef, key: string): TomlValueRef =
   ## Gets a field from a `node`. If `node` is nil or not an object or
   ## value at `key` does not exist, returns nil
   if not isNil(node) and node.kind == TomlValueKind.Table:
@@ -1856,7 +1856,7 @@ proc getOrDefault*(node: TomlValueRef, key: string): TomlValueRef =
 
 template simpleGetOrDefault*{`{}`(node, [key])}(node: TomlValueRef, key: string): TomlValueRef = node.getOrDefault(key)
 
-proc `{}=`*(node: TomlValueRef, keys: varargs[string], value: TomlValueRef) =
+func `{}=`*(node: TomlValueRef, keys: varargs[string], value: TomlValueRef) =
   ## Traverses the node and tries to set the value at the given location
   ## to ``value``. If any of the keys are missing, they are added.
   var node = node
@@ -1866,14 +1866,14 @@ proc `{}=`*(node: TomlValueRef, keys: varargs[string], value: TomlValueRef) =
     node = node[keys[i]]
   node[keys[keys.len-1]] = value
 
-proc delete*(obj: TomlValueRef, key: string) =
+func delete*(obj: TomlValueRef, key: string) =
   ## Deletes ``obj[key]``.
   assert(obj.kind == TomlValueKind.Table)
   if not obj.tableVal.hasKey(key):
     raise newException(IndexDefect, "key not in object")
   obj.tableVal.del(key)
 
-proc copy*(p: TomlValueRef): TomlValueRef =
+func copy*(p: TomlValueRef): TomlValueRef =
   ## Performs a deep copy of `a`.
   case p.kind
   of TomlValueKind.String:

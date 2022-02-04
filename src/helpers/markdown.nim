@@ -24,7 +24,7 @@ import vm/values/value
 
 when not defined(NOPARSERS):
 
-    proc parseMarkdownInput*(input: string): Value =
+    func parseMarkdownInput*(input: string): Value =
         when defined(USE_NIM_MARKDOWN):
             return newString(markdown(input))
         else:

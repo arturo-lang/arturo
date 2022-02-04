@@ -259,29 +259,29 @@ type
     references*: Table[string, Reference]
     config*: MarkdownConfig
 
-proc parse*(state: State, token: Token);
-proc render*(token: Token): string;
-proc parseBlock(state: State, token: Token);
-proc parseLeafBlockInlines(state: State, token: Token);
-proc getLinkText*(doc: string, start: int, allowNested: bool = false): tuple[slice: Slice[int], size: int];
-proc getLinkLabel*(doc: string, start: int): tuple[label: string, size: int];
-proc getLinkDestination*(doc: string, start: int): tuple[slice: Slice[int], size: int];
-proc getLinkTitle*(doc: string, start: int): tuple[slice: Slice[int], size: int];
-proc isContinuationText*(doc: string): bool;
-proc parseHtmlComment*(s: string): tuple[html: string, size: int];
-proc parseProcessingInstruction*(s: string): tuple[html: string, size: int];
-proc parseHtmlCData*(s: string): tuple[html: string, size: int];
-proc parseHtmlDeclaration*(s: string): tuple[html: string, size: int];
-proc parseHtmlTag*(s: string): tuple[html: string, size: int];
-proc parseHtmlOpenCloseTag*(s: string): tuple[html: string, size: int];
-proc toStringSeq(tokens: DoublyLinkedList[Token]): seq[string];
+func parse*(state: State, token: Token);
+func render*(token: Token): string;
+func parseBlock(state: State, token: Token);
+func parseLeafBlockInlines(state: State, token: Token);
+func getLinkText*(doc: string, start: int, allowNested: bool = false): tuple[slice: Slice[int], size: int];
+func getLinkLabel*(doc: string, start: int): tuple[label: string, size: int];
+func getLinkDestination*(doc: string, start: int): tuple[slice: Slice[int], size: int];
+func getLinkTitle*(doc: string, start: int): tuple[slice: Slice[int], size: int];
+func isContinuationText*(doc: string): bool;
+func parseHtmlComment*(s: string): tuple[html: string, size: int];
+func parseProcessingInstruction*(s: string): tuple[html: string, size: int];
+func parseHtmlCData*(s: string): tuple[html: string, size: int];
+func parseHtmlDeclaration*(s: string): tuple[html: string, size: int];
+func parseHtmlTag*(s: string): tuple[html: string, size: int];
+func parseHtmlOpenCloseTag*(s: string): tuple[html: string, size: int];
+func toStringSeq(tokens: DoublyLinkedList[Token]): seq[string];
 
-proc skipParsing*(): ParseResult = ParseResult(token: nil, pos: -1)
+func skipParsing*(): ParseResult = ParseResult(token: nil, pos: -1)
 
 method parse*(this: Parser, doc: string, start: int): ParseResult {.base, locks: "unknown".} =
   ParseResult(token: Token(), pos: doc.len)
 
-proc appendChild*(token: Token, child: Token) =
+func appendChild*(token: Token, child: Token) =
   token.children.append(child)
 
 const THEMATIC_BREAK_RE = r" {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*(?:\n+|$)"
@@ -328,13 +328,13 @@ const HTML_TAG = (
 const HTML_OPEN_CLOSE_TAG_START = "^ {0,3}(?:" & OPEN_TAG & "|" & CLOSE_TAG & r")\s*$"
 const HTML_OPEN_CLOSE_TAG_END = r"^\n?$"
 
-proc `$`*(chunk: Chunk): string =
+func `$`*(chunk: Chunk): string =
   fmt"{chunk.kind}{[chunk.doc]}"
 
-proc since*(s: string, i: int, offset: int = -1): string =
+func since*(s: string, i: int, offset: int = -1): string =
   if offset == -1: s[i..<s.len] else: s[i..<i+offset]
 
-proc replaceInitialTabs*(doc: string): string =
+func replaceInitialTabs*(doc: string): string =
   var res: seq[string]
   var n: int
   for line in doc.splitLines(keepEol=true):
@@ -357,7 +357,7 @@ proc preProcessing(state: State, token: Token) =
 proc isBlank*(doc: string): bool =
   doc.contains(re"^[ \t]*\n?$")
 
-proc firstLine*(doc: string): string =
+func firstLine*(doc: string): string =
   for line in doc.splitLines(keepEol=true):
     return line
   return ""
@@ -370,20 +370,20 @@ iterator restLines*(doc: string): string =
     else:
       isRestLines = true
 
-proc escapeTag*(doc: string): string =
+func escapeTag*(doc: string): string =
   ## Replace `<` and `>` to HTML-safe characters.
   ## Example::
   ##     check escapeTag("<tag>") == "&lt;tag&gt;"
   result = doc.replace("<", "&lt;")
   result = result.replace(">", "&gt;")
 
-proc escapeQuote*(doc: string): string =
+func escapeQuote*(doc: string): string =
   ## Replace `"` to HTML-safe characters.
   ## Example::
   ##     check escapeTag("'tag'") == "&quote;tag&quote;"
   doc.replace("\"", "&quot;")
 
-proc escapeAmpersandChar*(doc: string): string =
+func escapeAmpersandChar*(doc: string): string =
   ## Replace character `&` to HTML-safe characters.
   ## Example::
   ##     check escapeAmpersandChar("&amp;") ==  "&amp;amp;"
@@ -400,11 +400,11 @@ proc escapeAmpersandSeq*(doc: string): string =
   ##     escapeAmpersandSeq("&amp;") == "&amp;"
   result = doc.replace(sub=reAmpersandSeq, by="&amp;")
 
-proc escapeCode*(doc: string): string =
+func escapeCode*(doc: string): string =
   ## Make code block in markdown document HTML-safe.
   result = doc.escapeAmpersandChar.escapeTag
 
-proc removeBlankLines*(doc: string): string =
+func removeBlankLines*(doc: string): string =
   doc.strip(leading=false, trailing=true, chars={'\n'})
 
 proc escapeInvalidHTMLTag(doc: string): string =
@@ -426,7 +426,7 @@ proc escapeHTMLEntity*(doc: string): string =
       else:
         result = result.replace(re(entity), utf8Char)
 
-proc escapeLinkUrl*(url: string): string =
+func escapeLinkUrl*(url: string): string =
   encodeUrl(url.escapeHTMLEntity, usePlus=false).multiReplace([
     ("%40", "@"),
     ("%3A", ":"),
@@ -453,7 +453,7 @@ proc reFmt*(patterns: varargs[string]): Regex =
     s &= p
   re(s)
 
-proc toSeq*(tokens: DoublyLinkedList[Token]): seq[Token] =
+func toSeq*(tokens: DoublyLinkedList[Token]): seq[Token] =
   result = newSeq[Token]()
   for token in tokens.items:
     result.add(token)
@@ -510,7 +510,7 @@ method `$`*(token: Link): string =
   if title == "": a(href=href, token.children.toStringSeq.join(""))
   else: a(href=href, title=title, token.children.toStringSeq.join(""))
 
-proc toAlt*(token: Token): string =
+func toAlt*(token: Token): string =
   if (token of Em) or (token of Strong): token.children.toStringSeq.join("")
   elif token of Link: Link(token).text
   elif token of Image: Image(token).alt
@@ -567,7 +567,7 @@ method `$`*(token: HtmlTable): string =
   if tbody != "": tbody = "\n" & tbody.strip
   table("\n", thead, tbody)
 
-proc renderListItemChildren(token: Li): string =
+func renderListItemChildren(token: Li): string =
   var html: string
   if token.children.head == nil: return ""
 
@@ -602,10 +602,10 @@ method `$`*(token: Ul): string =
 method `$`*(token: Blockquote): string =
   blockquote("\n", render(token))
 
-proc toStringSeq(tokens: DoublyLinkedList[Token]): seq[string] =
+func toStringSeq(tokens: DoublyLinkedList[Token]): seq[string] =
   tokens.toSeq.map((t: Token) => $t)
 
-proc render*(token: Token): string =
+func render*(token: Token): string =
   var htmls = token.children.toStringSeq
   htmls.keepIf((s: string) => s != "")
   result = htmls.join("\n")
@@ -619,7 +619,7 @@ proc endsWithBlankLine(token: Token): bool =
   else:
     token.doc.find(re"\n\n$") != -1
 
-proc parseLoose(token: Token): bool =
+func parseLoose(token: Token): bool =
   for node in token.children.nodes:
     if node.next != nil and node.value.endsWithBlankLine:
       return true
@@ -1018,7 +1018,7 @@ method parse*(this: BlanklineParser, doc: string, start: int): ParseResult {.loc
 proc parseBlankLine*(doc: string, start: int): ParseResult =
   BlanklineParser().parse(doc, start)
 
-proc parseTableRow*(doc: string): seq[string] =
+func parseTableRow*(doc: string): seq[string] =
   var pos = 0
   var max = doc.len
   var ch: char
@@ -1516,13 +1516,13 @@ method parse*(this: ParagraphParser, doc: string, start: int): ParseResult =
   )
 
 
-proc tipToken*(token: Token): Token =
+func tipToken*(token: Token): Token =
   var tip: Token = token
   while tip.children.tail != nil:
     tip = tip.children.tail.value
   return tip
 
-proc parseContainerBlock(state: State, token: Token): ParseResult =
+func parseContainerBlock(state: State, token: Token): ParseResult =
   #var doc: string
   #for chunk in token.chunks:
   #  doc &= chunk.doc
@@ -1550,7 +1550,7 @@ proc parseContainerBlock(state: State, token: Token): ParseResult =
       token.tipToken.doc &= chunk.doc.strip(chars={' '})
   return ParseResult(token: token, pos: pos)
 
-proc finalizeList*(state: State, token: Token) =
+func finalizeList*(state: State, token: Token) =
   for listItem in token.children.items:
     if listItem.doc != "":
       parseBlock(state, listItem)
@@ -1580,7 +1580,7 @@ method apply*(this: Reference, state: State, res: ParseResult): ParseResult {.lo
     state.references[this.text] = this
   res
 
-proc parseBlock(state: State, token: Token) =
+func parseBlock(state: State, token: Token) =
   var res: ParseResult
   while token.pos < token.doc.len:
     for blockParser in state.config.blockParsers:
@@ -1758,7 +1758,7 @@ proc getLinkDestination*(doc: string, start: int): tuple[slice: Slice[int], size
     return ((0..<0), -1)
   return ((start ..< start+urlLen), urlLen)
 
-proc getLinkTitle*(doc: string, start: int): tuple[slice: Slice[int], size: int] =
+func getLinkTitle*(doc: string, start: int): tuple[slice: Slice[int], size: int] =
   var slice: Slice[int]
   var marker = doc[start]
   # Titles may be in single quotes, double quotes, or parentheses
@@ -1944,7 +1944,7 @@ proc parseInlineLink(doc: string, start: int, labelSlice: Slice[int]): ParseResu
   )
   return ParseResult(token: link, pos: pos+1)
 
-proc parseFullReferenceLink(doc: string, start: int, labelSlice: Slice[int]): ParseResult =
+func parseFullReferenceLink(doc: string, start: int, labelSlice: Slice[int]): ParseResult =
   var pos = labelSlice.b + 1
   var (label, labelSize) = getLinkLabel(doc, pos)
 
@@ -2060,7 +2060,7 @@ proc parseInlineImage(doc: string, start: int, labelSlice: Slice[int]): ParseRes
 
   return ParseResult(token: image, pos: pos+2)
 
-proc parseFullReferenceImage(doc: string, start: int, altSlice: Slice[int]): ParseResult =
+func parseFullReferenceImage(doc: string, start: int, altSlice: Slice[int]): ParseResult =
   var pos = altSlice.b + 1
   let (label, labelSize) = getLinkLabel(doc, pos)
 
@@ -2220,14 +2220,14 @@ method parse*(this: StrikethroughParser, doc: string, start: int): ParseResult {
   let token = Strikethrough(doc: matches[1])
   return ParseResult(token: token, pos: start+size)
 
-proc removeDelimiter*(delimiter: var DoublyLinkedNode[Delimiter]) =
+func removeDelimiter*(delimiter: var DoublyLinkedNode[Delimiter]) =
   if delimiter.prev != nil:
     delimiter.prev.next = delimiter.next
   if delimiter.next != nil:
     delimiter.next.prev = delimiter.prev
   delimiter = delimiter.next
 
-proc getDelimiterStack*(token: Token): DoublyLinkedList[Delimiter] =
+func getDelimiterStack*(token: Token): DoublyLinkedList[Delimiter] =
   result = initDoublyLinkedList[Delimiter]()
   for child in token.children.mitems:
     if child of Text:
@@ -2236,7 +2236,7 @@ proc getDelimiterStack*(token: Token): DoublyLinkedList[Delimiter] =
         text.delimiter.token = text
         result.append(text.delimiter)
 
-proc processEmphasis*(state: State, token: Token) =
+func processEmphasis*(state: State, token: Token) =
   var delimiterStack = token.getDelimiterStack
   var opener: DoublyLinkedNode[Delimiter] = nil
   var closer: DoublyLinkedNode[Delimiter] = nil
@@ -2363,7 +2363,7 @@ proc processEmphasis*(state: State, token: Token) =
   while delimiterStack.head != nil:
     removeDelimiter(delimiterStack.head)
 
-proc applyInlineParsers(state: State, doc: string, start: int): ParseResult =
+func applyInlineParsers(state: State, doc: string, start: int): ParseResult =
   result = new(ParseResult)
   result.pos = -1
   for inlineParser in state.config.inlineParsers:
@@ -2375,7 +2375,7 @@ proc applyInlineParsers(state: State, doc: string, start: int): ParseResult =
   if doc.len>0 and result.pos == start:
     result = ParseResult(token: Text(doc: fmt"{doc[start]}"), pos: start+1)
 
-proc parseLeafBlockInlines(state: State, token: Token) =
+func parseLeafBlockInlines(state: State, token: Token) =
   var pos = 0
   var res = new(ParseResult)
   for index, ch in token.doc[0 ..< token.doc.len].strip:
@@ -2386,12 +2386,12 @@ proc parseLeafBlockInlines(state: State, token: Token) =
     token.appendChild(res.token)
   processEmphasis(state, token)
 
-proc isContainerToken(token: Token): bool =
+func isContainerToken(token: Token): bool =
   if token of Inline: return false
   if token of Document: return true
   if token of Block: return token.children.head != nil
 
-proc parseInline(state: State, token: Token) =
+func parseInline(state: State, token: Token) =
   if isContainerToken(token):
     for childToken in token.children.mitems:
       parseInline(state, childToken)
@@ -2403,7 +2403,7 @@ proc parse(state: State, token: Token) =
   parseBlock(state, token)
   parseInline(state, token)
 
-proc initCommonmarkConfig*(
+func initCommonmarkConfig*(
   escape = true,
   keepHtml = true,
   blockParsers = @[
@@ -2441,7 +2441,7 @@ proc initCommonmarkConfig*(
     inlineParsers: inlineParsers,
   )
 
-proc initGfmConfig*(
+func initGfmConfig*(
   escape = true,
   keepHtml = true,
   blockParsers = @[
@@ -2481,7 +2481,7 @@ proc initGfmConfig*(
     inlineParsers: inlineParsers,
   )
 
-proc markdown*(doc: string, config: MarkdownConfig = nil,
+func markdown*(doc: string, config: MarkdownConfig = nil,
   root: Token = Document()): string =
   ## Convert a markdown document into a HTML document.
   ##
@@ -2500,7 +2500,7 @@ proc markdown*(doc: string, config: MarkdownConfig = nil,
   root.render()
 
 
-proc readCLIOptions*(): MarkdownConfig =
+func readCLIOptions*(): MarkdownConfig =
   ## Read options from command line.
   ## If no option passed, the corresponding option will be the default.
   ##

@@ -69,1408 +69,1408 @@ type
   #GMP_RAND_ALG_DEFAULT: gmp_randalg_t = 0.gmp_randalg_t
   #GMP_RAND_ALG_LC: gmp_randalg_t = GMP_RAND_ALG_DEFAULT
 
-proc mpq_numref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_numref",
+func mpq_numref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_numref",
     header: "<gmp.h>".}
-proc mpq_numref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_numref",
+func mpq_numref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_numref",
     header: "<gmp.h>".}
-proc mpq_denref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_denref",
+func mpq_denref*(a2: mpq_ptr): mpz_ptr {.importc: "mpq_denref",
     header: "<gmp.h>".}
-proc mpq_denref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_denref",
+func mpq_denref*(a2: var mpq_t): mpz_ptr {.importc: "mpq_denref",
     header: "<gmp.h>".}
-proc mp_set_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (
+func mp_set_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (
     a2: pointer; a3: csize_t; a4: csize_t): pointer; 
                               a4: proc (a2: pointer; a3: csize_t)) {.
     importc: "mp_set_memory_functions", header: "<gmp.h>".}
-proc mp_get_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (
+func mp_get_memory_functions*(a2: proc (a2: csize_t): pointer; a3: proc (
     a2: pointer; a3: csize_t; a4: csize_t): pointer; 
                               a4: proc (a2: pointer; a3: csize_t)) {.
     importc: "mp_get_memory_functions", header: "<gmp.h>".}
 var mp_bits_per_limb* {.importc: "mp_bits_per_limb", header: "<gmp.h>".}: cint
 var gmp_errno* {.importc: "gmp_errno", header: "<gmp.h>".}: cint
 var gmp_version* {.importc: "gmp_version", header: "<gmp.h>".}: cstring
-proc gmp_randinit*(a2: gmp_randstate_t; a3: gmp_randalg_t) {.varargs, 
+func gmp_randinit*(a2: gmp_randstate_t; a3: gmp_randalg_t) {.varargs, 
     importc: "gmp_randinit", header: "<gmp.h>".}
-proc gmp_randinit_default*(a2: gmp_randstate_t) {.
+func gmp_randinit_default*(a2: gmp_randstate_t) {.
     importc: "gmp_randinit_default", header: "<gmp.h>".}
-proc gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_srcptr; a4: culong; 
+func gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_srcptr; a4: culong; 
                            a5: mp_bitcnt_t) {.importc: "gmp_randinit_lc_2exp", 
     header: "<gmp.h>".}
-proc gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_t; a4: culong; 
+func gmp_randinit_lc_2exp*(a2: gmp_randstate_t; a3: mpz_t; a4: culong; 
                            a5: mp_bitcnt_t) {.importc: "gmp_randinit_lc_2exp", 
     header: "<gmp.h>".}
-proc gmp_randinit_lc_2exp_size*(a2: gmp_randstate_t; a3: mp_bitcnt_t): cint {.
+func gmp_randinit_lc_2exp_size*(a2: gmp_randstate_t; a3: mp_bitcnt_t): cint {.
     importc: "gmp_randinit_lc_2exp_size", header: "<gmp.h>".}
-proc gmp_randinit_mt*(a2: gmp_randstate_t) {.importc: "gmp_randinit_mt", 
+func gmp_randinit_mt*(a2: gmp_randstate_t) {.importc: "gmp_randinit_mt", 
     header: "<gmp.h>".}
-proc gmp_randinit_set*(a2: gmp_randstate_t; a3: ptr mm_gmp_randstate_struct) {.
+func gmp_randinit_set*(a2: gmp_randstate_t; a3: ptr mm_gmp_randstate_struct) {.
     importc: "gmp_randinit_set", header: "<gmp.h>".}
-proc gmp_randseed*(a2: gmp_randstate_t; a3: mpz_srcptr) {.
+func gmp_randseed*(a2: gmp_randstate_t; a3: mpz_srcptr) {.
     importc: "gmp_randseed", header: "<gmp.h>".}
-proc gmp_randseed*(a2: gmp_randstate_t; a3: mpz_t) {.importc: "gmp_randseed", 
+func gmp_randseed*(a2: gmp_randstate_t; a3: mpz_t) {.importc: "gmp_randseed", 
     header: "<gmp.h>".}
-proc gmp_randseed_ui*(a2: gmp_randstate_t; a3: culong) {.
+func gmp_randseed_ui*(a2: gmp_randstate_t; a3: culong) {.
     importc: "gmp_randseed_ui", header: "<gmp.h>".}
-proc gmp_randclear*(a2: gmp_randstate_t) {.importc: "gmp_randclear", 
+func gmp_randclear*(a2: gmp_randstate_t) {.importc: "gmp_randclear", 
     header: "<gmp.h>".}
-proc gmp_urandomb_ui*(a2: gmp_randstate_t; a3: culong): culong {.
+func gmp_urandomb_ui*(a2: gmp_randstate_t; a3: culong): culong {.
     importc: "gmp_urandomb_ui", header: "<gmp.h>".}
-proc gmp_urandomm_ui*(a2: gmp_randstate_t; a3: culong): culong {.
+func gmp_urandomm_ui*(a2: gmp_randstate_t; a3: culong): culong {.
     importc: "gmp_urandomm_ui", header: "<gmp.h>".}
-proc gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs, 
+func gmp_asprintf*(a2: cstringArray; a3: cstring): cint {.varargs, 
     importc: "gmp_asprintf", header: "<gmp.h>".}
-proc gmp_fprintf*(a2: File; a3: cstring): cint {.varargs, 
+func gmp_fprintf*(a2: File; a3: cstring): cint {.varargs, 
     importc: "gmp_fprintf", header: "<gmp.h>".}
-proc gmp_printf*(a2: cstring): cint {.varargs, importc: "gmp_printf", 
+func gmp_printf*(a2: cstring): cint {.varargs, importc: "gmp_printf", 
                                       header: "<gmp.h>".}
-proc gmp_snprintf*(a2: cstring; a3: csize_t; a4: cstring): cint {.varargs, 
+func gmp_snprintf*(a2: cstring; a3: csize_t; a4: cstring): cint {.varargs, 
     importc: "gmp_snprintf", header: "<gmp.h>".}
-proc gmp_sprintf*(a2: cstring; a3: cstring): cint {.varargs, 
+func gmp_sprintf*(a2: cstring; a3: cstring): cint {.varargs, 
     importc: "gmp_sprintf", header: "<gmp.h>".}
-proc gmp_fscanf*(a2: File; a3: cstring): cint {.varargs, 
+func gmp_fscanf*(a2: File; a3: cstring): cint {.varargs, 
     importc: "gmp_fscanf", header: "<gmp.h>".}
-proc gmp_scanf*(a2: cstring): cint {.varargs, importc: "gmp_scanf", 
+func gmp_scanf*(a2: cstring): cint {.varargs, importc: "gmp_scanf", 
                                      header: "<gmp.h>".}
-proc gmp_sscanf*(a2: cstring; a3: cstring): cint {.varargs, 
+func gmp_sscanf*(a2: cstring; a3: cstring): cint {.varargs, 
     importc: "gmp_sscanf", header: "<gmp.h>".}
-proc m_mpz_realloc*(a2: mpz_ptr; a3: mp_size_t): pointer {.
+func m_mpz_realloc*(a2: mpz_ptr; a3: mp_size_t): pointer {.
     importc: "_mpz_realloc", header: "<gmp.h>".}
-proc m_mpz_realloc*(a2: var mpz_t; a3: mp_size_t): pointer {.
+func m_mpz_realloc*(a2: var mpz_t; a3: mp_size_t): pointer {.
     importc: "_mpz_realloc", header: "<gmp.h>".}
-proc mpz_add*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_add", 
+func mpz_add*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_add", 
     header: "<gmp.h>".}
-proc mpz_add*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_add", 
+func mpz_add*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_add", 
     header: "<gmp.h>".}
-proc mpz_add_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_add_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_add_ui", header: "<gmp.h>".}
-proc mpz_add_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_add_ui", 
+func mpz_add_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_add_ui", 
     header: "<gmp.h>".}
-proc mpz_addmul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_addmul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_addmul", header: "<gmp.h>".}
-proc mpz_addmul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_addmul", 
+func mpz_addmul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_addmul", 
     header: "<gmp.h>".}
-proc mpz_addmul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_addmul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_addmul_ui", header: "<gmp.h>".}
-proc mpz_addmul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.
+func mpz_addmul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.
     importc: "mpz_addmul_ui", header: "<gmp.h>".}
-proc mpz_and*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_and", 
+func mpz_and*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_and", 
     header: "<gmp.h>".}
-proc mpz_and*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_and", 
+func mpz_and*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_and", 
     header: "<gmp.h>".}
-proc mpz_array_init*(a2: mpz_ptr; a3: mp_size_t; a4: mp_size_t) {.
+func mpz_array_init*(a2: mpz_ptr; a3: mp_size_t; a4: mp_size_t) {.
     importc: "mpz_array_init", header: "<gmp.h>".}
-proc mpz_array_init*(a2: var mpz_t; a3: mp_size_t; a4: mp_size_t) {.
+func mpz_array_init*(a2: var mpz_t; a3: mp_size_t; a4: mp_size_t) {.
     importc: "mpz_array_init", header: "<gmp.h>".}
-proc mpz_bin_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_bin_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_bin_ui", header: "<gmp.h>".}
-proc mpz_bin_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_bin_ui", 
+func mpz_bin_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_bin_ui", 
     header: "<gmp.h>".}
-proc mpz_bin_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.
+func mpz_bin_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.
     importc: "mpz_bin_uiui", header: "<gmp.h>".}
-proc mpz_bin_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.
+func mpz_bin_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.
     importc: "mpz_bin_uiui", header: "<gmp.h>".}
-proc mpz_cdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_cdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_cdiv_q", header: "<gmp.h>".}
-proc mpz_cdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_cdiv_q", 
+func mpz_cdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_cdiv_q", 
     header: "<gmp.h>".}
-proc mpz_cdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
+func mpz_cdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpz_cdiv_q_2exp", header: "<gmp.h>".}
-proc mpz_cdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
+func mpz_cdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
     importc: "mpz_cdiv_q_2exp", header: "<gmp.h>".}
-proc mpz_cdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
+func mpz_cdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
     importc: "mpz_cdiv_q_ui", header: "<gmp.h>".}
-proc mpz_cdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
+func mpz_cdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
     importc: "mpz_cdiv_q_ui", header: "<gmp.h>".}
-proc mpz_cdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
+func mpz_cdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
     importc: "mpz_cdiv_qr", header: "<gmp.h>".}
-proc mpz_cdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.
+func mpz_cdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.
     importc: "mpz_cdiv_qr", header: "<gmp.h>".}
-proc mpz_cdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.
+func mpz_cdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.
     importc: "mpz_cdiv_qr_ui", header: "<gmp.h>".}
-proc mpz_cdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.
+func mpz_cdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.
     importc: "mpz_cdiv_qr_ui", header: "<gmp.h>".}
-proc mpz_cdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_cdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_cdiv_r", header: "<gmp.h>".}
-proc mpz_cdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_cdiv_r", 
+func mpz_cdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_cdiv_r", 
     header: "<gmp.h>".}
-proc mpz_cdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
+func mpz_cdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpz_cdiv_r_2exp", header: "<gmp.h>".}
-proc mpz_cdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
+func mpz_cdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
     importc: "mpz_cdiv_r_2exp", header: "<gmp.h>".}
-proc mpz_cdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
+func mpz_cdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
     importc: "mpz_cdiv_r_ui", header: "<gmp.h>".}
-proc mpz_cdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
+func mpz_cdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
     importc: "mpz_cdiv_r_ui", header: "<gmp.h>".}
-proc mpz_cdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_cdiv_ui", 
+func mpz_cdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_cdiv_ui", 
     header: "<gmp.h>".}
-proc mpz_cdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_cdiv_ui", 
+func mpz_cdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_cdiv_ui", 
     header: "<gmp.h>".}
-proc mpz_clear*(a2: mpz_ptr) {.importc: "mpz_clear", header: "<gmp.h>".}
-proc mpz_clear*(a2: var mpz_t) {.importc: "mpz_clear", header: "<gmp.h>".}
-proc mpz_clears*(a2: mpz_ptr) {.varargs, importc: "mpz_clears", 
+func mpz_clear*(a2: mpz_ptr) {.importc: "mpz_clear", header: "<gmp.h>".}
+func mpz_clear*(a2: var mpz_t) {.importc: "mpz_clear", header: "<gmp.h>".}
+func mpz_clears*(a2: mpz_ptr) {.varargs, importc: "mpz_clears", 
                                 header: "<gmp.h>".}
-proc mpz_clears*(a2: var mpz_t) {.varargs, importc: "mpz_clears", 
+func mpz_clears*(a2: var mpz_t) {.varargs, importc: "mpz_clears", 
                                   header: "<gmp.h>".}
-proc mpz_clrbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_clrbit", 
+func mpz_clrbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_clrbit", 
     header: "<gmp.h>".}
-proc mpz_clrbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_clrbit", 
+func mpz_clrbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_clrbit", 
     header: "<gmp.h>".}
-proc mpz_cmp*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_cmp", 
+func mpz_cmp*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_cmp", 
     header: "<gmp.h>".}
-proc mpz_cmp*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_cmp", 
+func mpz_cmp*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_cmp", 
     header: "<gmp.h>".}
-proc mpz_cmp_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc: "mpz_cmp_d", 
+func mpz_cmp_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc: "mpz_cmp_d", 
     header: "<gmp.h>".}
-proc mpz_cmp_d*(a2: mpz_t; a3: cdouble): cint {.importc: "mpz_cmp_d", 
+func mpz_cmp_d*(a2: mpz_t; a3: cdouble): cint {.importc: "mpz_cmp_d", 
     header: "<gmp.h>".}
-proc mpz_cmp_si*(a2: mpz_srcptr; a3: clong): cint {.importc: "_mpz_cmp_si", 
+func mpz_cmp_si*(a2: mpz_srcptr; a3: clong): cint {.importc: "_mpz_cmp_si", 
     header: "<gmp.h>".}
-proc mpz_cmp_si*(a2: mpz_t; a3: clong): cint {.importc: "_mpz_cmp_si", 
+func mpz_cmp_si*(a2: mpz_t; a3: clong): cint {.importc: "_mpz_cmp_si", 
     header: "<gmp.h>".}
-proc mpz_cmp_ui*(a2: mpz_srcptr; a3: culong): cint {.importc: "_mpz_cmp_ui", 
+func mpz_cmp_ui*(a2: mpz_srcptr; a3: culong): cint {.importc: "_mpz_cmp_ui", 
     header: "<gmp.h>".}
-proc mpz_cmp_ui*(a2: mpz_t; a3: culong): cint {.importc: "_mpz_cmp_ui", 
+func mpz_cmp_ui*(a2: mpz_t; a3: culong): cint {.importc: "_mpz_cmp_ui", 
     header: "<gmp.h>".}
-proc mpz_cmpabs*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_cmpabs", 
+func mpz_cmpabs*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_cmpabs", 
     header: "<gmp.h>".}
-proc mpz_cmpabs*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_cmpabs", 
+func mpz_cmpabs*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_cmpabs", 
     header: "<gmp.h>".}
-proc mpz_cmpabs_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc: "mpz_cmpabs_d", 
+func mpz_cmpabs_d*(a2: mpz_srcptr; a3: cdouble): cint {.importc: "mpz_cmpabs_d", 
     header: "<gmp.h>".}
-proc mpz_cmpabs_d*(a2: mpz_t; a3: cdouble): cint {.importc: "mpz_cmpabs_d", 
+func mpz_cmpabs_d*(a2: mpz_t; a3: cdouble): cint {.importc: "mpz_cmpabs_d", 
     header: "<gmp.h>".}
-proc mpz_cmpabs_ui*(a2: mpz_srcptr; a3: culong): cint {.
+func mpz_cmpabs_ui*(a2: mpz_srcptr; a3: culong): cint {.
     importc: "mpz_cmpabs_ui", header: "<gmp.h>".}
-proc mpz_cmpabs_ui*(a2: mpz_t; a3: culong): cint {.importc: "mpz_cmpabs_ui", 
+func mpz_cmpabs_ui*(a2: mpz_t; a3: culong): cint {.importc: "mpz_cmpabs_ui", 
     header: "<gmp.h>".}
-proc mpz_com*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_com", 
+func mpz_com*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_com", 
     header: "<gmp.h>".}
-proc mpz_com*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_com", header: "<gmp.h>".}
-proc mpz_combit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_combit", 
+func mpz_com*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_com", header: "<gmp.h>".}
+func mpz_combit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_combit", 
     header: "<gmp.h>".}
-proc mpz_combit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_combit", 
+func mpz_combit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_combit", 
     header: "<gmp.h>".}
-proc mpz_congruent_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.
+func mpz_congruent_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.
     importc: "mpz_congruent_p", header: "<gmp.h>".}
-proc mpz_congruent_p*(a2: mpz_t; a3: mpz_t; a4: mpz_t): cint {.
+func mpz_congruent_p*(a2: mpz_t; a3: mpz_t; a4: mpz_t): cint {.
     importc: "mpz_congruent_p", header: "<gmp.h>".}
-proc mpz_congruent_2exp_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mp_bitcnt_t): cint {.
+func mpz_congruent_2exp_p*(a2: mpz_srcptr; a3: mpz_srcptr; a4: mp_bitcnt_t): cint {.
     importc: "mpz_congruent_2exp_p", header: "<gmp.h>".}
-proc mpz_congruent_2exp_p*(a2: mpz_t; a3: mpz_t; a4: mp_bitcnt_t): cint {.
+func mpz_congruent_2exp_p*(a2: mpz_t; a3: mpz_t; a4: mp_bitcnt_t): cint {.
     importc: "mpz_congruent_2exp_p", header: "<gmp.h>".}
-proc mpz_congruent_ui_p*(a2: mpz_srcptr; a3: culong; a4: culong): cint {.
+func mpz_congruent_ui_p*(a2: mpz_srcptr; a3: culong; a4: culong): cint {.
     importc: "mpz_congruent_ui_p", header: "<gmp.h>".}
-proc mpz_congruent_ui_p*(a2: mpz_t; a3: culong; a4: culong): cint {.
+func mpz_congruent_ui_p*(a2: mpz_t; a3: culong; a4: culong): cint {.
     importc: "mpz_congruent_ui_p", header: "<gmp.h>".}
-proc mpz_divexact*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_divexact*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_divexact", header: "<gmp.h>".}
-proc mpz_divexact*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.
+func mpz_divexact*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.
     importc: "mpz_divexact", header: "<gmp.h>".}
-proc mpz_divexact_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_divexact_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_divexact_ui", header: "<gmp.h>".}
-proc mpz_divexact_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.
+func mpz_divexact_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.
     importc: "mpz_divexact_ui", header: "<gmp.h>".}
-proc mpz_divisible_p*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.
+func mpz_divisible_p*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.
     importc: "mpz_divisible_p", header: "<gmp.h>".}
-proc mpz_divisible_p*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_divisible_p", 
+func mpz_divisible_p*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_divisible_p", 
     header: "<gmp.h>".}
-proc mpz_divisible_ui_p*(a2: mpz_srcptr; a3: culong): cint {.
+func mpz_divisible_ui_p*(a2: mpz_srcptr; a3: culong): cint {.
     importc: "mpz_divisible_ui_p", header: "<gmp.h>".}
-proc mpz_divisible_ui_p*(a2: mpz_t; a3: culong): cint {.
+func mpz_divisible_ui_p*(a2: mpz_t; a3: culong): cint {.
     importc: "mpz_divisible_ui_p", header: "<gmp.h>".}
-proc mpz_divisible_2exp_p*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.
+func mpz_divisible_2exp_p*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.
     importc: "mpz_divisible_2exp_p", header: "<gmp.h>".}
-proc mpz_divisible_2exp_p*(a2: mpz_t; a3: mp_bitcnt_t): cint {.
+func mpz_divisible_2exp_p*(a2: mpz_t; a3: mp_bitcnt_t): cint {.
     importc: "mpz_divisible_2exp_p", header: "<gmp.h>".}
-proc mpz_dump*(a2: mpz_srcptr) {.importc: "mpz_dump", header: "<gmp.h>".}
-proc mpz_dump*(a2: mpz_t) {.importc: "mpz_dump", header: "<gmp.h>".}
-proc mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; 
+func mpz_dump*(a2: mpz_srcptr) {.importc: "mpz_dump", header: "<gmp.h>".}
+func mpz_dump*(a2: mpz_t) {.importc: "mpz_dump", header: "<gmp.h>".}
+func mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; 
                  a7: csize_t; a8: mpz_srcptr): pointer {.importc: "mpz_export", 
     header: "<gmp.h>".}
-proc mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; 
+func mpz_export*(a2: pointer; a3: ptr csize_t; a4: cint; a5: csize_t; a6: cint; 
                  a7: csize_t; a8: mpz_t): pointer {.importc: "mpz_export", 
     header: "<gmp.h>".}
-proc mpz_fac_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_fac_ui", 
+func mpz_fac_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_fac_ui", 
     header: "<gmp.h>".}
-proc mpz_fac_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_fac_ui", 
+func mpz_fac_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_fac_ui", 
     header: "<gmp.h>".}
-proc mpz_2fac_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_2fac_ui", 
+func mpz_2fac_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_2fac_ui", 
     header: "<gmp.h>".}
-proc mpz_2fac_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_2fac_ui", 
+func mpz_2fac_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_2fac_ui", 
     header: "<gmp.h>".}
-proc mpz_mfac_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.
+func mpz_mfac_uiui*(a2: mpz_ptr; a3: culong; a4: culong) {.
     importc: "mpz_mfac_uiui", header: "<gmp.h>".}
-proc mpz_mfac_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.
+func mpz_mfac_uiui*(a2: var mpz_t; a3: culong; a4: culong) {.
     importc: "mpz_mfac_uiui", header: "<gmp.h>".}
-proc mpz_primorial_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_primorial_ui", 
+func mpz_primorial_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_primorial_ui", 
     header: "<gmp.h>".}
-proc mpz_primorial_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_primorial_ui", 
+func mpz_primorial_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_primorial_ui", 
     header: "<gmp.h>".}
-proc mpz_fdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_fdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_fdiv_q", header: "<gmp.h>".}
-proc mpz_fdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_fdiv_q", 
+func mpz_fdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_fdiv_q", 
     header: "<gmp.h>".}
-proc mpz_fdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
+func mpz_fdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpz_fdiv_q_2exp", header: "<gmp.h>".}
-proc mpz_fdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
+func mpz_fdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
     importc: "mpz_fdiv_q_2exp", header: "<gmp.h>".}
-proc mpz_fdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
+func mpz_fdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
     importc: "mpz_fdiv_q_ui", header: "<gmp.h>".}
-proc mpz_fdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
+func mpz_fdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
     importc: "mpz_fdiv_q_ui", header: "<gmp.h>".}
-proc mpz_fdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
+func mpz_fdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
     importc: "mpz_fdiv_qr", header: "<gmp.h>".}
-proc mpz_fdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.
+func mpz_fdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.
     importc: "mpz_fdiv_qr", header: "<gmp.h>".}
-proc mpz_fdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.
+func mpz_fdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.
     importc: "mpz_fdiv_qr_ui", header: "<gmp.h>".}
-proc mpz_fdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.
+func mpz_fdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.
     importc: "mpz_fdiv_qr_ui", header: "<gmp.h>".}
-proc mpz_fdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_fdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_fdiv_r", header: "<gmp.h>".}
-proc mpz_fdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_fdiv_r", 
+func mpz_fdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_fdiv_r", 
     header: "<gmp.h>".}
-proc mpz_fdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
+func mpz_fdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpz_fdiv_r_2exp", header: "<gmp.h>".}
-proc mpz_fdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
+func mpz_fdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
     importc: "mpz_fdiv_r_2exp", header: "<gmp.h>".}
-proc mpz_fdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
+func mpz_fdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
     importc: "mpz_fdiv_r_ui", header: "<gmp.h>".}
-proc mpz_fdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
+func mpz_fdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
     importc: "mpz_fdiv_r_ui", header: "<gmp.h>".}
-proc mpz_fdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_fdiv_ui", 
+func mpz_fdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_fdiv_ui", 
     header: "<gmp.h>".}
-proc mpz_fdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_fdiv_ui", 
+func mpz_fdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_fdiv_ui", 
     header: "<gmp.h>".}
-proc mpz_fib_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_fib_ui", 
+func mpz_fib_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_fib_ui", 
     header: "<gmp.h>".}
-proc mpz_fib_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_fib_ui", 
+func mpz_fib_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_fib_ui", 
     header: "<gmp.h>".}
-proc mpz_fib2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.
+func mpz_fib2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.
     importc: "mpz_fib2_ui", header: "<gmp.h>".}
-proc mpz_fib2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.
+func mpz_fib2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.
     importc: "mpz_fib2_ui", header: "<gmp.h>".}
-proc mpz_fits_sint_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_sint_p", 
+func mpz_fits_sint_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_sint_p", 
     header: "<gmp.h>".}
-proc mpz_fits_sint_p*(a2: mpz_t): cint {.importc: "mpz_fits_sint_p", 
+func mpz_fits_sint_p*(a2: mpz_t): cint {.importc: "mpz_fits_sint_p", 
     header: "<gmp.h>".}
-proc mpz_fits_slong_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_slong_p", 
+func mpz_fits_slong_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_slong_p", 
     header: "<gmp.h>".}
-proc mpz_fits_slong_p*(a2: mpz_t): cint {.importc: "mpz_fits_slong_p", 
+func mpz_fits_slong_p*(a2: mpz_t): cint {.importc: "mpz_fits_slong_p", 
     header: "<gmp.h>".}
-proc mpz_fits_sshort_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_sshort_p", 
+func mpz_fits_sshort_p*(a2: mpz_srcptr): cint {.importc: "mpz_fits_sshort_p", 
     header: "<gmp.h>".}
-proc mpz_fits_sshort_p*(a2: mpz_t): cint {.importc: "mpz_fits_sshort_p", 
+func mpz_fits_sshort_p*(a2: mpz_t): cint {.importc: "mpz_fits_sshort_p", 
     header: "<gmp.h>".}
-proc mpz_gcd*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_gcd", 
+func mpz_gcd*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_gcd", 
     header: "<gmp.h>".}
-proc mpz_gcd*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_gcd", 
+func mpz_gcd*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_gcd", 
     header: "<gmp.h>".}
-proc mpz_gcd_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
+func mpz_gcd_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
     importc: "mpz_gcd_ui", header: "<gmp.h>".}
-proc mpz_gcd_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
+func mpz_gcd_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
     importc: "mpz_gcd_ui", header: "<gmp.h>".}
-proc mpz_gcdext*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_ptr; a5: mpz_srcptr; 
+func mpz_gcdext*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_ptr; a5: mpz_srcptr; 
                  a6: mpz_srcptr) {.importc: "mpz_gcdext", header: "<gmp.h>".}
-proc mpz_gcdext*(a2: var mpz_t; a3: var mpz_t; a4: var mpz_t; a5: mpz_t; 
+func mpz_gcdext*(a2: var mpz_t; a3: var mpz_t; a4: var mpz_t; a5: mpz_t; 
                  a6: mpz_t) {.importc: "mpz_gcdext", header: "<gmp.h>".}
-proc mpz_get_d*(a2: mpz_srcptr): cdouble {.importc: "mpz_get_d", 
+func mpz_get_d*(a2: mpz_srcptr): cdouble {.importc: "mpz_get_d", 
     header: "<gmp.h>".}
-proc mpz_get_d*(a2: mpz_t): cdouble {.importc: "mpz_get_d", header: "<gmp.h>".}
-proc mpz_get_d_2exp*(a2: ptr clong; a3: mpz_srcptr): cdouble {.
+func mpz_get_d*(a2: mpz_t): cdouble {.importc: "mpz_get_d", header: "<gmp.h>".}
+func mpz_get_d_2exp*(a2: ptr clong; a3: mpz_srcptr): cdouble {.
     importc: "mpz_get_d_2exp", header: "<gmp.h>".}
-proc mpz_get_d_2exp*(a2: ptr clong; a3: mpz_t): cdouble {.
+func mpz_get_d_2exp*(a2: ptr clong; a3: mpz_t): cdouble {.
     importc: "mpz_get_d_2exp", header: "<gmp.h>".}
-proc mpz_get_si*(a2: mpz_srcptr): clong {.importc: "mpz_get_si", 
+func mpz_get_si*(a2: mpz_srcptr): clong {.importc: "mpz_get_si", 
     header: "<gmp.h>".}
-proc mpz_get_si*(a2: mpz_t): clong {.importc: "mpz_get_si", header: "<gmp.h>".}
-proc mpz_get_str*(a2: cstring; a3: cint; a4: mpz_srcptr): cstring {.
+func mpz_get_si*(a2: mpz_t): clong {.importc: "mpz_get_si", header: "<gmp.h>".}
+func mpz_get_str*(a2: cstring; a3: cint; a4: mpz_srcptr): cstring {.
     importc: "mpz_get_str", header: "<gmp.h>".}
-proc mpz_get_str*(a2: cstring; a3: cint; a4: mpz_t): cstring {.
+func mpz_get_str*(a2: cstring; a3: cint; a4: mpz_t): cstring {.
     importc: "mpz_get_str", header: "<gmp.h>".}
-proc mpz_hamdist*(a2: mpz_srcptr; a3: mpz_srcptr): mp_bitcnt_t {.
+func mpz_hamdist*(a2: mpz_srcptr; a3: mpz_srcptr): mp_bitcnt_t {.
     importc: "mpz_hamdist", header: "<gmp.h>".}
-proc mpz_hamdist*(a2: mpz_t; a3: mpz_t): mp_bitcnt_t {.importc: "mpz_hamdist", 
+func mpz_hamdist*(a2: mpz_t; a3: mpz_t): mp_bitcnt_t {.importc: "mpz_hamdist", 
     header: "<gmp.h>".}
-proc mpz_import*(a2: mpz_ptr; a3: csize_t; a4: cint; a5: csize_t; a6: cint; 
+func mpz_import*(a2: mpz_ptr; a3: csize_t; a4: cint; a5: csize_t; a6: cint; 
                  a7: csize_t; a8: pointer) {.importc: "mpz_import", 
     header: "<gmp.h>".}
-proc mpz_import*(a2: var mpz_t; a3: csize_t; a4: cint; a5: csize_t; a6: cint; 
+func mpz_import*(a2: var mpz_t; a3: csize_t; a4: cint; a5: csize_t; a6: cint; 
                  a7: csize_t; a8: pointer) {.importc: "mpz_import", 
     header: "<gmp.h>".}
-proc mpz_init*(a2: mpz_ptr) {.importc: "mpz_init", header: "<gmp.h>".}
-proc mpz_init*(a2: var mpz_t) {.importc: "mpz_init", header: "<gmp.h>".}
-proc mpz_init2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_init2", 
+func mpz_init*(a2: mpz_ptr) {.importc: "mpz_init", header: "<gmp.h>".}
+func mpz_init*(a2: var mpz_t) {.importc: "mpz_init", header: "<gmp.h>".}
+func mpz_init2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_init2", 
     header: "<gmp.h>".}
-proc mpz_init2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_init2", 
+func mpz_init2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_init2", 
     header: "<gmp.h>".}
-proc mpz_inits*(a2: mpz_ptr) {.varargs, importc: "mpz_inits", header: "<gmp.h>".}
-proc mpz_inits*(a2: var mpz_t) {.varargs, importc: "mpz_inits", 
+func mpz_inits*(a2: mpz_ptr) {.varargs, importc: "mpz_inits", header: "<gmp.h>".}
+func mpz_inits*(a2: var mpz_t) {.varargs, importc: "mpz_inits", 
                                  header: "<gmp.h>".}
-proc mpz_init_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_init_set", 
+func mpz_init_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_init_set", 
     header: "<gmp.h>".}
-proc mpz_init_set*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_init_set", 
+func mpz_init_set*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_init_set", 
     header: "<gmp.h>".}
-proc mpz_init_set_d*(a2: mpz_ptr; a3: cdouble) {.importc: "mpz_init_set_d", 
+func mpz_init_set_d*(a2: mpz_ptr; a3: cdouble) {.importc: "mpz_init_set_d", 
     header: "<gmp.h>".}
-proc mpz_init_set_d*(a2: var mpz_t; a3: cdouble) {.importc: "mpz_init_set_d", 
+func mpz_init_set_d*(a2: var mpz_t; a3: cdouble) {.importc: "mpz_init_set_d", 
     header: "<gmp.h>".}
-proc mpz_init_set_si*(a2: mpz_ptr; a3: clong) {.importc: "mpz_init_set_si", 
+func mpz_init_set_si*(a2: mpz_ptr; a3: clong) {.importc: "mpz_init_set_si", 
     header: "<gmp.h>".}
-proc mpz_init_set_si*(a2: var mpz_t; a3: clong) {.importc: "mpz_init_set_si", 
+func mpz_init_set_si*(a2: var mpz_t; a3: clong) {.importc: "mpz_init_set_si", 
     header: "<gmp.h>".}
-proc mpz_init_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.
+func mpz_init_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.
     importc: "mpz_init_set_str", header: "<gmp.h>".}
-proc mpz_init_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.
+func mpz_init_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.
     importc: "mpz_init_set_str", header: "<gmp.h>".}
-proc mpz_init_set_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_init_set_ui", 
+func mpz_init_set_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_init_set_ui", 
     header: "<gmp.h>".}
-proc mpz_init_set_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_init_set_ui", 
+func mpz_init_set_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_init_set_ui", 
     header: "<gmp.h>".}
-proc mpz_inp_raw*(a2: mpz_ptr; a3: File): csize_t {.importc: "mpz_inp_raw", 
+func mpz_inp_raw*(a2: mpz_ptr; a3: File): csize_t {.importc: "mpz_inp_raw", 
     header: "<gmp.h>".}
-proc mpz_inp_raw*(a2: var mpz_t; a3: File): csize_t {.importc: "mpz_inp_raw", 
+func mpz_inp_raw*(a2: var mpz_t; a3: File): csize_t {.importc: "mpz_inp_raw", 
     header: "<gmp.h>".}
-proc mpz_inp_str*(a2: mpz_ptr; a3: File; a4: cint): csize_t {.
+func mpz_inp_str*(a2: mpz_ptr; a3: File; a4: cint): csize_t {.
     importc: "mpz_inp_str", header: "<gmp.h>".}
-proc mpz_inp_str*(a2: var mpz_t; a3: File; a4: cint): csize_t {.
+func mpz_inp_str*(a2: var mpz_t; a3: File; a4: cint): csize_t {.
     importc: "mpz_inp_str", header: "<gmp.h>".}
-proc mpz_invert*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.
+func mpz_invert*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): cint {.
     importc: "mpz_invert", header: "<gmp.h>".}
-proc mpz_invert*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): cint {.
+func mpz_invert*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): cint {.
     importc: "mpz_invert", header: "<gmp.h>".}
-proc mpz_ior*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_ior", 
+func mpz_ior*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_ior", 
     header: "<gmp.h>".}
-proc mpz_ior*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_ior", 
+func mpz_ior*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_ior", 
     header: "<gmp.h>".}
-proc mpz_jacobi*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_jacobi", 
+func mpz_jacobi*(a2: mpz_srcptr; a3: mpz_srcptr): cint {.importc: "mpz_jacobi", 
     header: "<gmp.h>".}
-proc mpz_jacobi*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_jacobi", 
+func mpz_jacobi*(a2: mpz_t; a3: mpz_t): cint {.importc: "mpz_jacobi", 
     header: "<gmp.h>".}
-proc mpz_kronecker_si*(a2: mpz_srcptr; a3: clong): cint {.
+func mpz_kronecker_si*(a2: mpz_srcptr; a3: clong): cint {.
     importc: "mpz_kronecker_si", header: "<gmp.h>".}
-proc mpz_kronecker_si*(a2: mpz_t; a3: clong): cint {.
+func mpz_kronecker_si*(a2: mpz_t; a3: clong): cint {.
     importc: "mpz_kronecker_si", header: "<gmp.h>".}
-proc mpz_kronecker_ui*(a2: mpz_srcptr; a3: culong): cint {.
+func mpz_kronecker_ui*(a2: mpz_srcptr; a3: culong): cint {.
     importc: "mpz_kronecker_ui", header: "<gmp.h>".}
-proc mpz_kronecker_ui*(a2: mpz_t; a3: culong): cint {.
+func mpz_kronecker_ui*(a2: mpz_t; a3: culong): cint {.
     importc: "mpz_kronecker_ui", header: "<gmp.h>".}
-proc mpz_si_kronecker*(a2: clong; a3: mpz_srcptr): cint {.
+func mpz_si_kronecker*(a2: clong; a3: mpz_srcptr): cint {.
     importc: "mpz_si_kronecker", header: "<gmp.h>".}
-proc mpz_si_kronecker*(a2: clong; a3: mpz_t): cint {.
+func mpz_si_kronecker*(a2: clong; a3: mpz_t): cint {.
     importc: "mpz_si_kronecker", header: "<gmp.h>".}
-proc mpz_ui_kronecker*(a2: culong; a3: mpz_srcptr): cint {.
+func mpz_ui_kronecker*(a2: culong; a3: mpz_srcptr): cint {.
     importc: "mpz_ui_kronecker", header: "<gmp.h>".}
-proc mpz_ui_kronecker*(a2: culong; a3: mpz_t): cint {.
+func mpz_ui_kronecker*(a2: culong; a3: mpz_t): cint {.
     importc: "mpz_ui_kronecker", header: "<gmp.h>".}
-proc mpz_lcm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_lcm", 
+func mpz_lcm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_lcm", 
     header: "<gmp.h>".}
-proc mpz_lcm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_lcm", 
+func mpz_lcm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_lcm", 
     header: "<gmp.h>".}
-proc mpz_lcm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_lcm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_lcm_ui", header: "<gmp.h>".}
-proc mpz_lcm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_lcm_ui", 
+func mpz_lcm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_lcm_ui", 
     header: "<gmp.h>".}
-proc mpz_lucnum_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_lucnum_ui", 
+func mpz_lucnum_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_lucnum_ui", 
     header: "<gmp.h>".}
-proc mpz_lucnum_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_lucnum_ui", 
+func mpz_lucnum_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_lucnum_ui", 
     header: "<gmp.h>".}
-proc mpz_lucnum2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.
+func mpz_lucnum2_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: culong) {.
     importc: "mpz_lucnum2_ui", header: "<gmp.h>".}
-proc mpz_lucnum2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.
+func mpz_lucnum2_ui*(a2: var mpz_t; a3: var mpz_t; a4: culong) {.
     importc: "mpz_lucnum2_ui", header: "<gmp.h>".}
-proc mpz_millerrabin*(a2: mpz_srcptr; a3: cint): cint {.
+func mpz_millerrabin*(a2: mpz_srcptr; a3: cint): cint {.
     importc: "mpz_millerrabin", header: "<gmp.h>".}
-proc mpz_millerrabin*(a2: mpz_t; a3: cint): cint {.importc: "mpz_millerrabin", 
+func mpz_millerrabin*(a2: mpz_t; a3: cint): cint {.importc: "mpz_millerrabin", 
     header: "<gmp.h>".}
-proc mpz_mod*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_mod", 
+func mpz_mod*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_mod", 
     header: "<gmp.h>".}
-proc mpz_mod*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_mod", 
+func mpz_mod*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_mod", 
     header: "<gmp.h>".}
-proc mpz_mul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_mul", 
+func mpz_mul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_mul", 
     header: "<gmp.h>".}
-proc mpz_mul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_mul", 
+func mpz_mul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_mul", 
     header: "<gmp.h>".}
-proc mpz_mul_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
+func mpz_mul_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpz_mul_2exp", header: "<gmp.h>".}
-proc mpz_mul_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
+func mpz_mul_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
     importc: "mpz_mul_2exp", header: "<gmp.h>".}
-proc mpz_mul_si*(a2: mpz_ptr; a3: mpz_srcptr; a4: clong) {.
+func mpz_mul_si*(a2: mpz_ptr; a3: mpz_srcptr; a4: clong) {.
     importc: "mpz_mul_si", header: "<gmp.h>".}
-proc mpz_mul_si*(a2: var mpz_t; a3: mpz_t; a4: clong) {.importc: "mpz_mul_si", 
+func mpz_mul_si*(a2: var mpz_t; a3: mpz_t; a4: clong) {.importc: "mpz_mul_si", 
     header: "<gmp.h>".}
-proc mpz_mul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_mul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_mul_ui", header: "<gmp.h>".}
-proc mpz_mul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_mul_ui", 
+func mpz_mul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_mul_ui", 
     header: "<gmp.h>".}
-proc mpz_nextprime*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_nextprime", 
+func mpz_nextprime*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_nextprime", 
     header: "<gmp.h>".}
-proc mpz_nextprime*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_nextprime", 
+func mpz_nextprime*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_nextprime", 
     header: "<gmp.h>".}
-proc mpz_out_raw*(a2: File; a3: mpz_srcptr): csize_t {.importc: "mpz_out_raw", 
+func mpz_out_raw*(a2: File; a3: mpz_srcptr): csize_t {.importc: "mpz_out_raw", 
     header: "<gmp.h>".}
-proc mpz_out_raw*(a2: File; a3: mpz_t): csize_t {.importc: "mpz_out_raw", 
+func mpz_out_raw*(a2: File; a3: mpz_t): csize_t {.importc: "mpz_out_raw", 
     header: "<gmp.h>".}
-proc mpz_out_str*(a2: File; a3: cint; a4: mpz_srcptr): csize_t {.
+func mpz_out_str*(a2: File; a3: cint; a4: mpz_srcptr): csize_t {.
     importc: "mpz_out_str", header: "<gmp.h>".}
-proc mpz_out_str*(a2: File; a3: cint; a4: mpz_t): csize_t {.
+func mpz_out_str*(a2: File; a3: cint; a4: mpz_t): csize_t {.
     importc: "mpz_out_str", header: "<gmp.h>".}
-proc mpz_perfect_power_p*(a2: mpz_srcptr): cint {.
+func mpz_perfect_power_p*(a2: mpz_srcptr): cint {.
     importc: "mpz_perfect_power_p", header: "<gmp.h>".}
-proc mpz_perfect_power_p*(a2: mpz_t): cint {.importc: "mpz_perfect_power_p", 
+func mpz_perfect_power_p*(a2: mpz_t): cint {.importc: "mpz_perfect_power_p", 
     header: "<gmp.h>".}
-proc mpz_pow_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_pow_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_pow_ui", header: "<gmp.h>".}
-proc mpz_pow_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_pow_ui", 
+func mpz_pow_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_pow_ui", 
     header: "<gmp.h>".}
-proc mpz_powm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
+func mpz_powm*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
     importc: "mpz_powm", header: "<gmp.h>".}
-proc mpz_powm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.
+func mpz_powm*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.
     importc: "mpz_powm", header: "<gmp.h>".}
-proc mpz_powm_sec*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
+func mpz_powm_sec*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
     importc: "mpz_powm_sec", header: "<gmp.h>".}
-proc mpz_powm_sec*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.
+func mpz_powm_sec*(a2: var mpz_t; a3: mpz_t; a4: mpz_t; a5: mpz_t) {.
     importc: "mpz_powm_sec", header: "<gmp.h>".}
-proc mpz_powm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong; a5: mpz_srcptr) {.
+func mpz_powm_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong; a5: mpz_srcptr) {.
     importc: "mpz_powm_ui", header: "<gmp.h>".}
-proc mpz_powm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong; a5: mpz_t) {.
+func mpz_powm_ui*(a2: var mpz_t; a3: mpz_t; a4: culong; a5: mpz_t) {.
     importc: "mpz_powm_ui", header: "<gmp.h>".}
-proc mpz_probab_prime_p*(a2: mpz_srcptr; a3: cint): cint {.
+func mpz_probab_prime_p*(a2: mpz_srcptr; a3: cint): cint {.
     importc: "mpz_probab_prime_p", header: "<gmp.h>".}
-proc mpz_probab_prime_p*(a2: mpz_t; a3: cint): cint {.
+func mpz_probab_prime_p*(a2: mpz_t; a3: cint): cint {.
     importc: "mpz_probab_prime_p", header: "<gmp.h>".}
-proc mpz_random*(a2: mpz_ptr; a3: mp_size_t) {.importc: "mpz_random", 
+func mpz_random*(a2: mpz_ptr; a3: mp_size_t) {.importc: "mpz_random", 
     header: "<gmp.h>".}
-proc mpz_random*(a2: var mpz_t; a3: mp_size_t) {.importc: "mpz_random", 
+func mpz_random*(a2: var mpz_t; a3: mp_size_t) {.importc: "mpz_random", 
     header: "<gmp.h>".}
-proc mpz_random2*(a2: mpz_ptr; a3: mp_size_t) {.importc: "mpz_random2", 
+func mpz_random2*(a2: mpz_ptr; a3: mp_size_t) {.importc: "mpz_random2", 
     header: "<gmp.h>".}
-proc mpz_random2*(a2: var mpz_t; a3: mp_size_t) {.importc: "mpz_random2", 
+func mpz_random2*(a2: var mpz_t; a3: mp_size_t) {.importc: "mpz_random2", 
     header: "<gmp.h>".}
-proc mpz_realloc2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_realloc2", 
+func mpz_realloc2*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_realloc2", 
     header: "<gmp.h>".}
-proc mpz_realloc2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_realloc2", 
+func mpz_realloc2*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_realloc2", 
     header: "<gmp.h>".}
-proc mpz_remove*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): mp_bitcnt_t {.
+func mpz_remove*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr): mp_bitcnt_t {.
     importc: "mpz_remove", header: "<gmp.h>".}
-proc mpz_remove*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): mp_bitcnt_t {.
+func mpz_remove*(a2: var mpz_t; a3: mpz_t; a4: mpz_t): mp_bitcnt_t {.
     importc: "mpz_remove", header: "<gmp.h>".}
-proc mpz_root*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): cint {.
+func mpz_root*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): cint {.
     importc: "mpz_root", header: "<gmp.h>".}
-proc mpz_root*(a2: var mpz_t; a3: mpz_t; a4: culong): cint {.
+func mpz_root*(a2: var mpz_t; a3: mpz_t; a4: culong): cint {.
     importc: "mpz_root", header: "<gmp.h>".}
-proc mpz_rootrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong) {.
+func mpz_rootrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong) {.
     importc: "mpz_rootrem", header: "<gmp.h>".}
-proc mpz_rootrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong) {.
+func mpz_rootrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong) {.
     importc: "mpz_rootrem", header: "<gmp.h>".}
-proc mpz_rrandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
+func mpz_rrandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
     importc: "mpz_rrandomb", header: "<gmp.h>".}
-proc mpz_rrandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
+func mpz_rrandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
     importc: "mpz_rrandomb", header: "<gmp.h>".}
-proc mpz_scan0*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
+func mpz_scan0*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpz_scan0", header: "<gmp.h>".}
-proc mpz_scan0*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan0", 
+func mpz_scan0*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan0", 
     header: "<gmp.h>".}
-proc mpz_scan1*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
+func mpz_scan1*(a2: mpz_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpz_scan1", header: "<gmp.h>".}
-proc mpz_scan1*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan1", 
+func mpz_scan1*(a2: mpz_t; a3: mp_bitcnt_t): mp_bitcnt_t {.importc: "mpz_scan1", 
     header: "<gmp.h>".}
-proc mpz_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_set", 
+func mpz_set*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_set", 
     header: "<gmp.h>".}
-proc mpz_set*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_set", header: "<gmp.h>".}
-proc mpz_set_d*(a2: mpz_ptr; a3: cdouble) {.importc: "mpz_set_d", 
+func mpz_set*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_set", header: "<gmp.h>".}
+func mpz_set_d*(a2: mpz_ptr; a3: cdouble) {.importc: "mpz_set_d", 
     header: "<gmp.h>".}
-proc mpz_set_d*(a2: var mpz_t; a3: cdouble) {.importc: "mpz_set_d", 
+func mpz_set_d*(a2: var mpz_t; a3: cdouble) {.importc: "mpz_set_d", 
     header: "<gmp.h>".}
-proc mpz_set_f*(a2: mpz_ptr; a3: mpf_srcptr) {.importc: "mpz_set_f", 
+func mpz_set_f*(a2: mpz_ptr; a3: mpf_srcptr) {.importc: "mpz_set_f", 
     header: "<gmp.h>".}
-proc mpz_set_f*(a2: var mpz_t; a3: mpf_t) {.importc: "mpz_set_f", 
+func mpz_set_f*(a2: var mpz_t; a3: mpf_t) {.importc: "mpz_set_f", 
     header: "<gmp.h>".}
-proc mpz_set_si*(a2: mpz_ptr; a3: clong) {.importc: "mpz_set_si", 
+func mpz_set_si*(a2: mpz_ptr; a3: clong) {.importc: "mpz_set_si", 
     header: "<gmp.h>".}
-proc mpz_set_si*(a2: var mpz_t; a3: clong) {.importc: "mpz_set_si", 
+func mpz_set_si*(a2: var mpz_t; a3: clong) {.importc: "mpz_set_si", 
     header: "<gmp.h>".}
-proc mpz_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.
+func mpz_set_str*(a2: mpz_ptr; a3: cstring; a4: cint): cint {.
     importc: "mpz_set_str", header: "<gmp.h>".}
-proc mpz_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.
+func mpz_set_str*(a2: var mpz_t; a3: cstring; a4: cint): cint {.
     importc: "mpz_set_str", header: "<gmp.h>".}
-proc mpz_set_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_set_ui", 
+func mpz_set_ui*(a2: mpz_ptr; a3: culong) {.importc: "mpz_set_ui", 
     header: "<gmp.h>".}
-proc mpz_set_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_set_ui", 
+func mpz_set_ui*(a2: var mpz_t; a3: culong) {.importc: "mpz_set_ui", 
     header: "<gmp.h>".}
-proc mpz_setbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_setbit", 
+func mpz_setbit*(a2: mpz_ptr; a3: mp_bitcnt_t) {.importc: "mpz_setbit", 
     header: "<gmp.h>".}
-proc mpz_setbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_setbit", 
+func mpz_setbit*(a2: var mpz_t; a3: mp_bitcnt_t) {.importc: "mpz_setbit", 
     header: "<gmp.h>".}
-proc mpz_sizeinbase*(a2: mpz_srcptr; a3: cint): csize_t {.
+func mpz_sizeinbase*(a2: mpz_srcptr; a3: cint): csize_t {.
     importc: "mpz_sizeinbase", header: "<gmp.h>".}
-proc mpz_sizeinbase*(a2: mpz_t; a3: cint): csize_t {.importc: "mpz_sizeinbase", 
+func mpz_sizeinbase*(a2: mpz_t; a3: cint): csize_t {.importc: "mpz_sizeinbase", 
     header: "<gmp.h>".}
-proc mpz_sqrt*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_sqrt", 
+func mpz_sqrt*(a2: mpz_ptr; a3: mpz_srcptr) {.importc: "mpz_sqrt", 
     header: "<gmp.h>".}
-proc mpz_sqrt*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_sqrt", 
+func mpz_sqrt*(a2: var mpz_t; a3: mpz_t) {.importc: "mpz_sqrt", 
     header: "<gmp.h>".}
-proc mpz_sqrtrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr) {.
+func mpz_sqrtrem*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr) {.
     importc: "mpz_sqrtrem", header: "<gmp.h>".}
-proc mpz_sqrtrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t) {.
+func mpz_sqrtrem*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t) {.
     importc: "mpz_sqrtrem", header: "<gmp.h>".}
-proc mpz_sub*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_sub", 
+func mpz_sub*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_sub", 
     header: "<gmp.h>".}
-proc mpz_sub*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_sub", 
+func mpz_sub*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_sub", 
     header: "<gmp.h>".}
-proc mpz_sub_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_sub_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_sub_ui", header: "<gmp.h>".}
-proc mpz_sub_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_sub_ui", 
+func mpz_sub_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.importc: "mpz_sub_ui", 
     header: "<gmp.h>".}
-proc mpz_ui_sub*(a2: mpz_ptr; a3: culong; a4: mpz_srcptr) {.
+func mpz_ui_sub*(a2: mpz_ptr; a3: culong; a4: mpz_srcptr) {.
     importc: "mpz_ui_sub", header: "<gmp.h>".}
-proc mpz_ui_sub*(a2: var mpz_t; a3: culong; a4: mpz_t) {.importc: "mpz_ui_sub", 
+func mpz_ui_sub*(a2: var mpz_t; a3: culong; a4: mpz_t) {.importc: "mpz_ui_sub", 
     header: "<gmp.h>".}
-proc mpz_submul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_submul*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_submul", header: "<gmp.h>".}
-proc mpz_submul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_submul", 
+func mpz_submul*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_submul", 
     header: "<gmp.h>".}
-proc mpz_submul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
+func mpz_submul_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong) {.
     importc: "mpz_submul_ui", header: "<gmp.h>".}
-proc mpz_submul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.
+func mpz_submul_ui*(a2: var mpz_t; a3: mpz_t; a4: culong) {.
     importc: "mpz_submul_ui", header: "<gmp.h>".}
-proc mpz_swap*(a2: mpz_ptr; a3: mpz_ptr) {.importc: "mpz_swap", 
+func mpz_swap*(a2: mpz_ptr; a3: mpz_ptr) {.importc: "mpz_swap", 
     header: "<gmp.h>".}
-proc mpz_swap*(a2: var mpz_t; a3: var mpz_t) {.importc: "mpz_swap", 
+func mpz_swap*(a2: var mpz_t; a3: var mpz_t) {.importc: "mpz_swap", 
     header: "<gmp.h>".}
-proc mpz_tdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_tdiv_ui", 
+func mpz_tdiv_ui*(a2: mpz_srcptr; a3: culong): culong {.importc: "mpz_tdiv_ui", 
     header: "<gmp.h>".}
-proc mpz_tdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_tdiv_ui", 
+func mpz_tdiv_ui*(a2: mpz_t; a3: culong): culong {.importc: "mpz_tdiv_ui", 
     header: "<gmp.h>".}
-proc mpz_tdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_tdiv_q*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_tdiv_q", header: "<gmp.h>".}
-proc mpz_tdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_tdiv_q", 
+func mpz_tdiv_q*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_tdiv_q", 
     header: "<gmp.h>".}
-proc mpz_tdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
+func mpz_tdiv_q_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpz_tdiv_q_2exp", header: "<gmp.h>".}
-proc mpz_tdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
+func mpz_tdiv_q_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
     importc: "mpz_tdiv_q_2exp", header: "<gmp.h>".}
-proc mpz_tdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
+func mpz_tdiv_q_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
     importc: "mpz_tdiv_q_ui", header: "<gmp.h>".}
-proc mpz_tdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
+func mpz_tdiv_q_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
     importc: "mpz_tdiv_q_ui", header: "<gmp.h>".}
-proc mpz_tdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
+func mpz_tdiv_qr*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: mpz_srcptr) {.
     importc: "mpz_tdiv_qr", header: "<gmp.h>".}
-proc mpz_tdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.
+func mpz_tdiv_qr*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: mpz_t) {.
     importc: "mpz_tdiv_qr", header: "<gmp.h>".}
-proc mpz_tdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.
+func mpz_tdiv_qr_ui*(a2: mpz_ptr; a3: mpz_ptr; a4: mpz_srcptr; a5: culong): culong {.
     importc: "mpz_tdiv_qr_ui", header: "<gmp.h>".}
-proc mpz_tdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.
+func mpz_tdiv_qr_ui*(a2: var mpz_t; a3: var mpz_t; a4: mpz_t; a5: culong): culong {.
     importc: "mpz_tdiv_qr_ui", header: "<gmp.h>".}
-proc mpz_tdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
+func mpz_tdiv_r*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.
     importc: "mpz_tdiv_r", header: "<gmp.h>".}
-proc mpz_tdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_tdiv_r", 
+func mpz_tdiv_r*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_tdiv_r", 
     header: "<gmp.h>".}
-proc mpz_tdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
+func mpz_tdiv_r_2exp*(a2: mpz_ptr; a3: mpz_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpz_tdiv_r_2exp", header: "<gmp.h>".}
-proc mpz_tdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
+func mpz_tdiv_r_2exp*(a2: var mpz_t; a3: mpz_t; a4: mp_bitcnt_t) {.
     importc: "mpz_tdiv_r_2exp", header: "<gmp.h>".}
-proc mpz_tdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
+func mpz_tdiv_r_ui*(a2: mpz_ptr; a3: mpz_srcptr; a4: culong): culong {.
     importc: "mpz_tdiv_r_ui", header: "<gmp.h>".}
-proc mpz_tdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
+func mpz_tdiv_r_ui*(a2: var mpz_t; a3: mpz_t; a4: culong): culong {.
     importc: "mpz_tdiv_r_ui", header: "<gmp.h>".}
-proc mpz_tstbit*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.importc: "mpz_tstbit", 
+func mpz_tstbit*(a2: mpz_srcptr; a3: mp_bitcnt_t): cint {.importc: "mpz_tstbit", 
     header: "<gmp.h>".}
-proc mpz_tstbit*(a2: mpz_t; a3: mp_bitcnt_t): cint {.importc: "mpz_tstbit", 
+func mpz_tstbit*(a2: mpz_t; a3: mp_bitcnt_t): cint {.importc: "mpz_tstbit", 
     header: "<gmp.h>".}
-proc mpz_ui_pow_ui*(a2: mpz_ptr; a3: culong; a4: culong) {.
+func mpz_ui_pow_ui*(a2: mpz_ptr; a3: culong; a4: culong) {.
     importc: "mpz_ui_pow_ui", header: "<gmp.h>".}
-proc mpz_ui_pow_ui*(a2: var mpz_t; a3: culong; a4: culong) {.
+func mpz_ui_pow_ui*(a2: var mpz_t; a3: culong; a4: culong) {.
     importc: "mpz_ui_pow_ui", header: "<gmp.h>".}
-proc mpz_urandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
+func mpz_urandomb*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
     importc: "mpz_urandomb", header: "<gmp.h>".}
-proc mpz_urandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
+func mpz_urandomb*(a2: var mpz_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
     importc: "mpz_urandomb", header: "<gmp.h>".}
-proc mpz_urandomm*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mpz_srcptr) {.
+func mpz_urandomm*(a2: mpz_ptr; a3: gmp_randstate_t; a4: mpz_srcptr) {.
     importc: "mpz_urandomm", header: "<gmp.h>".}
-proc mpz_urandomm*(a2: var mpz_t; a3: gmp_randstate_t; a4: mpz_t) {.
+func mpz_urandomm*(a2: var mpz_t; a3: gmp_randstate_t; a4: mpz_t) {.
     importc: "mpz_urandomm", header: "<gmp.h>".}
-proc mpz_xor*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_xor", 
+func mpz_xor*(a2: mpz_ptr; a3: mpz_srcptr; a4: mpz_srcptr) {.importc: "mpz_xor", 
     header: "<gmp.h>".}
-proc mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_xor", 
+func mpz_xor*(a2: var mpz_t; a3: mpz_t; a4: mpz_t) {.importc: "mpz_xor", 
     header: "<gmp.h>".}
-proc mpz_limbs_read*(a2: mpz_srcptr): mp_srcptr {.importc: "mpz_limbs_read", 
+func mpz_limbs_read*(a2: mpz_srcptr): mp_srcptr {.importc: "mpz_limbs_read", 
     header: "<gmp.h>".}
-proc mpz_limbs_read*(a2: mpz_t): mp_srcptr {.importc: "mpz_limbs_read", 
+func mpz_limbs_read*(a2: mpz_t): mp_srcptr {.importc: "mpz_limbs_read", 
     header: "<gmp.h>".}
-proc mpz_limbs_write*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.
+func mpz_limbs_write*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.
     importc: "mpz_limbs_write", header: "<gmp.h>".}
-proc mpz_limbs_write*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.
+func mpz_limbs_write*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.
     importc: "mpz_limbs_write", header: "<gmp.h>".}
-proc mpz_limbs_modify*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.
+func mpz_limbs_modify*(a2: mpz_ptr; a3: mp_size_t): mp_ptr {.
     importc: "mpz_limbs_modify", header: "<gmp.h>".}
-proc mpz_limbs_modify*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.
+func mpz_limbs_modify*(a2: var mpz_t; a3: mp_size_t): mp_ptr {.
     importc: "mpz_limbs_modify", header: "<gmp.h>".}
-proc mpz_limbs_finish*(a2: mpz_ptr; a3: mp_size_t) {.
+func mpz_limbs_finish*(a2: mpz_ptr; a3: mp_size_t) {.
     importc: "mpz_limbs_finish", header: "<gmp.h>".}
-proc mpz_limbs_finish*(a2: var mpz_t; a3: mp_size_t) {.
+func mpz_limbs_finish*(a2: var mpz_t; a3: mp_size_t) {.
     importc: "mpz_limbs_finish", header: "<gmp.h>".}
-proc mpz_roinit_n*(a2: mpz_ptr; a3: mp_srcptr; a4: mp_size_t): mpz_srcptr {.
+func mpz_roinit_n*(a2: mpz_ptr; a3: mp_srcptr; a4: mp_size_t): mpz_srcptr {.
     importc: "mpz_roinit_n", header: "<gmp.h>".}
-proc mpz_roinit_n*(a2: var mpz_t; a3: var mp_limb_t; a4: mp_size_t): mpz_srcptr {.
+func mpz_roinit_n*(a2: var mpz_t; a3: var mp_limb_t; a4: mp_size_t): mpz_srcptr {.
     importc: "mpz_roinit_n", header: "<gmp.h>".}
-proc mpq_add*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_add", 
+func mpq_add*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_add", 
     header: "<gmp.h>".}
-proc mpq_add*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_add", 
+func mpq_add*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_add", 
     header: "<gmp.h>".}
-proc mpq_canonicalize*(a2: mpq_ptr) {.importc: "mpq_canonicalize", 
+func mpq_canonicalize*(a2: mpq_ptr) {.importc: "mpq_canonicalize", 
                                       header: "<gmp.h>".}
-proc mpq_canonicalize*(a2: var mpq_t) {.importc: "mpq_canonicalize", 
+func mpq_canonicalize*(a2: var mpq_t) {.importc: "mpq_canonicalize", 
                                         header: "<gmp.h>".}
-proc mpq_clear*(a2: mpq_ptr) {.importc: "mpq_clear", header: "<gmp.h>".}
-proc mpq_clear*(a2: var mpq_t) {.importc: "mpq_clear", header: "<gmp.h>".}
-proc mpq_clears*(a2: mpq_ptr) {.varargs, importc: "mpq_clears", 
+func mpq_clear*(a2: mpq_ptr) {.importc: "mpq_clear", header: "<gmp.h>".}
+func mpq_clear*(a2: var mpq_t) {.importc: "mpq_clear", header: "<gmp.h>".}
+func mpq_clears*(a2: mpq_ptr) {.varargs, importc: "mpq_clears", 
                                 header: "<gmp.h>".}
-proc mpq_clears*(a2: var mpq_t) {.varargs, importc: "mpq_clears", 
+func mpq_clears*(a2: var mpq_t) {.varargs, importc: "mpq_clears", 
                                   header: "<gmp.h>".}
-proc mpq_cmp*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc: "mpq_cmp", 
+func mpq_cmp*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc: "mpq_cmp", 
     header: "<gmp.h>".}
-proc mpq_cmp*(a2: mpq_t; a3: mpq_t): cint {.importc: "mpq_cmp", 
+func mpq_cmp*(a2: mpq_t; a3: mpq_t): cint {.importc: "mpq_cmp", 
     header: "<gmp.h>".}
-proc m_mpq_cmp_si*(a2: mpq_srcptr; a3: clong; a4: culong): cint {.
+func m_mpq_cmp_si*(a2: mpq_srcptr; a3: clong; a4: culong): cint {.
     importc: "_mpq_cmp_si", header: "<gmp.h>".}
-proc m_mpq_cmp_si*(a2: mpq_t; a3: clong; a4: culong): cint {.
+func m_mpq_cmp_si*(a2: mpq_t; a3: clong; a4: culong): cint {.
     importc: "_mpq_cmp_si", header: "<gmp.h>".}
-proc m_mpq_cmp_ui*(a2: mpq_srcptr; a3: culong; a4: culong): cint {.
+func m_mpq_cmp_ui*(a2: mpq_srcptr; a3: culong; a4: culong): cint {.
     importc: "_mpq_cmp_ui", header: "<gmp.h>".}
-proc m_mpq_cmp_ui*(a2: mpq_t; a3: culong; a4: culong): cint {.
+func m_mpq_cmp_ui*(a2: mpq_t; a3: culong; a4: culong): cint {.
     importc: "_mpq_cmp_ui", header: "<gmp.h>".}
-proc mpq_div*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_div", 
+func mpq_div*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_div", 
     header: "<gmp.h>".}
-proc mpq_div*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_div", 
+func mpq_div*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_div", 
     header: "<gmp.h>".}
-proc mpq_div_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.
+func mpq_div_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpq_div_2exp", header: "<gmp.h>".}
-proc mpq_div_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.
+func mpq_div_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.
     importc: "mpq_div_2exp", header: "<gmp.h>".}
-proc mpq_equal*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc: "mpq_equal", 
+func mpq_equal*(a2: mpq_srcptr; a3: mpq_srcptr): cint {.importc: "mpq_equal", 
     header: "<gmp.h>".}
-proc mpq_equal*(a2: mpq_t; a3: mpq_t): cint {.importc: "mpq_equal", 
+func mpq_equal*(a2: mpq_t; a3: mpq_t): cint {.importc: "mpq_equal", 
     header: "<gmp.h>".}
-proc mpq_get_num*(a2: mpz_ptr; a3: mpq_srcptr) {.importc: "mpq_get_num", 
+func mpq_get_num*(a2: mpz_ptr; a3: mpq_srcptr) {.importc: "mpq_get_num", 
     header: "<gmp.h>".}
-proc mpq_get_num*(a2: var mpz_t; a3: mpq_t) {.importc: "mpq_get_num", 
+func mpq_get_num*(a2: var mpz_t; a3: mpq_t) {.importc: "mpq_get_num", 
     header: "<gmp.h>".}
-proc mpq_get_den*(a2: mpz_ptr; a3: mpq_srcptr) {.importc: "mpq_get_den", 
+func mpq_get_den*(a2: mpz_ptr; a3: mpq_srcptr) {.importc: "mpq_get_den", 
     header: "<gmp.h>".}
-proc mpq_get_den*(a2: var mpz_t; a3: mpq_t) {.importc: "mpq_get_den", 
+func mpq_get_den*(a2: var mpz_t; a3: mpq_t) {.importc: "mpq_get_den", 
     header: "<gmp.h>".}
-proc mpq_get_d*(a2: mpq_srcptr): cdouble {.importc: "mpq_get_d", 
+func mpq_get_d*(a2: mpq_srcptr): cdouble {.importc: "mpq_get_d", 
     header: "<gmp.h>".}
-proc mpq_get_d*(a2: mpq_t): cdouble {.importc: "mpq_get_d", header: "<gmp.h>".}
-proc mpq_get_str*(a2: cstring; a3: cint; a4: mpq_srcptr): cstring {.
+func mpq_get_d*(a2: mpq_t): cdouble {.importc: "mpq_get_d", header: "<gmp.h>".}
+func mpq_get_str*(a2: cstring; a3: cint; a4: mpq_srcptr): cstring {.
     importc: "mpq_get_str", header: "<gmp.h>".}
-proc mpq_get_str*(a2: cstring; a3: cint; a4: mpq_t): cstring {.
+func mpq_get_str*(a2: cstring; a3: cint; a4: mpq_t): cstring {.
     importc: "mpq_get_str", header: "<gmp.h>".}
-proc mpq_init*(a2: mpq_ptr) {.importc: "mpq_init", header: "<gmp.h>".}
-proc mpq_init*(a2: var mpq_t) {.importc: "mpq_init", header: "<gmp.h>".}
-proc mpq_inits*(a2: mpq_ptr) {.varargs, importc: "mpq_inits", header: "<gmp.h>".}
-proc mpq_inits*(a2: var mpq_t) {.varargs, importc: "mpq_inits", 
+func mpq_init*(a2: mpq_ptr) {.importc: "mpq_init", header: "<gmp.h>".}
+func mpq_init*(a2: var mpq_t) {.importc: "mpq_init", header: "<gmp.h>".}
+func mpq_inits*(a2: mpq_ptr) {.varargs, importc: "mpq_inits", header: "<gmp.h>".}
+func mpq_inits*(a2: var mpq_t) {.varargs, importc: "mpq_inits", 
                                  header: "<gmp.h>".}
-proc mpq_inp_str*(a2: mpq_ptr; a3: File; a4: cint): csize_t {.
+func mpq_inp_str*(a2: mpq_ptr; a3: File; a4: cint): csize_t {.
     importc: "mpq_inp_str", header: "<gmp.h>".}
-proc mpq_inp_str*(a2: var mpq_t; a3: File; a4: cint): csize_t {.
+func mpq_inp_str*(a2: var mpq_t; a3: File; a4: cint): csize_t {.
     importc: "mpq_inp_str", header: "<gmp.h>".}
-proc mpq_inv*(a2: mpq_ptr; a3: mpq_srcptr) {.importc: "mpq_inv", 
+func mpq_inv*(a2: mpq_ptr; a3: mpq_srcptr) {.importc: "mpq_inv", 
     header: "<gmp.h>".}
-proc mpq_inv*(a2: var mpq_t; a3: mpq_t) {.importc: "mpq_inv", header: "<gmp.h>".}
-proc mpq_mul*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_mul", 
+func mpq_inv*(a2: var mpq_t; a3: mpq_t) {.importc: "mpq_inv", header: "<gmp.h>".}
+func mpq_mul*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_mul", 
     header: "<gmp.h>".}
-proc mpq_mul*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_mul", 
+func mpq_mul*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_mul", 
     header: "<gmp.h>".}
-proc mpq_mul_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.
+func mpq_mul_2exp*(a2: mpq_ptr; a3: mpq_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpq_mul_2exp", header: "<gmp.h>".}
-proc mpq_mul_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.
+func mpq_mul_2exp*(a2: var mpq_t; a3: mpq_t; a4: mp_bitcnt_t) {.
     importc: "mpq_mul_2exp", header: "<gmp.h>".}
-proc mpq_out_str*(a2: File; a3: cint; a4: mpq_srcptr): csize_t {.
+func mpq_out_str*(a2: File; a3: cint; a4: mpq_srcptr): csize_t {.
     importc: "mpq_out_str", header: "<gmp.h>".}
-proc mpq_out_str*(a2: File; a3: cint; a4: mpq_t): csize_t {.
+func mpq_out_str*(a2: File; a3: cint; a4: mpq_t): csize_t {.
     importc: "mpq_out_str", header: "<gmp.h>".}
-proc mpq_set*(a2: mpq_ptr; a3: mpq_srcptr) {.importc: "mpq_set", 
+func mpq_set*(a2: mpq_ptr; a3: mpq_srcptr) {.importc: "mpq_set", 
     header: "<gmp.h>".}
-proc mpq_set*(a2: var mpq_t; a3: mpq_t) {.importc: "mpq_set", header: "<gmp.h>".}
-proc mpq_set_d*(a2: mpq_ptr; a3: cdouble) {.importc: "mpq_set_d", 
+func mpq_set*(a2: var mpq_t; a3: mpq_t) {.importc: "mpq_set", header: "<gmp.h>".}
+func mpq_set_d*(a2: mpq_ptr; a3: cdouble) {.importc: "mpq_set_d", 
     header: "<gmp.h>".}
-proc mpq_set_d*(a2: var mpq_t; a3: cdouble) {.importc: "mpq_set_d", 
+func mpq_set_d*(a2: var mpq_t; a3: cdouble) {.importc: "mpq_set_d", 
     header: "<gmp.h>".}
-proc mpq_set_den*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_den", 
+func mpq_set_den*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_den", 
     header: "<gmp.h>".}
-proc mpq_set_den*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_den", 
+func mpq_set_den*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_den", 
     header: "<gmp.h>".}
-proc mpq_set_f*(a2: mpq_ptr; a3: mpf_srcptr) {.importc: "mpq_set_f", 
+func mpq_set_f*(a2: mpq_ptr; a3: mpf_srcptr) {.importc: "mpq_set_f", 
     header: "<gmp.h>".}
-proc mpq_set_f*(a2: var mpq_t; a3: mpf_t) {.importc: "mpq_set_f", 
+func mpq_set_f*(a2: var mpq_t; a3: mpf_t) {.importc: "mpq_set_f", 
     header: "<gmp.h>".}
-proc mpq_set_num*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_num", 
+func mpq_set_num*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_num", 
     header: "<gmp.h>".}
-proc mpq_set_num*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_num", 
+func mpq_set_num*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_num", 
     header: "<gmp.h>".}
-proc mpq_set_si*(a2: mpq_ptr; a3: clong; a4: culong) {.importc: "mpq_set_si", 
+func mpq_set_si*(a2: mpq_ptr; a3: clong; a4: culong) {.importc: "mpq_set_si", 
     header: "<gmp.h>".}
-proc mpq_set_si*(a2: var mpq_t; a3: clong; a4: culong) {.importc: "mpq_set_si", 
+func mpq_set_si*(a2: var mpq_t; a3: clong; a4: culong) {.importc: "mpq_set_si", 
     header: "<gmp.h>".}
-proc mpq_set_str*(a2: mpq_ptr; a3: cstring; a4: cint): cint {.
+func mpq_set_str*(a2: mpq_ptr; a3: cstring; a4: cint): cint {.
     importc: "mpq_set_str", header: "<gmp.h>".}
-proc mpq_set_str*(a2: var mpq_t; a3: cstring; a4: cint): cint {.
+func mpq_set_str*(a2: var mpq_t; a3: cstring; a4: cint): cint {.
     importc: "mpq_set_str", header: "<gmp.h>".}
-proc mpq_set_ui*(a2: mpq_ptr; a3: culong; a4: culong) {.importc: "mpq_set_ui", 
+func mpq_set_ui*(a2: mpq_ptr; a3: culong; a4: culong) {.importc: "mpq_set_ui", 
     header: "<gmp.h>".}
-proc mpq_set_ui*(a2: var mpq_t; a3: culong; a4: culong) {.importc: "mpq_set_ui", 
+func mpq_set_ui*(a2: var mpq_t; a3: culong; a4: culong) {.importc: "mpq_set_ui", 
     header: "<gmp.h>".}
-proc mpq_set_z*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_z", 
+func mpq_set_z*(a2: mpq_ptr; a3: mpz_srcptr) {.importc: "mpq_set_z", 
     header: "<gmp.h>".}
-proc mpq_set_z*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_z", 
+func mpq_set_z*(a2: var mpq_t; a3: mpz_t) {.importc: "mpq_set_z", 
     header: "<gmp.h>".}
-proc mpq_sub*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_sub", 
+func mpq_sub*(a2: mpq_ptr; a3: mpq_srcptr; a4: mpq_srcptr) {.importc: "mpq_sub", 
     header: "<gmp.h>".}
-proc mpq_sub*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_sub", 
+func mpq_sub*(a2: var mpq_t; a3: mpq_t; a4: mpq_t) {.importc: "mpq_sub", 
     header: "<gmp.h>".}
-proc mpq_swap*(a2: mpq_ptr; a3: mpq_ptr) {.importc: "mpq_swap", 
+func mpq_swap*(a2: mpq_ptr; a3: mpq_ptr) {.importc: "mpq_swap", 
     header: "<gmp.h>".}
-proc mpq_swap*(a2: var mpq_t; a3: var mpq_t) {.importc: "mpq_swap", 
+func mpq_swap*(a2: var mpq_t; a3: var mpq_t) {.importc: "mpq_swap", 
     header: "<gmp.h>".}
-proc mpf_abs*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_abs", 
+func mpf_abs*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_abs", 
     header: "<gmp.h>".}
-proc mpf_abs*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_abs", header: "<gmp.h>".}
-proc mpf_add*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_add", 
+func mpf_abs*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_abs", header: "<gmp.h>".}
+func mpf_add*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_add", 
     header: "<gmp.h>".}
-proc mpf_add*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_add", 
+func mpf_add*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_add", 
     header: "<gmp.h>".}
-proc mpf_add_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
+func mpf_add_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
     importc: "mpf_add_ui", header: "<gmp.h>".}
-proc mpf_add_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_add_ui", 
+func mpf_add_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_add_ui", 
     header: "<gmp.h>".}
-proc mpf_ceil*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_ceil", 
+func mpf_ceil*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_ceil", 
     header: "<gmp.h>".}
-proc mpf_ceil*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_ceil", 
+func mpf_ceil*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_ceil", 
     header: "<gmp.h>".}
-proc mpf_clear*(a2: mpf_ptr) {.importc: "mpf_clear", header: "<gmp.h>".}
-proc mpf_clear*(a2: var mpf_t) {.importc: "mpf_clear", header: "<gmp.h>".}
-proc mpf_clears*(a2: mpf_ptr) {.varargs, importc: "mpf_clears", 
+func mpf_clear*(a2: mpf_ptr) {.importc: "mpf_clear", header: "<gmp.h>".}
+func mpf_clear*(a2: var mpf_t) {.importc: "mpf_clear", header: "<gmp.h>".}
+func mpf_clears*(a2: mpf_ptr) {.varargs, importc: "mpf_clears", 
                                 header: "<gmp.h>".}
-proc mpf_clears*(a2: var mpf_t) {.varargs, importc: "mpf_clears", 
+func mpf_clears*(a2: var mpf_t) {.varargs, importc: "mpf_clears", 
                                   header: "<gmp.h>".}
-proc mpf_cmp*(a2: mpf_srcptr; a3: mpf_srcptr): cint {.importc: "mpf_cmp", 
+func mpf_cmp*(a2: mpf_srcptr; a3: mpf_srcptr): cint {.importc: "mpf_cmp", 
     header: "<gmp.h>".}
-proc mpf_cmp*(a2: mpf_t; a3: mpf_t): cint {.importc: "mpf_cmp", 
+func mpf_cmp*(a2: mpf_t; a3: mpf_t): cint {.importc: "mpf_cmp", 
     header: "<gmp.h>".}
-proc mpf_cmp_d*(a2: mpf_srcptr; a3: cdouble): cint {.importc: "mpf_cmp_d", 
+func mpf_cmp_d*(a2: mpf_srcptr; a3: cdouble): cint {.importc: "mpf_cmp_d", 
     header: "<gmp.h>".}
-proc mpf_cmp_d*(a2: mpf_t; a3: cdouble): cint {.importc: "mpf_cmp_d", 
+func mpf_cmp_d*(a2: mpf_t; a3: cdouble): cint {.importc: "mpf_cmp_d", 
     header: "<gmp.h>".}
-proc mpf_cmp_si*(a2: mpf_srcptr; a3: clong): cint {.importc: "mpf_cmp_si", 
+func mpf_cmp_si*(a2: mpf_srcptr; a3: clong): cint {.importc: "mpf_cmp_si", 
     header: "<gmp.h>".}
-proc mpf_cmp_si*(a2: mpf_t; a3: clong): cint {.importc: "mpf_cmp_si", 
+func mpf_cmp_si*(a2: mpf_t; a3: clong): cint {.importc: "mpf_cmp_si", 
     header: "<gmp.h>".}
-proc mpf_cmp_ui*(a2: mpf_srcptr; a3: culong): cint {.importc: "mpf_cmp_ui", 
+func mpf_cmp_ui*(a2: mpf_srcptr; a3: culong): cint {.importc: "mpf_cmp_ui", 
     header: "<gmp.h>".}
-proc mpf_cmp_ui*(a2: mpf_t; a3: culong): cint {.importc: "mpf_cmp_ui", 
+func mpf_cmp_ui*(a2: mpf_t; a3: culong): cint {.importc: "mpf_cmp_ui", 
     header: "<gmp.h>".}
-proc mpf_div*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_div", 
+func mpf_div*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_div", 
     header: "<gmp.h>".}
-proc mpf_div*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_div", 
+func mpf_div*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_div", 
     header: "<gmp.h>".}
-proc mpf_div_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.
+func mpf_div_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpf_div_2exp", header: "<gmp.h>".}
-proc mpf_div_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.
+func mpf_div_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.
     importc: "mpf_div_2exp", header: "<gmp.h>".}
-proc mpf_div_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
+func mpf_div_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
     importc: "mpf_div_ui", header: "<gmp.h>".}
-proc mpf_div_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_div_ui", 
+func mpf_div_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_div_ui", 
     header: "<gmp.h>".}
-proc mpf_dump*(a2: mpf_srcptr) {.importc: "mpf_dump", header: "<gmp.h>".}
-proc mpf_dump*(a2: mpf_t) {.importc: "mpf_dump", header: "<gmp.h>".}
-proc mpf_eq*(a2: mpf_srcptr; a3: mpf_srcptr; a4: mp_bitcnt_t): cint {.
+func mpf_dump*(a2: mpf_srcptr) {.importc: "mpf_dump", header: "<gmp.h>".}
+func mpf_dump*(a2: mpf_t) {.importc: "mpf_dump", header: "<gmp.h>".}
+func mpf_eq*(a2: mpf_srcptr; a3: mpf_srcptr; a4: mp_bitcnt_t): cint {.
     importc: "mpf_eq", header: "<gmp.h>".}
-proc mpf_eq*(a2: mpf_t; a3: mpf_t; a4: mp_bitcnt_t): cint {.importc: "mpf_eq", 
+func mpf_eq*(a2: mpf_t; a3: mpf_t; a4: mp_bitcnt_t): cint {.importc: "mpf_eq", 
     header: "<gmp.h>".}
-proc mpf_fits_sint_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_sint_p", 
+func mpf_fits_sint_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_sint_p", 
     header: "<gmp.h>".}
-proc mpf_fits_sint_p*(a2: mpf_t): cint {.importc: "mpf_fits_sint_p", 
+func mpf_fits_sint_p*(a2: mpf_t): cint {.importc: "mpf_fits_sint_p", 
     header: "<gmp.h>".}
-proc mpf_fits_slong_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_slong_p", 
+func mpf_fits_slong_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_slong_p", 
     header: "<gmp.h>".}
-proc mpf_fits_slong_p*(a2: mpf_t): cint {.importc: "mpf_fits_slong_p", 
+func mpf_fits_slong_p*(a2: mpf_t): cint {.importc: "mpf_fits_slong_p", 
     header: "<gmp.h>".}
-proc mpf_fits_sshort_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_sshort_p", 
+func mpf_fits_sshort_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_sshort_p", 
     header: "<gmp.h>".}
-proc mpf_fits_sshort_p*(a2: mpf_t): cint {.importc: "mpf_fits_sshort_p", 
+func mpf_fits_sshort_p*(a2: mpf_t): cint {.importc: "mpf_fits_sshort_p", 
     header: "<gmp.h>".}
-proc mpf_fits_uint_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_uint_p", 
+func mpf_fits_uint_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_uint_p", 
     header: "<gmp.h>".}
-proc mpf_fits_uint_p*(a2: mpf_t): cint {.importc: "mpf_fits_uint_p", 
+func mpf_fits_uint_p*(a2: mpf_t): cint {.importc: "mpf_fits_uint_p", 
     header: "<gmp.h>".}
-proc mpf_fits_ulong_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_ulong_p", 
+func mpf_fits_ulong_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_ulong_p", 
     header: "<gmp.h>".}
-proc mpf_fits_ulong_p*(a2: mpf_t): cint {.importc: "mpf_fits_ulong_p", 
+func mpf_fits_ulong_p*(a2: mpf_t): cint {.importc: "mpf_fits_ulong_p", 
     header: "<gmp.h>".}
-proc mpf_fits_ushort_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_ushort_p", 
+func mpf_fits_ushort_p*(a2: mpf_srcptr): cint {.importc: "mpf_fits_ushort_p", 
     header: "<gmp.h>".}
-proc mpf_fits_ushort_p*(a2: mpf_t): cint {.importc: "mpf_fits_ushort_p", 
+func mpf_fits_ushort_p*(a2: mpf_t): cint {.importc: "mpf_fits_ushort_p", 
     header: "<gmp.h>".}
-proc mpf_floor*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_floor", 
+func mpf_floor*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_floor", 
     header: "<gmp.h>".}
-proc mpf_floor*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_floor", 
+func mpf_floor*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_floor", 
     header: "<gmp.h>".}
-proc mpf_get_d*(a2: mpf_srcptr): cdouble {.importc: "mpf_get_d", 
+func mpf_get_d*(a2: mpf_srcptr): cdouble {.importc: "mpf_get_d", 
     header: "<gmp.h>".}
-proc mpf_get_d*(a2: mpf_t): cdouble {.importc: "mpf_get_d", header: "<gmp.h>".}
-proc mpf_get_d_2exp*(a2: ptr clong; a3: mpf_srcptr): cdouble {.
+func mpf_get_d*(a2: mpf_t): cdouble {.importc: "mpf_get_d", header: "<gmp.h>".}
+func mpf_get_d_2exp*(a2: ptr clong; a3: mpf_srcptr): cdouble {.
     importc: "mpf_get_d_2exp", header: "<gmp.h>".}
-proc mpf_get_d_2exp*(a2: ptr clong; a3: mpf_t): cdouble {.
+func mpf_get_d_2exp*(a2: ptr clong; a3: mpf_t): cdouble {.
     importc: "mpf_get_d_2exp", header: "<gmp.h>".}
-proc mpf_get_default_prec*(): mp_bitcnt_t {.importc: "mpf_get_default_prec", 
+func mpf_get_default_prec*(): mp_bitcnt_t {.importc: "mpf_get_default_prec", 
     header: "<gmp.h>".}
-proc mpf_get_prec*(a2: mpf_srcptr): mp_bitcnt_t {.importc: "mpf_get_prec", 
+func mpf_get_prec*(a2: mpf_srcptr): mp_bitcnt_t {.importc: "mpf_get_prec", 
     header: "<gmp.h>".}
-proc mpf_get_prec*(a2: mpf_t): mp_bitcnt_t {.importc: "mpf_get_prec", 
+func mpf_get_prec*(a2: mpf_t): mp_bitcnt_t {.importc: "mpf_get_prec", 
     header: "<gmp.h>".}
-proc mpf_get_si*(a2: mpf_srcptr): clong {.importc: "mpf_get_si", 
+func mpf_get_si*(a2: mpf_srcptr): clong {.importc: "mpf_get_si", 
     header: "<gmp.h>".}
-proc mpf_get_si*(a2: mpf_t): clong {.importc: "mpf_get_si", header: "<gmp.h>".}
-proc mpf_get_str*(a2: cstring; a3: ptr mp_exp_t; a4: cint; a5: csize_t; 
+func mpf_get_si*(a2: mpf_t): clong {.importc: "mpf_get_si", header: "<gmp.h>".}
+func mpf_get_str*(a2: cstring; a3: ptr mp_exp_t; a4: cint; a5: csize_t; 
                   a6: mpf_srcptr): cstring {.importc: "mpf_get_str", 
     header: "<gmp.h>".}
-proc mpf_get_str*(a2: cstring; a3: var mp_exp_t; a4: cint; a5: csize_t; a6: mpf_t): cstring {.
+func mpf_get_str*(a2: cstring; a3: var mp_exp_t; a4: cint; a5: csize_t; a6: mpf_t): cstring {.
     importc: "mpf_get_str", header: "<gmp.h>".}
-proc mpf_get_ui*(a2: mpf_srcptr): culong {.importc: "mpf_get_ui", 
+func mpf_get_ui*(a2: mpf_srcptr): culong {.importc: "mpf_get_ui", 
     header: "<gmp.h>".}
-proc mpf_get_ui*(a2: mpf_t): culong {.importc: "mpf_get_ui", header: "<gmp.h>".}
-proc mpf_init*(a2: mpf_ptr) {.importc: "mpf_init", header: "<gmp.h>".}
-proc mpf_init*(a2: var mpf_t) {.importc: "mpf_init", header: "<gmp.h>".}
-proc mpf_init2*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc: "mpf_init2", 
+func mpf_get_ui*(a2: mpf_t): culong {.importc: "mpf_get_ui", header: "<gmp.h>".}
+func mpf_init*(a2: mpf_ptr) {.importc: "mpf_init", header: "<gmp.h>".}
+func mpf_init*(a2: var mpf_t) {.importc: "mpf_init", header: "<gmp.h>".}
+func mpf_init2*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc: "mpf_init2", 
     header: "<gmp.h>".}
-proc mpf_init2*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc: "mpf_init2", 
+func mpf_init2*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc: "mpf_init2", 
     header: "<gmp.h>".}
-proc mpf_inits*(a2: mpf_ptr) {.varargs, importc: "mpf_inits", header: "<gmp.h>".}
-proc mpf_inits*(a2: var mpf_t) {.varargs, importc: "mpf_inits", 
+func mpf_inits*(a2: mpf_ptr) {.varargs, importc: "mpf_inits", header: "<gmp.h>".}
+func mpf_inits*(a2: var mpf_t) {.varargs, importc: "mpf_inits", 
                                  header: "<gmp.h>".}
-proc mpf_init_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_init_set", 
+func mpf_init_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_init_set", 
     header: "<gmp.h>".}
-proc mpf_init_set*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_init_set", 
+func mpf_init_set*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_init_set", 
     header: "<gmp.h>".}
-proc mpf_init_set_d*(a2: mpf_ptr; a3: cdouble) {.importc: "mpf_init_set_d", 
+func mpf_init_set_d*(a2: mpf_ptr; a3: cdouble) {.importc: "mpf_init_set_d", 
     header: "<gmp.h>".}
-proc mpf_init_set_d*(a2: var mpf_t; a3: cdouble) {.importc: "mpf_init_set_d", 
+func mpf_init_set_d*(a2: var mpf_t; a3: cdouble) {.importc: "mpf_init_set_d", 
     header: "<gmp.h>".}
-proc mpf_init_set_si*(a2: mpf_ptr; a3: clong) {.importc: "mpf_init_set_si", 
+func mpf_init_set_si*(a2: mpf_ptr; a3: clong) {.importc: "mpf_init_set_si", 
     header: "<gmp.h>".}
-proc mpf_init_set_si*(a2: var mpf_t; a3: clong) {.importc: "mpf_init_set_si", 
+func mpf_init_set_si*(a2: var mpf_t; a3: clong) {.importc: "mpf_init_set_si", 
     header: "<gmp.h>".}
-proc mpf_init_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.
+func mpf_init_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.
     importc: "mpf_init_set_str", header: "<gmp.h>".}
-proc mpf_init_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.
+func mpf_init_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.
     importc: "mpf_init_set_str", header: "<gmp.h>".}
-proc mpf_init_set_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_init_set_ui", 
+func mpf_init_set_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_init_set_ui", 
     header: "<gmp.h>".}
-proc mpf_init_set_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_init_set_ui", 
+func mpf_init_set_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_init_set_ui", 
     header: "<gmp.h>".}
-proc mpf_inp_str*(a2: mpf_ptr; a3: File; a4: cint): csize_t {.
+func mpf_inp_str*(a2: mpf_ptr; a3: File; a4: cint): csize_t {.
     importc: "mpf_inp_str", header: "<gmp.h>".}
-proc mpf_inp_str*(a2: var mpf_t; a3: File; a4: cint): csize_t {.
+func mpf_inp_str*(a2: var mpf_t; a3: File; a4: cint): csize_t {.
     importc: "mpf_inp_str", header: "<gmp.h>".}
-proc mpf_integer_p*(a2: mpf_srcptr): cint {.importc: "mpf_integer_p", 
+func mpf_integer_p*(a2: mpf_srcptr): cint {.importc: "mpf_integer_p", 
     header: "<gmp.h>".}
-proc mpf_integer_p*(a2: mpf_t): cint {.importc: "mpf_integer_p", 
+func mpf_integer_p*(a2: mpf_t): cint {.importc: "mpf_integer_p", 
                                        header: "<gmp.h>".}
-proc mpf_mul*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_mul", 
+func mpf_mul*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_mul", 
     header: "<gmp.h>".}
-proc mpf_mul*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_mul", 
+func mpf_mul*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_mul", 
     header: "<gmp.h>".}
-proc mpf_mul_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.
+func mpf_mul_2exp*(a2: mpf_ptr; a3: mpf_srcptr; a4: mp_bitcnt_t) {.
     importc: "mpf_mul_2exp", header: "<gmp.h>".}
-proc mpf_mul_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.
+func mpf_mul_2exp*(a2: var mpf_t; a3: mpf_t; a4: mp_bitcnt_t) {.
     importc: "mpf_mul_2exp", header: "<gmp.h>".}
-proc mpf_mul_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
+func mpf_mul_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
     importc: "mpf_mul_ui", header: "<gmp.h>".}
-proc mpf_mul_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_mul_ui", 
+func mpf_mul_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_mul_ui", 
     header: "<gmp.h>".}
-proc mpf_neg*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_neg", 
+func mpf_neg*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_neg", 
     header: "<gmp.h>".}
-proc mpf_neg*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_neg", header: "<gmp.h>".}
-proc mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_srcptr): csize_t {.
+func mpf_neg*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_neg", header: "<gmp.h>".}
+func mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_srcptr): csize_t {.
     importc: "mpf_out_str", header: "<gmp.h>".}
-proc mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_t): csize_t {.
+func mpf_out_str*(a2: File; a3: cint; a4: csize_t; a5: mpf_t): csize_t {.
     importc: "mpf_out_str", header: "<gmp.h>".}
-proc mpf_pow_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
+func mpf_pow_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
     importc: "mpf_pow_ui", header: "<gmp.h>".}
-proc mpf_pow_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_pow_ui", 
+func mpf_pow_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_pow_ui", 
     header: "<gmp.h>".}
-proc mpf_random2*(a2: mpf_ptr; a3: mp_size_t; a4: mp_exp_t) {.
+func mpf_random2*(a2: mpf_ptr; a3: mp_size_t; a4: mp_exp_t) {.
     importc: "mpf_random2", header: "<gmp.h>".}
-proc mpf_random2*(a2: var mpf_t; a3: mp_size_t; a4: mp_exp_t) {.
+func mpf_random2*(a2: var mpf_t; a3: mp_size_t; a4: mp_exp_t) {.
     importc: "mpf_random2", header: "<gmp.h>".}
-proc mpf_reldiff*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.
+func mpf_reldiff*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.
     importc: "mpf_reldiff", header: "<gmp.h>".}
-proc mpf_reldiff*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_reldiff", 
+func mpf_reldiff*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_reldiff", 
     header: "<gmp.h>".}
-proc mpf_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_set", 
+func mpf_set*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_set", 
     header: "<gmp.h>".}
-proc mpf_set*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_set", header: "<gmp.h>".}
-proc mpf_set_d*(a2: mpf_ptr; a3: cdouble) {.importc: "mpf_set_d", 
+func mpf_set*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_set", header: "<gmp.h>".}
+func mpf_set_d*(a2: mpf_ptr; a3: cdouble) {.importc: "mpf_set_d", 
     header: "<gmp.h>".}
-proc mpf_set_d*(a2: var mpf_t; a3: cdouble) {.importc: "mpf_set_d", 
+func mpf_set_d*(a2: var mpf_t; a3: cdouble) {.importc: "mpf_set_d", 
     header: "<gmp.h>".}
-proc mpf_set_default_prec*(a2: mp_bitcnt_t) {.importc: "mpf_set_default_prec", 
+func mpf_set_default_prec*(a2: mp_bitcnt_t) {.importc: "mpf_set_default_prec", 
     header: "<gmp.h>".}
-proc mpf_set_prec*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc: "mpf_set_prec", 
+func mpf_set_prec*(a2: mpf_ptr; a3: mp_bitcnt_t) {.importc: "mpf_set_prec", 
     header: "<gmp.h>".}
-proc mpf_set_prec*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc: "mpf_set_prec", 
+func mpf_set_prec*(a2: var mpf_t; a3: mp_bitcnt_t) {.importc: "mpf_set_prec", 
     header: "<gmp.h>".}
-proc mpf_set_prec_raw*(a2: mpf_ptr; a3: mp_bitcnt_t) {.
+func mpf_set_prec_raw*(a2: mpf_ptr; a3: mp_bitcnt_t) {.
     importc: "mpf_set_prec_raw", header: "<gmp.h>".}
-proc mpf_set_prec_raw*(a2: var mpf_t; a3: mp_bitcnt_t) {.
+func mpf_set_prec_raw*(a2: var mpf_t; a3: mp_bitcnt_t) {.
     importc: "mpf_set_prec_raw", header: "<gmp.h>".}
-proc mpf_set_q*(a2: mpf_ptr; a3: mpq_srcptr) {.importc: "mpf_set_q", 
+func mpf_set_q*(a2: mpf_ptr; a3: mpq_srcptr) {.importc: "mpf_set_q", 
     header: "<gmp.h>".}
-proc mpf_set_q*(a2: var mpf_t; a3: mpq_t) {.importc: "mpf_set_q", 
+func mpf_set_q*(a2: var mpf_t; a3: mpq_t) {.importc: "mpf_set_q", 
     header: "<gmp.h>".}
-proc mpf_set_si*(a2: mpf_ptr; a3: clong) {.importc: "mpf_set_si", 
+func mpf_set_si*(a2: mpf_ptr; a3: clong) {.importc: "mpf_set_si", 
     header: "<gmp.h>".}
-proc mpf_set_si*(a2: var mpf_t; a3: clong) {.importc: "mpf_set_si", 
+func mpf_set_si*(a2: var mpf_t; a3: clong) {.importc: "mpf_set_si", 
     header: "<gmp.h>".}
-proc mpf_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.
+func mpf_set_str*(a2: mpf_ptr; a3: cstring; a4: cint): cint {.
     importc: "mpf_set_str", header: "<gmp.h>".}
-proc mpf_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.
+func mpf_set_str*(a2: var mpf_t; a3: cstring; a4: cint): cint {.
     importc: "mpf_set_str", header: "<gmp.h>".}
-proc mpf_set_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_set_ui", 
+func mpf_set_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_set_ui", 
     header: "<gmp.h>".}
-proc mpf_set_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_set_ui", 
+func mpf_set_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_set_ui", 
     header: "<gmp.h>".}
-proc mpf_set_z*(a2: mpf_ptr; a3: mpz_srcptr) {.importc: "mpf_set_z", 
+func mpf_set_z*(a2: mpf_ptr; a3: mpz_srcptr) {.importc: "mpf_set_z", 
     header: "<gmp.h>".}
-proc mpf_set_z*(a2: var mpf_t; a3: mpz_t) {.importc: "mpf_set_z", 
+func mpf_set_z*(a2: var mpf_t; a3: mpz_t) {.importc: "mpf_set_z", 
     header: "<gmp.h>".}
-proc mpf_size*(a2: mpf_srcptr): csize_t {.importc: "mpf_size", header: "<gmp.h>".}
-proc mpf_size*(a2: mpf_t): csize_t {.importc: "mpf_size", header: "<gmp.h>".}
-proc mpf_sqrt*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_sqrt", 
+func mpf_size*(a2: mpf_srcptr): csize_t {.importc: "mpf_size", header: "<gmp.h>".}
+func mpf_size*(a2: mpf_t): csize_t {.importc: "mpf_size", header: "<gmp.h>".}
+func mpf_sqrt*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_sqrt", 
     header: "<gmp.h>".}
-proc mpf_sqrt*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_sqrt", 
+func mpf_sqrt*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_sqrt", 
     header: "<gmp.h>".}
-proc mpf_sqrt_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_sqrt_ui", 
+func mpf_sqrt_ui*(a2: mpf_ptr; a3: culong) {.importc: "mpf_sqrt_ui", 
     header: "<gmp.h>".}
-proc mpf_sqrt_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_sqrt_ui", 
+func mpf_sqrt_ui*(a2: var mpf_t; a3: culong) {.importc: "mpf_sqrt_ui", 
     header: "<gmp.h>".}
-proc mpf_sub*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_sub", 
+func mpf_sub*(a2: mpf_ptr; a3: mpf_srcptr; a4: mpf_srcptr) {.importc: "mpf_sub", 
     header: "<gmp.h>".}
-proc mpf_sub*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_sub", 
+func mpf_sub*(a2: var mpf_t; a3: mpf_t; a4: mpf_t) {.importc: "mpf_sub", 
     header: "<gmp.h>".}
-proc mpf_sub_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
+func mpf_sub_ui*(a2: mpf_ptr; a3: mpf_srcptr; a4: culong) {.
     importc: "mpf_sub_ui", header: "<gmp.h>".}
-proc mpf_sub_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_sub_ui", 
+func mpf_sub_ui*(a2: var mpf_t; a3: mpf_t; a4: culong) {.importc: "mpf_sub_ui", 
     header: "<gmp.h>".}
-proc mpf_swap*(a2: mpf_ptr; a3: mpf_ptr) {.importc: "mpf_swap", 
+func mpf_swap*(a2: mpf_ptr; a3: mpf_ptr) {.importc: "mpf_swap", 
     header: "<gmp.h>".}
-proc mpf_swap*(a2: var mpf_t; a3: var mpf_t) {.importc: "mpf_swap", 
+func mpf_swap*(a2: var mpf_t; a3: var mpf_t) {.importc: "mpf_swap", 
     header: "<gmp.h>".}
-proc mpf_trunc*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_trunc", 
+func mpf_trunc*(a2: mpf_ptr; a3: mpf_srcptr) {.importc: "mpf_trunc", 
     header: "<gmp.h>".}
-proc mpf_trunc*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_trunc", 
+func mpf_trunc*(a2: var mpf_t; a3: mpf_t) {.importc: "mpf_trunc", 
     header: "<gmp.h>".}
-proc mpf_ui_div*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.
+func mpf_ui_div*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.
     importc: "mpf_ui_div", header: "<gmp.h>".}
-proc mpf_ui_div*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc: "mpf_ui_div", 
+func mpf_ui_div*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc: "mpf_ui_div", 
     header: "<gmp.h>".}
-proc mpf_ui_sub*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.
+func mpf_ui_sub*(a2: mpf_ptr; a3: culong; a4: mpf_srcptr) {.
     importc: "mpf_ui_sub", header: "<gmp.h>".}
-proc mpf_ui_sub*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc: "mpf_ui_sub", 
+func mpf_ui_sub*(a2: var mpf_t; a3: culong; a4: mpf_t) {.importc: "mpf_ui_sub", 
     header: "<gmp.h>".}
-proc mpf_urandomb*(a2: mpf_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
+func mpf_urandomb*(a2: mpf_t; a3: gmp_randstate_t; a4: mp_bitcnt_t) {.
     importc: "mpf_urandomb", header: "<gmp.h>".}
-proc mpn_add_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.
+func mpn_add_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.
     importc: "mpn_add_n", header: "<gmp.h>".}
-proc mpn_add_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_add_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                 a5: mp_size_t): mp_limb_t {.importc: "mpn_add_n", 
     header: "<gmp.h>".}
-proc mpn_addmul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
+func mpn_addmul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
     importc: "mpn_addmul_1", header: "<gmp.h>".}
-proc mpn_addmul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_addmul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                    a5: mp_limb_t): mp_limb_t {.importc: "mpn_addmul_1", 
     header: "<gmp.h>".}
-proc mpn_divexact_by3c*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
+func mpn_divexact_by3c*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
     importc: "mpn_divexact_by3c", header: "<gmp.h>".}
-proc mpn_divexact_by3c*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_divexact_by3c*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                         a5: mp_limb_t): mp_limb_t {.
     importc: "mpn_divexact_by3c", header: "<gmp.h>".}
-proc mpn_divrem*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; 
+func mpn_divrem*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; 
                  a6: mp_srcptr; a7: mp_size_t): mp_limb_t {.
     importc: "mpn_divrem", header: "<gmp.h>".}
-proc mpn_divrem*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
+func mpn_divrem*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
                  a5: mp_size_t; a6: var mp_limb_t; a7: mp_size_t): mp_limb_t {.
     importc: "mpn_divrem", header: "<gmp.h>".}
-proc mpn_divrem_1*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; 
+func mpn_divrem_1*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; 
                    a6: mp_limb_t): mp_limb_t {.importc: "mpn_divrem_1", 
     header: "<gmp.h>".}
-proc mpn_divrem_1*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
+func mpn_divrem_1*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
                    a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.
     importc: "mpn_divrem_1", header: "<gmp.h>".}
-proc mpn_divrem_2*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; 
+func mpn_divrem_2*(a2: mp_ptr; a3: mp_size_t; a4: mp_ptr; a5: mp_size_t; 
                    a6: mp_srcptr): mp_limb_t {.importc: "mpn_divrem_2", 
     header: "<gmp.h>".}
-proc mpn_divrem_2*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
+func mpn_divrem_2*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
                    a5: mp_size_t; a6: var mp_limb_t): mp_limb_t {.
     importc: "mpn_divrem_2", header: "<gmp.h>".}
-proc mpn_div_qr_1*(a2: mp_ptr; a3: ptr mp_limb_t; a4: mp_srcptr; a5: mp_size_t; 
+func mpn_div_qr_1*(a2: mp_ptr; a3: ptr mp_limb_t; a4: mp_srcptr; a5: mp_size_t; 
                    a6: mp_limb_t): mp_limb_t {.importc: "mpn_div_qr_1", 
     header: "<gmp.h>".}
-proc mpn_div_qr_1*(a2: var mp_limb_t; a3: ptr mp_limb_t; a4: var mp_limb_t; 
+func mpn_div_qr_1*(a2: var mp_limb_t; a3: ptr mp_limb_t; a4: var mp_limb_t; 
                    a5: mp_size_t; a6: mp_limb_t): mp_limb_t {.
     importc: "mpn_div_qr_1", header: "<gmp.h>".}
-proc mpn_div_qr_2*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; 
+func mpn_div_qr_2*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; 
                    a6: mp_srcptr): mp_limb_t {.importc: "mpn_div_qr_2", 
     header: "<gmp.h>".}
-proc mpn_div_qr_2*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_div_qr_2*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                    a5: mp_size_t; a6: var mp_limb_t): mp_limb_t {.
     importc: "mpn_div_qr_2", header: "<gmp.h>".}
-proc mpn_gcd*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_ptr; a6: mp_size_t): mp_size_t {.
+func mpn_gcd*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_ptr; a6: mp_size_t): mp_size_t {.
     importc: "mpn_gcd", header: "<gmp.h>".}
-proc mpn_gcd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_gcd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
               a5: var mp_limb_t; a6: mp_size_t): mp_size_t {.importc: "mpn_gcd", 
     header: "<gmp.h>".}
-proc mpn_gcd_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
+func mpn_gcd_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
     importc: "mpn_gcd_1", header: "<gmp.h>".}
-proc mpn_gcd_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
+func mpn_gcd_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
     importc: "mpn_gcd_1", header: "<gmp.h>".}
-proc mpn_gcdext_1*(a2: ptr mp_limb_signed_t; a3: ptr mp_limb_signed_t; 
+func mpn_gcdext_1*(a2: ptr mp_limb_signed_t; a3: ptr mp_limb_signed_t; 
                    a4: mp_limb_t; a5: mp_limb_t): mp_limb_t {.
     importc: "mpn_gcdext_1", header: "<gmp.h>".}
-proc mpn_gcdext*(a2: mp_ptr; a3: mp_ptr; a4: ptr mp_size_t; a5: mp_ptr; 
+func mpn_gcdext*(a2: mp_ptr; a3: mp_ptr; a4: ptr mp_size_t; a5: mp_ptr; 
                  a6: mp_size_t; a7: mp_ptr; a8: mp_size_t): mp_size_t {.
     importc: "mpn_gcdext", header: "<gmp.h>".}
-proc mpn_gcdext*(a2: var mp_limb_t; a3: var mp_limb_t; a4: ptr mp_size_t; 
+func mpn_gcdext*(a2: var mp_limb_t; a3: var mp_limb_t; a4: ptr mp_size_t; 
                  a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t; 
                  a8: mp_size_t): mp_size_t {.importc: "mpn_gcdext", 
     header: "<gmp.h>".}
-proc mpn_get_str*(a2: ptr uint8; a3: cint; a4: mp_ptr; a5: mp_size_t): csize_t {.
+func mpn_get_str*(a2: ptr uint8; a3: cint; a4: mp_ptr; a5: mp_size_t): csize_t {.
     importc: "mpn_get_str", header: "<gmp.h>".}
-proc mpn_get_str*(a2: ptr uint8; a3: cint; a4: var mp_limb_t; a5: mp_size_t): csize_t {.
+func mpn_get_str*(a2: ptr uint8; a3: cint; a4: var mp_limb_t; a5: mp_size_t): csize_t {.
     importc: "mpn_get_str", header: "<gmp.h>".}
-proc mpn_hamdist*(a2: mp_srcptr; a3: mp_srcptr; a4: mp_size_t): mp_bitcnt_t {.
+func mpn_hamdist*(a2: mp_srcptr; a3: mp_srcptr; a4: mp_size_t): mp_bitcnt_t {.
     importc: "mpn_hamdist", header: "<gmp.h>".}
-proc mpn_hamdist*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_bitcnt_t {.
+func mpn_hamdist*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_bitcnt_t {.
     importc: "mpn_hamdist", header: "<gmp.h>".}
-proc mpn_lshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.
+func mpn_lshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.
     importc: "mpn_lshift", header: "<gmp.h>".}
-proc mpn_lshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.
+func mpn_lshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.
     importc: "mpn_lshift", header: "<gmp.h>".}
-proc mpn_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
+func mpn_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
     importc: "mpn_mod_1", header: "<gmp.h>".}
-proc mpn_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
+func mpn_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t): mp_limb_t {.
     importc: "mpn_mod_1", header: "<gmp.h>".}
-proc mpn_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
+func mpn_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
               a6: mp_size_t): mp_limb_t {.importc: "mpn_mul", header: "<gmp.h>".}
-proc mpn_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
               a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc: "mpn_mul", 
     header: "<gmp.h>".}
-proc mpn_mul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
+func mpn_mul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
     importc: "mpn_mul_1", header: "<gmp.h>".}
-proc mpn_mul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_mul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                 a5: mp_limb_t): mp_limb_t {.importc: "mpn_mul_1", 
     header: "<gmp.h>".}
-proc mpn_mul_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_mul_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_mul_n", header: "<gmp.h>".}
-proc mpn_mul_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_mul_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                 a5: mp_size_t) {.importc: "mpn_mul_n", header: "<gmp.h>".}
-proc mpn_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_sqr", 
+func mpn_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_sqr", 
     header: "<gmp.h>".}
-proc mpn_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
+func mpn_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
     importc: "mpn_sqr", header: "<gmp.h>".}
-proc mpn_neg*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t): mp_limb_t {.
+func mpn_neg*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t): mp_limb_t {.
     importc: "mpn_neg", header: "<gmp.h>".}
-proc mpn_neg*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_limb_t {.
+func mpn_neg*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t): mp_limb_t {.
     importc: "mpn_neg", header: "<gmp.h>".}
-proc mpn_com*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_com", 
+func mpn_com*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.importc: "mpn_com", 
     header: "<gmp.h>".}
-proc mpn_com*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
+func mpn_com*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
     importc: "mpn_com", header: "<gmp.h>".}
-proc mpn_perfect_square_p*(a2: mp_srcptr; a3: mp_size_t): cint {.
+func mpn_perfect_square_p*(a2: mp_srcptr; a3: mp_size_t): cint {.
     importc: "mpn_perfect_square_p", header: "<gmp.h>".}
-proc mpn_perfect_square_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.
+func mpn_perfect_square_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.
     importc: "mpn_perfect_square_p", header: "<gmp.h>".}
-proc mpn_perfect_power_p*(a2: mp_srcptr; a3: mp_size_t): cint {.
+func mpn_perfect_power_p*(a2: mp_srcptr; a3: mp_size_t): cint {.
     importc: "mpn_perfect_power_p", header: "<gmp.h>".}
-proc mpn_perfect_power_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.
+func mpn_perfect_power_p*(a2: var mp_limb_t; a3: mp_size_t): cint {.
     importc: "mpn_perfect_power_p", header: "<gmp.h>".}
-proc mpn_popcount*(a2: mp_srcptr; a3: mp_size_t): mp_bitcnt_t {.
+func mpn_popcount*(a2: mp_srcptr; a3: mp_size_t): mp_bitcnt_t {.
     importc: "mpn_popcount", header: "<gmp.h>".}
-proc mpn_popcount*(a2: var mp_limb_t; a3: mp_size_t): mp_bitcnt_t {.
+func mpn_popcount*(a2: var mp_limb_t; a3: mp_size_t): mp_bitcnt_t {.
     importc: "mpn_popcount", header: "<gmp.h>".}
-proc mpn_pow_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; 
+func mpn_pow_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; 
                 a6: mp_ptr): mp_size_t {.importc: "mpn_pow_1", header: "<gmp.h>".}
-proc mpn_pow_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_pow_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                 a5: mp_limb_t; a6: var mp_limb_t): mp_size_t {.
     importc: "mpn_pow_1", header: "<gmp.h>".}
-proc mpn_preinv_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t; 
+func mpn_preinv_mod_1*(a2: mp_srcptr; a3: mp_size_t; a4: mp_limb_t; 
                        a5: mp_limb_t): mp_limb_t {.importc: "mpn_preinv_mod_1", 
     header: "<gmp.h>".}
-proc mpn_preinv_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t; 
+func mpn_preinv_mod_1*(a2: var mp_limb_t; a3: mp_size_t; a4: mp_limb_t; 
                        a5: mp_limb_t): mp_limb_t {.importc: "mpn_preinv_mod_1", 
     header: "<gmp.h>".}
-proc mpn_random*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_random", 
+func mpn_random*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_random", 
     header: "<gmp.h>".}
-proc mpn_random*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_random", 
+func mpn_random*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_random", 
     header: "<gmp.h>".}
-proc mpn_random2*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_random2", 
+func mpn_random2*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_random2", 
     header: "<gmp.h>".}
-proc mpn_random2*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_random2", 
+func mpn_random2*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_random2", 
     header: "<gmp.h>".}
-proc mpn_rshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.
+func mpn_rshift*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: cuint): mp_limb_t {.
     importc: "mpn_rshift", header: "<gmp.h>".}
-proc mpn_rshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.
+func mpn_rshift*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; a5: cuint): mp_limb_t {.
     importc: "mpn_rshift", header: "<gmp.h>".}
-proc mpn_scan0*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
+func mpn_scan0*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpn_scan0", header: "<gmp.h>".}
-proc mpn_scan0*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.
+func mpn_scan0*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpn_scan0", header: "<gmp.h>".}
-proc mpn_scan1*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
+func mpn_scan1*(a2: mp_srcptr; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpn_scan1", header: "<gmp.h>".}
-proc mpn_scan1*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.
+func mpn_scan1*(a2: var mp_limb_t; a3: mp_bitcnt_t): mp_bitcnt_t {.
     importc: "mpn_scan1", header: "<gmp.h>".}
-proc mpn_set_str*(a2: mp_ptr; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.
+func mpn_set_str*(a2: mp_ptr; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.
     importc: "mpn_set_str", header: "<gmp.h>".}
-proc mpn_set_str*(a2: var mp_limb_t; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.
+func mpn_set_str*(a2: var mp_limb_t; a3: ptr uint8; a4: csize_t; a5: cint): mp_size_t {.
     importc: "mpn_set_str", header: "<gmp.h>".}
-proc mpn_sizeinbase*(a2: mp_srcptr; a3: mp_size_t; a4: cint): csize_t {.
+func mpn_sizeinbase*(a2: mp_srcptr; a3: mp_size_t; a4: cint): csize_t {.
     importc: "mpn_sizeinbase", header: "<gmp.h>".}
-proc mpn_sizeinbase*(a2: var mp_limb_t; a3: mp_size_t; a4: cint): csize_t {.
+func mpn_sizeinbase*(a2: var mp_limb_t; a3: mp_size_t; a4: cint): csize_t {.
     importc: "mpn_sizeinbase", header: "<gmp.h>".}
-proc mpn_sqrtrem*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t): mp_size_t {.
+func mpn_sqrtrem*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t): mp_size_t {.
     importc: "mpn_sqrtrem", header: "<gmp.h>".}
-proc mpn_sqrtrem*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_sqrtrem*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                   a5: mp_size_t): mp_size_t {.importc: "mpn_sqrtrem", 
     header: "<gmp.h>".}
-proc mpn_sub*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
+func mpn_sub*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
               a6: mp_size_t): mp_limb_t {.importc: "mpn_sub", header: "<gmp.h>".}
-proc mpn_sub*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sub*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
               a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.importc: "mpn_sub", 
     header: "<gmp.h>".}
-proc mpn_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
+func mpn_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
     importc: "mpn_sub_1", header: "<gmp.h>".}
-proc mpn_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                 a5: mp_limb_t): mp_limb_t {.importc: "mpn_sub_1", 
     header: "<gmp.h>".}
-proc mpn_sub_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.
+func mpn_sub_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t): mp_limb_t {.
     importc: "mpn_sub_n", header: "<gmp.h>".}
-proc mpn_sub_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_sub_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                 a5: mp_size_t): mp_limb_t {.importc: "mpn_sub_n", 
     header: "<gmp.h>".}
-proc mpn_submul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
+func mpn_submul_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t): mp_limb_t {.
     importc: "mpn_submul_1", header: "<gmp.h>".}
-proc mpn_submul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_submul_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                    a5: mp_limb_t): mp_limb_t {.importc: "mpn_submul_1", 
     header: "<gmp.h>".}
-proc mpn_tdiv_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; 
+func mpn_tdiv_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; 
                   a6: mp_size_t; a7: mp_srcptr; a8: mp_size_t) {.
     importc: "mpn_tdiv_qr", header: "<gmp.h>".}
-proc mpn_tdiv_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_tdiv_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                   a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t; 
                   a8: mp_size_t) {.importc: "mpn_tdiv_qr", header: "<gmp.h>".}
-proc mpn_and_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_and_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_and_n", header: "<gmp.h>".}
-proc mpn_and_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_and_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                 a5: mp_size_t) {.importc: "mpn_and_n", header: "<gmp.h>".}
-proc mpn_andn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_andn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_andn_n", header: "<gmp.h>".}
-proc mpn_andn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_andn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                  a5: mp_size_t) {.importc: "mpn_andn_n", header: "<gmp.h>".}
-proc mpn_nand_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_nand_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_nand_n", header: "<gmp.h>".}
-proc mpn_nand_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_nand_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                  a5: mp_size_t) {.importc: "mpn_nand_n", header: "<gmp.h>".}
-proc mpn_ior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_ior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_ior_n", header: "<gmp.h>".}
-proc mpn_ior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_ior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                 a5: mp_size_t) {.importc: "mpn_ior_n", header: "<gmp.h>".}
-proc mpn_iorn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_iorn_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_iorn_n", header: "<gmp.h>".}
-proc mpn_iorn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_iorn_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                  a5: mp_size_t) {.importc: "mpn_iorn_n", header: "<gmp.h>".}
-proc mpn_nior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_nior_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_nior_n", header: "<gmp.h>".}
-proc mpn_nior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_nior_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                  a5: mp_size_t) {.importc: "mpn_nior_n", header: "<gmp.h>".}
-proc mpn_xor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_xor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_xor_n", header: "<gmp.h>".}
-proc mpn_xor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_xor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                 a5: mp_size_t) {.importc: "mpn_xor_n", header: "<gmp.h>".}
-proc mpn_xnor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
+func mpn_xnor_n*(a2: mp_ptr; a3: mp_srcptr; a4: mp_srcptr; a5: mp_size_t) {.
     importc: "mpn_xnor_n", header: "<gmp.h>".}
-proc mpn_xnor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_xnor_n*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                  a5: mp_size_t) {.importc: "mpn_xnor_n", header: "<gmp.h>".}
-proc mpn_copyi*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.
+func mpn_copyi*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.
     importc: "mpn_copyi", header: "<gmp.h>".}
-proc mpn_copyi*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
+func mpn_copyi*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
     importc: "mpn_copyi", header: "<gmp.h>".}
-proc mpn_copyd*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.
+func mpn_copyd*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t) {.
     importc: "mpn_copyd", header: "<gmp.h>".}
-proc mpn_copyd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
+func mpn_copyd*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t) {.
     importc: "mpn_copyd", header: "<gmp.h>".}
-proc mpn_zero*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_zero", 
+func mpn_zero*(a2: mp_ptr; a3: mp_size_t) {.importc: "mpn_zero", 
     header: "<gmp.h>".}
-proc mpn_zero*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_zero", 
+func mpn_zero*(a2: var mp_limb_t; a3: mp_size_t) {.importc: "mpn_zero", 
     header: "<gmp.h>".}
-proc mpn_cnd_add_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; 
+func mpn_cnd_add_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; 
                     a6: mp_size_t): mp_limb_t {.importc: "mpn_cnd_add_n", 
     header: "<gmp.h>".}
-proc mpn_cnd_add_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_cnd_add_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                     a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.
     importc: "mpn_cnd_add_n", header: "<gmp.h>".}
-proc mpn_cnd_sub_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; 
+func mpn_cnd_sub_n*(a2: mp_limb_t; a3: mp_ptr; a4: mp_srcptr; a5: mp_srcptr; 
                     a6: mp_size_t): mp_limb_t {.importc: "mpn_cnd_sub_n", 
     header: "<gmp.h>".}
-proc mpn_cnd_sub_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_cnd_sub_n*(a2: mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                     a5: var mp_limb_t; a6: mp_size_t): mp_limb_t {.
     importc: "mpn_cnd_sub_n", header: "<gmp.h>".}
-proc mpn_sec_add_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; 
+func mpn_sec_add_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; 
                     a6: mp_ptr): mp_limb_t {.importc: "mpn_sec_add_1", 
     header: "<gmp.h>".}
-proc mpn_sec_add_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sec_add_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                     a5: mp_limb_t; a6: var mp_limb_t): mp_limb_t {.
     importc: "mpn_sec_add_1", header: "<gmp.h>".}
-proc mpn_sec_add_1_itch*(a2: mp_size_t): mp_size_t {.
+func mpn_sec_add_1_itch*(a2: mp_size_t): mp_size_t {.
     importc: "mpn_sec_add_1_itch", header: "<gmp.h>".}
-proc mpn_sec_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; 
+func mpn_sec_sub_1*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_limb_t; 
                     a6: mp_ptr): mp_limb_t {.importc: "mpn_sec_sub_1", 
     header: "<gmp.h>".}
-proc mpn_sec_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sec_sub_1*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                     a5: mp_limb_t; a6: var mp_limb_t): mp_limb_t {.
     importc: "mpn_sec_sub_1", header: "<gmp.h>".}
-proc mpn_sec_sub_1_itch*(a2: mp_size_t): mp_size_t {.
+func mpn_sec_sub_1_itch*(a2: mp_size_t): mp_size_t {.
     importc: "mpn_sec_sub_1_itch", header: "<gmp.h>".}
-proc mpn_sec_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
+func mpn_sec_mul*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
                   a6: mp_size_t; a7: mp_ptr) {.importc: "mpn_sec_mul", 
     header: "<gmp.h>".}
-proc mpn_sec_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sec_mul*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                   a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t) {.
     importc: "mpn_sec_mul", header: "<gmp.h>".}
-proc mpn_sec_mul_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.
+func mpn_sec_mul_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.
     importc: "mpn_sec_mul_itch", header: "<gmp.h>".}
-proc mpn_sec_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_ptr) {.
+func mpn_sec_sqr*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_ptr) {.
     importc: "mpn_sec_sqr", header: "<gmp.h>".}
-proc mpn_sec_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sec_sqr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                   a5: var mp_limb_t) {.importc: "mpn_sec_sqr", header: "<gmp.h>".}
-proc mpn_sec_sqr_itch*(a2: mp_size_t): mp_size_t {.importc: "mpn_sec_sqr_itch", 
+func mpn_sec_sqr_itch*(a2: mp_size_t): mp_size_t {.importc: "mpn_sec_sqr_itch", 
     header: "<gmp.h>".}
-proc mpn_sec_powm*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
+func mpn_sec_powm*(a2: mp_ptr; a3: mp_srcptr; a4: mp_size_t; a5: mp_srcptr; 
                    a6: mp_bitcnt_t; a7: mp_srcptr; a8: mp_size_t; a9: mp_ptr) {.
     importc: "mpn_sec_powm", header: "<gmp.h>".}
-proc mpn_sec_powm*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sec_powm*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                    a5: var mp_limb_t; a6: mp_bitcnt_t; a7: var mp_limb_t; 
                    a8: mp_size_t; a9: var mp_limb_t) {.importc: "mpn_sec_powm", 
     header: "<gmp.h>".}
-proc mpn_sec_powm_itch*(a2: mp_size_t; a3: mp_bitcnt_t; a4: mp_size_t): mp_size_t {.
+func mpn_sec_powm_itch*(a2: mp_size_t; a3: mp_bitcnt_t; a4: mp_size_t): mp_size_t {.
     importc: "mpn_sec_powm_itch", header: "<gmp.h>".}
-proc mpn_sec_tabselect*(a2: ptr mp_limb_t; a3: ptr mp_limb_t; a4: mp_size_t; 
+func mpn_sec_tabselect*(a2: ptr mp_limb_t; a3: ptr mp_limb_t; a4: mp_size_t; 
                         a5: mp_size_t; a6: mp_size_t) {.
     importc: "mpn_sec_tabselect", header: "<gmp.h>".}
-proc mpn_sec_div_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; 
+func mpn_sec_div_qr*(a2: mp_ptr; a3: mp_ptr; a4: mp_size_t; a5: mp_srcptr; 
                      a6: mp_size_t; a7: mp_ptr): mp_limb_t {.
     importc: "mpn_sec_div_qr", header: "<gmp.h>".}
-proc mpn_sec_div_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
+func mpn_sec_div_qr*(a2: var mp_limb_t; a3: var mp_limb_t; a4: mp_size_t; 
                      a5: var mp_limb_t; a6: mp_size_t; a7: var mp_limb_t): mp_limb_t {.
     importc: "mpn_sec_div_qr", header: "<gmp.h>".}
-proc mpn_sec_div_qr_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.
+func mpn_sec_div_qr_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.
     importc: "mpn_sec_div_qr_itch", header: "<gmp.h>".}
-proc mpn_sec_div_r*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; 
+func mpn_sec_div_r*(a2: mp_ptr; a3: mp_size_t; a4: mp_srcptr; a5: mp_size_t; 
                     a6: mp_ptr) {.importc: "mpn_sec_div_r", header: "<gmp.h>".}
-proc mpn_sec_div_r*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
+func mpn_sec_div_r*(a2: var mp_limb_t; a3: mp_size_t; a4: var mp_limb_t; 
                     a5: mp_size_t; a6: var mp_limb_t) {.
     importc: "mpn_sec_div_r", header: "<gmp.h>".}
-proc mpn_sec_div_r_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.
+func mpn_sec_div_r_itch*(a2: mp_size_t; a3: mp_size_t): mp_size_t {.
     importc: "mpn_sec_div_r_itch", header: "<gmp.h>".}
-proc mpn_sec_invert*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; 
+func mpn_sec_invert*(a2: mp_ptr; a3: mp_ptr; a4: mp_srcptr; a5: mp_size_t; 
                      a6: mp_bitcnt_t; a7: mp_ptr): cint {.
     importc: "mpn_sec_invert", header: "<gmp.h>".}
-proc mpn_sec_invert*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
+func mpn_sec_invert*(a2: var mp_limb_t; a3: var mp_limb_t; a4: var mp_limb_t; 
                      a5: mp_size_t; a6: mp_bitcnt_t; a7: var mp_limb_t): cint {.
     importc: "mpn_sec_invert", header: "<gmp.h>".}
-proc mpn_sec_invert_itch*(a2: mp_size_t): mp_size_t {.
+func mpn_sec_invert_itch*(a2: mp_size_t): mp_size_t {.
     importc: "mpn_sec_invert_itch", header: "<gmp.h>".}
-proc mpz_abs*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc: "mpz_abs", 
+func mpz_abs*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc: "mpz_abs", 
     header: "<gmp.h>".}
-proc mpz_abs*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc: "mpz_abs", 
+func mpz_abs*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc: "mpz_abs", 
     header: "<gmp.h>".}
-proc mpz_fits_uint_p*(mm_gmp_z: mpz_srcptr): cint {.importc: "mpz_fits_uint_p", 
+func mpz_fits_uint_p*(mm_gmp_z: mpz_srcptr): cint {.importc: "mpz_fits_uint_p", 
     header: "<gmp.h>".}
-proc mpz_fits_uint_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_uint_p", 
+func mpz_fits_uint_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_uint_p", 
     header: "<gmp.h>".}
-proc mpz_fits_ulong_p*(mm_gmp_z: mpz_srcptr): cint {.
+func mpz_fits_ulong_p*(mm_gmp_z: mpz_srcptr): cint {.
     importc: "mpz_fits_ulong_p", header: "<gmp.h>".}
-proc mpz_fits_ulong_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_ulong_p", 
+func mpz_fits_ulong_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_ulong_p", 
     header: "<gmp.h>".}
-proc mpz_fits_ushort_p*(mm_gmp_z: mpz_srcptr): cint {.
+func mpz_fits_ushort_p*(mm_gmp_z: mpz_srcptr): cint {.
     importc: "mpz_fits_ushort_p", header: "<gmp.h>".}
-proc mpz_fits_ushort_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_ushort_p", 
+func mpz_fits_ushort_p*(mm_gmp_z: mpz_t): cint {.importc: "mpz_fits_ushort_p", 
     header: "<gmp.h>".}
-proc mpz_get_ui*(mm_gmp_z: mpz_srcptr): culong {.importc: "mpz_get_ui", 
+func mpz_get_ui*(mm_gmp_z: mpz_srcptr): culong {.importc: "mpz_get_ui", 
     header: "<gmp.h>".}
-proc mpz_get_ui*(mm_gmp_z: mpz_t): culong {.importc: "mpz_get_ui", 
+func mpz_get_ui*(mm_gmp_z: mpz_t): culong {.importc: "mpz_get_ui", 
     header: "<gmp.h>".}
-proc mpz_getlimbn*(mm_gmp_z: mpz_srcptr; mm_gmp_n: mp_size_t): mp_limb_t {.
+func mpz_getlimbn*(mm_gmp_z: mpz_srcptr; mm_gmp_n: mp_size_t): mp_limb_t {.
     importc: "mpz_getlimbn", header: "<gmp.h>".}
-proc mpz_getlimbn*(mm_gmp_z: mpz_t; mm_gmp_n: mp_size_t): mp_limb_t {.
+func mpz_getlimbn*(mm_gmp_z: mpz_t; mm_gmp_n: mp_size_t): mp_limb_t {.
     importc: "mpz_getlimbn", header: "<gmp.h>".}
-proc mpz_neg*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc: "mpz_neg", 
+func mpz_neg*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpz_srcptr) {.importc: "mpz_neg", 
     header: "<gmp.h>".}
-proc mpz_neg*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc: "mpz_neg", 
+func mpz_neg*(mm_gmp_w: var mpz_t; mm_gmp_u: mpz_t) {.importc: "mpz_neg", 
     header: "<gmp.h>".}
-proc mpz_perfect_square_p*(mm_gmp_a: mpz_srcptr): cint {.
+func mpz_perfect_square_p*(mm_gmp_a: mpz_srcptr): cint {.
     importc: "mpz_perfect_square_p", header: "<gmp.h>".}
-proc mpz_perfect_square_p*(mm_gmp_a: mpz_t): cint {.
+func mpz_perfect_square_p*(mm_gmp_a: mpz_t): cint {.
     importc: "mpz_perfect_square_p", header: "<gmp.h>".}
-proc mpz_popcount*(mm_gmp_u: mpz_srcptr): mp_bitcnt_t {.importc: "mpz_popcount", 
+func mpz_popcount*(mm_gmp_u: mpz_srcptr): mp_bitcnt_t {.importc: "mpz_popcount", 
     header: "<gmp.h>".}
-proc mpz_popcount*(mm_gmp_u: mpz_t): mp_bitcnt_t {.importc: "mpz_popcount", 
+func mpz_popcount*(mm_gmp_u: mpz_t): mp_bitcnt_t {.importc: "mpz_popcount", 
     header: "<gmp.h>".}
-proc mpz_set_q*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpz_set_q", 
+func mpz_set_q*(mm_gmp_w: mpz_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpz_set_q", 
     header: "<gmp.h>".}
-proc mpz_set_q*(mm_gmp_w: var mpz_t; mm_gmp_u: mpq_t) {.importc: "mpz_set_q", 
+func mpz_set_q*(mm_gmp_w: var mpz_t; mm_gmp_u: mpq_t) {.importc: "mpz_set_q", 
     header: "<gmp.h>".}
-proc mpz_size*(mm_gmp_z: mpz_srcptr): csize_t {.importc: "mpz_size", 
+func mpz_size*(mm_gmp_z: mpz_srcptr): csize_t {.importc: "mpz_size", 
     header: "<gmp.h>".}
-proc mpz_size*(mm_gmp_z: mpz_t): csize_t {.importc: "mpz_size", header: "<gmp.h>".}
-proc mpq_abs*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpq_abs", 
+func mpz_size*(mm_gmp_z: mpz_t): csize_t {.importc: "mpz_size", header: "<gmp.h>".}
+func mpq_abs*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpq_abs", 
     header: "<gmp.h>".}
-proc mpq_abs*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc: "mpq_abs", 
+func mpq_abs*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc: "mpq_abs", 
     header: "<gmp.h>".}
-proc mpq_neg*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpq_neg", 
+func mpq_neg*(mm_gmp_w: mpq_ptr; mm_gmp_u: mpq_srcptr) {.importc: "mpq_neg", 
     header: "<gmp.h>".}
-proc mpq_neg*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc: "mpq_neg", 
+func mpq_neg*(mm_gmp_w: var mpq_t; mm_gmp_u: mpq_t) {.importc: "mpq_neg", 
     header: "<gmp.h>".}
-proc mpn_add*(mm_gmp_wp: mp_ptr; mm_gmp_xp: mp_srcptr; mm_gmp_xsize: mp_size_t; 
+func mpn_add*(mm_gmp_wp: mp_ptr; mm_gmp_xp: mp_srcptr; mm_gmp_xsize: mp_size_t; 
               mm_gmp_yp: mp_srcptr; mm_gmp_ysize: mp_size_t): mp_limb_t {.
     importc: "mpn_add", header: "<gmp.h>".}
-proc mpn_add*(mm_gmp_wp: var mp_limb_t; mm_gmp_xp: var mp_limb_t; 
+func mpn_add*(mm_gmp_wp: var mp_limb_t; mm_gmp_xp: var mp_limb_t; 
               mm_gmp_xsize: mp_size_t; mm_gmp_yp: var mp_limb_t; 
               mm_gmp_ysize: mp_size_t): mp_limb_t {.importc: "mpn_add", 
     header: "<gmp.h>".}
-proc mpn_add_1*(mm_gmp_dst: mp_ptr; mm_gmp_src: mp_srcptr; 
+func mpn_add_1*(mm_gmp_dst: mp_ptr; mm_gmp_src: mp_srcptr; 
                 mm_gmp_size: mp_size_t; mm_gmp_n: mp_limb_t): mp_limb_t {.
     importc: "mpn_add_1", header: "<gmp.h>".}
-proc mpn_add_1*(mm_gmp_dst: var mp_limb_t; mm_gmp_src: var mp_limb_t; 
+func mpn_add_1*(mm_gmp_dst: var mp_limb_t; mm_gmp_src: var mp_limb_t; 
                 mm_gmp_size: mp_size_t; mm_gmp_n: mp_limb_t): mp_limb_t {.
     importc: "mpn_add_1", header: "<gmp.h>".}
-proc mpn_cmp*(mm_gmp_xp: mp_srcptr; mm_gmp_yp: mp_srcptr; mm_gmp_size: mp_size_t): cint {.
+func mpn_cmp*(mm_gmp_xp: mp_srcptr; mm_gmp_yp: mp_srcptr; mm_gmp_size: mp_size_t): cint {.
     importc: "mpn_cmp", header: "<gmp.h>".}
-proc mpn_cmp*(mm_gmp_xp: var mp_limb_t; mm_gmp_yp: var mp_limb_t; 
+func mpn_cmp*(mm_gmp_xp: var mp_limb_t; mm_gmp_yp: var mp_limb_t; 
               mm_gmp_size: mp_size_t): cint {.importc: "mpn_cmp", 
     header: "<gmp.h>".}
-proc mpz_sgn*(a2: mpz_srcptr): cint {.importc: "mpz_sgn", header: "<gmp.h>".}
-proc mpz_sgn*(a2: mpz_t): cint {.importc: "mpz_sgn", header: "<gmp.h>".}
-proc mpf_sgn*(a2: mpf_srcptr): cint {.importc: "mpf_sgn", header: "<gmp.h>".}
-proc mpf_sgn*(a2: mpf_t): cint {.importc: "mpf_sgn", header: "<gmp.h>".}
-proc mpq_sgn*(a2: mpq_srcptr): cint {.importc: "mpq_sgn", header: "<gmp.h>".}
-proc mpq_sgn*(a2: mpq_t): cint {.importc: "mpq_sgn", header: "<gmp.h>".}
-proc mpz_odd_p*(a2: mpz_srcptr): cint {.importc: "mpz_odd_p",
+func mpz_sgn*(a2: mpz_srcptr): cint {.importc: "mpz_sgn", header: "<gmp.h>".}
+func mpz_sgn*(a2: mpz_t): cint {.importc: "mpz_sgn", header: "<gmp.h>".}
+func mpf_sgn*(a2: mpf_srcptr): cint {.importc: "mpf_sgn", header: "<gmp.h>".}
+func mpf_sgn*(a2: mpf_t): cint {.importc: "mpf_sgn", header: "<gmp.h>".}
+func mpq_sgn*(a2: mpq_srcptr): cint {.importc: "mpq_sgn", header: "<gmp.h>".}
+func mpq_sgn*(a2: mpq_t): cint {.importc: "mpq_sgn", header: "<gmp.h>".}
+func mpz_odd_p*(a2: mpz_srcptr): cint {.importc: "mpz_odd_p",
     header: "<gmp.h>".}
-proc mpz_odd_p*(a2: mpz_t): cint {.importc: "mpz_odd_p", header: "<gmp.h>".}
-proc mpz_even_p*(a2: mpz_srcptr): cint {.importc: "mpz_even_p",
+func mpz_odd_p*(a2: mpz_t): cint {.importc: "mpz_odd_p", header: "<gmp.h>".}
+func mpz_even_p*(a2: mpz_srcptr): cint {.importc: "mpz_even_p",
     header: "<gmp.h>".}
-proc mpz_even_p*(a2: mpz_t): cint {.importc: "mpz_even_p", header: "<gmp.h>".}
+func mpz_even_p*(a2: mpz_t): cint {.importc: "mpz_even_p", header: "<gmp.h>".}
 const 
   GMP_ERROR_NONE* = 0
   GMP_ERROR_UNSUPPORTED_ARGUMENT* = 1
@@ -1486,7 +1486,7 @@ when isMainModule:
 type Int* = ref mpz_t
   ## An Int represents a signed multi-precision integer.
 
-proc isLLP64: bool {.compileTime.} =
+func isLLP64: bool {.compileTime.} =
   # LLP64 programming model
   sizeof(clong) != sizeof(int)
 
@@ -1507,21 +1507,21 @@ when defined(windows):
 
 {.pop.}
 
-proc validBase(base: cint) =
+func validBase(base: cint) =
   # Validates the given base.
   if base < -36 or (base > -2 and base < 2) or base > 62:
     raise newException(ValueError, "Invalid base")
 
-proc finalizeInt(z: Int) =
+func finalizeInt(z: Int) =
   # Finalizer - release the memory allocated to the mpz.
   mpz_clear(z[])
 
-proc newInt*(x: culong): Int =
+func newInt*(x: culong): Int =
   ## Allocates and returns a new Int set to `x`.
   new(result, finalizeInt)
   mpz_init_set_ui(result[], x)
 
-proc newInt*(x: int = 0): Int =
+func newInt*(x: int = 0): Int =
   ## Allocates and returns a new Int set to `x`.
   new(result, finalizeInt)
   when isLLP64():
@@ -1539,14 +1539,14 @@ proc newInt*(x: int = 0): Int =
   else:
     mpz_init_set_si(result[], x.clong)
 
-proc newInt*(s: string, base: cint = 10): Int =
+func newInt*(s: string, base: cint = 10): Int =
   ## Allocates and returns a new Int set to `s`, interpreted in the given `base`.
   validBase(base)
   new(result, finalizeInt)
   if mpz_init_set_str(result[], s, base) == -1:
     raise newException(ValueError, "String not in correct base")
 
-proc clear*(z: Int) =
+func clear*(z: Int) =
   ## Clears the allocated space used by the number.
   ##
   ## This normally happens on a finalizer call, but if you want immediate
@@ -1554,34 +1554,34 @@ proc clear*(z: Int) =
   GCunref(z)
   finalizeInt(z)
 
-proc clone*(z: Int): Int =
+func clone*(z: Int): Int =
   ## Returns a clone of `z`.
   new(result, finalizeInt)
   mpz_init_set(result[], z[])
 
-proc digits*(z: Int, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
+func digits*(z: Int, base: range[(2.cint) .. (62.cint)] = 10): csize_t =
   ## Returns the size of `z` measured in number of digits in the given `base`.
   ## The sign of `z` is ignored, just the absolute value is used.
   mpz_sizeinbase(z[], base)
 
-proc `$`*(z: Int, base: cint = 10): string =
+func `$`*(z: Int, base: cint = 10): string =
   ## The stringify operator for an Int argument. Returns `z` converted to a
   ## string in the given `base`.
   validBase(base)
   result = newString(digits(z, base) + 2)
   result.setLen(mpz_get_str((cstring)result, base, z[]).len)
 
-proc set*(z, x: Int): Int =
+func set*(z, x: Int): Int =
   ## Sets `z` to `x` and returns `z`.
   result = z
   mpz_set(result[], x[])
 
-proc set*(z: Int, x: culong): Int =
+func set*(z: Int, x: culong): Int =
   ## Sets `z` to `x` and returns `z`.
   result = z
   mpz_set_ui(result[], x)
 
-proc set*(z: Int, x: int): Int =
+func set*(z: Int, x: int): Int =
   ## Sets `z` to `x` and returns `z`.
   result = z
   when isLLP64():
@@ -1598,18 +1598,18 @@ proc set*(z: Int, x: int): Int =
   else:
     mpz_set_si(result[], x.clong)
 
-proc set*(z: Int, s: string, base: cint = 10): Int =
+func set*(z: Int, s: string, base: cint = 10): Int =
   ## Sets `z` to the value of `s`, interpreted in the given `base`, and returns `z`.
   validBase(base)
   result = z
   if mpz_set_str(result[], s, base) == -1:
     raise newException(ValueError, "String not in correct base")
 
-proc swap*(x: Int, y: Int) =
+func swap*(x: Int, y: Int) =
   ## Swaps the values `x` and `y` efficiently.
   mpz_swap(x[], y[])
 
-proc cmp*(x, y: Int): cint =
+func cmp*(x, y: Int): cint =
   ## Compares `x` and `y` and returns:
   ## ::
   ##   -1 if x <  y
@@ -1621,7 +1621,7 @@ proc cmp*(x, y: Int): cint =
   elif result > 0:
     result = 1
 
-proc cmp*(x: Int, y: culong): cint =
+func cmp*(x: Int, y: culong): cint =
   ## Compares `x` and `y` and returns:
   ## ::
   ##   -1 if x <  y
@@ -1633,7 +1633,7 @@ proc cmp*(x: Int, y: culong): cint =
   elif result > 0:
     result = 1
 
-proc cmp*(x: Int, y: int): cint =
+func cmp*(x: Int, y: int): cint =
   ## Compares `x` and `y` and returns:
   ## ::
   ##   -1 if x <  y
@@ -1679,33 +1679,33 @@ proc cmp*(x: Int, y: int): cint =
   elif result > 0:
     result = 1
 
-proc `==`*(x: Int, y: int | culong | Int): bool =
+func `==`*(x: Int, y: int | culong | Int): bool =
   ## Returns whether `x` equals `y`.
   cmp(x, y) == 0
 
-proc `==`*(x: int | culong, y: Int): bool =
+func `==`*(x: int | culong, y: Int): bool =
   ## Returns whether `x` equals `y`.
   cmp(y, x) == 0
 
-proc `<`*(x: Int, y: int | culong | Int): bool =
+func `<`*(x: Int, y: int | culong | Int): bool =
   ## Returns whether `x` is less than `y`.
   cmp(x, y) == -1
 
-proc `<`*(x: int | culong, y: Int): bool =
+func `<`*(x: int | culong, y: Int): bool =
   ## Returns whether `x` is less than `y`.
   cmp(y, x) == 1
 
-proc `<=`*(x: Int, y: int | culong | Int): bool =
+func `<=`*(x: Int, y: int | culong | Int): bool =
   ## Returns whether `x` is less than or equal `y`.
   let c = cmp(x, y)
   c == 0 or c == -1
 
-proc `<=`*(x: int | culong, y: Int): bool =
+func `<=`*(x: int | culong, y: Int): bool =
   ## Returns whether `x` is less than or equal `y`.
   let c = cmp(y, x)
   c == 0 or c == 1
 
-proc sign*(x: Int): cint =
+func sign*(x: Int): cint =
   ## Allows faster testing for negative, zero, and positive. Returns:
   ## ::
   ##   -1 if x <  0
@@ -1713,166 +1713,166 @@ proc sign*(x: Int): cint =
   ##   +1 if x >  0
   mpz_sgn(x[])
 
-proc positive*(x: Int): bool =
+func positive*(x: Int): bool =
   ## Returns whether `x` is positive or zero.
   x.sign >= 0
 
-proc negative*(x: Int): bool =
+func negative*(x: Int): bool =
   ## Returns whether `x` is negative.
   x.sign < 0
 
-proc isZero*(x: Int): bool =
+func isZero*(x: Int): bool =
   ## Returns whether `x` is zero.
   x.sign == 0
 
-proc abs*(z, x: Int): Int =
+func abs*(z, x: Int): Int =
   ## Sets `z` to |x| (the absolute value of `x`) and returns `z`.
   result = z
   mpz_abs(result[], x[])
 
-proc abs*(x: Int): Int =
+func abs*(x: Int): Int =
   ## Returns the absolute value of `x`.
   newInt().abs(x)
 
-proc add*(z, x, y: Int): Int =
+func add*(z, x, y: Int): Int =
   ## Sets `z` to the sum x+y and returns `z`.
   result = z
   mpz_add(result[], x[], y[])
 
-proc add*(z, x: Int, y: culong): Int =
+func add*(z, x: Int, y: culong): Int =
   ## Sets `z` to the sum x+y and returns `z`.
   result = z
   mpz_add_ui(result[], x[], y)
 
-proc add*(z, x: Int, y: int): Int =
+func add*(z, x: Int, y: int): Int =
   ## Sets `z` to the sum x+y and returns `z`.
   when isLLP64():
     if y.fitsLLP64ULong: z.add(x, y.culong) else: z.add(x, newInt(y))
   else:
     if y >= 0: z.add(x, y.culong) else: z.add(x, newInt(y))
 
-proc `+`*(x: Int, y: int | culong | Int): Int =
+func `+`*(x: Int, y: int | culong | Int): Int =
   ## Returns the sum x+y.
   newInt().add(x, y)
 
-proc `+`*(x: int | culong, y: Int): Int =
+func `+`*(x: int | culong, y: Int): Int =
   ## Returns the sum x+y.
   newInt().add(y, x)
 
-proc sub*(z, x, y: Int): Int =
+func sub*(z, x, y: Int): Int =
   ## Sets `z` to the difference x-y and returns `z`.
   result = z
   mpz_sub(result[], x[], y[])
 
-proc sub*(z, x: Int, y: culong): Int =
+func sub*(z, x: Int, y: culong): Int =
   ## Sets `z` to the difference x-y and returns `z`.
   result = z
   mpz_sub_ui(result[], x[], y)
 
-proc sub*(z: Int, x: culong, y: Int): Int =
+func sub*(z: Int, x: culong, y: Int): Int =
   ## Sets `z` to the difference x-y and returns `z`.
   result = z
   mpz_ui_sub(result[], x, y[])
 
-proc sub*(z, x: Int, y: int): Int =
+func sub*(z, x: Int, y: int): Int =
   ## Sets `z` to the difference x-y and returns `z`.
   when isLLP64():
     if y.fitsLLP64ULong: z.sub(x, y.culong) else: z.sub(x, newInt(y))
   else:
     if y >= 0: z.sub(x, y.culong) else: z.sub(x, newInt(y))
 
-proc sub*(z: Int, x: int, y: Int): Int =
+func sub*(z: Int, x: int, y: Int): Int =
   ## Sets `z` to the difference x-y and returns `z`.
   when isLLP64():
     if x.fitsLLP64ULong: z.sub(x.culong, y) else: z.sub(newInt(x), y)
   else:
     if x >= 0: z.sub(x.culong, y) else: z.sub(newInt(x), y)
 
-proc `-`*(x: Int, y: int | culong | Int): Int =
+func `-`*(x: Int, y: int | culong | Int): Int =
   ## Returns the difference x-y.
   newInt().sub(x, y)
 
-proc `-`*(x: int | culong, y: Int): Int =
+func `-`*(x: int | culong, y: Int): Int =
   ## Returns the difference x-y.
   newInt().sub(x, y)
 
-proc addMul*(z, x, y: Int): Int =
+func addMul*(z, x, y: Int): Int =
   ## Increments `z` by `x` times `y`.
   result = z
   mpz_addmul(result[], x[], y[])
 
-proc addMul*(z, x: Int, y: culong): Int =
+func addMul*(z, x: Int, y: culong): Int =
   ## Increments `z` by `x` times `y`.
   result = z
   mpz_addmul_ui(result[], x[], y)
 
-proc addMul*(z, x: Int, y: int): Int =
+func addMul*(z, x: Int, y: int): Int =
   ## Increments `z` by `x` times `y`.
   when isLLP64():
     if y.fitsLLP64ULong: z.addMul(x, y.culong) else: z.addMul(x, newInt(y))
   else:
     if y >= 0: z.addMul(x, y.culong) else: z.addMul(x, newInt(y))
 
-proc addMul*(z: Int, x: int | culong, y: Int): Int =
+func addMul*(z: Int, x: int | culong, y: Int): Int =
   ## Increments `z` by `x` times `y`.
   z.addMul(y, x)
 
-proc addMul*(z: Int, x: int | culong, y: int | culong): Int =
+func addMul*(z: Int, x: int | culong, y: int | culong): Int =
   ## Increments `z` by `x` times `y`.
   z.addMul(newInt(x), y)
 
-proc subMul*(z, x, y: Int): Int =
+func subMul*(z, x, y: Int): Int =
   ## Decrements `z` by `x` times `y`.
   result = z
   mpz_submul(result[], x[], y[])
 
-proc subMul*(z, x: Int, y: culong): Int =
+func subMul*(z, x: Int, y: culong): Int =
   ## Decrements `z` by `x` times `y`.
   result = z
   mpz_submul_ui(result[], x[], y)
 
-proc subMul*(z, x: Int, y: int): Int =
+func subMul*(z, x: Int, y: int): Int =
   ## Decrements `z` by `x` times `y`.
   when isLLP64():
     if y.fitsLLP64ULong: z.subMul(x, y.culong) else: z.subMul(x, newInt(y))
   else:
     if y >= 0: z.subMul(x, y.culong) else: z.subMul(x, newInt(y))
 
-proc subMul*(z: Int, x: int | culong, y: Int): Int =
+func subMul*(z: Int, x: int | culong, y: Int): Int =
   ## Decrements `z` by `x` times `y`.
   z.subMul(y, x)
 
-proc subMul*(z: Int, x: int | culong, y: int | culong): Int =
+func subMul*(z: Int, x: int | culong, y: int | culong): Int =
   ## Increments `z` by `x` times `y`.
   z.subMul(newInt(x), y)
 
-proc inc*(z: Int, x: int | culong | Int) =
+func inc*(z: Int, x: int | culong | Int) =
   ## Increments `z` by `x`.
   discard z.add(z, x)
 
-proc dec*(z: Int, x: int | culong | Int) =
+func dec*(z: Int, x: int | culong | Int) =
   ## Decrements `z` by `x`.
   discard z.sub(z, x)
 
-proc `+=`*(z: Int, x: int | culong | Int) =
+func `+=`*(z: Int, x: int | culong | Int) =
   ## Increments `z` by `x`.
   z.inc(x)
 
-proc `-=`*(z: Int, x: int | culong | Int) =
+func `-=`*(z: Int, x: int | culong | Int) =
   ## Decrements `z` by `x`.
   z.dec(x)
 
-proc mul*(z, x, y: Int): Int =
+func mul*(z, x, y: Int): Int =
   ## Sets `z` to the product x*y and returns `z`.
   result = z
   mpz_mul(result[], x[], y[])
 
-proc mul*(z, x: Int, y: culong): Int =
+func mul*(z, x: Int, y: culong): Int =
   ## Sets `z` to the product x*y and returns `z`.
   result = z
   mpz_mul_ui(result[], x[], y)
 
-proc mul*(z, x: Int, y: int): Int =
+func mul*(z, x: Int, y: int): Int =
   ## Sets `z` to the product x*y and returns `z`.
   result = z
   when isLLP64():
@@ -1885,15 +1885,15 @@ proc mul*(z, x: Int, y: int): Int =
   else:
     mpz_mul_si(result[], x[], y.clong)
 
-proc `*`*(x: Int, y: int | culong | Int): Int =
+func `*`*(x: Int, y: int | culong | Int): Int =
   ## Returns the product x*y.
   newInt().mul(x, y)
 
-proc `*`*(x: int | culong, y: Int): Int =
+func `*`*(x: int | culong, y: Int): Int =
   ## Returns the product x*y.
   newInt().mul(y, x)
 
-proc `*=`*(z: Int, x: int | culong | Int) =
+func `*=`*(z: Int, x: int | culong | Int) =
   discard z.mul(z, x)
 
 # template countupImpl(incr: stmt) {.immediate, dirty.} =
@@ -1932,89 +1932,89 @@ proc `*=`*(z: Int, x: int | culong | Int) =
 #   let step = 1
 #   countupImpl: inc(res, step)
 
-proc `and`*(z, x, y: Int): Int =
+func `and`*(z, x, y: Int): Int =
   ## Sets `z` = `x` bitwise-and `y` and returns `z`.
   result = z
   mpz_and(z[], x[], y[])
 
-proc `and`*(x, y: Int): Int =
+func `and`*(x, y: Int): Int =
   ## Returns `x` bitwise-and `y`.
   newInt().`and`(x, y)
 
-proc `and`*(x: Int, y: int | culong): Int =
+func `and`*(x: Int, y: int | culong): Int =
   ## Returns `x` bitwise-and `y`.
   x and newInt(y)
 
-proc `and`*(x: int | culong, y: Int): Int =
+func `and`*(x: int | culong, y: Int): Int =
   ## Returns `x` bitwise-and `y`.
   newInt(x) and y
 
-proc `or`*(z, x, y: Int): Int =
+func `or`*(z, x, y: Int): Int =
   ## Sets `z` = `x` bitwise inclusive-or `y` and returns `z`.
   result = z
   mpz_ior(z[], x[], y[])
 
-proc `or`*(x, y: Int): Int =
+func `or`*(x, y: Int): Int =
   ## Returns `x` bitwise inclusive-or `y`.
   newInt().`or`(x, y)
 
-proc `or`*(x: Int, y: int | culong): Int =
+func `or`*(x: Int, y: int | culong): Int =
   ## Returns `x` bitwise inclusive-or `y`.
   x or newInt(y)
 
-proc `or`*(x: int | culong, y: Int): Int =
+func `or`*(x: int | culong, y: Int): Int =
   ## Returns `x` bitwise inclusive-or `y`.
   newInt(x) or y
 
-proc `xor`*(z, x, y: Int): Int =
+func `xor`*(z, x, y: Int): Int =
   ## Sets `z` = `x` bitwise exclusive-or `y` and returns `z`.
   result = z
   mpz_xor(z[], x[], y[])
 
-proc `xor`*(x, y: Int): Int =
+func `xor`*(x, y: Int): Int =
   ## Returns `x` bitwise exclusive-or `y`.
   newInt().`xor`(x, y)
 
-proc `xor`*(x: Int, y: int | culong): Int =
+func `xor`*(x: Int, y: int | culong): Int =
   ## Returns `x` bitwise exclusive-or `y`.
   x xor newInt(y)
 
-proc `xor`*(x: int | culong, y: Int): Int =
+func `xor`*(x: int | culong, y: Int): Int =
   ## Returns `x` bitwise exclusive-or `y`.
   newInt(x) xor y
 
-proc `not`*(z, x: Int): Int =
+func `not`*(z, x: Int): Int =
   ## Sets `z` to the one's complement of `x` and returns `z`.
   result = z
   mpz_com(z[], x[])
 
-proc `not`*(x: Int): Int =
+func `not`*(x: Int): Int =
   ## Returns the one's complement of `x`.
   newInt().`not` x
 
-proc odd*(z: Int): bool =
+func odd*(z: Int): bool =
   ## Returns whether `z` is odd.
   mpz_odd_p(z[]) != 0
 
-proc even*(z: Int): bool =
+func even*(z: Int): bool =
   ## Returns whether `z` is even.
   mpz_even_p(z[]) != 0
 
-proc `div`*(z, x, y: Int): Int =
+func `div`*(z, x, y: Int): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `div` implements truncated division towards zero.
   if y == 0: raise newException(DivByZeroDefect, "Division by zero")
   result = z
   mpz_tdiv_q(result[], x[], y[])
 
-proc `div`*(z, x: Int, y: culong): Int =
+func `div`*(z, x: Int, y: culong): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `div` implements truncated division towards zero.
   if y == 0: raise newException(DivByZeroDefect, "Division by zero")
   result = z
   discard mpz_tdiv_q_ui(result[], x[], y)
 
-proc `div`*(z, x: Int, y: int): Int =
+func `div`*(z, x: Int, y: int): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `div` implements truncated division towards zero.
   when isLLP64():
@@ -2022,31 +2022,31 @@ proc `div`*(z, x: Int, y: int): Int =
   else:
     if y >= 0: z.`div`(x, y.culong) else: z.`div`(x, newInt(y))
 
-proc `div`*(x: Int, y: int | culong | Int): Int =
+func `div`*(x: Int, y: int | culong | Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `div` implements truncated division towards zero.
   newInt().`div`(x, y)
 
-proc `div`*(x: int | culong, y: Int): Int =
+func `div`*(x: int | culong, y: Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `div` implements truncated division towards zero.
   newInt().`div`(newInt(x), y)
 
-proc `mod`*(z, x, y: Int): Int =
+func `mod`*(z, x, y: Int): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `mod` implements truncated division towards zero.
   if y == 0: raise newException(DivByZeroDefect, "Division by zero")
   result = z
   mpz_tdiv_r(result[], x[], y[])
 
-proc `mod`*(z, x: Int, y: culong): Int =
+func `mod`*(z, x: Int, y: culong): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `mod` implements truncated division towards zero.
   if y == 0: raise newException(DivByZeroDefect, "Division by zero")
   result = z
   discard mpz_tdiv_r_ui(result[], x[], y)
 
-proc `mod`*(z, x: Int, y: int): Int =
+func `mod`*(z, x: Int, y: int): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `mod` implements truncated division towards zero.
   when isLLP64():
@@ -2054,17 +2054,17 @@ proc `mod`*(z, x: Int, y: int): Int =
   else:
     if y >= 0: z.`mod`(x, y.culong) else: z.`mod`(x, newInt(y))
 
-proc `mod`*(x: Int, y: int | culong | Int): Int =
+func `mod`*(x: Int, y: int | culong | Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `mod` implements truncated division towards zero.
   newInt().`mod`(x, y)
 
-proc `mod`*(x: int | culong, y: Int): Int =
+func `mod`*(x: int | culong, y: Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `mod` implements truncated division towards zero.
   newInt().`mod`(newInt(x), y)
 
-proc modInverse*(z, g, n: Int): bool =
+func modInverse*(z, g, n: Int): bool =
   ## Computes the inverse of `g` modulo `n` and put the result in `z`. If the
   ## inverse exists, the return value is `true` and `z` will satisfy
   ## 0 < `z` < abs(`n`). If an inverse doesn't exist the return value is `false`
@@ -2072,26 +2072,26 @@ proc modInverse*(z, g, n: Int): bool =
   ## zero.
   mpz_invert(z[], g[], n[]) != 0
 
-proc modInverse*(g: Int, n: Int): Int =
+func modInverse*(g: Int, n: Int): Int =
   ## Computes the inverse of `g` modulo `n`. If an inverse doesn't exist the
   ## return value is undefined. The behaviour of this proc is undefined when `n`
   ## is zero.
   result = newInt()
   discard modInverse(result, g, n)
 
-proc modInverse*(g: Int, n: int | culong): Int =
+func modInverse*(g: Int, n: int | culong): Int =
   ## Computes the inverse of `g` modulo `n`. If an inverse doesn't exist the
   ## return value is undefined. The behaviour of this proc is undefined when `n`
   ## is zero.
   modInverse(g, newInt(n))
 
-proc modInverse*(g: int | culong, n: Int): Int =
+func modInverse*(g: int | culong, n: Int): Int =
   ## Computes the inverse of `g` modulo `n`. If an inverse doesn't exist the
   ## return value is undefined. The behaviour of this proc is undefined when `n`
   ## is zero.
   modInverse(newInt(g), n)
 
-proc divMod*(q, r, x, y: Int): tuple[q, r: Int] =
+func divMod*(q, r, x, y: Int): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `divMod` implements truncated division towards zero.
@@ -2099,7 +2099,7 @@ proc divMod*(q, r, x, y: Int): tuple[q, r: Int] =
   result = (q: q, r: r)
   mpz_tdiv_qr(q[], r[], x[], y[])
 
-proc divMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
+func divMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `divMod` implements truncated division towards zero.
@@ -2107,7 +2107,7 @@ proc divMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
   result = (q: q, r: r)
   discard mpz_tdiv_qr_ui(q[], r[], x[], y)
 
-proc divMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
+func divMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `divMod` implements truncated division towards zero.
@@ -2116,19 +2116,19 @@ proc divMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
   else:
     if y >= 0: divMod(q, r, x, y.culong) else: divMod(q, r, x, newInt(y))
 
-proc divMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
+func divMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
   ## Returns a tuple consisting of the quotient and remainder resulting from x/y
   ## for `y` != 0.
   ## `divMod` implements truncated division towards zero.
   divMod(newInt(), newInt(), x, y)
 
-proc divMod*(x: int | culong, y: Int): tuple[q, r: Int] =
+func divMod*(x: int | culong, y: Int): tuple[q, r: Int] =
   ## Returns a tuple consisting of the quotient and remainder resulting from x/y
   ## for `y` != 0.
   ## `divMod` implements truncated division towards zero.
   divMod(newInt(), newInt(), newInt(x), y)
 
-proc fdiv*(z, x, y: Int): Int =
+func fdiv*(z, x, y: Int): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `fdiv` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
@@ -2136,7 +2136,7 @@ proc fdiv*(z, x, y: Int): Int =
   result = z
   mpz_fdiv_q(result[], x[], y[])
 
-proc fdiv*(z, x: Int, y: culong): Int =
+func fdiv*(z, x: Int, y: culong): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `fdiv` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
@@ -2144,7 +2144,7 @@ proc fdiv*(z, x: Int, y: culong): Int =
   result = z
   discard mpz_fdiv_q_ui(result[], x[], y)
 
-proc fdiv*(z, x: Int, y: int): Int =
+func fdiv*(z, x: Int, y: int): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `fdiv` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
@@ -2153,29 +2153,29 @@ proc fdiv*(z, x: Int, y: int): Int =
   else:
     if y >= 0: z.fdiv(x, y.culong) else: z.fdiv(x, newInt(y))
 
-proc fdiv*(x: Int, y: int | culong | Int): Int =
+func fdiv*(x: Int, y: int | culong | Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `fdiv` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
   newInt().fdiv(x, y)
 
-proc fdiv*(x: int | culong, y: Int): Int =
+func fdiv*(x: int | culong, y: Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `fdiv` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
   newInt().fdiv(newInt(x), y)
 
-proc `//`*(x: Int, y: int | culong | Int): Int =
+func `//`*(x: Int, y: int | culong | Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `//` implements truncated division towards negative infinity.
   fdiv(x, y)
 
-proc `//`*(x: int | culong, y: Int): Int =
+func `//`*(x: int | culong, y: Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `//` implements truncated division towards negative infinity.
   fdiv(x, y)
 
-proc fmod*(z, x, y: Int): Int =
+func fmod*(z, x, y: Int): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `fmod` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
@@ -2183,7 +2183,7 @@ proc fmod*(z, x, y: Int): Int =
   result = z
   mpz_fdiv_r(result[], x[], y[])
 
-proc fmod*(z, x: Int, y: culong): Int =
+func fmod*(z, x: Int, y: culong): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `fmod` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
@@ -2191,7 +2191,7 @@ proc fmod*(z, x: Int, y: culong): Int =
   result = z
   discard mpz_fdiv_r_ui(result[], x[], y)
 
-proc fmod*(z, x: Int, y: int): Int =
+func fmod*(z, x: Int, y: int): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `fmod` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
@@ -2200,29 +2200,29 @@ proc fmod*(z, x: Int, y: int): Int =
   else:
     if y >= 0: z.fmod(x, y.culong) else: z.fmod(x, newInt(y))
 
-proc fmod*(x: Int, y: int | culong | Int): Int =
+func fmod*(x: Int, y: int | culong | Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `fmod` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
   newInt().fmod(x, y)
 
-proc fmod*(x: int | culong, y: Int): Int =
+func fmod*(x: int | culong, y: Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `fmod` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
   newInt().fmod(newInt(x), y)
 
-proc `\\`*(x: Int, y: int | culong | Int): Int =
+func `\\`*(x: Int, y: int | culong | Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `\\` implements truncated division towards negative infinity.
   fmod(x, y)
 
-proc `\\`*(x: int | culong, y: Int): Int =
+func `\\`*(x: int | culong, y: Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `\\` implements truncated division towards negative infinity.
   fmod(x, y)
 
-proc fdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
+func fdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `fdivMod` implements truncated division towards negative infinity.
@@ -2231,7 +2231,7 @@ proc fdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
   result = (q: q, r: r)
   mpz_fdiv_qr(q[], r[], x[], y[])
 
-proc fdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
+func fdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `fdivMod` implements truncated division towards negative infinity.
@@ -2240,7 +2240,7 @@ proc fdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
   result = (q: q, r: r)
   discard mpz_fdiv_qr_ui(q[], r[], x[], y)
 
-proc fdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
+func fdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `fdivMod` implements truncated division towards negative infinity.
@@ -2250,21 +2250,21 @@ proc fdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
   else:
     if y >= 0: fdivMod(q, r, x, y.culong) else: fdivMod(q, r, x, newInt(y))
 
-proc fdivMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
+func fdivMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
   ## Returns a tuple consisting of the quotient and remainder resulting from x/y
   ## for `y` != 0.
   ## `fdivMod` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
   fdivMod(newInt(), newInt(), x, y)
 
-proc fdivMod*(x: int | culong, y: Int): tuple[q, r: Int] =
+func fdivMod*(x: int | culong, y: Int): tuple[q, r: Int] =
   ## Returns a tuple consisting of the quotient and remainder resulting from x/y
   ## for `y` != 0.
   ## `fdivMod` implements truncated division towards negative infinity.
   ## The f stands for “floor”.
   fdivMod(newInt(), newInt(), newInt(x), y)
 
-proc cdiv*(z, x, y: Int): Int =
+func cdiv*(z, x, y: Int): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `cdiv` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
@@ -2272,7 +2272,7 @@ proc cdiv*(z, x, y: Int): Int =
   result = z
   mpz_cdiv_q(result[], x[], y[])
 
-proc cdiv*(z, x: Int, y: culong): Int =
+func cdiv*(z, x: Int, y: culong): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `cdiv` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
@@ -2280,7 +2280,7 @@ proc cdiv*(z, x: Int, y: culong): Int =
   result = z
   discard mpz_cdiv_q_ui(result[], x[], y)
 
-proc cdiv*(z, x: Int, y: int): Int =
+func cdiv*(z, x: Int, y: int): Int =
   ## Sets `z` to the quotient x/y for `y` != 0 and returns `z`.
   ## `cdiv` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
@@ -2289,19 +2289,19 @@ proc cdiv*(z, x: Int, y: int): Int =
   else:
     if y >= 0: z.cdiv(x, y.culong) else: z.cdiv(x, newInt(y))
 
-proc cdiv*(x: Int, y: int | culong | Int): Int =
+func cdiv*(x: Int, y: int | culong | Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `cdiv` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
   newInt().cdiv(x, y)
 
-proc cdiv*(x: int | culong, y: Int): Int =
+func cdiv*(x: int | culong, y: Int): Int =
   ## Returns the quotient x/y for `y` != 0.
   ## `cdiv` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
   newInt().cdiv(newInt(x), y)
 
-proc cmod*(z, x, y: Int): Int =
+func cmod*(z, x, y: Int): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `cmod` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
@@ -2309,7 +2309,7 @@ proc cmod*(z, x, y: Int): Int =
   result = z
   mpz_cdiv_r(result[], x[], y[])
 
-proc cmod*(z, x: Int, y: culong): Int =
+func cmod*(z, x: Int, y: culong): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `cmod` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
@@ -2317,7 +2317,7 @@ proc cmod*(z, x: Int, y: culong): Int =
   result = z
   discard mpz_cdiv_r_ui(result[], x[], y)
 
-proc cmod*(z, x: Int, y: int): Int =
+func cmod*(z, x: Int, y: int): Int =
   ## Sets `z` to the remainder x/y for `y` != 0 and returns `z`.
   ## `cmod` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
@@ -2326,19 +2326,19 @@ proc cmod*(z, x: Int, y: int): Int =
   else:
     if y >= 0: z.cmod(x, y.culong) else: z.cmod(x, newInt(y))
 
-proc cmod*(x: Int, y: int | culong | Int): Int =
+func cmod*(x: Int, y: int | culong | Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `cmod` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
   newInt().cmod(x, y)
 
-proc cmod*(x: int | culong, y: Int): Int =
+func cmod*(x: int | culong, y: Int): Int =
   ## Returns the remainder x/y for `y` != 0.
   ## `cmod` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
   newInt().cmod(newInt(x), y)
 
-proc cdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
+func cdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `cdivMod` implements truncated division towards positive infinity.
@@ -2347,7 +2347,7 @@ proc cdivMod*(q, r, x, y: Int): tuple[q, r: Int] =
   result = (q: q, r: r)
   mpz_cdiv_qr(q[], r[], x[], y[])
 
-proc cdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
+func cdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `cdivMod` implements truncated division towards positive infinity.
@@ -2356,7 +2356,7 @@ proc cdivMod*(q, r, x: Int, y: culong): tuple[q, r: Int] =
   result = (q: q, r: r)
   discard mpz_cdiv_qr_ui(q[], r[], x[], y)
 
-proc cdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
+func cdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
   ## Sets `q` to the quotient and `r` to the remainder resulting from x/y for
   ## `y` != 0 and returns the tuple (`q`, `r`).
   ## `cdivMod` implements truncated division towards positive infinity.
@@ -2366,21 +2366,21 @@ proc cdivMod*(q, r, x: Int, y: int): tuple[q, r: Int] =
   else:
     if y >= 0: cdivMod(q, r, x, y.culong) else: cdivMod(q, r, x, newInt(y))
 
-proc cdivMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
+func cdivMod*(x: Int, y: int | culong | Int): tuple[q, r: Int] =
   ## Returns a tuple consisting of the quotient and remainder resulting from x/y
   ## for `y` != 0.
   ## `cdivMod` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
   cdivMod(newInt(), newInt(), x, y)
 
-proc cdivMod*(x: int | culong, y: Int): tuple[q, r: Int] =
+func cdivMod*(x: int | culong, y: Int): tuple[q, r: Int] =
   ## Returns a tuple consisting of the quotient and remainder resulting from x/y
   ## for `y` != 0.
   ## `cdivMod` implements truncated division towards positive infinity.
   ## The c stands for “ceil”.
   cdivMod(newInt(), newInt(), newInt(x), y)
 
-proc fac*(z, x: Int): Int =
+func fac*(z, x: Int): Int =
   ## Sets `z` to the factorial of `x` and returns `z`.
   if x < 2:
     if x.negative:
@@ -2402,12 +2402,12 @@ proc fac*(z, x: Int): Int =
 
   if x.odd: result *= x
 
-proc fac*(z: Int, x: culong): Int =
+func fac*(z: Int, x: culong): Int =
   ## Sets `z` to the factorial of `x` and returns `z`.
   result = z
   mpz_fac_ui(result[], x)
 
-proc fac*(z: Int, x: int): Int =
+func fac*(z: Int, x: int): Int =
   ## Sets `z` to the factorial of `x` and returns `z`.
   if x < 2:
     if x < 0:
@@ -2422,7 +2422,7 @@ proc fac*(z: Int, x: int): Int =
   else:
     discard z.fac(x.culong)
 
-proc fac*(x: int | culong | Int): Int =
+func fac*(x: int | culong | Int): Int =
   ## Returns the factorial of `x`.
   newInt().fac(x)
 
@@ -2457,12 +2457,12 @@ proc fac*(x: int | culong | Int): Int =
 #   ## If a > b (empty range), the result is 1.
 #   newInt().mulRange(a, b)
 
-proc binom*(z, n: Int, k: culong): Int =
+func binom*(z, n: Int, k: culong): Int =
   ## Sets `z` to the binomial coefficient of (`n`, `k`) and returns `z`.
   result = z
   mpz_bin_ui(z[], n[], k)
 
-proc binom*(z: Int, n, k: culong): Int =
+func binom*(z: Int, n, k: culong): Int =
   ## Sets `z` to the binomial coefficient of (`n`, `k`) and returns `z`.
   result = z
   mpz_bin_uiui(z[], n, k)
@@ -2493,172 +2493,172 @@ proc binom*(z: Int, n, k: culong): Int =
 #   else:
 #     result = binom(n, k.culong)
 
-proc bit*(x: Int, i: culong): cint =
+func bit*(x: Int, i: culong): cint =
   ## Returns the value of the `i`'th bit of `x`.
   mpz_tstbit(x[], i)
 
-proc setBit*(z: Int, i: culong): Int =
+func setBit*(z: Int, i: culong): Int =
   ## Sets the i`'th bit of `z` and returns the resulting Int.
   result = z
   mpz_setbit(z[], i)
 
-proc clearBit*(z: Int, i: culong): Int =
+func clearBit*(z: Int, i: culong): Int =
   ## Clears the i`'th bit of `z` and returns the resulting Int.
   result = z
   mpz_clrbit(z[], i)
 
-proc complementBit*(z: Int, i: culong): Int =
+func complementBit*(z: Int, i: culong): Int =
   ## Complements the i`'th bit of `z` and returns the resulting Int.
   result = z
   mpz_combit(z[], i)
 
-proc bitLen*(x: Int): csize_t =
+func bitLen*(x: Int): csize_t =
   ## Returns the length of the absolute value of `x` in bits.
   digits(x, 2)
 
-proc pow*(z, x: Int, y: culong): Int =
+func pow*(z, x: Int, y: culong): Int =
   ## Sets `z` to `x` raised to `y` and returns `z`. The case 0^0 yields 1.
   result = z
   mpz_pow_ui(z[], x[], y)
 
-proc pow*(z: Int, x, y: culong): Int =
+func pow*(z: Int, x, y: culong): Int =
   ## Sets `z` to `x` raised to `y` and returns `z`. The case 0^0 yields 1.
   result = z
   mpz_ui_pow_ui(z[], x, y)
 
-proc pow*(x: culong | Int, y: culong): Int =
+func pow*(x: culong | Int, y: culong): Int =
   ## Returns `x` raised to `y`. The case 0^0 yields 1.
   newInt().pow(x, y)
 
-proc pow*(x: int, y: culong): Int =
+func pow*(x: int, y: culong): Int =
   ## Returns `x` raised to `y`. The case 0^0 yields 1.
   when isLLP64():
     if x.fitsLLP64ULong: pow(x.culong, y) else: pow(newInt(x), y)
   else:
     if x >= 0: pow(x.culong, y) else: pow(newInt(x), y)
 
-proc `^`*(x: int | culong | Int, y: culong): Int =
+func `^`*(x: int | culong | Int, y: culong): Int =
   ## Returns `x` raised to `y`. The case 0^0 yields 1.
   pow(x, y)
 
-proc exp*(z, x: Int, y: culong, m: Int): Int =
+func exp*(z, x: Int, y: culong, m: Int): Int =
   ## Sets `z` to (`x` raised to `y`) modulo `m` and returns `z`.
   ## If `m` == 0, z = x^y.
   if m.sign == 0: return z.pow(x, y)
   result = z
   mpz_powm_ui(z[], x[], y, m[])
 
-proc exp*(z, x, y, m: Int): Int =
+func exp*(z, x, y, m: Int): Int =
   ## Sets `z` to (`x` raised to `y`) modulo `m` and returns `z`.
   ## If `m` == 0, z = x^y.
   result = z
   mpz_powm(z[], x[], y[], m[])
 
-proc exp*(x: Int, y: Int, m: Int): Int =
+func exp*(x: Int, y: Int, m: Int): Int =
   ## Returns (`x` raised to `y`) modulo `m`.
   ## If `m` == 0, z = x^y.
   newInt().exp(x, y, m)
 
-proc exp*(x: Int, y: culong, m: Int): Int =
+func exp*(x: Int, y: culong, m: Int): Int =
   ## Returns (`x` raised to `y`) modulo `m`.
   ## If `m` == 0, z = x^y.
   newInt().exp(x, y, m)
 
-proc exp*(x: Int, y: culong, m: int | culong): Int =
+func exp*(x: Int, y: culong, m: int | culong): Int =
   ## Returns (`x` raised to `y`) modulo `m`.
   ## If `m` == 0, z = x^y.
   exp(x, y, newInt(m))
 
-proc exp*(x: int | culong, y: culong, m: Int): Int =
+func exp*(x: int | culong, y: culong, m: Int): Int =
   ## Returns (`x` raised to `y`) modulo `m`.
   ## If `m` == 0, z = x^y.
   exp(newInt(x), y, m)
 
-proc sqrt*(z, x: Int): Int =
+func sqrt*(z, x: Int): Int =
     result = z
     mpz_sqrt(z[], x[])
 
-proc sqrt*(x: Int): Int =
+func sqrt*(x: Int): Int =
   ## Returns the greatest common divisor of `x` and `y`.
   newInt().sqrt(x)
 
-proc gcd*(z, x, y: Int): Int =
+func gcd*(z, x, y: Int): Int =
   ## Sets `z` to the greatest common divisor of `x` and `y` and returns `z`.
   result = z
   mpz_gcd(z[], x[], y[])
 
-proc gcd*(z, x: Int, y: culong): Int =
+func gcd*(z, x: Int, y: culong): Int =
   ## Sets `z` to the greatest common divisor of `x` and `y` and returns `z`.
   result = z
   discard mpz_gcd_ui(z[], x[], y)
 
-proc gcd*(z, x: Int, y: int): Int =
+func gcd*(z, x: Int, y: int): Int =
   ## Sets `z` to the greatest common divisor of `x` and `y` and returns `z`.
   when isLLP64():
     if y.fitsLLP64ULong: z.gcd(x, y.culong) else: z.gcd(x, newInt(y))
   else:
     if y >= 0: z.gcd(x, y.culong) else: z.gcd(x, newInt(y))
 
-proc gcd*(x: Int, y: int | culong | Int): Int =
+func gcd*(x: Int, y: int | culong | Int): Int =
   ## Returns the greatest common divisor of `x` and `y`.
   newInt().gcd(x, y)
 
-proc gcd*(x: int | culong, y: Int): Int =
+func gcd*(x: int | culong, y: Int): Int =
   ## Returns the greatest common divisor of `x` and `y`.
   newInt().gcd(newInt(x), y)
 
-proc lcm*(z, x, y: Int): Int =
+func lcm*(z, x, y: Int): Int =
   ## Sets `z` to the least common multiple of `x` and `y` and returns `z`.
   result = z
   mpz_lcm(z[], x[], y[])
 
-proc lcm*(z, x: Int, y: culong): Int =
+func lcm*(z, x: Int, y: culong): Int =
   ## Sets `z` to the least common multiple of `x` and `y` and returns `z`.
   result = z
   mpz_lcm_ui(z[], x[], y)
 
-proc lcm*(z, x: Int, y: int): Int =
+func lcm*(z, x: Int, y: int): Int =
   ## Sets `z` to the least common multiple of `x` and `y` and returns `z`.
   when isLLP64():
     if y.fitsLLP64ULong: z.lcm(x, y.culong) else: z.lcm(x, newInt(y))
   else:
     if y >= 0: z.lcm(x, y.culong) else: z.lcm(x, newInt(y))
 
-proc lcm*(x: Int, y: int | culong | Int): Int =
+func lcm*(x: Int, y: int | culong | Int): Int =
   ## Returns the least common multiple of `x` and `y`.
   newInt().lcm(x, y)
 
-proc lcm*(x: int | culong, y: Int): Int =
+func lcm*(x: int | culong, y: Int): Int =
   ## Returns the least common multiple of `x` and `y`.
   newInt().lcm(newInt(x), y)
 
-proc `shl`*(z, x: Int, y: culong): Int =
+func `shl`*(z, x: Int, y: culong): Int =
   ## Sets `z` the `shift left` operation of `x` and `y` and returns `z`.
   result = z
   mpz_mul_2exp(z[], x[], y)
 
-proc `shl`*(x: Int, y: culong): Int =
+func `shl`*(x: Int, y: culong): Int =
   ## Computes the `shift left` operation of `x` and `y`.
   newInt().`shl`(x, y)
 
-proc `shr`*(z, x: Int, y: culong): Int =
+func `shr`*(z, x: Int, y: culong): Int =
   ## Sets `z` to the `shift right` operation of `x` and `y`.
   result = z
   mpz_fdiv_q_2exp(z[], x[], y)
 
-proc `shr`*(x: Int, y: culong): Int =
+func `shr`*(x: Int, y: culong): Int =
   ## Computes the `shift right` operation of `x` and `y`.
   newInt().`shr`(x, y)
 
-proc fitsCULong*(x: Int): bool =
+func fitsCULong*(x: Int): bool =
   ## Returns whether `x` fits in a culong.
   mpz_fits_ulong_p(x[]) != 0
 
-proc fitsCLong*(x: Int): bool =
+func fitsCLong*(x: Int): bool =
   ## Returns whether `x` fits in a clong.
   mpz_fits_slong_p(x[]) != 0
 
-proc fitsInt*(x: Int): bool =
+func fitsInt*(x: Int): bool =
   ## Returns whether `x` fits in an int.
   when isLLP64():
     if x[].mp_size < -1 or x[].mp_size > 1: return false
@@ -2668,21 +2668,21 @@ proc fitsInt*(x: Int): bool =
   else:
     x.fitsClong
 
-proc toCULong*(x: Int): culong =
+func toCULong*(x: Int): culong =
   ## Returns the value of `x` as a culong.
   ## If `x` is too big to fit a culong then just the least significant bits that
   ## do fit are returned. The sign of `x` is ignored, only the absolute value is
   ## used. To find out if the value will fit, use the proc `fitsCULong`.
   mpz_get_ui(x[])
 
-proc toCLong*(x: Int): clong =
+func toCLong*(x: Int): clong =
   ## If `x` fits into a clong returns the value of `x`. Otherwise returns the
   ## least significant part of `x`, with the same sign as `x`.
   ## If `x` is too big to fit in a clong, the returned result is probably not
   ## very useful. To find out if the value will fit, use the proc `fitsCLong`.
   mpz_get_si(x[])
 
-proc toInt*(x: Int): int =
+func toInt*(x: Int): int =
   ## If `x` fits into an int returns the value of `x`. Otherwise returns the
   ## least significant part of `x`, with the same sign as `x`.
   ## If `x` is too big to fit in an int, the returned result is probably not
@@ -2694,16 +2694,16 @@ proc toInt*(x: Int): int =
   else:
     x.toCLong
 
-proc neg*(z, x: Int): Int =
+func neg*(z, x: Int): Int =
   ## Sets `z` to -`x` and returns `z`.
   result = z
   mpz_neg(z[], x[])
 
-proc `-`*(x: Int): Int =
+func `-`*(x: Int): Int =
   ## Unary `-` operator for an Int. Negates `x`.
   newInt().neg(x)
 
-proc probablyPrime*(x: Int, n: cint): cint =
+func probablyPrime*(x: Int, n: cint): cint =
   ## Determines whether `x` is prime. Return 2 if `x` is definitely prime, return
   ## 1 if `x` is probably prime (without being certain), or return 0 if `x` is
   ## definitely composite.
@@ -2714,7 +2714,7 @@ proc probablyPrime*(x: Int, n: cint): cint =
   ## be identified as a prime with a probability of less than 2^(-50).
   mpz_probab_prime_p(x[], n)
 
-proc nextPrime*(z, x: Int): Int =
+func nextPrime*(z, x: Int): Int =
   ## Sets `z` to the next prime greater than `x`.
   ## This proc uses a probabilistic algorithm to identify primes. For practical
   ## purposes it's adequate, the chance of a composite passing will be extremely
@@ -2722,7 +2722,7 @@ proc nextPrime*(z, x: Int): Int =
   result = z
   mpz_nextprime(z[], x[])
 
-proc nextPrime*(x: Int): Int =
+func nextPrime*(x: Int): Int =
   ## Returns the next prime greater than `x`.
   ## This proc uses a probabilistic algorithm to identify primes. For practical
   ## purposes it's adequate, the chance of a composite passing will be extremely

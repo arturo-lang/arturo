@@ -58,7 +58,7 @@ proc printMultiData(label: string, data: seq[string], color: string = resetColor
     for item in data[1..^1]:
         printOneData("",item,resetColor,colorb)
 
-proc getShortData(initial: string): seq[string] =
+func getShortData(initial: string): seq[string] =
     result = @[initial]
     if result[0].len>50:
         let parts = result[0].splitWhitespace()
@@ -68,7 +68,7 @@ proc getShortData(initial: string): seq[string] =
             parts[middle+1..^1].join(" ")
         ]
 
-proc getTypeString(vs: ValueSpec):string =
+func getTypeString(vs: ValueSpec):string =
     var specs: seq[string] = @[]
 
     if vs == {}:
