@@ -18,7 +18,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-proc parsePathComponents*(s: string): OrderedTable[string,Value] {.inline.} =
+func parsePathComponents*(s: string): OrderedTable[string,Value] {.inline.} =
     var (dir, name, ext) = splitFile(s)
 
     result = {
