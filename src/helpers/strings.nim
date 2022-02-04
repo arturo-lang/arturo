@@ -23,10 +23,10 @@ when not defined(NOASCIIDECODE):
 #=======================================
 
 when not defined(NOASCIIDECODE):
-    proc convertToAscii*(input: string): string =
+    func convertToAscii*(input: string): string =
         return unidecode(input)
 
-proc truncatePreserving*(s: string, at: int, with: string = "..."): string =
+func truncatePreserving*(s: string, at: int, with: string = "..."): string =
     result = s
     if runeLen(s) > at:
         var i = at
@@ -36,7 +36,7 @@ proc truncatePreserving*(s: string, at: int, with: string = "..."): string =
         setLen result, i+1
         result.add with
 
-proc truncate*(s: string, at: int, with: string = "..."): string =
+func truncate*(s: string, at: int, with: string = "..."): string =
     result = s
     if runeLen(s) > (at + len(with)):
         setLen result, at+1
@@ -54,7 +54,7 @@ iterator tokenize*(text: string; sep: openArray[string]): string =
         inc i
     if i > lastMatch: yield text[lastMatch ..< i]
 
-proc centerUnicode*(s: string, width: int, padding = ' '.Rune): string =
+func centerUnicode*(s: string, width: int, padding = ' '.Rune): string =
     let sLen = s.runeLen
     if width <= sLen: return s
     let leftPadding = (width - sLen) div 2
@@ -63,7 +63,7 @@ proc centerUnicode*(s: string, width: int, padding = ' '.Rune): string =
     for i in (leftPadding+sLen) ..< width:
         result.add $padding
 
-proc levenshteinAlign*(astr, bstr: string, filler: Rune): tuple[a, b: string] =
+func levenshteinAlign*(astr, bstr: string, filler: Rune): tuple[a, b: string] =
     let a = astr
     let b = bstr
     var costs = newSeqWith(a.len + 1, newSeq[int](b.len + 1))
@@ -100,7 +100,7 @@ proc levenshteinAlign*(astr, bstr: string, filler: Rune): tuple[a, b: string] =
 type TCrc32* = uint32
 const InitCrc32* = TCrc32(0xffffffff)
  
-proc createCrcTable(): array[0..255, TCrc32] =
+func createCrcTable(): array[0..255, TCrc32] =
     for i in 0..255:
         var rem = TCrc32(i)
         for j in 0..7:
@@ -111,7 +111,7 @@ proc createCrcTable(): array[0..255, TCrc32] =
 # Table created at compile time
 const crc32table = createCrcTable()
  
-proc crc32*(s: string): string =
+func crc32*(s: string): string =
     var res = InitCrc32
     for c in s:
         res = (res shr 8) xor crc32table[(res and 0xff) xor byte(c)]
