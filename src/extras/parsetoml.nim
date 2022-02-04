@@ -171,7 +171,7 @@ proc getNextNonWhitespace(state: var ParserState,
 
   result = nextChar
 
-func charToInt(c: char, base: NumberBase): int {.inline, noSideEffect.} =
+func charToInt(c: char, base: NumberBase): int {.inline.} =
   case base
   of base10, base8, base2: result = int(c) - int('0')
   of base16:
@@ -293,7 +293,7 @@ proc parseDecimalPart(state: var ParserState): float64 =
     firstPos = false
 
 
-func stringDelimiter(kind: StringType): char {.inline, noSideEffect.} =
+func stringDelimiter(kind: StringType): char {.inline.} =
   result = (case kind
             of StringType.Basic: '\"'
             of StringType.Literal: '\'')
@@ -1760,7 +1760,7 @@ func `==`* (a, b: TomlValueRef): bool =
 
 import hashes
 
-func hash*(n: OrderedTable[string, TomlValueRef]): Hash {.noSideEffect.}
+func hash*(n: OrderedTable[string, TomlValueRef]): Hash
 
 func hash*(n: TomlValueRef): Hash =
   ## Compute the hash for a TOML node
