@@ -211,9 +211,14 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {Floating},
-        # TODO(Strings\jaro) add library documentation
-        #  labels: library,documentation,easy
         example     = """
+            jaro "one" "one"        ; => 1.0
+
+            jaro "crate" "trace"    ; => 0.7333333333333334
+            jaro "dwayne" "duane"   ; => 0.8222222222222223
+
+            jaro "abcdef" "fedcba"  ; => 0.3888888888888888
+            jaro "abcde" "vwxyz"    ; => 0.0
         """:
             push(newFloating(jaro(x.s,y.s)))    
 
