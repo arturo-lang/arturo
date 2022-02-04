@@ -644,6 +644,9 @@ proc copyValue*(v: Value): Value {.inline.} =
 proc addChild*(parent: Value, child: Value) {.inline.} =
     parent.a.add(child)
 
+proc removeChildren*(parent: Value, rng: Slice[int]) {.inline.} =
+    parent.a.delete(rng)
+
 proc asFloat*(v: Value): float = 
     # get number value forcefully as a float
     if v.kind == Floating:
