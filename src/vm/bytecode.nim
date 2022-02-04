@@ -297,5 +297,5 @@ proc readBytecode*(origin: string): Translation =
         discard
 
 
-proc hash*(x: OpCode): Hash {.inline.}=
+func hash*(x: OpCode): Hash {.inline.}=
     cast[Hash](ord(x))
