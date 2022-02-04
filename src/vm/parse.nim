@@ -80,6 +80,14 @@ template AddToken*(token: untyped): untyped =
     addChild(topBlock, token)
     #topBlock.refs.add(p.lineNumber)
 
+template stripTrailingNewlines*(): untyped =
+    if topBlock.a[^1].kind == Newline:
+        let lastN = topBlock.a.len-1
+        var firstN = lastN
+        while firstN-1 >= 0 and topBlock.a[firstN-1].kind == Newline:
+            firstN -= 1
+        removeChildren(topBlock, firstN..lastN)
+
 #=======================================
 # Helpers
 #=======================================
@@ -544,6 +552,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 inc(pos)
                 p.symbol = triangleright
             else: 
+                stripTrailingNewlines()
                 p.symbol = pipe
         of '/'  : 
             if p.buf[pos+1]=='/': 
