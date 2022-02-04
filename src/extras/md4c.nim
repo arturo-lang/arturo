@@ -10,13 +10,13 @@ type
 
     mdCallback* = proc (str: cstring, i: cint, p:pointer): pointer
 
-proc toMarkdown*(
+func toMarkdown*(
     input: cstring, 
     input_size: cint, 
     userdata: memBuffer, 
     parser_flags: cint, 
     renderer_flags: cint): cint {.importc: "toMarkdown",header: "<md4c/md4c-html.h>".}
 
-proc freeMarkdownBuffer*(
+func freeMarkdownBuffer*(
     userdata: memBuffer,
 ) {.importc: "membuf_fini",header: "<md4c/md4c-html.h>".}

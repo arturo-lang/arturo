@@ -35,7 +35,7 @@ var
 # Methods
 #=======================================
 
-proc suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
+func suggestAlternative*(s: string, reference: ValueDict = Syms): seq[string] {.inline.} =
     var levs = initOrderedTable[string,int]()
 
     for k,v in pairs(reference):

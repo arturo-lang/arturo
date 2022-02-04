@@ -125,8 +125,8 @@ when defined(WEB):
                Newline,
                Any          : discard
 
-    proc isArray(x: JsObject): bool {.noSideEffect, importcpp: "(Array.isArray(#))".}
-    proc jsonified(x: JsObject): cstring {.noSideEffect, importcpp: "(JSON.stringify(#))".}
+    func isArray(x: JsObject): bool {.importcpp: "(Array.isArray(#))".}
+    func jsonified(x: JsObject): cstring {.importcpp: "(JSON.stringify(#))".}
 
     proc parseJsObject*(n: JsObject): Value =
         if n.isNull() or n.isUndefined(): return VNULL

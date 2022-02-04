@@ -27,7 +27,7 @@ import vm/[
 # Helpers
 #=======================================
 
-proc getWordsInBlock*(bl: Value): seq[string] =
+func getWordsInBlock*(bl: Value): seq[string] =
     result = @[]
     for item in bl.a:
         case item.kind:
@@ -56,7 +56,7 @@ proc getUsedLibraryFunctions(code: Value): seq[string] =
     # and sort them
     result.sort()
 
-proc getUsedLibraryModules(funcs: seq[string]): seq[string] =
+func getUsedLibraryModules(funcs: seq[string]): seq[string] =
     result = deduplicate(funcs.map((f) => getInfo(f, Syms[f], Aliases)["module"].s))
 
     result.sort()

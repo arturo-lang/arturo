@@ -164,9 +164,27 @@ proc defineSymbols*() =
             "size"      : ({Integer},"specify the size of the generated palette")
         },
         returns     = {Block},
-        # TODO(Colors\palette) add library documentation
-        #  labels: library,documentation,easy
         example     = """
+            palette.triad #red      ; => [#FF0000 #00FF00 #0000FF]
+            palette.tetrad #red     ; => [#FF0000 #80FF00 #00FFFF #7F00FF]
+            ;;;;
+            palette.monochrome #red
+            ; => [#FF0000 #D40000 #AA0000 #7F0000 #550000 #2A0000]
+
+            palette.monochrome.size:10 #red
+            ; => [#FF0000 #E50000 #CC0000 #B20000 #990000 #7F0000 #660000 #4C0000 #330000 #190000]
+            ;;;;
+            palette.analogous #red
+            ; => [#FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600]
+
+            palette.analogous.size:10 #red
+            ; => [#FF00FF #FF00CC #FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600 #FF9900 #FFCC00]
+            ;;;;
+            palette.random #red
+            ; => [#FF0000 #00EC00 #0000D2 #00F000 #0000FF #00FF00]
+
+            palette.random.size:10 #red
+            ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
         """:
             ##########################################################
             if (popAttr("triad") != VNULL):
@@ -227,9 +245,12 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
-        # TODO(Colors\spin) add library documentation
-        #  labels: library,documentation,easy
         example     = """
+            spin #red 90            ; => #80FF00
+            spin #red 180           ; => #00FFFF
+
+            spin #123456 45         ; => #231256
+            spin #123456 360        ; => #123456
         """:
             ##########################################################
             if x.kind == Literal:

@@ -381,9 +381,10 @@ proc defineSymbols*() =
             },
             attrs       = NoAttrs,
             returns     = {Integer},
-            # TODO(Files\volume) add library documentation
-            #  labels: library,documentation,easy
             example     = """
+                volume "README.md"
+                ; => 13704 
+                ; (size in bytes)
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("volume")

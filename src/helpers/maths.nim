@@ -20,7 +20,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-proc addmod*[T: SomeInteger](a, b, modulus: T): T =
+func addmod*[T: SomeInteger](a, b, modulus: T): T =
     let a_m = if a < modulus: a else: a mod modulus
     if b == 0.T: return a_m
     let b_m = if b < modulus: b else: b mod modulus
@@ -29,7 +29,7 @@ proc addmod*[T: SomeInteger](a, b, modulus: T): T =
     if a_m >= b_from_m: return a_m - b_from_m
     return a_m + b_m 
  
-proc mulmod*[T: SomeInteger](a, b, modulus: T): T =
+func mulmod*[T: SomeInteger](a, b, modulus: T): T =
     var a_m = if a < modulus: a else: a mod modulus
     var b_m = if b < modulus: b else: b mod modulus
     if b_m > a_m: swap(a_m, b_m)
@@ -38,7 +38,7 @@ proc mulmod*[T: SomeInteger](a, b, modulus: T): T =
         a_m = (a_m shl 1) - (if a_m >= (modulus - a_m): modulus else: 0)
         b_m = b_m shr 1
  
-proc expmod*[T: SomeInteger](base, exponent, modulus: T): T =
+func expmod*[T: SomeInteger](base, exponent, modulus: T): T =
     result = 1
     var (e, b) = (exponent, base)
     while e > 0.T:
@@ -46,7 +46,7 @@ proc expmod*[T: SomeInteger](base, exponent, modulus: T): T =
         e = e shr 1
         b = mulmod(b, b, modulus)
  
-proc miller_rabin_test*[T: SomeInteger](num: T, witnesses: seq[uint64]): bool =
+func miller_rabin_test*[T: SomeInteger](num: T, witnesses: seq[uint64]): bool =
     var d = num - 1
     let (neg_one_mod, n) = (d, d)
     d = d shr countTrailingZeroBits(d)
@@ -60,7 +60,7 @@ proc miller_rabin_test*[T: SomeInteger](num: T, witnesses: seq[uint64]): bool =
         if y != neg_one_mod and (s and 1) != 1: return false
     true
  
-proc selectWitnesses*[T: SomeInteger](num: T): seq[uint64] =
+func selectWitnesses*[T: SomeInteger](num: T): seq[uint64] =
     if num < 341_531u:
         result = @[9345883071009581737u64]
     elif num < 1_050_535_501u:
@@ -78,7 +78,7 @@ proc selectWitnesses*[T: SomeInteger](num: T): seq[uint64] =
     else:
         result = @[2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
  
-proc isPrime*[T: SomeInteger](n: T): bool =
+func isPrime*[T: SomeInteger](n: T): bool =
     let primes = @[2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
     if n <= primes[^1].T: return (n in primes)
     let modp47 = 614889782588491410u
@@ -87,12 +87,12 @@ proc isPrime*[T: SomeInteger](n: T): bool =
     miller_rabin_test(n, witnesses)
 
 when not defined(NOGMP):
-    proc pollardG*(n: var Int, m: Int) {.inline.} =
+    func pollardG*(n: var Int, m: Int) {.inline.} =
         discard mul(n,n,n)
         discard add(n,n,1)
         discard `mod`(n,n,m)
 
-    proc pollardRho*(n: Int): Int =
+    func pollardRho*(n: Int): Int =
         var x = newInt(2)
         var y = newInt(2)
         var d = newInt(1)
@@ -123,7 +123,7 @@ when not defined(NOGMP):
         else:
             return d
 
-# proc factors*(n: int): seq[int] =
+# func factors*(n: int): seq[int] =
 #     var res: seq[int] = @[]
 
 #     var i = 1
@@ -138,7 +138,7 @@ when not defined(NOGMP):
 
 #     result = res
 
-proc factors*(n: int): seq[int] =
+func factors*(n: int): seq[int] =
     var tail: seq[int] = @[]
     result = @[]
 
@@ -154,7 +154,7 @@ proc factors*(n: int): seq[int] =
     tail.reverse()
     result &= tail
 
-proc primeFactorization*(n: int): seq[int] =
+func primeFactorization*(n: int): seq[int] =
     var x = n
     if x==0: return
     result = @[]
@@ -174,10 +174,10 @@ proc primeFactorization*(n: int): seq[int] =
     
     sort(result)
 
-proc primeFactors*(n: int): seq[int] =   
+func primeFactors*(n: int): seq[int] =   
     factors(n).filter((x)=>isPrime(x.uint64)) 
 
-proc getDigits*(n: int, base: int = 10): seq[int] =
+func getDigits*(n: int, base: int = 10): seq[int] =
     if n == 0: return @[0]
 
     var num = n
@@ -190,7 +190,7 @@ proc getDigits*(n: int, base: int = 10): seq[int] =
     result.reverse()
 
 when not defined(NOGMP):
-    proc getDigits*(n: Int, base: int = 10): seq[int] =
+    func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
 
         var num = n
@@ -201,7 +201,7 @@ when not defined(NOGMP):
 
         result.reverse()
 
-    proc primeFactors*(num: Int): seq[Int] =
+    func primeFactors*(num: Int): seq[Int] =
         result = @[]
         var n = num
 
@@ -222,7 +222,7 @@ when not defined(NOGMP):
         result.add(factor1)
         result.add(factor2)
         
-    proc primeFactorization*(n: Int): seq[Int] =
+    func primeFactorization*(n: Int): seq[Int] =
         var x = n
         if x==0: return
         result = @[]
@@ -249,7 +249,7 @@ when not defined(NOGMP):
         
         sort(result)
 
-    proc factors*(n: Int): seq[Int] =
+    func factors*(n: Int): seq[Int] =
         var tail: seq[Int] = @[]
         result = @[]
         var i = newInt(1)
@@ -265,7 +265,7 @@ when not defined(NOGMP):
         tail.reverse()
         result &= tail
 
-    proc isqrt*[T: SomeSignedInt | Int](x: T): T =
+    func isqrt*[T: SomeSignedInt | Int](x: T): T =
         when T is Int:
             result = newInt()
             var q = newInt(1)
@@ -285,7 +285,7 @@ when not defined(NOGMP):
                 z = t
                 result += q
 
-    proc powmod*(x: Value, y: Value, z: Value): Value =
+    func powmod*(x: Value, y: Value, z: Value): Value =
         var X : Value = x
         var Z : Value = z
         if x.iKind==NormalInteger: X = newBigInteger(x.i)
