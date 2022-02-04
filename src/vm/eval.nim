@@ -42,7 +42,7 @@ when defined(VERBOSE):
 # Helpers
 #=======================================
 
-proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
+func indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
     result = 0
     for i in items(a):
         if sameValue(item, i): return
