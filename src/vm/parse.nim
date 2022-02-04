@@ -94,7 +94,7 @@ template stripTrailingNewlines*(): untyped =
 
 ## Error reporting
 
-proc getContext*(p: var Parser, curPos: int): string =
+func getContext*(p: var Parser, curPos: int): string =
     result = ""
 
     var i = curPos
