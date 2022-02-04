@@ -193,7 +193,11 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         else: (for b in currentCommand.reversed: it.add(b))
                         currentCommand = @[]
                 else:
-                    # Ther is a trailing pipe;
+                    # TODO(Eval\addTerminalValue) Verify pipe operators are working
+                    #  Also, we should add some unit-tests
+                    # labels: vm,evaluator,enhancement,unit-test
+                    
+                    # There is a trailing pipe;
                     # let's inspect the following symbol
 
                     i += 1
@@ -210,15 +214,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     discard subargStack.pop()
                     subargStack[^1] -= 1
 
+                # TODO(Eval\addTerminalValue) pipes not working along with sub-blocks
+                #  it's mainly when we might combine `->`/`=>` sugar with pipes 
+                # labels: vm,evaluator,enhancement,bug
+
                 # Check for a trailing pipe
                 if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
                     if subargStack.len==0:
                         # The subcommand is finished
                         
                         ended = true
-
-            # TODO(Eval\addTerminalValue) pipes need to be re-implemented
-            #  labels: vm,evaluator,enhancement,bug
 
     template processNextCommand(): untyped =
         i += 1
