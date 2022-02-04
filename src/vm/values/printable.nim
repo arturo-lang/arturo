@@ -26,7 +26,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-proc `$`*(s: SymbolKind): string =
+func `$`*(s: SymbolKind): string =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
