@@ -203,7 +203,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             argStack.add(TmpArities[funcName]-1)
                             addTrailingConst(consts, n.a[i+1], opCall)
                             i += 1
-                    #echo "----"
             else:
                 if subargStack.len != 0: subargStack[^1] -= 1
 
@@ -220,25 +219,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             # TODO(Eval\addTerminalValue) pipes need to be re-implemented
             #  labels: vm,evaluator,enhancement,bug
-            # ## Process trailing pipe            
-            # if (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
-                
-            #     if (i+2<childrenCount and n.a[i+2].kind == Word):
-            #         if argStack.len != 0: argStack[^1] -= 1
-            #         var found = false
-            #         for indx,spec in OpSpecs:
-            #             if spec.name == n.a[i+2].s:
-            #                 found = true
-            #                 if (((currentCommand[0])>=(byte)(opStore0)) and ((currentCommand[0])<=(byte)(opStoreY))):
-            #                     currentCommand.insert((byte)indx, 1)
-            #                 else:
-            #                     currentCommand.insert((byte)indx)
-            #                 argStack.add(OpSpecs[indx].args-1)
-            #                 break
-            #         i += 2
-            #     else:
-            #         echo "found trailing pipe without adjunct command. exiting"
-            #         quit()
 
     template processNextCommand(): untyped =
         i += 1
