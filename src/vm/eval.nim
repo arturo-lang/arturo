@@ -12,6 +12,9 @@
 
 import algorithm, sequtils, tables, unicode
 
+when defined(VERBOSE):
+    import sugar
+
 when not defined(NOGMP):
     import extras/bignum
 
@@ -108,6 +111,26 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addToCommand((byte)indx)
                 addToCommand((byte)op)
 
+    template addToCommandHead(b: byte):untyped =
+        currentCommand.insert(b)
+
+    proc addTrailingConst(consts: var seq[Value], v: Value, op: OpCode) =
+        var indx = consts.indexOfValue(v)
+        if indx == -1:
+            consts.add(v)
+            indx = consts.len-1
+
+        if indx <= 29:
+            addToCommandHead((byte)(((byte)(op)-0x1E) + (byte)(indx)))
+        else:
+            if indx>255:
+                addToCommandHead((byte)indx)
+                addToCommandHead((byte)indx shr 8)
+                addToCommandHead((byte)(op)+1)
+            else:
+                addToCommandHead((byte)indx)
+                addToCommandHead((byte)op)
+
     proc addAttr(consts: var seq[Value], v: Value) =
         var indx = consts.find(v)
         if indx == -1:
@@ -159,6 +182,9 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     argStack[^1] -= 1
 
                 # Check for a trailing pipe
+                while (i+1<childrenCount and n.a[i+1].kind==Newline):
+                    i += 1
+
                 if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
                     if argStack.len==0:
                         # The command is finished
@@ -166,6 +192,25 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         if inBlock: (for b in currentCommand: it.add(b))
                         else: (for b in currentCommand.reversed: it.add(b))
                         currentCommand = @[]
+                else:
+                    #echo "Found trailing pipe"
+                    #echo "argStack: " & argStack.map((x) => $(x)).join(", ")
+                    # debugCurrentCommand()
+                    # echo "we are at pos: " & $(i)
+                    i += 1
+                    if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
+                        let funcName = n.a[i+1].s
+                        if TmpArities.hasKey(funcName):
+                            #echo "found function: " & funcName & " with arity: " & $(TmpArities[funcName])
+                            argStack.add(TmpArities[funcName]-1)
+                            #echo "argStack: " & argStack.map((x) => $(x)).join(", ")
+                            #echo "adding trailing const"
+                            addTrailingConst(consts, n.a[i+1], opCall)
+                            
+                            #echo "with arity: " & $(TmpArities[n.a[i+1].s])
+                            #echo "argStack: " & argStack.map((x) => $(x)).join(", ")
+                            i += 1
+                    #echo "----"
             else:
                 if subargStack.len != 0: subargStack[^1] -= 1
 
