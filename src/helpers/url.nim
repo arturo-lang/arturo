@@ -20,13 +20,13 @@ import vm/values/value
 # Methods
 #=======================================
 
-proc isUrl*(s: string): bool {.inline.} =
+func isUrl*(s: string): bool {.inline.} =
     when not defined(WEB):
         return s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
     else:
         return false
 
-proc parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
+func parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
     var res = initUri()
     parseUri(s, res)
 
