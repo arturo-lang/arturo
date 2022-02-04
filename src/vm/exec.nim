@@ -376,6 +376,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
     when defined(VERBOSE):
         if depth==0:
+            showDebugHeader("Constants")
+
+            for j, cn in cnst:
+                stdout.write fmt("{j}: ")
+                cn.dump(0,false)
+                
             showDebugHeader("Stack")
 
             i = 0
@@ -387,10 +393,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
                 i += 1
 
-            showDebugHeader("Symbols")
-            for k,v in Syms:
-                stdout.write fmt("{k} => ")
-                v.dump(0, false)
+            # showDebugHeader("Symbols")
+            # for k,v in Syms:
+            #     stdout.write fmt("{k} => ")
+            #     v.dump(0, false)
 
     let newSyms = Syms
     Syms = oldSyms

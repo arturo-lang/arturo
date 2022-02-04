@@ -12,6 +12,9 @@
 
 import algorithm, sequtils, tables, unicode
 
+when defined(VERBOSE):
+    import sugar
+
 when not defined(NOGMP):
     import extras/bignum
 
@@ -108,6 +111,30 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                 addToCommand((byte)indx)
                 addToCommand((byte)op)
 
+    template addToCommandHead(b: byte, at = 0):untyped =
+        currentCommand.insert(b, at)
+
+    proc addTrailingConst(consts: var seq[Value], v: Value, op: OpCode) =
+        var atPos = 0
+        if currentCommand[0] in opStore0.byte..opStoreX.byte:
+            atPos = 1
+
+        var indx = consts.indexOfValue(v)
+        if indx == -1:
+            consts.add(v)
+            indx = consts.len-1
+
+        if indx <= 29:
+            addToCommandHead((byte)(((byte)(op)-0x1E) + (byte)(indx)), atPos)
+        else:
+            if indx>255:
+                addToCommandHead((byte)indx, atPos)
+                addToCommandHead((byte)indx shr 8, atPos)
+                addToCommandHead((byte)(op)+1, atPos)
+            else:
+                addToCommandHead((byte)indx, atPos)
+                addToCommandHead((byte)op, atPos)
+
     proc addAttr(consts: var seq[Value], v: Value) =
         var indx = consts.find(v)
         if indx == -1:
@@ -158,7 +185,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     discard argStack.pop()
                     argStack[^1] -= 1
 
-                # Check for a trailing pipe
                 if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
                     if argStack.len==0:
                         # The command is finished
@@ -166,6 +192,27 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         if inBlock: (for b in currentCommand: it.add(b))
                         else: (for b in currentCommand.reversed: it.add(b))
                         currentCommand = @[]
+                else:
+                    # TODO(Eval\addTerminalValue) Verify pipe operators are working
+                    # labels: vm,evaluator,enhancement,unit-test
+                    
+                    # There is a trailing pipe;
+                    # let's inspect the following symbol
+
+                    i += 1
+                    if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
+                        let funcName = n.a[i+1].s
+                        if TmpArities.hasKey(funcName):
+                            if TmpArities[funcName]>1:
+                                argStack.add(TmpArities[funcName]-1)
+                                addTrailingConst(consts, n.a[i+1], opCall)
+                            else:
+                                addTrailingConst(consts, n.a[i+1], opCall)
+                                if argStack.len==0:
+                                    if inBlock: (for b in currentCommand: it.add(b))
+                                    else: (for b in currentCommand.reversed: it.add(b))
+                                    currentCommand = @[]
+                            i += 1
             else:
                 if subargStack.len != 0: subargStack[^1] -= 1
 
@@ -173,34 +220,16 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     discard subargStack.pop()
                     subargStack[^1] -= 1
 
+                # TODO(Eval\addTerminalValue) pipes not working along with sub-blocks
+                #  it's mainly when we might combine `->`/`=>` sugar with pipes 
+                # labels: vm,evaluator,enhancement,bug
+
                 # Check for a trailing pipe
                 if not (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
                     if subargStack.len==0:
                         # The subcommand is finished
                         
                         ended = true
-
-            # TODO(Eval\addTerminalValue) pipes need to be re-implemented
-            #  labels: vm,evaluator,enhancement,bug
-            # ## Process trailing pipe            
-            # if (i+1<childrenCount and n.a[i+1].kind == Symbol and n.a[i+1].m == pipe):
-                
-            #     if (i+2<childrenCount and n.a[i+2].kind == Word):
-            #         if argStack.len != 0: argStack[^1] -= 1
-            #         var found = false
-            #         for indx,spec in OpSpecs:
-            #             if spec.name == n.a[i+2].s:
-            #                 found = true
-            #                 if (((currentCommand[0])>=(byte)(opStore0)) and ((currentCommand[0])<=(byte)(opStoreY))):
-            #                     currentCommand.insert((byte)indx, 1)
-            #                 else:
-            #                     currentCommand.insert((byte)indx)
-            #                 argStack.add(OpSpecs[indx].args-1)
-            #                 break
-            #         i += 2
-            #     else:
-            #         echo "found trailing pipe without adjunct command. exiting"
-            #         quit()
 
     template processNextCommand(): untyped =
         i += 1
@@ -411,6 +440,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addConst(consts, newBlock(subblock), opPush)
 
                     of thickarrowright  : 
+                        # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
+                        # labels: vm,evaluator,enhancement,bug
                         while n.a[i+1].kind == Newline:
                             when not defined(NOERRORLINES):
                                 addEol(n.a[i+1].line)
