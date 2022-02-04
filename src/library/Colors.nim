@@ -227,9 +227,12 @@ proc defineSymbols*() =
         },
         attrs       = NoAttrs,
         returns     = {ValueKind.Color},
-        # TODO(Colors\spin) add library documentation
-        #  labels: library,documentation,easy
         example     = """
+            spin #red 90            ; => #80FF00
+            spin #red 180           ; => #00FFFF
+
+            spin #123456 45         ; => #231256
+            spin #123456 360        ; => #123456
         """:
             ##########################################################
             if x.kind == Literal:
