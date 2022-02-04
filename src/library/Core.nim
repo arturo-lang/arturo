@@ -46,9 +46,20 @@ proc defineSymbols*() =
             "infix"  : ({Logical},"use infix precedence")
         },
         returns     = {Nothing},
-        # TODO(Core\alias) Add documentation example
-        #  labels: library,documentation,easy
         example     = """
+            addThem: function [x, y][
+                x + y
+            ]
+            alias --> 'addThem
+    
+            print --> 2 3
+            ; 5
+            ;;;;
+            multiplyThem: function [x, y][ x * y ]
+            alias.infix {<=>} 'multiplyThem
+
+            print 2 <=> 3
+            ; 6
         """:
             ##########################################################
             var prec = PrefixPrecedence
