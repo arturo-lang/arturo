@@ -1203,20 +1203,20 @@ template colorFromRGB*(rgb: RGB): VColor =
 # Converters
 #=======================================
 
-proc RGBfromColor*(c: VColor): RGB =
+func RGBfromColor*(c: VColor): RGB =
     result.r = c.int shr 24 and 0xff
     result.g = c.int shr 16 and 0xff
     result.b = c.int shr 8 and 0xff
     result.a = c.int and 0xff
 
-proc RGBAfromColor*(c: VColor): RGB =
+func RGBAfromColor*(c: VColor): RGB =
     result.r = c.int shr 24 and 0xff
     result.g = c.int shr 16 and 0xff
     result.b = c.int shr 8 and 0xff
     result.a = c.int and 0xff
 
-proc HSLtoRGB*(hsl: HSL): RGB =
-    proc hueToRGB(p, q, t: float): float =
+func HSLtoRGB*(hsl: HSL): RGB =
+    func hueToRGB(p, q, t: float): float =
         var T = t
         if t<0: T += 1.0
         if t>1: T -= 1.0
@@ -1251,7 +1251,7 @@ proc HSLtoRGB*(hsl: HSL): RGB =
 
     return ((int)r, (int)g, (int)b, (int)a)
 
-proc HSVtoRGB*(hsv: HSV): RGB =
+func HSVtoRGB*(hsv: HSV): RGB =
     let h = (((float)hsv.h)/360)
     let s = hsv.s
     let v = hsv.v
@@ -1280,7 +1280,7 @@ proc HSVtoRGB*(hsv: HSV): RGB =
 
     return ((int)r, (int)g, (int)b, (int)a)
 
-proc RGBtoHSL*(c: VColor): HSL =
+func RGBtoHSL*(c: VColor): HSL =
     let rgb = RGBfromColor(c)
 
     let R = rgb.r / 255
@@ -1313,7 +1313,7 @@ proc RGBtoHSL*(c: VColor): HSL =
 
     return ((int)h,s,l,a)
 
-proc RGBtoHSV*(c: VColor): HSV =
+func RGBtoHSV*(c: VColor): HSV =
     let rgb = RGBfromColor(c)
 
     let R = rgb.r / 255
@@ -1347,24 +1347,24 @@ proc RGBtoHSV*(c: VColor): HSV =
 # Helpers
 #=======================================
 
-proc satPlus(a, b: int): int {.inline.} =
+func satPlus(a, b: int): int {.inline.} =
     result = a +% b
     if result > 255: result = 255
 
-proc satMinus(a, b: int): int {.inline.} =
+func satMinus(a, b: int): int {.inline.} =
     result = a -% b
     if result < 0: result = 0
 
-proc colorNameCmp(x: tuple[name: string, col: VColor], y: string): int =
+func colorNameCmp(x: tuple[name: string, col: VColor], y: string): int =
     result = cmpIgnoreCase(x.name, y)
 
 #=======================================
 # Overloads
 #=======================================
 
-proc `==` *(a, b: VColor): bool {.borrow.}
+func `==` *(a, b: VColor): bool {.borrow.}
 
-proc `+`*(a, b: VColor): VColor =
+func `+`*(a, b: VColor): VColor =
     let A = RGBfromColor(a)
     let B = RGBfromColor(b)
 
@@ -1375,7 +1375,7 @@ proc `+`*(a, b: VColor): VColor =
         satPlus(A.a, B.a)
     )
 
-proc `-`*(a, b: VColor): VColor =
+func `-`*(a, b: VColor): VColor =
     let A = RGBfromColor(a)
     let B = RGBfromColor(b)
 
@@ -1386,7 +1386,7 @@ proc `-`*(a, b: VColor): VColor =
         satMinus(A.a, B.a)
     )
 
-proc `$`*(c: VColor): string =
+func `$`*(c: VColor): string =
     if (c.int and 0xff) < 0xff:
         result = '#' & toHex(int(c), 8)
     else:
@@ -1396,22 +1396,22 @@ proc `$`*(c: VColor): string =
 # Constructors
 #=======================================
 
-proc colorFromShortHex*(s: string): VColor =
+func colorFromShortHex*(s: string): VColor =
     let token = s[0] & s[0] & s[1] & s[1] & s[2] & s[2] & "FF"
     result = VColor(parseHexInt(token))
 
-proc colorFromHex*(s: string): VColor =
+func colorFromHex*(s: string): VColor =
     result = VColor(parseHexInt(s) shl 8 or 0xff)
 
-proc colorFromHexWithAlpha*(s: string): VColor =
+func colorFromHexWithAlpha*(s: string): VColor =
     result = VColor(parseHexInt(s))
 
-proc colorByName*(name: string): VColor =
+func colorByName*(name: string): VColor =
     var idx = binarySearch(colorNames, name, colorNameCmp)
     if idx < 0: raise newException(ValueError, "unknown color: " & name)
     result = colorNames[idx][1]
 
-proc parseColor*(str: string): VColor =
+func parseColor*(str: string): VColor =
     var s = str
     if s[0]=='#': s = str[1..^1]
     try:
@@ -1426,7 +1426,7 @@ proc parseColor*(str: string): VColor =
 # Methods
 #=======================================
 
-proc alterColorValue*(c: VColor, f: float): VColor =
+func alterColorValue*(c: VColor, f: float): VColor =
     var (r,g,b,a) = RGBfromColor(c)
     var pcent: float
     if f > 0:
@@ -1444,21 +1444,21 @@ proc alterColorValue*(c: VColor, f: float): VColor =
     else:
         return c
 
-proc invertColor*(c: VColor): RGB =
+func invertColor*(c: VColor): RGB =
     var hsl = RGBtoHSL(c)
     hsl.h += 180;
     if hsl.h > 360:
         hsl.h -= 360
     return HSLtoRGB(hsl)
 
-proc saturateColor*(c: VColor, diff: float): RGB =
+func saturateColor*(c: VColor, diff: float): RGB =
     var hsl = RGBtoHSL(c)
     hsl.s = hsl.s + hsl.s * diff
     if hsl.s > 1: hsl.s = 1
     if hsl.s < 0: hsl.s = 0
     return HSLtoRGB(hsl)
 
-proc blendColors*(c1: VColor, c2: VColor, balance: float): RGB =
+func blendColors*(c1: VColor, c2: VColor, balance: float): RGB =
     let rgb1 = RGBfromColor(c1)
     let rgb2 = RGBfromColor(c2)
 
@@ -1484,16 +1484,16 @@ func spinColor*(c: VColor, amount: int): VColor =
 
 # Palettes
 
-proc triadPalette*(c: VColor): Palette =
+func triadPalette*(c: VColor): Palette =
     result = @[0, 120, 240].map((x) => spinColor(c, x))
 
-proc tetradPalette*(c: VColor): Palette =
+func tetradPalette*(c: VColor): Palette =
     result = @[0, 90, 180, 270].map((x) => spinColor(c, x))
 
-proc splitPalette*(c: VColor): Palette =
+func splitPalette*(c: VColor): Palette =
     result = @[0, 72, 216].map((x) => spinColor(c, x))
 
-proc analogousPalette*(c: VColor, size: int): Palette =
+func analogousPalette*(c: VColor, size: int): Palette =
     let slices = 30
     let part = (int)(360 / slices)
 
@@ -1506,7 +1506,7 @@ proc analogousPalette*(c: VColor, size: int): Palette =
         hsl.h = (hsl.h + part) mod 360
         inc i
 
-proc monochromePalette*(c: VColor, size: int): Palette =
+func monochromePalette*(c: VColor, size: int): Palette =
     var hsv = RGBtoHSV(c)
     let modification = 1.0 / (float)(size)
     var i = 0
