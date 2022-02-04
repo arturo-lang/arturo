@@ -342,9 +342,9 @@ var
 # Forward Declarations
 #=======================================
 
-proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
-proc `$`(v: Value): string {.inline.}
-proc hash*(v: Value): Hash {.inline.}
+func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.}
+func `$`(v: Value): string {.inline.}
+func hash*(v: Value): Hash {.inline.}
 
 #=======================================
 # Helpers
@@ -362,10 +362,10 @@ when defined(WEB):
     proc flushFile*(buffer: var string) =
         echo buffer
 
-proc newNull*(): Value {.inline.} =
+template newNull*(): Value =
     VNULL
 
-proc newNothing*(): Value {.inline.} =
+template newNothing*(): Value =
     VNOTHING
 
 proc newLogical*(b: logical): Value {.inline.} =
@@ -391,13 +391,13 @@ when not defined(NOGMP):
     proc newInteger*(bi: Int): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
-proc newInteger*(i: int): Value {.inline.} =
+func newInteger*(i: int): Value {.inline.} =
     result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
-proc newInteger*(i: int64): Value {.inline.} =
+func newInteger*(i: int64): Value {.inline.} =
     newInteger((int)(i))
 
-proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
+func newInteger*(i: string, lineno: int = 1): Value {.inline.} =
     try:
         return newInteger(parseInt(i))
     except ValueError:
@@ -406,26 +406,26 @@ proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
         else:
             RuntimeError_IntegerParsingOverflow(lineno, i)
 
-proc newBigInteger*(i: int): Value {.inline.} =
+func newBigInteger*(i: int): Value {.inline.} =
     when not defined(NOGMP):
         result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
-proc newFloating*(f: float): Value {.inline.} =
+func newFloating*(f: float): Value {.inline.} =
     Value(kind: Floating, f: f)
 
-proc newFloating*(f: int): Value {.inline.} =
+func newFloating*(f: int): Value {.inline.} =
     Value(kind: Floating, f: (float)(f))
 
-proc newFloating*(f: string): Value {.inline.} =
+func newFloating*(f: string): Value {.inline.} =
     newFloating(parseFloat(f))
 
-proc newComplex*(com: Complex64): Value {.inline} =
+func newComplex*(com: Complex64): Value {.inline} =
     Value(kind: Complex, z: com)
 
-proc newComplex*(fre: float, fim: float): Value {.inline.} =
+func newComplex*(fre: float, fim: float): Value {.inline.} =
     Value(kind: Complex, z: Complex64(re: fre, im: fim))
 
-proc newComplex*(fre: Value, fim: Value): Value {.inline} =
+func newComplex*(fre: Value, fim: Value): Value {.inline} =
     var r: float
     var i: float
 
@@ -437,7 +437,7 @@ proc newComplex*(fre: Value, fim: Value): Value {.inline} =
 
     newComplex(r,i)
 
-proc newVersion*(v: string): Value {.inline.} =
+func newVersion*(v: string): Value {.inline.} =
     var numPart = ""
     var extraPart = ""
     var lastIndex : int
@@ -457,7 +457,7 @@ proc newVersion*(v: string): Value {.inline.} =
                          patch: parseInt(parts[2]), 
                          extra: extraPart)
 
-proc newType*(t: ValueKind): Value {.inline.} =
+func newType*(t: ValueKind): Value {.inline.} =
     Value(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(n: string, p: Value = VNULL): Value {.inline.} =
@@ -473,59 +473,59 @@ proc newType*(t: string): Value {.inline.} =
     except ValueError:
         newUserType(t)
 
-proc newChar*(c: Rune): Value {.inline.} =
+func newChar*(c: Rune): Value {.inline.} =
     Value(kind: Char, c: c)
 
-proc newChar*(c: char): Value {.inline.} =
+func newChar*(c: char): Value {.inline.} =
     Value(kind: Char, c: ($c).runeAt(0))
 
-proc newChar*(c: string): Value {.inline.} =
+func newChar*(c: string): Value {.inline.} =
     Value(kind: Char, c: c.runeAt(0))
 
-proc newString*(s: string, dedented: bool = false): Value {.inline.} =
+func newString*(s: string, dedented: bool = false): Value {.inline.} =
     if not dedented: Value(kind: String, s: s)
     else: Value(kind: String, s: unicode.strip(dedent(s)))
 
-proc newString*(s: cstring, dedented: bool = false): Value {.inline.} =
+func newString*(s: cstring, dedented: bool = false): Value {.inline.} =
     newString($(s), dedented)
 
-proc newWord*(w: string): Value {.inline.} =
+func newWord*(w: string): Value {.inline.} =
     Value(kind: Word, s: w)
 
-proc newLiteral*(l: string): Value {.inline.} =
+func newLiteral*(l: string): Value {.inline.} =
     Value(kind: Literal, s: l)
 
-proc newLabel*(l: string): Value {.inline.} =
+func newLabel*(l: string): Value {.inline.} =
     Value(kind: Label, s: l)
 
-proc newAttribute*(a: string): Value {.inline.} =
+func newAttribute*(a: string): Value {.inline.} =
     Value(kind: Attribute, r: a)
 
-proc newAttributeLabel*(a: string): Value {.inline.} =
+func newAttributeLabel*(a: string): Value {.inline.} =
     Value(kind: AttributeLabel, r: a)
 
-proc newPath*(p: ValueArray): Value {.inline.} =
+func newPath*(p: ValueArray): Value {.inline.} =
     Value(kind: Path, p: p)
 
-proc newPathLabel*(p: ValueArray): Value {.inline.} =
+func newPathLabel*(p: ValueArray): Value {.inline.} =
     Value(kind: PathLabel, p: p)
 
-proc newSymbol*(m: SymbolKind): Value {.inline.} =
+func newSymbol*(m: SymbolKind): Value {.inline.} =
     Value(kind: Symbol, m: m)
 
-proc newSymbol*(m: string): Value {.inline.} =
+func newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
-proc newColor*(l: VColor): Value {.inline.} =
+func newColor*(l: VColor): Value {.inline.} =
     Value(kind: Color, l: l)
 
-proc newColor*(rgb: RGB): Value {.inline.} =
+func newColor*(rgb: RGB): Value {.inline.} =
     newColor(colorFromRGB(rgb))
 
-proc newColor*(l: string): Value {.inline.} =
+func newColor*(l: string): Value {.inline.} =
     newColor(parseColor(l))
 
-proc newDate*(dt: DateTime): Value {.inline.} =
+func newDate*(dt: DateTime): Value {.inline.} =
     let edict = {
         "hour"      : newInteger(dt.hour),
         "minute"    : newInteger(dt.minute),
@@ -541,16 +541,16 @@ proc newDate*(dt: DateTime): Value {.inline.} =
     }.toOrderedTable
     Value(kind: Date, e: edict, eobj: dt)
 
-proc newBinary*(n: ByteArray = @[]): Value {.inline.} =
+func newBinary*(n: ByteArray = @[]): Value {.inline.} =
     Value(kind: Binary, n: n)
 
-proc newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
+func newDictionary*(d: ValueDict = initOrderedTable[string,Value]()): Value {.inline.} =
     Value(kind: Dictionary, d: d)
 
-proc newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
+func newFunction*(params: Value, main: Value, imports: Value = VNULL, exports: Value = VNULL, exportable: bool = false, memoize: bool = false): Value {.inline.} =
     Value(kind: Function, fnKind: UserFunction, params: params, main: main, imports: imports, exports: exports, exportable: exportable, memoize: memoize)
 
-proc newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
+func newBuiltin*(name: string, al: SymbolKind, pr: PrecedenceKind, desc: string, ar: int, ag: OrderedTable[string,ValueSpec], at: OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: string, act: BuiltinAction): Value {.inline.} =
     Value(
         kind    : Function, 
         fnKind  : BuiltinFunction, 
@@ -573,16 +573,16 @@ when not defined(NOSQLITE):
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
 #     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
-proc newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
+func newBytecode*(c: ValueArray, i: ByteArray): Value {.inline.} =
     Value(kind: Bytecode, consts: c, instrs: i)
 
-proc newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
+func newInline*(a: ValueArray = @[]): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} = 
     Value(kind: Inline, a: a)#, refs: refs)
 
-proc newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
+func newBlock*(a: ValueArray = @[], data = VNULL): Value {.inline.} = #, refs: seq[int] = @[]): Value {.inline.} =
     Value(kind: Block, a: a, data: data)#, refs: refs)
 
-proc newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
+func newIntegerBlock*[T](a: seq[T]): Value {.inline.} =
     newBlock(a.map(proc (x:T):Value = newInteger((int)(x))))
 
 proc newStringBlock*(a: seq[string]): Value {.inline.} =
@@ -591,7 +591,7 @@ proc newStringBlock*(a: seq[string]): Value {.inline.} =
 proc newStringBlock*(a: seq[cstring]): Value {.inline.} =
     newBlock(a.map(proc (x:cstring):Value = newString(x)))
 
-proc newNewline*(l: int): Value {.inline.} =
+func newNewline*(l: int): Value {.inline.} =
     #echo "VALUE: adding newline: " & $(l)
     Value(kind: Newline, line: l)
 
@@ -641,20 +641,20 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         else: discard
 
-proc addChild*(parent: Value, child: Value) {.inline.} =
+func addChild*(parent: Value, child: Value) {.inline.} =
     parent.a.add(child)
 
-proc removeChildren*(parent: Value, rng: Slice[int]) {.inline.} =
+func removeChildren*(parent: Value, rng: Slice[int]) {.inline.} =
     parent.a.delete(rng)
 
-proc asFloat*(v: Value): float = 
+func asFloat*(v: Value): float = 
     # get number value forcefully as a float
     if v.kind == Floating:
         result = v.f
     else:
         result = (float)(v.i)
 
-proc getArity*(x: Value): int =
+func getArity*(x: Value): int =
     if x.fnKind==BuiltinFunction:
         return x.arity
     else:
@@ -1302,12 +1302,12 @@ proc `!!=`*(x: var Value) =
 # proc `!=`*[T](x,y:ref T){.error.}
 # proc cmp*[T](x,y:ref T){.error.}
 
-proc `$`*(b: logical): string =
+func `$`*(b: logical): string =
     if b==True: return "true"
     elif b==False: return "false"
     else: return "maybe"
 
-proc `$`(s: SymbolKind): string =
+func `$`(s: SymbolKind): string =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
@@ -1401,7 +1401,7 @@ proc `$`(s: SymbolKind): string =
 
         of unaliased                : discard
 
-proc `$`(v: Value): string {.inline.} =
+func `$`(v: Value): string {.inline.} =
     case v.kind:
         of Null         : return "null"
         of Logical      : return $(v.b)
@@ -1643,7 +1643,7 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 #  Indentation is not working right for inner dictionaries and blocks
 #  Check: `print as.pretty.code.unwrapped info.get 'get`
 #  labels: values,enhancement,library
-proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
+func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
     if pretty:
@@ -1754,7 +1754,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         if not isLast:
             result &= "\n"
 
-proc sameValue*(x: Value, y: Value): bool {.inline.}=
+func sameValue*(x: Value, y: Value): bool {.inline.}=
     if x.kind in [Integer, Floating] and y.kind in [Integer, Floating]:
         if x.kind==Integer:
             if y.kind==Integer: 
@@ -1848,7 +1848,7 @@ proc sameValue*(x: Value, y: Value): bool {.inline.}=
 
 # TODO(Value\hash) Verify hashing is done right
 #  labels: vm,unit-test
-proc hash*(v: Value): Hash {.inline.}=
+func hash*(v: Value): Hash {.inline.}=
     case v.kind:
         of Null         : result = 0
         of Logical      : result = cast[Hash](v.b)
