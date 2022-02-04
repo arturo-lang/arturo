@@ -13,9 +13,6 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-when defined(BENCHMARK) or defined(VERBOSE):
-    import helpers/debug
-
 import vm/[errors, values/value]
 
 #=======================================
