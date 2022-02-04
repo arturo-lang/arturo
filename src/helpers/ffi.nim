@@ -23,19 +23,19 @@ when not defined(WEB):
     # but it kinda works - better than nothing!
 
     type
-        V_Caller*      = proc():pointer                         {.nimcall.}
-        I_Caller*      = proc(a: int):pointer                   {.nimcall.}
-        F_Caller*      = proc(a: float):pointer                 {.nimcall.}
-        S_Caller*      = proc(a: cstring):pointer               {.nimcall.}
-        II_Caller*     = proc(a: int, b:int):pointer            {.nimcall.}
-        IF_Caller*     = proc(a: int, b: float):pointer         {.nimcall.}
-        IS_Caller*     = proc(a: int, b:cstring):pointer        {.nimcall.}
-        FI_Caller*     = proc(a: float, b:int):pointer          {.nimcall.}
-        FF_Caller*     = proc(a: float, b:float):pointer        {.nimcall.}
-        FS_Caller*     = proc(a: float, b:cstring):pointer      {.nimcall.}
-        SI_Caller*     = proc(a: cstring, b:int):pointer        {.nimcall.}
-        SF_Caller*     = proc(a: cstring, b:float):pointer      {.nimcall.}
-        SS_Caller*     = proc(a: cstring, b:cstring):pointer    {.nimcall.}
+        V_Caller*      = func():pointer                         {.nimcall.}
+        I_Caller*      = func(a: int):pointer                   {.nimcall.}
+        F_Caller*      = func(a: float):pointer                 {.nimcall.}
+        S_Caller*      = func(a: cstring):pointer               {.nimcall.}
+        II_Caller*     = func(a: int, b:int):pointer            {.nimcall.}
+        IF_Caller*     = func(a: int, b: float):pointer         {.nimcall.}
+        IS_Caller*     = func(a: int, b:cstring):pointer        {.nimcall.}
+        FI_Caller*     = func(a: float, b:int):pointer          {.nimcall.}
+        FF_Caller*     = func(a: float, b:float):pointer        {.nimcall.}
+        FS_Caller*     = func(a: float, b:cstring):pointer      {.nimcall.}
+        SI_Caller*     = func(a: cstring, b:int):pointer        {.nimcall.}
+        SF_Caller*     = func(a: cstring, b:float):pointer      {.nimcall.}
+        SS_Caller*     = func(a: cstring, b:cstring):pointer    {.nimcall.}
 
     #=======================================
     # Helpers
@@ -69,14 +69,14 @@ when not defined(WEB):
         checkRunner(runner)
         runner(arg1,arg2)
 
-    proc resolveLibrary*(path: string): string =
+    func resolveLibrary*(path: string): string =
         let (_, _, extension) = splitFile(path)
         if extension != "":
             result = path
         else:
             result = DynlibFormat % [path]
 
-    proc boolToInt*(v: Value): int =
+    func boolToInt*(v: Value): int =
         if v.b==True: result = 1
         else: result = 0
 
