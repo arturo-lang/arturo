@@ -51,10 +51,11 @@ proc indexOfValue*(a: seq[Value], item: Value): int {.inline.}=
 # Methods
 #=======================================
 
-template addEol(line: untyped):untyped =
-    it.add((byte)opEol)
-    it.add((byte)line shr 8)
-    it.add((byte)line)
+when not defined(NOERRORLINES):
+    template addEol(line: untyped):untyped =
+        it.add((byte)opEol)
+        it.add((byte)line shr 8)
+        it.add((byte)line)
 
 proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool = false, isDictionary: bool = false) =
     var argStack: seq[int] = @[]
@@ -411,7 +412,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
                     of thickarrowright  : 
                         while n.a[i+1].kind == Newline:
-                            addEol(n.a[i+1].line)
+                            when not defined(NOERRORLINES):
+                                addEol(n.a[i+1].line)
                             i += 1
                         # get next node
                         let subnode = n.a[i+1]
@@ -501,7 +503,10 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
             of Bytecode: discard
 
             of Newline: 
-                addEol(node.line)
+                when not defined(NOERRORLINES):
+                    addEol(node.line)
+                else:
+                    discard
                 # #echo "EVAL: found newline: " & $(node.line)
                 # it.add((byte)opEol)
                 # it.add((byte)node.line shr 8)
