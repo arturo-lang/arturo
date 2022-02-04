@@ -194,7 +194,6 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                         currentCommand = @[]
                 else:
                     # TODO(Eval\addTerminalValue) Verify pipe operators are working
-                    #  Also, we should add some unit-tests
                     # labels: vm,evaluator,enhancement,unit-test
                     
                     # There is a trailing pipe;
@@ -204,8 +203,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                     if (i+1<childrenCount and n.a[i+1].kind == Word and Syms[n.a[i+1].s].kind == Function):
                         let funcName = n.a[i+1].s
                         if TmpArities.hasKey(funcName):
-                            argStack.add(TmpArities[funcName]-1)
-                            addTrailingConst(consts, n.a[i+1], opCall)
+                            if TmpArities[funcName]>1:
+                                argStack.add(TmpArities[funcName]-1)
+                                addTrailingConst(consts, n.a[i+1], opCall)
+                            else:
+                                addTrailingConst(consts, n.a[i+1], opCall)
+                                if argStack.len==0:
+                                    if inBlock: (for b in currentCommand: it.add(b))
+                                    else: (for b in currentCommand.reversed: it.add(b))
+                                    currentCommand = @[]
                             i += 1
             else:
                 if subargStack.len != 0: subargStack[^1] -= 1
@@ -434,6 +440,8 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
                             addConst(consts, newBlock(subblock), opPush)
 
                     of thickarrowright  : 
+                        # TODO(Eval\addTerminalValue) Thick arrow-right not working with pipes
+                        # labels: vm,evaluator,enhancement,bug
                         while n.a[i+1].kind == Newline:
                             when not defined(NOERRORLINES):
                                 addEol(n.a[i+1].line)
