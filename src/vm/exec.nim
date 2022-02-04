@@ -333,9 +333,11 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opNop                : discard
 
             of opEol                :
-                i += 2
-                CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-                #echo "found EOL: " & $(CurrentLine)
+                when not defined(NOERRORLINES):
+                    i += 2
+                    CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                else:
+                    discard
 
             # reserved
             of opRsrv1..opRsrv2     : discard
