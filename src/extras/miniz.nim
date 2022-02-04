@@ -880,7 +880,7 @@ proc open*(zip: var Zip, path: string, mode:FileMode=fmRead): bool {.discardable
   else:
     quit "unsupported mode for zip"
 
-func add_file*(zip: var Zip, path: string, archivePath:string="") =
+proc add_file*(zip: var Zip, path: string, archivePath:string="") =
   check_mode(zip, MZ_ZIP_MODE_WRITING, "add_file")
   var comment:pointer
   if not fileExists(path):
@@ -890,14 +890,14 @@ func add_file*(zip: var Zip, path: string, archivePath:string="") =
     arcPath = archivePath.cstring
   doAssert zip.c.addr.mz_zip_writer_add_file(archivePath, path.cstring, comment, 0, cast[mz_uint](3'u16 or MZ_ZIP_FLAG_CASE_SENSITIVE.uint16)) == MZ_TRUE
 
-func close*(zip: var Zip) =
+proc close*(zip: var Zip) =
   if zip.mode == fmWrite:
     doAssert zip.c.addr.mz_zip_writer_finalize_archive() == MZ_TRUE
     doAssert zip.c.addr.mz_zip_writer_end() == MZ_TRUE
   elif zip.mode == fmRead:
     doAssert zip.c.addr.mz_zip_reader_end() == MZ_TRUE
 
-func get_file_name(zip: var Zip, i:int): string {.inline.} =
+proc get_file_name(zip: var Zip, i:int): string {.inline.} =
   var size = zip.c.addr.mz_zip_reader_get_filename(i.mz_uint, (cstring)result, 0)
   result.setLen(size.int)
   doAssert zip.c.addr.mz_zip_reader_get_filename(i.mz_uint, (cstring)result, size) > 0.mz_uint
