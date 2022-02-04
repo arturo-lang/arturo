@@ -10,7 +10,7 @@
 # Methods
 #=======================================
 
-func showDebugHeader*(title: string) =
+proc showDebugHeader*(title: string) =
     echo "======================================================="
     echo "== " & title
     echo "======================================================="
