@@ -397,7 +397,7 @@ func newInteger*(i: int): Value {.inline.} =
 func newInteger*(i: int64): Value {.inline.} =
     newInteger((int)(i))
 
-func newInteger*(i: string, lineno: int = 1): Value {.inline.} =
+proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
     try:
         return newInteger(parseInt(i))
     except ValueError:
