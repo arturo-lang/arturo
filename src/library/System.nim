@@ -176,9 +176,20 @@ proc defineSymbols*() =
             args        = NoArgs,
             attrs       = NoAttrs,
             returns     = {Dictionary},
-            # TODO(System\process) add library documentation
-            #  labels: library,documentation,easy
             example     = """
+                print process\id
+                ; 78046
+
+                inspect process
+                ; [ :dictionary
+                ;       id      :	78046 :integer
+                ;       memory  :	[ :dictionary
+                ;           occupied  :		1783104 :integer
+                ;           free      :		360448 :integer
+                ;           total     :		2379776 :integer
+                ;           max       :		2379776 :integer
+                ;       ]
+                ; ]
             """:
                 ##########################################################
                 var ret = initOrderedTable[string,Value]()
