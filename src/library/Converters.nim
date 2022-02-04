@@ -672,8 +672,6 @@ proc defineSymbols*() =
             "lower" : ({Logical},"automatically convert all keys to lowercase")
         },
         returns     = {Dictionary},
-        # TODO(Converters\dictionary) add documentation example for `.lower`
-        #  labels: library, documentation, easy
         example     = """
             none: #[]               ; none: []
             a: #[
@@ -690,7 +688,14 @@ proc defineSymbols*() =
             ]
             ; we are in the block
             ; yep
-            ; => [name: "John", age: 34]
+            ; d: [name: "John", age: 34]
+            ;;;;
+            e: #.lower [
+                Name: "John"
+                suRnaMe: "Doe"
+                AGE: 35
+            ]
+            ; e: [name:John, surname:Doe, age:35]
         """:
             ##########################################################
             var dict: ValueDict
