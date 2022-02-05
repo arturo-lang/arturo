@@ -4,9 +4,5 @@ factorial: function [n][
 	(n>0) ? -> n * factorial n-1
 	        -> 1
 ]
-
-i: new 0
-while [i<maxLimit][
+loop 0..maxLimit 'i -> 
 	print factorial i
-	inc 'i
-]
