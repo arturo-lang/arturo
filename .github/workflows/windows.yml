@@ -106,6 +106,8 @@ jobs:
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
+          arturo -m list
+          arturo -m remote
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
