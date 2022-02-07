@@ -128,6 +128,7 @@ when isMainModule and not defined(WEB):
                         of "m", "module":
                             action = evalCode
                             code = runModule
+                            break
                         of "d","debug":
                             debug = true
                         of "no-color":
