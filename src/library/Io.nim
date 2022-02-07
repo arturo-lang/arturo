@@ -246,7 +246,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "lines" : ({Logical},"print each value in block in a new line"),
+        },
         returns     = {Nothing},
         example     = """
             print "Hello world!"          ; Hello world!
@@ -255,6 +257,8 @@ proc defineSymbols*() =
             if x.kind==Block:
                 when defined(WEB):
                     stdout = ""
+
+                let inLines = (popAttr("lines")!=VNULL)
 
                 let xblock = doEval(x)
                 let stop = SP
@@ -266,9 +270,10 @@ proc defineSymbols*() =
 
                 for r in res.reversed:
                     stdout.write($(r))
-                    stdout.write(" ")
+                    if not inLines: stdout.write(" ")
+                    else: stdout.write("\n")
 
-                stdout.write("\n")
+                if not inLines: stdout.write("\n")
                 stdout.flushFile()
             else:
                 echo $(x)

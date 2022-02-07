@@ -1,0 +1,3 @@
+a: new 1
+do.times: 500000 -> inc 'a
+print a
