@@ -18,6 +18,7 @@ import parseopt, strformat, strutils
 #=======================================
 
 let
+    # terminal colors
     COLORS = true
     RED* = if COLORS: "\e[0;31m" else: ""
     GREEN* = if COLORS: "\e[1;32m" else: ""
@@ -27,6 +28,13 @@ let
     GRAY* = if COLORS: "\e[0;90m" else: ""
     CLEAR* = if COLORS: "\e[0m" else: ""
     BOLD* = if COLORS: "\e[1m" else: ""
+
+    # paths
+    ROOT_DIR = r"./.arturo"
+    TARGET_DIR = "{ROOT_DIR}/bin".fmt
+    TARGET_FILE = toExe("{TARGET_DIR}/arturo".fmt)
+    TARGET_LIB = "{ROOT_DIR}/lib".fmt
+    MAIN = "src/arturo.nim"
 
 #=======================================
 # Helpers
@@ -88,14 +96,6 @@ proc getNimInfo*(): string =
     result = NimVersion
 
     #echo r"{GRAY}Nim version: {NimVersion}{CLEAR}".fmt
-
-# paths and tools
-let
-    ROOT_DIR = r"./.arturo"
-    TARGET_DIR = "{ROOT_DIR}/bin".fmt
-    TARGET_FILE = toExe("{TARGET_DIR}/arturo".fmt)
-    TARGET_LIB = "{ROOT_DIR}/lib".fmt
-    MAIN = "src/arturo.nim"
 
 # variables
 var
