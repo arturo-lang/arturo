@@ -82,15 +82,16 @@ proc showHeader*(title: string) =
 proc showHelp*(error=false) =
     if error:
         showHeader("Error")
-        echo r" * Not a valid operation"
-        echo r" * please use one of the ones below"
-        echo r""
+        echo r"{RED}".fmt
+        echo r" Not a valid operation."
+        echo r" Please choose one of the ones below:"
+        echo r"{CLEAR}".fmt
     else:
         showHeader("Help")
 
     echo r" install              : Build arturo and install executable"
-    echo r"      mini            : (optional) build MINI version"
-    echo r"      web             : (optional) build Web/JS version"
+    echo r"      mini            : Build MINI version (optional)"
+    echo r"      web             : Build Web/JS version (optional)"
     echo r""
     echo r" package <script>     : Package arturo app and build executable"
     echo r""
