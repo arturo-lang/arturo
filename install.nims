@@ -177,6 +177,26 @@ proc miniBuild() =
   MINI_BUILD = true 
   FLAGS.add("{FLAGS} -d:NOASCIIDECODE -d:NOEXAMPLES -d:NOGMP -d:NOPARSERS -d:NOSQLITE -d:NOUNZIP -d:NOWEBVIEW -d:MINI".fmt)
 
+proc buildPackage(package: string) =
+  # generate portable data
+  writeFile("{package}.data.json".fmt, staticExec(r"arturo --package-info {package}.art".fmt))
+
+  # set environment variables
+  putEnv("PORTABLE_INPUT", "{package}.art".fmt)
+  putEnv("PORTABLE_DATA", "{package}.data.json".fmt)
+    
+  BINARY="{package}".fmt
+  FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOEXAMPLES -d:NOERRORLINES -d:PORTABLE".fmt
+  echo r"{GRAY}FLAGS: {FLAGS}".fmt
+  echo r""
+
+  exec(r"nim c {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt)
+    
+  # clean up
+  rmFile(r"{package}.data.json".fmt)
+  #animate_progress 
+  echo "{CLEAR}".fmt
+
 ################################################################################
 # Check command switches
 ################################################################################
@@ -184,7 +204,9 @@ let userName = if verifyOS() == "Windows": getEnv("USERNAME") else: staticExec("
 IS_DEV_BUILD = if userName == "drkameleon": true else: false
 
 let yes = @["", "on", "1", "x", "yes", "true"]
-var p = initOptParser("") 
+var 
+  p = initOptParser("") 
+  package: string
 while true:
   p.next()
   case p.kind
@@ -237,7 +259,7 @@ while true:
     if p.key in ["profile"]:
       CONFIG = r"profile {CONFIG}".fmt
       FLAGS = r"{FLAGS} -d:PROFILE --profiler:on --stackTrace:on".fmt
-  of cmdArgument: discard
+  of cmdArgument: package = p.key #discard
 
 if MINI_BUILD:
   CONFIG = r"@mini {CONFIG}".fmt
@@ -254,8 +276,6 @@ if IS_DEV_BUILD:
 ################################################################################
 # MAIN
 ################################################################################
-showHeader "Installer"
-
 task test, "Run test suite":
   exec r"{TARGET_FILE} ./tools/tester.art".fmt
 
@@ -273,6 +293,7 @@ task install, "Copy executable to {TARGET_DIR}".fmt:
   installAll()
 
 task build, "Build arturo and install executable":
+  showHeader "Installer"
   verifyTask()
 
   try:
@@ -293,6 +314,29 @@ task build, "Build arturo and install executable":
 
   except:
     echo "The installer failed :("
+
+  quit(QuitSuccess)
+
+################################################################################
+# TODO(package) unify with main install script
+#  labels: installer,cleanup
+################################################################################
+task package, "Package arturo app and build executable":
+  showHeader "Packager"
+  verifyTask()
+
+  try:
+    section "Packaging..."
+    buildPackage(package)
+
+    if COMPRESS: 
+      section "Post-processing..."
+      compressBinary()
+
+    section "Done!"
+
+  except:
+    echo "The packager failed :("
 
   quit(QuitSuccess)
 
