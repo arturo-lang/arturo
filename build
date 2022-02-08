@@ -80,6 +80,49 @@ var
     CONFIG=""
 
 #=======================================
+# Helpers
+#=======================================
+
+proc getOSInfo*(): string =
+    case hostOS:
+        of "windows":       result = "Windows"
+        of "macosx":        result = "macOS"
+        of "linux":         result = "Linux"
+        of "netbsd":        result = "NetBSD"
+        of "freebsd":       result = "FreeBSD"
+        of "openbsd":       result = "OpenBSD"
+        of "solaris":       result = "Solaris"
+        of "aix":           result = "AIX"
+        of "haiku":         result = "Haiku"
+        of "standalone":    result = "Unknown"
+
+proc getNimInfo*(): string =
+    NimVersion
+
+proc miniBuild*() =
+    for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
+        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
+    FLAGS = "{FLAGS} -d:MINI".fmt
+
+proc compressBinary() =
+    echo r"{GRAY}Compressing binary:{CLEAR}".fmt
+    if FOR_WEB:
+        try:
+            exec r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+        except:
+            echo "uglifyjs not available"
+    else:
+        try:
+            exec r"upx.exe -q {toExe(BINARY)}".fmt
+        except:
+            echo "upx not available"
+
+proc setupDirectories*() =
+    # create target dirs recursively, if not exists
+    mkdir TARGET_DIR
+    mkdir TARGET_LIB
+
+#=======================================
 # Output
 #=======================================
 
@@ -124,48 +167,17 @@ proc showFooter*() =
     echo r"====================================================================="
     echo r"{CLEAR}".fmt
 
-#=======================================
-# Helpers
-#=======================================
+proc showEnvironment*() =
+    section "Checking environment..."
 
-proc getOSInfo*(): string =
-    case hostOS:
-        of "windows":       result = "Windows"
-        of "macosx":        result = "macOS"
-        of "linux":         result = "Linux"
-        of "netbsd":        result = "NetBSD"
-        of "freebsd":       result = "FreeBSD"
-        of "openbsd":       result = "OpenBSD"
-        of "solaris":       result = "Solaris"
-        of "aix":           result = "AIX"
-        of "haiku":         result = "Haiku"
-        of "standalone":    result = "Unknown"
+    echo "{GRAY}   os: {getOSInfo()}".fmt
+    echo "   compiler: Nim {getNimInfo()}{CLEAR}".fmt
 
-proc getNimInfo*(): string =
-    NimVersion
+proc showBuildInfo*() =
+    section "Building..."
 
-proc miniBuild*() =
-    for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
-        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
-    FLAGS = "{FLAGS} -d:MINI".fmt
-
-proc compressBinary() =
-    echo r"{GRAY}Compressing binary:{CLEAR}".fmt
-    if FOR_WEB:
-        try:
-            exec r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-        except:
-            echo "uglifyjs not available"
-    else:
-        try:
-            exec r"upx.exe -q {toExe(BINARY)}".fmt
-        except:
-            echo "upx not available"
-
-proc setupDirectories*() =
-    # create target dirs recursively, if not exists
-    mkdir TARGET_DIR
-    mkdir TARGET_LIB
+    echo "{GRAY}   version: ".fmt & staticRead("version/version") & " " & staticRead("version/build")
+    echo "   config: @full".fmt
 
 #=======================================
 # Methods
@@ -176,15 +188,17 @@ proc doInstall*() =
 
     # check environment
     let userName = if getOSinfo() == "Windows": getEnv("USERNAME") else: staticExec("whoami")
-    IS_DEV_BUILD = if userName == "drkameleon": true else: false
     
-    # if it's a dev build 
-    # if the one who's building is some guy going back the nick "drkameleon";
-    # who might that be ?!
+    # if the one who's building is some guy going back the nick "drkameleon" -
+    # who might that be ?! - then it's a DEV build
     if userName == "drkameleon":
         writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
         exec r"git commit -m 'build update' version/build".fmt
         FLAGS = r"{FLAGS} -d:DEV --listCmd --verbosity:0 --hints:on".fmt
+
+    # show environment & build info
+    showEnvironment()
+    showBuildInfo()
 
     # let's go for it
     exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
