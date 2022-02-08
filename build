@@ -13,7 +13,8 @@ mode = ScriptMode.Silent
 # Libraries
 #=======================================
 
-import os, parseopt, strformat, strutils
+import os, parseopt, sequtils
+import strformat, strutils, tables
 
 #=======================================
 # Constants
@@ -21,22 +22,43 @@ import os, parseopt, strformat, strutils
 
 let
     # terminal colors
-    COLORS = hostOS != "windows"
-    RED* = if COLORS: "\e[0;31m" else: ""
-    GREEN* = if COLORS: "\e[1;32m" else: ""
-    BLUE* = if COLORS: "\e[0;34m" else: ""
-    MAGENTA* = if COLORS: "\e[1;35m" else: ""
-    CYAN* = if COLORS: "\e[1;36m" else: ""
-    GRAY* = if COLORS: "\e[0;90m" else: ""
-    CLEAR* = if COLORS: "\e[0m" else: ""
-    BOLD* = if COLORS: "\e[1m" else: ""
+    COLORS      = hostOS != "windows"
+
+    RED*        = if COLORS: "\e[0;31m" else: ""
+    GREEN*      = if COLORS: "\e[1;32m" else: ""
+    BLUE*       = if COLORS: "\e[0;34m" else: ""
+    MAGENTA*    = if COLORS: "\e[1;35m" else: ""
+    CYAN*       = if COLORS: "\e[1;36m" else: ""
+    GRAY*       = if COLORS: "\e[0;90m" else: ""
+    CLEAR*      = if COLORS: "\e[0m"    else: ""
+    BOLD*       = if COLORS: "\e[1m"    else: ""
 
     # paths
-    ROOT_DIR = r"."
-    TARGET_DIR = "{ROOT_DIR}/bin".fmt
+    ROOT_DIR    = r"."
+    TARGET_DIR  = "{ROOT_DIR}/bin".fmt
     TARGET_FILE = toExe("{TARGET_DIR}/arturo".fmt)
-    TARGET_LIB = "{ROOT_DIR}/lib".fmt
-    MAIN = "src/arturo.nim"
+    TARGET_LIB  = "{ROOT_DIR}/lib".fmt
+    MAIN        = "src/arturo.nim"
+
+    # configuration options
+    OPTIONS = {
+        "arm"               : "--cpu:arm",
+        "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
+        "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
+        "mini"              : "",
+        "noasciidecode"     : "-d:NOASCIIDECODE",
+        "noexamples"        : "-d:NOEXAMPLES",
+        "nogmp"             : "-d:NOGMP",
+        "noparsers"         : "-d:NOPARSERS",
+        "nosqlite"          : "-d:NOSQLITE",
+        "nounzip"           : "-d:NOUNZIP",
+        "nowebview"         : "-d:NOWEBVIEW",
+        "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
+        "release"           : "--passC:'-flto'",
+        "safe"              : "-d:SAFE",
+        "verbose"           : "-d:VERBOSE",
+        "web"               : "--verbosity:3 -d:WEB"
+    }.toTable
 
 #=======================================
 # Variables
@@ -52,13 +74,13 @@ var
     FOR_WEB = false
     IS_DEV_BUILD = false     
     MODE = ""       
-    PACKAGE_FILE = "" 
+    ARGS: seq[string] = @[] 
 
     FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src"
     CONFIG=""
 
 #=======================================
-# Helpers
+# Output
 #=======================================
 
 proc showLogo*() =
@@ -78,6 +100,105 @@ proc showHeader*(title: string) =
     echo r"====================================================================="
     echo r" ► {title}                                                           ".fmt
     echo r"====================================================================="
+
+proc section*(title: string) =
+    echo ""
+    echo r"--------------------------------------------"
+    echo " {MAGENTA}●{CLEAR} {title}".fmt
+    echo r"--------------------------------------------"
+
+proc showFooter*() =
+    echo r"{GRAY}".fmt
+    echo r"====================================================================="
+    echo r": Arturo has been successfully built & installed!"
+    echo r":"
+    echo r": To be able to run it,"
+    echo r": first make sure its in your $PATH:"
+    echo r":"
+    echo r":        export PATH=$HOME/.arturo/bin:$PATH"
+    echo r":"
+    echo r": and add it to your ${shellRcFile},"
+    echo r": so that it's set automatically every time."
+    echo r":"
+    echo r": Rock on! :)"
+    echo r"====================================================================="
+    echo r"{CLEAR}".fmt
+
+#=======================================
+# Helpers
+#=======================================
+
+proc getOSInfo*(): string =
+    case hostOS:
+        of "windows":       result = "Windows"
+        of "macosx":        result = "macOS"
+        of "linux":         result = "Linux"
+        of "netbsd":        result = "NetBSD"
+        of "freebsd":       result = "FreeBSD"
+        of "openbsd":       result = "OpenBSD"
+        of "solaris":       result = "Solaris"
+        of "aix":           result = "AIX"
+        of "haiku":         result = "Haiku"
+        of "standalone":    result = "Unknown"
+
+proc getNimInfo*(): string =
+    NimVersion
+
+proc miniBuild*() =
+    for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
+        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
+    FLAGS = "{FLAGS} -d:MINI".fmt
+
+proc compressBinary() =
+    echo r"{GRAY}Compressing binary:{CLEAR}".fmt
+    if FOR_WEB:
+        try:
+            exec r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+        except:
+            echo "uglifyjs not available"
+    else:
+        try:
+            exec r"upx.exe -q {toExe(BINARY)}".fmt
+        except:
+            echo "upx not available"
+
+proc setupDirectories*() =
+    # create target dirs recursively, if not exists
+    mkdir TARGET_DIR
+    mkdir TARGET_LIB
+
+#=======================================
+# Methods
+#=======================================
+
+proc doInstall*() =
+    showHeader "install"
+
+    # check environment
+    let userName = if getOSinfo() == "Windows": getEnv("USERNAME") else: staticExec("whoami")
+    IS_DEV_BUILD = if userName == "drkameleon": true else: false
+    
+    # if it's a dev build 
+    # if the one who's building is some guy going back the nick "drkameleon";
+    # who might that be ?!
+    if userName == "drkameleon":
+        writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
+        exec r"git commit -m 'build update' version/build".fmt
+        FLAGS = r"{FLAGS} -d:DEV --listCmd --verbosity:0 --hints:on".fmt
+
+    # let's go for it
+    exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+
+proc doPackage*() =
+    showHeader "package"
+
+proc doTest*() =
+    showHeader "test"
+    exec r"{TARGET_FILE} ./tools/tester.art".fmt
+
+proc doBenchmar*() = 
+    showHeader "benchmark"
+    echo "something"
 
 proc showHelp*(error=false) =
     if error:
@@ -101,9 +222,6 @@ proc showHelp*(error=false) =
     echo r" help                 : Show this help screen"
     echo r""
 
-# showLogo()
-# showHeader("Install")
-
 #=======================================
 # Main
 #=======================================
@@ -114,14 +232,29 @@ while true:
     p.next()
 
     case p.kind:
-        of cmdShortOption, cmdLongOption:   
-            echo "shortOption: " & p.key
-            echo "shortOption.val: " & p.val
         of cmdArgument:
             if p.key in ["install", "package", "test", "benchmark", "help"]:
                 MODE = p.key
             else:
-                PACKAGE_FILE = p.key
+                if p.key notin ["e", "./build", "build"]:
+                    if OPTIONS.hasKey(p.key):
+                        FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
+                        case p.key:
+                            of "debug":
+                                COMPRESS = false
+                            of "mini":
+                                miniBuild()
+                            of "web":
+                                miniBuild()
+                                FOR_WEB = true
+                                COMPILER = "js"
+                                BINARY = r"{BINARY}.js".fmt
+                            else:
+                                discard
+                    else:
+                        ARGS.add(p.key)
+        of cmdShortOption, cmdLongOption:   
+            discard
         of cmdEnd: 
             break
 
@@ -131,55 +264,19 @@ showLogo()
 # process accordingly
 case MODE:
     of "install":
-        echo "installing"
+        doInstall()
     of "package":
-        echo "packaging"
+        doPackage()
+    of "test":
+        doTest()
     of "help":
         showHelp()
     else:
         showHelp(error=true)
 
-
-# proc showFooter*() =
-#     echo r"{GRAY}".fmt
-#     echo r"====================================================================="
-#     echo r": Arturo has been successfully installed!"
-#     echo r":"
-#     echo r": To be able to run it,"
-#     echo r": first make sure its in your $PATH:"
-#     echo r":"
-#     echo r":        export PATH=$HOME/.arturo/bin:$PATH"
-#     echo r":"
-#     echo r": and add it to your ${shellRcFile},"
-#     echo r": so that it's set automatically every time."
-#     echo r":"
-#     echo r": Rock on! :)"
-#     echo r"====================================================================="
-#     echo r"{CLEAR}".fmt
-
-# proc section*(title: string) =
-#     echo ""
-#     echo r"--------------------------------------------"
-#     echo " {MAGENTA}●{CLEAR} {title}".fmt
-#     echo r"--------------------------------------------"
-
-# proc getOSinfo*(): string =
-#     case hostOS:
-#         of "windows":       result = "Windows"
-#         of "macosx":        result = "macOS"
-#         of "linux":         result = "Linux"
-#         of "netbsd":        result = "NetBSD"
-#         of "freebsd":       result = "FreeBSD"
-#         of "openbsd":       result = "OpenBSD"
-#         of "solaris":       result = "Solaris"
-#         of "aix":           result = "AIX"
-#         of "haiku":         result = "Haiku"
-#         of "standalone":    result = "Unknown"
-
-# proc getNimInfo*(): string =
-#     result = NimVersion
-
-#     #echo r"{GRAY}Nim version: {NimVersion}{CLEAR}".fmt
+echo "ARGS: " & $(ARGS)
+echo "FLAGS: " & $(FLAGS)
+showFooter()
 
 # ################################################################################
 # # FUNCTIONS
@@ -204,23 +301,6 @@ case MODE:
 #     else:
 #         exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
 #     echo "{CLEAR}".fmt
-
-# proc compressBinary() =
-#     echo r"{GRAY}Compressing binary:{CLEAR}".fmt
-#     if FOR_WEB:
-#         try:
-#             exec r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-#         except:
-#             echo "uglifyjs not available"
-#     else:
-#         try:
-#             exec r"upx.exe -q {toExe(BINARY)}".fmt
-#         except:
-#             echo "upx not available"
-
-# proc miniBuild() =
-#     MINI_BUILD = true 
-#     FLAGS.add("{FLAGS} -d:NOASCIIDECODE -d:NOEXAMPLES -d:NOGMP -d:NOPARSERS -d:NOSQLITE -d:NOUNZIP -d:NOWEBVIEW -d:MINI".fmt)
 
 # proc buildPackage(package: string) =
 #     # generate portable data
