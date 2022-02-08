@@ -76,33 +76,30 @@ var
     MODE = ""       
     ARGS: seq[string] = @[] 
 
-    FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src"
-    CONFIG=""
+    FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src --opt:speed"
+    CONFIG="@full"
 
 #=======================================
 # Helpers
 #=======================================
 
-proc getOSInfo*(): string =
-    case hostOS:
-        of "windows":       result = "Windows"
-        of "macosx":        result = "macOS"
-        of "linux":         result = "Linux"
-        of "netbsd":        result = "NetBSD"
-        of "freebsd":       result = "FreeBSD"
-        of "openbsd":       result = "OpenBSD"
-        of "solaris":       result = "Solaris"
-        of "aix":           result = "AIX"
-        of "haiku":         result = "Haiku"
-        of "standalone":    result = "Unknown"
-
-proc getNimInfo*(): string =
-    NimVersion
+proc getShellRc*(): string =
+    if hostOS != "windows":
+        let (sh,ss) = gorgeEx("echo $SHELL")
+        case sh:
+            of "/bin/zsh":
+                result = "~/.zshrc"
+            of "/bin/bash":
+                result = "~/.bashrc or ~/.profile"
+            of "/bin/sh":
+                result = "~/.profile"
+            else:
+                result = "~/.profile"
 
 proc miniBuild*() =
     for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
-    FLAGS = "{FLAGS} -d:MINI".fmt
+    FLAGS = "{FLAGS} --opt:size -d:MINI".fmt
 
 proc compressBinary() =
     echo r"{GRAY}Compressing binary:{CLEAR}".fmt
@@ -121,6 +118,12 @@ proc setupDirectories*() =
     # create target dirs recursively, if not exists
     mkdir TARGET_DIR
     mkdir TARGET_LIB
+
+proc updateBuild*() =
+    writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
+    let (outp, cd) = gorgeEx r"git commit -m 'build update' version/build".fmt
+    for ln in outp.split("\n"):
+        echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
 
 #=======================================
 # Output
@@ -141,7 +144,7 @@ proc showLogo*() =
 
 proc showHeader*(title: string) = 
     echo r"====================================================================="
-    echo r" ► {title}                                                           ".fmt
+    echo r" ► {title.toUpperAscii()}                                            ".fmt
     echo r"====================================================================="
 
 proc section*(title: string) =
@@ -154,14 +157,15 @@ proc showFooter*() =
     echo r"{GRAY}".fmt
     echo r"====================================================================="
     echo r": Arturo has been successfully built & installed!"
-    echo r":"
-    echo r": To be able to run it,"
-    echo r": first make sure its in your $PATH:"
-    echo r":"
-    echo r":        export PATH=$HOME/.arturo/bin:$PATH"
-    echo r":"
-    echo r": and add it to your ${shellRcFile},"
-    echo r": so that it's set automatically every time."
+    if hostOS != "windows":
+        echo r":"
+        echo r": To be able to run it,"
+        echo r": first make sure its in your $PATH:"
+        echo r":"
+        echo r":        export PATH=$HOME/.arturo/bin:$PATH"
+        echo r":"
+        echo r": and add it to your {getShellRc()},".fmt
+        echo r": so that it's set automatically every time."
     echo r":"
     echo r": Rock on! :)"
     echo r"====================================================================="
@@ -170,14 +174,14 @@ proc showFooter*() =
 proc showEnvironment*() =
     section "Checking environment..."
 
-    echo "{GRAY}   os: {getOSInfo()}".fmt
-    echo "   compiler: Nim {getNimInfo()}{CLEAR}".fmt
+    echo "{GRAY}   os: {hostOS}".fmt
+    echo "   compiler: Nim {NimVersion}{CLEAR}".fmt
 
 proc showBuildInfo*() =
     section "Building..."
 
-    echo "{GRAY}   version: ".fmt & staticRead("version/version") & " " & staticRead("version/build")
-    echo "   config: @full".fmt
+    echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
+    echo "   config: {CONFIG}{CLEAR}".fmt
 
 #=======================================
 # Methods
@@ -187,21 +191,34 @@ proc doInstall*() =
     showHeader "install"
 
     # check environment
-    let userName = if getOSinfo() == "Windows": getEnv("USERNAME") else: staticExec("whoami")
+    let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
+    let IS_DEV = userName == "drkameleon"
     
     # if the one who's building is some guy going back the nick "drkameleon" -
     # who might that be ?! - then it's a DEV build
-    if userName == "drkameleon":
-        writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
-        exec r"git commit -m 'build update' version/build".fmt
+    if IS_DEV:
+        section "Updating build..."
+        updateBuild()
         FLAGS = r"{FLAGS} -d:DEV --listCmd --verbosity:0 --hints:on".fmt
 
     # show environment & build info
     showEnvironment()
     showBuildInfo()
 
+    echo "{GRAY}".fmt
+
+    var outp = ""
+    var res = 0
+
     # let's go for it
-    exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+    if IS_DEV:
+        exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+    else:
+        (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+
+    showFooter()
+
+    quit(res)
 
 proc doPackage*() =
     showHeader "package"
@@ -258,11 +275,13 @@ while true:
                                 COMPRESS = false
                             of "mini":
                                 miniBuild()
+                                CONFIG = "@mini"
                             of "web":
                                 miniBuild()
                                 FOR_WEB = true
                                 COMPILER = "js"
                                 BINARY = r"{BINARY}.js".fmt
+                                CONFIG = "@web"
                             else:
                                 discard
                     else:
@@ -290,7 +309,6 @@ case MODE:
 
 echo "ARGS: " & $(ARGS)
 echo "FLAGS: " & $(FLAGS)
-showFooter()
 
 # ################################################################################
 # # FUNCTIONS
