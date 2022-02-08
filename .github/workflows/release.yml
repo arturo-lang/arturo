@@ -124,7 +124,7 @@ jobs:
       - name: Build Arturo
         run: |
           export MACOSX_DEPLOYMENT_TARGET=10.10
-          ./install ${{ matrix.version }} nosqlite nogmp ${{ matrix.arch }} log
+          ./install ${{ matrix.version }} ${{ matrix.arch }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           file bin/arturo
 
