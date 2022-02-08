@@ -32,9 +32,6 @@ let
 # Helpers
 #=======================================
 
-################################################################################
-# HELPERS
-################################################################################
 proc showHeader*(title: string) =
     echo r"=======================================================================".fmt
     echo r"{GREEN}                                                            _                                        ".fmt
@@ -74,9 +71,7 @@ proc section*(title: string) =
     echo " {MAGENTA}●{CLEAR} {title}".fmt
     echo r"-----------------------------------------------------------------------"
 
-proc verifyOS*() : string =
-    var currentOS: string
-
+proc getOSinfo*(): string =
     case hostOS:
         of "windows":       result = "Windows"
         of "macosx":        result = "macOS"
@@ -89,21 +84,11 @@ proc verifyOS*() : string =
         of "haiku":         result = "Haiku"
         of "standalone":    result = "Unknown"
 
-    # echo r"{GRAY}Os: {currentOS}{CLEAR}".fmt
-    # return currentOS
+proc getNimInfo*(): string =
+    result = NimVersion
 
-proc verifyNim*() =
-#    if ! command_exists nim ; 
-#     then
-#                curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-#        fi
-#    VERS=$(nim -v | grep -o "Version \d\.\d\.\d")
-#    NIMV="${VERS/Version /}"
-    echo r"{GRAY}Nim version: {NimVersion}{CLEAR}".fmt
+    #echo r"{GRAY}Nim version: {NimVersion}{CLEAR}".fmt
 
-################################################################################
-# INITIALIZE OPTIONS
-################################################################################
 # paths and tools
 let
     ROOT_DIR = r"./.arturo"
@@ -190,7 +175,7 @@ proc buildPackage(package: string) =
 ################################################################################
 # Check command switches
 ################################################################################
-let userName = if verifyOS() == "Windows": getEnv("USERNAME") else: staticExec("whoami")
+let userName = if getOSinfo() == "Windows": getEnv("USERNAME") else: staticExec("whoami")
 IS_DEV_BUILD = if userName == "drkameleon": true else: false
 
 let yes = @["", "on", "1", "x", "yes", "true"]
@@ -272,10 +257,10 @@ task test, "Run test suite":
 
 task verify, "Show nim version":
     section "Checking environment..."
-    let currentOS = verifyOS()
+    let currentOS = getOSinfo()
     if currentOS == "Windows":
         FLAGS.add(" -d:NOGMP")
-    verifyNim()
+    echo getNimInfo()
     
 task install, "Copy executable to {TARGET_DIR}".fmt:
     section "Installing..."
