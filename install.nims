@@ -295,10 +295,6 @@ task build, "Build arturo and install executable":
 
     quit(QuitSuccess)
 
-################################################################################
-# TODO(package) unify with main install script
-#    labels: installer,cleanup
-################################################################################
 task package, "Package arturo app and build executable":
     showHeader "Packager"
     verifyTask()
