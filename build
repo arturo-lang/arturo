@@ -72,7 +72,7 @@ var
     PRINT_LOG = false
     RUN_UNIT_TESTS = false
     FOR_WEB = false
-    IS_DEV_BUILD = false     
+    IS_DEV = false     
     MODE = ""       
     ARGS: seq[string] = @[] 
 
@@ -189,10 +189,6 @@ proc showBuildInfo*() =
 
 proc doInstall*() =
     showHeader "install"
-
-    # check environment
-    let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
-    let IS_DEV = userName == "drkameleon"
     
     # if the one who's building is some guy going back the nick "drkameleon" -
     # who might that be ?! - then it's a DEV build
@@ -223,11 +219,45 @@ proc doInstall*() =
 proc doPackage*() =
     showHeader "package"
 
+    let package = ARGS[0]
+
+    # generate portable data
+    section "Processing data..."
+
+    writeFile("{package}.data.json".fmt, staticExec(r"arturo --package-info {package}.art".fmt))
+    echo "{GRAY}   written to: {package}.data.json{CLEAR}".fmt
+
+    # set up environment
+    section "Setting up options..."
+
+    putEnv("PORTABLE_INPUT", "{package}.art".fmt)
+    putEnv("PORTABLE_DATA", "{package}.data.json".fmt)
+
+    echo "{GRAY}   done".fmt
+
+    # show environment & build info
+    showEnvironment()
+    showBuildInfo()
+
+    echo "{GRAY}".fmt
+        
+    BINARY="{package}".fmt
+    FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOEXAMPLES -d:NOERRORLINES -d:PORTABLE".fmt
+    echo r"{GRAY}FLAGS: {FLAGS}".fmt
+    echo r""
+
+    exec(r"nim c {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt)
+        
+    # clean up
+    rmFile(r"{package}.data.json".fmt)
+
+    echo "{CLEAR}".fmt
+
 proc doTest*() =
     showHeader "test"
     exec r"{TARGET_FILE} ./tools/tester.art".fmt
 
-proc doBenchmar*() = 
+proc doBenchmark*() = 
     showHeader "benchmark"
     echo "something"
 
@@ -256,6 +286,10 @@ proc showHelp*(error=false) =
 #=======================================
 # Main
 #=======================================
+
+# check environment
+let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
+IS_DEV = userName == "drkameleon"
 
 # parse command line
 var p = initOptParser("") 
@@ -296,16 +330,12 @@ showLogo()
 
 # process accordingly
 case MODE:
-    of "install":
-        doInstall()
-    of "package":
-        doPackage()
-    of "test":
-        doTest()
-    of "help":
-        showHelp()
-    else:
-        showHelp(error=true)
+    of "install"    :   doInstall()
+    of "package"    :   doPackage()
+    of "test"       :   doTest()
+    of "benchmark"  :   doBenchmark()
+    of "help"       :   showHelp()
+    else            :   showHelp(error=true)
 
 echo "ARGS: " & $(ARGS)
 echo "FLAGS: " & $(FLAGS)
