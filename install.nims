@@ -13,7 +13,6 @@
 
 import 
     std/[ parseopt, strformat, strutils, ]
-{.warning[UnusedImport]:off.}
 
 #=======================================
 # Constants
