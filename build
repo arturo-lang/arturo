@@ -80,50 +80,10 @@ var
     CONFIG="@full"
 
 #=======================================
-# Helpers
+# Forward declarations
 #=======================================
 
-proc getShellRc*(): string =
-    if hostOS != "windows":
-        let (sh,ss) = gorgeEx("echo $SHELL")
-        case sh:
-            of "/bin/zsh":
-                result = "~/.zshrc"
-            of "/bin/bash":
-                result = "~/.bashrc or ~/.profile"
-            of "/bin/sh":
-                result = "~/.profile"
-            else:
-                result = "~/.profile"
-
-proc miniBuild*() =
-    for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
-        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
-    FLAGS = "{FLAGS} --opt:size -d:MINI".fmt
-
-proc compressBinary() =
-    echo r"{GRAY}Compressing binary:{CLEAR}".fmt
-    if FOR_WEB:
-        try:
-            exec r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-        except:
-            echo "uglifyjs not available"
-    else:
-        try:
-            exec r"upx.exe -q {toExe(BINARY)}".fmt
-        except:
-            echo "upx not available"
-
-proc setupDirectories*() =
-    # create target dirs recursively, if not exists
-    mkdir TARGET_DIR
-    mkdir TARGET_LIB
-
-proc updateBuild*() =
-    writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
-    let (outp, cd) = gorgeEx r"git commit -m 'build update' version/build".fmt
-    for ln in outp.split("\n"):
-        echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
+proc getShellRc*(): string
 
 #=======================================
 # Output
@@ -184,6 +144,67 @@ proc showBuildInfo*() =
     echo "   config: {CONFIG}{CLEAR}".fmt
 
 #=======================================
+# Helpers
+#=======================================
+
+proc getShellRc*(): string =
+    if hostOS != "windows":
+        let (sh,ss) = gorgeEx("echo $SHELL")
+        case sh:
+            of "/bin/zsh":
+                result = "~/.zshrc"
+            of "/bin/bash":
+                result = "~/.bashrc or ~/.profile"
+            of "/bin/sh":
+                result = "~/.profile"
+            else:
+                result = "~/.profile"
+
+proc miniBuild*() =
+    for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
+        FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
+    FLAGS = "{FLAGS} --opt:size -d:MINI".fmt
+
+proc compressBinary() =
+    echo r"{GRAY}Compressing binary:{CLEAR}".fmt
+    if FOR_WEB:
+        try:
+            exec r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+        except:
+            echo "uglifyjs not available"
+    else:
+        try:
+            exec r"upx.exe -q {toExe(BINARY)}".fmt
+        except:
+            echo "upx not available"
+
+proc setupDirectories*() =
+    # create target dirs recursively, if not exists
+    mkdir TARGET_DIR
+    mkdir TARGET_LIB
+
+proc updateBuild*() =
+    writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
+    let (outp, cd) = gorgeEx r"git commit -m 'build update' version/build".fmt
+    for ln in outp.split("\n"):
+        echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
+
+proc compile*(footer=false): int =
+    var outp = ""
+    var res = 0
+
+    # let's go for it
+    if IS_DEV:
+        exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+    else:
+        (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+
+    if footer:
+        showFooter()
+
+    return res
+
+#=======================================
 # Methods
 #=======================================
 
@@ -203,18 +224,7 @@ proc doInstall*() =
 
     echo "{GRAY}".fmt
 
-    var outp = ""
-    var res = 0
-
-    # let's go for it
-    if IS_DEV:
-        exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
-    else:
-        (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
-
-    showFooter()
-
-    quit(res)
+    quit(compile(footer=true))
 
 proc doPackage*() =
     showHeader "package"
