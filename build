@@ -21,7 +21,7 @@ import os, parseopt, strformat, strutils
 
 let
     # terminal colors
-    COLORS = true
+    COLORS = hostOS != "window"
     RED* = if COLORS: "\e[0;31m" else: ""
     GREEN* = if COLORS: "\e[1;32m" else: ""
     BLUE* = if COLORS: "\e[0;34m" else: ""
