@@ -36,7 +36,6 @@ let
     TARGET_LIB = "{ROOT_DIR}/lib".fmt
     MAIN = "src/arturo.nim"
 
-
 #=======================================
 # Variables
 #=======================================
@@ -59,24 +58,24 @@ var
 #=======================================
 
 proc showHeader*(title: string) =
-    echo r"=======================================================================".fmt
-    echo r"{GREEN}                                                            _                                        ".fmt
-    echo r"                                                         | |                                     "
-    echo r"                                        __ _ _ __| |_ _     _ _ __ ___     "
-    echo r"                                     / _` | '__| __| | | | '__/ _ \    "
-    echo r"                                    | (_| | |    | |_| |_| | | | (_) | "
-    echo r"                                     \__,_|_|     \__|\__,_|_|    \___/    "
-    echo r"{CLEAR}".fmt
-    echo r"                                                         {BOLD}Arturo".fmt
-    echo r"                                             Programming Language{CLEAR}".fmt
-    echo r"                                        (c)2022 Yanis Zafirópulos"
-    echo r"======================================================================="
-    echo r" ► {title}".fmt
-    echo r"======================================================================="
+    echo r"====================================================================={GREEN}".fmt
+    echo r"                               _                                     "
+    echo r"                              | |                                    "
+    echo r"                     __ _ _ __| |_ _   _ _ __ ___                    "
+    echo r"                    / _` | '__| __| | | | '__/ _ \                   "
+    echo r"                   | (_| | |  | |_| |_| | | | (_) |                  "
+    echo r"                    \__,_|_|   \__|\__,_|_|  \___/                   "
+    echo r"{CLEAR}{BOLD}                                                        ".fmt
+    echo r"                      Arturo Programming Language{CLEAR}             ".fmt
+    echo r"                       (c)2022 Yanis Zafirópulos                     "
+    echo r"                                                                     "
+    echo r"====================================================================="
+    echo r" ► {title}                                                           ".fmt
+    echo r"====================================================================="
 
 proc showFooter*() =
     echo r"{GRAY}".fmt
-    echo r":======================================================================"
+    echo r"====================================================================="
     echo r": Arturo has been successfully installed!"
     echo r":"
     echo r": To be able to run it,"
@@ -88,7 +87,7 @@ proc showFooter*() =
     echo r": so that it's set automatically every time."
     echo r":"
     echo r": Rock on! :)"
-    echo r":======================================================================"
+    echo r"====================================================================="
     echo r"{CLEAR}".fmt
 
 proc section*(title: string) =
