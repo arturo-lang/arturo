@@ -11,8 +11,7 @@
 # Libraries
 #=======================================
 
-import 
-    std/[ parseopt, strformat, strutils, ]
+import parseopt, strformat, strutils
 
 #=======================================
 # Constants
