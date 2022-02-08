@@ -36,6 +36,24 @@ let
     TARGET_LIB = "{ROOT_DIR}/lib".fmt
     MAIN = "src/arturo.nim"
 
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    BINARY = "bin/arturo"
+    COMPILER = "c"
+    MINI_BUILD = false
+    COMPRESS = true
+    PRINT_LOG = false
+    RUN_UNIT_TESTS = false
+    FOR_WEB = false
+    IS_DEV_BUILD = false             
+
+    FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src"
+    CONFIG=""
+
 #=======================================
 # Helpers
 #=======================================
@@ -96,20 +114,6 @@ proc getNimInfo*(): string =
     result = NimVersion
 
     #echo r"{GRAY}Nim version: {NimVersion}{CLEAR}".fmt
-
-# variables
-var
-    BINARY = "bin/arturo"
-    COMPILER = "c"
-    MINI_BUILD = false
-    COMPRESS = true
-    PRINT_LOG = false
-    RUN_UNIT_TESTS = false
-    FOR_WEB = false
-    IS_DEV_BUILD = false             
-
-    FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src"
-    CONFIG=""
 
 ################################################################################
 # FUNCTIONS
