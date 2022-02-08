@@ -8,9 +8,6 @@
 ################################################################################
 import 
     std/[ parseopt, strformat, strutils, ]
-#    tools/utils
-
-#{.hints: off.}
 {.warning[UnusedImport]:off.}
 
 let
@@ -68,29 +65,21 @@ proc section*(title: string) =
 
 proc verifyOS*() : string =
     var currentOS: string
-    
-    case hostOS
-    of "linux": currentOS="Linux"
-    of "linux-gnu": currentOS="Linux"
-    of "darwin": currentOS="macOS" 
-    of "cygwin": currentOS="Windows"
-    of "msys": currentOS="Windows"
-    of "windows": currentOS="Windows"
-    of "solaris": currentOS="Solaris"
-    of "freebsd": currentOS="FreeBSD"
-    of "bsd": currentOS="BSD"
-    else:                 
-        currentOS="Unknown (" & hostOS & ")"
-#                if [ `uname` = "Linux" ]; then 
-#                        currentOS="Linux"
-#                elif [ `uname` = "FreeBSD" ]; then
-#                        currentOS="FreeBSD"
-#                else
-#                        currentOS="Unknown ($OSTYPE / `uname`)"
-#                fi ;;
 
-    echo r"{GRAY}Os: {currentOS}{CLEAR}".fmt
-    return currentOS
+    case hostOS:
+        of "windows":       result = "Windows"
+        of "macosx":        result = "macOS"
+        of "linux":         result = "Linux"
+        of "netbsd":        result = "NetBSD"
+        of "freebsd":       result = "FreeBSD"
+        of "openbsd":       result = "OpenBSD"
+        of "solaris":       result = "Solaris"
+        of "aix":           result = "AIX"
+        of "haiku":         result = "Haiku"
+        of "standalone":    result = "Unknown"
+
+    # echo r"{GRAY}Os: {currentOS}{CLEAR}".fmt
+    # return currentOS
 
 proc verifyNim*() =
 #    if ! command_exists nim ; 
