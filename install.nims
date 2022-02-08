@@ -110,7 +110,7 @@ var
     PRINT_LOG = false
     RUN_UNIT_TESTS = false
     FOR_WEB = false
-    IS_DEV_BUILD = false                        #if [ "$(whoami)" == "drkameleon" ]: IS_DEV_BUILD = true
+    IS_DEV_BUILD = false             
 
     FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src"
     CONFIG=""
@@ -122,15 +122,6 @@ proc verifyDirectories() =
     # create target dirs recursively, if not exists
     mkdir TARGET_DIR
     mkdir TARGET_LIB
-    
-#[    
-    if [[ ":$PATH:" == *":$TARGET_DIR:"* ]]; 
-            :
-    then
-            # path was not in path
-            PATH=$TARGET_DIR:$PATH            
-    fi
-]#
 
 proc installAll() =
     cpFile(r"{toExe(BINARY)}".fmt, r"{TARGET_FILE}".fmt)
@@ -144,8 +135,6 @@ proc buildArturo() =
 
     if not PRINT_LOG and not IS_DEV_BUILD:
         exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
-#        nim $COMPILER $FLAGS -o:$BINARY $MAIN 2>/dev/null &
-#            animate_progress
     else:
         exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
     echo "{CLEAR}".fmt
@@ -274,7 +263,6 @@ task verify, "Show nim version":
     let currentOS = verifyOS()
     if currentOS == "Windows":
         FLAGS.add(" -d:NOGMP")
-    # verifyShell()
     verifyNim()
     
 task install, "Copy executable to {TARGET_DIR}".fmt:
