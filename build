@@ -50,7 +50,9 @@ var
     PRINT_LOG = false
     RUN_UNIT_TESTS = false
     FOR_WEB = false
-    IS_DEV_BUILD = false             
+    IS_DEV_BUILD = false     
+    MODE = ""       
+    PACKAGE_FILE = "" 
 
     FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src"
     CONFIG=""
@@ -77,22 +79,65 @@ proc showHeader*(title: string) =
     echo r" ► {title}                                                           ".fmt
     echo r"====================================================================="
 
-showLogo()
-showHeader("Install")
+proc showHelp*(error=false) =
+    if error:
+        showHeader("Error")
+        echo r" * Not a valid operation"
+        echo r" * please use one of the ones below"
+        echo r""
+    else:
+        showHeader("Help")
 
-var 
-    p = initOptParser("") 
-    package: string
+    echo r" install              : Build arturo and install executable"
+    echo r"      mini            : (optional) build MINI version"
+    echo r"      web             : (optional) build Web/JS version"
+    echo r""
+    echo r" package <script>     : Package arturo app and build executable"
+    echo r""
+    echo r" test                 : Run test suite"
+    echo r" benchmark            : Run benchmark suite"
+    echo r""
+    echo r" help                 : Show this help screen"
+    echo r""
+
+# showLogo()
+# showHeader("Install")
+
+#=======================================
+# Main
+#=======================================
+
+# parse command line
+var p = initOptParser("") 
 while true:
     p.next()
-    case p.kind
-    of cmdEnd: break
-    of cmdShortOption, cmdLongOption:   
-        echo "shortOption: " & p.key
-        echo "shortOption.val: " & p.val
-    of cmdArgument:
-        echo "argument: " & p.key
-        echo "argument.val:" & p.val
+
+    case p.kind:
+        of cmdShortOption, cmdLongOption:   
+            echo "shortOption: " & p.key
+            echo "shortOption.val: " & p.val
+        of cmdArgument:
+            if p.key in ["install", "package", "test", "benchmark", "help"]:
+                MODE = p.key
+            else:
+                PACKAGE_FILE = p.key
+        of cmdEnd: 
+            break
+
+# show our log anyway
+showLogo()
+
+# process accordingly
+case MODE:
+    of "install":
+        echo "installing"
+    of "package":
+        echo "packaging"
+    of "help":
+        showHelp()
+    else:
+        showHelp(error=true)
+
 
 # proc showFooter*() =
 #     echo r"{GRAY}".fmt
@@ -276,11 +321,11 @@ while true:
 # # Main tasks
 # #=======================================
 
-task build, "building":
-    echo "building now"
+# task build, "building":
+#     echo "building now"
 
-task install, "installing":
-    echo "installing now"
+# task install, "installing":
+#     echo "installing now"
 
 # task test, "Run test suite":
 #     exec r"{TARGET_FILE} ./tools/tester.art".fmt
