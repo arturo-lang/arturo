@@ -451,3 +451,8 @@ try:
         else            :   showHelp(error=true, errorMsg=r"Not a valid operation: {MODE}".fmt)
 except:
     quit(QuitFailure)
+
+#=======================================
+# This is the end,
+# my only friend, the end...
+#=======================================
