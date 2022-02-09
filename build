@@ -50,6 +50,7 @@ let
         "arm"               : "--cpu:arm",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
+        "dev"               : "-d:DEV --listCmd --verbosity:0 --hints:on",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
         "noexamples"        : "-d:NOEXAMPLES",
@@ -221,7 +222,6 @@ proc doInstall*() =
     if IS_DEV:
         section "Updating build..."
         updateBuild()
-        FLAGS = r"{FLAGS} -d:DEV --listCmd --verbosity:0 --hints:on".fmt
 
     # show environment & build info
     showEnvironment()
@@ -304,7 +304,7 @@ proc showHelp*(error=false) =
 
 # check environment
 let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
-IS_DEV = userName == "drkameleon"
+IS_DEV = userName == "drkameleon" or IS_DEV
 
 # parse command line
 var p = initOptParser("") 
@@ -322,6 +322,8 @@ while true:
                         case p.key:
                             of "debug":
                                 COMPRESS = false
+                            of "dev":
+                                IS_DEV = true
                             of "mini":
                                 miniBuild()
                                 CONFIG = "@mini"
