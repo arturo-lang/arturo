@@ -39,11 +39,11 @@ let
     BOLD*       = bold()
 
     # paths
-    ROOT_DIR    = r"."
-    TARGET_DIR  = "{ROOT_DIR}/bin".fmt
-    TARGET_FILE = toExe("{TARGET_DIR}/arturo".fmt)
-    TARGET_LIB  = "{ROOT_DIR}/lib".fmt
-    MAIN        = "src/arturo.nim"
+    ROOT_DIR    = r"{getHomeDir()}.arturo".fmt
+    TARGET_DIR  = r"{ROOT_DIR}/bin".fmt
+    TARGET_FILE = toExe(r"{TARGET_DIR}/arturo".fmt)
+    TARGET_LIB  = r"{ROOT_DIR}/lib".fmt
+    MAIN        = r"src/arturo.nim"
 
     # configuration options
     OPTIONS = {
@@ -95,6 +95,8 @@ var
 # Forward declarations
 #=======================================
 
+echo ROOT_DIR
+
 proc getShellRc*(): string
 
 #=======================================
@@ -120,26 +122,26 @@ proc showHeader*(title: string) =
     echo r"====================================================================="
 
 proc section*(title: string) =
-    echo ""
+    echo r"{CLEAR}".fmt
     echo r"--------------------------------------------"
-    echo " {MAGENTA}●{CLEAR} {title}".fmt
+    echo r" {MAGENTA}●{CLEAR} {title}".fmt
     echo r"--------------------------------------------"
 
 proc showFooter*() =
-    echo r"{GRAY}".fmt
+    echo r"{CLEAR}".fmt
     echo r"====================================================================="
-    echo r": Arturo has been successfully built & installed!"
+    echo r" : Arturo has been successfully built & installed!"
     if hostOS != "windows":
-        echo r":"
-        echo r": To be able to run it,"
-        echo r": first make sure its in your $PATH:"
-        echo r":"
-        echo r":        export PATH=$HOME/.arturo/bin:$PATH"
-        echo r":"
-        echo r": and add it to your {getShellRc()},".fmt
-        echo r": so that it's set automatically every time."
-    echo r":"
-    echo r": Rock on! :)"
+        echo r" :"
+        echo r" : To be able to run it,"
+        echo r" : first make sure its in your $PATH:"
+        echo r" :"
+        echo r" :        export PATH=$HOME/.arturo/bin:$PATH"
+        echo r" :"
+        echo r" : and add it to your {getShellRc()},".fmt
+        echo r" : so that it's set automatically every time."
+    echo r" :"
+    echo r" : Rock on! :)"
     echo r"====================================================================="
     echo r"{CLEAR}".fmt
 
@@ -226,6 +228,7 @@ proc compile*(footer=false): int =
     if IS_DEV:
         # if we're in dev mode we don't really care about the success/failure of the process -
         # I guess we'll see it in front of us
+        echo "{GRAY}".fmt
         exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
     else:
         # but when it's running e.g. as a CI build,
@@ -233,6 +236,12 @@ proc compile*(footer=false): int =
         (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
 
     return res
+
+proc installAll*() =
+    if INSTALL:
+        section "Installing..."
+        cpFile(r"{toExe(BINARY)}".fmt, r"{TARGET_FILE}".fmt)
+        echo "{GRAY}   deployed to: {ROOT_DIR}{CLEAR}".fmt
 
 #=======================================
 # Methods
@@ -251,12 +260,12 @@ proc doInstall*() =
     showEnvironment()
     showBuildInfo()
 
-    echo "{GRAY}".fmt
-
     if (let cd = compile(footer=true); cd != 0):
         quit(cd)
 
     compressBinary()
+
+    installAll()
 
     showFooter()
 
