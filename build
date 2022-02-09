@@ -20,7 +20,7 @@ import src/helpers/terminal
 # Initialize globals
 #=======================================
 
-mode = ScriptMode.Silent
+#mode = ScriptMode.Silent
 NoColors = hostOS == "windows"
 
 #=======================================
@@ -345,16 +345,16 @@ while true:
 showLogo()
 
 # process accordingly
-case MODE:
-    try:
+try:
+    case MODE:
         of "install"    :   doInstall()
         of "package"    :   doPackage()
         of "test"       :   doTest()
         of "benchmark"  :   doBenchmark()
         of "help"       :   showHelp()
         else            :   showHelp(error=true)
-    except:
-        quit(QuitFailure)
+except:
+    quit(QuitFailure)
 
 # echo "ARGS: " & $(ARGS)
 # echo "FLAGS: " & $(FLAGS)
