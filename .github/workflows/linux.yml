@@ -82,5 +82,7 @@ jobs:
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
         run: |
+          ls -la .
+          ls -la bin
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
