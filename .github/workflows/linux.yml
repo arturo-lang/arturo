@@ -78,9 +78,11 @@ jobs:
       - name: Run unit tests (full)
         if: matrix.version == 'full'
         run: |
-          bin/arturo tools/tester.art
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          arturo tools/tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
         run: |
-          bin/arturo tools/tester.art
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          arturo tools/tester.art
