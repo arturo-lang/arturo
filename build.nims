@@ -389,7 +389,7 @@ while true:
                     showLogo()
                     showHelp(error=true, errorMsg="Multiple operations specified!")
             else:
-                if p.key notin ["e", "./build", "build"]:
+                if p.key notin ["e", "./build.nims", "build.nims", "build"]:
                     if OPTIONS.hasKey(p.key):
                         FLAGS = "{FLAGS} {OPTIONS[p.key]}".fmt
                         case p.key:
