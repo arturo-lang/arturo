@@ -65,7 +65,7 @@ jobs:
           echo "Running nim"
           nim --version
 
-          ./install
+          ./build.nims install ${{ matrix.version }} log
 
       - name: Install dependencies + Build Arturo (mini)
         if: matrix.version == 'mini'
@@ -93,7 +93,7 @@ jobs:
           echo "Running nim"
           nim --version
 
-          ./install mini
+          ./build.nims install ${{ matrix.version }} log
 
       - name: Run unit tests (full)
         if: matrix.version == 'full'
