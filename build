@@ -275,11 +275,14 @@ proc doBenchmark*() =
     showHeader "benchmark"
     echo "something"
 
-proc showHelp*(error=false) =
+proc showHelp*(error=false, errorMsg="") =
     if error:
         showHeader("Error")
         echo r"{RED}".fmt
-        echo r" Not a valid operation."
+        if errorMsg != "":
+            echo errorMsg
+        else:
+            echo r" Not a valid operation."
         echo r" Please choose one of the ones below:"
         echo r"{CLEAR}".fmt
     else:
@@ -296,6 +299,9 @@ proc showHelp*(error=false) =
     echo r""
     echo r" help                 : Show this help screen"
     echo r""
+    
+    if error:
+        quit(QuitFailure)
 
 #=======================================
 # Main
@@ -313,7 +319,10 @@ while true:
     case p.kind:
         of cmdArgument:
             if p.key in ["install", "package", "test", "benchmark", "help"]:
-                MODE = p.key
+                if MODE == "":
+                    MODE = p.key
+                else:
+                    showHelp(error=true, errorMsg="Multiple operations specified!")
             else:
                 if p.key notin ["e", "./build", "build"]:
                     if OPTIONS.hasKey(p.key):
