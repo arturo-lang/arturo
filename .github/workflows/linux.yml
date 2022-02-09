@@ -66,6 +66,8 @@ jobs:
           ./build.nims install ${{ matrix.version }} log
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           ls -la bin
+          bin/arturo -v
+          arturo -v
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
