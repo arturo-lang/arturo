@@ -280,7 +280,7 @@ proc showHelp*(error=false, errorMsg="") =
         showHeader("Error")
         echo r"{RED}".fmt
         if errorMsg != "":
-            echo errorMsg
+            echo r" " & errorMsg
         else:
             echo r" Not a valid operation."
         echo r" Please choose one of the ones below:"
@@ -299,7 +299,15 @@ proc showHelp*(error=false, errorMsg="") =
     echo r""
     echo r" help                 : Show this help screen"
     echo r""
-    
+    echo r"---------------------------------------------------------------------"
+    echo r" ✼ Example:"
+    echo r"---------------------------------------------------------------------"
+    echo r""
+    echo r" ./build install         -> to build & install the full version"
+    echo r" ./build install mini    -> to build & install the mini version"
+    echo r" ./build package script  -> to package your <script>.art app"
+    echo r""
+
     if error:
         quit(QuitFailure)
 
@@ -322,6 +330,7 @@ while true:
                 if MODE == "":
                     MODE = p.key
                 else:
+                    showLogo()
                     showHelp(error=true, errorMsg="Multiple operations specified!")
             else:
                 if p.key notin ["e", "./build", "build"]:
@@ -346,7 +355,9 @@ while true:
                     else:
                         ARGS.add(p.key)
         of cmdShortOption, cmdLongOption:   
-            discard
+            if p.key != "hints":
+                showLogo()
+                showHelp(error=true, errorMsg="Erroneous argument supplied!")
         of cmdEnd: 
             break
 
