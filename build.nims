@@ -201,6 +201,10 @@ proc miniBuild*() =
 
 proc compressBinary() =
     if COMPRESS:
+        # TODO (build.nims) Check compression
+        #  right now, especially on Linux, `upx` seems to be destroying the final binary
+        # labels: bug, enhancement, installer
+        
         # section "Post-processing..."
 
         # echo r"{GRAY}   compressing binary...{CLEAR}".fmt
