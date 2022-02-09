@@ -110,7 +110,7 @@ git clone https://github.com/arturo-lang/arturo.git
 cd arturo
 ./install
 ```
-
+ 
 After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the aforementioned path is in your `$PATH` as per the installation script instructions.
 
 > 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./install mini`
