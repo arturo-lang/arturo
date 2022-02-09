@@ -52,7 +52,7 @@ let
         "arm"               : "--cpu:arm",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "-d:DEV --listCmd --verbosity:0 --hints:on",
+        "dev"               : "-d:DEV --listCmd --verbosity:1 --hints:on",
         "dontcompress"      : "",
         "dontinstall"       : "",
         "full"              : "",
