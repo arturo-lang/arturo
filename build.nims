@@ -55,6 +55,7 @@ let
         "dev"               : "-d:DEV --listCmd --verbosity:0 --hints:on",
         "dontcompress"      : "",
         "dontinstall"       : "",
+        "full"              : "",
         "log"               : "",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
