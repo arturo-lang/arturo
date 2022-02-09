@@ -330,14 +330,20 @@ proc performTests*() =
     try:
         exec r"{TARGET_FILE} ./tools/tester.art".fmt
     except:
-        quit(QuitFailure)
+        try: 
+            exec r"{toExe(BINARY)} ./tools/tester.art".fmt
+        except:
+            quit(QuitFailure)
 
 proc performBenchmarks*() = 
     showHeader "benchmark"
     try:
         exec r"{TARGET_FILE} ./tools/benchmarker.art".fmt
     except:
-        quit(QuitFailure)
+        try: 
+            exec r"{toExe(BINARY)} ./tools/benchmarker.art".fmt
+        except:
+            quit(QuitFailure)
 
 proc showHelp*(error=false, errorMsg="") =
     if error:
