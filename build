@@ -55,6 +55,7 @@ let
         "dontinstall"       : "",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
+        "nodev"             : "",
         "noexamples"        : "-d:NOEXAMPLES",
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
@@ -157,6 +158,9 @@ proc showBuildInfo*() =
     echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
     echo "   config: {CONFIG}{CLEAR}".fmt
 
+    if IS_DEV:
+        echo "{GRAY}   flags: {FLAGS}{CLEAR}".fmt
+
 #=======================================
 # Helpers
 #=======================================
@@ -255,6 +259,7 @@ proc doInstall*() =
     if IS_DEV:
         section "Updating build..."
         updateBuild()
+        FLAGS = FLAGS & " " & OPTIONS["dev"]
 
     # show environment & build info
     showEnvironment()
@@ -365,7 +370,7 @@ proc showHelp*(error=false, errorMsg="") =
 
 # check environment
 let userName = if hostOS == "windows": getEnv("USERNAME") else: staticExec("whoami")
-IS_DEV = userName == "drkameleon" or IS_DEV
+IS_DEV = userName == "drkameleon"
 
 # parse command line
 var p = initOptParser("") 
@@ -396,6 +401,8 @@ while true:
                             of "mini":
                                 miniBuild()
                                 CONFIG = "@mini"
+                            of "nodev":
+                                IS_DEV = false
                             of "web":
                                 miniBuild()
                                 FOR_WEB = true
