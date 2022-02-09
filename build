@@ -20,7 +20,7 @@ import src/helpers/terminal
 # Initialize globals
 #=======================================
 
-#mode = ScriptMode.Silent
+mode = ScriptMode.Silent
 NoColors = hostOS == "windows"
 
 #=======================================
@@ -79,10 +79,14 @@ var
     FOR_WEB             = false
     IS_DEV              = false     
     MODE                = ""       
-    ARGS: seq[string]   = @[] 
 
-    FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src --opt:speed"
-    CONFIG="@full"
+    FLAGS*              = "--skipParentCfg:on --colors:off -d:release -d:danger " &
+                          "--panics:off --mm:orc --checks:off --overflowChecks:on " &
+                          "-d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache " & 
+                          "--embedsrc:on --path:src --opt:speed"
+    CONFIG              ="@full"
+
+    ARGS: seq[string]   = @[] 
 
 #=======================================
 # Forward declarations
@@ -153,17 +157,17 @@ proc showBuildInfo*() =
 #=======================================
 
 proc getShellRc*(): string =
-    if hostOS != "windows":
-        let (sh,ss) = gorgeEx("echo $SHELL")
-        case sh:
-            of "/bin/zsh":
-                result = "~/.zshrc"
-            of "/bin/bash":
-                result = "~/.bashrc or ~/.profile"
-            of "/bin/sh":
-                result = "~/.profile"
-            else:
-                result = "~/.profile"
+    # will only be called on non-Windows systems
+    let (sh,ss) = gorgeEx("echo $SHELL")
+    case sh:
+        of "/bin/zsh":
+            result = "~/.zshrc"
+        of "/bin/bash":
+            result = "~/.bashrc or ~/.profile"
+        of "/bin/sh":
+            result = "~/.profile"
+        else:
+            result = "~/.profile"
 
 proc miniBuild*() =
     for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
