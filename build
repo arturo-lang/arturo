@@ -71,16 +71,15 @@ let
 #=======================================
 
 var
-    BINARY = "bin/arturo"
-    COMPILER = "c"
-    MINI_BUILD = false
-    COMPRESS = true
-    PRINT_LOG = false
-    RUN_UNIT_TESTS = false
-    FOR_WEB = false
-    IS_DEV = false     
-    MODE = ""       
-    ARGS: seq[string] = @[] 
+    BINARY              = "bin/arturo"
+    COMPILER            = "c"
+    COMPRESS            = true
+    PRINT_LOG           = false
+    RUN_UNIT_TESTS      = false
+    FOR_WEB             = false
+    IS_DEV              = false     
+    MODE                = ""       
+    ARGS: seq[string]   = @[] 
 
     FLAGS* = "--skipParentCfg:on --colors:off -d:release -d:danger --panics:off --mm:orc --checks:off --overflowChecks:on -d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache --embedsrc:on --path:src --opt:speed"
     CONFIG="@full"
