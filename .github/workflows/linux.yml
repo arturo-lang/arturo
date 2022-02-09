@@ -65,6 +65,7 @@ jobs:
         run: |
           ./build.nims install ${{ matrix.version }} log
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+          ls -la bin
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
@@ -74,8 +75,10 @@ jobs:
 
       - name: Run unit tests (full)
         if: matrix.version == 'full'
-        run: arturo tools/tester.art
+        run: |
+          bin/arturo tools/tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
-        run: arturo tools/tester.art
+        run: |
+          bin/arturo tools/tester.art
