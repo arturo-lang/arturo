@@ -88,7 +88,7 @@ var
     IS_DEV              = false     
     MODE                = ""       
 
-    FLAGS*              = "--skipParentCfg:on --colors:off -d:release -d:danger " &
+    FLAGS*              = "--skipUserCfg:on --skipProjCfg:on --skipParentCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache " & 
                           "--embedsrc:on --path:src --opt:speed"
@@ -201,19 +201,19 @@ proc miniBuild*() =
 
 proc compressBinary() =
     if COMPRESS:
-        section "Post-processing..."
+        # section "Post-processing..."
 
-        echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-        if FOR_WEB:
-            let (op,cd) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-            if cd!=0:
-                echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
-        else:
-            let upx = "upx"
+        # echo r"{GRAY}   compressing binary...{CLEAR}".fmt
+        # if FOR_WEB:
+        #     let (op,cd) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+        #     if cd!=0:
+        #         echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+        # else:
+        #     let upx = "upx"
 
-            let (op,cd) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
-            if cd!=0:
-                echo "{RED}   upx: 3rd-party tool not available{CLEAR}".fmt
+        #     let (op,cd) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
+        #     if cd!=0:
+        #         echo "{RED}   upx: 3rd-party tool not available{CLEAR}".fmt
 
 proc verifyDirectories*() =
     echo "{GRAY}   setting up directories...".fmt
