@@ -201,18 +201,19 @@ proc miniBuild*() =
 
 proc compressBinary() =
     if COMPRESS:
+        section "Post-processing..."
+
+        echo r"{GRAY}   compressing binary...{CLEAR}".fmt
+        if FOR_WEB:
+            let (op,cd) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+            if cd!=0:
+                echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+        else:
+            discard
         # TODO (build.nims) Check compression
         #  right now, especially on Linux, `upx` seems to be destroying the final binary
         # labels: bug, enhancement, installer
         
-        # section "Post-processing..."
-
-        # echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-        # if FOR_WEB:
-        #     let (op,cd) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-        #     if cd!=0:
-        #         echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
-        # else:
         #     let upx = "upx"
 
         #     let (op,cd) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
