@@ -63,7 +63,7 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }}
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Upload Artifacts
@@ -76,10 +76,10 @@ jobs:
         if: matrix.version == 'full'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art
+          ./build.nims test
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art
+          ./build.nims test
