@@ -76,23 +76,11 @@ jobs:
       - name: Run unit tests (full)
         if: matrix.version == 'full'
         run: |
-          echo "@BIN"
-          ls -la bin
-          echo "@HOME"
-          ls -la $HOME/.arturo/bin
-          echo "${pwd}/bin" >> $GITHUB_PATH
-          cat $GITHUB_PATH
-          which arturo
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
         run: |
-          echo "@BIN"
-          ls -la bin
-          echo "@HOME"
-          ls -la $HOME/.arturo/bin
-          echo "${pwd}/bin" >> $GITHUB_PATH
-          cat $GITHUB_PATH
-          which arturo
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
