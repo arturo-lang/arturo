@@ -1,4 +1,4 @@
-#!/usr/bin/env -S nim --hints:off
+#!/usr/bin/env nim
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
