@@ -6,6 +6,8 @@
 #
 # @file: build
 ######################################################
+# initial conversion to NimScript thanks to:
+# - Patrick (skydive241@gmx.de)
 
 #=======================================
 # Libraries
@@ -127,7 +129,9 @@ proc section*(title: string) =
     echo r"--------------------------------------------"
 
 proc showFooter*() =
-    echo r"{CYAN}".fmt
+    echo r"{CLEAR}".fmt
+    echo r"====================================================================="
+    echo r" {MAGENTA}●{CLEAR}{GREEN} Awesome!{CLEAR}".fmt
     echo r"====================================================================="
     echo r"   Arturo has been successfully built & installed!"
     if hostOS != "windows":
@@ -209,7 +213,8 @@ proc compressBinary() =
             if cd!=0:
                 echo "{RED}   upx: 3rd-party tool not available{CLEAR}".fmt
 
-proc setupDirectories*() =
+proc verifyDirectories*() =
+    echo "{GRAY}   setting up directories...".fmt
     # create target dirs recursively, if they don't exist
     mkdir TARGET_DIR
     mkdir TARGET_LIB
@@ -242,8 +247,8 @@ proc compile*(footer=false): int =
 proc installAll*() =
     if INSTALL:
         section "Installing..."
-        echo "{GRAY}   setting up directories...".fmt
-        setupDirectories()
+
+        verifyDirectories()
         echo "   copying files..."
         cpFile(r"{toExe(BINARY)}".fmt, r"{TARGET_FILE}".fmt)
         echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
@@ -315,14 +320,14 @@ proc buildPackage*() =
 
     echo "{CLEAR}".fmt
 
-proc doTest*() =
+proc performTests*() =
     showHeader "test"
     try:
         exec r"{TARGET_FILE} ./tools/tester.art".fmt
     except:
         quit(QuitFailure)
 
-proc doBenchmark*() = 
+proc performBenchmarks*() = 
     showHeader "benchmark"
     try:
         exec r"{TARGET_FILE} ./tools/benchmarker.art".fmt
@@ -429,202 +434,9 @@ try:
     case MODE:
         of "install"    :   buildArturo()
         of "package"    :   buildPackage()
-        of "test"       :   doTest()
-        of "benchmark"  :   doBenchmark()
+        of "test"       :   performTests()
+        of "benchmark"  :   performBenchmarks()
         of "help"       :   showHelp()
         else            :   showHelp(error=true)
 except:
     quit(QuitFailure)
-
-# echo "ARGS: " & $(ARGS)
-# echo "FLAGS: " & $(FLAGS)
-
-# ################################################################################
-# # FUNCTIONS
-# ################################################################################
-# proc verifyDirectories() =
-#     # create target dirs recursively, if not exists
-#     mkdir TARGET_DIR
-#     mkdir TARGET_LIB
-
-# proc installAll() =
-#     cpFile(r"{toExe(BINARY)}".fmt, r"{TARGET_FILE}".fmt)
-#     echo "{GRAY}Deploy files to: {ROOT_DIR}{CLEAR}".fmt
-    
-# proc buildArturo() =
-#     echo(r"{GRAY}Build version: ".fmt, staticExec(r"cat version/version"), r" ", staticExec(r"cat version/build".fmt))
-#     echo r"config: {CONFIG}".fmt
-#     echo r"FLAGS: {FLAGS}".fmt
-#     echo r""
-
-#     if not PRINT_LOG and not IS_DEV_BUILD:
-#         exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
-#     else:
-#         exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
-#     echo "{CLEAR}".fmt
-
-# proc buildPackage(package: string) =
-#     # generate portable data
-#     writeFile("{package}.data.json".fmt, staticExec(r"arturo --package-info {package}.art".fmt))
-
-#     # set environment variables
-#     putEnv("PORTABLE_INPUT", "{package}.art".fmt)
-#     putEnv("PORTABLE_DATA", "{package}.data.json".fmt)
-        
-#     BINARY="{package}".fmt
-#     FLAGS="{FLAGS} --forceBuild:on --opt:size -d:NOEXAMPLES -d:NOERRORLINES -d:PORTABLE".fmt
-#     echo r"{GRAY}FLAGS: {FLAGS}".fmt
-#     echo r""
-
-#     exec(r"nim c {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt)
-        
-#     # clean up
-#     rmFile(r"{package}.data.json".fmt)
-#     #animate_progress 
-#     echo "{CLEAR}".fmt
-
-# ################################################################################
-# # Check command switches
-# ################################################################################
-# let userName = if getOSinfo() == "Windows": getEnv("USERNAME") else: staticExec("whoami")
-# IS_DEV_BUILD = if userName == "drkameleon": true else: false
-
-# let yes = @["", "on", "1", "x", "yes", "true"]
-# var 
-#     p = initOptParser("") 
-#     package: string
-# while true:
-#     p.next()
-#     case p.kind
-#     of cmdEnd: break
-#     of cmdShortOption, cmdLongOption:            
-#         if p.key in ["log"]:
-#             PRINT_LOG = true
-#         if p.key in ["noupx"]:
-#             COMPRESS = false
-#         if p.key in ["dev"]:
-#             IS_DEV_BUILD = true
-#         if p.key in ["test"]:
-#             RUN_UNIT_TESTS = true
-#         if p.key in ["release"]:
-#             FLAGS = r"{FLAGS} --passC:'-flto'".fmt
-#         if p.key in ["mini"]:            
-#             miniBuild()
-#         if p.key in ["safe"]:
-#             FLAGS = r"{FLAGS} -d:SAFE".fmt
-#         if p.key in ["web"]:
-#             miniBuild()
-#             FOR_WEB = true
-#             COMPILER = "js"
-#             BINARY = r"{BINARY}.js".fmt
-#             FLAGS = r"{FLAGS} --verbosity:3".fmt
-#             FLAGS = r"{FLAGS} -d:WEB ".fmt
-
-#         if p.key in ["noasciidecode"]: FLAGS = r"{FLAGS} -d:NOASCIIDECODE".fmt
-#         if p.key in ["noexamples"]: FLAGS = r"{FLAGS} -d:NOEXAMPLES".fmt
-#         if p.key in ["nogmp"]: FLAGS = r"{FLAGS} -d:NOGMP".fmt
-#         if p.key in ["noparsers"]: FLAGS = r"{FLAGS} -d:NOPARSERS".fmt
-#         if p.key in ["nosqlite"]: FLAGS = r"{FLAGS} -d:NOSQLITE".fmt
-#         if p.key in ["nounzip"]: FLAGS = r"{FLAGS} -d:NOUNZIP".fmt
-#         if p.key in ["nowebview"]: FLAGS = r"{FLAGS} -d:NOWEBVIEW".fmt
-        
-#         if p.key in ["arm"]: FLAGS = r"{FLAGS} --cpu:arm".fmt
-#         if p.key in ["arm64"]:
-#             FLAGS = r"{FLAGS} --cpu:arm64 --gcc.path:/usr/bin".fmt
-#             FLAGS = r"{FLAGS} --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc".fmt
-#         if p.key in ["verbose"]:
-#             CONFIG = r"verbose {CONFIG}".fmt
-#             FLAGS = r"{FLAGS} -d:VERBOSE".fmt
-#         if p.key in ["benchmark"]:
-#             CONFIG = r"benchmark {CONFIG}".fmt
-#             FLAGS = r"{FLAGS} -d:BENCHMARK".fmt
-#         if p.key in ["debug"]:
-#             COMPRESS = false
-#             CONFIG = r"debug {CONFIG}".fmt
-#             FLAGS = r"{FLAGS} -d:DEBUG --debugger:on --debuginfo --linedir:on".fmt
-#         if p.key in ["profile"]:
-#             CONFIG = r"profile {CONFIG}".fmt
-#             FLAGS = r"{FLAGS} -d:PROFILE --profiler:on --stackTrace:on".fmt
-#     of cmdArgument: package = p.key #discard
-
-# if MINI_BUILD:
-#     CONFIG = r"@mini {CONFIG}".fmt
-#     FLAGS = r"{FLAGS} --opt:size".fmt
-# else: 
-#     CONFIG = r"@full {CONFIG}".fmt
-#     FLAGS = "{FLAGS} --opt:speed".fmt 
-
-# if IS_DEV_BUILD:
-#     writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
-#     exec r"git commit -m 'build update' version/build".fmt
-#     FLAGS = r"{FLAGS} -d:DEV --listCmd --verbosity:0 --hints:on".fmt
-
-# #=======================================
-# # Main tasks
-# #=======================================
-
-# task build, "building":
-#     echo "building now"
-
-# task install, "installing":
-#     echo "installing now"
-
-# task test, "Run test suite":
-#     exec r"{TARGET_FILE} ./tools/tester.art".fmt
-
-# task verify, "Show nim version":
-#     section "Checking environment..."
-#     let currentOS = getOSinfo()
-#     if currentOS == "Windows":
-#         FLAGS.add(" -d:NOGMP")
-#     echo getNimInfo()
-    
-# task install, "Copy executable to {TARGET_DIR}".fmt:
-#     section "Installing..."
-#     verifyDirectories()
-#     installAll()
-
-# task build, "Build arturo and install executable":
-#     showHeader "Installer"
-#     verifyTask()
-
-#     try:
-#         section "Building..."
-#         buildArturo()
-
-#         if COMPRESS: 
-#             section "Post-processing..."
-#             compressBinary()
-
-#         installTask()
-        
-#         if RUN_UNIT_TESTS:
-#             testTask()
-
-#         section "Done!"
-#         showFooter()
-
-#     except:
-#         echo "The installer failed :("
-
-#     quit(QuitSuccess)
-
-# task package, "Package arturo app and build executable":
-#     showHeader "Packager"
-#     verifyTask()
-
-#     try:
-#         section "Packaging..."
-#         buildPackage(package)
-
-#         if COMPRESS: 
-#             section "Post-processing..."
-#             compressBinary()
-
-#         section "Done!"
-
-#     except:
-#         echo "The packager failed :("
-
-#     quit(QuitSuccess)
-
