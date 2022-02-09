@@ -359,9 +359,9 @@ proc showHelp*(error=false, errorMsg="") =
     echo r" ✼ Example:"
     echo r"---------------------------------------------------------------------"
     echo r""
-    echo r" ./build install         -> to build & install the full version"
-    echo r" ./build install mini    -> to build & install the mini version"
-    echo r" ./build package script  -> to package your <script>.art app"
+    echo r" ./build.nims install         -> to build & install the full version "
+    echo r" ./build.nims install mini    -> to build & install the mini version "
+    echo r" ./build.nims package script  -> to package your <script>.art app    "
     echo r""
 
     if error:
