@@ -4,7 +4,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: install.nims
+# @file: build
 ######################################################
 
 #=======================================
@@ -96,8 +96,6 @@ var
 # Forward declarations
 #=======================================
 
-echo ROOT_DIR
-
 proc getShellRc*(): string
 
 #=======================================
@@ -129,20 +127,20 @@ proc section*(title: string) =
     echo r"--------------------------------------------"
 
 proc showFooter*() =
-    echo r"{CLEAR}".fmt
+    echo r"{CYAN}".fmt
     echo r"====================================================================="
-    echo r" : Arturo has been successfully built & installed!"
+    echo r"   Arturo has been successfully built & installed!"
     if hostOS != "windows":
-        echo r" :"
-        echo r" : To be able to run it,"
-        echo r" : first make sure its in your $PATH:"
-        echo r" :"
-        echo r" :        export PATH=$HOME/.arturo/bin:$PATH"
-        echo r" :"
-        echo r" : and add it to your {getShellRc()},".fmt
-        echo r" : so that it's set automatically every time."
-    echo r" :"
-    echo r" : Rock on! :)"
+        echo r""
+        echo r"   To be able to run it,"
+        echo r"   first make sure its in your $PATH:"
+        echo r""
+        echo r"          export PATH=$HOME/.arturo/bin:$PATH"
+        echo r""
+        echo r"   and add it to your {getShellRc()},".fmt
+        echo r"   so that it's set automatically every time."
+    echo r""
+    echo r"   Rock on! :)"
     echo r"====================================================================="
     echo r"{CLEAR}".fmt
 
@@ -150,7 +148,7 @@ proc showEnvironment*() =
     section "Checking environment..."
 
     echo "{GRAY}   os: {hostOS}".fmt
-    echo "   compiler: Nim {NimVersion}{CLEAR}".fmt
+    echo "   compiler: Nim v{NimVersion}{CLEAR}".fmt
 
 proc showBuildInfo*() =
     section "Building..."
@@ -244,14 +242,17 @@ proc compile*(footer=false): int =
 proc installAll*() =
     if INSTALL:
         section "Installing..."
+        echo "{GRAY}   setting up directories...".fmt
+        setupDirectories()
+        echo "   copying files..."
         cpFile(r"{toExe(BINARY)}".fmt, r"{TARGET_FILE}".fmt)
-        echo "{GRAY}   deployed to: {ROOT_DIR}{CLEAR}".fmt
+        echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
 
 #=======================================
 # Methods
 #=======================================
 
-proc doInstall*() =
+proc buildArturo*() =
     showHeader "install"
     
     # if the one who's building is some guy going back the nick "drkameleon" -
@@ -274,7 +275,7 @@ proc doInstall*() =
 
     showFooter()
 
-proc doPackage*() =
+proc buildPackage*() =
     showHeader "package"
 
     let package = ARGS[0]
@@ -426,8 +427,8 @@ showLogo()
 # process accordingly
 try:
     case MODE:
-        of "install"    :   doInstall()
-        of "package"    :   doPackage()
+        of "install"    :   buildArturo()
+        of "package"    :   buildPackage()
         of "test"       :   doTest()
         of "benchmark"  :   doBenchmark()
         of "help"       :   showHelp()
