@@ -44,9 +44,9 @@ jobs:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
           run: |
-            ./install mini
+            ./build.nims install ${{ matrix.version }}
             export PATH="$HOME/.arturo/bin:$PATH"
-            arturo tools/tester.art
+            ./build.nims test
        
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
