@@ -51,6 +51,8 @@ let
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
         "dev"               : "-d:DEV --listCmd --verbosity:0 --hints:on",
+        "dontcompress"      : "",
+        "dontinstall"       : "",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
         "noexamples"        : "-d:NOEXAMPLES",
@@ -74,6 +76,7 @@ var
     BINARY              = "bin/arturo"
     COMPILER            = "c"
     COMPRESS            = true
+    INSTALL             = true
     PRINT_LOG           = false
     RUN_UNIT_TESTS      = false
     FOR_WEB             = false
@@ -187,17 +190,20 @@ proc miniBuild*() =
     FLAGS = "{FLAGS} --opt:size -d:MINI".fmt
 
 proc compressBinary() =
-    echo r"{GRAY}Compressing binary:{CLEAR}".fmt
-    if FOR_WEB:
-        try:
-            exec r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-        except:
-            echo "uglifyjs not available"
-    else:
-        try:
-            exec r"upx.exe -q {toExe(BINARY)}".fmt
-        except:
-            echo "upx not available"
+    if COMPRESS:
+        section "Post-processing..."
+
+        echo r"{GRAY}   compressing binary...{CLEAR}".fmt
+        if FOR_WEB:
+            let (op,cd) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+            if cd!=0:
+                echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+        else:
+            let upx = "upx"
+
+            let (op,cd) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
+            if cd!=0:
+                echo "{RED}   upx: 3rd-party tool not available{CLEAR}".fmt
 
 proc setupDirectories*() =
     # create target dirs recursively, if they don't exist
@@ -226,9 +232,6 @@ proc compile*(footer=false): int =
         # we most definitely want it a) to be silent, b) to capture the exit code
         (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
 
-    if footer:
-        showFooter()
-
     return res
 
 #=======================================
@@ -250,7 +253,12 @@ proc doInstall*() =
 
     echo "{GRAY}".fmt
 
-    quit(compile(footer=true))
+    if (let cd = compile(footer=true); cd != 0):
+        quit(cd)
+
+    compressBinary()
+
+    showFooter()
 
 proc doPackage*() =
     showHeader "package"
@@ -282,7 +290,10 @@ proc doPackage*() =
     echo r"{GRAY}FLAGS: {FLAGS}".fmt
     echo r""
 
-    exec(r"nim c {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt)
+    echo "{GRAY}".fmt
+
+    if (let cd = compile(footer=false); cd != 0):
+        quit(cd)
         
     # clean up
     rmFile(r"{package}.data.json".fmt)
@@ -369,6 +380,10 @@ while true:
                                 COMPRESS = false
                             of "dev":
                                 IS_DEV = true
+                            of "dontcompress":
+                                COMPRESS = false
+                            of "dontinstall":
+                                INSTALL = false
                             of "mini":
                                 miniBuild()
                                 CONFIG = "@mini"
