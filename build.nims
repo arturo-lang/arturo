@@ -55,6 +55,7 @@ let
         "dev"               : "-d:DEV --listCmd --verbosity:0 --hints:on",
         "dontcompress"      : "",
         "dontinstall"       : "",
+        "log"               : "",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
         "nodev"             : "",
@@ -232,11 +233,14 @@ proc compile*(footer=false): int =
     var res = 0
 
     # let's go for it
-    if IS_DEV:
+    if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
         # I guess we'll see it in front of us
         echo "{GRAY}".fmt
-        exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+        try:
+            exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
+        except:
+            return QuitFailure
     else:
         # but when it's running e.g. as a CI build,
         # we most definitely want it a) to be silent, b) to capture the exit code
@@ -401,6 +405,8 @@ while true:
                                 COMPRESS = false
                             of "dontinstall":
                                 INSTALL = false
+                            of "log":
+                                PRINT_LOG = true
                             of "mini":
                                 miniBuild()
                                 CONFIG = "@mini"
