@@ -16,22 +16,23 @@ mode = ScriptMode.Silent
 import os, parseopt, sequtils
 import strformat, strutils, tables
 
+import src/helpers/terminal
+NoColors = hostOS == "windows"
+
 #=======================================
 # Constants
 #=======================================
 
 let
-    # terminal colors
-    COLORS      = hostOS != "windows"
-
-    RED*        = if COLORS: "\e[0;31m" else: ""
-    GREEN*      = if COLORS: "\e[1;32m" else: ""
-    BLUE*       = if COLORS: "\e[0;34m" else: ""
-    MAGENTA*    = if COLORS: "\e[1;35m" else: ""
-    CYAN*       = if COLORS: "\e[1;36m" else: ""
-    GRAY*       = if COLORS: "\e[0;90m" else: ""
-    CLEAR*      = if COLORS: "\e[0m"    else: ""
-    BOLD*       = if COLORS: "\e[1m"    else: ""
+    # terminal color aliases
+    RED*        = fg(redColor)
+    GREEN*      = bold(greenColor)
+    BLUE*       = fg(blueColor)
+    MAGENTA*    = fg(magentaColor)
+    CYAN*       = fg(cyanColor)
+    GRAY*       = fg(grayColor)
+    CLEAR*      = resetColor()
+    BOLD*       = bold()
 
     # paths
     ROOT_DIR    = r"."
