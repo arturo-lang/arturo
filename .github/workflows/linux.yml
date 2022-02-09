@@ -80,6 +80,7 @@ jobs:
           echo "@HOME"
           ls -la $HOME/.arturo/bin
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          which arturo
           arturo tools/tester.art
 
       - name: Run unit tests (mini)
@@ -90,4 +91,5 @@ jobs:
           echo "@HOME"
           ls -la $HOME/.arturo/bin
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
+          which arturo
           arturo tools/tester.art
