@@ -240,7 +240,7 @@ proc compile*(footer=false): int =
         try:
             exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
         except:
-            return QuitFailure
+            res = QuitFailure
     else:
         # but when it's running e.g. as a CI build,
         # we most definitely want it a) to be silent, b) to capture the exit code
