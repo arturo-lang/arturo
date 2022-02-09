@@ -63,10 +63,10 @@ jobs:
         if: matrix.version == 'full'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ./build.nims test
+          arturo tools/tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          ./build.nims test
+          arturo tools/tester.art
