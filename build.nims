@@ -1,10 +1,10 @@
-#!/usr/bin/env -S nim e --hints:off
+#!/usr/bin/env -S nim --hints:off
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2022 Yanis Zafirópulos
 #
-# @file: build
+# @file: build.nims
 ######################################################
 # initial conversion to NimScript thanks to:
 # - Patrick (skydive241@gmx.de)
