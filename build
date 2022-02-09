@@ -157,7 +157,8 @@ proc showBuildInfo*() =
 #=======================================
 
 proc getShellRc*(): string =
-    # will only be called on non-Windows systems
+    # will only be called on non-Windows systems -
+    # are there any more shells that are not taken into account?
     let (sh,ss) = gorgeEx("echo $SHELL")
     case sh:
         of "/bin/zsh":
@@ -170,8 +171,19 @@ proc getShellRc*(): string =
             result = "~/.profile"
 
 proc miniBuild*() =
-    for k in ["noasciidecode", "noexamples", "nogmp", "noparsers", "nosqlite", "nounzip", "nowebview"]:
+    # all the necessary "modes" for mini builds
+    for k in [
+        "noasciidecode", 
+        "noexamples", 
+        "nogmp", 
+        "noparsers", 
+        "nosqlite", 
+        "nounzip", 
+        "nowebview"
+    ]:
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
+
+    # plus, shrinking + the MINI flag
     FLAGS = "{FLAGS} --opt:size -d:MINI".fmt
 
 proc compressBinary() =
@@ -188,11 +200,13 @@ proc compressBinary() =
             echo "upx not available"
 
 proc setupDirectories*() =
-    # create target dirs recursively, if not exists
+    # create target dirs recursively, if they don't exist
     mkdir TARGET_DIR
     mkdir TARGET_LIB
 
 proc updateBuild*() =
+    # will only be called in DEV mode -
+    # basically, increment the build number by one and perform a git commit
     writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
     let (outp, cd) = gorgeEx r"git commit -m 'build update' version/build".fmt
     for ln in outp.split("\n"):
@@ -204,8 +218,12 @@ proc compile*(footer=false): int =
 
     # let's go for it
     if IS_DEV:
+        # if we're in dev mode we don't really care about the success/failure of the process -
+        # I guess we'll see it in front of us
         exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
     else:
+        # but when it's running e.g. as a CI build,
+        # we most definitely want it a) to be silent, b) to capture the exit code
         (outp, res) = gorgeEx "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
 
     if footer:
@@ -273,11 +291,17 @@ proc doPackage*() =
 
 proc doTest*() =
     showHeader "test"
-    exec r"{TARGET_FILE} ./tools/tester.art".fmt
+    try:
+        exec r"{TARGET_FILE} ./tools/tester.art".fmt
+    except:
+        quit(QuitFailure)
 
 proc doBenchmark*() = 
     showHeader "benchmark"
-    echo "something"
+    try:
+        exec r"{TARGET_FILE} ./tools/benchmarker.art".fmt
+    except:
+        quit(QuitFailure)
 
 proc showHelp*(error=false, errorMsg="") =
     if error:
