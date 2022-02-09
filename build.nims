@@ -255,7 +255,9 @@ proc installAll*() =
 
         verifyDirectories()
         echo "   copying files..."
-        cpFile(r"{toExe(BINARY)}".fmt, r"{TARGET_FILE}".fmt)
+        cpFile(toExe(BINARY), TARGET_FILE)
+        if hostOS == "windows":
+            exec(r"chmod +x {TARGET_FILE}".fmt)
         echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
 
 #=======================================
