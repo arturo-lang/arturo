@@ -338,10 +338,7 @@ proc showHelp*(error=false, errorMsg="") =
     if error:
         showHeader("Error")
         echo r"{RED}".fmt
-        if errorMsg != "":
-            echo r" " & errorMsg
-        else:
-            echo r" Not a valid operation."
+        echo r" " & errorMsg
         echo r" Please choose one of the ones below:"
         echo r"{CLEAR}".fmt
     else:
@@ -437,6 +434,7 @@ try:
         of "test"       :   performTests()
         of "benchmark"  :   performBenchmarks()
         of "help"       :   showHelp()
-        else            :   showHelp(error=true)
+        of ""           :   showHelp(error=true, errorMsg=r"No operation specified.")
+        else            :   showHelp(error=true, errorMsg=r"Not a valid operation: {MODE}".fmt)
 except:
     quit(QuitFailure)
