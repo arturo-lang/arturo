@@ -81,6 +81,7 @@ jobs:
           echo "@HOME"
           ls -la $HOME/.arturo/bin
           echo "${pwd}/bin" >> $GITHUB_PATH
+          echo $GITHUB_PATH
           which arturo
           arturo tools/tester.art
 
@@ -92,5 +93,6 @@ jobs:
           echo "@HOME"
           ls -la $HOME/.arturo/bin
           echo "${pwd}/bin" >> $GITHUB_PATH
+          echo $GITHUB_PATH
           which arturo
           arturo tools/tester.art
