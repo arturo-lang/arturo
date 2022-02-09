@@ -84,5 +84,7 @@ jobs:
         run: |
           ls -la .
           ls -la bin
+          echo "${{ github.workspace }}"
+          pwd
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           arturo tools/tester.art
