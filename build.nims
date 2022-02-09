@@ -161,7 +161,7 @@ proc showBuildInfo*() =
     echo "{GRAY}   version: ".fmt & staticRead("version/version") & " b/" & staticRead("version/build")
     echo "   config: {CONFIG}{CLEAR}".fmt
 
-    if IS_DEV:
+    if IS_DEV or PRINT_LOG:
         echo "{GRAY}   flags: {FLAGS}{CLEAR}".fmt
 
 #=======================================
