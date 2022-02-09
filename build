@@ -347,15 +347,18 @@ showLogo()
 
 # process accordingly
 case MODE:
-    of "install"    :   doInstall()
-    of "package"    :   doPackage()
-    of "test"       :   doTest()
-    of "benchmark"  :   doBenchmark()
-    of "help"       :   showHelp()
-    else            :   showHelp(error=true)
+    try:
+        of "install"    :   doInstall()
+        of "package"    :   doPackage()
+        of "test"       :   doTest()
+        of "benchmark"  :   doBenchmark()
+        of "help"       :   showHelp()
+        else            :   showHelp(error=true)
+    except:
+        quit(QuitFailure)
 
-echo "ARGS: " & $(ARGS)
-echo "FLAGS: " & $(FLAGS)
+# echo "ARGS: " & $(ARGS)
+# echo "FLAGS: " & $(FLAGS)
 
 # ################################################################################
 # # FUNCTIONS
