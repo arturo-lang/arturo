@@ -7,8 +7,6 @@
 # @file: install.nims
 ######################################################
 
-mode = ScriptMode.Silent
-
 #=======================================
 # Libraries
 #=======================================
@@ -17,6 +15,12 @@ import os, parseopt, sequtils
 import strformat, strutils, tables
 
 import src/helpers/terminal
+
+#=======================================
+# Initialize globals
+#=======================================
+
+mode = ScriptMode.Silent
 NoColors = hostOS == "windows"
 
 #=======================================
