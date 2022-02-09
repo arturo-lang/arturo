@@ -241,6 +241,7 @@ proc compile*(footer=false): int =
         try:
             exec "nim {COMPILER} {FLAGS} -o:{toExe(BINARY)} {MAIN}".fmt
         except:
+            echo r"{RED}  CRASHED!!!{CLEAR}".fmt
             res = QuitFailure
     else:
         # but when it's running e.g. as a CI build,
