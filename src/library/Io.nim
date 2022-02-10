@@ -50,6 +50,8 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Io"
 
+    # TODO(Io\clear) implement for Web/JS builds
+    #  labels: library,enhancement,web
     builtin "clear",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
