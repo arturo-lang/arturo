@@ -50,8 +50,6 @@ proc defineSymbols*() =
         echo "- Importing: Io"
 
     when not defined(windows):
-        # TODO(Io\clear) implement for Web/JS builds
-        #  labels: library,enhancement,web
         builtin "clear",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
