@@ -9,7 +9,7 @@
 #=======================================
 # Libraries
 #=======================================
-when not defined(WEB):
+when not defined(WEB) and not defined(windows):
     import parseopt, sequtils, sugar
 
 import os, strutils, tables, times
