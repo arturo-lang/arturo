@@ -94,7 +94,7 @@ If you want to have the latest cutting-edge version of Arturo, the easiest and m
 
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
       choosenim stable
-* Dependencies (*only* for Linux):
+* Dependencies (*only* for Linux & full builds):
    - gtk+-3.0 *(\* needed only for non-mini builds)*
    - webkit2gtk-4.0 *(\* needed only for non-mini builds)*
    - libgmp-dev
@@ -108,12 +108,14 @@ All the process in a nutshell:
 ```bash
 git clone https://github.com/arturo-lang/arturo.git
 cd arturo
-./install
+./build.nims install
 ```
- 
+
+> 💡  For Windows, the equivalent would be `nim build.nims install` - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
+
 After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the aforementioned path is in your `$PATH` as per the installation script instructions.
 
-> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./install mini`
+> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
 
 ### Pre-built binaries
 

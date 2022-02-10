@@ -17,6 +17,7 @@ helpers:
   - src/helpers/*
   
 installer:
+  - build.nims
   - install
   - src/scripts/update.art
 

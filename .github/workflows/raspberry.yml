@@ -56,7 +56,7 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./install ${{ matrix.version }} nosqlite nogmp ${{ matrix.arch }} log
+          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           file bin/arturo
 
