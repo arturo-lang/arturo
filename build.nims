@@ -210,7 +210,7 @@ proc compressBinary() =
                 echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
         else:
             discard
-        # TODO (build.nims) Check compression
+        # TODO(build.nims) Check compression
         #  right now, especially on Linux, `upx` seems to be destroying the final binary
         # labels: bug, enhancement, installer
         
