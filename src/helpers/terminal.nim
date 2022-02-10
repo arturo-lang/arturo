@@ -7,6 +7,12 @@
 ######################################################
 
 #=======================================
+# Libraries
+#=======================================
+
+import linenoise
+
+#=======================================
 # Global Variables
 #=======================================
 
@@ -57,3 +63,9 @@ template rgb*(color: string=""):string =
 template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
+
+proc clearTerminal*() = 
+    when not defined(windows) and not defined(WEB):
+        clearScreen()
+    else:
+        discard
