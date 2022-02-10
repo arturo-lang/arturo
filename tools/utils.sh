@@ -9,6 +9,10 @@
 # @file: utils.sh
 ######################################################
 
+# TODO (tools/utils.sh) remove the script if not needed
+#  let's make sure first that no 3rd-party - or non-3rd-party - tool uses it
+# labels: installer, cleanup
+
 ################################################
 # OPTIONS
 ################################################

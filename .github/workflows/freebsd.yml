@@ -44,7 +44,7 @@ jobs:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
           run: |
-            ./install mini
+            ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
             arturo tools/tester.art
        
