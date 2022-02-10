@@ -23,8 +23,6 @@ import algorithm, tables
 
 when not defined(windows) and not defined(WEB):
     import linenoise
-
-when not defined(WEB):
     import helpers/repl
 
 import helpers/colors as colorsHelper
