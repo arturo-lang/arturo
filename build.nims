@@ -172,8 +172,8 @@ proc showBuildInfo*() =
 proc getShellRc*(): string =
     # will only be called on non-Windows systems -
     # are there any more shells that are not taken into account?
-    let (output, _) = gorgeEx("echo $SHELL")
-    case output:
+    let (sh,ss) = gorgeEx("echo $SHELL")
+    case sh:
         of "/bin/zsh":
             result = "~/.zshrc"
         of "/bin/bash":
@@ -205,8 +205,8 @@ proc compressBinary() =
 
         echo r"{GRAY}   compressing binary...{CLEAR}".fmt
         if FOR_WEB:
-            let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-            if code!=0:
+            let (op,cd) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+            if cd!=0:
                 echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
         else:
             discard
@@ -216,8 +216,8 @@ proc compressBinary() =
         
         #     let upx = "upx"
 
-        #     let (_, code) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
-        #     if code!=0:
+        #     let (op,cd) = gorgeEx r"{upx} -q {toExe(BINARY)}".fmt
+        #     if cd!=0:
         #         echo "{RED}   upx: 3rd-party tool not available{CLEAR}".fmt
 
 proc verifyDirectories*() =
@@ -230,8 +230,8 @@ proc updateBuild*() =
     # will only be called in DEV mode -
     # basically, increment the build number by one and perform a git commit
     writeFile("version/build", $(readFile("version/build").strip.parseInt + 1))
-    let (output, _) = gorgeEx r"git commit -m 'build update' version/build".fmt
-    for ln in output.split("\n"):
+    let (outp, cd) = gorgeEx r"git commit -m 'build update' version/build".fmt
+    for ln in outp.split("\n"):
         echo "{GRAY}   ".fmt & ln.strip() & "{CLEAR}".fmt
 
 proc compile*(footer=false): int =
