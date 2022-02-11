@@ -393,7 +393,7 @@ proc newLogical*(i: int): Value {.inline.} =
     else: newLogical(Maybe)
 
 when defined(WEB):
-    proc newInteger*(bi: jsBigInt): Value {.inline.} =
+    proc newInteger*(bi: JsBigInt): Value {.inline.} =
         result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 when not defined(NOGMP):
@@ -756,7 +756,7 @@ proc `+=`*(x: var Value, y: Value) =
                             RuntimeError_IntegerOperationOverflow("add", $(x), $(y))
                 else:
                     when defined(WEB):
-                        x = newInteger(big(x.y)+y.bi)
+                        x = newInteger(big(x.i)+y.bi)
                     elif not defined(NOGMP):
                         x = newInteger(x.i+y.bi)
                     
@@ -847,7 +847,7 @@ proc `-=`*(x: var Value, y: Value) =
                         x.i -= y.i
                     except OverflowDefect:
                         when defined(WEB):
-                            x = newInteger(big(x.i)-y.i)
+                            x = newInteger(big(x.i)-big(y.i))
                         elif not defined(NOGMP):
                             x = newInteger(newInt(x.i)-y.i)
                         else:
@@ -1164,9 +1164,9 @@ proc `^`*(x: Value, y: Value): Value =
             else:
                 when defined(WEB):
                     if y.iKind==NormalInteger: 
-                        x = newInteger(x.bi ** big(y.i))
+                        return newInteger(x.bi ** big(y.i))
                     else: 
-                        x = newInteger(x.bi ** y.bi)
+                        return newInteger(x.bi ** y.bi)
                 elif not defined(NOGMP):
                     if y.iKind==NormalInteger:
                         return newInteger(pow(x.bi,(culong)(y.i)))
