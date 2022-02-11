@@ -13,6 +13,9 @@
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
+when defined(WEB):
+    import std/jsbigints
+
 when not defined(NOGMP):
     import extras/bignum
 
@@ -127,7 +130,7 @@ proc `$`*(v: Value): string {.inline.} =
         of Integer      : 
             if v.iKind==NormalInteger: return $(v.i)
             else:
-                when not defined(NOGMP): 
+                when defined(WEB) or not defined(NOGMP): 
                     return $(v.bi)
         of Floating     : 
             if v.f==Inf: return "∞"
