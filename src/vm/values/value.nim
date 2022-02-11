@@ -18,6 +18,9 @@ when not defined(NOSQLITE):
     import db_sqlite as sqlite
     #import db_mysql as mysql
 
+when defined(WEB):
+    import std/jsbigints
+
 when not defined(NOGMP):
     import extras/bignum
 
@@ -216,7 +219,9 @@ type
                 case iKind*: IntegerKind:
                     of NormalInteger:   i*  : int
                     of BigInteger:      
-                        when not defined(NOGMP):
+                        when defined(WEB):
+                            bi* : JsBigInt
+                        elif not defined(NOGMP):
                             bi* : Int    
                         else:
                             discard
