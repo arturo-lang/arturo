@@ -49,19 +49,18 @@ proc defineSymbols*() =
     when defined(VERBOSE):
         echo "- Importing: Io"
 
-    when not defined(windows):
-        builtin "clear",
-            alias       = unaliased, 
-            rule        = PrefixPrecedence,
-            description = "clear terminal",
-            args        = NoArgs,
-            attrs       = NoAttrs,
-            returns     = {Nothing},
-            example     = """
-                clear             ; (clears the screen)
-            """:
-                ##########################################################
-                clearTerminal()
+    builtin "clear",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "clear terminal",
+        args        = NoArgs,
+        attrs       = NoAttrs,
+        returns     = {Nothing},
+        example     = """
+            clear             ; (clears the screen)
+        """:
+            ##########################################################
+            clearTerminal()
 
     builtin "color",
         alias       = unaliased, 
