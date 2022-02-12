@@ -620,7 +620,7 @@ proc defineSymbols*() =
                 else:
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
-                when not defined(NOGMP):
+                when defined(WEB) or not defined(NOGMP):
                     if prime:
                         when not defined(WEB):
                             push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
