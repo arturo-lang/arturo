@@ -19,6 +19,9 @@
 import complex except Complex
 import math, random, sequtils, sugar
 
+when defined(WEB):
+    import std/jsbigints
+
 when not defined(NOGMP):
     import extras/bignum
 
@@ -774,7 +777,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                when not defined(NOGMP):
+                when defined(WEB):
+                    push(newLogical(x.bi < big(0)))
+                elif not defined(NOGMP):
                     push(newLogical(negative(x.bi)))
             else:
                 push(newLogical(x < I0))
@@ -817,7 +822,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                when not defined(NOGMP):
+                when defined(WEB):
+                    push(newLogical(x.bi > big(0)))
+                elif not defined(NOGMP):
                     push(newLogical(positive(x.bi)))
             else:
                 push(newLogical(x > I0))
