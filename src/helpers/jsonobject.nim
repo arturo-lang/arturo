@@ -14,7 +14,7 @@ import std/json, sequtils, sugar
 import tables, unicode
 
 when defined(WEB):
-    import jsffi, strutils
+    import std/jsbigints, jsffi, strutils
 
 import vm/values/[printable, value]
 
@@ -86,7 +86,11 @@ when defined(WEB):
         case n.kind
             of Null         : result = toJs(nil)
             of Logical      : result = toJs(n.b)
-            of Integer      : result = toJs(n.i)
+            of Integer      : 
+                if n.iKind==NormalInteger:
+                    result = toJs(n.i)
+                else:
+                    result = toJs(n.bi)
             of Floating     : result = toJs(n.f)
             of Version      : result = toJs($(n))
             of Type         : result = toJs($(n.t))
