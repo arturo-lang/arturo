@@ -204,10 +204,10 @@ proc compressBinary() =
         section "Post-processing..."
 
         echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-        if FOR_WEB:
-            let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
-            if code!=0:
-                echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+        if FOR_WEB: discard
+            # let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+            # if code!=0:
+            #     echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
         else:
             discard
         # TODO(build.nims) Check compression
