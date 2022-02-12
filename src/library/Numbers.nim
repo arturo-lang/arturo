@@ -56,7 +56,7 @@ proc defineSymbols*() =
                 if x.iKind==NormalInteger: 
                     push(newInteger(abs(x.i)))
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB) or not defined(NOGMP):
                         push(newInteger(abs(x.bi)))
             elif x.kind==Floating:
                 push(newFloating(abs(x.f)))
