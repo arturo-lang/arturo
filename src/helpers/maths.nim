@@ -237,6 +237,22 @@ when defined(WEB):
                 z = t
                 result += q
 
+    func factors*(n: JsBigInt): seq[JsBigInt] =
+        var tail: seq[JsBigInt] = @[]
+        result = @[]
+        var i = big(1)
+        let s = isqrt(n)
+        while i <= s:
+            if n mod i == 0:
+                let d = n div i
+                if i != d: tail.add(d)
+                result.add(i)
+                
+            i += 1
+
+        tail.reverse()
+        result &= tail
+
 elif not defined(NOGMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
