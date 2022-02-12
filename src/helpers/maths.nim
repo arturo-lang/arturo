@@ -238,17 +238,21 @@ when defined(WEB):
                 result += q
 
     func factors*(n: JsBigInt): seq[JsBigInt] =
+        let bigZero = big(0)
+        let bigOne = big(1)
+        
         var tail: seq[JsBigInt] = @[]
         result = @[]
-        var i = big(1)
+        
+        var i = bigOne
         let s = isqrt(n)
         while i <= s:
-            if n mod i == 0:
+            if n mod i == bigZero:
                 let d = n div i
                 if i != d: tail.add(d)
                 result.add(i)
                 
-            i += 1
+            i += bigOne
 
         tail.reverse()
         result &= tail
