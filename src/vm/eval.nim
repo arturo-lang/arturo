@@ -15,9 +15,6 @@ import algorithm, sequtils, tables, unicode
 when defined(VERBOSE):
     import sugar
 
-when not defined(NOGMP):
-    import extras/bignum
-
 when not defined(PORTABLE):
     import strformat, strutils
     import helpers/terminal as terminalHelper
@@ -316,8 +313,15 @@ proc evalOne(n: Value, consts: var ValueArray, it: var ByteArray, inBlock: bool 
 
             of Integer:
                 addTerminalValue(false):
-                    if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
-                    else: addConst(consts, node, opPush)
+                    when defined(WEB) or not defined(NOGMP):
+                        if node.iKind==NormalInteger:
+                            if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                            else: addConst(consts, node, opPush)
+                        else:
+                            addConst(consts, node, opPush)
+                    else:
+                        if node.i>=0 and node.i<=10: addToCommand((byte)((byte)(opConstI0) + (byte)(node.i)))
+                        else: addConst(consts, node, opPush)
 
             of Floating:
                 addTerminalValue(false):
