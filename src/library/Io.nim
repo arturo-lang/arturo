@@ -22,7 +22,6 @@ when not defined(WEB):
 import algorithm, tables
 
 when not defined(windows) and not defined(WEB):
-    import linenoise
     import helpers/repl
 
 import helpers/colors as colorsHelper
@@ -61,10 +60,7 @@ proc defineSymbols*() =
             clear             ; (clears the screen)
         """:
             ##########################################################
-            when not defined(windows) and not defined(WEB):
-                clearScreen()
-            else:
-                discard
+            clearTerminal()
 
     builtin "color",
         alias       = unaliased, 
