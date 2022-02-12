@@ -1204,7 +1204,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                when not defined(NOGMP):
+                when defined(WEB):
+                    push(newLogical(x.bi==big(0)))
+                elif not defined(NOGMP):
                     push(newLogical(isZero(x.bi)))
             else:
                 push(newLogical(x == I0))
