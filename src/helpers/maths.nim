@@ -240,7 +240,7 @@ when defined(WEB):
     func factors*(n: JsBigInt): seq[JsBigInt] =
         let bigZero = big(0)
         let bigOne = big(1)
-        
+
         var tail: seq[JsBigInt] = @[]
         result = @[]
         
@@ -363,4 +363,20 @@ elif not defined(NOGMP):
             newInteger(exp(X.bi, (culong)(y.i), Z.bi))
         else:
             newInteger(exp(X.bi, y.bi, Z.bi))
+else:
+    func isqrt*(x: int): int =
+        result = 0
+        var q = 1
+    
+        while q <= x:
+            q = q shl 2
+    
+        var z = x
+        while q > 1:
+            q = q shr 2
+            let t = z - result - q
+            result = result shr 1
+            if t >= 0:
+                z = t
+                result += q
 
