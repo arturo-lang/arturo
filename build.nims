@@ -204,7 +204,7 @@ proc compressBinary() =
         section "Post-processing..."
 
         echo r"{GRAY}   compressing binary...{CLEAR}".fmt
-        if FOR_WEB: discard
+        if FOR_WEB:
             let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
             if code!=0:
                 echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
@@ -256,7 +256,7 @@ proc compile*(footer=false): int =
     return res
 
 proc installAll*() =
-    if INSTALL:
+    if INSTALL and not FOR_WEB:
         section "Installing..."
 
         verifyDirectories()
