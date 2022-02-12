@@ -199,6 +199,19 @@ when defined(WEB):
         else:
             n
 
+    func getDigits*(n: JsBigInt, base: int = 10): seq[int] =
+        let bigZero = big(0)
+        let bigBase = big(base)
+        if n == bigZero: return @[0]
+
+        var num = n
+        if num < bigZero: num = num * big(-1)
+        while num > bigZero:
+            result.add(toNumber(num mod bigBase))
+            num = num div bigBase
+
+        result.reverse()
+
 elif not defined(NOGMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
