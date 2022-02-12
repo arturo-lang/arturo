@@ -194,11 +194,11 @@ func getDigits*(n: int, base: int = 10): seq[int] =
 
 when defined(WEB):
     func abs*(n: JsBigInt): JsBigInt =
-        if n < big(0) 
+        if n < big(0):
             big(-1) * n
         else:
             n
-            
+
 elif not defined(NOGMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
