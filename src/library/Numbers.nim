@@ -540,7 +540,7 @@ proc defineSymbols*() =
             if x.iKind == NormalInteger:
                 push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
             else:
-                when not defined(NOGMP):
+                when defined(WEB) or not defined(NOGMP):
                     push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
     constant "e",
