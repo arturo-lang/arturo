@@ -256,7 +256,7 @@ proc compile*(footer=false): int =
     return res
 
 proc installAll*() =
-    if INSTALL:
+    if INSTALL and not FOR_WEB:
         section "Installing..."
 
         verifyDirectories()
