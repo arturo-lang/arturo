@@ -207,7 +207,7 @@ when defined(WEB):
         var num = n
         if num < bigZero: num = num * big(-1)
         while num > bigZero:
-            result.add(toNumber(num mod bigBase))
+            result.add((int)(toNumber(num mod bigBase)))
             num = num div bigBase
 
         result.reverse()
