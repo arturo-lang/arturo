@@ -11,7 +11,10 @@
 #=======================================
 
 import algorithm, bitops, std/math, sequtils, sugar
-when not defined(NOGMP):
+
+when defined(WEB):
+    import std/jsbigints
+elif not defined(NOGMP):
     import extras/bignum
 
 import vm/values/value
@@ -189,7 +192,72 @@ func getDigits*(n: int, base: int = 10): seq[int] =
 
     result.reverse()
 
-when not defined(NOGMP):
+when defined(WEB):
+    func abs*(n: JsBigInt): JsBigInt =
+        if n < big(0):
+            big(-1) * n
+        else:
+            n
+
+    func getDigits*(n: JsBigInt, base: int = 10): seq[int] =
+        let bigZero = big(0)
+        let bigBase = big(base)
+        if n == bigZero: return @[0]
+
+        var num = n
+        if num < bigZero: num = num * big(-1)
+        while num > bigZero:
+            result.add((int)(toNumber(num mod bigBase)))
+            num = num div bigBase
+
+        result.reverse()
+
+    func isqrt*[T: SomeSignedInt | JsBigInt](x: T): T =
+        when T is JsBigInt:
+            let bigZero = big(0)
+            let bigOne = big(1)
+            let bigTwo = big(2)
+        else:
+            let bigZero = 0
+            let bigOne = 1
+            let bigTwo = 2
+
+        result = bigZero
+        var q = bigOne
+    
+        while q <= x:
+            q = q shl bigTwo
+    
+        var z = x
+        while q > bigOne:
+            q = q shr bigTwo
+            let t = z - result - q
+            result = result shr bigOne
+            if t >= bigZero:
+                z = t
+                result += q
+
+    func factors*(n: JsBigInt): seq[JsBigInt] =
+        let bigZero = big(0)
+        let bigOne = big(1)
+
+        var tail: seq[JsBigInt] = @[]
+        result = @[]
+        
+        var i = bigOne
+        let s = isqrt(n)
+        while i <= s:
+            if n mod i == bigZero:
+                let d = n div i
+                if i != d: tail.add(d)
+                result.add(i)
+                
+            i += bigOne
+
+        tail.reverse()
+        result &= tail
+
+elif not defined(NOGMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
 
@@ -295,4 +363,20 @@ when not defined(NOGMP):
             newInteger(exp(X.bi, (culong)(y.i), Z.bi))
         else:
             newInteger(exp(X.bi, y.bi, Z.bi))
+else:
+    func isqrt*(x: int): int =
+        result = 0
+        var q = 1
+    
+        while q <= x:
+            q = q shl 2
+    
+        var z = x
+        while q > 1:
+            q = q shr 2
+            let t = z - result - q
+            result = result shr 1
+            if t >= 0:
+                z = t
+                result += q
 
