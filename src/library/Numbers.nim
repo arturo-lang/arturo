@@ -621,6 +621,8 @@ proc defineSymbols*() =
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
                 when defined(WEB) or not defined(NOGMP):
+                    # TODO(Numbers\factors) `.prime` not working for Web builds
+                    # labels: web,enhancement
                     if prime:
                         when not defined(WEB):
                             push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
@@ -682,7 +684,8 @@ proc defineSymbols*() =
             var current = blk[0]
 
             var i = 1
-
+            # TODO(Numbers\gcd) not working for Web builds
+            # labels: web,enhancement
             while i<blk.len:
                 if current.iKind==NormalInteger:
                     if blk[i].iKind==BigInteger:
@@ -833,6 +836,8 @@ proc defineSymbols*() =
                 push(newLogical(x > I0))
     
     when not defined(NOGMP):
+        # TODO(Numbers\powmod) not working for Web builds
+        # labels: web,enhancement
         builtin "powmod",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -883,6 +888,8 @@ proc defineSymbols*() =
             if x.iKind==NormalInteger:
                 push(newLogical(isPrime(x.i.uint64)))
             else:
+                # TODO(Numbers\prime?) not working for Web builds
+                # labels: web,enhancement
                 when not defined(NOGMP):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
@@ -1099,13 +1106,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Integer,Floating,Complex}
         },
-        attrs       = 
-        when not defined(NOGMP):
-            {
-                "integer"   : ({Logical},"get the integer square root")
-            }
-        else:
-            NoAttrs,
+        attrs       = {
+            "integer"   : ({Logical},"get the integer square root")
+        },
         returns     = {Floating},
         example     = """
             print sqrt 4                ; 2.0
