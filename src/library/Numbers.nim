@@ -622,7 +622,10 @@ proc defineSymbols*() =
             else:
                 when not defined(NOGMP):
                     if prime:
-                        push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
+                        when not defined(WEB):
+                            push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
+                        else:
+                            discard
                     else:
                         push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
@@ -1114,11 +1117,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("integer") != VNULL):
-                when not defined(NOGMP):
+                when defined(WEB) or not defined(NOGMP):
                     if x.iKind == NormalInteger:
                         push(newInteger(isqrt(x.i)))
                     else:
                         push(newInteger(isqrt(x.bi)))
+                else:
+                    push(newInteger(isqrt(x.i)))
             elif x.kind==Complex: push(newComplex(sqrt(x.z)))
             else: push(newFloating(sqrt(asFloat(x))))
 
