@@ -205,7 +205,8 @@ proc compressBinary() =
 
         echo r"{GRAY}   compressing binary...{CLEAR}".fmt
         if FOR_WEB:
-            let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {BINARY}/.js/.min.js".fmt
+            let minBin = BINARY.replace(".js",".min.js")
+            let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
             if code!=0:
                 echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
         else:
