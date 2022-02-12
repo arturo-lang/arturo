@@ -11,7 +11,10 @@
 #=======================================
 
 import algorithm, bitops, std/math, sequtils, sugar
-when not defined(NOGMP):
+
+when defined(WEB):
+    import std/jsbigints
+elif not defined(NOGMP):
     import extras/bignum
 
 import vm/values/value
@@ -189,7 +192,14 @@ func getDigits*(n: int, base: int = 10): seq[int] =
 
     result.reverse()
 
-when not defined(NOGMP):
+when defined(WEB):
+    func abs*(n: JsBigInt): JsBigInt =
+        if n < big(0) 
+            big(-1) * n
+        else:
+            n
+            
+elif not defined(NOGMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
 
