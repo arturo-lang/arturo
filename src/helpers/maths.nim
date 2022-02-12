@@ -212,6 +212,31 @@ when defined(WEB):
 
         result.reverse()
 
+    func isqrt*[T: SomeSignedInt | JsBigInt](x: T): T =
+        when T is JsBigInt:
+            let bigZero = big(0)
+            let bigOne = big(1)
+            let bigTwo = big(2)
+        else:
+            let bigZero = 0
+            let bigOne = 1
+            let bigTwo = 2
+
+        result = bigZero
+        var q = bigOne
+    
+        while q <= x:
+            q = q shl bigTwo
+    
+        var z = x
+        while q > bigOne:
+            q = q shr bigTwo
+            let t = z - result - q
+            result = result shr bigOne
+            if t >= bigZero:
+                z = t
+                result += q
+
 elif not defined(NOGMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
         if n == 0: return @[0]
