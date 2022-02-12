@@ -14,7 +14,7 @@ import std/json, sequtils, sugar
 import tables, unicode
 
 when defined(WEB):
-    import std/jsbigints, jsffi, strutils
+    import jsffi, strutils
 
 import vm/values/[printable, value]
 
