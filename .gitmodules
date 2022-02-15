@@ -1,0 +1,3 @@
+[submodule "src/extras/webview"]
+	path = src/extras/webview
+	url = https://github.com/drkameleon/nim-webview
