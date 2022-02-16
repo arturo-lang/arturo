@@ -91,7 +91,7 @@ var
     FLAGS*              = "--skipUserCfg:on --skipProjCfg:on --skipParentCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache " & 
-                          "--embedsrc:on --path:src --opt:speed"
+                          "--embedsrc:on --path:src --opt:speed -d:USE_NIM_MARKDOWN"
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
