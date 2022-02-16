@@ -242,7 +242,7 @@ proc compile*(footer=false): int =
     # use VCC for non-MINI Windows builds
     if hostOS=="windows" and COMPILER=="c" and not FLAGS.contains("NOWEBVIEW"):
         COMPILER = "cpp --cc:vcc ".fmt
-        FLAGS = "{FLAGS} -d:NOGMP -d:USE_NIM_MARKDOWN ".fmt
+        FLAGS = "{FLAGS} -d:NOGMP -d:USE_NIM_MARKDOWN -d:NOWEBVIEW ".fmt
 
     # let's go for it
     if IS_DEV or PRINT_LOG:
