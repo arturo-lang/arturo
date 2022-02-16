@@ -69,6 +69,7 @@ let
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         "release"           : "--passC:'-flto'",
         "safe"              : "-d:SAFE",
+        "vcc"               : "",
         "verbose"           : "-d:VERBOSE",
         "web"               : "--verbosity:3 -d:WEB"
     }.toTable
@@ -86,11 +87,12 @@ var
     RUN_UNIT_TESTS      = false
     FOR_WEB             = false
     IS_DEV              = false     
+    USE_VCC             = false
     MODE                = ""       
 
     FLAGS*              = "--skipUserCfg:on --skipProjCfg:on --skipParentCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
-                          "-d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache " & 
+                          "-d:ssl --cincludes:extras --nimcache:.cache " & 
                           "--embedsrc:on --path:src --opt:speed -d:USE_NIM_MARKDOWN"
     CONFIG              ="@full"
 
@@ -240,9 +242,15 @@ proc compile*(footer=false): int =
     var res = 0
 
     # use VCC for non-MINI Windows builds
-    if hostOS=="windows" and COMPILER=="c" and not FLAGS.contains("NOWEBVIEW"):
+    if (hostOS=="windows" and COMPILER=="c" and not FLAGS.contains("NOWEBVIEW")) or USE_VCC:
         COMPILER = "cpp --cc:vcc ".fmt
-        FLAGS = "{FLAGS} -d:NOGMP -d:USE_NIM_MARKDOWN -d:NOWEBVIEW -d:MINI ".fmt
+        FLAGS = "{FLAGS} -d:NOGMP -d:USE_NIM_MARKDOWN -d:NOWEBVIEW -d:MINI --exceptions:setjmp".fmt
+        USE_VCC = true
+
+    if USE_VCC:
+        FLAGS = "{FLAGS} --passC:/O2".fmt
+    else:
+        FLAGS = "{FLAGS} --passC:-O3".fmt
 
     # let's go for it
     if IS_DEV or PRINT_LOG:
@@ -433,6 +441,8 @@ while true:
                                 CONFIG = "@mini"
                             of "nodev":
                                 IS_DEV = false
+                            of "vcc":
+                                USE_VCC = true
                             of "web":
                                 miniBuild()
                                 FOR_WEB = true
