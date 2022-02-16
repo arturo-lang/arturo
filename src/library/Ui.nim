@@ -19,11 +19,11 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import os
+    import json, std/jsonutils, os
 
     import helpers/jsonobject
     import helpers/url
-    import helpers/webview
+    import helpers/webviews
 
     import vm/[env, exec]
 
@@ -91,14 +91,22 @@ proc defineSymbols*() =
                     # targetUrl = joinPath(TmpDir,"artview.html")
                     # writeFile(targetUrl, x.s)
 
-                let wv = createWebview(
+                var wv: Webview
+                wv = createWebview(
                     title       = title, 
                     url         = targetUrl, 
                     width       = width, 
                     height      = height, 
                     resizable   = not fixed, 
                     debug       = withDebug,
-                    handler     = nil
+                    handler     = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
+                        echo "received: " & $(req)
+                        #wv.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
+                        #     echo "SEQ: " & $(seq)
+                        #     echo "GOT: " & $(req)
+                        #     echo "arg: " & $(cast[int](arg))
+
+                        #     wt.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
                     # proc (w: Webview, arg: cstring) =
                     #     let got = valueFromJson($arg)
                     #     push(GetKey(got.d, "args"))
