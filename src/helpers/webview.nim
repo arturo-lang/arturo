@@ -14,24 +14,24 @@
 # Command-line arguments
 #=======================================
 
-when not defined(NOWEBVIEW):
-    {.passC: "-DWEBVIEW_STATIC -DWEBVIEW_IMPLEMENTATION".}
-    {.passC: "-I" & currentSourcePath().substr(0, high(currentSourcePath()) - 4) .}
+# when not defined(NOWEBVIEW):
+#     {.passC: "-DWEBVIEW_STATIC -DWEBVIEW_IMPLEMENTATION".}
+#     {.passC: "-I" & currentSourcePath().substr(0, high(currentSourcePath()) - 4) .}
 
-    when defined(linux):
-        {.passC: "-DWEBVIEW_GTK=1 " &
-        staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
-        {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
-    elif defined(freebsd):
-        {.passC: "-DWEBVIEW_GTK=1 " &
-        staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
-        {.passL: staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
-    elif defined(windows):
-        {.passC: "-DWEBVIEW_WINAPI=1".}
-        {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
-    elif defined(macosx):
-        {.passC: "-DWEBVIEW_COCOA=1 -x objective-c".}
-        {.passL: "-framework Cocoa -framework WebKit".}
+#     when defined(linux):
+#         {.passC: "-DWEBVIEW_GTK=1 " &
+#         staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
+#         {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
+#     elif defined(freebsd):
+#         {.passC: "-DWEBVIEW_GTK=1 " &
+#         staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
+#         {.passL: staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
+#     elif defined(windows):
+#         {.passC: "-DWEBVIEW_WINAPI=1".}
+#         {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
+#     elif defined(macosx):
+#         {.passC: "-DWEBVIEW_COCOA=1 -x objective-c".}
+#         {.passL: "-framework Cocoa -framework WebKit".}
 
 #=======================================
 # Libraries
@@ -39,51 +39,8 @@ when not defined(NOWEBVIEW):
 
 import os, osproc, strutils
 
-#=======================================
-# Types
-#=======================================
-
 when not defined(NOWEBVIEW):
-
-    type
-        WebviewPrivObj  {.importc: "struct webview_priv", header: "webview.h", bycopy.} = object
-        WebviewObj*     {.importc: "struct webview", header: "webview.h", bycopy.} = object
-            url*        {.importc: "url".}: cstring
-            title*      {.importc: "title".}: cstring
-            width*      {.importc: "width".}: cint
-            height*     {.importc: "height".}: cint
-            resizable*  {.importc: "resizable".}: cint
-            debug*      {.importc: "debug".}: cint
-            invokeCb    {.importc: "external_invoke_cb".}: pointer
-            priv        {.importc: "priv".}: WebviewPrivObj
-            userdata    {.importc: "userdata".}: pointer
-        Webview* = ptr WebviewObj
-
-        DialogType* {.size: sizeof(cint).} = enum
-            dtOpen  = 0
-            dtSave  = 1
-            dtAlert = 2
-
-#=======================================
-# C Imports
-#=======================================
-
-when not defined(NOWEBVIEW):
-    proc init*(w: Webview): cint {.importc: "webview_init", header: "webview.h".}
-    proc loop*(w: Webview; blocking: cint): cint {.importc: "webview_loop", header: "webview.h".}
-    proc eval*(w: Webview; js: cstring): cint {.importc: "webview_eval", header: "webview.h".}
-    proc getEval*(w: Webview; js: cstring): cstring {.importc: "webview_eval_get", header: "webview.h".}
-    proc injectCss*(w: Webview; css: cstring): cint {.importc: "webview_inject_css", header: "webview.h".}
-    proc setTitle*(w: Webview; title: cstring) {.importc: "webview_set_title", header: "webview.h".}
-    proc setColor*(w: Webview; r,g,b,a: uint8) {.importc: "webview_set_color", header: "webview.h".}
-    proc setFullscreen*(w: Webview; fullscreen: cint) {.importc: "webview_set_fullscreen", header: "webview.h".}
-    proc dialog*(w: Webview; dlgtype: DialogType; flags: cint; title: cstring; arg: cstring; result: cstring; resultsz: csize_t) {.importc: "webview_dialog", header: "webview.h".}
-    #proc dispatch(w: Webview; fn: pointer; arg: pointer) {.importc: "webview_dispatch", header: "webview.h".}
-    proc terminate*(w: Webview) {.importc: "webview_terminate", header: "webview.h".}
-    proc exit*(w: Webview) {.importc: "webview_exit", header: "webview.h".}
-    proc debug*(format: cstring) {.varargs, importc: "webview_debug", header: "webview.h".}
-    proc printLog*(s: cstring) {.importc: "webview_print_log", header: "webview.h".}
-    proc webview*(title: cstring; url: cstring; w: cint; h: cint; resizable: cint): cint {.importc: "webview", header: "webview.h".}
+    import extras/webview/webview
 
 #=======================================
 # Methods
@@ -170,58 +127,63 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
             echo "could not open a Chrome window"
 
 when not defined(NOWEBVIEW):
-    proc generalExternalInvokeCallback(w: Webview, arg: cstring) {.exportc.} =
-        echo "generalExternalInvoke: " & $(arg)
-        # var handled = false
-        # if eps.hasKey(w):
-        #     try:
-        #         var mi = parseJson($arg).to(MethodInfo)
-        #         if hasKey(eps[w], mi.scope) and hasKey(eps[w][mi.scope], mi.name):
-        #             discard eps[w][mi.scope][mi.name](mi.args)
-        #             handled = true
-        #     except:
-        #         echo getCurrentExceptionMsg()
+    # proc generalExternalInvokeCallback(w: Webview, arg: cstring) {.exportc.} =
+    #     echo "generalExternalInvoke: " & $(arg)
+    #     # var handled = false
+    #     # if eps.hasKey(w):
+    #     #     try:
+    #     #         var mi = parseJson($arg).to(MethodInfo)
+    #     #         if hasKey(eps[w], mi.scope) and hasKey(eps[w][mi.scope], mi.name):
+    #     #             discard eps[w][mi.scope][mi.name](mi.args)
+    #     #             handled = true
+    #     #     except:
+    #     #         echo getCurrentExceptionMsg()
 
-        # elif cbs.hasKey(w): 
-        #     cbs[w](w, $arg)
-        #     handled = true
+    #     # elif cbs.hasKey(w): 
+    #     #     cbs[w](w, $arg)
+    #     #     handled = true
 
-        # if handled == false:
-        #     echo "external invode:'", arg, "' not handled"
+    #     # if handled == false:
+    #     #     echo "external invode:'", arg, "' not handled"
 
-    proc createWebView*(title="Arturo", url="", 
-                     width=640, height=480, 
-                     resizable=true, debug=false,
-                     handler: pointer): Webview =
-        var w = cast[Webview](alloc0(sizeof(WebviewObj)))
-        w.title = title
-        w.url = url
-        w.width = width.cint
-        w.height = height.cint
-        w.resizable = if resizable: 1 else: 0
-        w.debug = if debug: 1 else: 0
-        w.invokeCb = handler
-        if w.init() != 0: return nil
+    proc createWebView*(title="Arturo", url="", width=640, height=480, resizable=true, debug=false, handler:pointer): Webview =
+        newWebview(title, url, width=width, height=height, debug=debug)
 
-        discard w.eval """
-            if (typeof arturo === 'undefined') {
-                arturo = {};
-            }
-            arturo.call = function(method,args) {
-                window.external.invoke(
-                    JSON.stringify({
-                        method: method,
-                        args: args
-                    })
-                );
-            };
-        """
+    proc showWebview*(w: Webview) =
+        w.show()
+    # proc createWebView*(title="Arturo", url="", 
+    #                  width=640, height=480, 
+    #                  resizable=true, debug=false,
+    #                  handler: pointer): Webview =
+    #     var w = cast[Webview](alloc0(sizeof(WebviewObj)))
+    #     w.title = title
+    #     w.url = url
+    #     w.width = width.cint
+    #     w.height = height.cint
+    #     w.resizable = if resizable: 1 else: 0
+    #     w.debug = if debug: 1 else: 0
+    #     w.invokeCb = handler
+    #     if w.init() != 0: return nil
 
-        return w
+    #     discard w.eval """
+    #         if (typeof arturo === 'undefined') {
+    #             arturo = {};
+    #         }
+    #         arturo.call = function(method,args) {
+    #             window.external.invoke(
+    #                 JSON.stringify({
+    #                     method: method,
+    #                     args: args
+    #                 })
+    #             );
+    #         };
+    #     """
 
-    proc run*(w: Webview)=
-        while w.loop(1) == 0:
-            discard
+    #     return w
+
+    # proc run*(w: Webview)=
+    #     while w.loop(1) == 0:
+    #         discard
 
 # when not defined(MINI):
 #     proc bindMethod*(w: Webview, scope, name: string, p: (proc(param: Value): string)) =
