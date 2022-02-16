@@ -25,7 +25,7 @@ when not defined(WEB):
     import helpers/jsonobject
     import helpers/terminal
     import helpers/url
-    import helpers/webview
+    import helpers/webviews
 
 import vm/lib
 when not defined(WEB):
