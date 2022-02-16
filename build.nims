@@ -239,6 +239,10 @@ proc compile*(footer=false): int =
     var outp = ""
     var res = 0
 
+    # use VCC for non-MINI Windows builds
+    if hostOS=="windows" and COMPILER=="c" and not FLAGS.contains("NOWEBVIEW"):
+        COMPILER = "{COMPILER} --cc:vcc ".fmt
+
     # let's go for it
     if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
