@@ -259,21 +259,21 @@ type
     references*: Table[string, Reference]
     config*: MarkdownConfig
 
-func parse*(state: State, token: Token);
-func render*(token: Token): string;
-func parseBlock(state: State, token: Token);
-func parseLeafBlockInlines(state: State, token: Token);
-func getLinkText*(doc: string, start: int, allowNested: bool = false): tuple[slice: Slice[int], size: int];
-func getLinkLabel*(doc: string, start: int): tuple[label: string, size: int];
-func getLinkDestination*(doc: string, start: int): tuple[slice: Slice[int], size: int];
+proc parse*(state: State, token: Token);
+proc render*(token: Token): string;
+proc parseBlock(state: State, token: Token);
+proc parseLeafBlockInlines(state: State, token: Token);
+proc getLinkText*(doc: string, start: int, allowNested: bool = false): tuple[slice: Slice[int], size: int];
+proc getLinkLabel*(doc: string, start: int): tuple[label: string, size: int];
+proc getLinkDestination*(doc: string, start: int): tuple[slice: Slice[int], size: int];
 func getLinkTitle*(doc: string, start: int): tuple[slice: Slice[int], size: int];
-func isContinuationText*(doc: string): bool;
-func parseHtmlComment*(s: string): tuple[html: string, size: int];
-func parseProcessingInstruction*(s: string): tuple[html: string, size: int];
-func parseHtmlCData*(s: string): tuple[html: string, size: int];
-func parseHtmlDeclaration*(s: string): tuple[html: string, size: int];
-func parseHtmlTag*(s: string): tuple[html: string, size: int];
-func parseHtmlOpenCloseTag*(s: string): tuple[html: string, size: int];
+proc isContinuationText*(doc: string): bool;
+proc parseHtmlComment*(s: string): tuple[html: string, size: int];
+proc parseProcessingInstruction*(s: string): tuple[html: string, size: int];
+proc parseHtmlCData*(s: string): tuple[html: string, size: int];
+proc parseHtmlDeclaration*(s: string): tuple[html: string, size: int];
+proc parseHtmlTag*(s: string): tuple[html: string, size: int];
+proc parseHtmlOpenCloseTag*(s: string): tuple[html: string, size: int];
 func toStringSeq(tokens: DoublyLinkedList[Token]): seq[string];
 
 func skipParsing*(): ParseResult = ParseResult(token: nil, pos: -1)
@@ -426,7 +426,7 @@ proc escapeHTMLEntity*(doc: string): string =
       else:
         result = result.replace(re(entity), utf8Char)
 
-func escapeLinkUrl*(url: string): string =
+proc escapeLinkUrl*(url: string): string =
   encodeUrl(url.escapeHTMLEntity, usePlus=false).multiReplace([
     ("%40", "@"),
     ("%3A", ":"),
@@ -605,7 +605,7 @@ method `$`*(token: Blockquote): string =
 func toStringSeq(tokens: DoublyLinkedList[Token]): seq[string] =
   tokens.toSeq.map((t: Token) => $t)
 
-func render*(token: Token): string =
+proc render*(token: Token): string =
   var htmls = token.children.toStringSeq
   htmls.keepIf((s: string) => s != "")
   result = htmls.join("\n")
@@ -619,7 +619,7 @@ proc endsWithBlankLine(token: Token): bool =
   else:
     token.doc.find(re"\n\n$") != -1
 
-func parseLoose(token: Token): bool =
+proc parseLoose(token: Token): bool =
   for node in token.children.nodes:
     if node.next != nil and node.value.endsWithBlankLine:
       return true
@@ -1522,7 +1522,7 @@ func tipToken*(token: Token): Token =
     tip = tip.children.tail.value
   return tip
 
-func parseContainerBlock(state: State, token: Token): ParseResult =
+proc parseContainerBlock(state: State, token: Token): ParseResult =
   #var doc: string
   #for chunk in token.chunks:
   #  doc &= chunk.doc
@@ -1550,7 +1550,7 @@ func parseContainerBlock(state: State, token: Token): ParseResult =
       token.tipToken.doc &= chunk.doc.strip(chars={' '})
   return ParseResult(token: token, pos: pos)
 
-func finalizeList*(state: State, token: Token) =
+proc finalizeList*(state: State, token: Token) =
   for listItem in token.children.items:
     if listItem.doc != "":
       parseBlock(state, listItem)
@@ -1580,7 +1580,7 @@ method apply*(this: Reference, state: State, res: ParseResult): ParseResult {.lo
     state.references[this.text] = this
   res
 
-func parseBlock(state: State, token: Token) =
+proc parseBlock(state: State, token: Token) =
   var res: ParseResult
   while token.pos < token.doc.len:
     for blockParser in state.config.blockParsers:
@@ -1944,7 +1944,7 @@ proc parseInlineLink(doc: string, start: int, labelSlice: Slice[int]): ParseResu
   )
   return ParseResult(token: link, pos: pos+1)
 
-func parseFullReferenceLink(doc: string, start: int, labelSlice: Slice[int]): ParseResult =
+proc parseFullReferenceLink(doc: string, start: int, labelSlice: Slice[int]): ParseResult =
   var pos = labelSlice.b + 1
   var (label, labelSize) = getLinkLabel(doc, pos)
 
@@ -2060,7 +2060,7 @@ proc parseInlineImage(doc: string, start: int, labelSlice: Slice[int]): ParseRes
 
   return ParseResult(token: image, pos: pos+2)
 
-func parseFullReferenceImage(doc: string, start: int, altSlice: Slice[int]): ParseResult =
+proc parseFullReferenceImage(doc: string, start: int, altSlice: Slice[int]): ParseResult =
   var pos = altSlice.b + 1
   let (label, labelSize) = getLinkLabel(doc, pos)
 
@@ -2375,7 +2375,7 @@ func applyInlineParsers(state: State, doc: string, start: int): ParseResult =
   if doc.len>0 and result.pos == start:
     result = ParseResult(token: Text(doc: fmt"{doc[start]}"), pos: start+1)
 
-func parseLeafBlockInlines(state: State, token: Token) =
+proc parseLeafBlockInlines(state: State, token: Token) =
   var pos = 0
   var res = new(ParseResult)
   for index, ch in token.doc[0 ..< token.doc.len].strip:
@@ -2481,7 +2481,7 @@ func initGfmConfig*(
     inlineParsers: inlineParsers,
   )
 
-func markdown*(doc: string, config: MarkdownConfig = nil,
+proc markdown*(doc: string, config: MarkdownConfig = nil,
   root: Token = Document()): string =
   ## Convert a markdown document into a HTML document.
   ##
