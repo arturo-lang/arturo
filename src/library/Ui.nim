@@ -87,8 +87,9 @@ proc defineSymbols*() =
                 var targetUrl = x.s
 
                 if not isUrl(x.s):
-                    targetUrl = joinPath(TmpDir,"artview.html")
-                    writeFile(targetUrl, x.s)
+                    targetUrl = "data:text/html, " & x.s
+                    # targetUrl = joinPath(TmpDir,"artview.html")
+                    # writeFile(targetUrl, x.s)
 
                 let wv = createWebview(
                     title       = title, 
@@ -97,30 +98,31 @@ proc defineSymbols*() =
                     height      = height, 
                     resizable   = not fixed, 
                     debug       = withDebug,
-                    handler     = proc (w: Webview, arg: cstring) =
-                        let got = valueFromJson($arg)
-                        push(GetKey(got.d, "args"))
-                        callByName(GetKey(got.d, "method").s)
+                    handler     = nil
+                    # proc (w: Webview, arg: cstring) =
+                    #     let got = valueFromJson($arg)
+                    #     push(GetKey(got.d, "args"))
+                    #     callByName(GetKey(got.d, "method").s)
                 )
 
-                builtin "eval",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Get whatever",
-                    args        = {
-                        "valueA": {String}
-                    },
-                    attrs       = NoAttrs,
-                    returns     = {Integer,Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        let query = "JSON.stringify(eval(\"" & x.s & "\"))"
-                        var ret: Value = newString($(wv.getEval((cstring)query)))
-                        push(ret)
+                # builtin "eval",
+                #     alias       = unaliased, 
+                #     rule        = PrefixPrecedence,
+                #     description = "Get whatever",
+                #     args        = {
+                #         "valueA": {String}
+                #     },
+                #     attrs       = NoAttrs,
+                #     returns     = {Integer,Nothing},
+                #     example     = """
+                #     """:
+                #         ##########################################################
+                #         let query = "JSON.stringify(eval(\"" & x.s & "\"))"
+                #         var ret: Value = newString($(wv.getEval((cstring)query)))
+                #         push(ret)
 
-                wv.run()
-                wv.exit()
+                showWebview(wv)
+                ##wv.exit()
 
 #=======================================
 # Add Library
