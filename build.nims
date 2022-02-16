@@ -241,7 +241,7 @@ proc compile*(footer=false): int =
 
     # use VCC for non-MINI Windows builds
     if hostOS=="windows" and COMPILER=="c" and not FLAGS.contains("NOWEBVIEW"):
-        COMPILER = "{COMPILER} --cc:vcc ".fmt
+        COMPILER = "cpp --cc:vcc ".fmt
         FLAGS = "{FLAGS} -d:NOGMP ".fmt
 
     # let's go for it
