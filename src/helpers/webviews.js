@@ -18,3 +18,11 @@ arturo.call = function (method){
 arturo.exec = function (code){
     return window.callback("exec", JSON.stringify(code))
 }
+
+// setup events
+window.onload = function (){
+    return window.callback("event", JSON.stringify("load"))
+}
+window.onerror = function (){
+    return window.callback("event", JSON.stringify("error"))
+}

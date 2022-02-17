@@ -31,6 +31,7 @@ when not defined(NOWEBVIEW):
             FunctionCall,
             ExecuteCode,
             BackendAction,
+            WebviewEvent,
             UnrecognizedCall
 
         WebviewCallHandler* = proc (call: WebviewCallKind, value: Value): Value
@@ -162,6 +163,7 @@ when not defined(NOWEBVIEW):
             case mode:
                 of "call"   : callKind = FunctionCall
                 of "exec"   : callKind = ExecuteCode
+                of "event"  : callKind = WebviewEvent
                 of "action" : callKind = BackendAction
                 else        : 
                     res = 1
