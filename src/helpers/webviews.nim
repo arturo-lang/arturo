@@ -10,14 +10,35 @@
 # Libraries
 #=======================================
 
+import std/json, std/jsonutils
 import os, osproc, strutils
 
 when not defined(NOWEBVIEW):
     import extras/webview
     import helpers/jsonobject
-    import vm/values/value
+    import vm/values/value, vm/values/printable
 
     export webview
+
+#=======================================
+# Types
+#=======================================
+
+type
+    WebviewCallKind* = enum
+        FunctionCall,
+        BackendAction,
+        UnrecognizedCall
+
+    WebviewCallHandler* = proc (call: WebviewCallKind, value: Value): Value
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    mainWebview* {.global.}      : Webview
+    mainCallHandler* {.global.}  : WebviewCallHandler
 
 #=======================================
 # Methods
@@ -129,7 +150,7 @@ when not defined(NOWEBVIEW):
                         height=480, 
                         resizable=true, 
                         debug=false, 
-                        handler:WebviewCallback): Webview =
+                        callHandler:WebviewCallHandler = nil): Webview =
         result = webview_create(debug.cint)
         webview_set_title(result, title=title.cstring)
         webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
@@ -138,16 +159,39 @@ when not defined(NOWEBVIEW):
             if (typeof arturo === 'undefined') {
                 arturo = {};
             }
-            arturo.call = function(method,args) {
-                window.backend(
-                    JSON.stringify({
-                        method: method,
-                        args: args
-                    })
-                );
+            arturo.call = function (method){
+                return window.callback("call", JSON.stringify({
+                    "method": method,
+                    "args": Array.prototype.slice.call(arguments, 1)
+                }));
             };
         """)
-        result.webview_bind("callback", handler, cast[pointer](666))
+
+        let handler = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
+            var request = parseJson($(req))
+
+            let mode = request.elems[0].str
+            let value = valueFromJson(request.elems[1].str)
+
+            var res = 0
+            var callKind: WebviewCallKind
+            var returned: cstring = "{}"
+
+            case mode:
+                of "call"   : callKind = FunctionCall
+                of "action" : callKind = BackendAction
+                else        : 
+                    res = 1
+                    callKind = UnrecognizedCall
+
+            if callKind != UnrecognizedCall:
+                returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
+
+            webview_return(mainWebview, seq, res.cint, returned)
+
+        mainWebview = result
+        mainCallHandler = callHandler
+        result.webview_bind("callback", handler, cast[pointer](0))
 
         # result = newWebview(title, url, width=width, height=height, debug=true)
         # webview_init(result,"""

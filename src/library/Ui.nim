@@ -25,7 +25,7 @@ when not defined(NOWEBVIEW):
     import helpers/url
     import helpers/webviews
 
-    import vm/[env, exec]
+    import vm/[env, exec, values/printable]
 
 #=======================================
 # Methods
@@ -92,6 +92,7 @@ proc defineSymbols*() =
                     # writeFile(targetUrl, x.s)
 
                 var wv: Webview
+                let ww = wv
                 wv = createWebview(
                     title       = title, 
                     url         = targetUrl, 
@@ -99,18 +100,24 @@ proc defineSymbols*() =
                     height      = height, 
                     resizable   = not fixed, 
                     debug       = withDebug,
-                    handler     = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
-                        echo "received: " & $(req)
-                        #wv.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
-                        #     echo "SEQ: " & $(seq)
-                        #     echo "GOT: " & $(req)
-                        #     echo "arg: " & $(cast[int](arg))
+                    callHandler = proc (call: WebviewCallKind, value: Value): Value =
+                        echo "GOT CALL: " & $(call)
+                        echo "WITH VALUE: " & $(value)#$(valueFromJson($(value)))
+                        newString("booming!")
+                    # handler     = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
+                    #     echo "seq: " & $(seq)
+                    #     echo "received: " & $(req)
+                    #     let ww = cast[Webview](arg)
+                    #     ww.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
+                    #     #     echo "SEQ: " & $(seq)
+                    #     #     echo "GOT: " & $(req)
+                    #     #     echo "arg: " & $(cast[int](arg))
 
-                        #     wt.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
-                    # proc (w: Webview, arg: cstring) =
-                    #     let got = valueFromJson($arg)
-                    #     push(GetKey(got.d, "args"))
-                    #     callByName(GetKey(got.d, "method").s)
+                    #     #     wt.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
+                    # # proc (w: Webview, arg: cstring) =
+                    # #     let got = valueFromJson($arg)
+                    # #     push(GetKey(got.d, "args"))
+                    # #     callByName(GetKey(got.d, "method").s)
                 )
 
                 # builtin "eval",
