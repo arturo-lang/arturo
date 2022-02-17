@@ -116,21 +116,19 @@ proc defineSymbols*() =
                                 result = pop()
                 )
 
-                # builtin "eval",
-                #     alias       = unaliased, 
-                #     rule        = PrefixPrecedence,
-                #     description = "Get whatever",
-                #     args        = {
-                #         "valueA": {String}
-                #     },
-                #     attrs       = NoAttrs,
-                #     returns     = {Integer,Nothing},
-                #     example     = """
-                #     """:
-                #         ##########################################################
-                #         let query = "JSON.stringify(eval(\"" & x.s & "\"))"
-                #         var ret: Value = newString($(wv.getEval((cstring)query)))
-                #         push(ret)
+                builtin "eval",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Evaluate JavaScript code in active webview",
+                    args        = {
+                        "js": {String}
+                    },
+                    attrs       = NoAttrs,
+                    returns     = {Integer,Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.evaluate(x.s)
 
                 wv.show()
 
