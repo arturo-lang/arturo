@@ -19,13 +19,12 @@
 import vm/lib
 
 when not defined(NOWEBVIEW):
-    import json, std/jsonutils, os
+    import algorithm
 
-    import helpers/jsonobject
     import helpers/url
     import helpers/webviews
 
-    import vm/[env, exec, values/printable]
+    import vm/[exec, parse]
 
 #=======================================
 # Methods
@@ -84,7 +83,7 @@ proc defineSymbols*() =
                 if not isUrl(x.s):
                     targetUrl = "data:text/html, " & x.s
 
-                let wv: Webview = createWebview(
+                let wv: Webview = newWebview(
                     title       = title, 
                     url         = targetUrl, 
                     width       = width, 
@@ -92,13 +91,29 @@ proc defineSymbols*() =
                     resizable   = not fixed, 
                     debug       = withDebug,
                     callHandler = proc (call: WebviewCallKind, value: Value): Value =
-                        echo "GOT CALL: " & $(call)
-                        echo "WITH VALUE: " & $(value)#$(valueFromJson($(value)))
-                        newString("booming!")
-                    # # proc (w: Webview, arg: cstring) =
-                    # #     let got = valueFromJson($arg)
-                    # #     push(GetKey(got.d, "args"))
-                    # #     callByName(GetKey(got.d, "method").s)
+                        result = VNULL
+                        if call==FunctionCall:
+                            if Syms.hasKey(value.d["method"].s) and Syms[value.d["method"].s].kind==Function:
+                                let prevSP = SP
+
+                                let fun = Syms[value.d["method"].s]
+                                for v in value.d["args"].a.reversed:
+                                    push(v)
+
+                                if fun.fnKind==UserFunction:
+                                    discard execBlock(fun.main, args=fun.params.a, isFuncBlock=true, imports=fun.imports, exports=fun.exports)
+                                else:
+                                    fun.action()
+
+                                if SP > prevSP:
+                                    result = pop()
+                        elif call==ExecuteCode:
+                            let parsed = doParse(value.s, isFile=false)
+                            let prevSP = SP
+                            if not isNil(parsed):
+                                discard execBlock(parsed)
+                            if SP > prevSP:
+                                result = pop()
                 )
 
                 # builtin "eval",
@@ -117,8 +132,8 @@ proc defineSymbols*() =
                 #         var ret: Value = newString($(wv.getEval((cstring)query)))
                 #         push(ret)
 
-                showWebview(wv)
-                
+                wv.show()
+
 #=======================================
 # Add Library
 #=======================================
