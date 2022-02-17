@@ -108,7 +108,7 @@ when not defined(WEBVIEW_NOEDGE):
         ## Stops the main loop. It is safe to call this function from another other
         ## background thread.
 
-    proc webview_dispatch(w: Webview, fn: WebviewDispatch, arg: pointer) {.importc.}
+    proc webview_dispatch(w: Webview, fn: WebviewDispatch, arg: pointer) {.importc, used.}
         ## Posts a function to be executed on the main thread. You normally do not need
         ## to call this function, unless you want to tweak the native window.
     
