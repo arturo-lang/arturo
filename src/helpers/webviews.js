@@ -4,7 +4,6 @@ if (typeof arturo === 'undefined') {
     arturo = {}
 }
 
-
 // call backend method 
 // with given arguments
 arturo.call = function (method){
