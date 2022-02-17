@@ -14,7 +14,7 @@ import os, osproc, strutils
 
 when not defined(NOWEBVIEW):
     import std/json
-    
+
     import extras/webview
     import helpers/jsonobject
     import vm/values/value
@@ -29,6 +29,7 @@ when not defined(NOWEBVIEW):
     type
         WebviewCallKind* = enum
             FunctionCall,
+            ExecuteCode,
             BackendAction,
             UnrecognizedCall
 
@@ -129,7 +130,7 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
 
 when not defined(NOWEBVIEW):
 
-    proc createWebView*(title       : string                = "Arturo", 
+    proc newWebView*(title       : string                = "Arturo", 
                         url         : string                = "", 
                         width       : int                   = 640, 
                         height      : int                   = 480, 
@@ -152,6 +153,9 @@ when not defined(NOWEBVIEW):
                     "args": Array.prototype.slice.call(arguments, 1)
                 }));
             };
+            arturo.exec = function (code){
+                return window.callback("exec", JSON.stringify(code));
+            };
         """ & initializer).cstring)
 
         let handler = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
@@ -166,6 +170,7 @@ when not defined(NOWEBVIEW):
 
             case mode:
                 of "call"   : callKind = FunctionCall
+                of "exec"   : callKind = ExecuteCode
                 of "action" : callKind = BackendAction
                 else        : 
                     res = 1
@@ -180,6 +185,6 @@ when not defined(NOWEBVIEW):
         mainCallHandler = callHandler
         result.webview_bind("callback", handler, cast[pointer](0))
 
-    proc showWebview*(w: Webview) =
+    proc show*(w: Webview) =
         webview_run(w)
         webview_destroy(w)
