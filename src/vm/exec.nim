@@ -199,7 +199,7 @@ template handleBranching*(tryDoing, finalize: untyped): untyped =
     except BreakTriggered:
         return
     except ContinueTriggered:
-        let _ = 2
+        discard
     except Defect as e:
         raise e 
     finally:
