@@ -75,25 +75,16 @@ proc defineSymbols*() =
                 var fixed = (popAttr("fixed")!=VNULL)
                 var withDebug = (popAttr("debug")!=VNULL)
 
-                if (let aTitle = popAttr("title"); aTitle != VNULL):
-                    title = aTitle.s
-
-                if (let aWidth = popAttr("width"); aWidth != VNULL):
-                    width = aWidth.i
-
-                if (let aHeight = popAttr("height"); aHeight != VNULL):
-                    height = aHeight.i
+                if (let aTitle = popAttr("title"); aTitle != VNULL): title = aTitle.s
+                if (let aWidth = popAttr("width"); aWidth != VNULL): width = aWidth.i
+                if (let aHeight = popAttr("height"); aHeight != VNULL): height = aHeight.i
 
                 var targetUrl = x.s
 
                 if not isUrl(x.s):
                     targetUrl = "data:text/html, " & x.s
-                    # targetUrl = joinPath(TmpDir,"artview.html")
-                    # writeFile(targetUrl, x.s)
 
-                var wv: Webview
-                let ww = wv
-                wv = createWebview(
+                let wv: Webview = createWebview(
                     title       = title, 
                     url         = targetUrl, 
                     width       = width, 
@@ -104,16 +95,6 @@ proc defineSymbols*() =
                         echo "GOT CALL: " & $(call)
                         echo "WITH VALUE: " & $(value)#$(valueFromJson($(value)))
                         newString("booming!")
-                    # handler     = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
-                    #     echo "seq: " & $(seq)
-                    #     echo "received: " & $(req)
-                    #     let ww = cast[Webview](arg)
-                    #     ww.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
-                    #     #     echo "SEQ: " & $(seq)
-                    #     #     echo "GOT: " & $(req)
-                    #     #     echo "arg: " & $(cast[int](arg))
-
-                    #     #     wt.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
                     # # proc (w: Webview, arg: cstring) =
                     # #     let got = valueFromJson($arg)
                     # #     push(GetKey(got.d, "args"))
@@ -137,8 +118,7 @@ proc defineSymbols*() =
                 #         push(ret)
 
                 showWebview(wv)
-                ##wv.exit()
-
+                
 #=======================================
 # Add Library
 #=======================================

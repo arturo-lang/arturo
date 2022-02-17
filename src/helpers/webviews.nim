@@ -24,21 +24,23 @@ when not defined(NOWEBVIEW):
 # Types
 #=======================================
 
-type
-    WebviewCallKind* = enum
-        FunctionCall,
-        BackendAction,
-        UnrecognizedCall
+when not defined(NOWEBVIEW):
+    type
+        WebviewCallKind* = enum
+            FunctionCall,
+            BackendAction,
+            UnrecognizedCall
 
-    WebviewCallHandler* = proc (call: WebviewCallKind, value: Value): Value
+        WebviewCallHandler* = proc (call: WebviewCallKind, value: Value): Value
 
 #=======================================
 # Variables
 #=======================================
 
-var
-    mainWebview* {.global.}      : Webview
-    mainCallHandler* {.global.}  : WebviewCallHandler
+when not defined(NOWEBVIEW):
+    var
+        mainWebview* {.global.}      : Webview
+        mainCallHandler* {.global.}  : WebviewCallHandler
 
 #=======================================
 # Methods
@@ -125,37 +127,21 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
             echo "could not open a Chrome window"
 
 when not defined(NOWEBVIEW):
-    # proc generalExternalInvokeCallback(w: Webview, arg: cstring) {.exportc.} =
-    #     echo "generalExternalInvoke: " & $(arg)
-    #     # var handled = false
-    #     # if eps.hasKey(w):
-    #     #     try:
-    #     #         var mi = parseJson($arg).to(MethodInfo)
-    #     #         if hasKey(eps[w], mi.scope) and hasKey(eps[w][mi.scope], mi.name):
-    #     #             discard eps[w][mi.scope][mi.name](mi.args)
-    #     #             handled = true
-    #     #     except:
-    #     #         echo getCurrentExceptionMsg()
 
-    #     # elif cbs.hasKey(w): 
-    #     #     cbs[w](w, $arg)
-    #     #     handled = true
+    proc createWebView*(title       : string                = "Arturo", 
+                        url         : string                = "", 
+                        width       : int                   = 640, 
+                        height      : int                   = 480, 
+                        resizable   : bool                  = true, 
+                        debug       : bool                  = false, 
+                        initializer : string                = "",
+                        callHandler : WebviewCallHandler    = nil): Webview =
 
-    #     # if handled == false:
-    #     #     echo "external invode:'", arg, "' not handled"
-
-    proc createWebView*(title="Arturo", 
-                        url="", 
-                        width=640, 
-                        height=480, 
-                        resizable=true, 
-                        debug=false, 
-                        callHandler:WebviewCallHandler = nil): Webview =
         result = webview_create(debug.cint)
         webview_set_title(result, title=title.cstring)
         webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
         webview_navigate(result, url.cstring)
-        webview_init(result,"""
+        webview_init(result,("""
             if (typeof arturo === 'undefined') {
                 arturo = {};
             }
@@ -165,7 +151,7 @@ when not defined(NOWEBVIEW):
                     "args": Array.prototype.slice.call(arguments, 1)
                 }));
             };
-        """)
+        """ & initializer).cstring)
 
         let handler = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
             var request = parseJson($(req))
@@ -193,66 +179,6 @@ when not defined(NOWEBVIEW):
         mainCallHandler = callHandler
         result.webview_bind("callback", handler, cast[pointer](0))
 
-        # result = newWebview(title, url, width=width, height=height, debug=true)
-        # webview_init(result,"""
-        #     if (typeof arturo === 'undefined') {
-        #         arturo = {};
-        #     }
-        #     arturo.call = function(method,args) {
-        #         window.backend(
-        #             JSON.stringify({
-        #                 method: method,
-        #                 args: args
-        #             })
-        #         );
-        #     };
-        # """)
-
-        # result.webview_bind("callback", handler, cast[pointer](666))
-
-        # proc receiver(seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
-        #     echo "SEQ: " & $(seq)
-        #     echo "GOT: " & $(req)
-        #     echo "arg: " & $(cast[int](arg))
-
-        #     wt.webview_return(seq, 0.cint, ($ %*("this is a message")).cstring)
-
-        # wt.webview_bind("something", receiver, cast[pointer](666))
-
     proc showWebview*(w: Webview) =
         webview_run(w)
         webview_destroy(w)
-        #w.show()
-    # proc createWebView*(title="Arturo", url="", 
-    #                  width=640, height=480, 
-    #                  resizable=true, debug=false,
-    #                  handler: pointer): Webview =
-    #     var w = cast[Webview](alloc0(sizeof(WebviewObj)))
-    #     w.title = title
-    #     w.url = url
-    #     w.width = width.cint
-    #     w.height = height.cint
-    #     w.resizable = if resizable: 1 else: 0
-    #     w.debug = if debug: 1 else: 0
-    #     w.invokeCb = handler
-    #     if w.init() != 0: return nil
-
-    #     discard w.eval """
-    #         if (typeof arturo === 'undefined') {
-    #             arturo = {};
-    #         }
-    #         arturo.call = function(method,args) {
-    #             window.external.invoke(
-    #                 JSON.stringify({
-    #                     method: method,
-    #                     args: args
-    #                 })
-    #             );
-    #         };
-    #     """
-
-    #     return w
-
-    # proc run*(w: Webview)=
-    #     while w.loop(1) == 0:
-    #         discard
