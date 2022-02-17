@@ -6,33 +6,6 @@
 # @file: helpers/webview.nim
 ######################################################
 
-# TODO(Helpers\webview): Add support for new version of Webview library
-#  from https://github.com/webview/webview
-#  labels: library, 3rd-party
-
-#=======================================
-# Command-line arguments
-#=======================================
-
-# when not defined(NOWEBVIEW):
-#     {.passC: "-DWEBVIEW_STATIC -DWEBVIEW_IMPLEMENTATION".}
-#     {.passC: "-I" & currentSourcePath().substr(0, high(currentSourcePath()) - 4) .}
-
-#     when defined(linux):
-#         {.passC: "-DWEBVIEW_GTK=1 " &
-#         staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
-#         {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
-#     elif defined(freebsd):
-#         {.passC: "-DWEBVIEW_GTK=1 " &
-#         staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
-#         {.passL: staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
-#     elif defined(windows):
-#         {.passC: "-DWEBVIEW_WINAPI=1".}
-#         {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
-#     elif defined(macosx):
-#         {.passC: "-DWEBVIEW_COCOA=1 -x objective-c".}
-#         {.passL: "-framework Cocoa -framework WebKit".}
-
 #=======================================
 # Libraries
 #=======================================
@@ -40,7 +13,7 @@
 import os, osproc, strutils
 
 when not defined(NOWEBVIEW):
-    import extras/webview/webview
+    import extras/webview
     import helpers/jsonobject
     import vm/values/value
 
@@ -150,8 +123,17 @@ when not defined(NOWEBVIEW):
     #     # if handled == false:
     #     #     echo "external invode:'", arg, "' not handled"
 
-    proc createWebView*(title="Arturo", url="", width=640, height=480, resizable=true, debug=false, handler:WebviewCallback): Webview =
-        result = newWebview(title, url, width=width, height=height, debug=true)
+    proc createWebView*(title="Arturo", 
+                        url="", 
+                        width=640, 
+                        height=480, 
+                        resizable=true, 
+                        debug=false, 
+                        handler:WebviewCallback): Webview =
+        result = webview_create(debug.cint)
+        webview_set_title(result, title=title.cstring)
+        webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
+        webview_navigate(result, url.cstring)
         webview_init(result,"""
             if (typeof arturo === 'undefined') {
                 arturo = {};
@@ -165,8 +147,24 @@ when not defined(NOWEBVIEW):
                 );
             };
         """)
-
         result.webview_bind("callback", handler, cast[pointer](666))
+
+        # result = newWebview(title, url, width=width, height=height, debug=true)
+        # webview_init(result,"""
+        #     if (typeof arturo === 'undefined') {
+        #         arturo = {};
+        #     }
+        #     arturo.call = function(method,args) {
+        #         window.backend(
+        #             JSON.stringify({
+        #                 method: method,
+        #                 args: args
+        #             })
+        #         );
+        #     };
+        # """)
+
+        # result.webview_bind("callback", handler, cast[pointer](666))
 
         # proc receiver(seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
         #     echo "SEQ: " & $(seq)
@@ -178,7 +176,9 @@ when not defined(NOWEBVIEW):
         # wt.webview_bind("something", receiver, cast[pointer](666))
 
     proc showWebview*(w: Webview) =
-        w.show()
+        webview_run(w)
+        webview_destroy(w)
+        #w.show()
     # proc createWebView*(title="Arturo", url="", 
     #                  width=640, height=480, 
     #                  resizable=true, debug=false,
@@ -212,77 +212,3 @@ when not defined(NOWEBVIEW):
     # proc run*(w: Webview)=
     #     while w.loop(1) == 0:
     #         discard
-
-# when not defined(MINI):
-#     proc bindMethod*(w: Webview, scope, name: string, p: (proc(param: Value): string)) =
-
-#         proc hook(hookParam: string): string =
-#             var 
-#                 paramVal: Value
-#                 retVal: string
-#             try:
-#                 paramVal = parseJsonNode(parseJson(hookParam))
-#                 # echo $(jnode)
-#                 # paramVal = jnode.to(P)
-#             except:
-#                 return "parse args failed: " & getCurrentExceptionMsg()
-            
-#             retVal = p(paramVal)
-#             return $(%*retVal) # ==> json
-        
-#         discard eps.hasKeyOrPut(w, newTable[string, TableRef[string, CallHook]]())
-#         discard hasKeyOrPut(eps[w], scope, newTable[string, CallHook]())
-#         eps[w][scope][name] = hook
-#         w.dispatch(proc() = discard w.eval(jsTemplate%[name, scope]))
-
-# when not defined(MINI):
-#     ## Something
-
-# else:
-#     proc showWebview*(title="WebView", url="", 
-#                       width=640, height=480, 
-#                       resizable=true, debug=false) =
-
-#         echo "- feature not supported in MINI builds"
-
-# proc showWebview*(title="WebView", url="", 
-#                   width=640, height=480, 
-#                   resizable=true, debug=false, bindings:ValueDict) =
-
-#     let wv = newWebview(title=title, 
-#                           url=url, 
-#                         width=width, 
-#                        height=height, 
-#                     resizable=true, 
-#                         debug=true,
-#                            cb=nil)
-
-#     for key,binding in bindings:
-#         let meth = key
-
-#         wv.bindMethod("webview", meth, proc (param: Value): string =
-#             echo "calling method: " & meth
-#             echo " - with argument: " & $(param)
-#             echo " - for parameter: " & $(binding.params.a[0])
-
-#             var args: ValueArray = @[binding.params.a[0]]
-
-#             echo "calling function!"
-#             discard execBlock(binding.main, execInParent=true, useArgs=true, args=args)
-#             let got = stack.pop().s
-#             echo " - got: " & $(got)
-
-#             discard wv.eval(got)
-#         )
-
-#     # proc wvCallback (param: seq[string]): string =
-#     #     echo "wvCallback :: " & param
-#     #     echo "executing something..."
-#     #     discard wv.eval("console.log('execd in JS');")
-#     #     echo "returning value..."
-#     #     return "returned value"
-
-#     # wv.bindProc("webview","run",wvCallback)
-
-#     wv.run()
-#     wv.exit()
