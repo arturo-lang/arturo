@@ -49,7 +49,8 @@ proc defineSymbols*() =
                 "width"     : ({Integer},"set window width"),
                 "height"    : ({Integer},"set window height"),
                 "fixed"     : ({Logical},"window shouldn't be resizable"),
-                "debug"     : ({Logical},"add inspector console")
+                "debug"     : ({Logical},"add inspector console"),
+                "on"        : ({Dictionary},"execute code on specific events")
             },
             returns     = {String,Nothing},
             example     = """
@@ -74,9 +75,12 @@ proc defineSymbols*() =
                 var fixed = (popAttr("fixed")!=VNULL)
                 var withDebug = (popAttr("debug")!=VNULL)
 
+                var on: ValueDict
+
                 if (let aTitle = popAttr("title"); aTitle != VNULL): title = aTitle.s
                 if (let aWidth = popAttr("width"); aWidth != VNULL): width = aWidth.i
                 if (let aHeight = popAttr("height"); aHeight != VNULL): height = aHeight.i
+                if (let aOn = popAttr("on"); aOn != VNULL): on = aOn.d
 
                 var targetUrl = x.s
 
@@ -114,6 +118,11 @@ proc defineSymbols*() =
                                 discard execBlock(parsed)
                             if SP > prevSP:
                                 result = pop()
+                        elif call==WebviewEvent:
+                            if on.hasKey(value.s):
+                                discard execBlock(on[value.s])
+                        else:
+                            discard
                 )
 
                 builtin "eval",
