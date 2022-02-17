@@ -131,32 +131,23 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
 when not defined(NOWEBVIEW):
 
     proc newWebView*(title       : string                = "Arturo", 
-                        url         : string                = "", 
-                        width       : int                   = 640, 
-                        height      : int                   = 480, 
-                        resizable   : bool                  = true, 
-                        debug       : bool                  = false, 
-                        initializer : string                = "",
-                        callHandler : WebviewCallHandler    = nil): Webview =
+                     url         : string                = "", 
+                     width       : int                   = 640, 
+                     height      : int                   = 480, 
+                     resizable   : bool                  = true, 
+                     debug       : bool                  = false, 
+                     initializer : string                = "",
+                     callHandler : WebviewCallHandler    = nil): Webview =
 
         result = webview_create(debug.cint)
         webview_set_title(result, title=title.cstring)
         webview_set_size(result, width.cint, height.cint, if resizable: Constraints.Default else: Constraints.Fixed)
         webview_navigate(result, url.cstring)
-        webview_init(result,("""
-            if (typeof arturo === 'undefined') {
-                arturo = {};
-            }
-            arturo.call = function (method){
-                return window.callback("call", JSON.stringify({
-                    "method": method,
-                    "args": Array.prototype.slice.call(arguments, 1)
-                }));
-            };
-            arturo.exec = function (code){
-                return window.callback("exec", JSON.stringify(code));
-            };
-        """ & initializer).cstring)
+        webview_init(result,(
+            (static readFile(parentDir(currentSourcePath()) & "/webviews.js")) & 
+            "\n" & 
+            initializer
+        ).cstring)
 
         let handler = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
             var request = parseJson($(req))
@@ -188,3 +179,6 @@ when not defined(NOWEBVIEW):
     proc show*(w: Webview) =
         webview_run(w)
         webview_destroy(w)
+
+    proc evaluate*(w: Webview, js: string) =
+        webview_eval(w, js.cstring)
