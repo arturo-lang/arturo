@@ -10,13 +10,14 @@
 # Libraries
 #=======================================
 
-import std/json, std/jsonutils
 import os, osproc, strutils
 
 when not defined(NOWEBVIEW):
+    import std/json
+    
     import extras/webview
     import helpers/jsonobject
-    import vm/values/value, vm/values/printable
+    import vm/values/value
 
     export webview
 
