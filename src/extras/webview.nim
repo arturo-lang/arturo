@@ -6,7 +6,7 @@
 # (c) 2022 Yanis Zafirópulos
 # 
 # @license: see LICENSE file
-# @file: nim-webview.nim
+# @file: extras/webview.nim
 ######################################################
 
 #=======================================
