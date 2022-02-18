@@ -53,7 +53,9 @@ proc showPopupDialog*(title: string, msg: string, dialog: DialogType, icon: Dial
     pfd_message(title.cstring, msg.cstring, dialog, icon)
 
 proc showSelectionDialog*(title: string, path: string, files = true): string =
+    var cresult: cstring
     if files:
-        result = $(pfd_select_file(title.cstring, path.cstring))
+        cresult = pfd_select_file(title.cstring, path.cstring)
     else:
-        result = $(pfd_select_folder(title.cstring, path.cstring))
+        cresult = pfd_select_folder(title.cstring, path.cstring)
+    result = $cresult
