@@ -7,8 +7,8 @@ extern "C" {
 
 extern void pfd_notification(const char* title, const char* message, int ic);
 extern int pfd_message(const char* title, const char* message, int tp, int ic);
-extern const char* pfd_select_folder(const char* title, const char* path);
-extern const char* pfd_select_file(const char* title, const char* path);
+extern char* pfd_select_folder(const char* title, const char* path);
+extern char* pfd_select_file(const char* title, const char* path);
 
 #ifdef __cplusplus
 }
