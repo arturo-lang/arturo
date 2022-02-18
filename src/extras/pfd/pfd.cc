@@ -1757,12 +1757,12 @@ int pfd_message(const char* title, const char* message, int tp, int ic){
     ).result();
 }
 
-const char* pfd_select_folder(const char* title, const char* path){
+char* pfd_select_folder(const char* title, const char* path){
     std::string s = pfd::select_folder(title, path).result();
     return s.c_str();
 }
 
-const char* pfd_select_file(const char* title, const char* path){
+char* pfd_select_file(const char* title, const char* path){
     std::string s = pfd::open_file(title, path).result()[0];
     return s.c_str();
 }
