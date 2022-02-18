@@ -26,6 +26,9 @@ when not defined(NOWEBVIEW):
 
     import vm/[exec, parse]
 
+when not defined(NODIALOGS):
+    import helpers/dialogs
+
 #=======================================
 # Methods
 #=======================================
@@ -34,6 +37,116 @@ proc defineSymbols*() =
 
     when defined(VERBOSE):
         echo "- Importing: Ui"
+
+    when not defined(NODIALOGS):
+        
+        builtin "alert",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "show notification with given title and message",
+            args        = {
+                "title"     : {String},
+                "message"   : {String}
+            },
+            attrs       = {
+                "info"      : ({Logical},"show informational notification"),
+                "warning"   : ({Logical},"show notification as a warning"),
+                "error"     : ({Logical},"show notification as an error")
+            },
+            returns     = {Logical},
+            example     = """
+            """:
+                ##########################################################
+                var alertIcon = NoIcon
+
+                if (popAttr("info") != VNULL):
+                    alertIcon = InfoIcon
+                elif (popAttr("warning") != VNULL):
+                    alertIcon = WarningIcon
+                elif (popAttr("error") != VNULL):
+                    alertIcon = ErrorIcon
+
+                showAlertDialog(x.s, y.s, alertIcon)
+
+        builtin "dialog",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "show a file selection dialog and return selection",
+            args        = {
+                "title"     : {String}
+            },
+            attrs       = {
+                "folder"    : ({Logical},"select folders instead of files"),
+                "path"      : ({String},"use given starting path")      
+            },
+            returns     = {String},
+            example     = """
+            """:
+                ##########################################################
+                var path = ""
+                let selectFolder = popAttr("folder")==VNULL
+                if (let aPath = popAttr("path"); aPath != VNULL): 
+                    path = aPath.s
+
+                push newString(showSelectionDialog(x.s, path, selectFolder))
+
+        builtin "popup",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "show popup dialog with given title and message and return result",
+            args        = {
+                "title"     : {String},
+                "message"   : {String}
+            },
+            attrs       = {
+                "info"              : ({Logical},"show informational popup"),
+                "warning"           : ({Logical},"show popup as a warning"),
+                "error"             : ({Logical},"show popup as an error"),
+                "question"          : ({Logical},"show popup as a question"),
+                "ok"                : ({Logical},"show an OK dialog (default)"),
+                "okCancel"          : ({Logical},"show an OK/Cancel dialog"),
+                "yesNo"             : ({Logical},"show a Yes/No dialog"),
+                "yesNoCancel"       : ({Logical},"show a Yes/No/Cancel dialog"),
+                "retryCancel"       : ({Logical},"show a Retry/Cancel dialog"),
+                "retryAbortIgnore"  : ({Logical},"show an Abort/Retry/Ignore dialog"),
+                "literal"           : ({Logical},"return the literal value of the pressed button")
+            },
+            returns     = {Logical,Literal},
+            example     = """
+            """:
+                ##########################################################
+                var popupIcon = NoIcon
+                var popupType = OKDialog
+
+                if (popAttr("info") != VNULL):
+                    popupIcon = InfoIcon
+                elif (popAttr("warning") != VNULL):
+                    popupIcon = WarningIcon
+                elif (popAttr("error") != VNULL):
+                    popupIcon = ErrorIcon
+                elif (popAttr("question") != VNULL):
+                    popupIcon = QuestionIcon
+
+                if (popAttr("ok") != VNULL):
+                    popupType = OKDialog
+                elif (popAttr("okCancel") != VNULL):
+                    popupType = OKCancelDialog
+                elif (popAttr("yesNo") != VNULL):
+                    popupType = YesNoDialog
+                elif (popAttr("yesNoCancel") != VNULL):
+                    popupType = YesNoCancelDialog
+                elif (popAttr("retryCancel") != VNULL):
+                    popupType = RetryCancelDialog
+                elif (popAttr("retryAbortIgnore") != VNULL):
+                    popupType = RetryAbortIgnoreDialog
+
+                let res = showPopupDialog(x.s, y.s, popupType, popupIcon)
+
+
+                if (popAttr("literal") != VNULL):
+                    push newLiteral(getLiteralDialogResult(popupType, res))
+                else:
+                    push newLogical(getBooleanDialogResult(popupType, res))
 
     when not defined(NOWEBVIEW):
 
