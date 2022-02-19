@@ -25,7 +25,7 @@ void generateDefaultMainMenu(void){
 
     NSMenuItem *menuItem;
     NSMenu* mainMenu = [[NSMenu alloc] init];
-    NSString* appName = GetApplicationName();
+    NSString* appName = GetApplicationName(); //[NSString stringWithUTF8String: ttl];
 
     /***************************************
      Create the main app menu 
