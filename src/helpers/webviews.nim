@@ -16,6 +16,8 @@ when not defined(NOWEBVIEW):
     import std/json
 
     import extras/webview
+    when defined(macosx):
+        import extras/menubar
     import helpers/jsonobject
     import vm/values/value
 
@@ -179,6 +181,9 @@ when not defined(NOWEBVIEW):
         result.webview_bind("callback", handler, cast[pointer](0))
 
     proc show*(w: Webview) =
+        when defined(macosx):
+            generateDefaultMainMenu()
+
         webview_run(w)
         webview_destroy(w)
 
