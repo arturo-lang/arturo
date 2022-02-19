@@ -22,7 +22,11 @@ import os
 {.compile("pfd/pfd.cc","-std=c++11").}
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
-{.passL:"-lstdc++".}
+
+when defined(windows):
+    {.passL:"/EHsc /std:c++17 version.lib shell32.lib".}
+else:
+    {.passL:"-lstdc++".}
 
 #=======================================
 # Types
