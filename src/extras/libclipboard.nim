@@ -42,7 +42,8 @@ type
         LCB_SECONDARY = 3
         LCB_MODE_END = 4
 
-    ClipboardObj* {.pure.} = ptr object
+    ClipboardStruct* {.importc:"clipboard_c", header: "libclipboard/libclipboard.h", pure.} = object
+    ClipboardObj* = ptr ClipboardStruct
 
 #=======================================
 # Function prototypes
