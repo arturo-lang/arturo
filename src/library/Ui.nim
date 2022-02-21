@@ -87,7 +87,6 @@ proc defineSymbols*() =
                 ##########################################################
                 setClipboard(x.s)
 
-
     when not defined(NODIALOGS):
 
         builtin "dialog",
