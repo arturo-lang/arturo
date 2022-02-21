@@ -41,7 +41,7 @@ type
         LCB_SECONDARY = 3
         LCB_MODE_END = 4
 
-    ClipboardObj* {.importc: "clipboard_c", header:"libclipboard/libclipboard.h".} = pointer
+    ClipboardObj* {.pure.} = ref object
 
 #=======================================
 # Function prototypes
