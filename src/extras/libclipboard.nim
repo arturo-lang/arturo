@@ -42,7 +42,7 @@ type
         LCB_SECONDARY = 3
         LCB_MODE_END = 4
 
-    ClipboardObj* {.pure.} = ref object
+    ClipboardObj* {.pure.} = ptr object
 
 #=======================================
 # Function prototypes
