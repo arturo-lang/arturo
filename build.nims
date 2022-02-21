@@ -59,6 +59,7 @@ let
         "log"               : "",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
+        "noclipboard"       : "-d:NOCLIPBOARD",
         "nodev"             : "",
         "nodialogs"         : "-d:NODIALOGS",
         "noexamples"        : "-d:NOEXAMPLES",
@@ -190,6 +191,7 @@ proc miniBuild*() =
     # all the necessary "modes" for mini builds
     for k in [
         "noasciidecode", 
+        "noclipboard",
         "nodialogs",
         "noexamples", 
         "nogmp", 
