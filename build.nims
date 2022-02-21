@@ -173,6 +173,11 @@ proc showBuildInfo*() =
 # Helpers
 #=======================================
 
+proc recompressJS*(jsFile: string) =
+    let outputFile = jsFile.replace(".min.js", ".final.min.js")
+    var js = readFile(jsFile)
+    writeFile(outputFile, js)
+
 proc getShellRc*(): string =
     # will only be called on non-Windows systems -
     # are there any more shells that are not taken into account?
@@ -215,6 +220,8 @@ proc compressBinary() =
             let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
             if code!=0:
                 echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+            else:
+                recompressJS(minBin)
         else:
             discard
         # TODO(build.nims) Check compression
