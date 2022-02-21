@@ -24,7 +24,7 @@ import os
 
 when defined(linux) or defined(freebsd):
     {.compile("libclipboard/clipboard_x11.c", "-DLIBCLIPBOARD_BUILD_X11 -pthread").}
-    {.passL: "-pthread".}
+    {.passL: "-pthread -lxcb".}
 elif defined(macosx):
     {.compile("libclipboard/clipboard_cocoa.c", "-x objective-c -DLIBCLIPBOARD_BUILD_COCOA -framework Foundation").}
 elif defined(windows):
