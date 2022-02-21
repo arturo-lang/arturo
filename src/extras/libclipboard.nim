@@ -23,7 +23,8 @@ import os
 {.compile("libclipboard/clipboard_common.c", "-I" & parentDir(currentSourcePath())).}
 
 when defined(linux) or defined(freebsd):
-    {.compile("libclipboard/clipboard_x11.c", "-DLIBCLIPBOARD_BUILD_X11").}
+    {.compile("libclipboard/clipboard_x11.c", "-DLIBCLIPBOARD_BUILD_X11 -pthread").}
+    {.passL: "-pthread".}
 elif defined(macosx):
     {.compile("libclipboard/clipboard_cocoa.c", "-x objective-c -DLIBCLIPBOARD_BUILD_COCOA -framework Foundation").}
 elif defined(windows):
