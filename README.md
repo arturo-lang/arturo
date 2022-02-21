@@ -5,7 +5,7 @@
 ### Simple, expressive & portable<br>programming language for efficient scripting<br><br>![License](https://img.shields.io/github/license/arturo-lang/arturo?style=for-the-badge) ![Language](https://img.shields.io/badge/language-Nim-6A7FC8.svg?style=for-the-badge)   [![Build Status](https://img.shields.io/github/workflow/status/arturo-lang/arturo/Linux?style=for-the-badge)](https://github.com/arturo-lang/arturo/actions) <a href="https://discord.gg/YdVK2CB" target="_blank">![Chat on Discord](https://img.shields.io/discord/765519132186640445?color=orange&label=@Discord&style=for-the-badge)</a>
   
 ---
-
+ 
 <!--ts-->
    * [The Language](#the-language)
    * [Documentation](#documentation)
