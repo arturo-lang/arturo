@@ -26,6 +26,9 @@ when not defined(NOWEBVIEW):
 
     import vm/[exec, parse]
 
+when not defined(NOCLIPBOARD):
+    import helpers/clipboard
+
 when not defined(NODIALOGS):
     import helpers/dialogs
 
@@ -67,6 +70,25 @@ proc defineSymbols*() =
                     alertIcon = ErrorIcon
 
                 showAlertDialog(x.s, y.s, alertIcon)
+
+    when not defined(NOCLIPBOARD):
+
+        builtin "clip",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "set clipboard content to given text",
+            args        = {
+                "content"   : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Nothing},
+            example     = """
+            """:
+                ##########################################################
+                setClipboard(x.s)
+
+
+    when not defined(NODIALOGS):
 
         builtin "dialog",
             alias       = unaliased, 
@@ -147,6 +169,20 @@ proc defineSymbols*() =
                     push newLiteral(getLiteralDialogResult(popupType, res))
                 else:
                     push newLogical(getBooleanDialogResult(popupType, res))
+
+    when not defined(NOCLIPBOARD):
+
+        builtin "unclip",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get clipboard content",
+            args        = NoArgs,
+            attrs       = NoAttrs,
+            returns     = {String},
+            example     = """
+            """:
+                ##########################################################
+                push newString(getClipboard())
 
     when not defined(NOWEBVIEW):
 
