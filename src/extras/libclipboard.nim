@@ -35,15 +35,20 @@ elif defined(windows):
 #=======================================
 
 type
-    ClipboardMode* = enum
-        LCB_CLIPBOARD = 0
-        LCB_PRIMARY = 1
-        LCB_SELECTION = 2
-        LCB_SECONDARY = 3
-        LCB_MODE_END = 4
-
+    ClipboardMode* = distinct cint
     ClipboardStruct* {.importc:"clipboard_c", header: "libclipboard/libclipboard.h", pure.} = object
     ClipboardObj* = ptr ClipboardStruct
+
+#=======================================
+# Constants
+#=======================================
+
+const
+    LCB_CLIPBOARD* = 0.ClipboardMode
+    LCB_PRIMARY* = 1.ClipboardMode
+    LCB_SELECTION* = 1.ClipboardMode
+    LCB_SECONDARY* = 2.ClipboardMode
+    LCB_MODE_END* = 3.ClipboardMode
 
 #=======================================
 # Function prototypes
