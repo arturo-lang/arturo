@@ -35,7 +35,7 @@ elif defined(windows):
 #=======================================
 
 type
-    ClipboardMode* {.size: sizeof(cint).} = enum
+    ClipboardMode* = enum
         LCB_CLIPBOARD = 0
         LCB_PRIMARY = 1
         LCB_SELECTION = 2
