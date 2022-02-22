@@ -52,7 +52,8 @@ when not defined(NOWEBVIEW):
 # Forward declarations
 #=======================================
 
-proc getWindow*(w: Webview): Window 
+when not defined(NOWEBVIEW):
+    proc getWindow*(w: Webview): Window 
 
 #=======================================
 # Methods
