@@ -1,3 +1,6 @@
+// Roughly based-on/inspired-by:
+// https://github.com/neutralinojs/neutralinojs/blob/main/api/window/window.cpp
+
 #if defined(__linux__) || defined(__FreeBSD__)
     #include <gtk/gtk.h>
     #include <glib.h>
@@ -7,9 +10,8 @@
 
 #elif defined(__APPLE__)
     #include <objc/objc-runtime.h>
-    #include <CoreFoundation/Corefoundation.h> 
-    #include <CoreGraphics/CGDisplayConfiguration.h>
-    #include <CoreGraphics/CGWindow.h>
+    #include <AppKit/AppKit.h>
+    
     #define NSBaseWindowLevel 0
     #define NSFloatingWindowLevel 5
     #define NSWindowStyleMaskFullScreen 16384
@@ -24,7 +26,15 @@
     #pragma comment(lib, "WebView2Loader.dll.lib")
 
     #define WINDOW_TYPE HWND
-    
+
 #endif
 
-void maximizeWindow(WINDOW_TYPE windowHandle);
+bool is_maximized_window(WINDOW_TYPE windowHandle);
+void maximize_window(WINDOW_TYPE windowHandle);
+void unmaximize_window(WINDOW_TYPE windowHandle);
+
+bool is_visible_window(WINDOW_TYPE windowHandle);
+void show_window(WINDOW_TYPE windowHandle);
+void hide_window(WINDOW_TYPE windowHandle);
+
+void make_borderless_window(WINDOW_TYPE windowHandle);
