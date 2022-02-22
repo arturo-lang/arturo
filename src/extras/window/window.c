@@ -3,7 +3,7 @@
 
 #include "window.h"
 
-int is_maximized_window(WINDOW_TYPE windowHandle){
+bool is_maximized_window(WINDOW_TYPE windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return gtk_window_is_maximized(GTK_WINDOW(windowHandle)) == 1;
     #elif defined(__APPLE__)
@@ -33,7 +33,7 @@ void unmaximize_window(WINDOW_TYPE windowHandle){
     #endif
 }
 
-int is_visible_window(WINDOW_TYPE windowHandle){
+bool is_visible_window(WINDOW_TYPE windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return gtk_widget_is_visible(windowHandle) == 1;
     #elif defined(__APPLE__)
