@@ -3,6 +3,10 @@
 
 #include "window.h"
 
+#if defined(__APPLE__)
+    #include <AppKit/AppKit.h>
+#endif
+
 bool is_maximized_window(WINDOW_TYPE windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return gtk_window_is_maximized(GTK_WINDOW(windowHandle)) == 1;

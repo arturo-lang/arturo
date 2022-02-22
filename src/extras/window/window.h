@@ -11,12 +11,7 @@
     #define WINDOW_TYPE GtkWidget*
 
 #elif defined(__APPLE__)
-    #include <Foundation/Foundation.h>
-    #include <AppKit/AppKit.h>
-    
-    #define NSBaseWindowLevel 0
-    #define NSFloatingWindowLevel 5
-    #define NSWindowStyleMaskFullScreen 16384
+    #include <objc/objc-runtime.h>
 
     #define WINDOW_TYPE id
 
