@@ -11,7 +11,7 @@
     #define WINDOW_TYPE GtkWidget*
 
 #elif defined(__APPLE__)
-    #include <objc/objc-runtime.h>
+    #include <Foundation/Foundation.h>
     #include <AppKit/AppKit.h>
     
     #define NSBaseWindowLevel 0

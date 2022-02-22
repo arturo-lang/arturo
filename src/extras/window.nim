@@ -30,7 +30,7 @@ elif defined(freebsd):
     {.passC: staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
     {.passL: staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
 elif defined(macosx):
-    {.compile("window/window.c", "-x objective-c").}
+    {.compile("window/window.c", "-framework Foundation -framework AppKit -x objective-c").}
     {.passL: "-framework AppKit".}
 elif defined(windows):
     {.passL: """/EHsc /std:c++17 "deps\libs\x64\WebView2LoaderStatic.lib" version.lib shell32.lib""".}
