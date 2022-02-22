@@ -351,6 +351,30 @@ proc defineSymbols*() =
                         ##########################################################
                         wv.getWindow().makeBorderless()
 
+                builtin "fullscreen",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Make webview window fullscreen",
+                    args        = NoArgs,
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.getWindow().fullscreen()
+
+                builtin "unfullscreen",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Unset webview window fullscreen mode",
+                    args        = NoArgs,
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.getWindow().unfullscreen()
+
                 wv.show()
 
 #=======================================
