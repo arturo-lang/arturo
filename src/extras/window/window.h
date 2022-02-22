@@ -1,6 +1,8 @@
 // Roughly based-on/inspired-by:
 // https://github.com/neutralinojs/neutralinojs/blob/main/api/window/window.cpp
 
+#include <stdbool.h>
+
 #if defined(__linux__) || defined(__FreeBSD__)
     #include <gtk/gtk.h>
     #include <glib.h>
@@ -29,11 +31,11 @@
 
 #endif
 
-int is_maximized_window(WINDOW_TYPE windowHandle);
+bool is_maximized_window(WINDOW_TYPE windowHandle);
 void maximize_window(WINDOW_TYPE windowHandle);
 void unmaximize_window(WINDOW_TYPE windowHandle);
 
-int is_visible_window(WINDOW_TYPE windowHandle);
+bool is_visible_window(WINDOW_TYPE windowHandle);
 void show_window(WINDOW_TYPE windowHandle);
 void hide_window(WINDOW_TYPE windowHandle);
 
