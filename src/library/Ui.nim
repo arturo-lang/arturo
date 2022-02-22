@@ -198,6 +198,9 @@ proc defineSymbols*() =
                 "width"     : ({Integer},"set window width"),
                 "height"    : ({Integer},"set window height"),
                 "fixed"     : ({Logical},"window shouldn't be resizable"),
+                "maximized" : ({Logical},"start in maximized mode"),
+                "fullscreen": ({Logical},"start in fullscreen mode"),
+                "borderless": ({Logical},"show as borderless window"),
                 "debug"     : ({Logical},"add inspector console"),
                 "on"        : ({Dictionary},"execute code on specific events"),
                 "inject"    : ({String},"inject JS code on webview initialization")
@@ -223,6 +226,9 @@ proc defineSymbols*() =
                 var width = 640
                 var height = 480
                 var fixed = (popAttr("fixed")!=VNULL)
+                var maximized = (popAttr("maximized")!=VNULL)
+                var fullscreen = (popAttr("fullscreen")!=VNULL)
+                var borderless = (popAttr("borderless")!=VNULL)
                 var withDebug = (popAttr("debug")!=VNULL)
                 var inject = ""
                 var on: ValueDict
@@ -244,6 +250,9 @@ proc defineSymbols*() =
                     width       = width, 
                     height      = height, 
                     resizable   = not fixed, 
+                    maximized   = maximized,
+                    fullscreen  = fullscreen,
+                    borderless  = borderless,
                     debug       = withDebug,
                     initializer = inject,
                     callHandler = proc (call: WebviewCallKind, value: Value): Value =
@@ -290,90 +299,6 @@ proc defineSymbols*() =
                     """:
                         ##########################################################
                         wv.evaluate(x.s)
-
-                builtin "maximize",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Maximize webview window",
-                    args        = NoArgs,
-                    attrs       = NoAttrs,
-                    returns     = {Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        wv.getWindow().maximize()
-
-                builtin "unmaximize",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Unmaximize webview window",
-                    args        = NoArgs,
-                    attrs       = NoAttrs,
-                    returns     = {Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        wv.getWindow().unmaximize()
-
-                builtin "show",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Show webview window",
-                    args        = NoArgs,
-                    attrs       = NoAttrs,
-                    returns     = {Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        wv.getWindow().show()
-
-                builtin "hide",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Hide webview window",
-                    args        = NoArgs,
-                    attrs       = NoAttrs,
-                    returns     = {Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        wv.getWindow().hide()
-
-                builtin "borderless",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Make webview window borderless",
-                    args        = NoArgs,
-                    attrs       = NoAttrs,
-                    returns     = {Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        wv.getWindow().makeBorderless()
-
-                builtin "fullscreen",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Make webview window fullscreen",
-                    args        = NoArgs,
-                    attrs       = NoAttrs,
-                    returns     = {Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        wv.getWindow().fullscreen()
-
-                builtin "unfullscreen",
-                    alias       = unaliased, 
-                    rule        = PrefixPrecedence,
-                    description = "Unset webview window fullscreen mode",
-                    args        = NoArgs,
-                    attrs       = NoAttrs,
-                    returns     = {Nothing},
-                    example     = """
-                    """:
-                        ##########################################################
-                        wv.getWindow().unfullscreen()
 
                 wv.show()
 
