@@ -16,10 +16,10 @@ when not defined(NOWEBVIEW):
     import std/json
 
     import extras/webview
-    import extras/window
     when defined(macosx):
         import extras/menubar
     import helpers/jsonobject
+    import helpers/windows
     import vm/values/value
 
     export webview
@@ -191,5 +191,8 @@ when not defined(NOWEBVIEW):
     proc evaluate*(w: Webview, js: string) =
         webview_eval(w, js.cstring)
 
-    proc maximize*(w: Webview) =
-        maximizeWindow(webview_get_window(w))
+    proc getWindow*(w: Webview): Window =
+        when not defined(WEBVIEW_NOEDGE):
+            webview_get_window(w)
+        else:
+            discard

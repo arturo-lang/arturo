@@ -23,6 +23,7 @@ when not defined(NOWEBVIEW):
 
     import helpers/url
     import helpers/webviews
+    import helpers/windows
 
     import vm/[exec, parse]
 
@@ -300,7 +301,7 @@ proc defineSymbols*() =
                     example     = """
                     """:
                         ##########################################################
-                        wv.maximize()
+                        wv.getWindow().maximize()
 
                 wv.show()
 
