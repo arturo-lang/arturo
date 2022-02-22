@@ -12,16 +12,37 @@
 
 import extras/window
 
+export window
+
 #=======================================
-# Types
+# Helpers
 #=======================================
 
-type
-    Window* = pointer
+proc isMaximized(w: Window): bool =
+    is_maximized_window(w)
+
+proc isVisible(w: Window): bool =
+    is_visible_window(w)
 
 #=======================================
 # Methods
 #=======================================
 
 proc maximize*(w: Window) =
-    maximizeWindow(w)
+    if not w.isMaximized():
+        maximize_window(w)
+
+proc unmaximize*(w: Window) =
+    if w.isMaximized():
+        unmaximize_window(w)
+
+proc show*(w: Window) =
+    if not w.isVisible():
+        show_window(w)
+
+proc hide*(w: Window) =
+    if w.isVisible():
+        hide_window(w)
+
+proc makeBorderless*(w: Window) =
+    make_borderless_window(w)

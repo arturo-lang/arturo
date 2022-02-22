@@ -36,11 +36,24 @@ elif defined(windows):
     {.passL: """/EHsc /std:c++17 "deps\libs\x64\WebView2LoaderStatic.lib" version.lib shell32.lib""".}
 
 #=======================================
+# Types
+#=======================================
+
+type
+    Window* = distinct pointer
+
+#=======================================
 # Function prototypes
 #=======================================
 
 {.push header: "window/window.h", cdecl.}
 
-proc maximizeWindow*(w: pointer) {.importc.}
+proc is_maximized_window*(w: Window): bool {.importc.}
+proc maximize_window*(w: Window) {.importc.}
+proc unmaximize_window*(w: Window) {.importc.}
+proc is_visible_window*(w: Window): bool {.importc.}
+proc show_window*(w: Window) {.importc.}
+proc hide_window*(w: Window) {.importc.}
+proc make_borderless_window*(w: Window) {.importc.}
 
 {.pop.}
