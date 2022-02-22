@@ -303,6 +303,54 @@ proc defineSymbols*() =
                         ##########################################################
                         wv.getWindow().maximize()
 
+                builtin "unmaximize",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Unmaximize webview window",
+                    args        = NoArgs,
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.getWindow().unmaximize()
+
+                builtin "show",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Show webview window",
+                    args        = NoArgs,
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.getWindow().show()
+
+                builtin "hide",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Hide webview window",
+                    args        = NoArgs,
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.getWindow().hide()
+
+                builtin "borderless",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Make webview window borderless",
+                    args        = NoArgs,
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.getWindow().makeBorderless()
+
                 wv.show()
 
 #=======================================

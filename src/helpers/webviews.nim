@@ -193,6 +193,6 @@ when not defined(NOWEBVIEW):
 
     proc getWindow*(w: Webview): Window =
         when not defined(WEBVIEW_NOEDGE):
-            webview_get_window(w)
+            (Window)(webview_get_window(w))
         else:
             discard
