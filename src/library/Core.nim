@@ -578,7 +578,7 @@ proc defineSymbols*() =
             x: 2
             
             switch x=2 -> print "yes, that's right!"
-                       -> print "nope, that's not right!
+                       -> print "nope, that's not right!"
             ; yes, that's right!
         """:
             ##########################################################
