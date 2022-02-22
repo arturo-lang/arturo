@@ -49,6 +49,12 @@ when not defined(NOWEBVIEW):
         mainCallHandler* {.global.}  : WebviewCallHandler
 
 #=======================================
+# Forward declarations
+#=======================================
+
+proc getWindow*(w: Webview): Window 
+
+#=======================================
 # Methods
 #=======================================
 
@@ -56,31 +62,31 @@ proc openChromeWindow*(port: int, flags: seq[string] = @[]) =
     var args = @[
         "--app=http://localhost:" & port.intToStr & "/ ",
         "--disable-http-cache",
-        # "--disable-background-networking",
-        # "--disable-background-timer-throttling", 
-        # "--disable-backgrounding-occluded-windows", 
-        # "--disable-breakpad", 
-        # "--disable-client-side-phishing-detection", 
-        # "--disable-default-apps", 
-        # "--disable-dev-shm-usage", 
-        # "--disable-infobars", 
-        # "--disable-extensions", 
-        # "--disable-features=site-per-process", 
-        # "--disable-hang-monitor", 
-        # "--disable-ipc-flooding-protection", 
-        # "--disable-popup-blocking", 
-        # "--disable-prompt-on-repost", 
-        # "--disable-renderer-backgrounding", 
-        # "--disable-sync", 
-        # "--disable-translate", 
-        # "--disable-windows10-custom-titlebar", 
-        # "--metrics-recording-only", 
-        # "--no-first-run", 
-        # "--no-default-browser-check", 
-        # "--safebrowsing-disable-auto-update", 
-        # "--enable-automation", 
-        # "--password-store=basic", 
-        # "--use-mock-keychain"
+        "--disable-background-networking",
+        "--disable-background-timer-throttling", 
+        "--disable-backgrounding-occluded-windows", 
+        "--disable-breakpad", 
+        "--disable-client-side-phishing-detection", 
+        "--disable-default-apps", 
+        "--disable-dev-shm-usage", 
+        "--disable-infobars", 
+        "--disable-extensions", 
+        "--disable-features=site-per-process", 
+        "--disable-hang-monitor", 
+        "--disable-ipc-flooding-protection", 
+        "--disable-popup-blocking", 
+        "--disable-prompt-on-repost", 
+        "--disable-renderer-backgrounding", 
+        "--disable-sync", 
+        "--disable-translate", 
+        "--disable-windows10-custom-titlebar", 
+        "--metrics-recording-only", 
+        "--no-first-run", 
+        "--no-default-browser-check", 
+        "--safebrowsing-disable-auto-update", 
+        "--enable-automation", 
+        "--password-store=basic", 
+        "--use-mock-keychain"
     ]
 
     for flag in flags:
@@ -139,6 +145,9 @@ when not defined(NOWEBVIEW):
                      width       : int                   = 640, 
                      height      : int                   = 480, 
                      resizable   : bool                  = true, 
+                     maximized   : bool                  = false,
+                     fullscreen  : bool                  = false,
+                     borderless  : bool                  = false,
                      debug       : bool                  = false, 
                      initializer : string                = "",
                      callHandler : WebviewCallHandler    = nil): Webview =
@@ -152,6 +161,17 @@ when not defined(NOWEBVIEW):
             "\n" & 
             initializer
         ).cstring)
+
+        when not defined(WEBVIEW_NOEDGE):
+            if maximized:
+                result.getWindow().maximize()
+
+            if fullscreen:
+                result.getWindow().fullscreen()
+
+            if borderless:
+                result.getWindow().makeBorderless()
+                result.getWindow().show()
 
         let handler = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
             var request = parseJson($(req))
@@ -172,8 +192,25 @@ when not defined(NOWEBVIEW):
                     res = 1
                     callKind = UnrecognizedCall
 
-            if callKind != UnrecognizedCall:
-                returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
+            if callKind == BackendAction:
+                case value.s:
+                    of "window.maximize":
+                        mainWebview.getWindow().maximize()
+                    of "window.unmaximize":
+                        mainWebview.getWindow().unmaximize()
+                    of "window.show":
+                        mainWebview.getWindow().show()
+                    of "window.hide":
+                        mainWebview.getWindow().hide()
+                    of "window.fullscreen":
+                        mainWebview.getWindow().fullscreen()
+                    of "window.unfullscreen":
+                        mainWebview.getWindow().unfullscreen()
+                    else:
+                        discard
+            else:
+                if callKind != UnrecognizedCall:
+                    returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
             webview_return(mainWebview, seq, res.cint, returned)
 
