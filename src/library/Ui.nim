@@ -198,7 +198,8 @@ proc defineSymbols*() =
                 "height"    : ({Integer},"set window height"),
                 "fixed"     : ({Logical},"window shouldn't be resizable"),
                 "debug"     : ({Logical},"add inspector console"),
-                "on"        : ({Dictionary},"execute code on specific events")
+                "on"        : ({Dictionary},"execute code on specific events"),
+                "inject"    : ({String},"inject JS code on webview initialization")
             },
             returns     = {String,Nothing},
             example     = """
@@ -222,13 +223,14 @@ proc defineSymbols*() =
                 var height = 480
                 var fixed = (popAttr("fixed")!=VNULL)
                 var withDebug = (popAttr("debug")!=VNULL)
-
+                var inject = ""
                 var on: ValueDict
 
                 if (let aTitle = popAttr("title"); aTitle != VNULL): title = aTitle.s
                 if (let aWidth = popAttr("width"); aWidth != VNULL): width = aWidth.i
                 if (let aHeight = popAttr("height"); aHeight != VNULL): height = aHeight.i
                 if (let aOn = popAttr("on"); aOn != VNULL): on = aOn.d
+                if (let aInject = popAttr("inject"); aInject != VNULL): inject = aInject.s
 
                 var targetUrl = x.s
 
@@ -242,6 +244,7 @@ proc defineSymbols*() =
                     height      = height, 
                     resizable   = not fixed, 
                     debug       = withDebug,
+                    initializer = inject,
                     callHandler = proc (call: WebviewCallKind, value: Value): Value =
                         result = VNULL
                         if call==FunctionCall:
@@ -286,6 +289,18 @@ proc defineSymbols*() =
                     """:
                         ##########################################################
                         wv.evaluate(x.s)
+
+                builtin "maximize",
+                    alias       = unaliased, 
+                    rule        = PrefixPrecedence,
+                    description = "Maximize webview window",
+                    args        = NoArgs,
+                    attrs       = NoAttrs,
+                    returns     = {Nothing},
+                    example     = """
+                    """:
+                        ##########################################################
+                        wv.maximize()
 
                 wv.show()
 
