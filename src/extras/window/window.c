@@ -75,27 +75,6 @@ void hide_window(WINDOW_TYPE windowHandle){
     #endif
 }
 
-void make_borderless_window(WINDOW_TYPE windowHandle){
-    #if defined(__linux__) || defined(__FreeBSD__)
-        gtk_window_set_decorated(GTK_WINDOW(windowHandle), false);
-    #elif defined(__APPLE__)
-        [windowHandle setStyleMask: [windowHandle styleMask] & ~NSWindowStyleMaskTitled];
-    #elif defined(_WIN32)
-        DWORD currentStyle = GetWindowLong(windowHandle, GWL_STYLE);
-        currentStyle &= ~(WS_CAPTION | WS_THICKFRAME);
-        SetWindowLong(windowHandle, GWL_STYLE, currentStyle);
-        SetWindowPos(
-            windowHandle, 
-            NULL, 
-            0, 
-            0, 
-            0, 
-            0, 
-            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
-        );
-    #endif
-}
-
 bool is_fullscreen_window(WINDOW_TYPE windowHandle){
     #if defined(__linux__) || defined(__FreeBSD__)
         return isFullscreen;
@@ -163,5 +142,62 @@ void unfullscreen_window(WINDOW_TYPE windowHandle){
         );
         
         isFullscreen = false;
+    #endif
+}
+
+void set_topmost_window(WINDOW_TYPE windowHandle){
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_set_keep_above(GTK_WINDOW(windowHandle), true);
+    #elif defined(__APPLE__)
+        [windowHandle setLevel: NSFloatingWindowLevel];
+    #elif defined(_WIN32)
+        SetWindowPos(
+            windowHandle,
+            HWND_TOPMOST,
+            0,
+            0,
+            0,
+            0,
+            SWP_NOMOVE | SWP_NOSIZE
+        )
+    #endif
+}
+
+void unset_topmost_window(WINDOW_TYPE windowHandle){
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_set_keep_above(GTK_WINDOW(windowHandle), false);
+    #elif defined(__APPLE__)
+        [windowHandle setLevel: NSNormalWindowLevel];
+    #elif defined(_WIN32)
+        SetWindowPos(
+            windowHandle,
+            HWND_NOTOPMOST,
+            0,
+            0,
+            0,
+            0,
+            SWP_NOMOVE | SWP_NOSIZE
+        )
+    #endif
+}
+
+void make_borderless_window(WINDOW_TYPE windowHandle){
+    #if defined(__linux__) || defined(__FreeBSD__)
+        gtk_window_set_decorated(GTK_WINDOW(windowHandle), false);
+    #elif defined(__APPLE__)
+        [windowHandle setStyleMask: [windowHandle styleMask] & ~NSWindowStyleMaskTitled];
+    #elif defined(_WIN32)
+        DWORD currentStyle = GetWindowLong(windowHandle, GWL_STYLE);
+        currentStyle &= ~(WS_CAPTION | WS_THICKFRAME);
+        SetWindowLong(windowHandle, GWL_STYLE, currentStyle);
+        SetWindowPos(
+            windowHandle, 
+            NULL, 
+            0, 
+            0, 
+            0, 
+            0, 
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
+        );
     #endif
 }

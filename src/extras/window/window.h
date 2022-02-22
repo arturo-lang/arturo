@@ -34,8 +34,11 @@ bool is_visible_window(WINDOW_TYPE windowHandle);
 void show_window(WINDOW_TYPE windowHandle);
 void hide_window(WINDOW_TYPE windowHandle);
 
-void make_borderless_window(WINDOW_TYPE windowHandle);
-
 bool is_fullscreen_window(WINDOW_TYPE windowHandle);
 void fullscreen_window(WINDOW_TYPE windowHandle);
 void unfullscreen_window(WINDOW_TYPE windowHandle);
+
+void set_topmost_window(WINDOW_TYPE windowHandle);
+void unset_topmost_window(WINDOW_TYPE windowHandle);
+
+void make_borderless_window(WINDOW_TYPE windowHandle);

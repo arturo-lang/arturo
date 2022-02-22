@@ -148,6 +148,7 @@ when not defined(NOWEBVIEW):
                      maximized   : bool                  = false,
                      fullscreen  : bool                  = false,
                      borderless  : bool                  = false,
+                     topmost     : bool                  = false,
                      debug       : bool                  = false, 
                      initializer : string                = "",
                      callHandler : WebviewCallHandler    = nil): Webview =
@@ -172,6 +173,9 @@ when not defined(NOWEBVIEW):
             if borderless:
                 result.getWindow().makeBorderless()
                 result.getWindow().show()
+
+            if topmost or borderless:
+                result.getWindow().topmost()
 
         let handler = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
             var request = parseJson($(req))

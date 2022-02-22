@@ -54,9 +54,11 @@ proc unmaximize_window*(w: Window) {.importc.}
 proc is_visible_window*(w: Window): bool {.importc.}
 proc show_window*(w: Window) {.importc.}
 proc hide_window*(w: Window) {.importc.}
-proc make_borderless_window*(w: Window) {.importc.}
 proc is_fullscreen_window*(w: Window): bool {.importc.}
 proc fullscreen_window*(w: Window) {.importc.}
 proc unfullscreen_window*(w: Window) {.importc.}
+proc set_topmost_window*(w: Window) {.importc.}
+proc unset_topmost_window*(w: Window) {.importc.}
+proc make_borderless_window*(w: Window) {.importc.}
 
 {.pop.}

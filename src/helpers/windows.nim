@@ -55,5 +55,11 @@ proc unfullscreen*(w: Window) =
     if w.isFullscreen():
         unfullscreen_window(w)
 
+proc topmost*(w: Window) =
+    set_topmost_window(w)
+
+proc untopmost*(w: Window) =
+    unset_topmost_window(w)
+
 proc makeBorderless*(w: Window) =
     make_borderless_window(w)
