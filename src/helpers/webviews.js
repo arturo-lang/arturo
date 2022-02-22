@@ -15,6 +15,11 @@ if (typeof arturo === 'undefined') {
         // in backend
         exec: (code)=>{
             return window.callback("exec", JSON.stringify(code))
+        },
+
+        // invoke a specific backend action
+        invoke: (action)=>{
+            return window.callback("action", JSON.stringify(action))
         }
     }
 }
