@@ -174,7 +174,7 @@ proc showBuildInfo*() =
 #=======================================
 
 proc recompressJS*(jsFile: string) =
-    let outputFile = jsFile.replace(".min.js", ".final.min.js")
+    let outputFile = jsFile #.replace(".min.js", ".final.min.js")
     var js = readFile(jsFile)
 
     # replace Field0, Field1, etc with F0, F1, etc
@@ -192,6 +192,23 @@ proc recompressJS*(jsFile: string) =
         ("'iKind = ", ""),
         ("'tpKind = ", ""),
         ("'fnKind = ", "")
+    )
+
+    # replace other more-verbose identifiers
+    js = js.multiReplace(
+        ("Stack_1660944389", "STA"),
+        ("finalizer", "FIN"),
+        ("counter", "COU"),
+        ("tpKindValue", "TKDV"),
+        ("tpKind", "TKD"),
+        ("iKindValue", "IKDV"),
+        ("iKind", "IKD"),
+        ("fnKindValue", "FKDV"),
+        ("fnKind", "FKD"),
+        ("dbKindValue", "DKDV"),
+        ("dbKind", "DKD"),
+        ("offsetBase", "OFFB"),
+        ("offset", "OFF")
     )
 
     writeFile(outputFile, js)
@@ -226,7 +243,7 @@ proc miniBuild*() =
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
 
     # plus, shrinking + the MINI flag
-    FLAGS = "{FLAGS} --opt:size -d:MINI".fmt
+    FLAGS = FLAGS.replace("--opt:speed ","") & " --opt:size -d:MINI"
 
 proc compressBinary() =
     if COMPRESS:
