@@ -29,11 +29,11 @@
 
 #endif
 
-bool is_maximized_window(WINDOW_TYPE windowHandle);
+int is_maximized_window(WINDOW_TYPE windowHandle);
 void maximize_window(WINDOW_TYPE windowHandle);
 void unmaximize_window(WINDOW_TYPE windowHandle);
 
-bool is_visible_window(WINDOW_TYPE windowHandle);
+int is_visible_window(WINDOW_TYPE windowHandle);
 void show_window(WINDOW_TYPE windowHandle);
 void hide_window(WINDOW_TYPE windowHandle);
 
