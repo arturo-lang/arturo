@@ -201,6 +201,7 @@ proc defineSymbols*() =
                 "maximized" : ({Logical},"start in maximized mode"),
                 "fullscreen": ({Logical},"start in fullscreen mode"),
                 "borderless": ({Logical},"show as borderless window"),
+                "topmost"   : ({Logical},"set window as always-on-top"),
                 "debug"     : ({Logical},"add inspector console"),
                 "on"        : ({Dictionary},"execute code on specific events"),
                 "inject"    : ({String},"inject JS code on webview initialization")
@@ -229,6 +230,7 @@ proc defineSymbols*() =
                 var maximized = (popAttr("maximized")!=VNULL)
                 var fullscreen = (popAttr("fullscreen")!=VNULL)
                 var borderless = (popAttr("borderless")!=VNULL)
+                var topmost = (popAttr("topmost")!=VNULL)
                 var withDebug = (popAttr("debug")!=VNULL)
                 var inject = ""
                 var on: ValueDict
@@ -253,6 +255,7 @@ proc defineSymbols*() =
                     maximized   = maximized,
                     fullscreen  = fullscreen,
                     borderless  = borderless,
+                    topmost     = topmost,
                     debug       = withDebug,
                     initializer = inject,
                     callHandler = proc (call: WebviewCallKind, value: Value): Value =
