@@ -13,7 +13,7 @@
 # Libraries
 #=======================================
 
-import os, parseopt, sequtils
+import os, parseopt,sequtils
 import strformat, strutils, tables
 
 import src/helpers/terminal
@@ -52,7 +52,7 @@ let
         "arm"               : "--cpu:arm",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "-d:DEV --listCmd --verbosity:1 --hints:on",
+        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:1 --hints:on",
         "dontcompress"      : "",
         "dontinstall"       : "",
         "full"              : "",
@@ -95,7 +95,7 @@ var
     FLAGS*              = "--skipUserCfg:on --skipProjCfg:on --skipParentCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 
-                          "--embedsrc:on --path:src --opt:speed"
+                          "--path:src --opt:speed"
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
@@ -176,6 +176,24 @@ proc showBuildInfo*() =
 proc recompressJS*(jsFile: string) =
     let outputFile = jsFile.replace(".min.js", ".final.min.js")
     var js = readFile(jsFile)
+
+    # replace Field0, Field1, etc with F0, F1, etc
+    js = js.replaceWord("Field0", "F0")
+           .replaceWord("Field1", "F1")
+           .replaceWord("Field2", "F2")
+           .replaceWord("Field3", "F3")
+
+    # replace redundant error messages
+    js = js.multiReplace(
+        ("field '", ""),
+        ("' is not accessible for type '", ""),
+        ("' using ", ""),
+        ("'kind = ", ""),
+        ("'iKind = ", ""),
+        ("'tpKind = ", ""),
+        ("'fnKind = ", "")
+    )
+
     writeFile(outputFile, js)
 
 proc getShellRc*(): string =
