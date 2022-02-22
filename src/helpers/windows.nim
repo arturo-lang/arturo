@@ -24,6 +24,9 @@ proc isMaximized(w: Window): bool =
 proc isVisible(w: Window): bool =
     is_visible_window(w)
 
+proc isFullscreen(w: Window): bool =
+    is_fullscreen_window(w)
+
 #=======================================
 # Methods
 #=======================================
@@ -43,6 +46,14 @@ proc show*(w: Window) =
 proc hide*(w: Window) =
     if w.isVisible():
         hide_window(w)
+
+proc fullscreen*(w: Window) =
+    if not w.isFullscreen():
+        fullscreen_window(w)
+
+proc unfullscreen*(w: Window) =
+    if w.isFullscreen():
+        unfullscreen_window(w)
 
 proc makeBorderless*(w: Window) =
     make_borderless_window(w)

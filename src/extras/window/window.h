@@ -35,3 +35,7 @@ void show_window(WINDOW_TYPE windowHandle);
 void hide_window(WINDOW_TYPE windowHandle);
 
 void make_borderless_window(WINDOW_TYPE windowHandle);
+
+bool is_fullscreen_window(WINDOW_TYPE windowHandle);
+void fullscreen_window(WINDOW_TYPE windowHandle);
+void unfullscreen_window(WINDOW_TYPE windowHandle);
