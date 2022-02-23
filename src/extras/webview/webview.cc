@@ -818,7 +818,7 @@ using browser_engine = cocoa_wkwebview_engine;
 // ====================================================================
 //
 
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 #include <Shlwapi.h>
 #include <codecvt>
 #include <stdlib.h>
