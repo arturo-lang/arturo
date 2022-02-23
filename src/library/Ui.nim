@@ -23,7 +23,6 @@ when not defined(NOWEBVIEW):
 
     import helpers/url
     import helpers/webviews
-    import helpers/windows
 
     import vm/[exec, parse]
 
