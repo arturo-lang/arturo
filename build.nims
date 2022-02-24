@@ -52,7 +52,7 @@ let
         "arm"               : "--cpu:arm",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:1 --hints:on",
+        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:2 --hints:on",
         "dontcompress"      : "",
         "dontinstall"       : "",
         "full"              : "",
@@ -95,7 +95,7 @@ var
     FLAGS*              = "--skipUserCfg:on --skipProjCfg:on --skipParentCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 
-                          "--path:src --opt:speed"
+                          "--path:src --opt:speed --threads:on"
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
@@ -243,7 +243,10 @@ proc miniBuild*() =
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
 
     # plus, shrinking + the MINI flag
-    FLAGS = FLAGS.replace("--opt:speed ","") & " --opt:size -d:MINI"
+    FLAGS = FLAGS.multiReplace(
+        ("--opt:speed ",""),
+        ("--threads:on ","")
+    ) & " --opt:size -d:MINI"
 
 proc compressBinary() =
     if COMPRESS:
