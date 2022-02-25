@@ -87,4 +87,4 @@ proc respond*(req: ServerRequest, resp: ServerResponse) =
 proc startServer*(handler: RequestHandler, port: int = 18966) =
     let settings = initSettings(port.Port)
 
-    run(handler.OnRequest, settings.Settings)
+    run(handler.OnRequest, settings)
