@@ -69,7 +69,7 @@ type
     sock*: EpollSocket         ##  Windows specific
     hnd*: EpollHandle          ##  Windows specific
 
-  EpollEvent* {.wepoll.} = object
+  EpollEvent* {.wepoll, importc:"epoll_event".} = object
     events*: uint32          ##  Epoll events and flags
     data*: EpollData         ##  User data variable
 
