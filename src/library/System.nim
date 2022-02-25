@@ -87,7 +87,7 @@ proc defineSymbols*() =
             attrs       = {
                 "code"      : ({Integer},"return process exit code")
             },
-            returns     = {String},
+            returns     = {String, Dictionary},
             example     = """
             print execute "pwd"
             ; /Users/admin/Desktop
