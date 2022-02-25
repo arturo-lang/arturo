@@ -128,7 +128,9 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "exit program",
         args        = NoArgs,
-        attrs       = NoAttrs,
+        attrs       = {
+            "args"      : ({Integer},"use given error code"),
+        },
         returns     = {Nothing},
         example     = """
             exit              ; (terminates the program)
@@ -136,7 +138,11 @@ proc defineSymbols*() =
             exit.with: 3      ; (terminates the program with code 3)
         """:
             ##########################################################
-            quit()
+            var errCode = QuitSuccess
+            if (let aWith = popAttr("with"); aWith != VNULL):
+                errCode = aWith.i
+
+            quit(errCode)
 
     builtin "panic",
         alias       = unaliased, 
