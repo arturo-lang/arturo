@@ -17,7 +17,7 @@
 #=======================================
 
 when not defined(WEB):
-    import os, osproc
+    import os, osproc, sugar
     
 import sequtils
 
@@ -85,6 +85,7 @@ proc defineSymbols*() =
                 "command"   : {String}
             },
             attrs       = {
+                "args"      : ({Block},"use given command arguments"),
                 "code"      : ({Integer},"return process exit code")
             },
             returns     = {String, Dictionary},
@@ -98,10 +99,22 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
 
+                # get arguments & options
+                var cmd = x.s
                 let code = (popAttr("code") != VNULL)
+                var args: seq[string] = @[]
+                if (let aArgs = popAttr("args"); aArgs != VNULL):
+                    args = aArgs.a.map((x) => x.s)
 
-                let (output, pcode) = execCmdEx(x.s)
+                # add arguments, if any
+                for i in 0..high(args):
+                    cmd.add(' ')
+                    cmd.add(quoteShell(args[i]))
 
+                # actually execute the command
+                let (output, pcode) = execCmdEx(cmd)
+
+                # return result, accordingly
                 if code:
                     push(newDictionary({
                         "output": newString(output),
