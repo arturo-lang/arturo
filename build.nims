@@ -66,6 +66,7 @@ let
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
         "nosqlite"          : "-d:NOSQLITE",
+        "nothreads"         : "-d:NOTHREADS",
         "nounzip"           : "-d:NOUNZIP",
         "nowebview"         : "-d:NOWEBVIEW",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
@@ -88,7 +89,8 @@ var
     PRINT_LOG           = false
     RUN_UNIT_TESTS      = false
     FOR_WEB             = false
-    IS_DEV              = false     
+    IS_DEV              = false 
+    IS_MULTITHREADED    = true    
     USE_VCC             = false
     MODE                = ""       
 
@@ -237,16 +239,14 @@ proc miniBuild*() =
         "nogmp", 
         "noparsers", 
         "nosqlite", 
+        "nothreads",
         "nounzip", 
         "nowebview"
     ]:
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
 
     # plus, shrinking + the MINI flag
-    FLAGS = FLAGS.multiReplace(
-        ("--opt:speed ",""),
-        ("--threads:on ","")
-    ) & " --opt:size -d:MINI"
+    FLAGS = FLAGS.replace("--opt:speed ","") & " --opt:size -d:MINI"
 
 proc compressBinary() =
     if COMPRESS:
@@ -295,6 +295,9 @@ proc compile*(footer=false): int =
         COMPILER = "cpp --cc:vcc ".fmt
         FLAGS = "{FLAGS} -d:NOGMP -d:USE_NIM_MARKDOWN -d:MINI --exceptions:cpp".fmt
         USE_VCC = true
+
+    if not IS_MULTITHREADED:
+        FLAGS = FLAGS.replace("--threads:on ","")
 
     if USE_VCC:
         FLAGS = "{FLAGS} --passC:/O2".fmt
@@ -490,6 +493,8 @@ while true:
                                 CONFIG = "@mini"
                             of "nodev":
                                 IS_DEV = false
+                            of "nothreads":
+                                IS_MULTITHREADED = false
                             of "vcc":
                                 USE_VCC = true
                             of "web":
