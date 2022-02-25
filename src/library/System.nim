@@ -18,11 +18,23 @@
 
 when not defined(WEB):
     import os, osproc, sugar
+
+    when defined(windows):
+        import winlean
+    else:
+        import posix
     
 import sequtils
 
 import vm/lib
 import vm/[env, errors]
+
+#=======================================
+# Variables
+#=======================================
+
+var
+    ActiveProcesses = initOrderedTable[int, Process]()
 
 #=======================================
 # Methods
@@ -86,7 +98,9 @@ proc defineSymbols*() =
             },
             attrs       = {
                 "args"      : ({Block},"use given command arguments"),
-                "code"      : ({Integer},"return process exit code")
+                "async"     : ({Logical},"execute asynchronously as a process and return id"),
+                "code"      : ({Logical},"return process exit code"),
+                "directly"  : ({Logical},"execute command directly, as a shell command")  
             },
             returns     = {String, Dictionary},
             example     = """
@@ -101,27 +115,43 @@ proc defineSymbols*() =
 
                 # get arguments & options
                 var cmd = x.s
-                let code = (popAttr("code") != VNULL)
                 var args: seq[string] = @[]
                 if (let aArgs = popAttr("args"); aArgs != VNULL):
                     args = aArgs.a.map((x) => x.s)
+                let code = (popAttr("code") != VNULL)
+                let directly = (popAttr("directly") != VNULL)
 
-                # add arguments, if any
-                for i in 0..high(args):
-                    cmd.add(' ')
-                    cmd.add(quoteShell(args[i]))
-
-                # actually execute the command
-                let (output, pcode) = execCmdEx(cmd)
-
-                # return result, accordingly
-                if code:
-                    push(newDictionary({
-                        "output": newString(output),
-                        "code": newInteger(pcode)
-                    }.toOrderedTable))
+                if (popAttr("async") != VNULL):
+                    let newProcess = startProcess(command = cmd, args = args)
+                    let pid = processID(newProcess)
+                    
+                    ActiveProcesses[pid] = newProcess
+                    push newInteger(pid)
                 else:
-                    push(newString(output))
+                    # add arguments, if any
+                    for i in 0..high(args):
+                        cmd.add(' ')
+                        cmd.add(quoteShell(args[i]))
+
+                    if directly:
+                        let pcode = execCmd(cmd)
+
+                        if code:
+                            push(newInteger(pcode))
+                        else:
+                            discard
+                    else:
+                        # actually execute the command
+                        let (output, pcode) = execCmdEx(cmd)
+
+                        # return result, accordingly
+                        if code:
+                            push(newDictionary({
+                                "output": newString(output),
+                                "code": newInteger(pcode)
+                            }.toOrderedTable))
+                        else:
+                            push(newString(output))
 
     builtin "exit",
         alias       = unaliased, 
