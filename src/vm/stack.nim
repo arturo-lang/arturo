@@ -26,7 +26,7 @@ const AttrsSize* = 10
 
 var
     # stack
-    Stack*{.threadvar.}     : seq[Value]
+    Stack*                  : seq[Value]
     Attrs*                  : OrderedTable[string,Value]
     SP*, AP*, CSP*          : int
 
