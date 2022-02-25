@@ -84,7 +84,9 @@ proc defineSymbols*() =
             args        = {
                 "command"   : {String}
             },
-            attrs       = NoAttrs,
+            attrs       = {
+                "code"      : ({Integer},"return process exit code")
+            },
             returns     = {String},
             example     = """
             print execute "pwd"
@@ -95,9 +97,18 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("execute")
-                let res = execCmdEx(x.s)
-                
-                push(newString(res[0]))
+
+                let code = (popAttr("code") != VNULL)
+
+                let (output, pcode) = execCmdEx(x.s)
+
+                if code:
+                    push(newDictionary({
+                        "output": newString(output),
+                        "code": newInteger(pcode)
+                    }.toOrderedTable))
+                else:
+                    push(newString(output))
 
     builtin "exit",
         alias       = unaliased, 
