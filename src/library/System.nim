@@ -308,7 +308,7 @@ proc defineSymbols*() =
                     # if it's an external process,
                     # proceed with its termination
                     when defined(windows):
-                        terminateProcess(pid, errCode)
+                        discard terminateProcess(pid, errCode)
                     else:
                         sendSignal((int32)pid, errCode)
 
