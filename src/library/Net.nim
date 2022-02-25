@@ -17,14 +17,13 @@
 #=======================================
 
 when not defined(WEB):
-    import algorithm, asyncdispatch, asynchttpserver
+    import algorithm, asyncdispatch#, asynchttpserver
     import cgi, httpclient, httpcore, os
-    import sequtils, smtp, strutils, times, threadpool
+    import sequtils, smtp, strutils, times
     import nre except toSeq
 
-    import options, httpx
-
     import helpers/jsonobject
+    import helpers/servers
     import helpers/terminal
     import helpers/url
     import helpers/webviews
@@ -34,100 +33,6 @@ when not defined(WEB):
     import vm/[env, exec]
 when defined(SAFE):
     import vm/[errors]
-
-#=======================================
-# Helpers
-#=======================================
-
-# var 
-#     serverPort {.global.} : int
-#     serverRoutes {.global.} : Value
-#     serverVerbose {.global.} : bool
-#     serverKillPath {.global.} : string
-
-proc startServer(serverPort: int, serverRoutes: Value, serverVerbose: bool, serverKillPath: string) {.async.} =
-    echo "HERE!!"
-    var server = newAsyncHttpServer()
-
-    proc handler(req: asynchttpserver.Request) {.async,gcsafe.} =
-        
-        # if serverVerbose:
-        #     stdout.write bold(magentaColor) & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & resetColor & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
-        #     if req.url.query!="":
-        #         stdout.write "?" & req.url.query
-
-        #     stdout.write "\n"
-        #     stdout.flushFile()
-
-        var status = 200
-        var headers = newHttpHeaders()
-
-        var body: string = "yep"
-
-        var routeFound = ""
-
-        # for k in serverRoutes.d.keys:
-        #     let route = req.url.path.match(nre.re(k & "$"))
-
-        #     if not route.isNone:
-
-        #         var args: ValueArray = @[]
-
-        #         let captures = route.get.captures.toTable
-
-        #         for group,capture in captures:
-        #             args.add(newString(group))
-
-        #         if req.reqMethod==HttpPost:
-        #             for d in decodeData(req.body):
-        #                 args.add(newString(d[0]))
-
-        #             for d in (toSeq(decodeData(req.body))).reversed:
-        #                 push(newString(d[1]))
-
-        #         for capture in (toSeq(pairs(captures))).reversed:
-        #             push(newString(capture[1]))
-
-        #         try:
-        #             {.cast(gcsafe).}:
-        #                 discard execBlock(serverRoutes.d[k], execInParent=true, args=args, memoized=Value(kind: Null))
-        #         except:
-        #             let e = getCurrentException()
-        #             echo "Something went wrong: " & e.msg
-        #         body = pop().s
-        #         routeFound = k
-        #         break
-
-        # if routeFound=="":
-        #     let subpath = joinPath(env.currentPath(),req.url.path)
-        #     if fileExists(subpath):
-        #         body = readFile(subpath)
-        #     else:
-        #         status = 404
-        #         body = "page not found!"
-
-        # if serverVerbose:
-        #     echo bold(greenColor) & ">> [" & $(status) & "] " & routeFound & resetColor
-
-        # if req.url.path==serverKillPath:
-        #     raise newException(Exception, "Received kill signal")
-
-        await req.respond(status.HttpCode, body, headers)
-
-    await server.serve(Port(18966), handler)
-    # try:
-    #     if serverVerbose:
-    #        echo ":: Starting server on port " & $(serverPort) & "...\n"
-    #     server.listen(Port(serverPort))
-    #     while true:
-    #         if server.shouldAcceptRequest():
-    #             await server.acceptRequest(handler)
-    #         else:
-    #             await sleepAsync(500)
-    # except:
-    #     let e = getCurrentException()
-    #     echo ":: Server message: " & e.msg
-    #     server.close()
 
 #=======================================
 # Methods
@@ -402,147 +307,80 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
-                #{.push warning[GcUnsafe2]:off.}
-                when not defined(VERBOSE):
-                    let routes = x
 
-                    var port = 18966
-                    var verbose = (popAttr("verbose") != VNULL)
-                    if (let aPort = popAttr("port"); aPort != VNULL):
-                        port = aPort.i
+                let routes = x
 
-                    let isAsync = (popAttr("async") != VNULL)
+                var port = 18966
+                var verbose = (popAttr("verbose") != VNULL)
+                if (let aPort = popAttr("port"); aPort != VNULL):
+                    port = aPort.i
 
-                    var killPath = "/exit"
-                    if (let aKill = popAttr("kill"); aKill != VNULL):
-                        killPath = aKill.s
-                
-                    if (let aChrome = popAttr("chrome"); aChrome != VNULL):
-                        openChromeWindow(port)
-                
-                    echo "IN Thread: " & $(getThreadId())
+                let isAsync = (popAttr("async") != VNULL)
 
-                    if isAsync:
-                        proc onRequest(req: httpx.Request): Future[void] {.gcsafe.} =
-                            {.cast(gcsafe).}:
-                                var body = "yes"
-                                var status = 200
-                                var routeFound = ""
+                var killPath = "/exit"
+                if (let aKill = popAttr("kill"); aKill != VNULL):
+                    killPath = aKill.s
+            
+                if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+                    openChromeWindow(port)
 
-                                let reqUrlPath = req.path.get()
+                proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
+                    {.cast(gcsafe).}:
+                        var body = ""
+                        var allOK = true
+                        var routeFound = ""
 
-                                echo "we have a request: " & reqUrlPath
+                        let reqPath = req.path()
 
-                                for k in routes.d.keys:
-                                    let route = reqUrlPath.match(nre.re(k & "$"))
+                        for k in routes.d.keys:
+                            let route = reqPath.match(nre.re(k & "$"))
 
-                                    if not route.isNone:
+                            if not route.isNone:
 
-                                        echo "Route found :)"
+                                var args: ValueArray = @[]
+                                let captures = route.get.captures.toTable
+                                for group,capture in captures:
+                                    args.add(newString(group))
 
-                                        var args: ValueArray = @[]
+                                if req.action()==HttpPost:
+                                    for d in decodeData(req.body()):
+                                        args.add(newString(d[0]))
 
-                                        let captures = route.get.captures.toTable
+                                    for d in (toSeq(decodeData(req.body()))).reversed:
+                                        push(newString(d[1]))
 
-                                        for group,capture in captures:
-                                            args.add(newString(group))
+                                for capture in (toSeq(pairs(captures))).reversed:
+                                    push(newString(capture[1]))
+                                try:
+                                    discard execBlock(routes.d[k], execInParent=false, args=args, memoized=VNULL)
+                                    body = pop().s
+                                except:
+                                    let e = getCurrentException()
+                                    echo "Something went wrong: " & e.msg
+                                
+                                routeFound = k
+                                allOk = true
+                                break
 
-                                        if req.httpMethod==some(HttpPost):
-                                            for d in decodeData(req.body.get()):
-                                                args.add(newString(d[0]))
+                            else:
+                                allOk = false
 
-                                            for d in (toSeq(decodeData(req.body.get()))).reversed:
-                                                push(newString(d[1]))
+                        # if routeFound=="":
+                        #     let subpath = joinPath(env.currentPath(), reqPath)
+                        #     if fileExists(subpath):
+                        #         body = readFile(subpath)
+                        #     else:
+                        #         allOk = false
 
-                                        for capture in (toSeq(pairs(captures))).reversed:
-                                            push(newString(capture[1]))
-                                        try:
-                                            echo "about to execute block"
-                                            
-                                            discard execBlock(routes.d[k], execInParent=false, args=args, memoized=VNULL)
-                                            echo "after block"
-                                            body = "data:text/html, " & pop().s
-                                            echo "BODY: " & body
-                                        except:
-                                            let e = getCurrentException()
-                                            echo "Something went wrong: " & e.msg
-                                            echo e.getStackTrace()
-                                        
-                                        #body = "working - kinda: " & reqUrlPath
-                                        routeFound = k
-                                        break
-                                    else:
-                                        echo "Route not found!"
+                        if allOk:
+                            req.respond(newServerResponse(body))
+                        else:
+                            req.respond(error404())
 
-                                if routeFound=="":
-                                    let subpath = joinPath(env.currentPath(),reqUrlPath)
-                                    if fileExists(subpath):
-                                        body = readFile(subpath)
-                                    else:
-                                        status = 404
-                                        body = "page not found!"
+                        if verbose:
+                            echo bold(greenColor) & ">> [" & $(if allOK: "200" else: "404") & "] " & routeFound & resetColor
 
-                                if status != 404:
-                                    req.send(body)
-                                else:
-                                    req.send(Http404)
-
-                            # if serverVerbose:
-                            #     echo bold(greenColor) & ">> [" & $(status) & "] " & routeFound & resetColor
-
-                            # if req.url.path==serverKillPath:
-                            #     raise newException(Exception, "Received kill signal")
-                            # if req.httpMethod == some(HttpGet):
-                            #     case req.path.get()
-                            #         of "/":
-                            #             req.send("Hello World")
-                            #         of "/cloom":
-                            #             req.send("Zoom")
-                            #         else:
-                            #             req.send(Http404)
-                        echo "Starting server at port: " & $(port)
-                        spawn run(onRequest)
-                        # var thread: Thread[tuple[port:int,routes:Value,verbose:bool,killPath:string]]
-                        # proc serverThread(t: tuple[port:int,routes:Value,verbose:bool,killPath:string]){.thread.} =
-                        #     asyncCheck startServer(t.port,t.routes,t.verbose,t.killPath)
-                        #     runForever()
-                        #     #runForever()
-                        # createThread(thread, serverThread, (port, routes, verbose, killPath))
-                    else:
-                        waitFor startServer(port,routes,verbose,killPath)
-
-                    # serverPort = port
-                    # serverRoutes = routes
-                    # serverVerbose = verbose
-                    # serverKillPath = killPath
-
-                    # proc syncStartServer() =
-                    #     waitFor startServer()
-
-                    # if isAsync:
-                    #     spawn syncStartServer()
-                    # else:
-                    #     syncStartServer()
-
-                    # var serverPort {.threadvar.}
-                    # var serverRoutes {.threadvar.} = routes
-                    # var serverVerbose {.threadvar.} = verbose
-                    # var serverKillPath {.threadvar.} = killPath
-
-                    # proc serverThread(){.thread.} =
-                    #     var serverPort {.threadvar.} = port
-
-                    #     asyncCheck startServer(serverPort, serverRoutes, serverVerbose, serverKillPath)
-                    #     runForever()
-
-                    # if isAsync:
-
-                    #     var thread: Thread[void]
-                    #     createThread(thread, serverThread)
-                    # else:
-                    #     waitFor startServer()
-
-                #{.push warning[GcUnsafe2]:on.}
+                startServer(requestHandler.RequestHandler, port)
 
 #=======================================
 # Add Library
