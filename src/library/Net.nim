@@ -292,7 +292,6 @@ proc defineSymbols*() =
             attrs       = {
                 "port"      : ({Integer},"use given port"),
                 "verbose"   : ({Logical},"print info log"),
-                "async"     : ({Logical},"run asynchronously (to be used with a webview)"),
                 "chrome"    : ({Logical},"open in Chrome windows as an app"),
                 "kill"      : ({String},"bind a kill signal to the server (default: '/exit')")
             },
@@ -314,8 +313,6 @@ proc defineSymbols*() =
                 var verbose = (popAttr("verbose") != VNULL)
                 if (let aPort = popAttr("port"); aPort != VNULL):
                     port = aPort.i
-
-                let isAsync = (popAttr("async") != VNULL)
 
                 var killPath = "/exit"
                 if (let aKill = popAttr("kill"); aKill != VNULL):
@@ -364,13 +361,6 @@ proc defineSymbols*() =
 
                             else:
                                 allOk = false
-
-                        # if routeFound=="":
-                        #     let subpath = joinPath(env.currentPath(), reqPath)
-                        #     if fileExists(subpath):
-                        #         body = readFile(subpath)
-                        #     else:
-                        #         allOk = false
 
                         if allOk:
                             req.respond(newServerResponse(body))
