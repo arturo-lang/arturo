@@ -22,7 +22,7 @@ when not defined(WEB):
     when defined(windows):
         import winlean
     else:
-        import posix
+        import std/posix_utils
     
 import sequtils
 
@@ -273,6 +273,44 @@ proc defineSymbols*() =
         alias       = unaliased,
         description = "information about the current system":
             newDictionary(getSystemInfo())
+
+    when not defined(WEB):
+        builtin "terminate",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "kill process with given id",
+            args        = {
+                "id"    : {Integer}
+            },
+            attrs       = {
+                "code"  : ({Integer},"use given error code"),
+            },
+            returns     = {Nothing},
+            # TODO(System\terminate) add documentation example
+            #  labels: library,documentation,easy
+            example     = """
+            """:
+                ##########################################################
+                var errCode = QuitSuccess
+                let pid = x.i
+                if (let aCode = popAttr("code"); aCode != VNULL):
+                    errCode = aCode.i
+
+                # check if it's a process that has been
+                # created by us
+                if ActiveProcesses.hasKey(pid):
+                    # close it
+                    close(ActiveProcesses[pid])
+
+                    # and remove it from the table
+                    ActiveProcesses.del(pid)
+                else:
+                    # if it's an external process,
+                    # proceed with its termination
+                    when defined(windows):
+                        terminateProcess(pid, errCode)
+                    else:
+                        sendSignal((int32)pid, errCode)
 
 #=======================================
 # Add Library
