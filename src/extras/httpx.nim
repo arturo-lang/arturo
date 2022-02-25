@@ -30,7 +30,8 @@ when defined(windows):
     import sets
 else:
     import posix
-    from osproc import countProcessors
+    when compileOption("threads"):
+        from osproc import countProcessors
 
 
 export httpcore
