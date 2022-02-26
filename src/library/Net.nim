@@ -344,8 +344,8 @@ proc defineSymbols*() =
                                 reqBodyV = valueFromJson(reqBody) 
                             except:
                                 reqBodyV = newDictionary()
-                                for k,v in decodeQuery(reqBodyV):
-                                    reqBodyV[k] = newString(v)
+                                for k,v in decodeQuery(reqBody):
+                                    reqBodyV.d[k] = newString(v)
                         else: 
                             reqBodyV = newString(reqBody)
 
