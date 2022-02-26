@@ -307,8 +307,8 @@ proc defineSymbols*() =
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
 
+                # get parameters
                 let routes = x
-
                 var port = 18966
                 var verbose = (popAttr("verbose") != VNULL)
                 if (let aPort = popAttr("port"); aPort != VNULL):
@@ -317,43 +317,65 @@ proc defineSymbols*() =
                 if (let aChrome = popAttr("chrome"); aChrome != VNULL):
                     openChromeWindow(port)
 
+                # necessary so that "serveInternal" is available
                 execInternal("Net/serve")
 
                 proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
                     {.cast(gcsafe).}:
+                        # store many request details
                         let reqAction = req.action()
                         let reqBody = req.body()
                         let reqHeaders = req.headers().table
                         var reqQuery = initOrderedTable[string,Value]()
                         var reqPath = req.path()
 
+                        # get query components, if any
                         if reqPath.contains("?"):
                             let parts = reqPath.split("?")
                             reqPath = parts[0]
                             for k,v in decodeQuery(parts[1]):
                                 reqQuery[k] = newString(v)
 
+                        # carefully parse request body, if any
+                        var reqBodyV: Value
+
+                        if reqAction!=HttpGet: 
+                            try:
+                                reqBodyV = valueFromJson(reqBody) 
+                            except:
+                                reqBodyV = newDictionary()
+                        else: 
+                            reqBodyV = newString(reqBody)
+
                         # call internal implementation
                         let got = callInternal("serveInternal", true,
                             newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
-                                "body": (if reqAction!=HttpGet: valueFromJson(reqBody) else: newString(reqBody)),
+                                "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders)
                             }.toOrderedTable), 
                             routes
                         )
 
+                        # send response
                         req.respond(newServerResponse(
                             got.d["serverBody"].s,
                             HttpCode(got.d["serverStatus"].i),
                             got.d["serverContent"].s
                         ))
 
+                        # show request info
+                        # if we're on .verbose mode
                         if verbose:
                             echo bold(greenColor) & ">> [" & $(got.d["serverStatus"].i) & "] " & got.d["serverPattern"].s & resetColor
 
+                # show server startup info
+                # if we're on .verbose mode
+                if verbose:
+                    echo ":: Starting server on port " & $(port) & "...\n"
+                
                 startServer(requestHandler.RequestHandler, port)
 
 #=======================================
