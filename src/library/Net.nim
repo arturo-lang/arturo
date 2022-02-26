@@ -17,11 +17,8 @@
 #=======================================
 
 when not defined(WEB):
-    import algorithm, asyncdispatch#, asynchttpserver
-    import cgi, httpclient, httpcore, os
-    import sequtils, smtp, strtabs
-    import strutils, times, uri
-    import nre except toSeq
+    import algorithm, asyncdispatch, httpclient, httpcore
+    import os, sequtils, smtp, strutils, times, uri
 
     import helpers/jsonobject
     import helpers/servers
