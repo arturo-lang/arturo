@@ -1,0 +1,36 @@
+serveInternal: function [Request, serverRoutes][
+    serverResponse: #[
+        serverBody: ""
+        serverPattern: ""
+        serverStatus: 200
+        serverContent: ""
+    ]
+
+    send: function [str][
+        sendResult: "text/plain"
+
+        if not? null? attr 'css     -> sendResult: "text/css"
+        if not? null? attr 'html    -> sendResult: "text/html"
+        if not? null? attr 'js      -> sendResult: "application/javascript"
+        if not? null? attr 'json    -> sendResult: "application/json"
+        if not? null? attr 'xml     -> sendResult: "application/xml"
+
+        serverResponse\serverContent: "Content-Type: " ++ sendResult
+        return str
+    ]
+
+    loop serverRoutes [method, pattern, action][
+        if and? (to :string method) = lower Request\method 
+                not? empty? match Request\path "^"++pattern++"$" [
+            params: Request\body
+            if Request\method = "GET" -> params: Request\query
+
+            serverResponse\serverPattern: pattern
+            serverResponse\serverBody: do action
+            return serverResponse
+        ]
+    ]
+
+    serverResponse\serverStatus: 400
+    return serverResponse
+]
