@@ -19,7 +19,8 @@
 when not defined(WEB):
     import algorithm, asyncdispatch#, asynchttpserver
     import cgi, httpclient, httpcore, os
-    import sequtils, smtp, strutils, times
+    import sequtils, smtp, strtabs
+    import strutils, times, uri
     import nre except toSeq
 
     import helpers/jsonobject
@@ -287,7 +288,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "start web server using given routes",
             args        = {
-                "routes"    : {Dictionary}
+                "routes"    : {Block}
             },
             attrs       = {
                 "port"      : ({Integer},"use given port"),
@@ -321,54 +322,44 @@ proc defineSymbols*() =
                 if (let aChrome = popAttr("chrome"); aChrome != VNULL):
                     openChromeWindow(port)
 
+                execInternal("Net/serve")
+
                 proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
                     {.cast(gcsafe).}:
-                        var body = ""
-                        var allOK = true
-                        var routeFound = ""
+                        let reqAction = req.action()
+                        let reqBody = req.body()
+                        let reqHeaders = req.headers().table
+                        var reqQuery = initOrderedTable[string,Value]()
+                        var reqPath = req.path()
 
-                        let reqPath = req.path()
+                        if reqPath.contains("?"):
+                            let parts = reqPath.split("?")
+                            reqPath = parts[0]
+                            for k,v in decodeQuery(parts[1]):
+                                reqQuery[k] = newString(v)
 
-                        for k in routes.d.keys:
-                            let route = reqPath.match(nre.re(k & "$"))
+                        # call internal implementation
+                        let got = callInternal("serveInternal", true,
+                            newDictionary({
+                                "method": newString($(reqAction)),
+                                "path": newString(reqPath),
+                                "body": (if reqAction!=HttpGet: valueFromJson(reqBody) else: newString(reqBody)),
+                                "query": newDictionary(reqQuery),
+                                "headers": newStringDictionary(reqHeaders)
+                            }.toOrderedTable), 
+                            routes
+                        )
 
-                            if not route.isNone:
+                        dump(got)
 
-                                var args: ValueArray = @[]
-                                let captures = route.get.captures.toTable
-                                for group,capture in captures:
-                                    args.add(newString(group))
-
-                                if req.action()==HttpPost:
-                                    for d in decodeData(req.body()):
-                                        args.add(newString(d[0]))
-
-                                    for d in (toSeq(decodeData(req.body()))).reversed:
-                                        push(newString(d[1]))
-
-                                for capture in (toSeq(pairs(captures))).reversed:
-                                    push(newString(capture[1]))
-                                try:
-                                    discard execBlock(routes.d[k], execInParent=false, args=args, memoized=VNULL)
-                                    body = pop().s
-                                except:
-                                    let e = getCurrentException()
-                                    echo "Something went wrong: " & e.msg
-                                
-                                routeFound = k
-                                allOk = true
-                                break
-
-                            else:
-                                allOk = false
-
-                        if allOk:
-                            req.respond(newServerResponse(body))
-                        else:
-                            req.respond(error404())
+                        req.respond(newServerResponse(
+                            got.d["serverBody"].s,
+                            HttpCode(got.d["serverStatus"].i),
+                            got.d["serverContent"].s
+                        ))
 
                         if verbose:
-                            echo bold(greenColor) & ">> [" & $(if allOK: "200" else: "404") & "] " & routeFound & resetColor
+                            echo bold(greenColor) & ">> [" & $(got.d["serverStatus"].i) & "] " & got.d["serverPattern"].s & resetColor
 
                 startServer(requestHandler.RequestHandler, port)
 
