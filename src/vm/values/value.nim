@@ -608,6 +608,11 @@ func newNewline*(l: int): Value {.inline.} =
     #echo "VALUE: adding newline: " & $(l)
     Value(kind: Newline, line: l)
 
+proc newStringDictionary*(a: TableRef[string, seq[string]]): Value =
+    result = newDictionary()
+    for k,v in a.pairs:
+        result.d[k] = newStringBlock(v)
+
 proc copyValue*(v: Value): Value {.inline.} =
     case v.kind:
         of Null:        result = VNULL
