@@ -191,7 +191,27 @@ proc execBlock*(
     return Syms
 
 template execInternal*(path: string): untyped =
-    execBlock(doParse(static readFile("src/vm/library/internal/" & path & ".art"), isFile=false))
+    discard execBlock(
+        doParse(
+            static readFile(
+                normalizedPath(
+                    parentDir(currentSourcePath()) & "/../library/internal/" & path & ".art"
+                )
+            ),
+            isFile = false
+        ),
+        execInParent = true
+    )
+
+template callInternal*(fname: string, getValue: bool, args: varargs[Value]): untyped =
+    let fun = Syms[fname]
+    for v in args.reversed:
+        push(v)
+
+    callFunction(fun)
+
+    when getValue:
+        pop()
 
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     try:
