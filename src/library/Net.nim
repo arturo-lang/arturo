@@ -293,8 +293,7 @@ proc defineSymbols*() =
             attrs       = {
                 "port"      : ({Integer},"use given port"),
                 "verbose"   : ({Logical},"print info log"),
-                "chrome"    : ({Logical},"open in Chrome windows as an app"),
-                "kill"      : ({String},"bind a kill signal to the server (default: '/exit')")
+                "chrome"    : ({Logical},"open in Chrome windows as an app")
             },
             returns     = {Nothing},
             example     = """
@@ -314,10 +313,6 @@ proc defineSymbols*() =
                 var verbose = (popAttr("verbose") != VNULL)
                 if (let aPort = popAttr("port"); aPort != VNULL):
                     port = aPort.i
-
-                var killPath = "/exit"
-                if (let aKill = popAttr("kill"); aKill != VNULL):
-                    killPath = aKill.s
             
                 if (let aChrome = popAttr("chrome"); aChrome != VNULL):
                     openChromeWindow(port)
@@ -349,8 +344,6 @@ proc defineSymbols*() =
                             }.toOrderedTable), 
                             routes
                         )
-
-                        dump(got)
 
                         req.respond(newServerResponse(
                             got.d["serverBody"].s,
