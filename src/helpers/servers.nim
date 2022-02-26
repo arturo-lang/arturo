@@ -23,16 +23,10 @@ type
     ServerRequest* = distinct Request
     ServerSettings* = distinct Settings
 
-    ServerResponseContent* = enum
-        HTMLResponse,
-        CSSResponse,
-        XMLResponse,
-        TextResponse
-
     ServerResponse* = ref object
         body*       : string
         status*     : HttpCode
-        content*    : ServerResponseContent
+        content*    : string
         
 
 #=======================================
@@ -55,27 +49,10 @@ proc body*(req: ServerRequest): string =
     body(req.Request).get()
 
 proc generateHeaders*(resp: ServerResponse): string =
-    result = ""
+    result = resp.content
     
-    # if resp.status == Http200:
-    #     var contentType = "Content-Type: "
-    #     case resp.content: 
-    #         of HTMLResponse:
-    #             contentType &= "text/html; charset=UTF-8"
-    #         of CSSResponse:
-    #             contentType &= "text/css"
-    #         of XMLResponse:
-    #             contentType &= "text/xml"
-    #         of TextResponse:
-    #             contentType &= "text/plain"
-
-    #     result = contentType
-    
-proc newServerResponse*(body = "", status = Http200, content = HTMLResponse): ServerResponse =
+proc newServerResponse*(body = "", status = Http200, content = ""): ServerResponse =
     ServerResponse(body: body, status: status, content: content)
-
-proc error404*(): ServerResponse =
-    ServerResponse(body: "", status: Http404, content: HTMLResponse)
 
 #=======================================
 # Methods
