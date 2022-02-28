@@ -89,9 +89,6 @@ proc getUsageForFunction(n: string, v: Value): seq[string] =
         spaceBefore &= " "
         j+=1
 
-    for ar in args:
-        echo ar
-
     if args[0][0]!="":
         result.add fmt("{bold()}{n}{resetColor} {args[0][0]} {fg(grayColor)}{getTypeString(args[0][1])}")
     else:
