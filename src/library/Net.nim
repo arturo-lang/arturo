@@ -353,7 +353,7 @@ proc defineSymbols*() =
                                 "path": newString(reqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
-                                "headers": newStringDictionary(reqHeaders)
+                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
                             }.toOrderedTable), 
                             routes
                         )
