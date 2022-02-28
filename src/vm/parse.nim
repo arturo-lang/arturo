@@ -22,7 +22,7 @@ import vm/[errors, values/value]
 type
     Parser* = object of BaseLexer
         value*: string
-        values*: ValueArray
+        values*: seq[ValueArray]
         symbol*: SymbolKind
 
 #=======================================
@@ -728,7 +728,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         AddToken newSymbol(p.symbol)
 
 template parsePath(p: var Parser, root: Value, curLevel: int) =
-    p.values = @[root]
+    p.values.add(@[root])
 
     while p.buf[p.bufpos]==Backslash:
         inc(p.bufpos)
@@ -736,17 +736,17 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             of PermittedIdentifiers_Start:
                 setLen(p.value, 0)
                 parseIdentifier(p)
-                p.values.add(newLiteral(p.value))
+                p.values[^1].add(newLiteral(p.value))
             of PermittedNumbers_Start:
                 setLen(p.value, 0)
                 parseNumber(p)
-                if Dot in p.value: p.values.add(newFloating(p.value))
-                else: p.values.add(newInteger(p.value))
+                if Dot in p.value: p.values[^1].add(newFloating(p.value))
+                else: p.values[^1].add(newInteger(p.value))
             of LBracket:
                 inc(p.bufpos)
                 setLen(p.value,0)
                 var subblock = parseBlock(p,curLevel+1)
-                p.values.add(subblock)
+                p.values[^1].add(subblock)
             else:
                 break
 
@@ -811,9 +811,10 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                         parsePath(p, newWord(p.value), level)
                         if p.buf[p.bufpos]==Colon:
                             inc(p.bufpos)
-                            AddToken newPathLabel(p.values)
+                            AddToken newPathLabel(p.values[^1])
                         else:
-                            AddToken newPath(p.values)
+                            AddToken newPath(p.values[^1])
+                        discard p.values.pop()
                     else:
                         inc(p.bufpos)
                         AddToken newSymbol(backslash)
@@ -1032,6 +1033,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
 
     # initialize
     p.value = ""
+    p.values = @[]
 
     # do parse    
     let rootBlock = parseBlock(p, 0)
