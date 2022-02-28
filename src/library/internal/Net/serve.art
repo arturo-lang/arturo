@@ -1,4 +1,12 @@
 serveInternal: function [Request, serverRoutes][
+    ROUTES: #[
+        GET: #[]
+        POST: #[]
+    ]
+
+    GET: function [pattern, action]-> ROUTES\GET\[pattern]: action
+    POST: function [pattern, action]-> ROUTES\POST\[pattern]: action
+
     serverResponse: #[
         serverBody: ""
         serverPattern: ""
