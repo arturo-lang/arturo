@@ -20,58 +20,89 @@ initServerInternal: function [serverRoutes][
 ]
 
 ; main request handler
-serveInternal: function [Request][
+serveInternal: function [Request, verbose][
     serverResponse: #[
         serverBody: ""
         serverPattern: ""
-        serverStatus: 200
-        serverContent: ""
+        serverStatus: null
+        serverHeaders: ""
+        serverBenchmark: 0.0
     ]
 
+    customServerStatus: false
+
     send: function [str][
-        sendResult: "text/plain"
+        servedContent: "text/plain"
 
-        if not? null? attr 'css     -> sendResult: "text/css"
-        if not? null? attr 'html    -> sendResult: "text/html"
-        if not? null? attr 'js      -> sendResult: "application/javascript"
-        if not? null? attr 'json    -> sendResult: "application/json"
-        if not? null? attr 'xml     -> sendResult: "application/xml"
+        if not? null? attr 'css     -> servedContent: "text/css"
+        if not? null? attr 'html    -> servedContent: "text/html"
+        if not? null? attr 'js      -> servedContent: "application/javascript"
+        if not? null? attr 'json    -> servedContent: "application/json"
+        if not? null? attr 'xml     -> servedContent: "application/xml"
 
-        serverResponse\serverContent: "Content-Type: " ++ sendResult
+        servedContent: "Content-Type: " ++ servedContent
+
+        servedHeaders: new @[servedContent]
+        extraHeaders: attr 'headers
+        if not? null? extraHeaders ->
+            'servedHeaders ++ extraHeaders
+
+        extraStatus: attr 'status
+        if not? null? extraStatus ->
+            serverResponse\serverStatus: extraStatus
+
+        serverResponse\serverHeaders: join.with:"\c\L" servedHeaders
         return str
     ]
 
-    callActionFunction: function [actionFunc][
-        print "HERE"
-        print ["Has params:" keys get info.get 'actionFunc 'args]
-        call var'actionFunc []
+    callActionFunction: function [actionFunc, ptrn][
+        actionParams: keys get info.get 'actionFunc 'args
+        passedParams: new []
+
+        if positive? size actionParams [
+            matchedGroups: match.capture Request\path ptrn
+            loop actionParams 'actionParam [
+                if and? [dictionary? Request\body][key? Request\body actionParam] ->
+                    'passedParams ++ Request\body\[actionParam]
+                
+                if key? Request\query actionParam ->
+                    'passedParams ++ Request\query\[actionParam]
+
+                if key? matchedGroups actionParam ->
+                    'passedParams ++ matchedGroups\[actionParam]
+            ]
+        ]
+
+        call var'actionFunc passedParams
     ]
 
-    loop keys ROUTES\[Request\method] 'pattern [
-        if not? empty? match Request\path "^"++pattern++"$" [
-            action: ROUTES\[Request\method]\[pattern]
+    getServerResponse: [
+        loop keys ROUTES\[Request\method] 'pattern [
+            if not? empty? match Request\path "^"++pattern++"$" [
+                action: ROUTES\[Request\method]\[pattern]
 
-            serverResponse\serverPattern: pattern
-            (block? var'action)? [
-                serverResponse\serverBody: do action
-            ][
-                inspect var'action
-                print ["Has params:" keys get info.get 'action 'args]
-                serverResponse\serverBody: call var'action []
+                serverResponse\serverPattern: pattern
+                try?.verbose [
+                    (block? var'action)? [
+                        serverResponse\serverBody: do action
+                    ][
+                        serverResponse\serverBody: callActionFunction var'action pattern
+                    ]
+                    if null? serverResponse\serverStatus ->
+                        serverResponse\serverStatus: 200 ; OK
+                ]
+                else [
+                    serverResponse\serverStatus: 500 ; Internal Server Error
+                ]
             ]
-            ; serverResponse\serverBody: (block? var'action)? -> do action
-            ;                                                 -> callActionFunction var'action
-            ; if? block? var'action ->
-            ;     serverResponse\serverBody: do action
-            ; else ->
-            ;     serverResponse\serverBody: call var'action []
-            ; else ->
-            ;     call action []
-            
-            return serverResponse
         ]
     ]
 
-    serverResponse\serverStatus: 404
+    if? verbose -> serverResponse\serverBenchmark: benchmark.get getServerResponse
+    else -> do getServerResponse
+
+    if null? serverResponse\serverStatus ->
+        serverResponse\serverStatus: 404 ; Not Found
+
     return serverResponse
 ]
