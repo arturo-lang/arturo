@@ -920,8 +920,11 @@ proc defineSymbols*() =
 
                 ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize)
             else:
-                for arg in x.a:
-                    argTypes[arg.s] = {Any}
+                if x.a.len > 0:
+                    for arg in x.a:
+                        argTypes[arg.s] = {Any}
+                else:
+                    argTypes[""] = {Nothing}
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
             if y.data.kind==Dictionary:
