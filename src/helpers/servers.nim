@@ -26,7 +26,7 @@ type
     ServerResponse* = ref object
         body*       : string
         status*     : HttpCode
-        content*    : string
+        headers*    : string
         
 
 #=======================================
@@ -47,19 +47,16 @@ proc headers*(req: ServerRequest): HttpHeaders =
 
 proc body*(req: ServerRequest): string =
     body(req.Request).get()
-
-proc generateHeaders*(resp: ServerResponse): string =
-    result = resp.content
     
-proc newServerResponse*(body = "", status = Http200, content = ""): ServerResponse =
-    ServerResponse(body: body, status: status, content: content)
+proc newServerResponse*(body = "", status = Http200, headers = ""): ServerResponse =
+    ServerResponse(body: body, status: status, headers: headers)
 
 #=======================================
 # Methods
 #=======================================
 
 proc respond*(req: ServerRequest, resp: ServerResponse) =
-    send(req.Request, resp.status, resp.body, none(string), generateHeaders(resp))
+    send(req.Request, resp.status, resp.body, none(string), resp.headers)
 
 proc startServer*(handler: RequestHandler, port: int = 18966) =
     let settings = initSettings(port.Port)
