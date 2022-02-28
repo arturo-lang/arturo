@@ -317,6 +317,12 @@ proc defineSymbols*() =
                 # necessary so that "serveInternal" is available
                 execInternal("Net/serve")
 
+                # call internal implementation
+                # to initialize routes
+                callInternal("initServerInternal", getValue=false,
+                    routes
+                )
+
                 proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
                     {.cast(gcsafe).}:
                         # store many request details
@@ -347,15 +353,14 @@ proc defineSymbols*() =
                             reqBodyV = newString(reqBody)
 
                         # call internal implementation
-                        let got = callInternal("serveInternal", true,
+                        let got = callInternal("serveInternal", getValue=true,
                             newDictionary({
                                 "method": newString($(reqAction)),
                                 "path": newString(reqPath),
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
-                            }.toOrderedTable), 
-                            routes
+                            }.toOrderedTable)
                         )
 
                         # send response
