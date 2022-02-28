@@ -1,12 +1,26 @@
-serveInternal: function [Request, serverRoutes][
-    ROUTES: #[
-        GET: #[]
-        POST: #[]
-    ]
+; main routes
+ROUTES: #[
+    GET: #[]
+    POST: #[]
+    PUT: #[]
+    PATCH: #[]
+    DELETE: #[]
+]
 
-    GET: function [pattern, action]-> ROUTES\GET\[pattern]: action
-    POST: function [pattern, action]-> ROUTES\POST\[pattern]: action
+; route helpers
+GET:    function [pattern, action]-> ROUTES\GET\[pattern]: var'action
+POST:   function [pattern, action]-> ROUTES\POST\[pattern]: var'action
+PUT:    function [pattern, action]-> ROUTES\PUT\[pattern]: var'action
+PATCH:  function [pattern, action]-> ROUTES\PATCH\[pattern]: var'action
+DELETE: function [pattern, action]-> ROUTES\DELETE\[pattern]: var'action
 
+; initial route initialization
+initServerInternal: function [serverRoutes][
+    do serverRoutes
+]
+
+; main request handler
+serveInternal: function [Request][
     serverResponse: #[
         serverBody: ""
         serverPattern: ""
@@ -27,18 +41,37 @@ serveInternal: function [Request, serverRoutes][
         return str
     ]
 
-    loop serverRoutes [method, pattern, action][
-        if and? (to :string method) = lower Request\method 
-                not? empty? match Request\path "^"++pattern++"$" [
-            params: Request\body
-            if Request\method = "GET" -> params: Request\query
+    callActionFunction: function [actionFunc][
+        print "HERE"
+        print ["Has params:" keys get info.get 'actionFunc 'args]
+        call var'actionFunc []
+    ]
+
+    loop keys ROUTES\[Request\method] 'pattern [
+        if not? empty? match Request\path "^"++pattern++"$" [
+            action: ROUTES\[Request\method]\[pattern]
 
             serverResponse\serverPattern: pattern
-            serverResponse\serverBody: do action
+            (block? var'action)? [
+                serverResponse\serverBody: do action
+            ][
+                inspect var'action
+                print ["Has params:" keys get info.get 'action 'args]
+                serverResponse\serverBody: call var'action []
+            ]
+            ; serverResponse\serverBody: (block? var'action)? -> do action
+            ;                                                 -> callActionFunction var'action
+            ; if? block? var'action ->
+            ;     serverResponse\serverBody: do action
+            ; else ->
+            ;     serverResponse\serverBody: call var'action []
+            ; else ->
+            ;     call action []
+            
             return serverResponse
         ]
     ]
 
-    serverResponse\serverStatus: 400
+    serverResponse\serverStatus: 404
     return serverResponse
 ]
