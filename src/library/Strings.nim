@@ -362,8 +362,10 @@ proc defineSymbols*() =
             "string": {String},
             "regex" : {String}
         },
-        attrs       = NoAttrs,
-        returns     = {Block},
+        attrs       = {
+            "capture"   : ({Logical},"capture named groups"),
+        },
+        returns     = {Block, Dictionary},
         example     = """
             print match "hello" "hello"             ; => ["hello"]
             match "x: 123, y: 456" "[0-9]+"         ; => [123 456]
@@ -371,7 +373,15 @@ proc defineSymbols*() =
         """:
             ##########################################################
             when not defined(WEB):
-                push newStringBlock(x.s.findAll(re.re(y.s)))
+                if (popAttr("capture")!=VNULL):
+                    let matches = x.s.match(nre.re(y.s))
+                    if not matches.isNone:
+                        let captures = matches.get.captures.toTable
+                        push newStringDictionary(captures)
+                    else:
+                        push newDictionary()
+                else:
+                    push newStringBlock(x.s.findAll(re.re(y.s)))
             else:
                 push newStringBlock(cstring(x.s).match(newRegExp(cstring(y.s),"g")))
  

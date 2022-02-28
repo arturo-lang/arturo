@@ -608,6 +608,11 @@ func newNewline*(l: int): Value {.inline.} =
     #echo "VALUE: adding newline: " & $(l)
     Value(kind: Newline, line: l)
 
+proc newStringDictionary*(a: Table[string, string]): Value =
+    result = newDictionary()
+    for k,v in a.pairs:
+        result.d[k] = newString(v)
+
 proc newStringDictionary*(a: TableRef[string, seq[string]], collapseBlocks=false): Value =
     result = newDictionary()
     for k,v in a.pairs:
