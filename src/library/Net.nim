@@ -17,8 +17,9 @@
 #=======================================
 
 when not defined(WEB):
-    import algorithm, asyncdispatch, httpclient, httpcore
-    import os, sequtils, smtp, strutils, times, uri
+    import algorithm, asyncdispatch, httpclient
+    import httpcore, os, sequtils, smtp, strformat
+    import strutils, times, uri
 
     import helpers/jsonobject
     import helpers/servers
@@ -360,20 +361,35 @@ proc defineSymbols*() =
                                 "body": reqBodyV,
                                 "query": newDictionary(reqQuery),
                                 "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
-                            }.toOrderedTable)
+                            }.toOrderedTable),
+                            newLogical(verbose)
                         )
 
                         # send response
                         req.respond(newServerResponse(
                             got.d["serverBody"].s,
                             HttpCode(got.d["serverStatus"].i),
-                            got.d["serverContent"].s
+                            got.d["serverHeaders"].s
                         ))
 
                         # show request info
                         # if we're on .verbose mode
                         if verbose:
-                            echo bold(greenColor) & ">> [" & $(got.d["serverStatus"].i) & "] " & got.d["serverPattern"].s & resetColor
+                            var colorCode = greenColor
+                            if got.d["serverStatus"].i != 200: 
+                                colorCode = redColor
+
+                            var serverPattern = " "
+                            if got.d["serverPattern"].s != reqPath and got.d["serverPattern"].s != "":
+                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+
+                            let serverBenchmark = got.d["serverBenchmark"].f
+
+                            echo bold(colorCode) & ">> " & $(got.d["serverStatus"].i) & resetColor & " " & 
+                                 fg(whiteColor) & "[" & $(now()) & "] " &
+                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & reqPath & 
+                                 resetColor & serverPattern & 
+                                 fg(grayColor) & "(" & fmt"{serverBenchmark:.2f}" & " ms)" & resetColor
 
                 # show server startup info
                 # if we're on .verbose mode
