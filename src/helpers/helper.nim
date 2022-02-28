@@ -156,7 +156,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 
     if v.kind==Function:
         var args = initOrderedTable[string,Value]()
-        if (toSeq(v.args.keys))[0]!="":
+        if v.args.len > 0 and (toSeq(v.args.keys))[0]!="":
             for k,spec in v.args:
                 var specs:ValueArray = @[]
                 for s in spec:
@@ -166,22 +166,21 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
         result["args"] = newDictionary(args)
 
         var attrs = initOrderedTable[string,Value]()
-        if v.attrs.len > 0:
-            if (toSeq(v.attrs.keys))[0]!="":
-                for k,dd in v.attrs:
-                    let spec = dd[0]
-                    let descr = dd[1]
+        if v.attrs.len > 0 and (toSeq(v.attrs.keys))[0]!="":
+            for k,dd in v.attrs:
+                let spec = dd[0]
+                let descr = dd[1]
 
-                    var ss = initOrderedTable[string,Value]()
+                var ss = initOrderedTable[string,Value]()
 
-                    var specs:ValueArray = @[]
-                    for s in spec:
-                        specs.add(newType(s))
+                var specs:ValueArray = @[]
+                for s in spec:
+                    specs.add(newType(s))
 
-                    ss["types"] = newBlock(specs)
-                    ss["description"] = newString(descr)
+                ss["types"] = newBlock(specs)
+                ss["description"] = newString(descr)
 
-                    attrs[k] = newDictionary(ss)
+                attrs[k] = newDictionary(ss)
         result["attrs"] = newDictionary(attrs)
 
         var returns:ValueArray = @[]
