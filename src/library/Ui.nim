@@ -302,7 +302,10 @@ proc defineSymbols*() =
                         ##########################################################
                         wv.evaluate(x.s)
 
+                echo "showing webview"
                 wv.show()
+                echo "webview terminated"
+                
 
 #=======================================
 # Add Library
