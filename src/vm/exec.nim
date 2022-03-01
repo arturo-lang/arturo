@@ -122,6 +122,8 @@ proc execBlock*(
                 for i,arg in args:          
                     if stack.peek(i).kind==Function:
                         Arities[arg.s] = stack.peek(i).params.a.len
+                    else:
+                        Arities.del(arg.s)
 
             if imports!=VNULL:
                 savedSyms = Syms
