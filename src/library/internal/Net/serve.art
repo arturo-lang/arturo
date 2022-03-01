@@ -98,8 +98,7 @@ serveInternal: function [Request, verbose][
         ]
     ]
 
-    if? verbose -> serverResponse\serverBenchmark: benchmark.get getServerResponse
-    else -> do getServerResponse
+    serverResponse\serverBenchmark: benchmark.get getServerResponse
 
     if null? serverResponse\serverStatus ->
         serverResponse\serverStatus: 404 ; Not Found
