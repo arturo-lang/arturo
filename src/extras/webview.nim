@@ -69,7 +69,7 @@ type
         Maximum = 2
         Fixed = 3
     
-    ccstring {.importc:"const char*".} = cstring
+    ccstring* {.importc:"const char*".} = cstring
 
 when not defined(WEBVIEW_NOEDGE):
     type

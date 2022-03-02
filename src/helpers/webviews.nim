@@ -178,7 +178,7 @@ when not defined(NOWEBVIEW):
             if topmost or borderless:
                 result.getWindow().topmost()
 
-        let handler = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.} =
+        let handler = proc (seq: ccstring, req: ccstring, arg: pointer) {.cdecl.} =
             var request = parseJson($(req))
 
             let mode = request.elems[0].str
