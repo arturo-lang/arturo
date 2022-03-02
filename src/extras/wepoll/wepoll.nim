@@ -38,7 +38,10 @@ import os
 const header_file = currentSourcePath().splitPath.head / "wepoll.h"
 
 {.pragma: wepoll, header: header_file.}
-{.passL: "-lws2_32".}
+when not defined(WEBVIEW_NOEDGE):
+  {.passL: "ws2_32.lib".}
+else:
+  {.passL: "-lws2_32".}
 
 
 type
