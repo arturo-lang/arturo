@@ -13,7 +13,6 @@
 
 #elif defined(__APPLE__)
     #include <objc/objc-runtime.h>
-    #include <AppKit/AppKit.h>
 
     #define WINDOW_TYPE id
 
