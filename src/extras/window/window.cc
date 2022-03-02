@@ -20,8 +20,7 @@
     #define _WINSOCKAPI_
     #include <windows.h>
     #include <gdiplus.h>
-    #pragma comment (lib,"Gdiplus.lib")
-    #pragma comment(lib, "WebView2Loader.dll.lib")
+    #pragma comment(lib, "Gdiplus.lib")
 
     #define WINDOW_TYPE HWND
 
