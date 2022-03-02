@@ -25,18 +25,18 @@ import os
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
 when defined(linux):
-    {.compile("window/window.c", staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0").}
+    {.compile("window/window.cc", staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0").}
     {.passC: staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
     {.passL: staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
 elif defined(freebsd):
-    {.compile("window/window.c", staticExec"pkg-config --cflags gtk3 webkit2-gtk3").}
+    {.compile("window/window.cc", staticExec"pkg-config --cflags gtk3 webkit2-gtk3").}
     {.passC: staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
     {.passL: staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
 elif defined(macosx):
-    {.compile("window/window.c", "-framework Foundation -framework AppKit -x objective-c").}
+    {.compile("window/window.cc", "-framework Foundation -framework AppKit -x objective-c").}
     {.passL: "-framework AppKit".}
 elif defined(windows):
-    {.compile("window/window.c", "/std:c++17 /EHsc").}
+    {.compile("window/window.cc", "/std:c++17 /EHsc").}
     {.passL: """/EHsc /std:c++17 version.lib shell32.lib gdiplus.lib""".}
 
 #=======================================
