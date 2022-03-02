@@ -18,6 +18,9 @@
 
 #elif defined(_WIN32)
     #define _WINSOCKAPI_
+    #ifdef WIN32_LEAN_AND_MEAN
+        #define WIN32_LEAN_AND_MEAN 0
+    #endif
     #include <windows.h>
     #include <gdiplus.h>
     #pragma comment(lib, "Gdiplus.lib")
@@ -224,3 +227,7 @@ void make_borderless_window(void* windowHandle){
         );
     #endif
 }
+
+#ifndef WIN32_LEAN_AND_MEAN
+    #define WIN32_LEAN_AND_MEAN 1
+#endif
