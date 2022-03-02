@@ -185,7 +185,7 @@ void set_topmost_window(void* windowHandle){
             0,
             0,
             SWP_NOMOVE | SWP_NOSIZE
-        )
+        );
     #endif
 }
 
@@ -203,7 +203,7 @@ void unset_topmost_window(void* windowHandle){
             0,
             0,
             SWP_NOMOVE | SWP_NOSIZE
-        )
+        );
     #endif
 }
 
