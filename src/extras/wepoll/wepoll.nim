@@ -39,7 +39,7 @@ const header_file = currentSourcePath().splitPath.head / "wepoll.h"
 
 {.pragma: wepoll, header: header_file.}
 when not defined(WEBVIEW_NOEDGE):
-  {.passL: "ws2_32.lib".}
+  {.passL: "wsock32.lib".}
 else:
   {.passL: "-lws2_32".}
 
