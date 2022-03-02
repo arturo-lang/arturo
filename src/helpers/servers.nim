@@ -9,15 +9,9 @@
 #=======================================
 # Libraries
 #=======================================
-static: echo "IN: SERVERS"
 
 import nativesockets, options
-
-static: echo "IN: SERVERS 2"
-
 import extras/httpx
-
-static: echo "AFTER HTTPX"
 
 #=======================================
 # Types
