@@ -36,6 +36,7 @@ elif defined(macosx):
     {.compile("window/window.c", "-framework Foundation -framework AppKit -x objective-c").}
     {.passL: "-framework AppKit".}
 elif defined(windows):
+    {.compile("window/window.c", "/std:c++17 /EHsc").}
     {.passL: """/EHsc /std:c++17 version.lib shell32.lib gdiplus.lib""".}
 
 #=======================================
