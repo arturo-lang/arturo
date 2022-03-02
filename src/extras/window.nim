@@ -42,8 +42,12 @@ elif defined(windows):
 # Types
 #=======================================
 
-type
-    Window* = distinct pointer
+when defined(windows):
+    type
+        Window* = HWND
+else:
+    type
+        Window* = distinct pointer
 
 #=======================================
 # Function prototypes

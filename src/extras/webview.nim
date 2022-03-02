@@ -15,6 +15,11 @@
 
 import os
 
+when defined(windows):
+    import extras/winim/lean
+
+import extras/window
+
 #=======================================
 # Compilation & Linking
 #=======================================
@@ -112,7 +117,7 @@ when not defined(WEBVIEW_NOEDGE):
         ## Posts a function to be executed on the main thread. You normally do not need
         ## to call this function, unless you want to tweak the native window.
     
-    proc webview_get_window*(w: Webview): pointer {.importc.}
+    proc webview_get_window*(w: Webview): Window {.importc.}
         ## Returns a native window handle pointer. When using GTK backend the pointer
         ## is GtkWindow pointer, when using Cocoa backend the pointer is NSWindow
         ## pointer, when using Win32 backend the pointer is HWND pointer.
