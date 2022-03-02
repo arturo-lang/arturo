@@ -16,7 +16,7 @@
 import os
 
 when defined(windows):
-    import extras/winim/winim
+    import extras/winim/lean
 
 #=======================================
 # Compilation & Linking
