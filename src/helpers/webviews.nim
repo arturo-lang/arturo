@@ -179,7 +179,7 @@ when not defined(NOWEBVIEW):
                 result.getWindow().topmost()
 
         let handler = proc (seq: ccstring, req: ccstring, arg: pointer) {.cdecl.} =
-            var request = parseJson($(req))
+            var request = parseJson($(cast[cstring](req)))
 
             let mode = request.elems[0].str
             let value = valueFromJson(request.elems[1].str)
@@ -217,7 +217,7 @@ when not defined(NOWEBVIEW):
                 if callKind != UnrecognizedCall:
                     returned = jsonFromValue(mainCallHandler(callKind, value), pretty=false).cstring
 
-            webview_return(mainWebview, seq, res.cint, returned)
+            webview_return(mainWebview, cast[cstring](seq), res.cint, returned)
 
         mainWebview = result
         mainCallHandler = callHandler
