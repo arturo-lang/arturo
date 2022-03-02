@@ -68,12 +68,14 @@ type
         Minimum = 1
         Maximum = 2
         Fixed = 3
+    
+    ccstring {.importc:"const char*".} = cstring
 
 when not defined(WEBVIEW_NOEDGE):
     type
         Webview* {.importc: "webview_t".} = pointer
         WebviewDispatch* = proc (w: Webview, arg: pointer) {.cdecl.}
-        WebviewCallback* = proc (seq: cstring, req: cstring, arg: pointer) {.cdecl.}
+        WebviewCallback* = proc (seq: ccstring, req: ccstring, arg: pointer) {.cdecl.}
 else:
     type
         WebviewPrivObj  {.importc: "struct webview_priv", bycopy.} = object
