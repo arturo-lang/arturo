@@ -15,8 +15,8 @@
 
 import os
 
-when defined(windows):
-    import extras/winim/lean
+# when defined(windows):
+#     import extras/winim/lean
 
 #=======================================
 # Compilation & Linking
@@ -42,12 +42,8 @@ elif defined(windows):
 # Types
 #=======================================
 
-when defined(windows):
-    type
-        Window* = HWND
-else:
-    type
-        Window* = distinct pointer
+type
+    Window* = distinct pointer
 
 #=======================================
 # Function prototypes

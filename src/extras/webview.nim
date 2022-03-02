@@ -15,8 +15,8 @@
 
 import os
 
-when defined(windows):
-    import extras/winim/lean
+# when defined(windows):
+#     import extras/winim/lean
 
 import extras/window
 

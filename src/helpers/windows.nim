@@ -19,13 +19,13 @@ export window
 #=======================================
 
 proc isMaximized(w: Window): bool =
-    is_maximized_window((Window)w)
+    is_maximized_window(w)
 
 proc isVisible(w: Window): bool =
-    is_visible_window((Window)w)
+    is_visible_window(w)
 
 proc isFullscreen(w: Window): bool =
-    is_fullscreen_window((Window)w)
+    is_fullscreen_window(w)
 
 #=======================================
 # Methods
@@ -33,33 +33,33 @@ proc isFullscreen(w: Window): bool =
 
 proc maximize*(w: Window) =
     if not w.isMaximized():
-        maximize_window((Window)w)
+        maximize_window(w)
 
 proc unmaximize*(w: Window) =
     if w.isMaximized():
-        unmaximize_window((Window)w)
+        unmaximize_window(w)
 
 proc show*(w: Window) =
     if not w.isVisible():
-        show_window((Window)w)
+        show_window(w)
 
 proc hide*(w: Window) =
     if w.isVisible():
-        hide_window((Window)w)
+        hide_window(w)
 
 proc fullscreen*(w: Window) =
     if not w.isFullscreen():
-        fullscreen_window((Window)w)
+        fullscreen_window(w)
 
 proc unfullscreen*(w: Window) =
     if w.isFullscreen():
-        unfullscreen_window((Window)w)
+        unfullscreen_window(w)
 
 proc topmost*(w: Window) =
-    set_topmost_window((Window)w)
+    set_topmost_window(w)
 
 proc untopmost*(w: Window) =
-    unset_topmost_window((Window)w)
+    unset_topmost_window(w)
 
 proc makeBorderless*(w: Window) =
-    make_borderless_window((Window)w)
+    make_borderless_window(w)
