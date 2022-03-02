@@ -17,11 +17,8 @@ import os
 
 # when defined(windows):
 #     import extras/winim/lean
-static: echo "in EX: WEBVIEW"
 
 import extras/window
-
-static: echo "AFTER EX: WINDOW"
 
 #=======================================
 # Compilation & Linking
