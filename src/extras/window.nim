@@ -15,9 +15,6 @@
 
 import os
 
-# when defined(windows):
-#     import extras/winim/lean
-
 #=======================================
 # Compilation & Linking
 #=======================================

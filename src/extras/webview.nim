@@ -15,9 +15,6 @@
 
 import os
 
-# when defined(windows):
-#     import extras/winim/lean
-
 import extras/window
 
 #=======================================
@@ -25,12 +22,6 @@ import extras/window
 #=======================================
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
-
-# when defined(windows):
-#     when not defined(WEBVIEW_NOEDGE):
-#         {.compile("webview/webview.cc","/std:c++17 /EHsc").}
-# else:
-#     {.compile("webview/webview.cc","-std=c++11").}
 
 when defined(linux):
     {.compile("webview/webview.cc","-std=c++11").}
@@ -52,9 +43,6 @@ elif defined(windows):
     when not defined(WEBVIEW_NOEDGE):
         {.passC: "-DWEBVIEW_EDGE=1 -mwindows".}
         {.passL: """-std=c++17 -L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/x64 -lwebview -lWebView2Loader""".}
-        static: echo """-L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/x64"""
-        # #{.passL: """/EHsc /std:c++17 """" & currentSourcePath().splitPath.head & """\webview\deps\libs\x64\WebView2LoaderStatic.lib" version.lib shell32.lib""".}
-        # {.passL: """-std:c++17 version.lib shell32.lib""".}
     else:
         {.passC: "-DWEBVIEW_STATIC=1 -DWEBVIEW_IMPLEMENTATION=1 -DWEBVIEW_WINAPI=1".}
         {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
