@@ -60,7 +60,7 @@ jobs:
           7z x dist/extradlls.zip -obin
           7z x dist/nim.zip -onim
 
-          cp src/extras/webview/deps/dlls/*.dll bin
+          cp src/extras/webview/deps/dlls/x64/*.dll bin
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           export PATH="${{ github.workspace }}/bin":$PATH
