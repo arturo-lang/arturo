@@ -26,30 +26,34 @@ import extras/window
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
-when defined(windows):
-    when not defined(WEBVIEW_NOEDGE):
-        {.compile("webview/webview.cc","/std:c++17 /EHsc").}
-else:
-    {.compile("webview/webview.cc","-std=c++11").}
+# when defined(windows):
+#     when not defined(WEBVIEW_NOEDGE):
+#         {.compile("webview/webview.cc","/std:c++17 /EHsc").}
+# else:
+#     {.compile("webview/webview.cc","-std=c++11").}
 
 when defined(linux):
+    {.compile("webview/webview.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
              staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
     {.passL: "-lstdc++ " &
              staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
 elif defined(freebsd):
+    {.compile("webview/webview.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
              staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
     {.passL: "-lstdc++ " &
              staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
 elif defined(macosx):
+    {.compile("webview/webview.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_COCOA=1".}
     {.passL: "-lstdc++ -framework WebKit".}
 elif defined(windows):
     when not defined(WEBVIEW_NOEDGE):
-        {.passC: "-DWEBVIEW_EDGE=1".}
-        #{.passL: """/EHsc /std:c++17 """" & currentSourcePath().splitPath.head & """\webview\deps\libs\x64\WebView2LoaderStatic.lib" version.lib shell32.lib""".}
-        {.passL: """/EHsc /std:c++17 version.lib shell32.lib""".}
+        {.passC: "-DWEBVIEW_EDGE=1 -mwindows".}
+        {.passL: """-std:c++17 -L./dll/x64 -lwebview -lWebView2Loader""".}
+        # #{.passL: """/EHsc /std:c++17 """" & currentSourcePath().splitPath.head & """\webview\deps\libs\x64\WebView2LoaderStatic.lib" version.lib shell32.lib""".}
+        # {.passL: """-std:c++17 version.lib shell32.lib""".}
     else:
         {.passC: "-DWEBVIEW_STATIC=1 -DWEBVIEW_IMPLEMENTATION=1 -DWEBVIEW_WINAPI=1".}
         {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
