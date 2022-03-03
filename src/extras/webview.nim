@@ -51,7 +51,7 @@ elif defined(macosx):
 elif defined(windows):
     when not defined(WEBVIEW_NOEDGE):
         {.passC: "-DWEBVIEW_EDGE=1 -mwindows".}
-        {.passL: """-std=c++17 -L./dll/x64 -lwebview -lWebView2Loader""".}
+        {.passL: """-std=c++17 -L""" & currentSourcePath().splitPath.head & """/webview/deps/dll/x64 -lwebview -lWebView2Loader""".}
         # #{.passL: """/EHsc /std:c++17 """" & currentSourcePath().splitPath.head & """\webview\deps\libs\x64\WebView2LoaderStatic.lib" version.lib shell32.lib""".}
         # {.passL: """-std:c++17 version.lib shell32.lib""".}
     else:
