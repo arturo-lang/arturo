@@ -24,7 +24,8 @@ import os
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
 when defined(windows):
-    {.passL:"/EHsc /std:c++17 version.lib shell32.lib user32.lib kernel32.lib gdi32.lib".}
+    {.passL:"--std:c++17."}
+    #{.passL:"/EHsc /std:c++17 version.lib shell32.lib user32.lib kernel32.lib gdi32.lib".}
 else:
     {.passL:"-lstdc++".}
 
