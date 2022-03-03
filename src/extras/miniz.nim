@@ -1,9 +1,10 @@
 # Original Nim port
 # Copyright (c) 2017 Fabio Cevasco 
 
-{.compile: "libminiz.c".}
+import os, strutils
 
-import strutils
+{.passC: "-I" & parentDir(currentSourcePath()) .}
+{.compile: "miniz/libminiz.c".}
 
 when defined(i386) or defined(ia64):
     const 
