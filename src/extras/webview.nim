@@ -74,7 +74,6 @@ type
 when not defined(WEBVIEW_NOEDGE):
     type
         Webview* {.importc: "webview_t".} = pointer
-        WebviewDispatch* = proc (w: Webview, arg: pointer) {.cdecl.}
         WebviewCallback* = proc (seq: ccstring, req: ccstring, arg: pointer) {.cdecl.}
 else:
     type
@@ -91,6 +90,9 @@ else:
             userdata    {.importc: "userdata".}: pointer
         Webview* = ptr WebviewObj
 
+type
+    WebviewDispatch* = proc (w: Webview, arg: pointer) {.cdecl.}
+    
 #=======================================
 # Function prototypes
 #=======================================
