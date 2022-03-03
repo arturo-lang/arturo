@@ -837,7 +837,7 @@ using browser_engine = cocoa_wkwebview_engine;
 #include <windows.foundation.h>
 //#include <winrt/Windows.Foundation.h>
 
-#include "webview2.h"
+#include "deps/include/WebView2.h"
 
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "Shlwapi.lib")
