@@ -108,14 +108,14 @@ jobs:
         shell: msys2 {0}
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art
+          ./bin/arturo tools/tester.art
 
       - name: Run unit tests (mini)
         if: matrix.version == 'mini'
         shell: msys2 {0}
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-          arturo tools/tester.art
+          ./bin/arturo tools/tester.art
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
