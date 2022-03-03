@@ -23,8 +23,8 @@ import os
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
-when defined(windows):
-    {.passL:"-lstdc++ -L -lversion -lshell32 -luser32 -lkernel32 -lgdi32 -lcomctl32 -loleaut32".}
+when defined(windows):#"ole32", "comctl32", "oleaut32", "uuid"
+    {.passL:"-lstdc++ -L -lversion -lole32 -luuid -lshell32 -luser32 -lkernel32 -lgdi32 -lcomctl32 -loleaut32".}
     #{.passL:"/EHsc /std:c++17 version.lib shell32.lib user32.lib kernel32.lib gdi32.lib".}
 else:
     {.passL:"-lstdc++".}
