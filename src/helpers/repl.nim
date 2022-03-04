@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-when not defined(WEB):
+when not defined(windows) and not defined(WEB):
 
     import os, sequtils, strutils, sugar, tables
 
