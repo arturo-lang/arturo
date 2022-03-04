@@ -813,7 +813,7 @@ static int completeLine(struct current *current) {
     linenoiseCompletions lc = { 0, NULL };
     int c = 0;
 
-    completionCallback(sb_str(current->buf),&lc,completionUserdata);
+    completionCallback(sb_str(current->buf),&lc);//REMOVED:,completionUserdata);
     if (lc.len == 0) {
         beep();
     } else {
@@ -863,10 +863,11 @@ static int completeLine(struct current *current) {
 /* Register a callback function to be called for tab-completion.
    Returns the prior callback so that the caller may (if needed)
    restore it when done. */
-linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *fn, void *userdata) {
+linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *fn)//REMOVED:, void *userdata) {
+{
     linenoiseCompletionCallback * old = completionCallback;
     completionCallback = fn;
-    completionUserdata = userdata;
+    //REMOVED:completionUserdata = userdata;
     return old;
 }
 
@@ -875,10 +876,10 @@ void linenoiseAddCompletion(linenoiseCompletions *lc, const char *str) {
     lc->cvec[lc->len++] = strdup(str);
 }
 
-void linenoiseSetHintsCallback(linenoiseHintsCallback *callback, void *userdata)
+void linenoiseSetHintsCallback(linenoiseHintsCallback *callback) //REMOVED:, void *userdata)
 {
     hintsCallback = callback;
-    hintsUserdata = userdata;
+    //REMOVED:hintsUserdata = userdata;
 }
 
 void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *callback)
@@ -964,7 +965,7 @@ static int refreshShowHints(struct current *current, const char *buf, int availc
     if (showhints && hintsCallback && availcols > 0) {
         int bold = 0;
         int color = -1;
-        char *hint = hintsCallback(buf, &color, &bold, hintsUserdata);
+        char *hint = hintsCallback(buf, &color, &bold);//REMOVED:, hintsUserdata);
         if (hint) {
             rc = 1;
             if (display) {
@@ -995,7 +996,7 @@ static int refreshShowHints(struct current *current, const char *buf, int availc
                     clearOutputHighlight(current);
                 }
                 /* Call the function to free the hint returned. */
-                if (freeHintsCallback) freeHintsCallback(hint, hintsUserdata);
+                if (freeHintsCallback) freeHintsCallback(hint);//REMOVED:, hintsUserdata);
             }
         }
     }

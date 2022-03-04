@@ -46,13 +46,13 @@ typedef struct linenoiseCompletions {
 /*
  * The callback type for tab completion handlers.
  */
-typedef void(linenoiseCompletionCallback)(const char *prefix, linenoiseCompletions *comp, void *userdata);
+typedef void(linenoiseCompletionCallback)(const char *prefix, linenoiseCompletions *comp);//REMOVED:, void *userdata);
 
 /*
  * Sets the current tab completion handler and returns the previous one, or NULL
  * if no prior one has been set.
  */
-linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *comp, void *userdata);
+linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletionCallback *comp);//REMOVED:, void *userdata);
 
 /*
  * Adds a copy of the given string to the given completion list. The copy is owned
@@ -60,9 +60,9 @@ linenoiseCompletionCallback * linenoiseSetCompletionCallback(linenoiseCompletion
  */
 void linenoiseAddCompletion(linenoiseCompletions *comp, const char *str);
 
-typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold, void *userdata);
-typedef void(linenoiseFreeHintsCallback)(void *hint, void *userdata);
-void linenoiseSetHintsCallback(linenoiseHintsCallback *callback, void *userdata);
+typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold);//REMOVED:, void *userdata);
+typedef void(linenoiseFreeHintsCallback)(void *hint);//REMOVED:, void *userdata);
+void linenoiseSetHintsCallback(linenoiseHintsCallback *callback);//REMOVED:, void *userdata);
 void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *callback);
 
 #endif
