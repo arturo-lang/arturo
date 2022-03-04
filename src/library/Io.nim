@@ -212,25 +212,25 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 if (popAttr("repl")!=VNULL):
-                    when defined(windows):
-                        stdout.write(x.s)
-                        stdout.flushFile()
-                        push(newString(stdin.readLine()))
-                    else:
-                        var historyPath: string = ""
-                        var completionsArray: ValueArray = @[]
-                        var hintsTable: ValueDict = initOrderedTable[string,Value]()
+                    # when defined(windows):
+                    #     stdout.write(x.s)
+                    #     stdout.flushFile()
+                    #     push(newString(stdin.readLine()))
+                    # else:
+                    var historyPath: string = ""
+                    var completionsArray: ValueArray = @[]
+                    var hintsTable: ValueDict = initOrderedTable[string,Value]()
 
-                        if (let aHistory = popAttr("history"); aHistory != VNULL):
-                            historyPath = aHistory.s
+                    if (let aHistory = popAttr("history"); aHistory != VNULL):
+                        historyPath = aHistory.s
 
-                        if (let aComplete = popAttr("complete"); aComplete != VNULL):
-                            completionsArray = aComplete.a
+                    if (let aComplete = popAttr("complete"); aComplete != VNULL):
+                        completionsArray = aComplete.a
 
-                        if (let aHint = popAttr("hint"); aHint != VNULL):
-                            hintsTable = aHint.d
+                    if (let aHint = popAttr("hint"); aHint != VNULL):
+                        hintsTable = aHint.d
 
-                        push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
+                    push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
                 else:
                     stdout.write(x.s)
                     stdout.flushFile()
