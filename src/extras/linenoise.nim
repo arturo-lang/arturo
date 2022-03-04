@@ -1,5 +1,7 @@
 when defined(windows):
     {.compile("linenoise/linenoise.c").}
+    {.compile("linenoise/stringbuf.c").}
+    {.compile("linenoise/utf8.c").}
 
 #=======================================
 # Types
