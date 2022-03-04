@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Reflection.nim
 ######################################################
@@ -20,7 +20,7 @@ import helpers/benchmark
 when not defined(WEB):
     import helpers/helper
 
-import helpers/colors
+import helpers/terminal as terminalHelper
 
 import vm/lib
 import vm/[env, exec]
@@ -189,12 +189,12 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("get")!=VNULL):
-                let time = getBetterBenchmark:
+                let time = getBenchmark:
                     discard execBlock(x)
 
                 push newFloating(time)
             else:
-                betterBenchmark "":
+                benchmark "":
                     discard execBlock(x)
 
     builtin "binary?",

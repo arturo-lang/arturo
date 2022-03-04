@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/exec.nim
 ######################################################
@@ -333,9 +333,11 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             of opNop                : discard
 
             of opEol                :
-                i += 2
-                CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
-                #echo "found EOL: " & $(CurrentLine)
+                when not defined(NOERRORLINES):
+                    i += 2
+                    CurrentLine = (int)((uint16)(it[i-1]) shl 8 + (byte)(it[i]))
+                else:
+                    discard
 
             # reserved
             of opRsrv1..opRsrv2     : discard
@@ -374,6 +376,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
     when defined(VERBOSE):
         if depth==0:
+            showDebugHeader("Constants")
+
+            for j, cn in cnst:
+                stdout.write fmt("{j}: ")
+                cn.dump(0,false)
+                
             showDebugHeader("Stack")
 
             i = 0
@@ -385,10 +393,10 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
 
                 i += 1
 
-            showDebugHeader("Symbols")
-            for k,v in Syms:
-                stdout.write fmt("{k} => ")
-                v.dump(0, false)
+            # showDebugHeader("Symbols")
+            # for k,v in Syms:
+            #     stdout.write fmt("{k} => ")
+            #     v.dump(0, false)
 
     let newSyms = Syms
     Syms = oldSyms

@@ -1,0 +1,11 @@
+harshad?: function [n] -> zero? n % sum digits n
+harshads: select 1..1100 => harshad?
+
+print ["First 20 harshad numbers:" first.n:20 harshads]
+
+loop harshads 'h [
+    if h > 1000 [
+        print ["First harshad > 1000:" h]
+        break
+    ]
+]

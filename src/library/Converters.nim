@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Converters.nim
 ######################################################
@@ -302,10 +302,24 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
 
                     of Color:
                         let blk = cleanBlock(y.a)
-                        if (popAttr("hsl") != VNULL):
-                            return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f)))
+                        if blk.len < 3 or blk.len > 4:
+                            echo "wrong number of attributes"
                         else:
-                            return newColor((blk[0].i, blk[1].i, blk[2].i))
+                            if (popAttr("hsl") != VNULL):
+                                if blk.len==3:
+                                    return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
+                                elif blk.len==4:
+                                    return newColor(HSLtoRGB((blk[0].i, blk[1].f, blk[2].f, blk[3].f)))
+                            elif (popAttr("hsv") != VNULL):
+                                if blk.len==3:
+                                    return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f, 1.0)))
+                                elif blk.len==4:
+                                    return newColor(HSVtoRGB((blk[0].i, blk[1].f, blk[2].f, blk[3].f)))
+                            else:
+                                if blk.len==3:
+                                    return newColor((blk[0].i, blk[1].i, blk[2].i, 255))
+                                elif blk.len==4:
+                                    return newColor((blk[0].i, blk[1].i, blk[2].i, blk[3].i))
 
                     of Bytecode:
                         let blk = cleanBlock(y.a)
@@ -356,9 +370,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                             RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
                     else: 
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+            
+            of Color:
+                case tp:
+                    of String:
+                        return newString($(y))
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
             of Function,
-               Color,
                Database,
                Newline,
                Nothing,
@@ -648,7 +668,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "with"  : ({Block},"embed given symbols"),
-            "raw"   : ({Logical},"create dictionary from raw block")
+            "raw"   : ({Logical},"create dictionary from raw block"),
+            "lower" : ({Logical},"automatically convert all keys to lowercase")
         },
         returns     = {Dictionary},
         example     = """
@@ -667,7 +688,14 @@ proc defineSymbols*() =
             ]
             ; we are in the block
             ; yep
-            ; => [name: "John", age: 34]
+            ; d: [name: "John", age: 34]
+            ;;;;
+            e: #.lower [
+                Name: "John"
+                suRnaMe: "Doe"
+                AGE: 35
+            ]
+            ; e: [name:John, surname:Doe, age:35]
         """:
             ##########################################################
             var dict: ValueDict
@@ -694,6 +722,12 @@ proc defineSymbols*() =
             if (let aWith = popAttr("with"); aWith != VNULL):
                 for x in aWith.a:
                     dict[x.s] = GetSym(x.s)
+
+            if (popAttr("lower") != VNULL):
+                var oldDict = dict
+                dict = initOrderedTable[string,Value]()
+                for k,v in pairs(oldDict):
+                    dict[k.toLower()] = v
                     
             push(newDictionary(dict))
 
@@ -886,8 +920,11 @@ proc defineSymbols*() =
 
                 ret = newFunction(newBlock(args),newBlock(mainBody),imports,exports,exportable,memoize)
             else:
-                for arg in x.a:
-                    argTypes[arg.s] = {Any}
+                if x.a.len > 0:
+                    for arg in x.a:
+                        argTypes[arg.s] = {Any}
+                else:
+                    argTypes[""] = {Nothing}
                 ret = newFunction(x,y,imports,exports,exportable,memoize)
             
             if y.data.kind==Dictionary:
@@ -941,7 +978,8 @@ proc defineSymbols*() =
         },
         attrs       = {
             "format": ({String},"use given format (for dates)"),
-            "hsl"   : ({Logical},"convert HSL block to color")
+            "hsl"   : ({Logical},"convert HSL block to color"),
+            "hsv"   : ({Logical},"convert HSV block to color")
         },
         returns     = {Any},
         example     = """

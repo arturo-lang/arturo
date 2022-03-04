@@ -10,11 +10,11 @@ And the whole seizure, progress and termination of the disease,
 were the incidents of half an hour.
 }
 
-valid: as.agnostic [a b c d e f g h i j k l m n o p q r s t u v w x y z]
+valid: split "abcdefghijklmnopqrstuvwxyz"
 frequencies: #[]
 
 loop split lower source 'ch [
-    if in? to :literal ch valid [
+    if in? ch valid [
         if not? key? frequencies ch -> 
             set frequencies ch 0
 

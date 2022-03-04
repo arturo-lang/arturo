@@ -37,6 +37,8 @@ jobs:
         with:
           submodules: recursive
 
+      # TODO(FreeBSD) Nim compiler package stuck at version 1.6.2
+      # labels: enhancement, ci, workflows
       - name: Setup environment & Build Arturo
         id: test
         uses: vmactions/freebsd-vm@v0.1.5
@@ -44,7 +46,7 @@ jobs:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
           run: |
-            ./install mini
+            ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
             arturo tools/tester.art
        

@@ -8,8 +8,8 @@
 
 langs: #[
     Arturo:     #[ext:".art"    bin:"arturo"]
-    Lisp:       #[ext:".lisp"   bin:"lisp"]
-    Lua:        #[ext:".lua"    bin:"luac"]
+    Lisp:       #[ext:".lisp"   bin:"clisp"]
+    Lua:        #[ext:".lua"    bin:"lua"]
     PHP:        #[ext:".php"    bin:"php"]
     Python:     #[ext:".py"     bin:"python"]
     Python3:    #[ext:".py3"    bin:"python3"]
@@ -45,10 +45,15 @@ runBenchmark: function [bench][
     prints color.bold #cyan pad.right ~{: |replace name "_" " "|:} bigPadding
     loop langs [lang,data][
         scr: join.path @[dir name++data\ext]
+        expected: read join.path @[dir name++".res"]
+        ;print scr
+        ;print expected
 
         if? exists? scr [
-            result: strip execute ~{/usr/bin/time -lp |data\bin| |scr| 2>&1}
-            print result
+            result: execute ~{/usr/bin/time -lp |data\bin| |scr|}
+            result: strip replace first match result "real [0-9\.]+" "real " ""
+
+            prints "|" ++ color #green pad.center to :string result padding
         ]
         else [
             prints "|" ++ color #red pad.center "-" padding

@@ -4,10 +4,14 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: utils.sh
 ######################################################
+
+# TODO(tools/utils.sh) remove the script if not needed
+#  let's make sure first that no 3rd-party - or non-3rd-party - tool uses it
+# labels: installer, cleanup
 
 ################################################
 # OPTIONS
@@ -23,7 +27,7 @@ FLAGS="\
  -d:release\
  -d:danger\
  --panics:off\
- --gc:arc\
+ --mm:orc\
  --checks:off\
  --overflowChecks:on\
  -d:ssl\
@@ -71,7 +75,7 @@ showHeader() {
     eecho "${CLEAR}"
     printf "     \e[1mArturo"
     printf " Programming Language\e[0m\n"
-    eecho "      (c)2021 Yanis Zafirópulos"
+    eecho "      (c)2022 Yanis Zafirópulos"
     eecho ""
 
     eecho "======================================"

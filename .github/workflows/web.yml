@@ -25,7 +25,7 @@ jobs:
         os:
           - ubuntu-20.04
         version:
-          - web mini
+          - web
     steps:
       - name: "Cancel similar actions in progress"
         uses: styfle/cancel-workflow-action@0.6.0
@@ -48,7 +48,7 @@ jobs:
           
       - name: Build Arturo
         run: |
-          ./install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Upload Artifacts

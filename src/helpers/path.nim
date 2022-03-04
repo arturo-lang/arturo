@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/url.nim
 ######################################################
@@ -18,7 +18,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-proc parsePathComponents*(s: string): OrderedTable[string,Value] {.inline.} =
+func parsePathComponents*(s: string): OrderedTable[string,Value] {.inline.} =
     var (dir, name, ext) = splitFile(s)
 
     result = {

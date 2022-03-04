@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Net.nim
 ######################################################
@@ -22,8 +22,8 @@ when not defined(WEB):
     import sequtils, smtp, strutils, times
     import nre except toSeq
 
-    import helpers/colors
     import helpers/jsonobject
+    import helpers/terminal
     import helpers/url
     import helpers/webview
 
@@ -279,6 +279,8 @@ proc defineSymbols*() =
 
                 push newDictionary(ret)
 
+        # TODO(Net\serve) add documentation for `.kill`
+        #  labels: library,documentation,easy
         builtin "serve",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -289,7 +291,8 @@ proc defineSymbols*() =
             attrs       = {
                 "port"      : ({Integer},"use given port"),
                 "verbose"   : ({Logical},"print info log"),
-                "chrome"    : ({Logical},"open in Chrome windows as an app")
+                "chrome"    : ({Logical},"open in Chrome windows as an app"),
+                "kill"      : ({String},"bind a kill signal to the server (default: '/exit')")
             },
             returns     = {Nothing},
             example     = """
@@ -302,7 +305,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
-                {.push warning[GcUnsafe2]:off.}
+                #{.push warning[GcUnsafe2]:off.}
                 when not defined(VERBOSE):
                     let routes = x
 
@@ -311,87 +314,106 @@ proc defineSymbols*() =
                     if (let aPort = popAttr("port"); aPort != VNULL):
                         port = aPort.i
 
+                    var killPath = "/exit"
+                    if (let aKill = popAttr("kill"); aKill != VNULL):
+                        killPath = aKill.s
                 
                     if (let aChrome = popAttr("chrome"); aChrome != VNULL):
                         openChromeWindow(port)
 
-                    var server = newAsyncHttpServer()
+                    proc startServer {.async.} =
 
-                    proc handler(req: Request) {.async,gcsafe.} =
-                        if verbose:
-                            stdout.write bold(magentaColor) & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & resetColor & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
-                            if req.url.query!="":
-                                stdout.write "?" & req.url.query
+                        var server = newAsyncHttpServer()
 
-                            stdout.write "\n"
-                            stdout.flushFile()
+                        proc handler(req: Request) {.async,gcsafe.} =
+                            if verbose:
+                                stdout.write bold(magentaColor) & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & resetColor & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
+                                if req.url.query!="":
+                                    stdout.write "?" & req.url.query
 
-                        # echo "body: " & req.body
+                                stdout.write "\n"
+                                stdout.flushFile()
 
-                        # echo "========"
-                        # for k,v in pairs(req.headers):
-                        #     echo k & " => " & v
-                        # echo "========"
+                            # echo "body: " & req.body
 
-                        var status = 200
-                        var headers = newHttpHeaders()
+                            # echo "========"
+                            # for k,v in pairs(req.headers):
+                            #     echo k & " => " & v
+                            # echo "========"
 
-                        var body: string
+                            var status = 200
+                            var headers = newHttpHeaders()
 
-                        var routeFound = ""
-                        for k in routes.d.keys:
-                            let route = req.url.path.match(nre.re(k & "$"))
+                            var body: string
 
-                            if not route.isNone:
+                            var routeFound = ""
+                    
+                            for k in routes.d.keys:
+                                let route = req.url.path.match(nre.re(k & "$"))
 
-                                var args: ValueArray = @[]
+                                if not route.isNone:
 
-                                let captures = route.get.captures.toTable
+                                    var args: ValueArray = @[]
 
-                                for group,capture in captures:
-                                    args.add(newString(group))
+                                    let captures = route.get.captures.toTable
 
-                                if req.reqMethod==HttpPost:
-                                    for d in decodeData(req.body):
-                                        args.add(newString(d[0]))
+                                    for group,capture in captures:
+                                        args.add(newString(group))
 
-                                    for d in (toSeq(decodeData(req.body))).reversed:
-                                        push(newString(d[1]))
+                                    if req.reqMethod==HttpPost:
+                                        for d in decodeData(req.body):
+                                            args.add(newString(d[0]))
 
-                                for capture in (toSeq(pairs(captures))).reversed:
-                                    push(newString(capture[1]))
+                                        for d in (toSeq(decodeData(req.body))).reversed:
+                                            push(newString(d[1]))
 
-                                try:
-                                    discard execBlock(routes.d[k], execInParent=true, args=args)
-                                except:
-                                    let e = getCurrentException()
-                                    echo "Something went wrong." & e.msg
-                                body = pop().s
-                                routeFound = k
-                                break
+                                    for capture in (toSeq(pairs(captures))).reversed:
+                                        push(newString(capture[1]))
 
-                        if routeFound=="":
-                            let subpath = joinPath(env.currentPath(),req.url.path)
-                            if fileExists(subpath):
-                                body = readFile(subpath)
-                            else:
-                                status = 404
-                                body = "page not found!"
+                                    try:
+                                        {.cast(gcsafe).}:
+                                            discard execBlock(routes.d[k], execInParent=true, args=args, memoized=Value(kind: Null))
+                                    except:
+                                        let e = getCurrentException()
+                                        echo "Something went wrong: " & e.msg
+                                    body = pop().s
+                                    routeFound = k
+                                    break
 
-                        if verbose:
-                            echo bold(greenColor) & ">> [" & $(status) & "] " & routeFound & resetColor
+                            if routeFound=="":
+                                let subpath = joinPath(env.currentPath(),req.url.path)
+                                if fileExists(subpath):
+                                    body = readFile(subpath)
+                                else:
+                                    status = 404
+                                    body = "page not found!"
 
-                        await req.respond(status.HttpCode, body, headers)
+                            if verbose:
+                                echo bold(greenColor) & ">> [" & $(status) & "] " & routeFound & resetColor
 
-                    try:
-                        if verbose:
-                            echo ":: Starting server on port " & $(port) & "...\n"
-                        waitFor server.serve(port = port.Port, callback = handler, address = "")
-                    except:
-                        let e = getCurrentException()
-                        echo "Something went wrong." & e.msg
-                        server.close()
-                {.push warning[GcUnsafe2]:on.}
+                            if req.url.path==killPath:
+                                raise newException(Exception, "Received kill signal")
+
+                            await req.respond(status.HttpCode, body, headers)
+
+                        try:
+                            if verbose:
+                                echo ":: Starting server on port " & $(port) & "...\n"
+                            server.listen(Port(port))
+                            while true:
+                                if server.shouldAcceptRequest():
+                                    await server.acceptRequest(handler)
+                                else:
+                                    await sleepAsync(500)
+                            #waitFor server.serve(port = port.Port, callback = handler, address = "")
+                        except:
+                            let e = getCurrentException()
+                            echo ":: Server message: " & e.msg
+                            server.close()
+
+                    waitFor startServer()
+
+                #{.push warning[GcUnsafe2]:on.}
 
 #=======================================
 # Add Library

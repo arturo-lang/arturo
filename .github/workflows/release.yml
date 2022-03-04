@@ -62,7 +62,7 @@ jobs:
       - name: Build Arturo
         run: |
           export MACOSX_DEPLOYMENT_TARGET=10.10
-          ./install ${{ matrix.version }} log
+          ./build.nims install ${{ matrix.version }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact
@@ -124,7 +124,7 @@ jobs:
       - name: Build Arturo
         run: |
           export MACOSX_DEPLOYMENT_TARGET=10.10
-          ./install ${{ matrix.version }} nosqlite nogmp ${{ matrix.arch }} log
+          ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
           file bin/arturo
 
@@ -174,7 +174,7 @@ jobs:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
           run: |
-            ./install mini
+            ./build.nims install ${{ matrix.version }} log
             export PATH="$HOME/.arturo/bin:$PATH"
 
       - name: Create artifact
@@ -232,7 +232,7 @@ jobs:
           mkdir nim
           curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
-          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
+          curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
           7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
@@ -245,16 +245,16 @@ jobs:
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           export PATH="${{ github.workspace }}/bin":$PATH
-          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
-          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
-          ls -la nim/nim-1.4.0
-          ls -la nim/nim-1.4.0/bin 
+          export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
+          echo "${{ github.workspace }}/nim/nim-1.6.4/bin" >> $GITHUB_PATH
+          ls -la nim/nim-1.6.4
+          ls -la nim/nim-1.6.4/bin 
           echo "$GITHUB_PATH"
           
           echo "Running nim"
           nim --version
 
-          ./install
+          ./build.nims install ${{ matrix.version }} log
 
           mv bin/arturo.exe arturo.exe
 
@@ -268,7 +268,7 @@ jobs:
           mkdir nim
           curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
-          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
+          curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
           7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
@@ -279,16 +279,16 @@ jobs:
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           export PATH="${{ github.workspace }}/bin":$PATH
-          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
-          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
-          ls -la nim/nim-1.4.0
-          ls -la nim/nim-1.4.0/bin 
+          export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
+          echo "${{ github.workspace }}/nim/nim-1.6.4/bin" >> $GITHUB_PATH
+          ls -la nim/nim-1.6.4
+          ls -la nim/nim-1.6.4/bin 
           echo "$GITHUB_PATH"
           
           echo "Running nim"
           nim --version
 
-          ./install mini
+          ./build.nims install ${{ matrix.version }} log
 
           mv bin/arturo.exe arturo.exe
 
@@ -346,7 +346,7 @@ jobs:
 
       - name: Build Arturo
         run: |
-          ./install mini web
+          ./build.nims install web
           echo "$HOME/.arturo/bin" >> $GITHUB_PATH
 
       - name: Create artifact

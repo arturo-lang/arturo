@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/values/comparison.nim
 ######################################################
@@ -11,8 +11,14 @@
 #=======================================
 
 import lenientops, tables, unicode
+
+when defined(WEB):
+    import std/jsbigints
+    
 when not defined(NOGMP):
     import extras/bignum
+
+import helpers/colors as ColorsHelper
  
 import vm/exec
 import vm/stack
@@ -29,26 +35,34 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
                     return x.i==y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return big(x.i)==y.bi
+                    elif not defined(NOGMP):
                         return x.i==y.bi
                 elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return x.bi==big(y.i)
+                    elif not defined(NOGMP):
                         return x.bi==y.i
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB) or not defined(NOGMP):
                         return x.bi==y.bi
             else: 
                 if x.iKind==NormalInteger:
                     return (float)(x.i)==y.f
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return x.bi==big((int)(y.f))
+                    elif not defined(NOGMP):
                         return (x.bi)==(int)(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f==(float)(y.i)
                 elif y.iKind==BigInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return big((int)(x.f))==y.bi
+                    elif not defined(NOGMP):
                         return (int)(x.f)==y.bi        
             else: return x.f==y.f
     else:
@@ -104,6 +118,8 @@ proc `==`*(x: Value, y: Value): bool {.inline.}=
                 when not defined(NOSQLITE):
                     if x.dbKind==SqliteDatabase: return cast[ByteAddress](x.sqlitedb) == cast[ByteAddress](y.sqlitedb)
                     #elif x.dbKind==MysqlDatabase: return cast[ByteAddress](x.mysqldb) == cast[ByteAddress](y.mysqldb)
+            of ValueKind.Color:
+                return x.l == y.l
             of Date:
                 return x.eobj == y.eobj
             else:
@@ -116,26 +132,34 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
                     return x.i<y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return big(x.i)<y.bi
+                    elif not defined(NOGMP):
                         return x.i<y.bi
                 elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return x.bi<big(y.i)
+                    elif not defined(NOGMP):
                         return x.bi<y.i
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB) or not defined(NOGMP):
                         return x.bi<y.bi
             else: 
                 if x.iKind==NormalInteger:
                     return x.i<y.f
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return x.bi<big((int)(y.f))
+                    elif not defined(NOGMP):
                         return (x.bi)<(int)(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f<y.i
                 elif y.iKind==BigInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return big((int)(x.f))<y.bi
+                    elif not defined(NOGMP):
                         return (int)(x.f)<y.bi        
             else: return x.f<y.f
     else:
@@ -182,26 +206,34 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
                 if x.iKind==NormalInteger and y.iKind==NormalInteger:
                     return x.i>y.i
                 elif x.iKind==NormalInteger and y.iKind==BigInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return big(x.i)>y.bi
+                    elif not defined(NOGMP):
                         return x.i>y.bi
                 elif x.iKind==BigInteger and y.iKind==NormalInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return x.bi>big(y.i)
+                    elif not defined(NOGMP):
                         return x.bi>y.i
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB) or not defined(NOGMP):
                         return x.bi>y.bi
             else: 
                 if x.iKind==NormalInteger:
                     return (float)(x.i)>y.f
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return x.bi>big((int)(y.f))
+                    elif not defined(NOGMP):
                         return (x.bi)>(int)(y.f)
         else:
             if y.kind==Integer: 
                 if y.iKind==NormalInteger:
                     return x.f>(float)(y.i)
                 elif y.iKind==BigInteger:
-                    when not defined(NOGMP):
+                    when defined(WEB):
+                        return big((int)(x.f))>y.bi
+                    elif not defined(NOGMP):
                         return (int)(x.f)>y.bi        
             else: return x.f>y.f
     else:

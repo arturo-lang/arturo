@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Io.nim
 ######################################################
@@ -19,16 +19,13 @@
 when not defined(WEB):
     import rdstdin, terminal
 
-import std/colors except Color
 import algorithm, tables
 
 when not defined(windows) and not defined(WEB):
-    import linenoise
-
-when not defined(WEB):
     import helpers/repl
 
 import helpers/colors as colorsHelper
+import helpers/terminal as terminalHelper
 
 import vm/lib
 import vm/[eval, exec]
@@ -63,10 +60,7 @@ proc defineSymbols*() =
             clear             ; (clears the screen)
         """:
             ##########################################################
-            when not defined(windows) and not defined(WEB):
-                clearScreen()
-            else:
-                discard
+            clearTerminal()
 
     builtin "color",
         alias       = unaliased, 
@@ -91,28 +85,29 @@ proc defineSymbols*() =
             var color = ""
 
             case x.l:
-                of colBlack:
+                of clBlack:
                     color = blackColor
-                of colRed:
+                of clRed:
                     color = redColor
-                of colGreen:
+                of clGreen:
                     color = greenColor
-                of colYellow:
+                of clYellow:
                     color = yellowColor
-                of colBlue:
+                of clBlue:
                     color = blueColor
-                of colMagenta:
+                of clMagenta:
                     color = magentaColor
-                of colOrange:
+                of clOrange:
                     color = rgb("208")
-                of colCyan:
+                of clCyan:
                     color = cyanColor
-                of colWhite:
+                of clWhite:
                     color = whiteColor
-                of colGray:
+                of clGray:
                     color = grayColor
                 else:
-                    color = rgb(extractRGB(x.l))
+                    let rgba = RGBfromColor(x.l)
+                    color = rgb((rgba.r, rgba.g, rgba.b))
 
             var finalColor = ""
 
@@ -245,7 +240,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "lines" : ({Logical},"print each value in block in a new line"),
+        },
         returns     = {Nothing},
         example     = """
             print "Hello world!"          ; Hello world!
@@ -254,6 +251,8 @@ proc defineSymbols*() =
             if x.kind==Block:
                 when defined(WEB):
                     stdout = ""
+
+                let inLines = (popAttr("lines")!=VNULL)
 
                 let xblock = doEval(x)
                 let stop = SP
@@ -265,9 +264,10 @@ proc defineSymbols*() =
 
                 for r in res.reversed:
                     stdout.write($(r))
-                    stdout.write(" ")
+                    if not inLines: stdout.write(" ")
+                    else: stdout.write("\n")
 
-                stdout.write("\n")
+                if not inLines: stdout.write("\n")
                 stdout.flushFile()
             else:
                 echo $(x)

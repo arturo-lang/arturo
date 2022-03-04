@@ -4,8 +4,5 @@ dict: #[
 	country: "Spain"
 ]
 
-i: new 0
-while [i =< 200000][
+do.times: 200000 ->
 	print dict\surname
-	inc 'i
-]

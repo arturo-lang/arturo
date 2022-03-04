@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Strings.nim
 ######################################################
@@ -23,11 +23,10 @@ else:
     import jsre
 
 import std/editdistance, json, os
-import sequtils, strutils, unicode, std/wordwrap, xmltree
+import sequtils, strutils, sugar
+import unicode, std/wordwrap, xmltree
 
 import helpers/strings
-when defined(WEB):
-    import helpers/js
 
 import vm/lib
 
@@ -200,7 +199,28 @@ proc defineSymbols*() =
             if x.kind==Literal:
                 SetInPlace(newString(indent(InPlace.s, count, padding)))
             else:
-                push(newString(indent(x.s, count, padding)))            
+                push(newString(indent(x.s, count, padding)))      
+
+    builtin "jaro",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "calculate Jaro similarity between given strings",
+        args        = {
+            "stringA"   : {String},
+            "stringB"   : {String}
+        },
+        attrs       = NoAttrs,
+        returns     = {Floating},
+        example     = """
+            jaro "one" "one"        ; => 1.0
+
+            jaro "crate" "trace"    ; => 0.7333333333333334
+            jaro "dwayne" "duane"   ; => 0.8222222222222223
+
+            jaro "abcdef" "fedcba"  ; => 0.3888888888888888
+            jaro "abcde" "vwxyz"    ; => 0.0
+        """:
+            push(newFloating(jaro(x.s,y.s)))    
 
     builtin "join",
         alias       = unaliased, 
@@ -353,7 +373,7 @@ proc defineSymbols*() =
             when not defined(WEB):
                 push newStringBlock(x.s.findAll(re.re(y.s)))
             else:
-                push newStringBlock(x.s.match(newRegExp(y.s,"g")))
+                push newStringBlock(cstring(x.s).match(newRegExp(cstring(y.s),"g")))
  
     builtin "numeric?",
         alias       = unaliased, 
@@ -513,7 +533,7 @@ proc defineSymbols*() =
                 when not defined(WEB):
                     push(newLogical(re.startsWith(x.s, re.re(y.s))))
                 else:
-                    push newLogical(x.s.startsWith(newRegExp(y.s,"")))
+                    push newLogical(cstring(x.s).startsWith(newRegExp(cstring(y.s),"")))
             else:
                 push(newLogical(x.s.startsWith(y.s)))
 
@@ -610,33 +630,48 @@ proc defineSymbols*() =
     builtin "replace",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "replace every matched substring by given replacement string and return result",
+        description = "replace every matched substring/s by given replacement string and return result",
         args        = {
             "string"        : {String,Literal},
-            "match"         : {String},
-            "replacement"   : {String}
+            "match"         : {String, Block},
+            "replacement"   : {String, Block}
         },
         attrs       = {
             "regex" : ({Logical},"match against a regular expression")
         },
         returns     = {String,Nothing},
         example     = """
-            replace "hello" "l" "x"           ; => "hexxo"
+            replace "hello" "l" "x"         ; => "hexxo"
             ;;;;
             str: "hello"
-            replace 'str "l" "x"              ; str: "hexxo"
+            replace 'str "l" "x"            ; str: "hexxo"
+            ;;;
+            replace "hello" ["h" "l"] "x"           ; => "xexxo"
+            replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             ##########################################################
             if (popAttr("regex") != VNULL):
-                when not defined(WEB):
-                    if x.kind==String: push(newString(x.s.replacef(re.re(y.s), z.s)))
-                    else: InPlace.s = InPlaced.s.replacef(re.re(y.s), z.s)
+                if x.kind==String:
+                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s, regex=true))
+                    else:
+                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true))
+                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true))
                 else:
-                    if x.kind==String: push(newString(x.s.replace(newRegExp(y.s,""), z.s)))
-                    else: InPlace.s = $(InPlaced.s.replace(newRegExp(y.s,""), z.s))
+                    if y.kind==String: InPlace.s = InPlaced.s.replaceAll(y.s, z.s, regex=true)
+                    else:
+                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true)
+                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true)
             else:
-                if x.kind==String: push(newString(x.s.replace(y.s, z.s)))
-                else: InPlace.s = InPlaced.s.replace(y.s, z.s)
+                if x.kind==String:
+                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s))
+                    else:
+                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s))
+                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s)))
+                else:
+                    if y.kind==String: InPlace.s = InPlaced.s.replace(y.s, z.s)
+                    else:
+                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s)
+                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s))
 
     builtin "strip",
         alias       = unaliased, 
@@ -713,7 +748,7 @@ proc defineSymbols*() =
                 when not defined(WEB):
                     push(newLogical(re.endsWith(x.s, re.re(y.s))))
                 else:
-                    push newLogical(x.s.endsWith(newRegExp(y.s,"")))
+                    push newLogical(cstring(x.s).endsWith(newRegExp(cstring(y.s),"")))
             else:
                 push(newLogical(x.s.endsWith(y.s)))
 

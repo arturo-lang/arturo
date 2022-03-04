@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/bytecode.nim
 ######################################################
@@ -297,5 +297,5 @@ proc readBytecode*(origin: string): Translation =
         discard
 
 
-proc hash*(x: OpCode): Hash {.inline.}=
+func hash*(x: OpCode): Hash {.inline.}=
     cast[Hash](ord(x))

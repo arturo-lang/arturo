@@ -1,0 +1,8 @@
+horner: function [coeffs, x][
+    result: 0
+    loop reverse coeffs 'c ->
+        result: c + result * x
+    return result
+]
+
+print horner @[neg 19, 7, neg 4, 6] 3
