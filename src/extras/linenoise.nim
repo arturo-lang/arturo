@@ -1,6 +1,6 @@
 ######################################################
 # nim-portable-dialogs
-# Sam Hocevar's Portable File Dialogs wrapper
+# Wrapper for Sam Bennett's fork of LineNoise
 # for Nim
 #
 # (c) 2022 Yanis Zafirópulos
