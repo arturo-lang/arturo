@@ -1,6 +1,26 @@
+######################################################
+# nim-portable-dialogs
+# Sam Hocevar's Portable File Dialogs wrapper
+# for Nim
+#
+# (c) 2022 Yanis Zafirópulos
+# 
+# @license: see LICENSE file
+# @file: extras/linenoise.nim
+######################################################
+
+#=======================================
+# Libraries
+#=======================================
+
 when defined(windows):
     import os
 
+#=======================================
+# Compilation & Linking
+#=======================================
+
+when defined(windows):
     {.passC: "-I" & parentDir(currentSourcePath()) .}
 
     {.compile("linenoise/linenoise.c", "-I" & parentDir(currentSourcePath())).}
@@ -20,13 +40,13 @@ type
     LinenoiseHintsCallback*         = proc (buf: cstring; color: var cint; bold: var cint): cstring {.cdecl.}
     LinenoiseFreeHintsCallback*     = proc (buf: cstring; color: var cint; bold: var cint) {.cdecl.}
 
-
 #=======================================
-# C Imports
+# Function prototypes
 #=======================================
 
 when defined(windows):
     {.push header: "linenoise/linenoise.h", cdecl.}
+
 proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback) {.importc: "linenoiseSetCompletionCallback".}
 proc linenoiseSetHintsCallback*(cback: ptr LinenoiseHintsCallback) {.importc: "linenoiseSetHintsCallback".}
 proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
@@ -38,6 +58,8 @@ proc linenoiseHistoryLoad*(filename: cstring): cint {.importc: "linenoiseHistory
 proc linenoiseClearScreen*() {.importc: "linenoiseClearScreen".}
 proc linenoiseSetMultiLine*(ml: cint) {.importc: "linenoiseSetMultiLine".}
 proc linenoisePrintKeyCodes*() {.importc: "linenoisePrintKeyCodes".}
+
 when defined(windows):
     {.pop.}
+
 proc free*(s: cstring) {.importc: "free", header: "<stdlib.h>".}
