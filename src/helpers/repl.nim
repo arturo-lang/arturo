@@ -10,12 +10,14 @@
 # Libraries
 #=======================================
 
+import os
+
 when defined(windows):
-    {.compile("../extras/linenoise/linenoise.c").}
+    {.compile(normalizePath(currentSourcePath().splitPath.head & "../extras/linenoise/linenoise.c")).}
 
 when not defined(WEB):
 
-    import os, sequtils, strutils, sugar, tables
+    import sequtils, strutils, sugar, tables
 
     import vm/values/value
 
@@ -51,7 +53,7 @@ when not defined(WEB):
     #=======================================
 
     when defined(windows):
-        {.push header: "../extras/linenoise/linenoise.h", cdecl.}
+        {.push header: normalizePath(currentSourcePath().splitPath.head & "../extras/linenoise/linenoise.h"), cdecl.}
     proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback) {.importc: "linenoiseSetCompletionCallback".}
     proc linenoiseSetHintsCallback(cback: ptr LinenoiseHintsCallback) {.importc: "linenoiseSetHintsCallback".}
     proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
