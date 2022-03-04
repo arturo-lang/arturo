@@ -49,17 +49,17 @@ jobs:
           mkdir nim
           curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
-          curl -L https://nim-lang.org/download/nim-1.6.2_x64.zip -o dist/nim.zip
+          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
           7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           export PATH="${{ github.workspace }}/bin":$PATH
-          export PATH="${{ github.workspace }}/nim/nim-1.6.2/bin":$PATH
-          echo "${{ github.workspace }}/nim/nim-1.6.2/bin" >> $GITHUB_PATH
-          ls -la nim/nim-1.6.2
-          ls -la nim/nim-1.6.2/bin 
+          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
+          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
+          ls -la nim/nim-1.4.0
+          ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
           
           echo "Running nim"
@@ -77,17 +77,17 @@ jobs:
           mkdir nim
           curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
-          curl -L https://nim-lang.org/download/nim-1.6.2_x64.zip -o dist/nim.zip
+          curl -L https://nim-lang.org/download/nim-1.4.0_x64.zip -o dist/nim.zip
           7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           export PATH="${{ github.workspace }}/bin":$PATH
-          export PATH="${{ github.workspace }}/nim/nim-1.6.2/bin":$PATH
-          echo "${{ github.workspace }}/nim/nim-1.6.2/bin" >> $GITHUB_PATH
-          ls -la nim/nim-1.6.2
-          ls -la nim/nim-1.6.2/bin 
+          export PATH="${{ github.workspace }}/nim/nim-1.4.0/bin":$PATH
+          echo "${{ github.workspace }}/nim/nim-1.4.0/bin" >> $GITHUB_PATH
+          ls -la nim/nim-1.4.0
+          ls -la nim/nim-1.4.0/bin 
           echo "$GITHUB_PATH"
           
           echo "Running nim"
