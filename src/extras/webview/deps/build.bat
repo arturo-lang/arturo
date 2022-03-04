@@ -3,7 +3,7 @@
 echo Prepare directories...
 set script_dir=%~dp0
 set src_dir=%script_dir%..
-set build_dir=%script_dir%\build\
+set build_dir="%script_dir%\build"
 mkdir "%build_dir%"
 
 echo Webview directory: %src_dir%
