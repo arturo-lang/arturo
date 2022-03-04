@@ -97,7 +97,7 @@ var
     FLAGS*              = "--skipUserCfg:on --skipProjCfg:on --skipParentCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 
-                          "--path:src --opt:speed --threads:on"
+                          "--path:src --opt:speed"
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
