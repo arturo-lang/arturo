@@ -24,19 +24,19 @@ import extras/window
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
 when defined(linux):
-    {.compile("webview/webview.cc","-std=c++11").}
+    {.compile("webview/webview_unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
              staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
     {.passL: "-lstdc++ " &
              staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
 elif defined(freebsd):
-    {.compile("webview/webview.cc","-std=c++11").}
+    {.compile("webview/webview_unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
              staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
     {.passL: "-lstdc++ " &
              staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
 elif defined(macosx):
-    {.compile("webview/webview.cc","-std=c++11").}
+    {.compile("webview/webview_unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_COCOA=1".}
     {.passL: "-lstdc++ -framework WebKit".}
 elif defined(windows):
@@ -47,10 +47,13 @@ elif defined(windows):
         {.passC: "-DWEBVIEW_STATIC=1 -DWEBVIEW_IMPLEMENTATION=1 -DWEBVIEW_WINAPI=1".}
         {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
 
-when defined(windows) and defined(WEBVIEW_NOEDGE):
-    {.push header: "webview/webview_win_old.h", cdecl.}
-else:
-    {.push header: "webview/webview.h", cdecl.}
+{.push header: "webview/webview_unix.h", cdecl.}
+# when defined(windows):
+
+# when defined(windows) and defined(WEBVIEW_NOEDGE):
+#     {.push header: "webview/webview_win_old.h", cdecl.}
+# else:
+#     {.push header: "webview/webview.h", cdecl.}
 
 #=======================================
 # Types

@@ -21,8 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#ifndef WEBVIEW_H
-#define WEBVIEW_H
+// COMPILATION FLAGS:
+
+// Linux
+// CPPFLAGS="`pkg-config --cflags --libs gtk+-3.0 webkit2gtk-4.0` -lstdc++"
+// MacOS
+// CPPFLAGS="-std=c++11 -framework WebKit"
+// Windows (x64)
+// CPPFLAGS="-mwindows -L./dll/x64 -lwebview -lWebView2Loader"
+//
 
 #ifndef WEBVIEW_API
 #define WEBVIEW_API extern
@@ -80,9 +87,6 @@ WEBVIEW_API void webview_set_size(webview_t w, int width, int height,
 // properly, webview will re-encode it for you.
 WEBVIEW_API void webview_navigate(webview_t w, const char *url);
 
-// Set webview HTML directly.
-WEBVIEW_API void webview_set_html(webview_t w, const char *html);
-
 // Injects JavaScript code at the initialization of the new page. Every time
 // the webview will open a the new page - this initialization code will be
 // executed. It is guaranteed that code is executed before window.onload.
@@ -103,9 +107,6 @@ WEBVIEW_API void webview_bind(webview_t w, const char *name,
                                          void *arg),
                               void *arg);
 
-// Removes a native C callback that was previously set by webview_bind.
-WEBVIEW_API void webview_unbind(webview_t w, const char *name);
-
 // Allows to return a value from the native binding. Original request pointer
 // must be provided to help internal RPC engine match requests with responses.
 // If status is zero - result is expected to be a valid JSON result value.
@@ -116,8 +117,6 @@ WEBVIEW_API void webview_return(webview_t w, const char *seq, int status,
 #ifdef __cplusplus
 }
 #endif
-
-#ifndef WEBVIEW_HEADER
 
 #if !defined(WEBVIEW_GTK) && !defined(WEBVIEW_COCOA) && !defined(WEBVIEW_EDGE)
 #if defined(__linux__)
@@ -544,10 +543,6 @@ public:
     webkit_web_view_load_uri(WEBKIT_WEB_VIEW(m_webview), url.c_str());
   }
 
-  void set_html(const std::string html) {
-    webkit_web_view_load_html(WEBKIT_WEB_VIEW(m_webview), html.c_str(), NULL);
-  }
-
   void init(const std::string js) {
     WebKitUserContentManager *manager =
         webkit_web_view_get_user_content_manager(WEBKIT_WEB_VIEW(m_webview));
@@ -780,13 +775,6 @@ public:
         ((id(*)(id, SEL, id))objc_msgSend)("NSURLRequest"_cls,
                                            "requestWithURL:"_sel, nsurl));
   }
-  void set_html(const std::string html) {
-    ((void (*)(id, SEL, id, id))objc_msgSend)(
-        m_webview, "loadHTMLString:baseURL:"_sel,
-        ((id(*)(id, SEL, const char *))objc_msgSend)(
-            "NSString"_cls, "stringWithUTF8String:"_sel, html.c_str()),
-        nullptr);
-  }
   void init(const std::string js) {
     // Equivalent Obj-C:
     // [m_manager addUserScript:[[WKUserScript alloc] initWithSource:[NSString stringWithUTF8String:js.c_str()] injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES]]
@@ -830,10 +818,9 @@ using browser_engine = cocoa_wkwebview_engine;
 // ====================================================================
 //
 
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
+#include <Shlwapi.h>
 #include <codecvt>
-#include <shlobj.h>
-#include <shlwapi.h>
 #include <stdlib.h>
 #include <windows.h>
 
@@ -848,8 +835,7 @@ using browser_engine = cocoa_wkwebview_engine;
 #pragma comment(lib, "windowsapp")
 
 // Edge/Chromium headers and libs
-#include "webview2.h"
-#pragma comment(lib, "shell32.lib")
+#include "deps/include/WebView2.h"
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "oleaut32.lib")
 
@@ -863,7 +849,6 @@ public:
   virtual ~browser() = default;
   virtual bool embed(HWND, bool, msg_cb_t) = 0;
   virtual void navigate(const std::string url) = 0;
-  virtual void set_html(const std::string html) = 0;
   virtual void eval(const std::string js) = 0;
   virtual void init(const std::string js) = 0;
   virtual void resize(HWND) = 0;
@@ -909,17 +894,17 @@ public:
   }
 
   void navigate(const std::string url) override {
-    Uri uri(winrt::to_hstring(url));
-    m_webview.Navigate(uri);
+    std::string html = html_from_uri(url);
+    if (html != "") {
+      m_webview.NavigateToString(winrt::to_hstring(html));
+    } else {
+      Uri uri(winrt::to_hstring(url));
+      m_webview.Navigate(uri);
+    }
   }
 
   void init(const std::string js) override {
     init_js = init_js + "(function(){" + js + "})();";
-  }
-
-  void set_html(const std::string html) override {
-    m_webview.NavigateToString(
-        winrt::to_hstring("data:text/html," + url_encode(html)).c_str());
   }
 
   void eval(const std::string js) override {
@@ -948,22 +933,21 @@ private:
 class edge_chromium : public browser {
 public:
   bool embed(HWND wnd, bool debug, msg_cb_t cb) override {
+    CoInitializeEx(nullptr, 0);
     std::atomic_flag flag = ATOMIC_FLAG_INIT;
     flag.test_and_set();
 
-    wchar_t currentExePath[MAX_PATH];
-    GetModuleFileNameW(NULL, currentExePath, MAX_PATH);
-    wchar_t *currentExeName = PathFindFileNameW(currentExePath);
+    char currentExePath[MAX_PATH];
+    GetModuleFileNameA(NULL, currentExePath, MAX_PATH);
+    char *currentExeName = PathFindFileNameA(currentExePath);
 
-    wchar_t dataPath[MAX_PATH];
-    if (!SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, dataPath))) {
-      return false;
-    }
-    wchar_t userDataFolder[MAX_PATH];
-    PathCombineW(userDataFolder, dataPath, currentExeName);
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> wideCharConverter;
+    std::wstring userDataFolder =
+        wideCharConverter.from_bytes(std::getenv("APPDATA"));
+    std::wstring currentExeNameW = wideCharConverter.from_bytes(currentExeName);
 
     HRESULT res = CreateCoreWebView2EnvironmentWithOptions(
-        nullptr, userDataFolder, nullptr,
+        nullptr, (userDataFolder + L"/" + currentExeNameW).c_str(), nullptr,
         new webview2_com_handler(wnd, cb,
                                  [&](ICoreWebView2Controller *controller) {
                                    m_controller = controller;
@@ -972,6 +956,7 @@ public:
                                    flag.clear();
                                  }));
     if (res != S_OK) {
+      CoUninitialize();
       return false;
     }
     MSG msg = {};
@@ -993,26 +978,31 @@ public:
   }
 
   void navigate(const std::string url) override {
-    auto wurl = winrt::to_hstring(url);
-    m_webview->Navigate(wurl.c_str());
-  }
-
-  void set_html(const std::string html) override {
-    auto html2 = winrt::to_hstring("data:text/html," + url_encode(html));
-    m_webview->Navigate(html2.c_str());
+    auto wurl = to_lpwstr(url);
+    m_webview->Navigate(wurl);
+    delete[] wurl;
   }
 
   void init(const std::string js) override {
-    auto wjs = winrt::to_hstring(js);
-    m_webview->AddScriptToExecuteOnDocumentCreated(wjs.c_str(), nullptr);
+    LPCWSTR wjs = to_lpwstr(js);
+    m_webview->AddScriptToExecuteOnDocumentCreated(wjs, nullptr);
+    delete[] wjs;
   }
 
   void eval(const std::string js) override {
-    auto wjs = winrt::to_hstring(js);
-    m_webview->ExecuteScript(wjs.c_str(), nullptr);
+    LPCWSTR wjs = to_lpwstr(js);
+    m_webview->ExecuteScript(wjs, nullptr);
+    delete[] wjs;
   }
 
 private:
+  LPWSTR to_lpwstr(const std::string s) {
+    int n = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
+    wchar_t *ws = new wchar_t[n];
+    MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, ws, n);
+    return ws;
+  }
+
   ICoreWebView2 *m_webview = nullptr;
   ICoreWebView2Controller *m_controller = nullptr;
 
@@ -1055,7 +1045,9 @@ private:
         ICoreWebView2 *sender, ICoreWebView2WebMessageReceivedEventArgs *args) {
       LPWSTR message;
       args->TryGetWebMessageAsString(&message);
-      m_msgCb(winrt::to_string(message));
+
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> wideCharConverter;
+      m_msgCb(wideCharConverter.to_bytes(message));
       sender->PostWebMessageAsString(message);
 
       CoTaskMemFree(message);
@@ -1088,15 +1080,15 @@ public:
           hInstance, IDI_APPLICATION, IMAGE_ICON, GetSystemMetrics(SM_CXSMICON),
           GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 
-      WNDCLASSEXW wc;
+      WNDCLASSEX wc;
       ZeroMemory(&wc, sizeof(WNDCLASSEX));
       wc.cbSize = sizeof(WNDCLASSEX);
       wc.hInstance = hInstance;
-      wc.lpszClassName = L"webview";
+      wc.lpszClassName = "webview";
       wc.hIcon = icon;
       wc.hIconSm = icon;
       wc.lpfnWndProc =
-          (WNDPROC)(+[](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) -> LRESULT {
+          (WNDPROC)(+[](HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) -> int {
             auto w = (win32_edge_engine *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
             switch (msg) {
             case WM_SIZE:
@@ -1122,14 +1114,14 @@ public:
               }
             } break;
             default:
-              return DefWindowProcW(hwnd, msg, wp, lp);
+              return DefWindowProc(hwnd, msg, wp, lp);
             }
             return 0;
           });
-      RegisterClassExW(&wc);
-      m_window = CreateWindowW(L"webview", L"", WS_OVERLAPPEDWINDOW,
-                               CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, nullptr,
-                               nullptr, GetModuleHandle(nullptr), nullptr);
+      RegisterClassEx(&wc);
+      m_window = CreateWindow("webview", "", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
+                              CW_USEDEFAULT, 640, 480, nullptr, nullptr,
+                              GetModuleHandle(nullptr), nullptr);
       SetWindowLongPtr(m_window, GWLP_USERDATA, (LONG_PTR)this);
     } else {
       m_window = *(static_cast<HWND *>(window));
@@ -1176,7 +1168,7 @@ public:
   }
 
   void set_title(const std::string title) {
-    SetWindowTextW(m_window, winrt::to_hstring(title).c_str());
+    SetWindowText(m_window, title.c_str());
   }
 
   void set_size(int width, int height, int hints) {
@@ -1208,7 +1200,6 @@ public:
   }
 
   void navigate(const std::string url) { m_browser->navigate(url); }
-  void set_html(const std::string html) { m_browser->set_html(html); }
   void eval(const std::string js) { m_browser->eval(js); }
   void init(const std::string js) { m_browser->init(js); }
 
@@ -1241,7 +1232,12 @@ public:
                                url_encode("<html><body>Hello</body></html>"));
       return;
     }
-    browser_engine::navigate(url);
+    std::string html = html_from_uri(url);
+    if (html != "") {
+      browser_engine::navigate("data:text/html," + url_encode(html));
+    } else {
+      browser_engine::navigate(url);
+    }
   }
 
   using binding_t = std::function<void(std::string, std::string, void *)>;
@@ -1281,18 +1277,6 @@ public:
     })())";
     init(js);
     bindings[name] = new binding_ctx_t(new binding_t(f), arg);
-  }
-
-  void unbind(const std::string name) {
-    if (bindings.find(name) != bindings.end()) {
-      auto js = "delete window['" + name + "'];";
-      init(js);
-      eval(js);
-      delete bindings[name]->first;
-      delete static_cast<sync_binding_ctx_t *>(bindings[name]->second);
-      delete bindings[name];
-      bindings.erase(name);
-    }
   }
 
   void resolve(const std::string seq, int status, const std::string result) {
@@ -1360,10 +1344,6 @@ WEBVIEW_API void webview_navigate(webview_t w, const char *url) {
   static_cast<webview::webview *>(w)->navigate(url);
 }
 
-WEBVIEW_API void webview_set_html(webview_t w, const char *html) {
-  static_cast<webview::webview *>(w)->set_html(html);
-}
-
 WEBVIEW_API void webview_init(webview_t w, const char *js) {
   static_cast<webview::webview *>(w)->init(js);
 }
@@ -1384,15 +1364,7 @@ WEBVIEW_API void webview_bind(webview_t w, const char *name,
       arg);
 }
 
-WEBVIEW_API void webview_unbind(webview_t w, const char *name) {
-  static_cast<webview::webview *>(w)->unbind(name);
-}
-
 WEBVIEW_API void webview_return(webview_t w, const char *seq, int status,
                                 const char *result) {
   static_cast<webview::webview *>(w)->resolve(seq, status, result);
 }
-
-#endif /* WEBVIEW_HEADER */
-
-#endif /* WEBVIEW_H */
