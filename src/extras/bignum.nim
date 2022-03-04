@@ -6,7 +6,10 @@
 # distribution, for details about the copyright.
 #
 
-{.passl: "-lgmp".}
+when not defined(windows):
+    {.passl: "-lgmp".}
+else:
+    {.passl: "-lgmpxx".}
 
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
