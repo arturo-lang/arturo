@@ -13,7 +13,7 @@
 import os
 
 when defined(windows):
-    {.compile(normalizePath(currentSourcePath().splitPath.head & "../extras/linenoise/linenoise.c")).}
+    {.compile(normalizedPath(currentSourcePath().splitPath.head & "../extras/linenoise/linenoise.c")).}
 
 when not defined(WEB):
 
@@ -53,7 +53,7 @@ when not defined(WEB):
     #=======================================
 
     when defined(windows):
-        {.push header: normalizePath(currentSourcePath().splitPath.head & "../extras/linenoise/linenoise.h"), cdecl.}
+        {.push header: normalizedPath(currentSourcePath().splitPath.head & "../extras/linenoise/linenoise.h"), cdecl.}
     proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback) {.importc: "linenoiseSetCompletionCallback".}
     proc linenoiseSetHintsCallback(cback: ptr LinenoiseHintsCallback) {.importc: "linenoiseSetHintsCallback".}
     proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
