@@ -296,7 +296,7 @@ proc compile*(footer=false): int =
         FLAGS = "{FLAGS} -d:NOGMP -d:USE_NIM_MARKDOWN -d:MINI".fmt # --exceptions:cpp".fmt
         # USE_VCC = true
         if IS_DEV:
-            exec "src\\extras\\webview\\deps\\build.bat"
+            let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
 
     if not IS_MULTITHREADED:
         FLAGS = FLAGS.replace("--threads:on ","")
@@ -332,6 +332,9 @@ proc installAll*() =
         cpFile(toExe(BINARY), TARGET_FILE)
         if hostOS != "windows":
             exec(r"chmod +x {TARGET_FILE}".fmt)
+        else:
+            cpFile("src/extras/webview/deps/dlls/x64/webview.dll","bin/")
+            cpFile("src/extras/webview/deps/dlls/x64/WebView2Loader.dll","bin/")
         echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
 
 #=======================================
