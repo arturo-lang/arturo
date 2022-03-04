@@ -1,6 +1,6 @@
 ######################################################
 # nim-portable-dialogs
-# Wrapper for Sam Bennett's fork of LineNoise
+# Wrapper for Steve Bennett's fork of LineNoise
 # for Nim
 #
 # (c) 2022 Yanis Zafirópulos
