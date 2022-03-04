@@ -296,7 +296,8 @@ proc compile*(footer=false): int =
         FLAGS = "{FLAGS} -d:NOGMP -d:USE_NIM_MARKDOWN -d:MINI".fmt # --exceptions:cpp".fmt
         # USE_VCC = true
         if IS_DEV:
-            exec "src/extras/webview/deps/build.bat"
+            echo "Building Webview library"
+            let (_,_) = gorgeEx "src/extras/webview/deps/build.bat"
 
     if not IS_MULTITHREADED:
         FLAGS = FLAGS.replace("--threads:on ","")
