@@ -17,7 +17,7 @@
 #=======================================
 
 when not defined(WEB):
-    import rdstdin, terminal
+    import terminal
 
 import algorithm, tables
 
