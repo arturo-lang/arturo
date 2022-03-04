@@ -3,7 +3,7 @@
 echo Prepare directories...
 set script_dir=%~dp0
 set src_dir=%script_dir%..
-set build_dir=%script_dir%..\build
+set build_dir=%script_dir%\deps
 mkdir "%build_dir%"
 
 echo Webview directory: %src_dir%
@@ -31,41 +31,41 @@ echo Found %vc_dir%
 call "%vc_dir%\Common7\Tools\vsdevcmd.bat" -arch=x86 -host_arch=x64
 
 echo Building webview.dll (x86)
-mkdir "%src_dir%\dll\x86"
+@REM mkdir "%src_dir%\dll\x86"
 cl /D "WEBVIEW_API=__declspec(dllexport)" ^
-	/I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
-	"%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll.lib" ^
-	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
-	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\webview.dll" || exit \b
-copy "%build_dir%\webview.dll" "%src_dir%\dll\x86"
-copy "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll" "%src_dir%\dll\x86"
+	/I "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
+	"%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll.lib" ^
+	/std:c++17 /EHsc "/Fo%build_dir%\dlls\x86"\ ^
+	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\dlls\x86\webview.dll" || exit \b
+@REM copy "%build_dir%\webview.dll" "%src_dir%\dll\x86"
+copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll" "%build_dir%\dlls\x86"
 
 call "%vc_dir%\Common7\Tools\vsdevcmd.bat" -arch=x64 -host_arch=x64
 echo Building webview.dll (x64)
-mkdir "%src_dir%\dll\x64"
+@REM mkdir "%src_dir%\dll\x64"
 cl /D "WEBVIEW_API=__declspec(dllexport)" ^
-	/I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
-	"%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
-	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
-	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\webview.dll" || exit \b
-copy "%build_dir%\webview.dll" "%src_dir%\dll\x64"
-copy "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%build_dir%"
-copy "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%src_dir%\dll\x64"
+	/I "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
+	"%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
+	/std:c++17 /EHsc "/Fo%build_dir%\dlls\x64"\ ^
+	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\dlls\x64\webview.dll" || exit \b
+@REM copy "%build_dir%\webview.dll" "%src_dir%\dll\x64"
+@REM copy "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%build_dir%"
+copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%build_dir%\dlls\x64"
 
-echo Building webview.exe (x64)
-cl /I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
-	"%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
-	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
-	"%src_dir%\main.cc" /link "/OUT:%build_dir%\webview.exe" || exit \b
+@REM echo Building webview.exe (x64)
+@REM cl /I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
+@REM 	"%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
+@REM 	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
+@REM 	"%src_dir%\main.cc" /link "/OUT:%build_dir%\webview.exe" || exit \b
 
-echo Building webview_test.exe (x64)
-cl /I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
-	"%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
-	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
-	"%src_dir%\webview_test.cc" /link "/OUT:%build_dir%\webview_test.exe" || exit \b
+@REM echo Building webview_test.exe (x64)
+@REM cl /I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
+@REM 	"%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
+@REM 	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
+@REM 	"%src_dir%\webview_test.cc" /link "/OUT:%build_dir%\webview_test.exe" || exit \b
 
-echo Running Go tests
-cd /D %src_dir%
-set CGO_ENABLED=1
-set "PATH=%PATH%;%src_dir%\dll\x64;%src_dir%\dll\x86"
-go test || exit \b
+@REM echo Running Go tests
+@REM cd /D %src_dir%
+@REM set CGO_ENABLED=1
+@REM set "PATH=%PATH%;%src_dir%\dll\x64;%src_dir%\dll\x86"
+@REM go test || exit \b
