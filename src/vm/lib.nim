@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/common.nim
 ######################################################
@@ -47,40 +47,51 @@ proc getWrongArgumentTypeErrorMsg*(functionName: string, argumentPos: int, expec
 #=======================================
 # Templates
 #=======================================
+when defined(PORTABLE):
+    import json, os, sugar
+
+    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
+    let funcs {.compileTime.} = toSeq(js["uses"]["functions"]).map((x) => x.getStr())
+    let compact {.compileTime.} = js["compact"].getStr() == "true"
+else:
+    let funcs {.compileTime.}: seq[string] = @[]
+    let compact {.compileTime.} = false
 
 template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, description: string, args: untyped, attrs: untyped, returns: ValueSpec, example: string, act: untyped):untyped =
-    when defined(DEV):
-        static: echo "processing: " & n
-
-    when args.len==1 and args==NoArgs:  
-        const argsLen = 0
-    else:                               
-        const argsLen = static args.len
-
-    when defined(NOEXAMPLES):
-        const cleanExample = ""
-    else:
-        const cleanExample = replace(strutils.strip(example),"\n            ","\n")
+    when not defined(PORTABLE) or not compact or funcs.contains(n):
         
-    when not defined(WEB):
-        let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
-            require(n, args)
-            act
-        )
-    else:
-        let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "]", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
-            require(n, args)
-            act
-        )
+        when defined(DEV):
+            static: echo " -> " & n
 
-    Arities[n] = static argsLen
-    Syms[n] = b
+        when args.len==1 and args==NoArgs:  
+            const argsLen = 0
+        else:                               
+            const argsLen = static args.len
 
-    when alias != unaliased:
-        Aliases[alias] = AliasBinding(
-            precedence: rule,
-            name: newWord(n)
-        )
+        when defined(NOEXAMPLES):
+            const cleanExample = ""
+        else:
+            const cleanExample = replace(strutils.strip(example),"\n            ","\n")
+            
+        when not defined(WEB):
+            let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "] " & description, static argsLen, args.toOrderedTable, attrs.toOrderedTable, returns, cleanExample, proc () =
+                require(n, args)
+                act
+            )
+        else:
+            let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "]", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
+                require(n, args)
+                act
+            )
+
+        Arities[n] = static argsLen
+        Syms[n] = b
+
+        when alias != unaliased:
+            Aliases[alias] = AliasBinding(
+                precedence: rule,
+                name: newWord(n)
+            )
 
 template constant*(n: string, alias: SymbolKind, description: string, v: Value):untyped =
     Syms[n] = (v)

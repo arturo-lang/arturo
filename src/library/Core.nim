@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Core.nim
 ######################################################
@@ -46,9 +46,20 @@ proc defineSymbols*() =
             "infix"  : ({Logical},"use infix precedence")
         },
         returns     = {Nothing},
-        # TODO(Core\alias) Add documentation example
-        #  labels: library,documentation,easy
         example     = """
+            addThem: function [x, y][
+                x + y
+            ]
+            alias --> 'addThem
+    
+            print --> 2 3
+            ; 5
+            ;;;;
+            multiplyThem: function [x, y][ x * y ]
+            alias.infix {<=>} 'multiplyThem
+
+            print 2 <=> 3
+            ; 6
         """:
             ##########################################################
             var prec = PrefixPrecedence
@@ -567,7 +578,7 @@ proc defineSymbols*() =
             x: 2
             
             switch x=2 -> print "yes, that's right!"
-                       -> print "nope, that's not right!
+                       -> print "nope, that's not right!"
             ; yes, that's right!
         """:
             ##########################################################

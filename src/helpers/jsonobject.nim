@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/json.nim
 ######################################################
@@ -43,7 +43,7 @@ proc generateJsonNode*(n: Value): JsonNode =
            for v in n.p:
                 result.add(generateJsonNode(v))
         of Symbol       : result = newJString($(n.m))
-        of Color        : discard
+        of Color        : result = newJString($(n))
         of Date         : discard
         of Binary       : discard
         of Inline,
@@ -86,7 +86,11 @@ when defined(WEB):
         case n.kind
             of Null         : result = toJs(nil)
             of Logical      : result = toJs(n.b)
-            of Integer      : result = toJs(n.i)
+            of Integer      : 
+                if n.iKind==NormalInteger:
+                    result = toJs(n.i)
+                else:
+                    result = toJs(n.bi)
             of Floating     : result = toJs(n.f)
             of Version      : result = toJs($(n))
             of Type         : result = toJs($(n.t))
@@ -116,7 +120,7 @@ when defined(WEB):
             of Dictionary   :
                 result = newJsObject()
                 for k,v in pairs(n.d):
-                    result[k] = generateJsObject(v)
+                    result[cstring(k)] = generateJsObject(v)
             of Complex,
                Function,
                Database,
@@ -125,8 +129,8 @@ when defined(WEB):
                Newline,
                Any          : discard
 
-    proc isArray(x: JsObject): bool {.noSideEffect, importcpp: "(Array.isArray(#))".}
-    proc jsonified(x: JsObject): cstring {.noSideEffect, importcpp: "(JSON.stringify(#))".}
+    func isArray(x: JsObject): bool {.importcpp: "(Array.isArray(#))".}
+    func jsonified(x: JsObject): cstring {.importcpp: "(JSON.stringify(#))".}
 
     proc parseJsObject*(n: JsObject): Value =
         if n.isNull() or n.isUndefined(): return VNULL

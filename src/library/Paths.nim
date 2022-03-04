@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Path.nim
 ######################################################
@@ -15,8 +15,6 @@
 #=======================================
 # Libraries
 #=======================================
-
-import std/colors except Color
 
 when not defined(WEB):
     import os, sequtils, sugar
@@ -67,7 +65,9 @@ proc defineSymbols*() =
                 "red"       : ({Logical},"get red component from color"),
                 "green"     : ({Logical},"get green component from color"),
                 "blue"      : ({Logical},"get blue component from color"),
+                "alpha"     : ({Logical},"get alpha component from color"),
                 "hsl"       : ({Logical},"get HSL representation from color"),
+                "hsv"       : ({Logical},"get HSV representation from color"),
                 "hue"       : ({Logical},"get hue component from color"),
                 "saturation": ({Logical},"get saturation component from color"),
                 "luminosity": ({Logical},"get luminosity component from color")
@@ -112,20 +112,27 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 if x.kind==Color:
-                    let (r,g,b) = extractRGB(x.l)
-
                     if (popAttr("red") != VNULL):
-                        push newInteger(r)
+                        push newInteger(RGBfromColor(x.l).r)
                     elif (popAttr("green") != VNULL):
-                        push newInteger(g)
+                        push newInteger(RGBfromColor(x.l).g)
                     elif (popAttr("blue") != VNULL):
-                        push newInteger(b)
+                        push newInteger(RGBfromColor(x.l).b)
+                    elif (popAttr("alpha") != VNULL):
+                        push newInteger(RGBfromColor(x.l).a)
                     elif (popAttr("hsl") != VNULL):
                         let hsl = RGBtoHSL(x.l)
                         push newDictionary({
                             "hue"       : newInteger(hsl.h),
                             "saturation": newFloating(hsl.s),
                             "luminosity": newFloating(hsl.l)
+                        }.toOrderedTable)
+                    elif (popAttr("hsv") != VNULL):
+                        let hsv = RGBtoHSV(x.l)
+                        push newDictionary({
+                            "hue"       : newInteger(hsv.h),
+                            "saturation": newFloating(hsv.s),
+                            "value"     : newFloating(hsv.v)
                         }.toOrderedTable)
                     elif (popAttr("hue") != VNULL):
                         let hsl = RGBtoHSL(x.l)
@@ -137,10 +144,12 @@ proc defineSymbols*() =
                         let hsl = RGBtoHSL(x.l)
                         push newFloating(hsl.l)
                     else:
+                        let rgb = RGBfromColor(x.l)
                         push newDictionary({
-                            "red"   : newInteger(r),
-                            "green" : newInteger(g),
-                            "blue"  : newInteger(b)
+                            "red"   : newInteger(rgb.r),
+                            "green" : newInteger(rgb.g),
+                            "blue"  : newInteger(rgb.b),
+                            "alpha" : newInteger(rgb.a)
                         }.toOrderedTable)
                 else:
                     if isUrl(x.s):

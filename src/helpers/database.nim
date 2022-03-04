@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/database.nim
 ######################################################
@@ -36,23 +36,23 @@ type
 # MySQL
 #-----------------------
 
-# proc openMysqlDb*(name: string, 
+# func openMysqlDb*(name: string, 
 #                   server: string = "localhost", 
 #                   username: string = "", 
 #                   password: string = ""): mysql.DbConn =
 #     mysql.open(server, username, password, name)
 
-# proc execMysqlDb*(db: mysql.DbConn, command: string) =
+# func execMysqlDb*(db: mysql.DbConn, command: string) =
 #     db.exec(sql(command))
 
-# proc closeMysqlDb*(dbObj: mysql.DbConn) =
+# func closeMysqlDb*(dbObj: mysql.DbConn) =
 #     mysql.close(dbObj)
 
 #-----------------------
 # SQLite
 #-----------------------
 
-proc openSqliteDb*(name: string): sqlite.DbConn =
+func openSqliteDb*(name: string): sqlite.DbConn =
     sqlite.open(name, "", "", "")
 
 proc execSqliteDb*(db: sqlite.DbConn, command: string, with: seq[string] = @[]): QueryResult =
@@ -82,8 +82,8 @@ proc execManySqliteDb*(db: sqlite.DbConn, commands: seq[string], with: seq[strin
 
     result = (EmptyQueryResult, ret)
 
-proc getLastIdSqliteDb*(db: sqlite.DbConn): int64 = 
+func getLastIdSqliteDb*(db: sqlite.DbConn): int64 = 
     last_insert_rowid(db)
 
-proc closeSqliteDb*(db: sqlite.DbConn) =
+func closeSqliteDb*(db: sqlite.DbConn) =
     sqlite.close(db)

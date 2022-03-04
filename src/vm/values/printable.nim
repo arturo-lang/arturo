@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/values/printable.nim
 ######################################################
@@ -10,12 +10,16 @@
 # Libraries
 #=======================================
 
-import colors except Color
 import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
+when defined(WEB):
+    import std/jsbigints
+
 when not defined(NOGMP):
     import extras/bignum
+
+import helpers/colors as ColorsHelper
 
 import vm/exec
 import vm/stack
@@ -25,7 +29,7 @@ import vm/values/value
 # Methods
 #=======================================
 
-proc `$`*(s: SymbolKind): string =
+func `$`*(s: SymbolKind): string =
     case s:
         of thickarrowleft           : result = "<="
         of thickarrowright          : result = "=>"
@@ -126,7 +130,7 @@ proc `$`*(v: Value): string {.inline.} =
         of Integer      : 
             if v.iKind==NormalInteger: return $(v.i)
             else:
-                when not defined(NOGMP): 
+                when defined(WEB) or not defined(NOGMP): 
                     return $(v.bi)
         of Floating     : 
             if v.f==Inf: return "∞"

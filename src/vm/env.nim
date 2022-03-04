@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/env.nim
 ######################################################
@@ -9,12 +9,12 @@
 #=======================================
 # Libraries
 #=======================================
-when not defined(WEB):
+when not defined(WEB) and not defined(windows):
     import parseopt, sequtils, sugar
 
 import os, strutils, tables, times
 
-import helpers/colors
+import helpers/terminal
 
 import vm/[parse,values/value]
 
@@ -76,7 +76,7 @@ proc parseCmdlineArguments*(): ValueDict =
 proc getSystemInfo*(): ValueDict =
     {
         "author"    : newString("Yanis Zafirópulos"),
-        "copyright" : newString("(c) 2019-2021"),
+        "copyright" : newString("(c) 2019-2022"),
         "version"   : newVersion(ArturoVersion),
         "build"     : newInteger(parseInt(ArturoBuild)),
         "buildDate" : newDate(now()),

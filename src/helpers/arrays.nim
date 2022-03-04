@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/arrays.nim
 ######################################################
@@ -31,7 +31,7 @@ proc flattened*(v: Value,once = false,level = 0): Value =
         else:
             result.a.add(item)
 
-proc removeFirst*(str: string, what: string): string =
+func removeFirst*(str: string, what: string): string =
     let rng = str.find(what)
     if rng != -1:
         result = str[0..rng-1] & str[(rng+what.len)..^1]
@@ -58,7 +58,7 @@ proc removeAll*(arr: ValueArray, what: Value): ValueArray =
             if v!=what:
                 result.add(v)
 
-proc removeByIndex*(arr: ValueArray, index: int): ValueArray =
+func removeByIndex*(arr: ValueArray, index: int): ValueArray =
     result = @[]
     for i,v in arr:
         if i!=index:
@@ -89,7 +89,7 @@ proc removeAll*(dict: ValueDict, what: Value, key: bool): ValueDict =
             if v!=what:
                 result[k] = v
 
-proc removeAll*(str: string, what: Value): string =
+func removeAll*(str: string, what: Value): string =
     if what.kind == String:
         return str.replace(what.s)
     elif what.kind == Char:

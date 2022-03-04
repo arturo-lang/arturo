@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Files.nim
 ######################################################
@@ -31,10 +31,9 @@ when not defined(WEB):
 
     import helpers/csv
     import helpers/datasource
+    import helpers/io
     import helpers/jsonobject
-
-import helpers/io
-
+    
 import vm/lib
 when defined(SAFE):
     import vm/[errors]
@@ -373,6 +372,25 @@ proc defineSymbols*() =
                     ##########################################################
                     miniz.unzip(y.s, x.s)
 
+        builtin "volume",
+            alias       = unaliased, 
+            rule        = PrefixPrecedence,
+            description = "get file size for given path",
+            args        = {
+                "file"      : {String}
+            },
+            attrs       = NoAttrs,
+            returns     = {Integer},
+            example     = """
+                volume "README.md"
+                ; => 13704 
+                ; (size in bytes)
+            """:
+                ##########################################################
+                when defined(SAFE): RuntimeError_OperationNotPermitted("volume")
+
+                push newInteger(getFileSize(x.s))
+
         builtin "write",
             alias       = doublearrowright, 
             rule        = PrefixPrecedence,
@@ -385,6 +403,7 @@ proc defineSymbols*() =
                 "append"        : ({Logical},"append to given file"),
                 "directory"     : ({Logical},"create directory at path"),
                 "json"          : ({Logical},"write value as Json"),
+                "compact"       : ({Logical},"produce compact, non-prettified Json code"),
                 "binary"        : ({Logical},"write as binary")
             },
             returns     = {Nothing},
@@ -407,7 +426,7 @@ proc defineSymbols*() =
                         writeToFile(x.s, y.n, append = (popAttr("append")!=VNULL))
                     else:
                         if (popAttr("json") != VNULL):
-                            let rez = jsonFromValue(y)
+                            let rez = jsonFromValue(y, pretty=(popAttr("compact")==VNULL))
                             if x.kind==String:
                                 writeToFile(x.s, rez, append = (popAttr("append")!=VNULL))
                             else:

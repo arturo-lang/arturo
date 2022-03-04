@@ -1,0 +1,50 @@
+; A simple pipe
+2 | print
+
+; ...should be equivalent to:
+print 2
+
+; A tiny-bit more complicated pipe
+2 | add 3 | print
+
+; And a pipe split in different lines
+2 | add 3
+  | print
+
+; ...should both be equivalent to:
+print add 2 3
+
+; Something even more complicated
+["one" "two"] | map 'x -> upper x
+              | print
+
+; ...should be equivalent to:
+print map ["one" "two"] 'x -> upper x
+
+; Let's level up
+1..10 | map 'x -> 2*x
+      | print
+
+; ...should be equivalent to:
+print map 1..10 'x -> 2*x
+
+; And a bit more
+1..10 | map 'x [3*x]
+      | select 'x [odd? x]
+      | print
+
+; ...should be equivalent to:
+print select map 1..10 'x [3*x] 'x [odd? x]
+
+; With assignment
+z: 2 | add 3 | sub 1
+print z
+
+; ...should be equivalent to:
+z: 2 | add 3
+     | sub 1
+print z
+
+; ...and also to:
+z: sub add 2 3 1
+print z

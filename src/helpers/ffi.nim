@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/ffi.nim
 ######################################################
@@ -69,14 +69,14 @@ when not defined(WEB):
         checkRunner(runner)
         runner(arg1,arg2)
 
-    proc resolveLibrary*(path: string): string =
+    func resolveLibrary*(path: string): string =
         let (_, _, extension) = splitFile(path)
         if extension != "":
             result = path
         else:
             result = DynlibFormat % [path]
 
-    proc boolToInt*(v: Value): int =
+    func boolToInt*(v: Value): int =
         if v.b==True: result = 1
         else: result = 0
 

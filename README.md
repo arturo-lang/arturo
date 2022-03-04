@@ -94,7 +94,7 @@ If you want to have the latest cutting-edge version of Arturo, the easiest and m
 
       curl https://nim-lang.org/choosenim/init.sh -sSf | sh
       choosenim stable
-* Dependencies (*only* for Linux):
+* Dependencies (*only* for Linux & full builds):
    - gtk+-3.0 *(\* needed only for non-mini builds)*
    - webkit2gtk-4.0 *(\* needed only for non-mini builds)*
    - libgmp-dev
@@ -108,12 +108,14 @@ All the process in a nutshell:
 ```bash
 git clone https://github.com/arturo-lang/arturo.git
 cd arturo
-./install
+./build.nims install
 ```
+
+> 💡  For Windows, the equivalent would be `nim build.nims install` - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
 
 After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the aforementioned path is in your `$PATH` as per the installation script instructions.
 
-> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./install mini`
+> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
 
 ### Pre-built binaries
 
@@ -177,21 +179,20 @@ Showcase
 ------------------------------
 
 <p align="center">
-	<a href="https://github.com/arturo-lang/aguila"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png"></a>    
-</p>
-<p align="center">
-	<a href="https://github.com/arturo-lang/aguila"><b>Modern cross-platform webview-based desktop apps<br>without HTML/CSS/JS</b></a>
-</p>
-
----
-
-<p align="center">
 	<a href="https://github.com/arturo-lang/grafito"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo.png"></a>    
 </p>
 <p align="center">
 	<a href="https://github.com/arturo-lang/grafito"><b>Portable, Serverless & Lightweight<br>SQLite-based Graph Database</b></a>
 </p>
 
+---
+
+<p align="center">
+	<a href="https://github.com/arturo-lang/aguila"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png"></a>    
+</p>
+<p align="center">
+	<a href="https://github.com/arturo-lang/aguila"><b>Modern cross-platform webview-based desktop apps<br>without HTML/CSS/JS</b></a>
+</p>
 
 Contributing
 ------------------------------
@@ -216,7 +217,7 @@ The list of things to fix and/or add could be endless. But here is one, a bit pr
 - [X] Add the option of saving intermediate bytecode
 - [X] Add support for a package manager
 - [ ] Add UI support (via libui? via webview? both?)
-- [ ] Explore different uses of Arturo's dialecting capabilities (SDLs)
+- [ ] Explore different uses of Arturo's dialecting capabilities (DSLs)
 - [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
 - [ ] Go full self-hosted (that's an ambitious one, I know...)
 
@@ -283,7 +284,7 @@ License
 
 MIT License
 
-Copyright (c) 2019-2021 Yanis Zafirópulos (aka Dr.Kameleon)
+Copyright (c) 2019-2022 Yanis Zafirópulos (aka Dr.Kameleon)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

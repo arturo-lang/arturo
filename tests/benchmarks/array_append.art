@@ -50093,9 +50093,4 @@ a: [1 2 3]
 'a ++ 1
 'a ++ 2
 'a ++ 3
-i: 0
-sz: size a
-while [i < sz][
-	print a \ i
-	i: i+1	
-]
+print.lines a

@@ -2,10 +2,14 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: install
 ######################################################
+
+# TODO(/install) remove the script if not needed
+#  let's make sure first that no 3rd-party - or non-3rd-party - tool uses it
+# labels: installer, cleanup
 
 source tools/utils.sh
 
@@ -66,6 +70,18 @@ installAll(){
     fi
 }
 
+miniBuild(){
+    MINI_BUILD=true 
+    FLAGS="$FLAGS   -d:NOASCIIDECODE \
+                    -d:NOEXAMPLES \
+                    -d:NOGMP \
+                    -d:NOPARSERS \
+                    -d:NOSQLITE \
+                    -d:NOUNZIP \
+                    -d:NOWEBVIEW \
+                    -d:MINI"
+}
+
 ################################################
 # INITIALIZE OPTIONS
 ################################################
@@ -110,31 +126,14 @@ do
         release)
             FLAGS="$FLAGS --passC:'-flto'";;
         mini)      
-            MINI_BUILD=true 
-            FLAGS="$FLAGS -d:NOASCIIDECODE \
-                          -d:NOEXAMPLES \
-                          -d:NOGMP \
-                          -d:NOPARSERS \
-                          -d:NOSQLITE \
-                          -d:NOUNZIP \
-                          -d:NOWEBVIEW \
-                          -d:MINI";;
-
+            miniBuild;;
         safe)
             FLAGS="$FLAGS -d:SAFE";;
         web)
-            # TODO(install) make Web builds mini, by default
-            #  labels: enhancement,cleanup,installer,web
+            miniBuild
             FOR_WEB=true
             COMPILER="js"
             BINARY="$BINARY.js"
-            FLAGS="$FLAGS -d:NOASCIIDECODE \
-                          -d:NOEXAMPLES \
-                          -d:NOGMP \
-                          -d:NOPARSERS \
-                          -d:NOSQLITE \
-                          -d:NOUNZIP \
-                          -d:NOWEBVIEW"
             FLAGS="$FLAGS --verbosity:3"
             FLAGS="$FLAGS -d:WEB ";;
 
@@ -181,7 +180,7 @@ if $IS_DEV_BUILD; then
     awk '{sub(/[[:digit:]]+$/,$NF+1)}1' version/build > version/build_tmp && mv version/build_tmp version/build
     git commit -m 'build update' version/build
 
-    FLAGS="$FLAGS -d:DEV --hints:on"
+    FLAGS="$FLAGS -d:DEV --listCmd --verbosity:0 --hints:on"
 fi
 
 ################################################

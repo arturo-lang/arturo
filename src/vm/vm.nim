@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/vm.nim
 ######################################################
@@ -10,11 +10,13 @@
 # Libraries
 #=======================================
 
-import os, random, strutils, tables
+import macros, os, random
+import strutils, sugar, tables
 
 when defined(WEB):
-    import jsffi, std/json
-    import helpers/jsonobject
+    import jsffi, json
+
+import helpers/jsonobject
 
 import vm/[
     env, 
@@ -28,29 +30,63 @@ import vm/[
     version
 ]
 
-import library/Arithmetic   as ArithmeticLib
-import library/Binary       as BinaryLib
-import library/Collections  as CollectionsLib
-import library/Colors       as ColorsLib
-import library/Comparison   as ComparisonLib
-import library/Converters   as ConvertersLib
-import library/Core         as CoreLib
-import library/Crypto       as CryptoLib
-import library/Databases    as DatabasesLib
-import library/Dates        as DatesLib
-import library/Files        as FilesLib
-import library/Io           as IoLib
-import library/Iterators    as IteratorsLib
-import library/Logic        as LogicLib
-import library/Net          as NetLib
-import library/Numbers      as NumbersLib
-import library/Paths        as PathsLib
-import library/Reflection   as ReflectionLib
-import library/Sets         as SetsLib
-import library/Statistics   as StatisticsLib
-import library/Strings      as StringsLib
-import library/System       as SystemLib
-import library/Ui           as UiLib
+#=======================================
+# Packaging setup
+#=======================================
+
+when defined(PORTABLE):
+    import json, sequtils
+
+    let js {.compileTime.} = parseJson(static readFile(getEnv("PORTABLE_DATA")))
+    let mods {.compileTime.} = toSeq(js["uses"]["modules"]).map((x) => x.getStr())
+    let compact {.compileTime.} = js["compact"].getStr() == "true"
+else:
+    let mods {.compileTime.}: seq[string] = @[]
+    let compact {.compileTime.} = false
+
+#=======================================
+# Macros
+#=======================================
+
+macro importLib(name: static[string]): untyped =
+    let id = ident(name & "Lib")
+    let libname = name.toUpperAscii()
+    result = quote do:
+        when not defined(PORTABLE) or not compact or mods.contains(`name`):
+            when defined(DEV):
+                static: 
+                    echo "-------------------------"
+                    echo " ## " & `libname`
+                    echo "-------------------------"
+            import library/`name` as `id`
+
+#=======================================
+# Standard library setup
+#=======================================
+
+importLib "Arithmetic"
+importLib "Binary"
+importLib "Collections"
+importLib "Colors"
+importLib "Comparison"
+importLib "Converters"
+importLib "Core"
+importLib "Crypto"
+importLib "Databases"
+importLib "Dates"
+importLib "Files"
+importLib "Io"
+importLib "Iterators"
+importLib "Logic"
+importLib "Net"
+importLib "Numbers"
+importLib "Paths"
+importLib "Reflection"
+importLib "Sets"
+importLib "Statistics"
+importLib "Strings"
+importLib "System"
+importLib "Ui"
 
 #=======================================
 # Variables
@@ -67,7 +103,7 @@ proc setupLibrary*() =
     for i,importLibrary in Libraries:
         importLibrary()
 
-template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false) =
+template initialize*(args: seq[string], filename: string, isFile:bool, scriptData:Value = VNULL, mutedColors: bool = false, portableData = "") =
     # function arity
     Arities = initTable[string,int]()
     # stack
@@ -101,6 +137,9 @@ template initialize*(args: seq[string], filename: string, isFile:bool, scriptDat
         else: env.addPath(getCurrentDir())
 
     Syms = initOrderedTable[string,Value]()
+
+    if portableData != "":
+        Syms["_portable"] = valueFromJson(portableData)
 
     # library
     setupLibrary()
@@ -137,7 +176,7 @@ when not defined(WEB):
 
             discard doExec(code)
 
-    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false): Translation {.exportc:"run".} =
+    proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, debug: bool = false, withData=""): Translation {.exportc:"run".} =
         handleVMErrors:
 
             DoDebug = debug
@@ -156,7 +195,8 @@ when not defined(WEB):
                     args, 
                     code, 
                     isFile=isFile, 
-                    mainCode.data
+                    mainCode.data,
+                    portableData=withData
                 )
 
             let evaled = mainCode.doEval()

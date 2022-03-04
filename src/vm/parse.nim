@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: vm/parse.nim
 ######################################################
@@ -13,9 +13,6 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-when defined(BENCHMARK) or defined(VERBOSE):
-    import helpers/debug
-
 import vm/[errors, values/value]
 
 #=======================================
@@ -25,7 +22,7 @@ import vm/[errors, values/value]
 type
     Parser* = object of BaseLexer
         value*: string
-        values*: ValueArray
+        values*: seq[ValueArray]
         symbol*: SymbolKind
 
 #=======================================
@@ -83,13 +80,21 @@ template AddToken*(token: untyped): untyped =
     addChild(topBlock, token)
     #topBlock.refs.add(p.lineNumber)
 
+template stripTrailingNewlines*(): untyped =
+    if topBlock.a[^1].kind == Newline:
+        let lastN = topBlock.a.len-1
+        var firstN = lastN
+        while firstN-1 >= 0 and topBlock.a[firstN-1].kind == Newline:
+            firstN -= 1
+        removeChildren(topBlock, firstN..lastN)
+
 #=======================================
 # Helpers
 #=======================================
 
 ## Error reporting
 
-proc getContext*(p: var Parser, curPos: int): string =
+func getContext*(p: var Parser, curPos: int): string =
     result = ""
 
     var i = curPos
@@ -477,28 +482,34 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
             else: p.symbol = question
         of '@'  : p.symbol = at
         of '#'  : 
+            # TODO(VM/parse) Properly recognize color values 
+            #  we could also integrate transparencies, but if it's a HEX color it should normally be limited to 6 characters
+            # labels: bug,parser,language
             if p.buf[pos+1] in PermittedColorChars:
-                let oldPos = pos
                 inc pos
                 var colorCode = ""
                 while p.buf[pos] in PermittedColorChars:
                     colorCode &= p.buf[pos]
                     inc pos
-                var color: Value
-                try:
-                    color = newColor(colorCode)
-                    isSymbol = false
-                    AddToken color
-                    p.bufpos = pos
-                except:
-                    try:
-                        color = newColor("#" & colorCode)
-                        isSymbol = false
-                        AddToken color
-                        p.bufpos = pos
-                    except:
-                        p.symbol = sharp
-                        pos = oldPos
+
+                isSymbol = false
+                AddToken newColor(colorCode)
+                p.bufpos = pos
+                # var color: Value
+                # try:
+                #     color = newColor(colorCode)
+                #     isSymbol = false
+                #     AddToken color
+                #     p.bufpos = pos
+                # except:
+                #     try:
+                #         color = newColor("#" & colorCode)
+                #         isSymbol = false
+                #         AddToken color
+                #         p.bufpos = pos
+                #     except:
+                #         p.symbol = sharp
+                #         pos = oldPos
             else: 
                 if p.buf[pos+1] == '#':
                     inc pos
@@ -541,6 +552,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
                 inc(pos)
                 p.symbol = triangleright
             else: 
+                stripTrailingNewlines()
                 p.symbol = pipe
         of '/'  : 
             if p.buf[pos+1]=='/': 
@@ -716,7 +728,7 @@ template parseAndAddSymbol(p: var Parser, topBlock: var Value) =
         AddToken newSymbol(p.symbol)
 
 template parsePath(p: var Parser, root: Value, curLevel: int) =
-    p.values = @[root]
+    p.values.add(@[root])
 
     while p.buf[p.bufpos]==Backslash:
         inc(p.bufpos)
@@ -724,17 +736,17 @@ template parsePath(p: var Parser, root: Value, curLevel: int) =
             of PermittedIdentifiers_Start:
                 setLen(p.value, 0)
                 parseIdentifier(p)
-                p.values.add(newLiteral(p.value))
+                p.values[^1].add(newLiteral(p.value))
             of PermittedNumbers_Start:
                 setLen(p.value, 0)
                 parseNumber(p)
-                if Dot in p.value: p.values.add(newFloating(p.value))
-                else: p.values.add(newInteger(p.value))
+                if Dot in p.value: p.values[^1].add(newFloating(p.value))
+                else: p.values[^1].add(newInteger(p.value))
             of LBracket:
                 inc(p.bufpos)
                 setLen(p.value,0)
                 var subblock = parseBlock(p,curLevel+1)
-                p.values.add(subblock)
+                p.values[^1].add(subblock)
             else:
                 break
 
@@ -799,9 +811,10 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                         parsePath(p, newWord(p.value), level)
                         if p.buf[p.bufpos]==Colon:
                             inc(p.bufpos)
-                            AddToken newPathLabel(p.values)
+                            AddToken newPathLabel(p.values[^1])
                         else:
-                            AddToken newPath(p.values)
+                            AddToken newPath(p.values[^1])
+                        discard p.values.pop()
                     else:
                         inc(p.bufpos)
                         AddToken newSymbol(backslash)
@@ -1020,6 +1033,7 @@ proc doParse*(input: string, isFile: bool = true): Value =
 
     # initialize
     p.value = ""
+    p.values = @[]
 
     # do parse    
     let rootBlock = parseBlock(p, 0)

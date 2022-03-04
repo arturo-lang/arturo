@@ -80,7 +80,7 @@ In Arturo, a *word* may have 3 main different uses:
 
 - refer to a value (that is: a variable, e.g. `x + 2`)
 - refer to an action, which does something (that is: a function, e.g. `doSomething`) - Arturo comes with close to 150 already defined such words/functions
-- refer to nothing (that is: a word without meaning, as in the `[lorem ipsum`] example above)
+- refer to nothing (that is: a word without meaning, as in the `[lorem ipsum]` example above)
 
 <h3 id="labels">Labels</h3>
 

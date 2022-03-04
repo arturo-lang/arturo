@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: library/Numbers.nim
 ######################################################
@@ -18,6 +18,9 @@
 
 import complex except Complex
 import math, random, sequtils, sugar
+
+when defined(WEB):
+    import std/jsbigints
 
 when not defined(NOGMP):
     import extras/bignum
@@ -56,7 +59,7 @@ proc defineSymbols*() =
                 if x.iKind==NormalInteger: 
                     push(newInteger(abs(x.i)))
                 else:
-                    when not defined(NOGMP):
+                    when defined(WEB) or not defined(NOGMP):
                         push(newInteger(abs(x.bi)))
             elif x.kind==Floating:
                 push(newFloating(abs(x.f)))
@@ -540,10 +543,10 @@ proc defineSymbols*() =
             if x.iKind == NormalInteger:
                 push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
             else:
-                when not defined(NOGMP):
+                when defined(WEB) or not defined(NOGMP):
                     push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
-    constant "epsilon",
+    constant "e",
         alias       = unaliased,
         description = "the constant e, Euler's number":
             newFloating(E)
@@ -617,9 +620,14 @@ proc defineSymbols*() =
                 else:
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
-                when not defined(NOGMP):
+                when defined(WEB) or not defined(NOGMP):
+                    # TODO(Numbers\factors) `.prime` not working for Web builds
+                    # labels: web,enhancement
                     if prime:
-                        push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
+                        when not defined(WEB):
+                            push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
+                        else:
+                            discard
                     else:
                         push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
@@ -676,7 +684,8 @@ proc defineSymbols*() =
             var current = blk[0]
 
             var i = 1
-
+            # TODO(Numbers\gcd) not working for Web builds
+            # labels: web,enhancement
             while i<blk.len:
                 if current.iKind==NormalInteger:
                     if blk[i].iKind==BigInteger:
@@ -774,7 +783,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                when not defined(NOGMP):
+                when defined(WEB):
+                    push(newLogical(x.bi < big(0)))
+                elif not defined(NOGMP):
                     push(newLogical(negative(x.bi)))
             else:
                 push(newLogical(x < I0))
@@ -817,12 +828,16 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                when not defined(NOGMP):
+                when defined(WEB):
+                    push(newLogical(x.bi > big(0)))
+                elif not defined(NOGMP):
                     push(newLogical(positive(x.bi)))
             else:
                 push(newLogical(x > I0))
     
     when not defined(NOGMP):
+        # TODO(Numbers\powmod) not working for Web builds
+        # labels: web,enhancement
         builtin "powmod",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
@@ -873,6 +888,8 @@ proc defineSymbols*() =
             if x.iKind==NormalInteger:
                 push(newLogical(isPrime(x.i.uint64)))
             else:
+                # TODO(Numbers\prime?) not working for Web builds
+                # labels: web,enhancement
                 when not defined(NOGMP):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
@@ -1089,13 +1106,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Integer,Floating,Complex}
         },
-        attrs       = 
-        when not defined(NOGMP):
-            {
-                "integer"   : ({Logical},"get the integer square root")
-            }
-        else:
-            NoAttrs,
+        attrs       = {
+            "integer"   : ({Logical},"get the integer square root")
+        },
         returns     = {Floating},
         example     = """
             print sqrt 4                ; 2.0
@@ -1107,11 +1120,13 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if (popAttr("integer") != VNULL):
-                when not defined(NOGMP):
+                when defined(WEB) or not defined(NOGMP):
                     if x.iKind == NormalInteger:
                         push(newInteger(isqrt(x.i)))
                     else:
                         push(newInteger(isqrt(x.bi)))
+                else:
+                    push(newInteger(isqrt(x.i)))
             elif x.kind==Complex: push(newComplex(sqrt(x.z)))
             else: push(newFloating(sqrt(asFloat(x))))
 
@@ -1197,7 +1212,9 @@ proc defineSymbols*() =
         """:
             ##########################################################
             if x.kind==Integer and x.iKind==BigInteger:
-                when not defined(NOGMP):
+                when defined(WEB):
+                    push(newLogical(x.bi==big(0)))
+                elif not defined(NOGMP):
                     push(newLogical(isZero(x.bi)))
             else:
                 push(newLogical(x == I0))

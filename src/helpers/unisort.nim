@@ -1,7 +1,7 @@
 ######################################################
 # Arturo
 # Programming Language + Bytecode VM compiler
-# (c) 2019-2021 Yanis Zafirópulos
+# (c) 2019-2022 Yanis Zafirópulos
 #
 # @file: helpers/unisort.nim
 ######################################################
@@ -27,9 +27,9 @@ const
     }.toOrderedTable()
 
     transform = {
-        "en": proc (r: var Rune) =
+        "en": func (r: var Rune) =
             discard,
-        "es": proc (r: var Rune) =
+        "es": func (r: var Rune) =
             case $(r):
                 of "Á": r = "A".runeAt(0)
                 of "É": r = "E".runeAt(0)
@@ -44,7 +44,7 @@ const
                 else: discard
     }.toOrderedTable()
 
-proc unicmp(x,y: Value, lang: string, sensitive:bool = false):int =
+func unicmp(x,y: Value, lang: string, sensitive:bool = false):int =
     let charset = charsets[lang]
 
     # echo "sorting: " & lang & " => sensitive: " & $(sensitive)
@@ -88,7 +88,7 @@ template `<-` (a, b) =
 # Methods
 #=======================================
 
-proc unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string, 
+func unimerge(a, b: var openArray[Value], lo, m, hi: int, lang: string, 
               cmp: proc (x, y: Value, lang: string, sensitive: bool): int {.closure.}, 
               sensitive:bool = false,
               order: SortOrder) =
@@ -145,10 +145,10 @@ func unisort*(a: var openArray[Value], lang: string,
             dec(m, s*2)
         s = s*2
 
-proc unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending) = 
+func unisort*(a: var openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending) = 
     unisort(a, lang, unicmp, sensitive, order)
 
-proc unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, lang: string, insensitive: bool): int {.closure.},
+func unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, lang: string, insensitive: bool): int {.closure.},
                 sensitive:bool = false,
                 order = SortOrder.Ascending): seq[Value] =
     result = newSeq[Value](a.len)
@@ -156,5 +156,5 @@ proc unisorted*(a: openArray[Value], lang: string, cmp: proc(x, y: Value, lang: 
         result[i] = a[i]
     unisort(result, lang, cmp, sensitive, order)
 
-proc unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending): seq[Value] =
+func unisorted*(a: openArray[Value], lang: string, sensitive:bool = false, order = SortOrder.Ascending): seq[Value] =
     unisorted(a, lang, unicmp, sensitive, order)
