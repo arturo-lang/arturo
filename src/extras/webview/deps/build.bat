@@ -3,7 +3,7 @@
 echo Prepare directories...
 set script_dir=%~dp0
 set src_dir=%script_dir%..
-set build_dir=%script_dir%\build
+set build_dir=%script_dir%\build\
 mkdir "%build_dir%"
 
 echo Webview directory: %src_dir%
@@ -50,7 +50,7 @@ cl /D "WEBVIEW_API=__declspec(dllexport)" ^
 	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%webview.dll" || exit \b
 copy "%build_dir%\webview.dll" "%script_dir%\dlls\x64"
 @REM copy "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%build_dir%"
-copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%script_dir%\dlls\x64"
+copy "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%script_dir%\dlls\x64"
 
 @REM echo Building webview.exe (x64)
 @REM cl /I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
