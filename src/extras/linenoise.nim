@@ -4,8 +4,8 @@ when defined(windows):
     {.passC: "-I" & parentDir(currentSourcePath()) .}
 
     {.compile("linenoise/linenoise.c", "-I" & parentDir(currentSourcePath())).}
-    {.compile("linenoise/stringbuf.c").}
-    {.compile("linenoise/utf8.c").}
+    {.compile("linenoise/stringbuf.c", "-I" & parentDir(currentSourcePath()))).}
+    {.compile("linenoise/utf8.c", "-I" & parentDir(currentSourcePath()))).}
 
 #=======================================
 # Types
