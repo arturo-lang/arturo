@@ -3,7 +3,7 @@
 echo Prepare directories...
 set script_dir=%~dp0
 set src_dir=%script_dir%..
-set build_dir=%script_dir%\deps
+set build_dir=%script_dir%\build
 mkdir "%build_dir%"
 
 echo Webview directory: %src_dir%
@@ -35,10 +35,10 @@ echo Building webview.dll (x86)
 cl /D "WEBVIEW_API=__declspec(dllexport)" ^
 	/I "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
 	"%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll.lib" ^
-	/std:c++17 /EHsc "/Fo%build_dir%\dlls\x86"\ ^
-	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\dlls\x86\webview.dll" || exit \b
-@REM copy "%build_dir%\webview.dll" "%src_dir%\dll\x86"
-copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll" "%build_dir%\dlls\x86"
+	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
+	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\webview.dll" || exit \b
+copy "%build_dir%\webview.dll" "%script_dir%\deps\dlls\x86"
+copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll" "%script_dir%\deps\dlls\x86"
 
 call "%vc_dir%\Common7\Tools\vsdevcmd.bat" -arch=x64 -host_arch=x64
 echo Building webview.dll (x64)
@@ -46,11 +46,11 @@ echo Building webview.dll (x64)
 cl /D "WEBVIEW_API=__declspec(dllexport)" ^
 	/I "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
 	"%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
-	/std:c++17 /EHsc "/Fo%build_dir%\dlls\x64"\ ^
-	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\dlls\x64\webview.dll" || exit \b
-@REM copy "%build_dir%\webview.dll" "%src_dir%\dll\x64"
+	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
+	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%webview.dll" || exit \b
+copy "%build_dir%\webview.dll" "%script_dir%\deps\dlls\x64"
 @REM copy "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%build_dir%"
-copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%build_dir%\dlls\x64"
+copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%script_dir%\deps\dlls\x64"
 
 @REM echo Building webview.exe (x64)
 @REM cl /I "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\include" ^
