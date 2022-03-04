@@ -213,7 +213,9 @@ proc defineSymbols*() =
                 ##########################################################
                 if (popAttr("repl")!=VNULL):
                     when defined(windows):
-                        push(newString(readLineFromStdin(x.s)))
+                        stdout.write(x.s)
+                        stdout.flushFile()
+                        push(newString(stdin.readLine()))
                     else:
                         var historyPath: string = ""
                         var completionsArray: ValueArray = @[]
@@ -230,8 +232,9 @@ proc defineSymbols*() =
 
                         push(newString(replInput(x.s, historyPath, completionsArray, hintsTable)))
                 else:
-                    push(newString(readLineFromStdin(x.s)))
-
+                    stdout.write(x.s)
+                    stdout.flushFile()
+                    push(newString(stdin.readLine()))
 
     builtin "print",
         alias       = unaliased, 
