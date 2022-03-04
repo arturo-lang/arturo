@@ -332,9 +332,9 @@ proc installAll*() =
         cpFile(toExe(BINARY), TARGET_FILE)
         if hostOS != "windows":
             exec(r"chmod +x {TARGET_FILE}".fmt)
-        # else:
-        #     cpFile("src/extras/webview/deps/dlls/x64/webview.dll","bin/")
-        #     cpFile("src/extras/webview/deps/dlls/x64/WebView2Loader.dll","bin/")
+        else:
+            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
+            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
         echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
 
 #=======================================
