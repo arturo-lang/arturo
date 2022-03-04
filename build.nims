@@ -297,7 +297,7 @@ proc compile*(footer=false): int =
         # USE_VCC = true
         if IS_DEV:
             echo "Building Webview library"
-            let (outp, res) = gorgeEx "src/extras/webview/deps/build.bat"
+            let (outp, res) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
             echo outp
             echo "got code: " & $(res)
 
