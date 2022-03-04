@@ -33,22 +33,22 @@ call "%vc_dir%\Common7\Tools\vsdevcmd.bat" -arch=x86 -host_arch=x64
 echo Building webview.dll (x86)
 @REM mkdir "%src_dir%\dll\x86"
 cl /D "WEBVIEW_API=__declspec(dllexport)" ^
-	/I "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
-	"%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll.lib" ^
+	/I "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
+	"%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll.lib" ^
 	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
 	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\webview.dll" || exit \b
-copy "%build_dir%\webview.dll" "%script_dir%\deps\dlls\x86"
-copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll" "%script_dir%\deps\dlls\x86"
+copy "%build_dir%\webview.dll" "%script_dir%\dlls\x86"
+copy "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll" "%script_dir%\deps\dlls\x86"
 
 call "%vc_dir%\Common7\Tools\vsdevcmd.bat" -arch=x64 -host_arch=x64
 echo Building webview.dll (x64)
 @REM mkdir "%src_dir%\dll\x64"
 cl /D "WEBVIEW_API=__declspec(dllexport)" ^
-	/I "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
-	"%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
+	/I "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
+	"%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
 	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
 	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%webview.dll" || exit \b
-copy "%build_dir%\webview.dll" "%script_dir%\deps\dlls\x64"
+copy "%build_dir%\webview.dll" "%script_dir%\dlls\x64"
 @REM copy "%src_dir%\script\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%build_dir%"
 copy "%src_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%script_dir%\deps\dlls\x64"
 
