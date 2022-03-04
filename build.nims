@@ -293,7 +293,7 @@ proc compile*(footer=false): int =
     # use VCC for non-MINI Windows builds
     if (hostOS=="windows" and COMPILER=="c" and not FLAGS.contains("NOWEBVIEW")) or USE_VCC:
         #COMPILER = "cpp --cc:vcc ".fmt
-        #FLAGS = "{FLAGS}".fmt # --exceptions:cpp".fmt
+        FLAGS = "{FLAGS} -d:NOGMP".fmt # --exceptions:cpp".fmt
         # USE_VCC = true
         if IS_DEV:
             let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
