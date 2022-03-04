@@ -10,7 +10,10 @@
 # Libraries
 #=======================================
 
-when not defined(windows) and not defined(WEB):
+when defined(windows):
+    {.compile("../extras/linenoise/linenoise.c").}
+
+when not defined(WEB):
 
     import os, sequtils, strutils, sugar, tables
 
@@ -47,6 +50,8 @@ when not defined(windows) and not defined(WEB):
     # C Imports
     #=======================================
 
+    when defined(windows):
+        {.push header: "../extras/linenoise/linenoise.h", cdecl.}
     proc linenoiseSetCompletionCallback*(cback: ptr LinenoiseCompletionCallback) {.importc: "linenoiseSetCompletionCallback".}
     proc linenoiseSetHintsCallback(cback: ptr LinenoiseHintsCallback) {.importc: "linenoiseSetHintsCallback".}
     proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
@@ -58,6 +63,8 @@ when not defined(windows) and not defined(WEB):
     proc linenoiseClearScreen*() {.importc: "linenoiseClearScreen".}
     proc linenoiseSetMultiLine*(ml: cint) {.importc: "linenoiseSetMultiLine".}
     proc linenoisePrintKeyCodes*() {.importc: "linenoisePrintKeyCodes".}
+    when defined(windows):
+        {.pop.}
     proc free*(s: cstring) {.importc: "free", header: "<stdlib.h>".}
 
     #=======================================
