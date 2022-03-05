@@ -8,6 +8,9 @@
 
 {.passl: "-lgmp".}
 
+when defined(windows):
+    {.passC: staticExec "pkg-config --cflags gmp".}
+
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
     mp_lc* {.importc: "_mp_lc".}: pointer
