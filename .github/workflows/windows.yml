@@ -47,15 +47,11 @@ jobs:
         if: matrix.version == 'full'
         shell: msys2 {0}
         run: |
-          pacman --noconfirm -S p7zip
-          pacman --noconfirm -S mingw-w64-x86_64-gcc
-          mkdir dist
+          pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
           mkdir nim
-          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://arturo-lang.s3.amazonaws.com/extra-dlls.zip -o dist/extradlls.zip
           curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
-          7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/extradlls.zip -obin
           7z x dist/nim.zip -onim
@@ -79,14 +75,10 @@ jobs:
         if: matrix.version == 'mini'
         shell: msys2 {0}
         run: |
-          pacman --noconfirm -S p7zip
-          pacman --noconfirm -S mingw-w64-x86_64-gcc
-          mkdir dist
+          pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
           mkdir nim
-          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
-          7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
           
