@@ -10,7 +10,7 @@
 
 when defined(windows):
     import os, strutils
-    {.passC: normalizedPath((staticExec"pkg-config --cflags gmp")) .}
+    {.passC: normalizedPath(strip(staticExec"pkg-config --cflags gmp")) .}
 
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
