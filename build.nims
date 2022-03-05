@@ -236,7 +236,6 @@ proc miniBuild*() =
         "nogmp", 
         "noparsers", 
         "nosqlite", 
-        "nothreads",
         "nounzip", 
         "nowebview"
     ]:
