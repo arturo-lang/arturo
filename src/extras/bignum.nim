@@ -9,7 +9,8 @@
 {.passl: "-lgmp".}
 
 when defined(windows):
-    {.passC: staticExec"pkg-config --cflags gmp".}
+    import strutils
+    {.passC: (staticExec"pkg-config --cflags gmp").replace("/","\\") .}
 
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
