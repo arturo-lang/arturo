@@ -828,9 +828,6 @@ when not(defined(MINIZ_NO_ZLIB_APIS)):
 
 ### Public Library
 
-import
-  os
-
 proc zip*(files: seq[string], filepath: string) =
   var pZip: ptr mz_zip_archive = cast[ptr mz_zip_archive](alloc0(sizeof(mz_zip_archive)))
   discard pZip.mz_zip_writer_init_file(filepath.cstring, 0)
