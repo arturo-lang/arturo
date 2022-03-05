@@ -48,6 +48,7 @@ jobs:
         shell: msys2 {0}
         run: |
           pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
+          mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://arturo-lang.s3.amazonaws.com/extra-dlls.zip -o dist/extradlls.zip
@@ -76,6 +77,7 @@ jobs:
         shell: msys2 {0}
         run: |
           pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
+          mkdir dist
           mkdir nim
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
