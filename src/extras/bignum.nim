@@ -9,9 +9,6 @@
 import os, strutils
 
 {.passL: "-lgmp".}
-# when defined(windows):
-#     {.passC: normalizedPath(strip(staticExec"pkg-config --cflags gmp")) .}
-#     {.passL: normalizedPath(strip(staticExec"pkg-config --libs gmp")) .}
 
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  
