@@ -66,7 +66,6 @@ let
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
         "nosqlite"          : "-d:NOSQLITE",
-        "nothreads"         : "-d:NOTHREADS",
         "nounzip"           : "-d:NOUNZIP",
         "nowebview"         : "-d:NOWEBVIEW",
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
@@ -90,14 +89,12 @@ var
     RUN_UNIT_TESTS      = false
     FOR_WEB             = false
     IS_DEV              = false 
-    IS_MULTITHREADED    = true    
-    USE_VCC             = false
     MODE                = ""       
 
     FLAGS*              = "--skipUserCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
                           "-d:ssl --cincludes:extras --nimcache:.cache " & 
-                          "--path:src --opt:speed"
+                          "--path:src --opt:speed --passC:-O3"
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
@@ -291,20 +288,8 @@ proc compile*(footer=false): int =
     var res = 0
 
     # use VCC for non-MINI Windows builds
-    if (hostOS=="windows" and COMPILER=="c" and not FLAGS.contains("NOWEBVIEW")) or USE_VCC:
-        #COMPILER = "cpp --cc:vcc ".fmt
-        FLAGS = "{FLAGS}".fmt # --exceptions:cpp".fmt
-        # USE_VCC = true
-        if IS_DEV:
-            let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
-
-    if not IS_MULTITHREADED:
-        FLAGS = FLAGS.replace("--threads:on ","")
-
-    if USE_VCC:
-        FLAGS = "{FLAGS} --passC:/O2".fmt
-    else:
-        FLAGS = "{FLAGS} --passC:-O3".fmt
+    if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
+        let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
 
     # let's go for it
     if IS_DEV or PRINT_LOG:
@@ -498,10 +483,6 @@ while true:
                                 CONFIG = "@mini"
                             of "nodev":
                                 IS_DEV = false
-                            of "nothreads":
-                                IS_MULTITHREADED = false
-                            of "vcc":
-                                USE_VCC = true
                             of "web":
                                 miniBuild()
                                 FOR_WEB = true
