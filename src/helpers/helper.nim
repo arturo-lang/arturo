@@ -138,6 +138,10 @@ proc splitExamples(ex: string): seq[string] =
 
     result.add(currentEx)
 
+proc syntaxHighlight(code: string): string =
+    result = code
+
+
 #=======================================
 # Methods
 #=======================================
@@ -219,7 +223,7 @@ proc printExamples*(v: Value) =
 
     let examples = splitExamples(v.example)
     for i, example in examples:
-        echo example
+        echo syntaxHighlight(example)
         if i != examples.len - 1:
             echo repeat(lineChar[0], lineLength)
 
