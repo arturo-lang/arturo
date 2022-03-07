@@ -217,6 +217,11 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
 proc printExamples*(v: Value) =
     if v.kind != Function or v.example.strip()=="": return
 
+    let examples = splitExamples(v.example)
+    for i, example in examples:
+        echo example
+        if i != examples.len - 1:
+            echo repeat(lineChar[0], lineLength)
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
