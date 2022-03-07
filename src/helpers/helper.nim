@@ -124,6 +124,20 @@ proc getOptionsForFunction(v: Value): seq[string] =
         
         result.add fmt("{alignLeft(leftSide,myLen)} {resetColor}-> {attr[1][1]}")
 
+proc splitExamples(ex: string): seq[string] =
+    result = @[]
+    var currentEx = ""
+    for line in splitLines(ex):
+        if ";;;;" == line.strip():
+            result.add(currentEx)
+            currentEx = ""
+        else:
+            if currentEx != "":
+                currentEx &= "\n"
+            currentEx &= line
+
+    result.add(currentEx)
+
 #=======================================
 # Methods
 #=======================================
@@ -198,7 +212,7 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
         result["description"] = newString(v.info)
-        result["example"] = newString(v.example)
+        result["example"] = newStringBlock(splitExamples(v.example))
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
