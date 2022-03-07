@@ -346,6 +346,8 @@ proc defineSymbols*() =
                 ##########################################################
                 if (popAttr("get") != VNULL):
                     push(newDictionary(getInfo(x.s, InPlace, Aliases)))
+                elif (popAttr("examples") != VNULL):
+                    printExamples(InPlace)
                 else:
                     printInfo(x.s, InPlace, Aliases)
 
