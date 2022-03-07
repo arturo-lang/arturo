@@ -119,7 +119,7 @@ jobs:
           7z a arturo-${{matrix.version}}-${{matrix.os}}.zip arturo.exe *.dll
 
       - name: Upload Artifacts
-        uses: 'actions/upload-artifact@v2'
+        uses: 'actions/upload-artifact@v1'
         with:
           name: arturo-${{matrix.version}}-${{matrix.os}}.zip
           path: arturo-${{matrix.version}}-${{matrix.os}}.zip
