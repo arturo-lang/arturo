@@ -115,11 +115,12 @@ jobs:
 
       - name: Create artifact
         run: |
-          mv bin/arturo.exe arturo.exe
-          7z a arturo-${{matrix.version}}-${{matrix.os}}.zip arturo.exe *.dll
+          mkdir arturo-${{matrix.version}}-${{matrix.os}}
+          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v1'
         with:
           name: arturo-${{matrix.version}}-${{matrix.os}}
-          path: arturo-${{matrix.version}}-${{matrix.os}}.zip
+          path: arturo-${{matrix.version}}-${{matrix.os}}
