@@ -121,5 +121,5 @@ jobs:
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v1'
         with:
-          name: arturo-${{matrix.version}}-${{matrix.os}}.zip
+          name: arturo-${{matrix.version}}-${{matrix.os}}
           path: arturo-${{matrix.version}}-${{matrix.os}}.zip
