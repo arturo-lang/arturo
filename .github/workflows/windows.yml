@@ -115,7 +115,8 @@ jobs:
 
       - name: Create artifact
         run: |
-          7z a arturo-${{matrix.version}}-${{matrix.os}}.zip bin/arturo.exe *.dll
+          mv bin/arturo.exe arturo.exe
+          7z a arturo-${{matrix.version}}-${{matrix.os}}.zip arturo.exe *.dll
 
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
