@@ -18,7 +18,7 @@ loop symbols [k,v][
 
         if not? empty? ats [
             'completions ++ map ats 'at [
-                if? :boolean = first att\[at]\types ->
+                if? :logical = first att\[at]\types ->
                     join @[k "." at " "]
                 else ->
                     join @[k "." at ": "]
