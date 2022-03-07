@@ -57,12 +57,6 @@ jobs:
           7z x dist/extradlls.zip -obin
           7z x dist/nim.zip -onim
 
-          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
-
           cp src/extras/webview/deps/dlls/x64/*.dll bin
           
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
@@ -117,12 +111,8 @@ jobs:
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           ./bin/arturo tools/tester.art
 
-      - name: Create artifact
-        run: |
-          7z a arturo-${{matrix.version}}-${{matrix.os}}.zip bin/arturo.exe *.dll
-
       - name: Upload Artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-          name: arturo-${{matrix.version}}-${{matrix.os}}.zip
-          path: arturo-${{matrix.version}}-${{matrix.os}}.zip
+          name: "arturo-${{matrix.version}}-${{matrix.os}}"
+          path: bin/arturo.exe
