@@ -323,7 +323,8 @@ proc defineSymbols*() =
                 "symbol": {String,Literal}
             },
             attrs       = {
-                "get"   : ({Logical},"get information as dictionary")
+                "get"       : ({Logical},"get information as dictionary"),
+                "examples"  : ({Logical},"show examples for given function, if any")
             },
             returns     = {Dictionary,Nothing},
             example     = """
