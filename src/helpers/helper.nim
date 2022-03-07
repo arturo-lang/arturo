@@ -214,6 +214,10 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
         result["description"] = newString(v.info)
         result["example"] = newStringBlock(splitExamples(v.example))
 
+proc printExamples*(v: Value) =
+    if v.kind != Function or v.example.strip()=="": return
+
+
 proc printInfo*(n: string, v: Value, aliases: SymbolDict) =
     # Get type + possible module (if it's a builtin)
     var typeStr = ":" & ($(v.kind)).toLowerAscii
