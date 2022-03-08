@@ -290,7 +290,7 @@ proc compile*(footer=false): int =
     if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
         let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
 
-        FLAGS = """{FLAGS} -passL:"-static -lpcre"""".fmt
+        FLAGS = """{FLAGS} --passL:"-static -lpcre"""".fmt
 
     # let's go for it
     if IS_DEV or PRINT_LOG:
