@@ -291,7 +291,7 @@ proc compile*(footer=false): int =
         let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
 
     if hostOS=="windows":
-        FLAGS = """{FLAGS} """.fmt
+        FLAGS = """{FLAGS} -llibcrypto.a""".fmt
 
     # let's go for it
     if IS_DEV or PRINT_LOG:
