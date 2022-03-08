@@ -323,7 +323,8 @@ proc defineSymbols*() =
                 "symbol": {String,Literal}
             },
             attrs       = {
-                "get"   : ({Logical},"get information as dictionary")
+                "get"       : ({Logical},"get information as dictionary"),
+                "examples"  : ({Logical},"show examples for given function, if any")
             },
             returns     = {Dictionary,Nothing},
             example     = """
@@ -343,10 +344,11 @@ proc defineSymbols*() =
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 ##########################################################
+                let showExamples = (popAttr("examples")!=VNULL)
                 if (popAttr("get") != VNULL):
                     push(newDictionary(getInfo(x.s, InPlace, Aliases)))
                 else:
-                    printInfo(x.s, InPlace, Aliases)
+                    printInfo(x.s, InPlace, Aliases, withExamples = showExamples)
 
     builtin "inline?",
         alias       = unaliased, 
