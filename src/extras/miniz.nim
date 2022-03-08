@@ -1,9 +1,10 @@
 # Original Nim port
 # Copyright (c) 2017 Fabio Cevasco 
 
-{.compile: "libminiz.c".}
+import os, strutils
 
-import strutils
+{.passC: "-I" & parentDir(currentSourcePath()) .}
+{.compile: "miniz/libminiz.c".}
 
 when defined(i386) or defined(ia64):
     const 
@@ -826,9 +827,6 @@ when not(defined(MINIZ_NO_ZLIB_APIS)):
       strategy: cint): mz_uint {.importc.}
 
 ### Public Library
-
-import
-  os
 
 proc zip*(files: seq[string], filepath: string) =
   var pZip: ptr mz_zip_archive = cast[ptr mz_zip_archive](alloc0(sizeof(mz_zip_archive)))

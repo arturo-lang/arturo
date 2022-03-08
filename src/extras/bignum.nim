@@ -6,7 +6,9 @@
 # distribution, for details about the copyright.
 #
 
-{.passl: "-lgmp".}
+import os, strutils
+
+{.passL: "-lgmp".}
 
 type 
   INNER_C_UNION_5532179898798000430* {.union, importc: "no_name", header: "<gmp.h>".} = object  

@@ -14,10 +14,8 @@ import os
 
 when not defined(WEB):
 
-    import extras/linenoise
-
     import sequtils, strutils, sugar, tables
-
+    import extras/linenoise
     import vm/values/value
 
     #=======================================

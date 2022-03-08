@@ -20,16 +20,16 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms*       : ValueDict
+    Syms* {.global.}      : ValueDict
 
     # symbol aliases
-    Aliases*    : SymbolDict
+    Aliases* {.global.}   : SymbolDict
 
     # function arity reference
-    Arities*    : Table[string,int]
+    Arities* {.global.}   : Table[string,int]
 
     # libraries 
-    Libraries*  : seq[BuiltinAction]
+    Libraries* {.global.} : seq[BuiltinAction]
 
 #=======================================
 # Methods

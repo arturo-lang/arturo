@@ -17,15 +17,15 @@
 #=======================================
 
 when not defined(WEB):
-    import algorithm, asyncdispatch, asynchttpserver
-    import cgi, httpclient, httpcore, os
-    import sequtils, smtp, strutils, times
-    import nre except toSeq
+    import algorithm, asyncdispatch, httpclient
+    import httpcore, os, sequtils, smtp, strformat
+    import strutils, times, uri
 
     import helpers/jsonobject
+    import helpers/servers
     import helpers/terminal
     import helpers/url
-    import helpers/webview
+    import helpers/webviews
 
 import vm/lib
 when not defined(WEB):
@@ -286,13 +286,12 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "start web server using given routes",
             args        = {
-                "routes"    : {Dictionary}
+                "routes"    : {Block}
             },
             attrs       = {
                 "port"      : ({Integer},"use given port"),
                 "verbose"   : ({Logical},"print info log"),
-                "chrome"    : ({Logical},"open in Chrome windows as an app"),
-                "kill"      : ({String},"bind a kill signal to the server (default: '/exit')")
+                "chrome"    : ({Logical},"open in Chrome windows as an app")
             },
             returns     = {Nothing},
             example     = """
@@ -305,115 +304,99 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 when defined(SAFE): RuntimeError_OperationNotPermitted("serve")
-                #{.push warning[GcUnsafe2]:off.}
-                when not defined(VERBOSE):
-                    let routes = x
 
-                    var port = 18966
-                    var verbose = (popAttr("verbose") != VNULL)
-                    if (let aPort = popAttr("port"); aPort != VNULL):
-                        port = aPort.i
+                # get parameters
+                let routes = x
+                var port = 18966
+                var verbose = (popAttr("verbose") != VNULL)
+                if (let aPort = popAttr("port"); aPort != VNULL):
+                    port = aPort.i
+            
+                if (let aChrome = popAttr("chrome"); aChrome != VNULL):
+                    openChromeWindow(port)
 
-                    var killPath = "/exit"
-                    if (let aKill = popAttr("kill"); aKill != VNULL):
-                        killPath = aKill.s
+                # necessary so that "serveInternal" is available
+                execInternal("Net/serve")
+
+                # call internal implementation
+                # to initialize routes
+                callInternal("initServerInternal", getValue=false,
+                    routes
+                )
+
+                proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
+                    {.cast(gcsafe).}:
+                        # store many request details
+                        let reqAction = req.action()
+                        let reqBody = req.body()
+                        let reqHeaders = req.headers().table
+                        var reqQuery = initOrderedTable[string,Value]()
+                        var reqPath = req.path()
+
+                        # get query components, if any
+                        if reqPath.contains("?"):
+                            let parts = reqPath.split("?")
+                            reqPath = parts[0]
+                            for k,v in decodeQuery(parts[1]):
+                                reqQuery[k] = newString(v)
+
+                        # carefully parse request body, if any
+                        var reqBodyV: Value
+
+                        if reqAction!=HttpGet: 
+                            try:
+                                reqBodyV = valueFromJson(reqBody) 
+                            except:
+                                reqBodyV = newDictionary()
+                                for k,v in decodeQuery(reqBody):
+                                    reqBodyV.d[k] = newString(v)
+                        else: 
+                            reqBodyV = newString(reqBody)
+
+                        # call internal implementation
+                        let got = callInternal("serveInternal", getValue=true,
+                            newDictionary({
+                                "method": newString($(reqAction)),
+                                "path": newString(reqPath),
+                                "body": reqBodyV,
+                                "query": newDictionary(reqQuery),
+                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true)
+                            }.toOrderedTable),
+                            newLogical(verbose)
+                        )
+
+                        # send response
+                        req.respond(newServerResponse(
+                            got.d["serverBody"].s,
+                            HttpCode(got.d["serverStatus"].i),
+                            got.d["serverHeaders"].s
+                        ))
+
+                        # show request info
+                        # if we're on .verbose mode
+                        if verbose:
+                            var colorCode = greenColor
+                            if got.d["serverStatus"].i != 200: 
+                                colorCode = redColor
+
+                            var serverPattern = " "
+                            if got.d["serverPattern"].s != reqPath and got.d["serverPattern"].s != "":
+                                serverPattern = " -> " & got.d["serverPattern"].s & " "
+
+                            let serverBenchmark = got.d["serverBenchmark"].f
+
+                            echo bold(colorCode) & ">> " & $(got.d["serverStatus"].i) & resetColor & " " & 
+                                 fg(whiteColor) & "[" & $(now()) & "] " &
+                                 bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & reqPath & 
+                                 resetColor & serverPattern & 
+                                 fg(grayColor) & "(" & fmt"{serverBenchmark:.2f}" & " ms)" & resetColor
+
+                # show server startup info
+                # if we're on .verbose mode
+                if verbose:
+                    echo ":: Starting server on port " & $(port) & "...\n"
                 
-                    if (let aChrome = popAttr("chrome"); aChrome != VNULL):
-                        openChromeWindow(port)
-
-                    proc startServer {.async.} =
-
-                        var server = newAsyncHttpServer()
-
-                        proc handler(req: Request) {.async,gcsafe.} =
-                            if verbose:
-                                stdout.write bold(magentaColor) & "<< [" & req.protocol[0] & "] " & req.hostname & ": " & resetColor & ($(req.reqMethod)).replace("Http").toUpperAscii() & " " & req.url.path
-                                if req.url.query!="":
-                                    stdout.write "?" & req.url.query
-
-                                stdout.write "\n"
-                                stdout.flushFile()
-
-                            # echo "body: " & req.body
-
-                            # echo "========"
-                            # for k,v in pairs(req.headers):
-                            #     echo k & " => " & v
-                            # echo "========"
-
-                            var status = 200
-                            var headers = newHttpHeaders()
-
-                            var body: string
-
-                            var routeFound = ""
-                    
-                            for k in routes.d.keys:
-                                let route = req.url.path.match(nre.re(k & "$"))
-
-                                if not route.isNone:
-
-                                    var args: ValueArray = @[]
-
-                                    let captures = route.get.captures.toTable
-
-                                    for group,capture in captures:
-                                        args.add(newString(group))
-
-                                    if req.reqMethod==HttpPost:
-                                        for d in decodeData(req.body):
-                                            args.add(newString(d[0]))
-
-                                        for d in (toSeq(decodeData(req.body))).reversed:
-                                            push(newString(d[1]))
-
-                                    for capture in (toSeq(pairs(captures))).reversed:
-                                        push(newString(capture[1]))
-
-                                    try:
-                                        {.cast(gcsafe).}:
-                                            discard execBlock(routes.d[k], execInParent=true, args=args, memoized=Value(kind: Null))
-                                    except:
-                                        let e = getCurrentException()
-                                        echo "Something went wrong: " & e.msg
-                                    body = pop().s
-                                    routeFound = k
-                                    break
-
-                            if routeFound=="":
-                                let subpath = joinPath(env.currentPath(),req.url.path)
-                                if fileExists(subpath):
-                                    body = readFile(subpath)
-                                else:
-                                    status = 404
-                                    body = "page not found!"
-
-                            if verbose:
-                                echo bold(greenColor) & ">> [" & $(status) & "] " & routeFound & resetColor
-
-                            if req.url.path==killPath:
-                                raise newException(Exception, "Received kill signal")
-
-                            await req.respond(status.HttpCode, body, headers)
-
-                        try:
-                            if verbose:
-                                echo ":: Starting server on port " & $(port) & "...\n"
-                            server.listen(Port(port))
-                            while true:
-                                if server.shouldAcceptRequest():
-                                    await server.acceptRequest(handler)
-                                else:
-                                    await sleepAsync(500)
-                            #waitFor server.serve(port = port.Port, callback = handler, address = "")
-                        except:
-                            let e = getCurrentException()
-                            echo ":: Server message: " & e.msg
-                            server.close()
-
-                    waitFor startServer()
-
-                #{.push warning[GcUnsafe2]:on.}
+                startServer(requestHandler.RequestHandler, port)
 
 #=======================================
 # Add Library

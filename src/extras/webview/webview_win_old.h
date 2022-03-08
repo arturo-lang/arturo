@@ -38,22 +38,7 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(WEBVIEW_GTK)
-#include <JavaScriptCore/JavaScript.h>
-#include <gtk/gtk.h>
-#include <webkit2/webkit2.h>
-
-struct webview_priv {
-  GtkWidget *window;
-  GtkWidget *scroller;
-  GtkWidget *webview;
-  GtkWidget *inspector_window;
-  GAsyncQueue *queue;
-  int ready;
-  int js_busy;
-  int should_exit;
-};
-#elif defined(WEBVIEW_WINAPI)
+#if defined(WEBVIEW_WINAPI)
 #define CINTERFACE
 #include <windows.h>
 
@@ -72,18 +57,6 @@ struct webview_priv {
   DWORD saved_style;
   DWORD saved_ex_style;
   RECT saved_rect;
-};
-#elif defined(WEBVIEW_COCOA)
-#import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
-#import <objc/runtime.h>
-
-struct webview_priv {
-  NSAutoreleasePool *pool;
-  NSWindow *window;
-  WebView *webview;
-  id windowDelegate;
-  int should_exit;
 };
 #else
 #error "Define one of: WEBVIEW_GTK, WEBVIEW_COCOA or WEBVIEW_WINAPI"
@@ -241,267 +214,6 @@ WEBVIEW_API int webview_inject_css(struct webview *w, const char *css) {
   return r;
 }
 
-#if defined(WEBVIEW_GTK)
-static void external_message_received_cb(WebKitUserContentManager *m,
-                                         WebKitJavascriptResult *r,
-                                         gpointer arg) {
-  (void)m;
-  struct webview *w = (struct webview *)arg;
-  if (w->external_invoke_cb == NULL) {
-    return;
-  }
-  JSGlobalContextRef context = webkit_javascript_result_get_global_context(r);
-  JSValueRef value = webkit_javascript_result_get_value(r);
-  JSStringRef js = JSValueToStringCopy(context, value, NULL);
-  size_t n = JSStringGetMaximumUTF8CStringSize(js);
-  char *s = g_new(char, n);
-  JSStringGetUTF8CString(js, s, n);
-  w->external_invoke_cb(w, s);
-  JSStringRelease(js);
-  g_free(s);
-}
-
-static void webview_load_changed_cb(WebKitWebView *webview,
-                                    WebKitLoadEvent event, gpointer arg) {
-  (void)webview;
-  struct webview *w = (struct webview *)arg;
-  if (event == WEBKIT_LOAD_FINISHED) {
-    w->priv.ready = 1;
-  }
-}
-
-static void webview_destroy_cb(GtkWidget *widget, gpointer arg) {
-  (void)widget;
-  struct webview *w = (struct webview *)arg;
-  webview_terminate(w);
-}
-
-static gboolean webview_context_menu_cb(WebKitWebView *webview,
-                                        GtkWidget *default_menu,
-                                        WebKitHitTestResult *hit_test_result,
-                                        gboolean triggered_with_keyboard,
-                                        gpointer userdata) {
-  (void)webview;
-  (void)default_menu;
-  (void)hit_test_result;
-  (void)triggered_with_keyboard;
-  (void)userdata;
-  return TRUE;
-}
-
-WEBVIEW_API int webview_init(struct webview *w) {
-  if (gtk_init_check(0, NULL) == FALSE) {
-    return -1;
-  }
-
-  w->priv.ready = 0;
-  w->priv.should_exit = 0;
-  w->priv.queue = g_async_queue_new();
-  w->priv.window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title(GTK_WINDOW(w->priv.window), w->title);
-
-  if (w->resizable) {
-    gtk_window_set_default_size(GTK_WINDOW(w->priv.window), w->width,
-                                w->height);
-  } else {
-    gtk_widget_set_size_request(w->priv.window, w->width, w->height);
-  }
-  gtk_window_set_resizable(GTK_WINDOW(w->priv.window), !!w->resizable);
-  gtk_window_set_position(GTK_WINDOW(w->priv.window), GTK_WIN_POS_CENTER);
-
-  w->priv.scroller = gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(GTK_CONTAINER(w->priv.window), w->priv.scroller);
-
-  WebKitUserContentManager *m = webkit_user_content_manager_new();
-  webkit_user_content_manager_register_script_message_handler(m, "external");
-  g_signal_connect(m, "script-message-received::external",
-                   G_CALLBACK(external_message_received_cb), w);
-
-  w->priv.webview = webkit_web_view_new_with_user_content_manager(m);
-  webkit_web_view_load_uri(WEBKIT_WEB_VIEW(w->priv.webview),
-                           webview_check_url(w->url));
-  g_signal_connect(G_OBJECT(w->priv.webview), "load-changed",
-                   G_CALLBACK(webview_load_changed_cb), w);
-  gtk_container_add(GTK_CONTAINER(w->priv.scroller), w->priv.webview);
-
-  if (w->debug) {
-    WebKitSettings *settings =
-        webkit_web_view_get_settings(WEBKIT_WEB_VIEW(w->priv.webview));
-    webkit_settings_set_enable_write_console_messages_to_stdout(settings, true);
-    webkit_settings_set_enable_developer_extras(settings, true);
-  } else {
-    g_signal_connect(G_OBJECT(w->priv.webview), "context-menu",
-                     G_CALLBACK(webview_context_menu_cb), w);
-  }
-
-  gtk_widget_show_all(w->priv.window);
-
-  webkit_web_view_run_javascript(
-      WEBKIT_WEB_VIEW(w->priv.webview),
-      "window.external={invoke:function(x){"
-      "window.webkit.messageHandlers.external.postMessage(x);}}",
-      NULL, NULL, NULL);
-
-  g_signal_connect(G_OBJECT(w->priv.window), "destroy",
-                   G_CALLBACK(webview_destroy_cb), w);
-  return 0;
-}
-
-WEBVIEW_API int webview_loop(struct webview *w, int blocking) {
-  gtk_main_iteration_do(blocking);
-  return w->priv.should_exit;
-}
-
-WEBVIEW_API void webview_set_title(struct webview *w, const char *title) {
-  gtk_window_set_title(GTK_WINDOW(w->priv.window), title);
-}
-
-WEBVIEW_API void webview_set_fullscreen(struct webview *w, int fullscreen) {
-  if (fullscreen) {
-    gtk_window_fullscreen(GTK_WINDOW(w->priv.window));
-  } else {
-    gtk_window_unfullscreen(GTK_WINDOW(w->priv.window));
-  }
-}
-
-WEBVIEW_API void webview_set_color(struct webview *w, uint8_t r, uint8_t g,
-                                   uint8_t b, uint8_t a) {
-  GdkRGBA color = {r / 255.0, g / 255.0, b / 255.0, a / 255.0};
-  webkit_web_view_set_background_color(WEBKIT_WEB_VIEW(w->priv.webview),
-                                       &color);
-}
-
-WEBVIEW_API void webview_dialog(struct webview *w,
-                                enum webview_dialog_type dlgtype, int flags,
-                                const char *title, const char *arg,
-                                char *result, size_t resultsz) {
-  GtkWidget *dlg;
-  if (result != NULL) {
-    result[0] = '\0';
-  }
-  if (dlgtype == WEBVIEW_DIALOG_TYPE_OPEN ||
-      dlgtype == WEBVIEW_DIALOG_TYPE_SAVE) {
-    dlg = gtk_file_chooser_dialog_new(
-        title, GTK_WINDOW(w->priv.window),
-        (dlgtype == WEBVIEW_DIALOG_TYPE_OPEN
-             ? (flags & WEBVIEW_DIALOG_FLAG_DIRECTORY
-                    ? GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER
-                    : GTK_FILE_CHOOSER_ACTION_OPEN)
-             : GTK_FILE_CHOOSER_ACTION_SAVE),
-        "_Cancel", GTK_RESPONSE_CANCEL,
-        (dlgtype == WEBVIEW_DIALOG_TYPE_OPEN ? "_Open" : "_Save"),
-        GTK_RESPONSE_ACCEPT, NULL);
-    gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dlg), FALSE);
-    gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dlg), FALSE);
-    gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dlg), TRUE);
-    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dlg), TRUE);
-    gtk_file_chooser_set_create_folders(GTK_FILE_CHOOSER(dlg), TRUE);
-    gint response = gtk_dialog_run(GTK_DIALOG(dlg));
-    if (response == GTK_RESPONSE_ACCEPT) {
-      gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
-      g_strlcpy(result, filename, resultsz);
-      g_free(filename);
-    }
-    gtk_widget_destroy(dlg);
-  } else if (dlgtype == WEBVIEW_DIALOG_TYPE_ALERT) {
-    GtkMessageType type = GTK_MESSAGE_OTHER;
-    switch (flags & WEBVIEW_DIALOG_FLAG_ALERT_MASK) {
-    case WEBVIEW_DIALOG_FLAG_INFO:
-      type = GTK_MESSAGE_INFO;
-      break;
-    case WEBVIEW_DIALOG_FLAG_WARNING:
-      type = GTK_MESSAGE_WARNING;
-      break;
-    case WEBVIEW_DIALOG_FLAG_ERROR:
-      type = GTK_MESSAGE_ERROR;
-      break;
-    }
-    dlg = gtk_message_dialog_new(GTK_WINDOW(w->priv.window), GTK_DIALOG_MODAL,
-                                 type, GTK_BUTTONS_OK, "%s", title);
-    gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dlg), "%s",
-                                             arg);
-    gtk_dialog_run(GTK_DIALOG(dlg));
-    gtk_widget_destroy(dlg);
-  }
-}
-
-static void webview_eval_finished(GObject *object, GAsyncResult *result,
-                                  gpointer userdata) {
-  (void) object;
-  (void) result;
-  struct webview *w = (struct webview *)userdata;
-  w->priv.js_busy = 0;
-}
-
-WEBVIEW_API int webview_eval(struct webview *w, const char *js) {
-  while (w->priv.ready == 0) {
-    g_main_context_iteration(NULL, TRUE);
-  }
-  w->priv.js_busy = 1;
-  webkit_web_view_run_javascript(WEBKIT_WEB_VIEW(w->priv.webview), js, NULL,
-                                 webview_eval_finished, w);
-  while (w->priv.js_busy) {
-    g_main_context_iteration(NULL, TRUE);
-  }
-  return 0;
-}
-
-// TODO(webview) Fix webview_eval_get for windows
-//  The current implementation just just a copy-paste of `webview_eval`, without returning anything
-//  labels: 3rdparty,library,bug,critical
-WEBVIEW_API const char* webview_eval_get(struct webview *w, const char *js) {
-  while (w->priv.ready == 0) {
-    g_main_context_iteration(NULL, TRUE);
-  }
-  w->priv.js_busy = 1;
-  webkit_web_view_run_javascript(WEBKIT_WEB_VIEW(w->priv.webview), js, NULL,
-                                 webview_eval_finished, w);
-  while (w->priv.js_busy) {
-    g_main_context_iteration(NULL, TRUE);
-  }
-  return "";
-}
-
-static gboolean webview_dispatch_wrapper(gpointer userdata) {
-  struct webview *w = (struct webview *)userdata;
-  for (;;) {
-    struct webview_dispatch_arg *arg =
-        (struct webview_dispatch_arg *)g_async_queue_try_pop(w->priv.queue);
-    if (arg == NULL) {
-      break;
-    }
-    (arg->fn)(w, arg->arg);
-    g_free(arg);
-  }
-  return FALSE;
-}
-
-WEBVIEW_API void webview_dispatch(struct webview *w, webview_dispatch_fn fn,
-                                  void *arg) {
-  struct webview_dispatch_arg *context =
-      (struct webview_dispatch_arg *)g_new(struct webview_dispatch_arg, 1);
-  context->w = w;
-  context->arg = arg;
-  context->fn = fn;
-  g_async_queue_lock(w->priv.queue);
-  g_async_queue_push_unlocked(w->priv.queue, context);
-  if (g_async_queue_length_unlocked(w->priv.queue) == 1) {
-    gdk_threads_add_idle(webview_dispatch_wrapper, w);
-  }
-  g_async_queue_unlock(w->priv.queue);
-}
-
-WEBVIEW_API void webview_terminate(struct webview *w) {
-  w->priv.should_exit = 1;
-}
-
-WEBVIEW_API void webview_exit(struct webview *w) { (void)w; }
-WEBVIEW_API void webview_print_log(const char *s) {
-  fprintf(stderr, "%s\n", s);
-}
-
-#endif /* WEBVIEW_GTK */
-
 #if defined(WEBVIEW_WINAPI)
 
 #pragma comment(lib, "user32.lib")
@@ -520,13 +232,25 @@ typedef struct {
   _IOleInPlaceFrameEx frame;
 } _IOleInPlaceSiteEx;
 
-typedef struct { IDocHostUIHandler ui; } _IDocHostUIHandlerEx;
+typedef struct {
+  IDocHostUIHandler ui;
+} _IDocHostUIHandlerEx;
+
+typedef struct {
+  IInternetSecurityManager mgr;
+} _IInternetSecurityManagerEx;
+
+typedef struct {
+  IServiceProvider provider;
+  _IInternetSecurityManagerEx mgr;
+} _IServiceProviderEx;
 
 typedef struct {
   IOleClientSite client;
   _IOleInPlaceSiteEx inplace;
   _IDocHostUIHandlerEx ui;
   IDispatch external;
+  _IServiceProviderEx provider;
 } _IOleClientSiteEx;
 
 #ifdef __cplusplus
@@ -667,6 +391,8 @@ static HRESULT STDMETHODCALLTYPE Site_QueryInterface(IOleClientSite FAR *This,
     *ppvObject = &((_IOleClientSiteEx *)This)->inplace;
   } else if (iid_eq(riid, &IID_IDocHostUIHandler)) {
     *ppvObject = &((_IOleClientSiteEx *)This)->ui;
+  } else if (iid_eq(riid, &IID_IServiceProvider)) {
+    *ppvObject = &((_IOleClientSiteEx *)This)->provider;
   } else {
     *ppvObject = 0;
     return (E_NOINTERFACE);
@@ -963,6 +689,57 @@ static IDocHostUIHandlerVtbl MyIDocHostUIHandlerTable = {
     UI_TranslateUrl,
     UI_FilterDataObject};
 
+
+
+static HRESULT STDMETHODCALLTYPE IS_QueryInterface(IInternetSecurityManager FAR *This, REFIID riid, void **ppvObject) {
+  return E_NOTIMPL;
+}
+static ULONG STDMETHODCALLTYPE IS_AddRef(IInternetSecurityManager FAR *This) { return 1; }
+static ULONG STDMETHODCALLTYPE IS_Release(IInternetSecurityManager FAR *This) { return 1; }
+static HRESULT STDMETHODCALLTYPE IS_SetSecuritySite(IInternetSecurityManager FAR *This, IInternetSecurityMgrSite *pSited) {
+  return INET_E_DEFAULT_ACTION;
+}
+static HRESULT STDMETHODCALLTYPE IS_GetSecuritySite(IInternetSecurityManager FAR *This, IInternetSecurityMgrSite **ppSite) {
+  return INET_E_DEFAULT_ACTION;
+}
+static HRESULT STDMETHODCALLTYPE IS_MapUrlToZone(IInternetSecurityManager FAR *This, LPCWSTR pwszUrl, DWORD *pdwZone, DWORD dwFlags) {
+  *pdwZone = URLZONE_LOCAL_MACHINE;
+  return S_OK;
+}
+static HRESULT STDMETHODCALLTYPE IS_GetSecurityId(IInternetSecurityManager FAR *This, LPCWSTR pwszUrl, BYTE *pbSecurityId, DWORD *pcbSecurityId, DWORD_PTR dwReserved) {
+  return INET_E_DEFAULT_ACTION;
+}
+static HRESULT STDMETHODCALLTYPE IS_ProcessUrlAction(IInternetSecurityManager FAR *This, LPCWSTR pwszUrl, DWORD dwAction, BYTE *pPolicy,  DWORD cbPolicy, BYTE *pContext, DWORD cbContext, DWORD dwFlags, DWORD dwReserved) {
+  return INET_E_DEFAULT_ACTION;
+}
+static HRESULT STDMETHODCALLTYPE IS_QueryCustomPolicy(IInternetSecurityManager FAR *This, LPCWSTR pwszUrl, REFGUID guidKey, BYTE **ppPolicy, DWORD *pcbPolicy, BYTE *pContext, DWORD cbContext, DWORD dwReserved) {
+  return INET_E_DEFAULT_ACTION;
+}
+static HRESULT STDMETHODCALLTYPE IS_SetZoneMapping(IInternetSecurityManager FAR *This, DWORD dwZone, LPCWSTR lpszPattern, DWORD dwFlags) {
+  return INET_E_DEFAULT_ACTION;
+}
+static HRESULT STDMETHODCALLTYPE IS_GetZoneMappings(IInternetSecurityManager FAR *This, DWORD dwZone, IEnumString **ppenumString, DWORD dwFlags) {
+  return INET_E_DEFAULT_ACTION;
+}
+static IInternetSecurityManagerVtbl MyInternetSecurityManagerTable = {IS_QueryInterface, IS_AddRef, IS_Release, IS_SetSecuritySite, IS_GetSecuritySite, IS_MapUrlToZone, IS_GetSecurityId, IS_ProcessUrlAction, IS_QueryCustomPolicy, IS_SetZoneMapping, IS_GetZoneMappings};
+
+static HRESULT STDMETHODCALLTYPE SP_QueryInterface(IServiceProvider FAR *This, REFIID riid, void **ppvObject) {
+  return (Site_QueryInterface(
+      (IOleClientSite *)((char *)This - sizeof(IOleClientSite) - sizeof(_IOleInPlaceSiteEx) - sizeof(_IDocHostUIHandlerEx) - sizeof(IDispatch)), riid, ppvObject));
+}
+static ULONG STDMETHODCALLTYPE SP_AddRef(IServiceProvider FAR *This) { return 1; }
+static ULONG STDMETHODCALLTYPE SP_Release(IServiceProvider FAR *This) { return 1; }
+static HRESULT STDMETHODCALLTYPE SP_QueryService(IServiceProvider FAR *This, REFGUID siid, REFIID riid, void **ppvObject) {
+  if (iid_eq(siid, &IID_IInternetSecurityManager) && iid_eq(riid, &IID_IInternetSecurityManager)) {
+    *ppvObject = &((_IServiceProviderEx *)This)->mgr;
+  } else {
+    *ppvObject = 0;
+    return (E_NOINTERFACE);
+  }
+  return S_OK;
+}
+static IServiceProviderVtbl MyServiceProviderTable = {SP_QueryInterface, SP_AddRef, SP_Release, SP_QueryService};
+
 static void UnEmbedBrowserObject(struct webview *w) {
   if (w->priv.browser != NULL) {
     (*w->priv.browser)->lpVtbl->Close(*w->priv.browser, OLECLOSE_NOSAVE);
@@ -991,6 +768,8 @@ static int EmbedBrowserObject(struct webview *w) {
   _iOleClientSiteEx->inplace.frame.window = w->priv.hwnd;
   _iOleClientSiteEx->ui.ui.lpVtbl = &MyIDocHostUIHandlerTable;
   _iOleClientSiteEx->external.lpVtbl = &ExternalDispatchTable;
+  _iOleClientSiteEx->provider.provider.lpVtbl = &MyServiceProviderTable;
+  _iOleClientSiteEx->provider.mgr.mgr.lpVtbl = &MyInternetSecurityManagerTable;
 
   if (CoGetClassObject(iid_unref(&CLSID_WebBrowser),
                        CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER, NULL,
@@ -1066,6 +845,9 @@ static int DisplayHTMLPage(struct webview *w) {
     LPCSTR webPageName;
     isDataURL = (strncmp(webview_url, WEBVIEW_DATA_URL_PREFIX,
                          strlen(WEBVIEW_DATA_URL_PREFIX)) == 0);
+#ifdef WEBVIEW_SUPRESS_ERRORS
+	webBrowser2->lpVtbl->put_Silent(webBrowser2, true);
+#endif
     if (isDataURL) {
       webPageName = "about:blank";
     } else {
@@ -1275,9 +1057,9 @@ WEBVIEW_API int webview_init(struct webview *w) {
 WEBVIEW_API int webview_loop(struct webview *w, int blocking) {
   MSG msg;
   if (blocking) {
-    GetMessage(&msg, 0, 0, 0);
+    if (GetMessage(&msg, 0, 0, 0)<0) return 0;
   } else {
-    PeekMessage(&msg, 0, 0, 0, PM_REMOVE);
+    if (!PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) return 0;
   }
   switch (msg.message) {
   case WM_QUIT:
@@ -1334,14 +1116,12 @@ WEBVIEW_API int webview_eval(struct webview *w, const char *js) {
     return -1;
   }
   DISPID dispid;
-  BSTR evalStr = SysAllocString(L"eval");
+  wchar_t *evalStr = L"eval";
   if (scriptDispatch->lpVtbl->GetIDsOfNames(
           scriptDispatch, iid_unref(&IID_NULL), &evalStr, 1,
           LOCALE_SYSTEM_DEFAULT, &dispid) != S_OK) {
-    SysFreeString(evalStr);
     return -1;
   }
-  SysFreeString(evalStr);
 
   DISPPARAMS params;
   VARIANT arg;
@@ -1373,73 +1153,6 @@ WEBVIEW_API int webview_eval(struct webview *w, const char *js) {
   htmlDoc2->lpVtbl->Release(htmlDoc2);
   docDispatch->lpVtbl->Release(docDispatch);
   return 0;
-}
-// TODO(webview) Fix webview_eval_get for windows
-//  The current implementation just just a copy-paste of `webview_eval`, without returning anything
-//  labels: 3rdparty,library,bug,critical
-WEBVIEW_API const char* webview_eval_get(struct webview *w, const char *js) {
-  IWebBrowser2 *webBrowser2;
-  IHTMLDocument2 *htmlDoc2;
-  IDispatch *docDispatch;
-  IDispatch *scriptDispatch;
-  if ((*w->priv.browser)
-          ->lpVtbl->QueryInterface((*w->priv.browser),
-                                   iid_unref(&IID_IWebBrowser2),
-                                   (void **)&webBrowser2) != S_OK) {
-    return -1;
-  }
-
-  if (webBrowser2->lpVtbl->get_Document(webBrowser2, &docDispatch) != S_OK) {
-    return -1;
-  }
-  if (docDispatch->lpVtbl->QueryInterface(docDispatch,
-                                          iid_unref(&IID_IHTMLDocument2),
-                                          (void **)&htmlDoc2) != S_OK) {
-    return -1;
-  }
-  if (htmlDoc2->lpVtbl->get_Script(htmlDoc2, &scriptDispatch) != S_OK) {
-    return -1;
-  }
-  DISPID dispid;
-  BSTR evalStr = SysAllocString(L"eval");
-  if (scriptDispatch->lpVtbl->GetIDsOfNames(
-          scriptDispatch, iid_unref(&IID_NULL), &evalStr, 1,
-          LOCALE_SYSTEM_DEFAULT, &dispid) != S_OK) {
-    SysFreeString(evalStr);
-    return -1;
-  }
-  SysFreeString(evalStr);
-
-  DISPPARAMS params;
-  VARIANT arg;
-  VARIANT result;
-  EXCEPINFO excepInfo;
-  UINT nArgErr = (UINT)-1;
-  params.cArgs = 1;
-  params.cNamedArgs = 0;
-  params.rgvarg = &arg;
-  arg.vt = VT_BSTR;
-  static const char *prologue = "(function(){";
-  static const char *epilogue = ";})();";
-  int n = strlen(prologue) + strlen(epilogue) + strlen(js) + 1;
-  char *eval = (char *)malloc(n);
-  snprintf(eval, n, "%s%s%s", prologue, js, epilogue);
-  wchar_t *buf = webview_to_utf16(eval);
-  if (buf == NULL) {
-    return -1;
-  }
-  arg.bstrVal = SysAllocString(buf);
-  if (scriptDispatch->lpVtbl->Invoke(
-          scriptDispatch, dispid, iid_unref(&IID_NULL), 0, DISPATCH_METHOD,
-          &params, &result, &excepInfo, &nArgErr) != S_OK) {
-    return -1;
-  }
-  SysFreeString(arg.bstrVal);
-  free(eval);
-  scriptDispatch->lpVtbl->Release(scriptDispatch);
-  htmlDoc2->lpVtbl->Release(htmlDoc2);
-  docDispatch->lpVtbl->Release(docDispatch);
-  return "";
 }
 
 WEBVIEW_API void webview_dispatch(struct webview *w, webview_dispatch_fn fn,
@@ -1494,7 +1207,7 @@ WEBVIEW_API void webview_set_fullscreen(struct webview *w, int fullscreen) {
 WEBVIEW_API void webview_set_color(struct webview *w, uint8_t r, uint8_t g,
                                    uint8_t b, uint8_t a) {
   HBRUSH brush = CreateSolidBrush(RGB(r, g, b));
-  SetClassLongPtr(w->priv.hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)brush);  
+  SetClassLongPtr(w->priv.hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)brush);
 }
 
 /* These are missing parts from MinGW */
@@ -1591,7 +1304,7 @@ WEBVIEW_API void webview_dialog(struct webview *w,
     IShellItem *res = NULL;
     WCHAR *ws = NULL;
     char *s = NULL;
-    FILEOPENDIALOGOPTIONS opts, add_opts;
+    FILEOPENDIALOGOPTIONS opts = 0, add_opts = 0;
     if (dlgtype == WEBVIEW_DIALOG_TYPE_OPEN) {
       if (CoCreateInstance(
               iid_unref(&CLSID_FileOpenDialog), NULL, CLSCTX_INPROC_SERVER,
@@ -1669,308 +1382,15 @@ WEBVIEW_API void webview_dialog(struct webview *w,
 }
 
 WEBVIEW_API void webview_terminate(struct webview *w) { PostQuitMessage(0); }
-WEBVIEW_API void webview_exit(struct webview *w) { OleUninitialize(); }
+
+WEBVIEW_API void webview_exit(struct webview *w) {
+  DestroyWindow(w->priv.hwnd);
+  OleUninitialize();
+}
+
 WEBVIEW_API void webview_print_log(const char *s) { OutputDebugString(s); }
 
 #endif /* WEBVIEW_WINAPI */
-
-#if defined(WEBVIEW_COCOA)
-#if (!defined MAC_OS_X_VERSION_10_12) ||                                       \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_12
-#define NSAlertStyleWarning NSWarningAlertStyle
-#define NSAlertStyleCritical NSCriticalAlertStyle
-#define NSWindowStyleMaskResizable NSResizableWindowMask
-#define NSWindowStyleMaskMiniaturizable NSMiniaturizableWindowMask
-#define NSWindowStyleMaskTitled NSTitledWindowMask
-#define NSWindowStyleMaskClosable NSClosableWindowMask
-#define NSWindowStyleMaskFullScreen NSFullScreenWindowMask
-#define NSEventMaskAny NSAnyEventMask
-#define NSEventModifierFlagCommand NSCommandKeyMask
-#define NSEventModifierFlagOption NSAlternateKeyMask
-#define NSAlertStyleInformational NSInformationalAlertStyle
-#endif /* MAC_OS_X_VERSION_10_12 */
-#if (!defined MAC_OS_X_VERSION_10_13) ||                                       \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_13
-#define NSModalResponseOK NSFileHandlingPanelOKButton
-#endif /* MAC_OS_X_VERSION_10_12, MAC_OS_X_VERSION_10_13 */
-static void webview_window_will_close(id self, SEL cmd, id notification) {
-  struct webview *w =
-      (struct webview *)objc_getAssociatedObject(self, "webview");
-  webview_terminate(w);
-}
-
-static BOOL webview_is_selector_excluded_from_web_script(id self, SEL cmd,
-                                                         SEL selector) {
-  return selector != @selector(invoke:);
-}
-
-static NSString *webview_webscript_name_for_selector(id self, SEL cmd,
-                                                     SEL selector) {
-  return selector == @selector(invoke:) ? @"invoke" : nil;
-}
-
-static void webview_did_clear_window_object(id self, SEL cmd, id webview,
-                                            id script, id frame) {
-  [script setValue:self forKey:@"external"];
-}
-
-static void webview_external_invoke(id self, SEL cmd, id arg) {
-  struct webview *w =
-      (struct webview *)objc_getAssociatedObject(self, "webview");
-  if (w == NULL || w->external_invoke_cb == NULL) {
-    return;
-  }
-  if ([arg isKindOfClass:[NSString class]] == NO) {
-    return;
-  }
-  w->external_invoke_cb(w, [(NSString *)(arg)UTF8String]);
-}
-
-WEBVIEW_API int webview_init(struct webview *w) {
-  w->priv.pool = [[NSAutoreleasePool alloc] init];
-  [NSApplication sharedApplication];
-
-  Class webViewDelegateClass =
-      objc_allocateClassPair([NSObject class], "WebViewDelegate", 0);
-  class_addMethod(webViewDelegateClass, sel_registerName("windowWillClose:"),
-                  (IMP)webview_window_will_close, "v@:@");
-  class_addMethod(object_getClass(webViewDelegateClass),
-                  sel_registerName("isSelectorExcludedFromWebScript:"),
-                  (IMP)webview_is_selector_excluded_from_web_script, "c@::");
-  class_addMethod(object_getClass(webViewDelegateClass),
-                  sel_registerName("webScriptNameForSelector:"),
-                  (IMP)webview_webscript_name_for_selector, "c@::");
-  class_addMethod(webViewDelegateClass,
-                  sel_registerName("webView:didClearWindowObject:forFrame:"),
-                  (IMP)webview_did_clear_window_object, "v@:@@@");
-  class_addMethod(webViewDelegateClass, sel_registerName("invoke:"),
-                  (IMP)webview_external_invoke, "v@:@");
-  objc_registerClassPair(webViewDelegateClass);
-
-  w->priv.windowDelegate = [[webViewDelegateClass alloc] init];
-  objc_setAssociatedObject(w->priv.windowDelegate, "webview", (id)(w),
-                           OBJC_ASSOCIATION_ASSIGN);
-
-  NSString *nsTitle = [NSString stringWithUTF8String:w->title];
-  NSRect r = NSMakeRect(0, 0, w->width, w->height);
-  NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
-                     NSWindowStyleMaskMiniaturizable;
-  if (w->resizable) {
-    style = style | NSWindowStyleMaskResizable;
-  }
-  w->priv.window = [[NSWindow alloc] initWithContentRect:r
-                                               styleMask:style
-                                                 backing:NSBackingStoreBuffered
-                                                   defer:NO];
-  [w->priv.window autorelease];
-  [w->priv.window setTitle:nsTitle];
-  [w->priv.window setDelegate:w->priv.windowDelegate];
-  [w->priv.window center];
-
-  [[NSUserDefaults standardUserDefaults] setBool:!!w->debug
-                                          forKey:@"WebKitDeveloperExtras"];
-  [[NSUserDefaults standardUserDefaults] synchronize];
-  w->priv.webview =
-      [[WebView alloc] initWithFrame:r frameName:@"WebView" groupName:nil];
-  NSURL *nsURL = [NSURL
-      URLWithString:[NSString stringWithUTF8String:webview_check_url(w->url)]];
-  [[w->priv.webview mainFrame] loadRequest:[NSURLRequest requestWithURL:nsURL]];
-
-  [w->priv.webview setAutoresizesSubviews:YES];
-  [w->priv.webview
-      setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-  w->priv.webview.frameLoadDelegate = w->priv.windowDelegate;
-  [[w->priv.window contentView] addSubview:w->priv.webview];
-  [w->priv.window orderFrontRegardless];
-
-  [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-  [NSApp finishLaunching];
-  [NSApp activateIgnoringOtherApps:YES];
-
-  NSMenu *menubar = [[[NSMenu alloc] initWithTitle:@""] autorelease];
-
-  NSString *appName = [[NSProcessInfo processInfo] processName];
-  NSMenuItem *appMenuItem =
-      [[[NSMenuItem alloc] initWithTitle:appName action:NULL keyEquivalent:@""]
-          autorelease];
-  NSMenu *appMenu = [[[NSMenu alloc] initWithTitle:appName] autorelease];
-  [appMenuItem setSubmenu:appMenu];
-  [menubar addItem:appMenuItem];
-
-  NSString *title = [@"Hide " stringByAppendingString:appName];
-  NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:title
-                                                 action:@selector(hide:)
-                                          keyEquivalent:@"h"] autorelease];
-  [appMenu addItem:item];
-  item = [[[NSMenuItem alloc] initWithTitle:@"Hide Others"
-                                     action:@selector(hideOtherApplications:)
-                              keyEquivalent:@"h"] autorelease];
-  [item setKeyEquivalentModifierMask:(NSEventModifierFlagOption |
-                                      NSEventModifierFlagCommand)];
-  [appMenu addItem:item];
-  item = [[[NSMenuItem alloc] initWithTitle:@"Show All"
-                                     action:@selector(unhideAllApplications:)
-                              keyEquivalent:@""] autorelease];
-  [appMenu addItem:item];
-  [appMenu addItem:[NSMenuItem separatorItem]];
-
-  title = [@"Quit " stringByAppendingString:appName];
-  item = [[[NSMenuItem alloc] initWithTitle:title
-                                     action:@selector(terminate:)
-                              keyEquivalent:@"q"] autorelease];
-  [appMenu addItem:item];
-
-  [NSApp setMainMenu:menubar];
-
-  w->priv.should_exit = 0;
-  return 0;
-}
-
-WEBVIEW_API int webview_loop(struct webview *w, int blocking) {
-  NSDate *until = (blocking ? [NSDate distantFuture] : [NSDate distantPast]);
-  NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                      untilDate:until
-                                         inMode:NSDefaultRunLoopMode
-                                        dequeue:YES];
-  if (event) {
-    [NSApp sendEvent:event];
-  }
-  return w->priv.should_exit;
-}
-
-WEBVIEW_API int webview_eval(struct webview *w, const char *js) {
-  NSString *nsJS = [NSString stringWithUTF8String:js];
-  [[w->priv.webview windowScriptObject] evaluateWebScript:nsJS];
-  return 0;
-}
-
-WEBVIEW_API id webview_eval_get(struct webview *w, const char *js) {
-  NSString *nsJS = [NSString stringWithUTF8String:js];
-  //NSString* got = [[w->priv.webview windowScriptObject] callWebScriptMethod:@"fetch" withArguments:@[nsJs]];
-  NSString* got = [[w->priv.webview windowScriptObject] evaluateWebScript:nsJS];
-  //NSLog(@"Obj-C Got : %@",got);
-  return [got UTF8String];
-}
-
-WEBVIEW_API void webview_set_title(struct webview *w, const char *title) {
-  NSString *nsTitle = [NSString stringWithUTF8String:title];
-  [w->priv.window setTitle:nsTitle];
-}
-
-WEBVIEW_API void webview_set_fullscreen(struct webview *w, int fullscreen) {
-  int b = ((([w->priv.window styleMask] & NSWindowStyleMaskFullScreen) ==
-            NSWindowStyleMaskFullScreen)
-               ? 1
-               : 0);
-  if (b != fullscreen) {
-    [w->priv.window toggleFullScreen:nil];
-  }
-}
-
-WEBVIEW_API void webview_set_color(struct webview *w, uint8_t r, uint8_t g,
-                                   uint8_t b, uint8_t a) {
-  [w->priv.window setBackgroundColor:[NSColor colorWithRed:(CGFloat)r / 255.0
-                                                     green:(CGFloat)g / 255.0
-                                                      blue:(CGFloat)b / 255.0
-                                                     alpha:(CGFloat)a / 255.0]];
-  if (0.5 >= ((r / 255.0 * 299.0) + (g / 255.0 * 587.0) + (b / 255.0 * 114.0)) /
-                 1000.0) {
-    [w->priv.window
-        setAppearance:[NSAppearance
-                          appearanceNamed:NSAppearanceNameVibrantDark]];
-  } else {
-    [w->priv.window
-        setAppearance:[NSAppearance
-                          appearanceNamed:NSAppearanceNameVibrantLight]];
-  }
-  [w->priv.window setOpaque:NO];
-  [w->priv.window setTitlebarAppearsTransparent:YES];
-  [w->priv.webview setDrawsBackground:NO];
-}
-
-WEBVIEW_API void webview_dialog(struct webview *w,
-                                enum webview_dialog_type dlgtype, int flags,
-                                const char *title, const char *arg,
-                                char *result, size_t resultsz) {
-  if (dlgtype == WEBVIEW_DIALOG_TYPE_OPEN ||
-      dlgtype == WEBVIEW_DIALOG_TYPE_SAVE) {
-    NSSavePanel *panel;
-    if (dlgtype == WEBVIEW_DIALOG_TYPE_OPEN) {
-      NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-      if (flags & WEBVIEW_DIALOG_FLAG_DIRECTORY) {
-        [openPanel setCanChooseFiles:NO];
-        [openPanel setCanChooseDirectories:YES];
-      } else {
-        [openPanel setCanChooseFiles:YES];
-        [openPanel setCanChooseDirectories:NO];
-      }
-      [openPanel setResolvesAliases:NO];
-      [openPanel setAllowsMultipleSelection:NO];
-      panel = openPanel;
-    } else {
-      panel = [NSSavePanel savePanel];
-    }
-    [panel setCanCreateDirectories:YES];
-    [panel setShowsHiddenFiles:YES];
-    [panel setExtensionHidden:NO];
-    [panel setCanSelectHiddenExtension:NO];
-    [panel setTreatsFilePackagesAsDirectories:YES];
-    [panel beginSheetModalForWindow:w->priv.window
-                  completionHandler:^(NSInteger result) {
-                    [NSApp stopModalWithCode:result];
-                  }];
-    if ([NSApp runModalForWindow:panel] == NSModalResponseOK) {
-      const char *filename = [[[panel URL] path] UTF8String];
-      strlcpy(result, filename, resultsz);
-    }
-  } else if (dlgtype == WEBVIEW_DIALOG_TYPE_ALERT) {
-    NSAlert *a = [NSAlert new];
-    switch (flags & WEBVIEW_DIALOG_FLAG_ALERT_MASK) {
-    case WEBVIEW_DIALOG_FLAG_INFO:
-      [a setAlertStyle:NSAlertStyleInformational];
-      break;
-    case WEBVIEW_DIALOG_FLAG_WARNING:
-      NSLog(@"warning");
-      [a setAlertStyle:NSAlertStyleWarning];
-      break;
-    case WEBVIEW_DIALOG_FLAG_ERROR:
-      NSLog(@"error");
-      [a setAlertStyle:NSAlertStyleCritical];
-      break;
-    }
-    [a setShowsHelp:NO];
-    [a setShowsSuppressionButton:NO];
-    [a setMessageText:[NSString stringWithUTF8String:title]];
-    [a setInformativeText:[NSString stringWithUTF8String:arg]];
-    [a addButtonWithTitle:@"OK"];
-    [a runModal];
-    [a release];
-  }
-}
-
-static void webview_dispatch_cb(void *arg) {
-  struct webview_dispatch_arg *context = (struct webview_dispatch_arg *)arg;
-  (context->fn)(context->w, context->arg);
-  free(context);
-}
-
-WEBVIEW_API void webview_dispatch(struct webview *w, webview_dispatch_fn fn,
-                                  void *arg) {
-  struct webview_dispatch_arg *context = (struct webview_dispatch_arg *)malloc(
-      sizeof(struct webview_dispatch_arg));
-  context->w = w;
-  context->arg = arg;
-  context->fn = fn;
-  dispatch_async_f(dispatch_get_main_queue(), context, webview_dispatch_cb);
-}
-
-WEBVIEW_API void webview_terminate(struct webview *w) {
-  w->priv.should_exit = 1;
-}
-WEBVIEW_API void webview_exit(struct webview *w) { [NSApp terminate:NSApp]; }
-WEBVIEW_API void webview_print_log(const char *s) { NSLog(@"%s", s); }
-
-#endif /* WEBVIEW_COCOA */
 
 #endif /* WEBVIEW_IMPLEMENTATION */
 
