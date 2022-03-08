@@ -20,7 +20,7 @@ import os
 #=======================================
 
 when defined(windows):
-    {.compile("pfd/pfd.cc","-std=c++1 -static-libc++").}
+    {.compile("pfd/pfd.cc","-std=c++11 -static-libstdc++").}
 else:
     {.compile("pfd/pfd.cc","-std=c++11").}
 
