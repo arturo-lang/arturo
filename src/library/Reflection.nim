@@ -23,7 +23,7 @@ when not defined(WEB):
 import helpers/terminal as terminalHelper
 
 import vm/lib
-import vm/[env, exec]
+import vm/[env, exec, parse]
 
 #=======================================
 # Methods
