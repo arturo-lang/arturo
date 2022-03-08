@@ -13,7 +13,7 @@
 # Libraries
 #=======================================
 
-import os, parseopt, sequtils
+import os, parseopt,sequtils
 import strformat, strutils, tables
 
 import src/helpers/terminal
@@ -52,14 +52,16 @@ let
         "arm"               : "--cpu:arm",
         "arm64"             : "--cpu:arm64 --gcc.path:/usr/bin --gcc.exe:aarch64-linux-gnu-gcc --gcc.linkerexe:aarch64-linux-gnu-gcc",
         "debug"             : "-d:DEBUG --debugger:on --debuginfo --linedir:on",
-        "dev"               : "-d:DEV --listCmd --verbosity:1 --hints:on",
+        "dev"               : "--embedsrc:on -d:DEV --listCmd --verbosity:1 --hints:on",
         "dontcompress"      : "",
         "dontinstall"       : "",
         "full"              : "",
         "log"               : "",
         "mini"              : "",
         "noasciidecode"     : "-d:NOASCIIDECODE",
+        "noclipboard"       : "-d:NOCLIPBOARD",
         "nodev"             : "",
+        "nodialogs"         : "-d:NODIALOGS",
         "noexamples"        : "-d:NOEXAMPLES",
         "nogmp"             : "-d:NOGMP",
         "noparsers"         : "-d:NOPARSERS",
@@ -69,6 +71,7 @@ let
         "profile"           : "-d:PROFILE --profiler:on --stackTrace:on",
         "release"           : "--passC:'-flto'",
         "safe"              : "-d:SAFE",
+        "vcc"               : "",
         "verbose"           : "-d:VERBOSE",
         "web"               : "--verbosity:3 -d:WEB"
     }.toTable
@@ -85,13 +88,13 @@ var
     PRINT_LOG           = false
     RUN_UNIT_TESTS      = false
     FOR_WEB             = false
-    IS_DEV              = false     
+    IS_DEV              = false 
     MODE                = ""       
 
-    FLAGS*              = "--skipUserCfg:on --skipProjCfg:on --skipParentCfg:on --colors:off -d:release -d:danger " &
+    FLAGS*              = "--skipUserCfg:on --colors:off -d:release -d:danger " &
                           "--panics:off --mm:orc --checks:off --overflowChecks:on " &
-                          "-d:ssl --passC:-O3 --cincludes:extras --nimcache:.cache " & 
-                          "--embedsrc:on --path:src --opt:speed"
+                          "-d:ssl --cincludes:extras --nimcache:.cache " & 
+                          "--path:src --opt:speed --passC:-O3"
     CONFIG              ="@full"
 
     ARGS: seq[string]   = @[] 
@@ -169,6 +172,46 @@ proc showBuildInfo*() =
 # Helpers
 #=======================================
 
+proc recompressJS*(jsFile: string) =
+    let outputFile = jsFile #.replace(".min.js", ".final.min.js")
+    var js = readFile(jsFile)
+
+    # replace Field0, Field1, etc with F0, F1, etc
+    js = js.replaceWord("Field0", "F0")
+           .replaceWord("Field1", "F1")
+           .replaceWord("Field2", "F2")
+           .replaceWord("Field3", "F3")
+
+    # replace redundant error messages
+    js = js.multiReplace(
+        ("field '", ""),
+        ("' is not accessible for type '", ""),
+        ("' using ", ""),
+        ("'kind = ", ""),
+        ("'iKind = ", ""),
+        ("'tpKind = ", ""),
+        ("'fnKind = ", "")
+    )
+
+    # replace other more-verbose identifiers
+    js = js.multiReplace(
+        ("Stack_1660944389", "STA"),
+        ("finalizer", "FIN"),
+        ("counter", "COU"),
+        ("tpKindValue", "TKDV"),
+        ("tpKind", "TKD"),
+        ("iKindValue", "IKDV"),
+        ("iKind", "IKD"),
+        ("fnKindValue", "FKDV"),
+        ("fnKind", "FKD"),
+        ("dbKindValue", "DKDV"),
+        ("dbKind", "DKD"),
+        ("offsetBase", "OFFB"),
+        ("offset", "OFF")
+    )
+
+    writeFile(outputFile, js)
+
 proc getShellRc*(): string =
     # will only be called on non-Windows systems -
     # are there any more shells that are not taken into account?
@@ -187,6 +230,8 @@ proc miniBuild*() =
     # all the necessary "modes" for mini builds
     for k in [
         "noasciidecode", 
+        "noclipboard",
+        "nodialogs",
         "noexamples", 
         "nogmp", 
         "noparsers", 
@@ -197,7 +242,7 @@ proc miniBuild*() =
         FLAGS = "{FLAGS} {OPTIONS[k]}".fmt
 
     # plus, shrinking + the MINI flag
-    FLAGS = "{FLAGS} --opt:size -d:MINI".fmt
+    FLAGS = FLAGS.replace("--opt:speed ","") & " --opt:size -d:MINI"
 
 proc compressBinary() =
     if COMPRESS:
@@ -209,6 +254,8 @@ proc compressBinary() =
             let (_, code) = gorgeEx r"uglifyjs {BINARY} -c -m ""toplevel,reserved=['A$']"" -c -o {minBin}".fmt
             if code!=0:
                 echo "{RED}   uglifyjs: 3rd-party tool not available{CLEAR}".fmt
+            else:
+                recompressJS(minBin)
         else:
             discard
         # TODO(build.nims) Check compression
@@ -239,6 +286,15 @@ proc compile*(footer=false): int =
     var outp = ""
     var res = 0
 
+    # use VCC for non-MINI Windows builds
+    if (hostOS=="windows" and not FLAGS.contains("NOWEBVIEW") and IS_DEV):
+        let (_,_) = gorgeEx "src\\extras\\webview\\deps\\build.bat"
+
+    # if hostOS=="windows":
+    #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
+    #     echo FLAGS
+    when defined(windows):
+        FLAGS = """{FLAGS}  --passL:"-static-libstdc++ -static-libgcc -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic" --gcc.linkerexe="g++"""".fmt
     # let's go for it
     if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
@@ -265,6 +321,9 @@ proc installAll*() =
         cpFile(toExe(BINARY), TARGET_FILE)
         if hostOS != "windows":
             exec(r"chmod +x {TARGET_FILE}".fmt)
+        else:
+            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\webview.dll","bin\\webview.dll")
+            cpFile("src\\extras\\webview\\deps\\dlls\\x64\\WebView2Loader.dll","bin\\WebView2Loader.dll")
         echo "   deployed to: {ROOT_DIR}{CLEAR}".fmt
 
 #=======================================

@@ -17,6 +17,15 @@ canExecute?: function [scri][
     scr: extract.filename scri
     if sys\release='mini [
         if in? scr [
+            "branching"
+            "ackermann function"
+            "loops - continue"
+            "next special primes"
+            "sorting algorithms - cycle sort"
+            "sorting algorithms - pancake sort"
+            
+            "trigonometric functions"
+
             "runtime.NumberOutOfPermittedRange"
             "iban"
             "integer overflow"

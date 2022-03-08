@@ -1,0 +1,107 @@
+; main routes
+ROUTES: #[
+    GET: #[]
+    POST: #[]
+    PUT: #[]
+    PATCH: #[]
+    DELETE: #[]
+]
+
+; route helpers
+GET:    function [pattern, action]-> ROUTES\GET\[pattern]: var'action
+POST:   function [pattern, action]-> ROUTES\POST\[pattern]: var'action
+PUT:    function [pattern, action]-> ROUTES\PUT\[pattern]: var'action
+PATCH:  function [pattern, action]-> ROUTES\PATCH\[pattern]: var'action
+DELETE: function [pattern, action]-> ROUTES\DELETE\[pattern]: var'action
+
+; initial route initialization
+initServerInternal: function [serverRoutes][
+    do serverRoutes
+]
+
+; main request handler
+serveInternal: function [Request, verbose][
+    serverResponse: #[
+        serverBody: ""
+        serverPattern: ""
+        serverStatus: null
+        serverHeaders: ""
+        serverBenchmark: 0.0
+    ]
+
+    customServerStatus: false
+
+    send: function [str][
+        servedContent: "text/plain"
+
+        if not? null? attr 'css     -> servedContent: "text/css"
+        if not? null? attr 'html    -> servedContent: "text/html"
+        if not? null? attr 'js      -> servedContent: "application/javascript"
+        if not? null? attr 'json    -> servedContent: "application/json"
+        if not? null? attr 'xml     -> servedContent: "application/xml"
+
+        servedContent: "Content-Type: " ++ servedContent
+
+        servedHeaders: new @[servedContent]
+        extraHeaders: attr 'headers
+        if not? null? extraHeaders ->
+            'servedHeaders ++ extraHeaders
+
+        extraStatus: attr 'status
+        if not? null? extraStatus ->
+            serverResponse\serverStatus: extraStatus
+
+        serverResponse\serverHeaders: join.with:"\c\L" servedHeaders
+        return str
+    ]
+
+    callActionFunction: function [actionFunc, ptrn][
+        actionParams: keys get info.get 'actionFunc 'args
+        passedParams: new []
+
+        if positive? size actionParams [
+            matchedGroups: match.capture Request\path ptrn
+            loop actionParams 'actionParam [
+                if and? [dictionary? Request\body][key? Request\body actionParam] ->
+                    'passedParams ++ Request\body\[actionParam]
+                
+                if key? Request\query actionParam ->
+                    'passedParams ++ Request\query\[actionParam]
+
+                if key? matchedGroups actionParam ->
+                    'passedParams ++ matchedGroups\[actionParam]
+            ]
+        ]
+
+        call var'actionFunc passedParams
+    ]
+
+    getServerResponse: [
+        loop keys ROUTES\[Request\method] 'pattern [
+            if not? empty? match Request\path "^"++pattern++"$" [
+                action: ROUTES\[Request\method]\[pattern]
+
+                serverResponse\serverPattern: pattern
+                try?.verbose [
+                    (block? var'action)? [
+                        serverResponse\serverBody: do action
+                    ][
+                        serverResponse\serverBody: callActionFunction var'action pattern
+                    ]
+                    if null? serverResponse\serverStatus ->
+                        serverResponse\serverStatus: 200 ; OK
+                ]
+                else [
+                    serverResponse\serverStatus: 500 ; Internal Server Error
+                ]
+            ]
+        ]
+    ]
+
+    serverResponse\serverBenchmark: benchmark.get getServerResponse
+
+    if null? serverResponse\serverStatus ->
+        serverResponse\serverStatus: 404 ; Not Found
+
+    return serverResponse
+]

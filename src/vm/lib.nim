@@ -79,7 +79,7 @@ template builtin*(n: string, alias: SymbolKind, rule: PrecedenceKind, descriptio
                 act
             )
         else:
-            let b = newBuiltin(n, alias, rule, "[" & static (instantiationInfo().filename).replace(".nim") & "]", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
+            let b = newBuiltin(n, alias, rule, "", static argsLen, initOrderedTable[string,ValueSpec](), initOrderedTable[string,(ValueSpec,string)](), returns, cleanExample, proc () =
                 require(n, args)
                 act
             )
