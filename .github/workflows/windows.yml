@@ -111,8 +111,14 @@ jobs:
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
           ./bin/arturo tools/tester.art
 
+      - name: Create artifact
+        run: |
+          mkdir arturo-${{matrix.version}}-${{matrix.os}}
+          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+
       - name: Upload Artifacts
-        uses: 'actions/upload-artifact@v2'
+        uses: 'actions/upload-artifact@v1'
         with:
-          name: "arturo-${{matrix.version}}-${{matrix.os}}"
-          path: bin/arturo.exe
+          name: arturo-${{matrix.version}}-${{matrix.os}}
+          path: arturo-${{matrix.version}}-${{matrix.os}}
