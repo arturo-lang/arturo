@@ -344,10 +344,11 @@ proc defineSymbols*() =
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 ##########################################################
+                let showExamples = (popAttr("examples")!=VNULL)
                 if (popAttr("get") != VNULL):
                     push(newDictionary(getInfo(x.s, InPlace, Aliases)))
                 else:
-                    printInfo(x.s, InPlace, Aliases, withExamples = (popAttr("examples")!=VNULL))
+                    printInfo(x.s, InPlace, Aliases, withExamples = showExamples)
 
     builtin "inline?",
         alias       = unaliased, 
