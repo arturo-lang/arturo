@@ -149,7 +149,7 @@ proc syntaxHighlight(code: string) =
     let literalColor = fg(rgb("129"))
     let functionColor = fg(rgb("87"))
     let labelColor = fg(rgb("148"))
-    let sugarColor = fg(rgb("208"))
+    let sugarColor = bold(rgb("208"))
     let symbolColor = fg(rgb("124"))
     let stringColor = fg(rgb("221"))
 
@@ -160,6 +160,7 @@ proc syntaxHighlight(code: string) =
         line.multiReplace(@[
             colorizeToken(commentColor, """(;.+)$"""),
             colorizeToken(stringColor, """(\"[^\"]+\")"""),
+            colorizeToken(stringColor, """(`[^\`]+`)"""),
             colorizeToken(literalColor, """('[\w]+\b\??:?)"""),
             colorizeToken(labelColor, """([\w]+\b\??:)"""),
             colorizeToken(sugarColor, """(->|=>|\||\:\:|[\-]{3,})"""),
