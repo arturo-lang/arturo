@@ -19,7 +19,10 @@ import os
 # Compilation & Linking
 #=======================================
 
-{.compile("pfd/pfd.cc","-std=c++11").}
+when defined(windows):
+    {.compile("pfd/pfd.cc","-std=c++1 -static-libc++").}
+else:
+    {.compile("pfd/pfd.cc","-std=c++11").}
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
