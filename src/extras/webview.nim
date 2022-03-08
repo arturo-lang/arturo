@@ -42,7 +42,7 @@ elif defined(macosx):
 elif defined(windows):
     when not defined(WEBVIEW_NOEDGE):
         {.passC: "-DWEBVIEW_EDGE=1 -mwindows".}
-        {.passL: """-static-libstdc++ -std=c++17 -Wl,-Bstatic -lstdc++ -L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/x64 -lwebview -Wl,-Bdynamic -lWebView2Loader""".}
+        {.passL: """-static-libstdc++ -std=c++17 -L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/x64 -lwebview -lWebView2Loader""".}
     else:
         {.passC: "-DWEBVIEW_STATIC=1 -DWEBVIEW_IMPLEMENTATION=1 -DWEBVIEW_WINAPI=1".}
         {.passL: "-lole32 -lcomctl32 -loleaut32 -luuid -lgdi32".}
