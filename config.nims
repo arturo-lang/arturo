@@ -11,3 +11,6 @@ if hostOS=="windows":
                                                   .replace("/lib","/bin")
         )
     )
+
+when defined(windows): 
+    switch("dynlibOverride", "pcre64")
