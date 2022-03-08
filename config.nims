@@ -12,5 +12,5 @@ if hostOS=="windows":
         )
     )
 
-when defined(windows): 
-    switch("dynlibOverride", "crypto-")
+# when defined(windows): 
+#     switch("dynlibOverride", "crypto-")
