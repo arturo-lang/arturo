@@ -59,7 +59,7 @@ jobs:
 
           cp src/extras/webview/deps/dlls/x64/*.dll bin
           
-          echo "${{ github.workspace }}/nim/nim-1.6.4/bin" >> $GITHUB_PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
 
           nim --version
 
@@ -77,7 +77,7 @@ jobs:
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
           
-          echo "${{ github.workspace }}/nim/nim-1.6.4/bin" >> $GITHUB_PATH
+          export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
 
           ./build.nims install ${{ matrix.version }} log
 
