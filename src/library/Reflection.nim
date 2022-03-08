@@ -346,10 +346,8 @@ proc defineSymbols*() =
                 ##########################################################
                 if (popAttr("get") != VNULL):
                     push(newDictionary(getInfo(x.s, InPlace, Aliases)))
-                elif (popAttr("examples") != VNULL):
-                    printExamples(InPlace)
                 else:
-                    printInfo(x.s, InPlace, Aliases)
+                    printInfo(x.s, InPlace, Aliases, withExamples = (popAttr("examples")!=VNULL))
 
     builtin "inline?",
         alias       = unaliased, 
