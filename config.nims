@@ -13,4 +13,4 @@ if hostOS=="windows":
     )
 
 when defined(windows): 
-    switch("dynlibOverride", "pcre64")
+    switch("dynlibOverride", "crypto-")
