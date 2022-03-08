@@ -293,8 +293,8 @@ proc compile*(footer=false): int =
     # if hostOS=="windows":
     #     FLAGS = """{FLAGS} --passL:"-static """.fmt & staticExec("pkg-config --libs-only-L libcrypto").strip() & """ -lcrypto -Bdynamic" """.fmt
     #     echo FLAGS
-    # when defined(windows):
-    #     FLAGS = """{FLAGS} --passL:"-static-libstdc++"""".fmt
+    when defined(windows):
+        FLAGS = """{FLAGS} --passL:"-static-libstdc++" --gcc.linkerexe="g++"""".fmt
     # let's go for it
     if IS_DEV or PRINT_LOG:
         # if we're in dev mode we don't really care about the success/failure of the process -
