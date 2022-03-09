@@ -222,7 +222,7 @@ template acceptClient() =
 template closeClient(selector: Selector[Data],
                                                          fd: SocketHandle|int,
                                                          inLoop = true) =
-    # TODO: Can POST body be sent with Connection: Close?
+    # FIX: Can POST body be sent with Connection: Close?
 
     var data: ptr Data = addr selector.getData(fd)
     let isRequestComplete = data.reqFut.isNil or data.reqFut.finished
@@ -612,6 +612,6 @@ when false:
         ## **NOTE:** This is not yet implemented.
 
         doAssert false
-        # TODO: Figure out the best way to implement this. One way is to use async
+        # FIX: Figure out the best way to implement this. One way is to use async
         # events to signal our `eventLoop`. Maybe it would be better not to support
         # multiple servers running at the same time?
