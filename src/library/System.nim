@@ -286,9 +286,15 @@ proc defineSymbols*() =
                 "code"  : ({Integer},"use given error code"),
             },
             returns     = {Nothing},
-            # TODO(System\terminate) add documentation example
-            #  labels: library,documentation,easy
             example     = """
+                ; start process
+                pid: execute.async "someProcessThatDoesSomethingInTheBackground"
+
+                ; wait for 5 seconds
+                pause 5000 
+
+                ; terminate background process
+                terminate pid
             """:
                 ##########################################################
                 var errCode = QuitSuccess
