@@ -64,7 +64,7 @@ proc defineSymbols*() =
             example     = """
             copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
             ; copied file
-            ;;;;
+            ..........
             copy "testfolder" normalize.tilde "~/Desktop/testfolder"
             ; copied whole folder
             """:
@@ -161,7 +161,7 @@ proc defineSymbols*() =
             ;         execute  :		true :boolean
             ;     ]
             ; ]
-            ;;;;
+            ..........
             permissions.set:#[others:#[write:true]] "bin/arturo"
             ; gave write permission to 'others'
             """:
@@ -242,13 +242,13 @@ proc defineSymbols*() =
             example     = """
             ; reading a simple local file
             str: read "somefile.txt"
-            ;;;;
+            ..........
             ; also works with remote urls
             page: read "http://www.somewebsite.com/page.html"
-            ;;;;
+            ..........
             ; we can also "read" JSON data as an object
             data: read.json "mydata.json"
-            ;;;;
+            ..........
             ; or even convert Markdown to HTML on-the-fly
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
@@ -337,7 +337,7 @@ proc defineSymbols*() =
                     "/Users/drkameleon/Desktop/gotoREADME.md"
             ; creates a symbolic link to our readme file
             ; in our desktop
-            ;;;;
+            ..........
             symlink.hard relative "arturo/README.md" 
                     "/Users/drkameleon/Desktop/gotoREADME.md"
             ; hard-links (effectively copies) our readme file
@@ -410,10 +410,10 @@ proc defineSymbols*() =
             example     = """
             ; write some string data to given file path
             write "somefile.txt" "Hello world!"
-            ;;;;
+            ..........
             ; we can also write any type of data as JSON
             write.json "data.json" myData
-            ;;;;
+            ..........
             ; append to an existing file
             write.append "somefile.txt" "Yes, Hello again!"
             """:

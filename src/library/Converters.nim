@@ -424,7 +424,7 @@ proc defineSymbols*() =
             ; we are in the block
             ; yep
             ; => [4 123]
-            ;;;;
+            ..........
             ; initializing empty array with initial value
             x: array.of: 2 "done"
             inspect.muted x
@@ -432,7 +432,7 @@ proc defineSymbols*() =
             ;     done :string
             ;     done :string
             ; ]
-            ;;;;
+            ..........
             ; initializing empty n-dimensional array with initial value
             x: array.of: [3 4] 0          ; initialize a 3x4 2D array
                                             ; with zeros
@@ -508,7 +508,7 @@ proc defineSymbols*() =
             print as.binary 123           ; 1111011
             print as.octal 123            ; 173
             print as.hex 123              ; 7b
-            ;;;;
+            ..........
             print as.ascii "thís ìß ñot à tést"
             ; this iss not a test
         """:
@@ -689,7 +689,7 @@ proc defineSymbols*() =
             ; we are in the block
             ; yep
             ; d: [name: "John", age: 34]
-            ;;;;
+            ..........
             e: #.lower [
                 Name: "John"
                 suRnaMe: "Doe"
@@ -789,12 +789,12 @@ proc defineSymbols*() =
             
             f: $[x][x+2]
             print f 10                ; 12
-            ;;;;
+            ..........
             multiply: function [x,y][
                 x * y
             ]
             print multiply 3 5        ; 15
-            ;;;;
+            ..........
             ; forcing typed parameters
             addThem: function [
                 x :integer
@@ -802,7 +802,7 @@ proc defineSymbols*() =
             ][
                 x + y
             ]
-            ;;;;
+            ..........
             ; adding complete documentation for user function
             ; using data comments within the body
             addThem: function [
@@ -840,7 +840,7 @@ proc defineSymbols*() =
             ; |
             ; |        returns  :integer :floating
             ; |--------------------------------------------------------------------------------
-            ;;;;
+            ..........
             publicF: function .export['x] [z][
                 print ["z =>" z]
                 x: 5
@@ -851,7 +851,7 @@ proc defineSymbols*() =
             
             print x
             ; 5
-            ;;;;
+            ..........
             ; memoization
             fib: $[x].memoize[
                 if? x<2 [1]
@@ -999,7 +999,7 @@ proc defineSymbols*() =
             to :boolean "true"            ; true
 
             to :literal "symbol"          ; 'symbol
-            ;;;;
+            ..........
             to :string 2020               ; "2020"
             to :string 'symbol            ; "symbol"
             to :string :word              ; "word"
@@ -1009,11 +1009,11 @@ proc defineSymbols*() =
 
             to :string .format:".2f" 123.12345
             ; 123.12
-            ;;;;
+            ..........
             to :block "one two three"       ; [one two three]
 
             do to :block "print 123"        ; 123
-            ;;;;
+            ..........
             to :date 0          ; => 1970-01-01T01:00:00+01:00
 
             print now           ; 2021-05-22T07:39:10+02:00
@@ -1021,18 +1021,18 @@ proc defineSymbols*() =
 
             to :date .format:"dd/MM/yyyy" "22/03/2021"
             ; 2021-03-22T00:00:00+01:00
-            ;;;;
+            ..........
             to [:string] [1 2 3 4]         
             ; ["1" "2" "3" "4"]
 
             to [:char] "hello"
             ; [`h` `e` `l` `l` `o`]
-            ;;;;
+            ..........
             define :person [name surname age][]
 
             to :person ["John" "Doe" 35]
             ; [name:John surname:Doe age:35]
-            ;;;;
+            ..........
             to :color [255 0 10]
             ; => #FF000A
 

@@ -164,7 +164,7 @@ proc defineSymbols*() =
         returns     = {Nothing},
         example     = """
             exit              ; (terminates the program)
-            ;;;;
+            ..........
             exit.with: 3      ; (terminates the program with code 3)
         """:
             ##########################################################
@@ -190,7 +190,7 @@ proc defineSymbols*() =
             panic.code:1 "something went terribly wrong. quitting..."
             ; quits with the given code and 
             ; prints a properly format error with the given message
-            ;;;;
+            ..........
             panic.unstyled "oops! that was wrong"
             ; quits with the default exit code (= 0) and
             ; just outputs a simple - unformatted - message

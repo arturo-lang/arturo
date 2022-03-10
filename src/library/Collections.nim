@@ -56,14 +56,14 @@ proc defineSymbols*() =
             append "hell" "o"         ; => "hello"
             append [1 2 3] 4          ; => [1 2 3 4]
             append [1 2 3] [4 5]      ; => [1 2 3 4 5]
-            ;;;;
+            ..........
             print "hell" ++ "o!"      ; hello!             
             print [1 2 3] ++ 4 ++ 5   ; [1 2 3 4 5]
-            ;;;;
+            ..........
             a: "hell"
             append 'a "o"
             print a                   ; hello
-            ;;;;
+            ..........
             b: [1 2 3]
             'b ++ 4
             print b                   ; [1 2 3 4]
@@ -120,10 +120,10 @@ proc defineSymbols*() =
         example     = """
             print chop "books"          ; book
             print chop chop "books"     ; boo
-            ;;;;
+            ..........
             str: "books"
             chop 'str                   ; str: "book"
-            ;;;;
+            ..........
             chop [1 2 3 4]              ; => [1 2 3]
         """:
             ##########################################################
@@ -172,7 +172,7 @@ proc defineSymbols*() =
             
             contains? arr 5             ; => false
             contains? arr 2             ; => true
-            ;;;;
+            ..........
             user: #[
                 name: "John"
                 surname: "Doe"
@@ -182,7 +182,7 @@ proc defineSymbols*() =
             contains? dict "Paul"       ; => false
             
             contains? keys dict "name"  ; => true
-            ;;;;
+            ..........
             contains? "hello" "x"       ; => false
         """:
             ##########################################################
@@ -216,7 +216,7 @@ proc defineSymbols*() =
         example     = """
             str: drop "some text" 5
             print str                     ; text
-            ;;;;
+            ..........
             arr: 1..10
             drop 'arr 3                   ; arr: [4 5 6 7 8 9 10]
         """:
@@ -244,7 +244,7 @@ proc defineSymbols*() =
         example     = """
             a: [1 2 3]
             empty 'a              ; a: []
-            ;;;;
+            ..........
             str: "some text"
             empty 'str            ; str: ""
         """:
@@ -321,7 +321,7 @@ proc defineSymbols*() =
         example     = """
             print first "this is some text"       ; t
             print first ["one" "two" "three"]     ; one
-            ;;;;
+            ..........
             print first.n:2 ["one" "two" "three"] ; one two
         """:
             ##########################################################
@@ -348,14 +348,14 @@ proc defineSymbols*() =
             arr: [[1 2 3] [4 5 6]]
             print flatten arr
             ; 1 2 3 4 5 6
-            ;;;;
+            ..........
             arr: [[1 2 3] [4 5 6]]
             flatten 'arr
             ; arr: [1 2 3 4 5 6]
-            ;;;;
+            ..........
             flatten [1 [2 3] [4 [5 6]]]
             ; => [1 2 3 4 5 6]
-            ;;;;
+            ..........
             flatten.once [1 [2 3] [4 [5 6]]]
             ; => [1 2 3 4 [5 6]]
         """:
@@ -385,7 +385,7 @@ proc defineSymbols*() =
             
             print get user 'surname       ; Doe
             print user\["username"]       ; Doe
-            ;;;;
+            ..........
             arr: ["zero" "one" "two"]
             
             print arr\1                   ; one
@@ -393,7 +393,7 @@ proc defineSymbols*() =
             print get arr 2               ; two
             y: 2
             print arr\[y]                 ; two
-            ;;;;
+            ..........
             str: "Hello world!"
             
             print str\0                   ; H
@@ -438,7 +438,7 @@ proc defineSymbols*() =
             
             in? 5 arr             ; => false
             in? 2 arr             ; => true
-            ;;;;
+            ..........
             user: #[
                 name: "John"
                 surname: "Doe"
@@ -448,7 +448,7 @@ proc defineSymbols*() =
             in? "Paul" dict       ; => false
             
             in? "name" keys dict  ; => true
-            ;;;;
+            ..........
             in? "x" "hello"       ; => false
         """:
             ##########################################################
@@ -482,9 +482,9 @@ proc defineSymbols*() =
         example     = """
             ind: index "hello" "e"
             print ind                 ; 1
-            ;;;;
+            ..........
             print index [1 2 3] 3     ; 2
-            ;;;;
+            ..........
             type index "hello" "x"
             ; :null
         """:
@@ -527,7 +527,7 @@ proc defineSymbols*() =
             
             print insert "heo" 2 "ll"
             ; hello
-            ;;;;
+            ..........
             dict: #[
                 name: John
             ]
@@ -625,7 +625,7 @@ proc defineSymbols*() =
         example     = """
             print last "this is some text"       ; t
             print last ["one" "two" "three"]     ; three
-            ;;;;
+            ..........
             print last.n:2 ["one" "two" "three"] ; two three
         """:
             ##########################################################
@@ -732,14 +732,14 @@ proc defineSymbols*() =
         example     = """
             remove "hello" "l"        ; => "heo"
             print "hello" -- "l"      ; heo
-            ;;;;
+            ..........
             str: "mystring"
             remove 'str "str"         
             print str                 ; mying
-            ;;;;
+            ..........
             print remove.once "hello" "l"
             ; helo
-            ;;;;
+            ..........
             remove [1 2 3 4] 4        ; => [1 2 3]
         """:
             ##########################################################
@@ -807,13 +807,13 @@ proc defineSymbols*() =
         example     = """
             print repeat "hello" 3
             ; hellohellohello
-            ;;;;
+            ..........
             repeat [1 2 3] 3
             ; => [1 2 3 1 2 3 1 2 3]
-            ;;;;
+            ..........
             repeat 5 3
             ; => [5 5 5]
-            ;;;;
+            ..........
             repeat [[1 2 3]] 3
             ; => [[1 2 3] [1 2 3] [1 2 3]]
         """:
@@ -845,7 +845,7 @@ proc defineSymbols*() =
         example     = """
             print reverse [1 2 3 4]           ; 4 3 2 1
             print reverse "Hello World"       ; dlroW olleH
-            ;;;;
+            ..........
             str: "my string"
             reverse 'str
             print str                         ; gnirts ym
@@ -904,7 +904,7 @@ proc defineSymbols*() =
             ]
             
             set myDict 'name "Michael"        ; => [name: "Michael", age: 34]
-            ;;;;
+            ..........
             arr: [1 2 3 4]
             set arr 0 "one"                   ; => ["one" 2 3 4]
 
@@ -912,7 +912,7 @@ proc defineSymbols*() =
 
             x: 2    
             arr\[x]: "tres"                   ; => ["one" "dos" "tres" 4]
-            ;;;;
+            ..........
             str: "hello"
             str\0: `x`
             print str
@@ -956,7 +956,7 @@ proc defineSymbols*() =
         returns     = {Block,Nothing},
         example     = """
             shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]
-            ;;;;
+            ..........
             arr: [2 5 9]
             shuffle 'arr
             print arr                     ; 5 9 2
@@ -979,10 +979,10 @@ proc defineSymbols*() =
         example     = """
             arr: ["one" "two" "three"]
             print size arr                ; 3
-            ;;;;
+            ..........
             dict: #[name: "John", surname: "Doe"]
             print size dict               ; 2
-            ;;;;
+            ..........
             str: "some text"      
             print size str                ; 9
             
@@ -1009,7 +1009,7 @@ proc defineSymbols*() =
         returns     = {String,Block},
         example     = """
             slice "Hello" 0 3             ; => "Hell"
-            ;;;;
+            ..........
             print slice 1..10 3 4         ; 4 5
         """:
             ##########################################################
@@ -1036,9 +1036,9 @@ proc defineSymbols*() =
         example     = """
             a: [3 1 6]
             print sort a                  ; 1 3 6
-            ;;;;
+            ..........
             print sort.descending a       ; 6 3 1
-            ;;;;
+            ..........
             b: ["one" "two" "three"]
             sort 'b
             print b                       ; one three two
@@ -1115,7 +1115,7 @@ proc defineSymbols*() =
             sorted? [1 2 3 4 5]         ; => true
             sorted? [4 3 2 1 5]         ; => false
             sorted? [5 4 3 2 1]         ; => false
-            ;;;;
+            ..........
             sorted?.descending [5 4 3 2 1]      ; => true
             sorted?.descending [4 3 2 1 5]      ; => false
             sorted?.descending [1 2 3 4 5]      ; => false
@@ -1151,15 +1151,15 @@ proc defineSymbols*() =
         returns     = {Block,Nothing},
         example     = """
             split "hello"                 ; => [`h` `e` `l` `l` `o`]
-            ;;;;
+            ..........
             split.words "hello world"     ; => ["hello" "world"]
-            ;;;;
+            ..........
             split.every: 2 "helloworld"
             ; => ["he" "ll" "ow" "or" "ld"]
-            ;;;;
+            ..........
             split.at: 4 "helloworld"
             ; => ["hell" "oworld"]
-            ;;;;
+            ..........
             arr: 1..9
             split.at:3 'arr
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
@@ -1275,10 +1275,10 @@ proc defineSymbols*() =
         example     = """
             print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
             ; 1 2 3 4 2 3 4 5 6 7 
-            ;;;;
+            ..........
             arr: [4 2 1 1 3 6 6]
             squeeze 'arr            ; a: [4 2 1 3 6]
-            ;;;;
+            ..........
             print squeeze "hello world"
             ; helo world
         """:
@@ -1336,7 +1336,7 @@ proc defineSymbols*() =
         example     = """
             str: take "some text" 5
             print str                     ; some
-            ;;;;
+            ..........
             arr: 1..10
             take 'arr 3                   ; arr: [1 2 3]
         """:
@@ -1366,7 +1366,7 @@ proc defineSymbols*() =
         example     = """
             arr: [1 2 4 1 3 2]
             print unique arr              ; 1 2 4 3
-            ;;;;
+            ..........
             arr: [1 2 4 1 3 2]
             unique 'arr
             print arr                     ; 1 2 4 3

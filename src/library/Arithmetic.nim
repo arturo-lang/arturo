@@ -40,7 +40,7 @@ proc defineSymbols*() =
         example     = """
             print add 1 2      ; 3
             print 1 + 3        ; 4
-            ;;;;
+            ..........
             a: 4
             add 'a 1           ; a: 5
         """:
@@ -59,7 +59,7 @@ proc defineSymbols*() =
         returns     = {Integer,Floating,Nothing},
         example     = """
             print dec 5        ; 4
-            ;;;;
+            ..........
             a: 4
             dec 'a             ; a: 3
         """:
@@ -80,7 +80,7 @@ proc defineSymbols*() =
         example     = """
             print div 5 2      ; 2
             print 9 / 3        ; 3
-            ;;;;
+            ..........
             a: 6
             div 'a 3           ; a: 2
         """:
@@ -100,7 +100,7 @@ proc defineSymbols*() =
         returns     = {Floating,Nothing},
         example     = """
             print fdiv 5 2     ; 2.5
-            ;;;;
+            ..........
             a: 6
             fdiv 'a 3          ; a: 2.0
         """:
@@ -119,7 +119,7 @@ proc defineSymbols*() =
         returns     = {Integer,Floating,Nothing},
         example     = """
             print inc 5        ; 6
-            ;;;;
+            ..........
             a: 4
             inc 'a             ; a: 5
         """:
@@ -140,7 +140,7 @@ proc defineSymbols*() =
         example     = """
             print mod 5 2      ; 1
             print 9 % 3        ; 0
-            ;;;;
+            ..........
             a: 8
             mod 'a 3           ; a: 2
         """:
@@ -161,7 +161,7 @@ proc defineSymbols*() =
         example     = """
             print mul 1 2      ; 2
             print 2 * 3        ; 6
-            ;;;;
+            ..........
             a: 5
             mul 'a 2           ; a: 10
         """:
@@ -180,7 +180,7 @@ proc defineSymbols*() =
         returns     = {Integer,Floating,Complex,Nothing},
         example     = """
             print neg 1        ; -1
-            ;;;;
+            ..........
             a: 5
             neg 'a             ; a: -5
         """:
@@ -201,7 +201,7 @@ proc defineSymbols*() =
         example     = """
             print pow 2 3      ; 8
             print 3 ^ 2        ; 9
-            ;;;;
+            ..........
             a: 5
             pow 'a 2           ; a: 25
         """:
@@ -222,7 +222,7 @@ proc defineSymbols*() =
         example     = """
             print sub 2 1      ; 1
             print 5 - 3        ; 2
-            ;;;;
+            ..........
             a: 7
             sub 'a 2           ; a: 5
         """:

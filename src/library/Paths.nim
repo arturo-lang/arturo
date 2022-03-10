@@ -83,7 +83,7 @@ proc defineSymbols*() =
 
             print extract path 
             ; [directory:/this/is/some basename:path.txt filename:path extension:.txt]
-            ;;;;
+            ..........
             url: "http://subdomain.website.com:8080/path/to/file.php?q=something#there"
 
             print extract.scheme url            ; http
@@ -97,7 +97,7 @@ proc defineSymbols*() =
 
             print extract url
             ; [scheme:http host:subdomain.website.com port:8080 user: password: path:/path/to/file.php query:q=something anchor:there]
-            ;;;;
+            ..........
             extract #magenta
             ; => [red:255 green:0 blue:255]
 
@@ -234,7 +234,7 @@ proc defineSymbols*() =
             returns     = {String,Null},
             example     = """
             print module 'html        ; /usr/local/lib/arturo/html.art
-            ;;;;
+            ..........
             do.import module 'html    ; (imports given module)
             """:
                 ##########################################################
@@ -258,13 +258,13 @@ proc defineSymbols*() =
 
             normalize "~/one/../two/../../three"
             ; => three
-            ;;;;
+            ..........
             normalize.tilde "~/one/../two/../../three"
             ; => /Users/three
 
             normalize.tilde "~/Documents"
             ; => /Users/drkameleon/Documents
-            ;;;;
+            ..........
             normalize.executable "myscript"
             ; => ./myscript          
             """:

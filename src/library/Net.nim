@@ -59,7 +59,7 @@ proc defineSymbols*() =
             example     = """
             download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
             ; (downloads file as "logo.png")
-            ;;;;
+            ..........
             download.as:"arturoLogo.png"
                         "https://github.com/arturo-lang/arturo/raw/master/logo.png"
             
@@ -157,7 +157,7 @@ proc defineSymbols*() =
                 ;     "origin": "92.59.209.80", 
                 ;     "url": "https://httpbin.org/get?some=arg&another=123"
                 ; } headers:[server:gunicorn/19.9.0 content-length:341 access-control-allow-credentials:true content-type:application/json date:2021-05-03T10:47:14+02:00 access-control-allow-origin:* connection:keep-alive] status:200]
-                ;;;;
+                ..........
                 r: request "https://httpbin.org/get" #[some:"arg" another: 123]
                 body: read.json r\body
                 inspect body\headers
@@ -167,10 +167,10 @@ proc defineSymbols*() =
 	            ;       User-Agent       :	Arturo HTTP Client / 0.9.75 :string
 	            ;       X-Amzn-Trace-Id  :	Root=1-608fd5f3-7e47203117863c111a3aef3b :string
                 ; ]
-                ;;;;
+                ..........
                 print (request "https://httpbin.org/get" #[]) \ 'status
                 ; 200
-                ;;;;
+                ..........
                 print request.post "https://httpbin.org/post" #[some:"arg" another: 123]
                 ; ...same as above...
             """:

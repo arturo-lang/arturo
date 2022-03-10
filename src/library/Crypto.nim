@@ -70,7 +70,7 @@ proc defineSymbols*() =
         example     = """
             print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="
             ; Numquam fugiens respexeris
-            ;;;;
+            ..........
             print decode.url "http%3A%2F%2Ffoo+bar%2F"
             ; http://foo bar/
         """:
@@ -107,7 +107,7 @@ proc defineSymbols*() =
         example     = """
             print encode "Numquam fugiens respexeris"
             ; TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM=
-            ;;;;
+            ..........
             print encode.url "http://foo bar/"
             ; http%3A%2F%2Ffoo+bar%2F
         """:
@@ -172,7 +172,7 @@ proc defineSymbols*() =
             example     = """                
             print digest "Hello world"
             ; 3e25960a79dbc69b674cd4ec67a72c62
-            ;;;;
+            ..........
             print digest.sha "Hello world"
             ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
             """:
