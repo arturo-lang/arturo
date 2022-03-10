@@ -158,8 +158,8 @@ proc defineSymbols*() =
         example     = """
         """:
             ##########################################################
-            push(newLogical(identical(x, y))
-            
+            push(newLogical(identical(x, y)))
+
 #=======================================
 # Add Library
 #=======================================
