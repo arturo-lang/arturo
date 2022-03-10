@@ -156,6 +156,9 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
+            same? 1 2           ; => false
+            same? 3 3           ; => true
+            same? 3 3.0         ; => false
         """:
             ##########################################################
             push(newLogical(identical(x, y)))
