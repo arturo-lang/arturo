@@ -144,6 +144,21 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newLogical(x != y))
+
+    builtin "same?",
+        alias       = equal, 
+        rule        = InfixPrecedence,
+        description = "check if valueA and valueB are exactly the same (identity)",
+        args        = {
+            "valueA": {Any},
+            "valueB": {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+        """:
+            ##########################################################
+            push(newLogical(identical(x, y))
             
 #=======================================
 # Add Library
