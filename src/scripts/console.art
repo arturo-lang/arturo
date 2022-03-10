@@ -117,7 +117,7 @@ help: function [][
 ]
 
 lookup: function [what :string :literal :type][
-    ;; description: « look up built-in function by given string or type
+    ;; description: « lookup functions by given descriptive string or signature types
     ;; options: [
     ;;      returns: « check by return type
     ;; ]
