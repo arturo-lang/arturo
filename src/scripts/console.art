@@ -127,7 +127,7 @@ lookup: function [what :string :literal :type][
 
     if? or? string? what literal? what [
         results: select sort keys symbols 'sym ->
-            function?.builtin var sym
+            function? var sym
 
         results: select results 'sym [
             finfo: get info.get sym 'description
