@@ -532,6 +532,12 @@ func newSymbol*(m: SymbolKind): Value {.inline.} =
 func newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
 
+func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
+    Value(kind: SymbolLiteral, m: m)
+
+func newSymbolLiteral*(m: string): Value {.inline.} =
+    newSymbolLiteral(parseEnum[SymbolKind](m))
+
 func newColor*(l: VColor): Value {.inline.} =
     Value(kind: Color, l: l)
 
@@ -2099,7 +2105,7 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Symbol,
            SymbolLiteral: result = cast[Hash](ord(v.m))
-           
+
         of Color        : result = cast[Hash](v.l)
 
         of Date         : discard
