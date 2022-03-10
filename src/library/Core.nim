@@ -39,7 +39,7 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "assign symbol to given function",
         args        = {
-            "symbol"      : {Symbol, String, Block},
+            "symbol"      : {Symbol, SymbolLiteral, String, Block},
             "function"    : {Word, Literal, String}
         },
         attrs       = {
