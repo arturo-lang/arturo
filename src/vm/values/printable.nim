@@ -154,7 +154,8 @@ proc `$`*(v: Value): string {.inline.} =
         of Path,
            PathLabel    :
             result = v.p.map((x) => $(x)).join("\\")
-        of Symbol       :
+        of Symbol,
+           SymbolLiteral:
             return $(v.m)
         of Color        :
             return $(v.l)

@@ -159,19 +159,20 @@ type
         Path            = 14
         PathLabel       = 15
         Symbol          = 16
-        Color           = 17
-        Date            = 18
-        Binary          = 19
-        Dictionary      = 20
-        Function        = 21
-        Inline          = 22
-        Block           = 23
-        Database        = 24
-        Bytecode        = 25
+        SymbolLiteral   = 17
+        Color           = 18
+        Date            = 19
+        Binary          = 20
+        Dictionary      = 21
+        Function        = 22
+        Inline          = 23
+        Block           = 24
+        Database        = 25
+        Bytecode        = 26
 
-        Newline         = 26
-        Nothing         = 27
-        Any             = 28
+        Newline         = 27
+        Nothing         = 28
+        Any             = 29
 
     ValueSpec* = set[ValueKind]
 
@@ -252,7 +253,9 @@ type
                AttributeLabel:   r*  : string
             of Path,
                PathLabel:   p*  : ValueArray
-            of Symbol:      m*  : SymbolKind
+            of Symbol,
+               SymbolLiteral:      
+                   m*  : SymbolKind
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
@@ -528,6 +531,12 @@ func newSymbol*(m: SymbolKind): Value {.inline.} =
 
 func newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
+
+func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
+    Value(kind: SymbolLiteral, m: m)
+
+func newSymbolLiteral*(m: string): Value {.inline.} =
+    newSymbolLiteral(parseEnum[SymbolKind](m))
 
 func newColor*(l: VColor): Value {.inline.} =
     Value(kind: Color, l: l)
@@ -1628,7 +1637,8 @@ func `$`(v: Value): string {.inline.} =
 
         of Color        :
             return $(v.l)
-        of Symbol       :
+        of Symbol,
+           SymbolLiteral:
             return $(v.m)
 
         of Date     : return $(v.eobj)
@@ -1726,14 +1736,14 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of String       : dumpPrimitive(v.s, v)
         
         of Word,
-            Literal,
-            Label        : dumpIdentifier(v)
+           Literal,
+           Label        : dumpIdentifier(v)
 
         of Attribute,
-            AttributeLabel    : dumpAttribute(v)
+           AttributeLabel    : dumpAttribute(v)
 
         of Path,
-            PathLabel    :
+           PathLabel    :
             dumpBlockStart(v)
 
             for i,child in v.p:
@@ -1743,7 +1753,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
             dumpBlockEnd()
 
-        of Symbol       : dumpSymbol(v)
+        of Symbol, 
+           SymbolLiteral: dumpSymbol(v)
 
         of Color        : dumpPrimitive($(v.l), v)
 
@@ -1878,6 +1889,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Attribute         : result &= "." & v.r
         of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       :  result &= $(v.m)
+        of SymbolLiteral: result &= "'" & $(v.m)
         of Color        : result &= $(v.l)
 
         of Inline, Block:
@@ -2007,7 +2019,8 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                Literal: return x.s == y.s
             of Attribute,
                AttributeLabel: return x.r == y.r
-            of Symbol: return x.m == y.m
+            of Symbol,
+               SymbolLiteral: return x.m == y.m
             of Color: return x.l == y.l
             of Inline,
                Block:
@@ -2090,7 +2103,9 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(i)
             result = !$ result
 
-        of Symbol       : result = cast[Hash](ord(v.m))
+        of Symbol,
+           SymbolLiteral: result = cast[Hash](ord(v.m))
+
         of Color        : result = cast[Hash](v.l)
 
         of Date         : discard
