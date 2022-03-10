@@ -77,6 +77,30 @@ print join @[
     orange "# Launching interactive console - rock on! 🤘" BR
 ]
 
+; terminal-only methods
+
+help: function [][
+    sorted: select sort keys symbols 'sym ->
+        function?.builtin var sym
+
+    print repeat "-" 90
+    print pad.center (to :string size sorted) ++ " built-in functions available" 90
+    print repeat "-" 90
+
+    loop sorted 'key [
+        v: symbols\[key]
+        fparams: "(" ++ (join.with:"," to [:string] keys get info.get key 'args) ++ ")"
+        finfo: get info.get key 'description
+        finfo: replace finfo .regex {:\[[^\]]+\] :} ""
+
+        print (color.bold #magenta pad.right key 17) ++
+              (pad.right fparams 30) ++
+              " -> " ++
+              finfo
+
+    ]
+]
+
 ; start the REPL
 
 while [true] .import [
