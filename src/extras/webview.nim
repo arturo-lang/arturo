@@ -24,26 +24,26 @@ import extras/window
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
 when defined(linux):
-    {.compile("webview/webview_unix.cc","-std=c++11").}
+    {.compile("webview/webview-unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
              staticExec"pkg-config --cflags gtk+-3.0 webkit2gtk-4.0".}
     {.passL: "-lstdc++ " &
              staticExec"pkg-config --libs gtk+-3.0 webkit2gtk-4.0".}
 elif defined(freebsd):
-    {.compile("webview/webview_unix.cc","-std=c++11").}
+    {.compile("webview/webview-unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_GTK=1 " &
              staticExec"pkg-config --cflags gtk3 webkit2-gtk3".}
     {.passL: "-lstdc++ " &
              staticExec"pkg-config --libs gtk3 webkit2-gtk3".}
 elif defined(macosx):
-    {.compile("webview/webview_unix.cc","-std=c++11").}
+    {.compile("webview/webview-unix.cc","-std=c++11").}
     {.passC: "-DWEBVIEW_COCOA=1".}
     {.passL: "-lstdc++ -framework WebKit".}
 elif defined(windows):
     {.passC: "-DWEBVIEW_EDGE=1 -mwindows".}
     {.passL: """-static-libstdc++ -std=c++17 -L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/x64 -lwebview -lWebView2Loader""".}
 
-{.push header: "webview/webview_unix.h", cdecl.}
+{.push header: "webview/webview.h", cdecl.}
 
 #=======================================
 # Types
