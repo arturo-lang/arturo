@@ -322,6 +322,20 @@ proc defineSymbols*() =
             ; |        returns  :nothing
             ; |--------------------------------------------------------------------------------
             ..........
+            info '++
+
+            ; |--------------------------------------------------------------------------------
+            ; |         append  :function                                          0x107555A10
+            ; |          alias  ++
+            ; |--------------------------------------------------------------------------------
+            ; |                 append value to given collection
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  append collection :char :string :literal :block
+            ; |                        value :any
+            ; |
+            ; |        returns  :string :block :nothing
+            ; |--------------------------------------------------------------------------------
+            ..........
             print info.get 'print
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
