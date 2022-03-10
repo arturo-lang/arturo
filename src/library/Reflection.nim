@@ -401,8 +401,11 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-            print integer? 123          ; true
-            print integer? "hello"      ; false
+            print integer? 123                  ; true
+            print integer? "hello"              ; false
+            ;;;;
+            integer?.big 123                    ; => false
+            integer?.big 12345678901234567890   ; => true
         """:
             ##########################################################
             if (popAttr("big")!=VNULL):
