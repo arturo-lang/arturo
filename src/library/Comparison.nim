@@ -22,10 +22,6 @@ import vm/lib
 # Methods
 #=======================================
 
-# TODO(Comparison) Add function to check for "identity"?
-#  Currently, we have only `equal?`. Should we add another like `identical?`?
-#  labels: library,open discussion
-
 proc defineSymbols*() =
 
     when defined(VERBOSE):
