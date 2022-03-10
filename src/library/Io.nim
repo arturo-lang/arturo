@@ -194,7 +194,7 @@ proc defineSymbols*() =
             
             print ["Hello" name "!"]
             ; Hello Bob!
-            ;;;;
+            ..........
             ; creating a simple REPL
             while [true][ 
                 inp: input.repl 

@@ -181,7 +181,7 @@ proc defineSymbols*() =
             ]
             
             ; [benchmark] time: 0.065s
-            ;;;;
+            ..........
             benchmark.get [
                 loop 1..10000 => prime?
             ]
@@ -339,7 +339,7 @@ proc defineSymbols*() =
             ; |
             ; |        returns  :nothing
             ; |--------------------------------------------------------------------------------
-            ;;;;
+            ..........
             print info.get 'print
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
@@ -403,7 +403,7 @@ proc defineSymbols*() =
         example     = """
             print integer? 123                  ; true
             print integer? "hello"              ; false
-            ;;;;
+            ..........
             integer?.big 123                    ; => false
             integer?.big 12345678901234567890   ; => true
         """:
@@ -538,7 +538,7 @@ proc defineSymbols*() =
             print logical? true         ; true
             print logical? false        ; true
             print logical? maybe        ; true
-            ;;;;
+            ..........
             print logical? 1=1          ; true
             print logical? 123          ; false
         """:

@@ -45,7 +45,7 @@ proc defineSymbols*() =
         returns     = {ValueKind.Color},
         example     = """
             blend #red #CCCCCC                  ; => #E66666
-            ;;;;
+            ..........
             blend .balance: 0.75 #red #CCCCCC   
             ; => #D99999
         """:
@@ -167,19 +167,19 @@ proc defineSymbols*() =
         example     = """
             palette.triad #red      ; => [#FF0000 #00FF00 #0000FF]
             palette.tetrad #red     ; => [#FF0000 #80FF00 #00FFFF #7F00FF]
-            ;;;;
+            ..........
             palette.monochrome #red
             ; => [#FF0000 #D40000 #AA0000 #7F0000 #550000 #2A0000]
 
             palette.monochrome.size:10 #red
             ; => [#FF0000 #E50000 #CC0000 #B20000 #990000 #7F0000 #660000 #4C0000 #330000 #190000]
-            ;;;;
+            ..........
             palette.analogous #red
             ; => [#FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600]
 
             palette.analogous.size:10 #red
             ; => [#FF00FF #FF00CC #FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600 #FF9900 #FFCC00]
-            ;;;;
+            ..........
             palette.random #red
             ; => [#FF0000 #00EC00 #0000D2 #00F000 #0000FF #00FF00]
 

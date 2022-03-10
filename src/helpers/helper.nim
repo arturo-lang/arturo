@@ -133,7 +133,7 @@ proc splitExamples*(ex: string): seq[string] =
     result = @[]
     var currentEx = ""
     for line in splitLines(ex):
-        if ";;;;" == line.strip():
+        if line.strip().findAll(re"\.{4,}").len > 0:
             result.add(currentEx)
             currentEx = ""
         else:
