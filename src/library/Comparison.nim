@@ -146,8 +146,8 @@ proc defineSymbols*() =
             push(newLogical(x != y))
 
     builtin "same?",
-        alias       = equal, 
-        rule        = InfixPrecedence,
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
         description = "check if valueA and valueB are exactly the same (identity)",
         args        = {
             "valueA": {Any},
