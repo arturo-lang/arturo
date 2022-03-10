@@ -387,13 +387,12 @@ proc doExec*(input:Translation, depth: int = 0, args: ValueArray = NoValues): Va
             #  labels: execution,vm,enhancement,cleanup
             # [0xB0-BF] #
             # comparison operators
-            # of opEq                 : stack.push(newBoolean(Stack[SP-1]==Stack[SP-2]))
-            # of opNe                 : stack.push(newBoolean(Stack[SP-1]!=Stack[SP-2]))
-            # of opGt                 : stack.push(newBoolean(Stack[SP-1]>Stack[SP-2]))
-            # of opGe                 : stack.push(newBoolean(Stack[SP-1]>=Stack[SP-2]))
-            # of opLt                 : stack.push(newBoolean(Stack[SP-1]<Stack[SP-2]))
-            # of opLe                 : stack.push(newBoolean(Stack[SP-1]<=Stack[SP-2]))
-            else                      : discard
+            of opEq                 : stack.push(newLogical(Stack[SP-1]==Stack[SP-2]))
+            of opNe                 : stack.push(newLogical(Stack[SP-1]!=Stack[SP-2]))
+            of opGt                 : stack.push(newLogical(Stack[SP-1]>Stack[SP-2]))
+            of opGe                 : stack.push(newLogical(Stack[SP-1]>=Stack[SP-2]))
+            of opLt                 : stack.push(newLogical(Stack[SP-1]<Stack[SP-2]))
+            of opLe                 : stack.push(newLogical(Stack[SP-1]<=Stack[SP-2]))
 
         i += 1
 
