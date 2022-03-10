@@ -396,14 +396,19 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "big"   : ({Logical},"check if, internally, it's a bignum")
+        },
         returns     = {Logical},
         example     = """
             print integer? 123          ; true
             print integer? "hello"      ; false
         """:
             ##########################################################
-            push(newLogical(x.kind==Integer))
+            if (popAttr("big")!=VNULL):
+                push(newLogical(x.kind==Integer and x.iKind==BigInteger))
+            else:
+                push(newLogical(x.kind==Integer))
 
     builtin "is?",
         alias       = unaliased, 
