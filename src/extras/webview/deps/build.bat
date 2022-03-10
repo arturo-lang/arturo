@@ -36,7 +36,7 @@ cl /D "WEBVIEW_API=__declspec(dllexport)" ^
 	/I "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
 	"%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll.lib" ^
 	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
-	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%\webview_x86.dll" || exit \b
+	"%src_dir%\webview-windows.cc" /link /DLL "/OUT:%build_dir%\webview_x86.dll" || exit \b
 copy "%build_dir%\webview_x86.dll" "%script_dir%\dlls\x86"
 @REM copy "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x86\WebView2Loader.dll" "%script_dir%\dlls\x86"
 
@@ -47,7 +47,7 @@ cl /D "WEBVIEW_API=__declspec(dllexport)" ^
 	/I "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\include" ^
 	"%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll.lib" ^
 	/std:c++17 /EHsc "/Fo%build_dir%"\ ^
-	"%src_dir%\webview.cc" /link /DLL "/OUT:%build_dir%webview_x64.dll" || exit \b
+	"%src_dir%\webview-windows.cc" /link /DLL "/OUT:%build_dir%webview_x64.dll" || exit \b
 copy "%build_dir%\webview_x64.dll" "%script_dir%\dlls\x64"
 @REM copy "%script_dir%\pkg\microsoft.web.webview2.1.0.664.37\build\native\x64\WebView2Loader.dll" "%script_dir%\dlls\x64"
 
