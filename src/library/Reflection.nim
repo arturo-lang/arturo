@@ -490,6 +490,13 @@ proc defineSymbols*() =
             print function? var 'print      ; true
             print function? "print"         ; false
             print function? 123             ; false
+            ..........
+            f: function [x][x+2]
+
+            function? var'f                 ; => true
+            function? var'print             ; => true
+            function?.builtin var'f         ; => false
+            function?.builtin var'print     ; => true
         """:
             ##########################################################
             if (popAttr("builtin")!=VNULL):
