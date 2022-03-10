@@ -481,7 +481,9 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "builtin"   : ({Logical},"check if, internally, it's a built-in")
+        },
         returns     = {Logical},
         example     = """
             print function? $[x][2*x]       ; true
@@ -490,7 +492,10 @@ proc defineSymbols*() =
             print function? 123             ; false
         """:
             ##########################################################
-            push(newLogical(x.kind==Function))
+            if (popAttr("builtin")!=VNULL):
+                push(newLogical(x.kind==Function and x.fnKind==BuiltinFunction))
+            else:
+                push(newLogical(x.kind==Function))
 
     builtin "label?",
         alias       = unaliased, 
