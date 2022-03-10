@@ -296,24 +296,6 @@ proc defineSymbols*() =
             push(newLogical(x.kind==Dictionary))
 
     when not defined(WEB):
-        builtin "help",
-            alias       = unaliased, 
-            rule        = PrefixPrecedence,
-            description = "print a list of all available builtin functions",
-            args        = NoArgs,
-            attrs       = NoAttrs,
-            returns     = {Nothing},
-            example     = """
-            help        
-
-            ; abs              (value)                        -> get the absolute value for given integer
-            ; acos             (angle)                        -> calculate the inverse cosine of given angle
-            ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
-            ; add              (valueA,valueB)                -> add given values and return result
-            ; ...
-            """:
-                ##########################################################
-                printHelp(Syms)
 
         builtin "info",
             alias       = unaliased, 

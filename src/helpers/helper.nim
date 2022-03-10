@@ -177,15 +177,6 @@ proc syntaxHighlight(code: string) =
 # Methods
 #=======================================
 
-proc printHelp*(syms: ValueDict) =
-    let sorted = toSeq(syms.keys).sorted
-    for key in sorted:
-        let v = syms[key]
-        if v.kind==Function and v.fnKind==BuiltinFunction:
-            var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
-            
-            echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.info
-
 proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result = initOrderedTable[string,Value]()
 
