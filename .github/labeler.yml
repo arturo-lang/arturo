@@ -30,7 +30,7 @@ installer:
 library:
   - src/library/*
 
-package-manager:
+package manager:
   - src/vm/packager.nim
   - src/scripts/module.art
 
