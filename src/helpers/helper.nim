@@ -10,9 +10,8 @@
 # Libraries
 #=======================================
 
-import algorithm, re, sequtils
-import sets, strformat, strutils
-import sugar, tables
+import re, sequtils, sets, strformat
+import strutils, sugar, tables
 
 import helpers/terminal
 
