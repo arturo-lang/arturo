@@ -42,7 +42,8 @@ proc generateJsonNode*(n: Value): JsonNode =
            result = newJArray()
            for v in n.p:
                 result.add(generateJsonNode(v))
-        of Symbol       : result = newJString($(n.m))
+        of Symbol,
+           SymbolLiteral: result = newJString($(n.m))
         of Color        : result = newJString($(n))
         of Date         : discard
         of Binary       : discard
