@@ -355,6 +355,15 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
+            of SymbolLiteral:
+                case tp:
+                    of String:
+                        return newString($(y))
+                    of Literal:
+                        return newLiteral($(y))
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
             of Date:
                 case tp:
                     of Integer:

@@ -23,7 +23,7 @@ when not defined(WEB):
 import helpers/terminal as terminalHelper
 
 import vm/lib
-import vm/[env, exec]
+import vm/[env, errors, exec]
 
 #=======================================
 # Methods
@@ -302,7 +302,7 @@ proc defineSymbols*() =
             rule        = PrefixPrecedence,
             description = "print info for given symbol",
             args        = {
-                "symbol": {String,Literal}
+                "symbol": {String,Literal,SymbolLiteral}
             },
             attrs       = {
                 "get"       : ({Logical},"get information as dictionary"),
@@ -322,15 +322,46 @@ proc defineSymbols*() =
             ; |        returns  :nothing
             ; |--------------------------------------------------------------------------------
             ..........
+            info '++
+
+            ; |--------------------------------------------------------------------------------
+            ; |         append  :function                                          0x107555A10
+            ; |          alias  ++
+            ; |--------------------------------------------------------------------------------
+            ; |                 append value to given collection
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  append collection :char :string :literal :block
+            ; |                        value :any
+            ; |
+            ; |        returns  :string :block :nothing
+            ; |--------------------------------------------------------------------------------
+            ..........
             print info.get 'print
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 ##########################################################
                 let showExamples = (popAttr("examples")!=VNULL)
-                if (popAttr("get") != VNULL):
-                    push(newDictionary(getInfo(x.s, InPlace, Aliases)))
+                var searchable = ""
+                var value = VNULL
+
+                if x.kind == SymbolLiteral:
+                    searchable = $(x.m)
+                    for (sym, binding) in pairs(Aliases):
+                        if sym == x.m:
+                            searchable = binding.name.s
+                            value = GetSym(searchable)
+                            break
+
+                    if value == VNULL:
+                        RuntimeError_AliasNotFound($(x.m))
                 else:
-                    printInfo(x.s, InPlace, Aliases, withExamples = showExamples)
+                    searchable = x.s
+                    value = InPlace
+                
+                if (popAttr("get") != VNULL):
+                    push(newDictionary(getInfo(searchable, value, Aliases)))
+                else:
+                    printInfo(searchable, value, Aliases, withExamples = showExamples)
 
     builtin "inline?",
         alias       = unaliased, 

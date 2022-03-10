@@ -80,6 +80,12 @@ template AddToken*(token: untyped): untyped =
     addChild(topBlock, token)
     #topBlock.refs.add(p.lineNumber)
 
+template LastToken*(): untyped = 
+    topBlock.a[^1]
+
+template ReplaceLastToken*(with: untyped): untyped =
+    topBlock.a[^1] = with
+
 template stripTrailingNewlines*(): untyped =
     if topBlock.a[^1].kind == Newline:
         let lastN = topBlock.a.len-1
@@ -821,9 +827,15 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 else:
                     AddToken newWord(p.value)
             of Tick:
+                # first try parsing it as a normal :literal
                 parseLiteral(p)
                 if p.value == Empty: 
-                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
+                    # if it's empty, then try parsing it as :symbolLiteral
+                    if p.buf[p.bufpos] in Symbols:
+                        parseAndAddSymbol(p,topBlock)
+                        ReplaceLastToken(newSymbolLiteral(LastToken.m))
+                    else:
+                        SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
                     AddToken newLiteral(p.value)
             of Dot:
