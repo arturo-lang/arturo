@@ -126,8 +126,8 @@ lookup: function [what :string :literal :type][
     results: new []
 
     if? or? string? what literal? what [
-        results: select sort keys symbols 'sym ->
-            function? var sym
+        results: (select sort keys symbols 'sym ->
+            function? var sym) -- ["orange" "orangeBold" "PrintFList"]
 
         results: select results 'sym [
             finfo: get info.get sym 'description
