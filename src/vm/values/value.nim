@@ -1631,7 +1631,8 @@ func `$`(v: Value): string {.inline.} =
 
         of Color        :
             return $(v.l)
-        of Symbol       :
+        of Symbol,
+           SymbolLiteral:
             return $(v.m)
 
         of Date     : return $(v.eobj)
@@ -1729,14 +1730,14 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of String       : dumpPrimitive(v.s, v)
         
         of Word,
-            Literal,
-            Label        : dumpIdentifier(v)
+           Literal,
+           Label        : dumpIdentifier(v)
 
         of Attribute,
-            AttributeLabel    : dumpAttribute(v)
+           AttributeLabel    : dumpAttribute(v)
 
         of Path,
-            PathLabel    :
+           PathLabel    :
             dumpBlockStart(v)
 
             for i,child in v.p:
@@ -1746,7 +1747,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
             dumpBlockEnd()
 
-        of Symbol       : dumpSymbol(v)
+        of Symbol, 
+           SymbolLiteral: dumpSymbol(v)
 
         of Color        : dumpPrimitive($(v.l), v)
 
@@ -1881,6 +1883,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Attribute         : result &= "." & v.r
         of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       :  result &= $(v.m)
+        of SymbolLiteral: result &= "'" & $(v.m)
         of Color        : result &= $(v.l)
 
         of Inline, Block:
@@ -2010,7 +2013,8 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                Literal: return x.s == y.s
             of Attribute,
                AttributeLabel: return x.r == y.r
-            of Symbol: return x.m == y.m
+            of Symbol,
+               SymbolLiteral: return x.m == y.m
             of Color: return x.l == y.l
             of Inline,
                Block:
@@ -2093,7 +2097,9 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(i)
             result = !$ result
 
-        of Symbol       : result = cast[Hash](ord(v.m))
+        of Symbol,
+           SymbolLiteral: result = cast[Hash](ord(v.m))
+           
         of Color        : result = cast[Hash](v.l)
 
         of Date         : discard
