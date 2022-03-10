@@ -253,7 +253,9 @@ type
                AttributeLabel:   r*  : string
             of Path,
                PathLabel:   p*  : ValueArray
-            of Symbol:      m*  : SymbolKind
+            of Symbol,
+               SymbolLiteral:      
+                   m*  : SymbolKind
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
