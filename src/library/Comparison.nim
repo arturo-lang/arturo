@@ -148,7 +148,7 @@ proc defineSymbols*() =
     builtin "same?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "check if valueA and valueB are exactly the same (identity)",
+        description = "check if given values are exactly the same (identity)",
         args        = {
             "valueA": {Any},
             "valueB": {Any}
