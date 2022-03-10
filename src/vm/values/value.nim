@@ -159,19 +159,20 @@ type
         Path            = 14
         PathLabel       = 15
         Symbol          = 16
-        Color           = 17
-        Date            = 18
-        Binary          = 19
-        Dictionary      = 20
-        Function        = 21
-        Inline          = 22
-        Block           = 23
-        Database        = 24
-        Bytecode        = 25
+        SymbolLiteral   = 17
+        Color           = 18
+        Date            = 19
+        Binary          = 20
+        Dictionary      = 21
+        Function        = 22
+        Inline          = 23
+        Block           = 24
+        Database        = 25
+        Bytecode        = 26
 
-        Newline         = 26
-        Nothing         = 27
-        Any             = 28
+        Newline         = 27
+        Nothing         = 28
+        Any             = 29
 
     ValueSpec* = set[ValueKind]
 
