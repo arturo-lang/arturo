@@ -259,9 +259,7 @@ type
             of Symbol,
                SymbolLiteral:      
                    m*  : SymbolKind
-            of Regex:
-                xp*: RegExp
-                pt*: string
+            of Regex:       rx* : RegExp
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
@@ -543,6 +541,12 @@ func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
 
 func newSymbolLiteral*(m: string): Value {.inline.} =
     newSymbolLiteral(parseEnum[SymbolKind](m))
+
+func newRegex*(rx: RegExp): Value {.inline.} =
+    Value(kind: Regex, rx: rx)
+
+func newRegex*(rx: string): Value {.inline.} =
+    newRegex(newRegExp(rx))
 
 func newColor*(l: VColor): Value {.inline.} =
     Value(kind: Color, l: l)
