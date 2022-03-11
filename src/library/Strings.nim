@@ -26,6 +26,7 @@ import std/editdistance, json, os
 import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
 
+import helpers/regex
 import helpers/strings
 
 import vm/lib
@@ -138,8 +139,7 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
                 elif (popAttr("regex") != VNULL):
-                    when not defined(WEB):
-                        SetInPlace(newString(re.escapeRe(InPlace.s)))
+                    SetInPlace(newString(escapeForRegex(InPlace.s)))
                 elif (popAttr("shell") != VNULL):
                     when not defined(WEB):
                         SetInPlace(newString(quoteShell(InPlace.s)))
@@ -151,8 +151,7 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     push(newString(escapeJsonUnquoted(x.s)))
                 elif (popAttr("regex") != VNULL):
-                    when not defined(WEB):
-                        push(newString(re.escapeRe(x.s)))
+                    push(newString(escapeForRegex(x.s)))
                 elif (popAttr("shell") != VNULL):
                     when not defined(WEB):
                         push(newString(quoteShell(x.s)))
