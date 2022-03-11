@@ -16,6 +16,10 @@
 # Libraries
 #=======================================
 
+when not defined(WEB):
+    import re except Regex
+    import nre except Regex, toSeq
+
 import std/editdistance, json, os
 import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
@@ -560,7 +564,7 @@ proc defineSymbols*() =
                 let Interpolated    = nre.re"\|([^\|]+)\|"
                 let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
-                if (popAttr("template") != VNULL):
+                if templated:
                     var keepGoing = true
                     if recursive: 
                         keepGoing = res.contains(Embeddable)
@@ -623,13 +627,11 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "replace every matched substring/s by given replacement string and return result",
         args        = {
-            "string"        : {String,Literal},
-            "match"         : {String, Block},
+            "string"        : {String, Literal},
+            "match"         : {String, Regex, Block},
             "replacement"   : {String, Block}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {String,Nothing},
         example     = """
             replace "hello" "l" "x"         ; => "hexxo"
@@ -641,28 +643,53 @@ proc defineSymbols*() =
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             ##########################################################
-            if (popAttr("regex") != VNULL):
-                if x.kind==String:
-                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s, regex=true))
-                    else:
-                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true))
-                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true))
+            if x.kind==String:
+                if y.kind==String:
+                    push(newString(x.s.replaceAll(y.s, z.s)))
+                elif y.kind==Regex:
+                    push(newString(x.s.replaceAll(y.rx, z.s)))
                 else:
-                    if y.kind==String: InPlace.s = InPlaced.s.replaceAll(y.s, z.s, regex=true)
+                    var final = x.s
+                    if z.kind==String:
+                        for item in y.a:
+                            if item.kind==String:
+                                final = final.replaceAll(item.s, z.s)
+                            elif item.kind==Regex:
+                                final = final.replaceAll(item.rx, z.s)
                     else:
-                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true)
-                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true)
+                        let lim = min(len(y.a), len(z.a))
+                        var i = 0
+                        while i < lim:
+                            let item = y.a[i]
+                            if item.kind==String:
+                                final = final.replaceAll(item.s, z.a[i].s)
+                            elif item.kind==Regex:
+                                final = final.replaceAll(item.rx, z.a[i].s)
+                            inc i
+                    push(newString(final))
             else:
-                if x.kind==String:
-                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s))
-                    else:
-                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s))
-                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s)))
+                if y.kind==String:
+                    InPlace.s = InPlaced.s.replaceAll(y.s, z.s)
+                elif y.kind==Regex:
+                    InPlace.s = InPlaced.s.replaceAll(y.rx, z.s)
                 else:
-                    if y.kind==String: InPlace.s = InPlaced.s.replace(y.s, z.s)
+                    discard InPlace
+                    if z.kind==String:
+                        for item in y.a:
+                            if item.kind==String:
+                                InPlaced.s = InPlaced.s.replaceAll(item.s, z.s)
+                            elif item.kind==Regex:
+                                InPlaced.s = InPlaced.s.replaceAll(item.rx, z.s)
                     else:
-                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s)
-                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s))
+                        let lim = min(len(y.a), len(z.a))
+                        var i = 0
+                        while i < lim:
+                            let item = y.a[i]
+                            if item.kind==String:
+                                InPlaced.s = InPlaced.s.replaceAll(item.s, z.a[i].s)
+                            elif item.kind==Regex:
+                                InPlaced.s = InPlaced.s.replaceAll(item.rx, z.a[i].s)
+                            inc i
 
     builtin "strip",
         alias       = unaliased, 
