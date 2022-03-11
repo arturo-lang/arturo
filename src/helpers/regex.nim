@@ -22,25 +22,37 @@ else:
 #=======================================
 
 type
-    RegularExpression* = (when defined(WEB): RegExp else: Regex)
+    RegexObj* = (when defined(WEB): RegExp else: Regex)
 
 #=======================================
 # Methods
 #=======================================
 
-proc `$`*(rx: RegularExpression): string =
+proc `$`*(rx: RegexObj): string =
     when defined(WEB):
         $(rx)
     else:
         rx.pattern
 
-proc newRegularExpression*(pattern: string): RegularExpression =
+proc newRegexObj*(pattern: string): RegexObj =
     when defined(WEB):
         newRegExp(cstring(pattern))
     else:
         re(pattern)
 
-proc hash*(rx: RegularExpression): Hash =
+proc contains*(str: string, rx: RegexObj): bool =
+    when defined(WEB):
+        cstring(str).contains(rx)
+    else:
+        nre.contains(str, rx)
+
+proc split*(str: string, rx: RegexObj): seq[string] =
+    when defined(WEB):
+        cstring(str).split(rx)
+    else:
+        nre.split(str, rx)
+
+proc hash*(rx: RegexObj): Hash =
     when defined(WEB):
         hash($(rx))
     else:
