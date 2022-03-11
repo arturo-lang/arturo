@@ -10,6 +10,7 @@
 # Libraries
 #=======================================
 
+import hashes
 import nre except toSeq
 
 #=======================================
@@ -28,3 +29,6 @@ proc `$`*(rx: RegExp): string =
 
 proc newRegExp*(pattern: string): RegExp =
     re(pattern)
+
+proc hash*(rx: RegExp): Hash =
+    hash(rx.pattern)
