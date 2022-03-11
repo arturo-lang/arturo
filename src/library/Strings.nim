@@ -381,7 +381,7 @@ proc defineSymbols*() =
                     else:
                         push newDictionary()
                 else:
-                    push newStringBlock(x.s.findAll(re.re(y.s)))
+                    push newStringBlock(x.s.findAll(nre.re(y.s)))
             else:
                 push newStringBlock(cstring(x.s).match(newRegExp(cstring(y.s),"g")))
  
