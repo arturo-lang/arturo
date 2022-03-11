@@ -80,6 +80,12 @@ proc endsWith*(str: string, rx: RegexObj): bool =
         else:
             return false
 
+proc replaceAll*(str: string, rx: RegexObj, with: string): string =
+    when defined(WEB):
+        cstring(str).replace(rx, cstring(with))
+    else:
+        nre.replace(str, rx, with)
+
 proc split*(str: string, rx: RegexObj): seq[string] =
     when defined(WEB):
         cstring(str).split(rx)
