@@ -367,7 +367,7 @@ proc defineSymbols*() =
         description = "get matches within string, using given regular expression",
         args        = {
             "string": {String},
-            "regex" : {Regex}
+            "regex" : {Regex, String}
         },
         attrs       = {
             "capture"   : ({Logical},"capture named groups"),
@@ -379,10 +379,14 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
+            var rgx
+            if y.kind==Regex: rgx = y.rx
+            else: rgx = newRegex(y.s)
+
             if (popAttr("capture")!=VNULL):
-                push(newStringDictionary(x.s.matchAllGroups(y.rx)))
+                push(newStringDictionary(x.s.matchAllGroups(rgx)))
             else:
-                push(newStringBlock(x.s.matchAll(y.rx)))
+                push(newStringBlock(x.s.matchAll(rgx)))
  
     builtin "numeric?",
         alias       = unaliased, 
