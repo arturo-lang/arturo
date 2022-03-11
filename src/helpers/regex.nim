@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes
+import hashes, strutils
 
 when defined(WEB):
     import jsre
@@ -23,6 +23,20 @@ else:
 
 type
     RegexObj* = (when defined(WEB): RegExp else: Regex)
+
+#=======================================
+# Helpers
+#=======================================
+
+proc escapeForRegex*(s: string): string =
+    result = ""
+    for c in items(s):
+        case c:
+            of 'a'..'z', 'A'..'Z', '0'..'9', '_':
+                result.add(c)
+            else:
+                result.add("\\x")
+                result.add(toHex(ord(c), 2))
 
 #=======================================
 # Methods
