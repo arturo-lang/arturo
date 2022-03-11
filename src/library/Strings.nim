@@ -41,6 +41,16 @@ when not defined(WEB):
         templateStore = initOrderedTable[string,Translation]()
 
 #=======================================
+# Helpers
+#=======================================
+
+template replaceStrWith*(str: var string, src: Value, dst: Value): untyped =
+    if src.kind==String:
+        str = str.replaceAll(src.s, dst.s)
+    elif src.kind==Regex:
+        str = str.replaceAll(src.rx, dst.s)
+
+#=======================================
 # Methods
 #=======================================
 
@@ -638,7 +648,7 @@ proc defineSymbols*() =
             ..........
             str: "hello"
             replace 'str "l" "x"            ; str: "hexxo"
-            ;;;
+            ..........
             replace "hello" ["h" "l"] "x"           ; => "xexxo"
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
@@ -652,19 +662,12 @@ proc defineSymbols*() =
                     var final = x.s
                     if z.kind==String:
                         for item in y.a:
-                            if item.kind==String:
-                                final = final.replaceAll(item.s, z.s)
-                            elif item.kind==Regex:
-                                final = final.replaceAll(item.rx, z.s)
+                            replaceStrWith(final, item, z)
                     else:
                         let lim = min(len(y.a), len(z.a))
                         var i = 0
                         while i < lim:
-                            let item = y.a[i]
-                            if item.kind==String:
-                                final = final.replaceAll(item.s, z.a[i].s)
-                            elif item.kind==Regex:
-                                final = final.replaceAll(item.rx, z.a[i].s)
+                            replaceStrWith(final, y.a[i], z.a[i])
                             inc i
                     push(newString(final))
             else:
@@ -676,19 +679,12 @@ proc defineSymbols*() =
                     discard InPlace
                     if z.kind==String:
                         for item in y.a:
-                            if item.kind==String:
-                                InPlaced.s = InPlaced.s.replaceAll(item.s, z.s)
-                            elif item.kind==Regex:
-                                InPlaced.s = InPlaced.s.replaceAll(item.rx, z.s)
+                            replaceStrWith(InPlaced.s, item, z)
                     else:
                         let lim = min(len(y.a), len(z.a))
                         var i = 0
                         while i < lim:
-                            let item = y.a[i]
-                            if item.kind==String:
-                                InPlaced.s = InPlaced.s.replaceAll(item.s, z.a[i].s)
-                            elif item.kind==Regex:
-                                InPlaced.s = InPlaced.s.replaceAll(item.rx, z.a[i].s)
+                            replaceStrWith(InPlaced.s, y.a[i], z.a[i])
                             inc i
 
     builtin "strip",
