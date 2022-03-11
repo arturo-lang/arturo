@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import hashes, strutils
+import hashes, strutils, tables
 
 when defined(WEB):
     import jsre
@@ -60,11 +60,48 @@ proc contains*(str: string, rx: RegexObj): bool =
     else:
         nre.contains(str, rx)
 
+proc startsWith*(str: string, rx: RegexObj): bool =
+    when defined(WEB):
+        cstring(str).startsWith(rx)
+    else:
+        let match = str.find(rx)
+        if not match.isNone:
+            return match.get.matchBounds.a == 0
+        else:
+            return false
+
+proc endsWith*(str: string, rx: RegexObj): bool =
+    when defined(WEB):
+        cstring(str).endsWith(rx)
+    else:
+        let match = str.find(rx)
+        if not match.isNone:
+            return match.get.matchBounds.b == str.len - 1
+        else:
+            return false
+
 proc split*(str: string, rx: RegexObj): seq[string] =
     when defined(WEB):
         cstring(str).split(rx)
     else:
         nre.split(str, rx)
+
+proc matchAll*(str: string, rx: RegexObj): seq[string] =
+    when defined(WEB):
+        let globalR = rx
+        rx.flags = "g"
+
+        cstring(str).match(globalR)
+    else:
+        nre.findAll(str, rx)
+
+proc matchAllGroups*(str: string, rx: RegexObj): Table[string,string] =
+    when defined(WEB):
+        discard
+    else:
+        let matches = nre.match(str, rx)
+        if not matches.isNone:
+            result = matches.get.captures.toTable
 
 proc hash*(rx: RegexObj): Hash =
     when defined(WEB):
