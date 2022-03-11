@@ -16,6 +16,8 @@ import tables, unicode
 when defined(WEB):
     import jsffi, strutils
 
+import helpers/regex as RegexHelper
+
 import vm/values/[printable, value]
 
 #=======================================
@@ -44,6 +46,7 @@ proc generateJsonNode*(n: Value): JsonNode =
                 result.add(generateJsonNode(v))
         of Symbol,
            SymbolLiteral: result = newJString($(n.m))
+        of Regex        : result = newJString($(n.rx))
         of Color        : result = newJString($(n))
         of Date         : discard
         of Binary       : discard
@@ -108,7 +111,9 @@ when defined(WEB):
                 for v in n.p:
                     ret.add(generateJsObject(v))
                 result = toJs(ret)
-            of Symbol       : result = toJs($(n.m))
+            of Symbol,
+               SymbolLiteral: result = toJs($(n.m))
+            of Regex        : result = toJs($(n.rx))
             of Color        : discard
             of Date         : discard
             of Binary       : discard
