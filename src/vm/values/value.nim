@@ -1650,7 +1650,8 @@ func `$`(v: Value): string {.inline.} =
         of Symbol,
            SymbolLiteral:
             return $(v.m)
-
+        of Regex:
+            return $(v.rx)
         of Date     : return $(v.eobj)
         of Binary   : return v.n.map((child) => fmt"{child:X}").join(" ")
         of Inline,
@@ -1765,6 +1766,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
         of Symbol, 
            SymbolLiteral: dumpSymbol(v)
+
+        of Regex        : dumpPrimitive($(v.rx), v)
 
         of Color        : dumpPrimitive($(v.l), v)
 
@@ -1900,6 +1903,7 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
+        of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
 
         of Inline, Block:
@@ -2031,6 +2035,7 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                AttributeLabel: return x.r == y.r
             of Symbol,
                SymbolLiteral: return x.m == y.m
+            of Regex: return x.rx == y.rx
             of Color: return x.l == y.l
             of Inline,
                Block:
@@ -2115,6 +2120,8 @@ func hash*(v: Value): Hash {.inline.}=
 
         of Symbol,
            SymbolLiteral: result = cast[Hash](ord(v.m))
+
+        of Regex: result = hash(v.rx)
 
         of Color        : result = cast[Hash](v.l)
 
