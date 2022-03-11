@@ -161,6 +161,7 @@ type
         PathLabel       = 15
         Symbol          = 16
         SymbolLiteral   = 17
+
         Regex           = 18
         Color           = 19
         Date            = 20
@@ -258,6 +259,9 @@ type
             of Symbol,
                SymbolLiteral:      
                    m*  : SymbolKind
+            of Regex:
+                xp*: RegExp
+                pt*: string
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
