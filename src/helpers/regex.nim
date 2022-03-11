@@ -11,24 +11,37 @@
 #=======================================
 
 import hashes
-import nre except toSeq
+
+when defined(WEB):
+    import jsre
+else:
+    import nre except toSeq
 
 #=======================================
 # Types
 #=======================================
 
 type
-    RegExp* = Regex
+    RegularExpression* = (when defined(WEB): RegExp else: Regex)
 
 #=======================================
 # Methods
 #=======================================
 
-proc `$`*(rx: RegExp): string =
-    rx.pattern
+proc `$`*(rx: RegularExpression): string =
+    when defined(WEB):
+        $(rx)
+    else:
+        rx.pattern
 
-proc newRegExp*(pattern: string): RegExp =
-    re(pattern)
+proc newRegularExpression*(pattern: string): RegularExpression =
+    when defined(WEB):
+        newRegExp(cstring(pattern))
+    else:
+        re(pattern)
 
-proc hash*(rx: RegExp): Hash =
-    hash(rx.pattern)
+proc hash*(rx: RegularExpression): Hash =
+    when defined(WEB):
+        hash($(rx))
+    else:
+        hash(rx.pattern)
