@@ -379,9 +379,10 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
-            var rgx
+            var rgx : RegexObj
+            
             if y.kind==Regex: rgx = y.rx
-            else: rgx = newRegex(y.s)
+            else: rgx = newRegex(y.s).rx
 
             if (popAttr("capture")!=VNULL):
                 push(newStringDictionary(x.s.matchAllGroups(rgx)))
