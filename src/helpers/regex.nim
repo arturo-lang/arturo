@@ -22,3 +22,9 @@ type
 #=======================================
 # Methods
 #=======================================
+
+proc `$`*(rx: RegExp): string =
+    rx.pattern
+
+proc newRegExp*(pattern: string): RegExp =
+    re(pattern)
