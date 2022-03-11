@@ -25,6 +25,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
 import vm/errors
@@ -160,19 +161,20 @@ type
         PathLabel       = 15
         Symbol          = 16
         SymbolLiteral   = 17
-        Color           = 18
-        Date            = 19
-        Binary          = 20
-        Dictionary      = 21
-        Function        = 22
-        Inline          = 23
-        Block           = 24
-        Database        = 25
-        Bytecode        = 26
+        Regex           = 18
+        Color           = 19
+        Date            = 20
+        Binary          = 21
+        Dictionary      = 22
+        Function        = 23
+        Inline          = 24
+        Block           = 25
+        Database        = 26
+        Bytecode        = 27
 
-        Newline         = 27
-        Nothing         = 28
-        Any             = 29
+        Newline         = 28
+        Nothing         = 29
+        Any             = 30
 
     ValueSpec* = set[ValueKind]
 
