@@ -16,12 +16,6 @@
 # Libraries
 #=======================================
 
-when not defined(WEB):
-    import re
-    import nre except toSeq
-else:
-    import jsre
-
 import std/editdistance, json, os
 import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
@@ -359,7 +353,7 @@ proc defineSymbols*() =
         description = "get matches within string, using given regular expression",
         args        = {
             "string": {String},
-            "regex" : {String}
+            "regex" : {Regex}
         },
         attrs       = {
             "capture"   : ({Logical},"capture named groups"),
@@ -371,18 +365,10 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
-            when not defined(WEB):
-                if (popAttr("capture")!=VNULL):
-                    let matches = x.s.match(nre.re(y.s))
-                    if not matches.isNone:
-                        let captures = matches.get.captures.toTable
-                        push newStringDictionary(captures)
-                    else:
-                        push newDictionary()
-                else:
-                    push newStringBlock(x.s.findAll(nre.re(y.s)))
+            if (popAttr("capture")!=VNULL):
+                push(newStringDictionary(x.s.matchAllGroups(y.rx)))
             else:
-                push newStringBlock(cstring(x.s).match(newRegExp(cstring(y.s),"g")))
+                push(newStringBlock(x.s.matchAll(y.rx)))
  
     builtin "numeric?",
         alias       = unaliased, 
@@ -527,22 +513,17 @@ proc defineSymbols*() =
         description = "check if string starts with given prefix",
         args        = {
             "string": {String},
-            "prefix": {String}
+            "prefix": {String, Regex}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
             prefix? "hello" "he"          ; => true
             prefix? "boom" "he"           ; => false
         """:
             ##########################################################
-            if (popAttr("regex") != VNULL):
-                when not defined(WEB):
-                    push(newLogical(re.startsWith(x.s, re.re(y.s))))
-                else:
-                    push newLogical(cstring(x.s).startsWith(newRegExp(cstring(y.s),"")))
+            if y.kind==Regex:
+                push(newLogical(x.s.startsWith(y.rx)))
             else:
                 push(newLogical(x.s.startsWith(y.s)))
 
@@ -569,6 +550,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 let recursive = not (popAttr("single") != VNULL)
+                let templated = (popAttr("template") != VNULL)
                 var res = ""
                 if x.kind == Literal:
                     res = InPlace.s
@@ -742,24 +724,20 @@ proc defineSymbols*() =
         description = "check if string ends with given suffix",
         args        = {
             "string": {String},
-            "suffix": {String}
+            "suffix": {String, Regex}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
             suffix? "hello" "lo"          ; => true
             suffix? "boom" "lo"           ; => false
         """:
             ##########################################################
-            if (popAttr("regex") != VNULL):
-                when not defined(WEB):
-                    push(newLogical(re.endsWith(x.s, re.re(y.s))))
-                else:
-                    push newLogical(cstring(x.s).endsWith(newRegExp(cstring(y.s),"")))
+            if y.kind==Regex:
+                push(newLogical(x.s.endsWith(y.rx)))
             else:
                 push(newLogical(x.s.endsWith(y.s)))
+
 
     builtin "truncate",
         alias       = unaliased, 
