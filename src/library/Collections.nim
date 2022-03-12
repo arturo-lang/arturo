@@ -18,8 +18,6 @@
 
 when not defined(WEB):
     import oids
-else:
-    import jsre
 
 import algorithm, os, random, sequtils
 import strutils, sugar, unicode

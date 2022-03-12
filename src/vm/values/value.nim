@@ -28,7 +28,8 @@ import helpers/colors as ColorsHelper
 import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
-import vm/errors
+when not defined(WEB):
+    import vm/errors
 
 #=======================================
 # Types
