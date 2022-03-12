@@ -116,7 +116,7 @@ help: function [][
     PrintFList results "available"
 ]
 
-lookup: function [what :string :literal :type][
+lookup: function [what :string :literal :regex :type][
     ;; description: « lookup functions by given descriptive string or signature types
     ;; options: [
     ;;      returns: « check by return type
@@ -125,7 +125,20 @@ lookup: function [what :string :literal :type][
 
     results: new []
 
-    if? or? string? what literal? what [
+    if? type? what [
+        results: select sort keys symbols 'sym ->
+            function?.builtin var sym
+
+        if? not? null? attr "returns" [
+            results: select results 'sym ->
+                contains? flatten get info.get sym 'returns what
+        ]
+        else [
+            results: select results 'sym ->
+                contains? flatten values get info.get sym 'args what
+        ]
+    ]
+    else [
         results: (select sort keys symbols 'sym ->
             function? var sym) -- ["orange" "orangeBold" "PrintFList"]
 
@@ -155,19 +168,6 @@ lookup: function [what :string :literal :type][
                 inFparams
                 inFattrs
             ]
-        ]
-    ]
-    else [
-        results: select sort keys symbols 'sym ->
-            function?.builtin var sym
-
-        if? not? null? attr "returns" [
-            results: select results 'sym ->
-                contains? flatten get info.get sym 'returns what
-        ]
-        else [
-            results: select results 'sym ->
-                contains? flatten values get info.get sym 'args what
         ]
     ]
     
