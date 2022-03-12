@@ -58,6 +58,11 @@ proc defineSymbols*() =
             },
             returns     = {Logical},
             example     = """
+                alert "Hello!" "This is a notification..."
+                ; show an OS notification without any styling
+
+                alert.error "Ooops!" "Something went wrong!"
+                ; show an OS notification with an error message
             """:
                 ##########################################################
                 var alertIcon = NoIcon
