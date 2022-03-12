@@ -17,15 +17,14 @@
 #=======================================
 
 when not defined(WEB):
-    import re
-    import nre except toSeq
-else:
-    import jsre
+    import re except Regex
+    import nre except Regex, toSeq
 
 import std/editdistance, json, os
 import sequtils, strutils, sugar
 import unicode, std/wordwrap, xmltree
 
+import helpers/regex
 import helpers/strings
 
 import vm/lib
@@ -40,6 +39,16 @@ when not defined(WEB):
 when not defined(WEB):
     var
         templateStore = initOrderedTable[string,Translation]()
+
+#=======================================
+# Helpers
+#=======================================
+
+template replaceStrWith*(str: var string, src: Value, dst: Value): untyped =
+    if src.kind==String:
+        str = str.replaceAll(src.s, dst.s)
+    elif src.kind==Regex:
+        str = str.replaceAll(src.rx, dst.s)
 
 #=======================================
 # Methods
@@ -138,8 +147,7 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     SetInPlace(newString(escapeJsonUnquoted(InPlace.s)))
                 elif (popAttr("regex") != VNULL):
-                    when not defined(WEB):
-                        SetInPlace(newString(re.escapeRe(InPlace.s)))
+                    SetInPlace(newString(escapeForRegex(InPlace.s)))
                 elif (popAttr("shell") != VNULL):
                     when not defined(WEB):
                         SetInPlace(newString(quoteShell(InPlace.s)))
@@ -151,8 +159,7 @@ proc defineSymbols*() =
                 if (popAttr("json") != VNULL):
                     push(newString(escapeJsonUnquoted(x.s)))
                 elif (popAttr("regex") != VNULL):
-                    when not defined(WEB):
-                        push(newString(re.escapeRe(x.s)))
+                    push(newString(escapeForRegex(x.s)))
                 elif (popAttr("shell") != VNULL):
                     when not defined(WEB):
                         push(newString(quoteShell(x.s)))
@@ -360,7 +367,7 @@ proc defineSymbols*() =
         description = "get matches within string, using given regular expression",
         args        = {
             "string": {String},
-            "regex" : {String}
+            "regex" : {Regex, String}
         },
         attrs       = {
             "capture"   : ({Logical},"capture named groups"),
@@ -372,18 +379,15 @@ proc defineSymbols*() =
             match "this is a string" "[0-9]+"       ; => []
         """:
             ##########################################################
-            when not defined(WEB):
-                if (popAttr("capture")!=VNULL):
-                    let matches = x.s.match(nre.re(y.s))
-                    if not matches.isNone:
-                        let captures = matches.get.captures.toTable
-                        push newStringDictionary(captures)
-                    else:
-                        push newDictionary()
-                else:
-                    push newStringBlock(x.s.findAll(re.re(y.s)))
+            var rgx : RegexObj
+            
+            if y.kind==Regex: rgx = y.rx
+            else: rgx = newRegex(y.s).rx
+
+            if (popAttr("capture")!=VNULL):
+                push(newStringDictionary(x.s.matchAllGroups(rgx)))
             else:
-                push newStringBlock(cstring(x.s).match(newRegExp(cstring(y.s),"g")))
+                push(newStringBlock(x.s.matchAll(rgx)))
  
     builtin "numeric?",
         alias       = unaliased, 
@@ -528,22 +532,17 @@ proc defineSymbols*() =
         description = "check if string starts with given prefix",
         args        = {
             "string": {String},
-            "prefix": {String}
+            "prefix": {String, Regex}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
             prefix? "hello" "he"          ; => true
             prefix? "boom" "he"           ; => false
         """:
             ##########################################################
-            if (popAttr("regex") != VNULL):
-                when not defined(WEB):
-                    push(newLogical(re.startsWith(x.s, re.re(y.s))))
-                else:
-                    push newLogical(cstring(x.s).startsWith(newRegExp(cstring(y.s),"")))
+            if y.kind==Regex:
+                push(newLogical(x.s.startsWith(y.rx)))
             else:
                 push(newLogical(x.s.startsWith(y.s)))
 
@@ -570,6 +569,7 @@ proc defineSymbols*() =
             """:
                 ##########################################################
                 let recursive = not (popAttr("single") != VNULL)
+                let templated = (popAttr("template") != VNULL)
                 var res = ""
                 if x.kind == Literal:
                     res = InPlace.s
@@ -579,7 +579,7 @@ proc defineSymbols*() =
                 let Interpolated    = nre.re"\|([^\|]+)\|"
                 let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
-                if (popAttr("template") != VNULL):
+                if templated:
                     var keepGoing = true
                     if recursive: 
                         keepGoing = res.contains(Embeddable)
@@ -642,46 +642,55 @@ proc defineSymbols*() =
         rule        = PrefixPrecedence,
         description = "replace every matched substring/s by given replacement string and return result",
         args        = {
-            "string"        : {String,Literal},
-            "match"         : {String, Block},
+            "string"        : {String, Literal},
+            "match"         : {String, Regex, Block},
             "replacement"   : {String, Block}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {String,Nothing},
         example     = """
             replace "hello" "l" "x"         ; => "hexxo"
             ..........
             str: "hello"
             replace 'str "l" "x"            ; str: "hexxo"
-            ;;;
+            ..........
             replace "hello" ["h" "l"] "x"           ; => "xexxo"
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             ##########################################################
-            if (popAttr("regex") != VNULL):
-                if x.kind==String:
-                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s, regex=true))
-                    else:
-                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true))
-                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true))
+            if x.kind==String:
+                if y.kind==String:
+                    push(newString(x.s.replaceAll(y.s, z.s)))
+                elif y.kind==Regex:
+                    push(newString(x.s.replaceAll(y.rx, z.s)))
                 else:
-                    if y.kind==String: InPlace.s = InPlaced.s.replaceAll(y.s, z.s, regex=true)
+                    var final = x.s
+                    if z.kind==String:
+                        for item in y.a:
+                            replaceStrWith(final, item, z)
                     else:
-                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s, regex=true)
-                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s), regex=true)
+                        let lim = min(len(y.a), len(z.a))
+                        var i = 0
+                        while i < lim:
+                            replaceStrWith(final, y.a[i], z.a[i])
+                            inc i
+                    push(newString(final))
             else:
-                if x.kind==String:
-                    if y.kind==String: push newString(x.s.replaceAll(y.s, z.s))
-                    else:
-                        if z.kind==String: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.s))
-                        else: push newString(x.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s)))
+                if y.kind==String:
+                    InPlace.s = InPlaced.s.replaceAll(y.s, z.s)
+                elif y.kind==Regex:
+                    InPlace.s = InPlaced.s.replaceAll(y.rx, z.s)
                 else:
-                    if y.kind==String: InPlace.s = InPlaced.s.replace(y.s, z.s)
+                    discard InPlace
+                    if z.kind==String:
+                        for item in y.a:
+                            replaceStrWith(InPlaced.s, item, z)
                     else:
-                        if z.kind==String: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.s)
-                        else: InPlace.s = InPlaced.s.multiReplaceAll(y.a.map((w)=>w.s), z.a.map((w)=>w.s))
+                        let lim = min(len(y.a), len(z.a))
+                        var i = 0
+                        while i < lim:
+                            replaceStrWith(InPlaced.s, y.a[i], z.a[i])
+                            inc i
 
     builtin "strip",
         alias       = unaliased, 
@@ -743,24 +752,20 @@ proc defineSymbols*() =
         description = "check if string ends with given suffix",
         args        = {
             "string": {String},
-            "suffix": {String}
+            "suffix": {String, Regex}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
             suffix? "hello" "lo"          ; => true
             suffix? "boom" "lo"           ; => false
         """:
             ##########################################################
-            if (popAttr("regex") != VNULL):
-                when not defined(WEB):
-                    push(newLogical(re.endsWith(x.s, re.re(y.s))))
-                else:
-                    push newLogical(cstring(x.s).endsWith(newRegExp(cstring(y.s),"")))
+            if y.kind==Regex:
+                push(newLogical(x.s.endsWith(y.rx)))
             else:
                 push(newLogical(x.s.endsWith(y.s)))
+
 
     builtin "truncate",
         alias       = unaliased, 

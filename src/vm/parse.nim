@@ -303,6 +303,7 @@ template parseCurlyString(p: var Parser) =
     var pos = p.bufpos + 1
     var curliesExpected = 1
     var verbatimString = false
+    var regexString = false
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
@@ -311,6 +312,10 @@ template parseCurlyString(p: var Parser) =
     if p.buf[pos]==':':
         inc(pos)
         verbatimString = true
+    elif p.buf[pos]=='/':
+        inc(pos)
+        regexString = true
+
     let initialLine = p.lineNumber
     let initialPoint = p.bufpos
     while true:
@@ -357,6 +362,17 @@ template parseCurlyString(p: var Parser) =
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
+            of '/':
+                if regexString:
+                    if p.buf[pos+1]==RCurly:
+                        inc(pos,2)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -364,6 +380,8 @@ template parseCurlyString(p: var Parser) =
 
     if verbatimString:
         AddToken newString(p.value)
+    elif regexString:
+        AddToken newRegex(p.value)
     else:
         AddToken newString(p.value, dedented=true)
 

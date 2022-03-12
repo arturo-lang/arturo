@@ -210,6 +210,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                             return newSymbol(y.s)
                         except ValueError:
                             RuntimeError_ConversionFailed(codify(y), $(y.kind), $(x.t))
+                    of Regex:
+                        return newRegex(y.s)
                     of Binary:
                         var ret: ByteArray = newSeq[byte](y.s.len)
                         for i,ch in y.s:
@@ -361,6 +363,13 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat = VNULL, ): Value
                         return newString($(y))
                     of Literal:
                         return newLiteral($(y))
+                    else:
+                        RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
+
+            of Regex:
+                case tp:
+                    of String:
+                        return newString($(y))
                     else:
                         RuntimeError_CannotConvert(codify(y), $(y.kind), $(x.t))
 
