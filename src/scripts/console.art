@@ -74,7 +74,7 @@ PrintFList: function [sorted, ftype][
         v: symbols\[key]
         fparams: "(" ++ (join.with:"," to [:string] keys get info.get key 'args) ++ ")"
         finfo: get info.get key 'description
-        finfo: replace finfo .regex {:\[[^\]]+\] :} ""
+        finfo: replace finfo {/\[[^\]]+\] /} ""
 
         print (color.bold #magenta pad.right key 17) ++
               (pad.right fparams 30) ++
