@@ -41,7 +41,7 @@ proc defineSymbols*() =
             if all? @[2>1 "DONE"=upper "done" true] 
                 -> print "yes, all are true"
             ; yes, all are true
-            ;;;;
+            ..........
             print all? @[true false true true]
             ; false
         """:
@@ -131,7 +131,7 @@ proc defineSymbols*() =
             if any? @[false 3=4 2>1] 
                 -> print "yes, one (or more) of the values is true"
             ; yes, one (or more) of the values is true
-            ;;;;
+            ..........
             print any? @[false false false]
             ; false
         """:

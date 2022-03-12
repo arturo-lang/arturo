@@ -164,19 +164,18 @@ when not defined(NOWEBVIEW):
             initializer
         ).cstring)
 
-        when not defined(WEBVIEW_NOEDGE):
-            if maximized:
-                result.getWindow().maximize()
+        if maximized:
+            result.getWindow().maximize()
 
-            if fullscreen:
-                result.getWindow().fullscreen()
+        if fullscreen:
+            result.getWindow().fullscreen()
 
-            if borderless:
-                result.getWindow().makeBorderless()
-                result.getWindow().show()
+        if borderless:
+            result.getWindow().makeBorderless()
+            result.getWindow().show()
 
-            if topmost or borderless:
-                result.getWindow().topmost()
+        if topmost or borderless:
+            result.getWindow().topmost()
 
         let handler = proc (seq: ccstring, req: ccstring, arg: pointer) {.cdecl.} =
             var request = parseJson($(cast[cstring](req)))
@@ -234,7 +233,4 @@ when not defined(NOWEBVIEW):
         webview_eval(w, js.cstring)
 
     proc getWindow*(w: Webview): Window =
-        when not defined(WEBVIEW_NOEDGE):
-            (Window)(webview_get_window(w))
-        else:
-            discard
+        webview_get_window(w)

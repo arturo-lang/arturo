@@ -25,9 +25,11 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/regex as RegexHelper
 import helpers/terminal as TerminalHelper
 
-import vm/errors
+when not defined(WEB):
+    import vm/errors
 
 #=======================================
 # Types
@@ -159,19 +161,22 @@ type
         Path            = 14
         PathLabel       = 15
         Symbol          = 16
-        Color           = 17
-        Date            = 18
-        Binary          = 19
-        Dictionary      = 20
-        Function        = 21
-        Inline          = 22
-        Block           = 23
-        Database        = 24
-        Bytecode        = 25
+        SymbolLiteral   = 17
 
-        Newline         = 26
-        Nothing         = 27
-        Any             = 28
+        Regex           = 18
+        Color           = 19
+        Date            = 20
+        Binary          = 21
+        Dictionary      = 22
+        Function        = 23
+        Inline          = 24
+        Block           = 25
+        Database        = 26
+        Bytecode        = 27
+
+        Newline         = 28
+        Nothing         = 29
+        Any             = 30
 
     ValueSpec* = set[ValueKind]
 
@@ -252,7 +257,10 @@ type
                AttributeLabel:   r*  : string
             of Path,
                PathLabel:   p*  : ValueArray
-            of Symbol:      m*  : SymbolKind
+            of Symbol,
+               SymbolLiteral:      
+                   m*  : SymbolKind
+            of Regex:       rx* : RegexObj
             of Color:       l*  : VColor
             of Date:        
                 e*     : ValueDict         
@@ -528,6 +536,18 @@ func newSymbol*(m: SymbolKind): Value {.inline.} =
 
 func newSymbol*(m: string): Value {.inline.} =
     newSymbol(parseEnum[SymbolKind](m))
+
+func newSymbolLiteral*(m: SymbolKind): Value {.inline.} =
+    Value(kind: SymbolLiteral, m: m)
+
+func newSymbolLiteral*(m: string): Value {.inline.} =
+    newSymbolLiteral(parseEnum[SymbolKind](m))
+
+func newRegex*(rx: RegexObj): Value {.inline.} =
+    Value(kind: Regex, rx: rx)
+
+func newRegex*(rx: string): Value {.inline.} =
+    newRegex(newRegexObj(rx))
 
 func newColor*(l: VColor): Value {.inline.} =
     Value(kind: Color, l: l)
@@ -1628,9 +1648,11 @@ func `$`(v: Value): string {.inline.} =
 
         of Color        :
             return $(v.l)
-        of Symbol       :
+        of Symbol,
+           SymbolLiteral:
             return $(v.m)
-
+        of Regex:
+            return $(v.rx)
         of Date     : return $(v.eobj)
         of Binary   : return v.n.map((child) => fmt"{child:X}").join(" ")
         of Inline,
@@ -1726,14 +1748,14 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
         of String       : dumpPrimitive(v.s, v)
         
         of Word,
-            Literal,
-            Label        : dumpIdentifier(v)
+           Literal,
+           Label        : dumpIdentifier(v)
 
         of Attribute,
-            AttributeLabel    : dumpAttribute(v)
+           AttributeLabel    : dumpAttribute(v)
 
         of Path,
-            PathLabel    :
+           PathLabel    :
             dumpBlockStart(v)
 
             for i,child in v.p:
@@ -1743,7 +1765,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false) {.expo
 
             dumpBlockEnd()
 
-        of Symbol       : dumpSymbol(v)
+        of Symbol, 
+           SymbolLiteral: dumpSymbol(v)
+
+        of Regex        : dumpPrimitive($(v.rx), v)
 
         of Color        : dumpPrimitive($(v.l), v)
 
@@ -1878,6 +1903,8 @@ func codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Attribute         : result &= "." & v.r
         of AttributeLabel    : result &= "." & v.r & ":"
         of Symbol       :  result &= $(v.m)
+        of SymbolLiteral: result &= "'" & $(v.m)
+        of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
 
         of Inline, Block:
@@ -2007,7 +2034,9 @@ func sameValue*(x: Value, y: Value): bool {.inline.}=
                Literal: return x.s == y.s
             of Attribute,
                AttributeLabel: return x.r == y.r
-            of Symbol: return x.m == y.m
+            of Symbol,
+               SymbolLiteral: return x.m == y.m
+            of Regex: return x.rx == y.rx
             of Color: return x.l == y.l
             of Inline,
                Block:
@@ -2090,7 +2119,11 @@ func hash*(v: Value): Hash {.inline.}=
                 result = result !& hash(i)
             result = !$ result
 
-        of Symbol       : result = cast[Hash](ord(v.m))
+        of Symbol,
+           SymbolLiteral: result = cast[Hash](ord(v.m))
+
+        of Regex: result = hash(v.rx)
+
         of Color        : result = cast[Hash](v.l)
 
         of Date         : discard

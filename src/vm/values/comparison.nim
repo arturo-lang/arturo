@@ -301,3 +301,18 @@ proc find*(a: openArray[Value], item: Value): int {.inline.}=
         if i == item: return
         inc(result)
     result = -1
+
+proc identical*(x: Value, y: Value): bool {.inline.} =
+    if x == y and x.kind == y.kind:
+        if x.kind in [Inline, Block]:
+            if x.a.len != y.a.len: return false
+
+            for i,child in x.a:
+                if not (child==y.a[i]): 
+                    return false
+
+            return true
+        else:
+            return true
+    else:
+        return false

@@ -80,6 +80,12 @@ template AddToken*(token: untyped): untyped =
     addChild(topBlock, token)
     #topBlock.refs.add(p.lineNumber)
 
+template LastToken*(): untyped = 
+    topBlock.a[^1]
+
+template ReplaceLastToken*(with: untyped): untyped =
+    topBlock.a[^1] = with
+
 template stripTrailingNewlines*(): untyped =
     if topBlock.a[^1].kind == Newline:
         let lastN = topBlock.a.len-1
@@ -297,6 +303,7 @@ template parseCurlyString(p: var Parser) =
     var pos = p.bufpos + 1
     var curliesExpected = 1
     var verbatimString = false
+    var regexString = false
     if p.buf[pos]=='!':
         inc(pos)
         while p.buf[pos] in Letters:
@@ -305,6 +312,10 @@ template parseCurlyString(p: var Parser) =
     if p.buf[pos]==':':
         inc(pos)
         verbatimString = true
+    elif p.buf[pos]=='/':
+        inc(pos)
+        regexString = true
+
     let initialLine = p.lineNumber
     let initialPoint = p.bufpos
     while true:
@@ -351,6 +362,17 @@ template parseCurlyString(p: var Parser) =
                 else:
                     add(p.value, p.buf[pos])
                     inc(pos)
+            of '/':
+                if regexString:
+                    if p.buf[pos+1]==RCurly:
+                        inc(pos,2)
+                        break
+                    else:
+                        add(p.value, p.buf[pos])
+                        inc(pos)
+                else:
+                    add(p.value, p.buf[pos])
+                    inc(pos)
             else:
                 add(p.value, p.buf[pos])
                 inc(pos)
@@ -358,6 +380,8 @@ template parseCurlyString(p: var Parser) =
 
     if verbatimString:
         AddToken newString(p.value)
+    elif regexString:
+        AddToken newRegex(p.value)
     else:
         AddToken newString(p.value, dedented=true)
 
@@ -821,9 +845,15 @@ proc parseBlock*(p: var Parser, level: int, isDeferred: bool = true): Value {.in
                 else:
                     AddToken newWord(p.value)
             of Tick:
+                # first try parsing it as a normal :literal
                 parseLiteral(p)
                 if p.value == Empty: 
-                    SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
+                    # if it's empty, then try parsing it as :symbolLiteral
+                    if p.buf[p.bufpos] in Symbols:
+                        parseAndAddSymbol(p,topBlock)
+                        ReplaceLastToken(newSymbolLiteral(LastToken.m))
+                    else:
+                        SyntaxError_EmptyLiteral(p.lineNumber, getContext(p, p.bufpos-1))
                 else:
                     AddToken newLiteral(p.value)
             of Dot:

@@ -60,6 +60,30 @@ orangeBold: $[x][
     color #orange.bold x
 ]
 
+PrintFList: function [sorted, ftype][
+    llength: 80
+
+    print repeat "-" llength
+    print pad.center ((positive? size sorted)? -> to :string size sorted -> "No") ++ 
+          " built-in function" ++ 
+          ((1 = size sorted)? -> " " -> "s ") ++
+          ftype llength
+    print repeat "-" llength
+
+    loop sorted 'key [
+        v: symbols\[key]
+        fparams: "(" ++ (join.with:"," to [:string] keys get info.get key 'args) ++ ")"
+        finfo: get info.get key 'description
+        finfo: replace finfo {/\[[^\]]+\] /} ""
+
+        print (color.bold #magenta pad.right key 17) ++
+              (pad.right fparams 30) ++
+              " -> " ++
+              finfo
+
+    ]
+]
+
 ; print header
 
 clear
@@ -67,14 +91,87 @@ print join @[
     ~LongHeader BR BR
     color #gray ~Details BR BR
     orange "# Type " 
-    orangeBold "info 'symbol"
-    orange " for info about a specific symbol or built-in function" BR
-    orange "# Type " 
     orangeBold "help"
-    orange " to get a list of all available functions with a short description" BR BR
+    orange " to get a list of all available functions with a short description" BR 
+    orange "# Type "
+    orangeBold {lookup "something"} 
+    orange " to lookup a specific function by name/description or type" BR 
+    orange "# Type " 
+    orangeBold "info 'symbol"
+    orange " for info about a specific symbol or built-in function" BR BR
     orange "# For multi-line input, just add a blank space at the end of a line" BR
     orange "# Use TAB for auto-completion, UP for navigating history" BR BR
     orange "# Launching interactive console - rock on! 🤘" BR
+]
+
+; terminal-only methods
+
+help: function [][
+    ;; description: « print a list of all available built-in functions
+    ;; returns: :nothing
+
+    results: select sort keys symbols 'sym ->
+        function?.builtin var sym
+
+    PrintFList results "available"
+]
+
+lookup: function [what :string :literal :regex :type][
+    ;; description: « lookup functions by given descriptive string or signature types
+    ;; options: [
+    ;;      returns: « check by return type
+    ;; ]
+    ;; returns: :nothing
+
+    results: new []
+
+    if? type? what [
+        results: select sort keys symbols 'sym ->
+            function?.builtin var sym
+
+        if? not? null? attr "returns" [
+            results: select results 'sym ->
+                contains? flatten get info.get sym 'returns what
+        ]
+        else [
+            results: select results 'sym ->
+                contains? flatten values get info.get sym 'args what
+        ]
+    ]
+    else [
+        results: (select sort keys symbols 'sym ->
+            function? var sym) -- ["orange" "orangeBold" "PrintFList"]
+
+        results: select results 'sym [
+            finfo: get info.get sym 'description
+            fparams: keys get info.get sym 'args
+            fattrs: keys get info.get sym 'attrs
+
+            inFparams: false
+            loop fparams 'fparam [
+                if contains? fparam what ->
+                    inFparams: true
+            ]
+
+            inFattrs: false
+            loop fattrs 'fattr [
+                if contains? fattr what ->
+                    inFattrs: true
+
+                if contains? get get get info.get sym 'attrs fattr 'description what ->
+                    inFattrs: true
+            ]
+
+            any? @[
+                contains? sym what
+                contains? finfo what
+                inFparams
+                inFattrs
+            ]
+        ]
+    ]
+    
+    PrintFList results "found"
 ]
 
 ; start the REPL
@@ -104,7 +201,7 @@ while [true] .import [
         StackSize: size stack
         
         if StackSize > 0 		[ Got: pop 1 ]
-        if Got <> null 			[ print color #gray ~"=> |Got|" ]
+        if Got <> null 			[ print color #gray render.once "=> |Got|" ]
 
         print ""
     ]

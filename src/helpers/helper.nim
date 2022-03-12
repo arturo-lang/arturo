@@ -10,9 +10,8 @@
 # Libraries
 #=======================================
 
-import algorithm, re, sequtils
-import sets, strformat, strutils
-import sugar, tables
+import re, sequtils, sets, strformat
+import strutils, sugar, tables
 
 import helpers/terminal
 
@@ -133,7 +132,7 @@ proc splitExamples*(ex: string): seq[string] =
     result = @[]
     var currentEx = ""
     for line in splitLines(ex):
-        if ";;;;" == line.strip():
+        if line.strip().findAll(re"\.{4,}").len > 0:
             result.add(currentEx)
             currentEx = ""
         else:
@@ -176,15 +175,6 @@ proc syntaxHighlight(code: string) =
 #=======================================
 # Methods
 #=======================================
-
-proc printHelp*(syms: ValueDict) =
-    let sorted = toSeq(syms.keys).sorted
-    for key in sorted:
-        let v = syms[key]
-        if v.kind==Function and v.fnKind==BuiltinFunction:
-            var params = "(" & (toSeq(v.args.keys)).join(",") & ")"
-            
-            echo strutils.alignLeft(key,17) & strutils.alignLeft(params,30) & " -> " & v.info
 
 proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
     result = initOrderedTable[string,Value]()
