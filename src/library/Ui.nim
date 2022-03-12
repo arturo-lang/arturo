@@ -108,6 +108,11 @@ proc defineSymbols*() =
             },
             returns     = {String},
             example     = """
+                selectedFile: dialog "Select a file to open"
+                ; gets full path for selected file, after dialog closes
+
+                selectedFolder: dialog.folder "Select a folder"
+                ; same as above, only for folder selection
             """:
                 ##########################################################
                 var path = ""
