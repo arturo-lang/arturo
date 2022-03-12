@@ -33,8 +33,10 @@ import vm/[env, errors]
 # Variables
 #=======================================
 
-var
-    ActiveProcesses = initOrderedTable[int, Process]()
+when not defined(WEB):
+
+    var
+        ActiveProcesses = initOrderedTable[int, Process]()
 
 #=======================================
 # Methods
