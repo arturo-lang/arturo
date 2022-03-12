@@ -620,6 +620,23 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==PathLabel))
 
+    builtin "regex?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :regex",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print regex? {/[a-z]+/}     ; true
+            print regex? "[a-z]+"       ; false
+            print regex? 123            ; false
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Regex))
+
     builtin "set?",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
