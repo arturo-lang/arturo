@@ -201,7 +201,7 @@ while [true] .import [
         StackSize: size stack
         
         if StackSize > 0 		[ Got: pop 1 ]
-        if Got <> null 			[ print color #gray ~"=> |Got|" ]
+        if Got <> null 			[ print color #gray render.once "=> |Got|" ]
 
         print ""
     ]
