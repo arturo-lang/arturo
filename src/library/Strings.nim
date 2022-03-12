@@ -558,7 +558,7 @@ proc defineSymbols*() =
                 "template"  : {String}
             },
             attrs       = {
-                "single"    : ({Logical},"don't render recursively"),
+                "once"      : ({Logical},"don't render recursively"),
                 "template"  : ({Logical},"render as a template")
             },
             returns     = {String,Nothing},
@@ -568,7 +568,7 @@ proc defineSymbols*() =
             print ~"|greeting|, your number is |x|"       ; hello, your number is 2
             """:
                 ##########################################################
-                let recursive = not (popAttr("single") != VNULL)
+                let recursive = not (popAttr("once") != VNULL)
                 let templated = (popAttr("template") != VNULL)
                 var res = ""
                 if x.kind == Literal:
