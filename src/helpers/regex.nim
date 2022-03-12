@@ -13,7 +13,7 @@
 import hashes, strutils, tables
 
 when defined(WEB):
-    import jsre
+    import jsre, sequtils, sugar
 else:
     import nre except toSeq
 
@@ -88,7 +88,7 @@ proc replaceAll*(str: string, rx: RegexObj, with: string): string =
 
 proc split*(str: string, rx: RegexObj): seq[string] =
     when defined(WEB):
-        cstring(str).split(rx)
+        cstring(str).split(rx).map(x => $(x))
     else:
         nre.split(str, rx)
 
