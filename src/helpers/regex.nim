@@ -82,7 +82,7 @@ proc endsWith*(str: string, rx: RegexObj): bool =
 
 proc replaceAll*(str: string, rx: RegexObj, with: string): string =
     when defined(WEB):
-        cstring(str).replace(rx, cstring(with))
+        $(replace(cstring(str), rx, cstring(with)))
     else:
         nre.replace(str, rx, with)
 
