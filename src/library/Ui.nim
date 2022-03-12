@@ -204,6 +204,12 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {String},
             example     = """
+                ; paste something into the clipboard (optionally)
+                clip "this is something to be pasted into the clipboard"
+
+                ; now, let's fetch whatever there is in the clipboard
+                unclip 
+                ; => "this is something to be pasted into the clipboard"
             """:
                 ##########################################################
                 push newString(getClipboard())
