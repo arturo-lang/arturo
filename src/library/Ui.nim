@@ -145,6 +145,20 @@ proc defineSymbols*() =
             },
             returns     = {Logical,Literal},
             example     = """
+                popup "Hello!" "This is a popup message"
+                ; shows a message dialog with an OK button
+                ; when the dialog is closed, it returns: true
+                ..........
+                if popup.yesNo "Hmm..." "Are you sure you want to continue?" [
+                    ; a Yes/No dialog will appear - if the user clicks YES,
+                    ; then the function will return true; thus we can do what
+                    ; we want here
+
+                ]
+                ..........
+                popup.okCancel.literal "Hello" "Click on a button"
+                ; => 'ok (if user clicked OK)
+                ; => 'cancel (if user clicked Cancel)
             """:
                 ##########################################################
                 var popupIcon = NoIcon
