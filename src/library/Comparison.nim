@@ -22,10 +22,6 @@ import vm/lib
 # Methods
 #=======================================
 
-# TODO(Comparison) Add function to check for "identity"?
-#  Currently, we have only `equal?`. Should we add another like `identical?`?
-#  labels: library,open discussion
-
 proc defineSymbols*() =
 
     when defined(VERBOSE):
@@ -144,7 +140,25 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newLogical(x != y))
-            
+
+    builtin "same?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "check if given values are exactly the same (identity)",
+        args        = {
+            "valueA": {Any},
+            "valueB": {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            same? 1 2           ; => false
+            same? 3 3           ; => true
+            same? 3 3.0         ; => false
+        """:
+            ##########################################################
+            push(newLogical(identical(x, y)))
+
 #=======================================
 # Add Library
 #=======================================

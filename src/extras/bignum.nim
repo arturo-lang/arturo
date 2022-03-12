@@ -6,7 +6,7 @@
 # distribution, for details about the copyright.
 #
 
-import os, strutils
+import os
 
 {.passL: "-lgmp".}
 

@@ -23,7 +23,7 @@ when not defined(WEB):
 import helpers/terminal as terminalHelper
 
 import vm/lib
-import vm/[env, exec]
+import vm/[env, errors, exec]
 
 #=======================================
 # Methods
@@ -181,7 +181,7 @@ proc defineSymbols*() =
             ]
             
             ; [benchmark] time: 0.065s
-            ;;;;
+            ..........
             benchmark.get [
                 loop 1..10000 => prime?
             ]
@@ -296,31 +296,13 @@ proc defineSymbols*() =
             push(newLogical(x.kind==Dictionary))
 
     when not defined(WEB):
-        builtin "help",
-            alias       = unaliased, 
-            rule        = PrefixPrecedence,
-            description = "print a list of all available builtin functions",
-            args        = NoArgs,
-            attrs       = NoAttrs,
-            returns     = {Nothing},
-            example     = """
-            help        
-
-            ; abs              (value)                        -> get the absolute value for given integer
-            ; acos             (angle)                        -> calculate the inverse cosine of given angle
-            ; acosh            (angle)                        -> calculate the inverse hyperbolic cosine of given angle
-            ; add              (valueA,valueB)                -> add given values and return result
-            ; ...
-            """:
-                ##########################################################
-                printHelp(Syms)
 
         builtin "info",
             alias       = unaliased, 
             rule        = PrefixPrecedence,
             description = "print info for given symbol",
             args        = {
-                "symbol": {String,Literal}
+                "symbol": {String,Literal,SymbolLiteral}
             },
             attrs       = {
                 "get"       : ({Logical},"get information as dictionary"),
@@ -339,16 +321,47 @@ proc defineSymbols*() =
             ; |
             ; |        returns  :nothing
             ; |--------------------------------------------------------------------------------
-            ;;;;
+            ..........
+            info '++
+
+            ; |--------------------------------------------------------------------------------
+            ; |         append  :function                                          0x107555A10
+            ; |          alias  ++
+            ; |--------------------------------------------------------------------------------
+            ; |                 append value to given collection
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  append collection :char :string :literal :block
+            ; |                        value :any
+            ; |
+            ; |        returns  :string :block :nothing
+            ; |--------------------------------------------------------------------------------
+            ..........
             print info.get 'print
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 ##########################################################
                 let showExamples = (popAttr("examples")!=VNULL)
-                if (popAttr("get") != VNULL):
-                    push(newDictionary(getInfo(x.s, InPlace, Aliases)))
+                var searchable = ""
+                var value = VNULL
+
+                if x.kind == SymbolLiteral:
+                    searchable = $(x.m)
+                    for (sym, binding) in pairs(Aliases):
+                        if sym == x.m:
+                            searchable = binding.name.s
+                            value = GetSym(searchable)
+                            break
+
+                    if value == VNULL:
+                        RuntimeError_AliasNotFound($(x.m))
                 else:
-                    printInfo(x.s, InPlace, Aliases, withExamples = showExamples)
+                    searchable = x.s
+                    value = InPlace
+                
+                if (popAttr("get") != VNULL):
+                    push(newDictionary(getInfo(searchable, value, Aliases)))
+                else:
+                    printInfo(searchable, value, Aliases, withExamples = showExamples)
 
     builtin "inline?",
         alias       = unaliased, 
@@ -396,14 +409,22 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "big"   : ({Logical},"check if, internally, it's a bignum")
+        },
         returns     = {Logical},
         example     = """
-            print integer? 123          ; true
-            print integer? "hello"      ; false
+            print integer? 123                  ; true
+            print integer? "hello"              ; false
+            ..........
+            integer?.big 123                    ; => false
+            integer?.big 12345678901234567890   ; => true
         """:
             ##########################################################
-            push(newLogical(x.kind==Integer))
+            if (popAttr("big")!=VNULL):
+                push(newLogical(x.kind==Integer and x.iKind==BigInteger))
+            else:
+                push(newLogical(x.kind==Integer))
 
     builtin "is?",
         alias       = unaliased, 
@@ -473,16 +494,28 @@ proc defineSymbols*() =
         args        = {
             "value" : {Any}
         },
-        attrs       = NoAttrs,
+        attrs       = {
+            "builtin"   : ({Logical},"check if, internally, it's a built-in")
+        },
         returns     = {Logical},
         example     = """
             print function? $[x][2*x]       ; true
             print function? var 'print      ; true
             print function? "print"         ; false
             print function? 123             ; false
+            ..........
+            f: function [x][x+2]
+
+            function? var'f                 ; => true
+            function? var'print             ; => true
+            function?.builtin var'f         ; => false
+            function?.builtin var'print     ; => true
         """:
             ##########################################################
-            push(newLogical(x.kind==Function))
+            if (popAttr("builtin")!=VNULL):
+                push(newLogical(x.kind==Function and x.fnKind==BuiltinFunction))
+            else:
+                push(newLogical(x.kind==Function))
 
     builtin "label?",
         alias       = unaliased, 
@@ -530,7 +563,7 @@ proc defineSymbols*() =
             print logical? true         ; true
             print logical? false        ; true
             print logical? maybe        ; true
-            ;;;;
+            ..........
             print logical? 1=1          ; true
             print logical? 123          ; false
         """:
@@ -586,6 +619,23 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newLogical(x.kind==PathLabel))
+
+    builtin "regex?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :regex",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            print regex? {/[a-z]+/}     ; true
+            print regex? "[a-z]+"       ; false
+            print regex? 123            ; false
+        """:
+            ##########################################################
+            push(newLogical(x.kind==Regex))
 
     builtin "set?",
         alias       = unaliased, 
@@ -673,6 +723,22 @@ proc defineSymbols*() =
         """:
             ##########################################################
             push(newLogical(x.kind==Symbol))
+
+    builtin "symbolLiteral?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :symbolLiteral",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            symbolLiteral? '++
+            ; => true
+        """:
+            ##########################################################
+            push(newLogical(x.kind==SymbolLiteral))
 
     builtin "symbols",
         alias       = unaliased, 

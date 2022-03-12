@@ -64,7 +64,7 @@ splitExampleSections: function [ex][
     sections: new []
     currentEx: new ""
     loop split.lines ex 'l [
-        if? ";;;;" = strip l [
+        if? not? empty? match strip l "\.{4,}" [
             'sections ++ currentEx
             currentEx: new ""
         ]
