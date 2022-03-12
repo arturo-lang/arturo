@@ -80,7 +80,11 @@ proc getSystemInfo*(): ValueDict =
         "version"   : newVersion(ArturoVersion),
         "build"     : newInteger(parseInt(ArturoBuild)),
         "buildDate" : newDate(now()),
-        "binary"    : newString(getAppFilename()),
+        "binary"    : 
+            when defined(WEB):
+                newString("arturo.js")
+            else:
+                newString(getAppFilename()),
         "cpu"       : newString(hostCPU),
         "os"        : newString(hostOS),
         "release"   : 
