@@ -88,6 +88,7 @@ proc defineSymbols*() =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
+                clip "this is something to be pasted into the clipboard"
             """:
                 ##########################################################
                 setClipboard(x.s)
