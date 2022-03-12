@@ -18,7 +18,6 @@
 
 when not defined(WEB):
     import oids
-    import nre except toSeq
 else:
     import jsre
 
@@ -27,6 +26,7 @@ import strutils, sugar, unicode
     
 
 import helpers/arrays
+import helpers/regex
 import helpers/strings
 import helpers/unisort
 
@@ -163,9 +163,7 @@ proc defineSymbols*() =
             "collection"    : {String,Block,Dictionary},
             "value"         : {Any}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
             arr: [1 2 3 4]
@@ -188,11 +186,8 @@ proc defineSymbols*() =
             ##########################################################
             case x.kind:
                 of String:
-                    if (popAttr("regex") != VNULL):
-                        when not defined(WEB):
-                            push(newLogical(nre.contains(x.s, nre.re(y.s))))
-                        else:
-                            push(newLogical(cstring(x.s).contains(newRegExp(cstring(y.s),""))))
+                    if y.kind==Regex:
+                        push(newLogical(x.s.contains(y.rx)))
                     else:
                         push(newLogical(y.s in x.s))
                 of Block:
@@ -429,9 +424,7 @@ proc defineSymbols*() =
             "value"         : {Any},
             "collection"    : {String,Block,Dictionary}
         },
-        attrs       = {
-            "regex" : ({Logical},"match against a regular expression")
-        },
+        attrs       = NoAttrs,
         returns     = {String,Block,Dictionary,Nothing},
         example     = """
             arr: [1 2 3 4]
@@ -454,11 +447,8 @@ proc defineSymbols*() =
             ##########################################################
             case y.kind:
                 of String:
-                    if (popAttr("regex") != VNULL):
-                        when not defined(WEB):
-                            push(newLogical(nre.contains(y.s, nre.re(x.s))))
-                        else:
-                            push(newLogical(cstring(y.s).contains(newRegExp(cstring(x.s),""))))
+                    if x.kind==Regex:
+                        push(newLogical(y.s.contains(x.rx)))
                     else:
                         push(newLogical(x.s in y.s))
                 of Block:
@@ -1142,8 +1132,7 @@ proc defineSymbols*() =
         attrs       = {
             "words"     : ({Logical},"split string by whitespace"),
             "lines"     : ({Logical},"split string by lines"),
-            "by"        : ({String,Block},"split using given separator"),
-            "regex"     : ({String},"split using given regular expression"),
+            "by"        : ({String,Regex,Block},"split using given separator"),
             "at"        : ({Integer},"split collection at given position"),
             "every"     : ({Integer},"split collection every <n> elements"),
             "path"      : ({Logical},"split path components in string")
@@ -1176,13 +1165,10 @@ proc defineSymbols*() =
                     elif (let aBy = popAttr("by"); aBy != VNULL):
                         if aBy.kind==String:
                             SetInPlace(newStringBlock(InPlaced.s.split(aBy.s)))
+                        elif aBy.kind==Regex:
+                            SetInPlace(newStringBlock(InPlaced.s.split(aBy.rx)))
                         else:
                             SetInPlace(newStringBlock(toSeq(InPlaced.s.tokenize(aBy.a.map((k)=>k.s)))))
-                    elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                        when not defined(WEB):
-                            SetInPlace(newStringBlock(InPlaced.s.split(nre.re(aRegex.s))))
-                        else:
-                            SetInPlace(newStringBlock(cstring(InPlaced.s).split(newRegExp(cstring(aRegex.s),""))))
                     elif (let aAt = popAttr("at"); aAt != VNULL):
                         SetInPlace(newStringBlock(@[InPlaced.s[0..aAt.i-1], InPlaced.s[aAt.i..^1]]))
                     elif (let aEvery = popAttr("every"); aEvery != VNULL):
@@ -1222,13 +1208,10 @@ proc defineSymbols*() =
                 elif (let aBy = popAttr("by"); aBy != VNULL):
                     if aBy.kind==String:
                         push(newStringBlock(x.s.split(aBy.s)))
+                    elif aBy.kind==Regex:
+                        push(newStringBlock(x.s.split(aBy.rx)))
                     else:
                         push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>k.s)))))
-                elif (let aRegex = popAttr("regex"); aRegex != VNULL):
-                    when not defined(WEB):
-                        push(newStringBlock(x.s.split(nre.re(aRegex.s))))
-                    else:
-                        push(newStringBlock(cstring(x.s).split(newRegExp(cstring(aRegex.s),""))))
                 elif (let aAt = popAttr("at"); aAt != VNULL):
                     push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
                 elif (let aEvery = popAttr("every"); aEvery != VNULL):

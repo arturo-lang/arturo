@@ -4,7 +4,7 @@ reverseGender: function [str][
 	repls: ["He_" "he_" "His_" "his_" "his_" "She_" "she_" "Her_" "her_" "her_"]
  
     loop.with:'i entries 'entry ->
-        replace 'ret .regex ~{\b|entry|\b} repls\[i]
+        replace 'ret to :regex ~{\b|entry|\b} repls\[i]
     
     return replace ret "_" ""
 ]

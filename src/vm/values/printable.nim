@@ -20,6 +20,7 @@ when not defined(NOGMP):
     import extras/bignum
 
 import helpers/colors as ColorsHelper
+import helpers/regex as RegexHelper
 
 import vm/exec
 import vm/stack
@@ -157,6 +158,8 @@ proc `$`*(v: Value): string {.inline.} =
         of Symbol,
            SymbolLiteral:
             return $(v.m)
+        of Regex:
+            return $(v.rx)
         of Color        :
             return $(v.l)
 
