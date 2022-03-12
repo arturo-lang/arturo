@@ -41,8 +41,6 @@ jobs:
         with:
           submodules: recursive
 
-      # TODO(FreeBSD) Nim compiler package stuck at version 1.6.2
-      # labels: enhancement, ci, workflows
       - name: Setup environment & Build Arturo
         id: test
         uses: vmactions/freebsd-vm@v0.1.5
