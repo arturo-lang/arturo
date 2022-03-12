@@ -724,6 +724,22 @@ proc defineSymbols*() =
             ##########################################################
             push(newLogical(x.kind==Symbol))
 
+    builtin "symbolLiteral?",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "checks if given value is of type :symbolLiteral",
+        args        = {
+            "value" : {Any}
+        },
+        attrs       = NoAttrs,
+        returns     = {Logical},
+        example     = """
+            symbolLiteral? '++
+            ; => true
+        """:
+            ##########################################################
+            push(newLogical(x.kind==SymbolLiteral))
+
     builtin "symbols",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
