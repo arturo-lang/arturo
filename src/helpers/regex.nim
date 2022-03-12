@@ -97,7 +97,7 @@ proc matchAll*(str: string, rx: RegexObj): seq[string] =
         let globalR = rx
         rx.flags = "g"
 
-        cstring(str).match(globalR)
+        cstring(str).match(globalR).map(x => $(x))
     else:
         nre.findAll(str, rx)
 
