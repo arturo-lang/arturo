@@ -10,12 +10,12 @@
    * [The Language](#the-language)
    * [Documentation](#documentation)
    * [Installation](#installation)
-      * [The easy way](#the-easy-way)
+      * [Pre-built binaries](#pre-built-binaries)
+      * [The alternatice way](#the-alternative-way)
       * [Manually](#manually)
         * [What you'll need first](#what-youll-need-first)
         * [Build & Install Arturo](#build--install-arturo)
-      * [Pre-built binaries](#pre-built-binaries)
-      * [Alternative ways](#alternative-ways)
+      * [Other methods](#other-methods)
         * [Docker](#docker)
         * [Homebrew](#homebrew)
    * [Showcase](#showcase)
@@ -34,11 +34,11 @@
 The Language 
 ------------------------------
 
-Arturo is an independently-developed, modern programming language, vaguely related to various other ones - including but not limited to Logo, Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl, and Lisp.
+Arturo is an independently-developed, modern programming language, vaguely related to various other ones - including but not limited to: Logo, Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl, and Lisp.
 
 The language has been designed following some very simple and straightforward principles:
 
-- Code is just a list of words and symbols
+- Code is just a list of words, symbols and literal values
 - Words and symbols within a block are interpreted - when needed - according to the context
 - No reserved words or keywords - look for them as hard as you can; there are absolutely none
 
@@ -59,7 +59,7 @@ Simple, isn't it?
 Documentation
 ------------------------------
 
-For more information about the language and access to the official Reference, please visit the official [Arturo Programming Language Reference](https://arturo-lang.io/documentation/).
+For more information about the language and access to the library reference, please visit the official [Arturo Programming Language documentation](https://arturo-lang.io/documentation/) website.
 
 |    <p align="center"><img width="60%" src="docs/images/play-circle-bold.png"></p>   | <p align="center"><img width="60%" src="docs/images/hand-pointing-bold.png"></p>   |    <p align="center"><img width="60%" src="docs/images/tree-bold.png"></p>    |
 |-------------------------|-------------------|-------------------|
@@ -71,62 +71,30 @@ For more information about the language and access to the official Reference, pl
 Installation
 ------------------------------
 
-### The easy way
+### Pre-built binaries
+
+Arturo comes with its own pre-built binaries (for practically, all OSes). All you have to do is download one of them and run it - that's it!
+
+#### [⬇️ Download Arturo now](https://arturo-lang.io/#download)
+
+*For being as up-to-date as possible, head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release.
+
+### The alternative way
 
 ```bash
 curl -sSL https://get.arturo-lang.io | sh
 ```
 
-Copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
+For Unix/Mac, you may also copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
 To get the most recent (nightly) build, just use: `curl -sSL https://get.arturo-lang.io/latest | sh`
 
-*If there is any issue with the installation, just let me know and I'll try to fix it. In this case, try one of the methods below.*
+*If there is any issue with the installation, just let me know and I'll try to fix it. In any case, it would be safer to try one of the pre-built binaries.*
 
 ### Manually
 
-> 💡  Arturo should compile practically everywhere: Windows, Linux, BSD, Mac OS - [even Android](https://github.com/arturo-lang/arturo/issues/65#issuecomment-770723447). If you encounter an issue, or your OS is not supported, drop me a line!
+In order to build Arturo manually, you may have a look here:
 
-If you want to have the latest cutting-edge version of Arturo, the easiest and most bulletproof way is to build it yourself.
-
-#### What you'll need first
-
-* [Nim compiler](https://nim-lang.org/)<br> 
-  if you don't have it installed, all it'll take is 2 simple commands:
-
-      curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-      choosenim stable
-* Dependencies (*only* for Linux & full builds):
-   - gtk+-3.0 *(\* needed only for non-mini builds)*
-   - webkit2gtk-4.0 *(\* needed only for non-mini builds)*
-   - libgmp-dev
-
-#### Build & Install Arturo
-
-What you need to do in order to build Arturo and install it is clone this repo and run the installation script.
-
-All the process in a nutshell:
-
-```bash
-git clone https://github.com/arturo-lang/arturo.git
-cd arturo
-./build.nims install
-```
-
-> 💡  For Windows, the equivalent would be `nim build.nims install` - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
-
-After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the aforementioned path is in your `$PATH` as per the installation script instructions.
-
-> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
-
-### Pre-built binaries
-
-Arturo also comes with its own pre-built binaries (for now, for Linux and macOS). All you have to do is download one of them and run it - that's it!
-
-For stable versions, you may check out one of the ["official" releases](https://github.com/arturo-lang/arturo/releases/tag/v0.9.7).
-
-For being as up-to-date as possible, head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases/tag/tag-2021-03-02) and simply download the latest release.
-
-### Alternative ways
+### Other methods
 
 #### Docker
 
