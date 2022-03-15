@@ -18,8 +18,6 @@
       * [Alternative ways](#alternative-ways)
         * [Docker](#docker)
         * [Homebrew](#homebrew)
-   * [Editors & IDEs](#editors--ides)
-      * [Fonts](#fonts)
    * [Showcase](#showcase)
    * [Contributing](#contributing)
       * [Roadmap](#roadmap)
@@ -148,34 +146,6 @@ If you are on macOS, you can easily install Arturo using [Homebrew](https://brew
 
 ```bash
 brew install arturo
-```
-
-Editors & IDEs
-------------------------------
-
-If you prefer to use some specific editors, check which one is already supported (if your preferred editor is not yet supported, just drop me a line - or help me include it):
-
-- **Visual Studio Code**:   
-https://github.com/arturo-lang/art-vscode-package
-
-- **SublimeText**:    
-https://github.com/arturo-lang/art-sublimetext-package
-
-- **Vim / Neovim**: (Thanks @xigoi :-))   
-https://github.com/xigoi/vim-arturo
-
-- **ArtIDE Editor for Windows**: (Thanks @mikeparr :-))    
-http://www.mikeparr.info/artlang.html
-
-### Fonts
-
-The font you use is a matter of personal taste. However, if you still want to know the "official" preference and make Arturo's symbols *shine*, then I'd strongly recommend you use [Fira Code](https://github.com/tonsky/FiraCode) with ligatures turned on. ;-)
-
-The recommended settings for using Fira Code along with Arturo in Visual Studio Code would be:
-
-```
-"editor.fontFamily": "'Fira Code'",
-"editor.fontLigatures": "'ss07','ss09','cv20','cv22','cv23'"
 ```
 
 Showcase
