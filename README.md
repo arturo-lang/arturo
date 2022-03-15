@@ -63,7 +63,7 @@ Documentation
 
 For more information about the language and access to the official Reference, please visit the official [Arturo Programming Language Reference](https://arturo-lang.io/documentation/).
 
-|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
+|    ![Language Reference](docs/images/play-circle-bold.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
 |-------------------------|-------------------|-------------------|-------------------------|
 |    **[Getting Started](https://arturo-lang.io/documentation/getting-started/)**   | **[Language Reference](https://arturo-lang.io/documentation/language/)**   |    **[Command Line](https://arturo-lang.io/documentation/command-line/)**   |    **[Library Reference](https://arturo-lang.io/documentation/library/)**    |
 
