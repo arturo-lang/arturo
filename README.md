@@ -18,10 +18,6 @@
         * [Homebrew](#homebrew)
    * [Showcase](#showcase)
    * [Contributing](#contributing)
-      * [Roadmap](#roadmap)
-      * [Project structure](#project-structure)
-      * [The Compiler](#the-compiler)
-        * [General schema](#general-schema)
    * [Community](#community)
    * [FAQ](#faq)
    * [License](#license)
@@ -59,10 +55,10 @@ Documentation
 
 For more information about the language and access to the library reference, please visit the official [Arturo Programming Language documentation](https://arturo-lang.io/documentation/) website.
 
-|    <p align="center"><img width="60%" src="docs/images/play-circle-bold.png"></p>   | <p align="center"><img width="60%" src="docs/images/hand-pointing-bold.png"></p>   |    <p align="center"><img width="60%" src="docs/images/tree-bold.png"></p>    |
+|    <p align="center"><img width="50%" src="docs/images/play-circle-bold.png"></p>   | <p align="center"><img width="50%" src="docs/images/hand-pointing-bold.png"></p>   |    <p align="center"><img width="50%" src="docs/images/tree-bold.png"></p>    |
 |-------------------------|-------------------|-------------------|
-|    **[Getting Started](https://arturo-lang.io/documentation/getting-started/)**   | **[Language](https://arturo-lang.io/documentation/in-a-nutshell/)**   |    **[Language](https://arturo-lang.io/documentation/language/)**   |
-| <p align="center"><img width="60%" src="docs/images/terminal-window-bold.png"></p> | <p align="center"><img width="60%" src="docs/images/books-bold.png"></p> | <p align="center"><img width="60%" src="docs/images/flask-bold.png"></p> |
+|    **[Getting Started](https://arturo-lang.io/documentation/getting-started/)**   | **[In A Nutshell](https://arturo-lang.io/documentation/in-a-nutshell/)**   |    **[Language](https://arturo-lang.io/documentation/language/)**   |
+| <p align="center"><img width="50%" src="docs/images/terminal-window-bold.png"></p> | <p align="center"><img width="50%" src="docs/images/books-bold.png"></p> | <p align="center"><img width="50%" src="docs/images/flask-bold.png"></p> |
 | **[Command Line](https://arturo-lang.io/documentation/getting-started/)** | **[Library](https://arturo-lang.io/documentation/library)** | **[Examples](https://arturo-lang.io/documentation/examples)** |
 
 
@@ -73,9 +69,9 @@ Installation
 
 Arturo comes with its own pre-built binaries (for practically, all OSes). All you have to do is download one of them and run it - that's it!
 
-#### [⬇️ Download Arturo now](https://arturo-lang.io/#download)
+#### [⬇️ Download Arturo](https://arturo-lang.io/#download)
 
-*For being as up-to-date as possible, head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release.
+*Wanna be as up-to-date as possible? Head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release!
 
 ### The alternative way
 
@@ -138,64 +134,6 @@ Contributing
 
 Please read [docs/CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
 
-**In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
-
-### Roadmap
-
-The list of things to fix and/or add could be endless. But here is one, a bit prioritized (if you think you can help, you know the way ;-):
-
-- [X] Add support for big number handling (via GMP)
-- [ ] Enrich the system library
-   - [X] Add built-in support for Databases (Sqlite, etc)
-   - [X] Implement HTML module
-   - [ ] Add more Server-related features
-   - [ ] Implement LaTeX generation module
-   - [ ] Add custom grammar parser functionality
-- [ ] Optimize and refine the bytecode
-- [ ] Improve VM performance
-- [X] Add the option of saving intermediate bytecode
-- [X] Add support for a package manager
-- [ ] Add UI support (via libui? via webview? both?)
-- [ ] Explore different uses of Arturo's dialecting capabilities (DSLs)
-- [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
-- [ ] Go full self-hosted (that's an ambitious one, I know...)
-
-### Project structure
-
-To get an initial idea of the project, here's a brief guide to where is what:
-
-| Location | Description |
-|---|---|
-| `bin/` | The destination of the final binary after compilation |
-| `examples/` | A list of working examples in Arturo |
-| `src/` | The main source folder |
-| `src/extras/` | 3rd party open-source code used by Arturo |
-| `src/helpers/` | Useful helper methods grouped by category and used mostly by library functions |
-| `src/library/` | The Arturo standard library functions, grouped by category |
-| `src/system/` | Components of the Arturo binary, written in Arturo (the REPL, the packager, etc) |
-| `src/vm/` | The Virtual Machine |
-| `src/vm/bytecode.nim` | A list of all the VM bytecodes along with their description |
-| `src/vm/env.nim` | VM Environment handling (paths, etc) |
-| `src/vm/eval.nim` | The evaluator: where the parse tree turns into bytecode instructions |
-| `src/vm/exec.nim` | The most important VM module, where the main loop is triggered |
-| `src/vm/parse.nim` | The main lexer/parser: turning the initial input into a parse tree, of words, symbols and values |
-| `src/vm/stack.nim` | Manipulation code for the different stacks used by the VM |
-| `src/vm/value.nim` | The main Value object for our Virtual Machine along with numerous overloads, from initialization methods to printing and basic arithmetic |
-| `src/arturo.nim` | The main entry; where all the magic begins |
-| `tests/` | Different unit tests |
-| `tools/` | Various tools, documentation generation, etc |
-| `version/` | Main version & build numbers |
-
-### The Compiler
-
-The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
-
-The main goals are: expressiveness, brevity, performance and portability. (With that exact order)
-
-#### General schema
-
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/schema.png"/>
-
 Community
 ------------------------------
 
@@ -203,7 +141,7 @@ In case you want to ask a question, suggest an idea, or practically anything rel
 
 For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
 
-For questions, quick ideas, and discussing generally the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
+For questions, quick ideas, and discussing generally the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo.
 
 [![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
 
