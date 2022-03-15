@@ -13,8 +13,6 @@
       * [Pre-built binaries](#pre-built-binaries)
       * [The alternatice way](#the-alternative-way)
       * [Manually](#manually)
-        * [What you'll need first](#what-youll-need-first)
-        * [Build & Install Arturo](#build--install-arturo)
       * [Other methods](#other-methods)
         * [Docker](#docker)
         * [Homebrew](#homebrew)
