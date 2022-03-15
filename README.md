@@ -63,11 +63,10 @@ Documentation
 
 For more information about the language and access to the official Reference, please visit the official [Arturo Programming Language Reference](https://arturo-lang.io/documentation/).
 
-|    ![Getting Started](docs/images/play-circle-bold.png)   | ![In A Nutshell](docs/images/hand-pointing-bold.png)   |    ![Language](docs/images/tree-bold.png)    |
+|    <p align="center"><img width="60%" src="docs/images/play-circle-bold.png"></p>   | <p align="center"><img width="60%" src="docs/images/hand-pointing-bold.png"></p>   |    <p align="center"><img width="60%" src="docs/images/tree-bold.png"></p>    |
 |-------------------------|-------------------|-------------------|
 |    **[Getting Started](https://arturo-lang.io/documentation/getting-started/)**   | **[Language Reference](https://arturo-lang.io/documentation/in-a-nutshell/)**   |    **[Language](https://arturo-lang.io/documentation/language/)**   |
-|-------------------------|-------------------|-------------------|
-| ![Command Line](docs/images/terminal-window-bold.png) | ![Language Reference](docs/images/books-bold.png) | ![Examples](docs/images/flask-bold.png) |
+| <p align="center"><img width="60%" src="docs/images/terminal-window-bold.png"></p> | <p align="center"><img width="60%" src="docs/images/books-bold.png"></p> | <p align="center"><img width="60%" src="docs/images/flask-bold.png"></p> |
 | **[Command Line](https://arturo-lang.io/documentation/getting-started/)** | **[Library](https://arturo-lang.io/documentation/library)** | **[Examples](https://arturo-lang.io/documentation/examples)** |
 
 
