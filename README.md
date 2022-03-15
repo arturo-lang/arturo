@@ -86,7 +86,7 @@ To get the most recent (nightly) build, just use: `curl -sSL https://get.arturo-
 
 ### Manually
 
-In order to build Arturo manually, you may have a look here:
+In order to build Arturo manually, you may have a look here at the [instructions here](https://github.com/arturo-lang/arturo/wiki/Building-Arturo).
 
 ### Other methods
 
