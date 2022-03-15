@@ -11,7 +11,7 @@
    * [Documentation](#documentation)
    * [Installation](#installation)
       * [Pre-built binaries](#pre-built-binaries)
-      * [The alternatice way](#the-alternative-way)
+      * [The alternative way](#the-alternative-way)
       * [Manually](#manually)
       * [Other methods](#other-methods)
         * [Docker](#docker)
