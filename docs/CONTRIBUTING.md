@@ -82,7 +82,7 @@ The main goals are: expressiveness, brevity, performance and portability. (With 
 
 #### General schema
 
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/schema.png#gh-light-mode-only"/><img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/schema-white.png#gh-dark-mode-only"/>
+<img src="images/schema.png#gh-light-mode-only"/><img src="images/schema-white.png#gh-dark-mode-only"/>
 
 ### Roadmap
 
