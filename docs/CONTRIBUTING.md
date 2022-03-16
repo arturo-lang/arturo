@@ -158,4 +158,41 @@ The documentation can be divided into 2 parts:
 
 ### Library reference
 
+Every single one of Arturo's built-in functions resides in one of the modules in the [src/library](../src/library) folder.
+
+In each and every one of the files/modules, you can find a list of all the functions within that module. 
+
+One example would `darken` from the [Colors module](../src/library/Colors.nim):
+
+```nim
+    builtin "darken",
+        alias       = unaliased, 
+        rule        = PrefixPrecedence,
+        description = "darken color by given percentage (0.0-1.0)",
+        args        = {
+            "color"     : {ValueKind.Color},
+            "percent"   : {Floating}
+        },
+        attrs       = NoAttrs,
+        returns     = {ValueKind.Color},
+        example     = """
+            darken #red 0.2         ; => #CC0000
+            darken #red 0.5         ; => #7F0000
+            darken #9944CC 0.3      ; => #6B308F
+        """:
+            ##########################################################
+            if x.kind == Literal:
+                SetInPlace(newColor(alterColorValue(InPlace.l, y.f * (-1))))
+            else:
+                push newColor(alterColorValue(x.l, y.f * (-1)))
+```
+
+As you can see, the code includes different pieces of data (`description`, `args`, `example`, etc) along with its implementation. This data is exactly what is is - automatically - included in Arturo's library reference (and the `info` function as well). Once you see a couple of them, it shouldn't be too difficult to figure out how it all works!
+
 ### Miscellaneous pages
+
+For all other pages in the official website (e.g. [this one](https://arturo-lang.io/documentation/language/)), all the content comes from templates that are then auto-magically (via Webize) converted to HTML.
+
+So, if you want to edit one of these pages, just edit the corresponding template and your changes will be reflected at the very-next generation of the website (that part is up to me).
+
+Here's where you can find all documentation template - all mostly written in a combination of Arturo itself and Markdown: [Documentation](../docs)
