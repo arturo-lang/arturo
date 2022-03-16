@@ -236,7 +236,6 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             result["alias"] = newString(alias[0])
             result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
-        result["description"] = newString(v.info)
         result["example"] = newStringBlock(splitExamples(v.example))
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) =
