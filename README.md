@@ -137,7 +137,7 @@ Showcase
 Contributing
 ------------------------------
 
-Please read [docs/CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
+Please read [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
 
 Community
 ------------------------------
