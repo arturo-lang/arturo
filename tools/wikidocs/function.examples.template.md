@@ -1,6 +1,0 @@
-
-#### Examples
-
-```red
-|example|
-```
