@@ -56,11 +56,11 @@ Documentation
 
 For more information about the language and access to the library reference, please visit the official [Arturo Programming Language documentation](https://arturo-lang.io/documentation/) website.
 
-|    <p align="center"><img width="50%" src="docs/images/play-circle-bold.png"></p>   | <p align="center"><img width="50%" src="docs/images/hand-pointing-bold.png"></p>   |    <p align="center"><img width="50%" src="docs/images/tree-bold.png"></p>    |
+| <p align="center"><img width="50%" src="docs/images/icons/getting-started.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/getting-started-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/in-a-nutshell.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/in-a-nutshell-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/language.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/language-white.png#gh-dark-mode-only"></p> |
 |-------------------------|-------------------|-------------------|
-|    **[Getting Started](https://arturo-lang.io/documentation/getting-started/)**   | **[In A Nutshell](https://arturo-lang.io/documentation/in-a-nutshell/)**   |    **[Language](https://arturo-lang.io/documentation/language/)**   |
-| <p align="center"><img width="50%" src="docs/images/terminal-window-bold.png"></p> | <p align="center"><img width="50%" src="docs/images/books-bold.png"></p> | <p align="center"><img width="50%" src="docs/images/flask-bold.png"></p> |
-| **[Command Line](https://arturo-lang.io/documentation/getting-started/)** | **[Library](https://arturo-lang.io/documentation/library)** | **[Examples](https://arturo-lang.io/documentation/examples)** |
+| **[Getting Started](https://arturo-lang.io/documentation/getting-started/)** | **[In A Nutshell](https://arturo-lang.io/documentation/in-a-nutshell/)** | **[Language](https://arturo-lang.io/documentation/language/)** |
+| <p align="center"><img width="50%" src="docs/images/icons/command-line.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/command-line-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/library.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/library-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/examples.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/examples-white.png#gh-dark-mode-only"></p> |
+| **[Command Line](https://arturo-lang.io/documentation/command-line/)** | **[Library](https://arturo-lang.io/documentation/library)** | **[Examples](https://arturo-lang.io/documentation/examples)** |
 
 
 Installation
