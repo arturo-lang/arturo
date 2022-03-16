@@ -6,7 +6,7 @@
 ; - First, run this script - to generate all necessary data & templates
 ; - Then, go to docs/website
 ; - Finally, run: webize --build --at: ../../../arturo-lang.io/
-; - And upload all website files to servers
+; - And upload all website files to server
 ;
 ; * Don't forget to push changes to the corresponding repo!
 ;---------------------------------------------------------------------------------
