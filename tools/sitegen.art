@@ -60,25 +60,6 @@ inspect relatedFuncs
 
 unique 'modules
 
-; splitExampleSections: function [ex][
-;     sections: new []
-;     currentEx: new ""
-;     loop split.lines ex 'l [
-;         if? not? empty? match strip l "\.{4,}" [
-;             'sections ++ currentEx
-;             currentEx: new ""
-;         ]
-;         else [
-;             if currentEx <> "" [
-;                 'currentEx ++ "\n"
-;             ]
-;             'currentEx ++ l
-;         ]
-;     ]
-;     'sections ++ currentEx
-;     return sections
-; ]
-
 loop functions [modl,lst][
     target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
     ; write.directory target ø
