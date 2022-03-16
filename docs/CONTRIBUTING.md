@@ -195,4 +195,4 @@ For all other pages in the official website (e.g. [this one](https://arturo-lang
 
 So, if you want to edit one of these pages, just edit the corresponding template and your changes will be reflected at the very-next generation of the website (that part is up to me).
 
-Here's where you can find all documentation template - all mostly written in a combination of Arturo itself and Markdown: [Documentation](../docs)
+Here's where you can find all documentation template - all mostly written in a combination of Arturo itself and Markdown: [Documentation](../docs/website)
