@@ -1,11 +1,11 @@
 name: "hash"
 type: :function
 module: "Crypto"
+description: "get hash for given value"
 returns: [
         :integer
          :string
     ]
-description: "get hash for given value"
 examples: [
         {
             print hash "hello"      ; 613153351

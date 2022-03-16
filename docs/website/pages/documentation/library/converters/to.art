@@ -1,10 +1,10 @@
 name: "to"
 type: :function
 module: "Converters"
+description: "convert value to given type"
 returns: [
         :any
     ]
-description: "convert value to given type"
 examples: [
         {
             to :integer "2020"            ; 2020
@@ -82,6 +82,12 @@ attributes: #[
                 :logical
             ]
         description: "convert HSL block to color"
+        ]
+    hsv: #[
+        types: [
+                :logical
+            ]
+        description: "convert HSV block to color"
         ]
     ]
 arguments: #[

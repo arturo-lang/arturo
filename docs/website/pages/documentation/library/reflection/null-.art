@@ -1,10 +1,10 @@
 name: "null?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :null"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :null"
 examples: [
         {
             print null? null            ; true
@@ -21,7 +21,7 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/null"
+        "System/null"
          "Reflection/char?"
          "Reflection/date?"
          "Reflection/label?"

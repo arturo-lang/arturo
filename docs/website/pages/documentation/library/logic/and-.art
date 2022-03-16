@@ -1,10 +1,10 @@
 name: "and?"
 type: :function
 module: "Logic"
+description: "return the logical AND for the given values"
 returns: [
         :logical
     ]
-description: "return the logical AND for the given values"
 examples: [
         {
             x: 2

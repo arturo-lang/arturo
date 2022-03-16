@@ -1,11 +1,11 @@
 name: "cosh"
 type: :function
 module: "Numbers"
+description: "calculate the hyperbolic cosine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the hyperbolic cosine of given angle"
 examples: [
         {
             print cosh 0                ; 1.0

@@ -1,11 +1,11 @@
 name: "normalize"
 type: :function
 module: "Paths"
+description: "get normalized version of given path"
 returns: [
         :string
          :nothing
     ]
-description: "get normalized version of given path"
 examples: [
         {
             normalize "one/../two/../../three"
@@ -49,6 +49,6 @@ arguments: #[
 related: [
         "Io/color"
          "Collections/combine"
+         "Files/volume"
          "Strings/capitalize"
-         "Paths/list"
     ]

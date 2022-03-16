@@ -1,0 +1,27 @@
+name: "volume"
+type: :function
+module: "Files"
+description: "get file size for given path"
+returns: [
+        :integer
+    ]
+examples: [
+        {
+            volume "README.md"
+                ; => 13704 
+                ; (size in bytes)
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    file: [
+            :string
+        ]
+    ]
+related: [
+        "Paths/list"
+         "Collections/values"
+         "Paths/module"
+         "Files/read"
+    ]

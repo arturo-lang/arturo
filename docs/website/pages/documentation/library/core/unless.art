@@ -1,10 +1,10 @@
 name: "unless"
 type: :function
 module: "Core"
+description: "perform action, if given condition is false or null"
 returns: [
         :nothing
     ]
-description: "perform action, if given condition is false or null"
 examples: [
         {
             x: 2

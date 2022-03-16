@@ -1,12 +1,12 @@
 name: "chop"
 type: :function
 module: "Collections"
+description: "remove last item from given collection"
 returns: [
         :string
          :block
          :nothing
     ]
-description: "remove last item from given collection"
 examples: [
         {
             print chop "books"          ; book

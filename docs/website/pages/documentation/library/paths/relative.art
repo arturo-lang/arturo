@@ -1,12 +1,12 @@
 name: "relative"
 type: :function
 module: "Paths"
+description: "get relative path for given path, based on current script\'s location"
 returns: [
         :string
     ]
 alias: "./"
 infix?: false
-description: "get relative path for given path, based on current script\'s location"
 examples: [
         {
             ; we are in folder: /Users/admin/Desktop

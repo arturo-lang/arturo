@@ -1,10 +1,10 @@
 name: "nand?"
 type: :function
 module: "Logic"
+description: "return the logical NAND for the given values"
 returns: [
         :logical
     ]
-description: "return the logical NAND for the given values"
 examples: [
         {
             x: 2

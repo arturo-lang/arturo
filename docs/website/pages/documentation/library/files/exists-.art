@@ -1,10 +1,10 @@
 name: "exists?"
 type: :function
 module: "Files"
+description: "check if given file exists"
 returns: [
         :logical
     ]
-description: "check if given file exists"
 examples: [
         {
             if exists? "somefile.txt" [ 

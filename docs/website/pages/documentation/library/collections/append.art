@@ -1,6 +1,7 @@
 name: "append"
 type: :function
 module: "Collections"
+description: "append value to given collection"
 returns: [
         :string
          :block
@@ -8,7 +9,6 @@ returns: [
     ]
 alias: "++"
 infix?: true
-description: "append value to given collection"
 examples: [
         {
             append "hell" "o"         ; => "hello"

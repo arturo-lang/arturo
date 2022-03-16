@@ -1,10 +1,10 @@
 name: "blend"
 type: :function
 module: "Colors"
+description: "blend given colors and get result"
 returns: [
         :color
     ]
-description: "blend given colors and get result"
 examples: [
         "blend #red #CCCCCC                  ; => #E66666"
          {

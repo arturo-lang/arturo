@@ -1,11 +1,11 @@
 name: "or"
 type: :function
 module: "Binary"
+description: "calculate the binary OR for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary OR for the given values"
 examples: [
         "print or 2 3       ; 3"
          {

@@ -1,11 +1,11 @@
 name: "sec"
 type: :function
 module: "Numbers"
+description: "calculate the secant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the secant of given angle"
 examples: [
         {
             print sec 0                 ; 1.0

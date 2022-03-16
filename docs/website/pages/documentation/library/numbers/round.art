@@ -1,10 +1,10 @@
 name: "round"
 type: :function
 module: "Numbers"
+description: "round given value"
 returns: [
         :floating
     ]
-description: "round given value"
 examples: [
         {
             print round 2.1         ; 2.0

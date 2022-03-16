@@ -1,10 +1,10 @@
 name: "sqrt"
 type: :function
 module: "Numbers"
+description: "get square root of given value"
 returns: [
         :floating
     ]
-description: "get square root of given value"
 examples: [
         {
             print sqrt 4                ; 2.0

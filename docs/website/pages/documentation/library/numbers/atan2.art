@@ -1,11 +1,11 @@
 name: "atan2"
 type: :function
 module: "Numbers"
+description: "calculate the inverse tangent of y / x"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse tangent of y / x"
 examples: [
         {
             atan2 1 1           ; 0.7853981633974483

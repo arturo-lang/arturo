@@ -1,7 +1,7 @@
 name: "pi"
 type: :floating
-description: "the number pi, mathematical constant"
 module: "Numbers"
+description: "the number pi, mathematical constant"
 returns: [
         :floating
     ]

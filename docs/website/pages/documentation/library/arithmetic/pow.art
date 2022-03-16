@@ -1,6 +1,7 @@
 name: "pow"
 type: :function
 module: "Arithmetic"
+description: "calculate the power of given values and return result"
 returns: [
         :integer
          :floating
@@ -9,7 +10,6 @@ returns: [
     ]
 alias: "^"
 infix?: true
-description: "calculate the power of given values and return result"
 examples: [
         {
             print pow 2 3      ; 8

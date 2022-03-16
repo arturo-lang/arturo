@@ -1,10 +1,10 @@
 name: "until"
 type: :function
 module: "Core"
+description: "execute action until the given condition is not false or null"
 returns: [
         :nothing
     ]
-description: "execute action until the given condition is not false or null"
 examples: [
         {
             i: 0 
@@ -38,6 +38,6 @@ arguments: #[
 related: [
         "Files/unzip"
          "Core/while"
-         "Core/null"
+         "System/null"
          "Net/mail"
     ]

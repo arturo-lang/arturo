@@ -1,10 +1,10 @@
 name: "inspect"
 type: :function
 module: "Reflection"
+description: "print full dump of given value to screen"
 returns: [
         :nothing
     ]
-description: "print full dump of given value to screen"
 examples: [
         {
             inspect 3                 ; 3 :integer

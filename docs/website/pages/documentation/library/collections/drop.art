@@ -1,12 +1,12 @@
 name: "drop"
 type: :function
 module: "Collections"
+description: "drop first <number> of elements from given collection and return the remaining ones"
 returns: [
         :string
          :block
          :nothing
     ]
-description: "drop first <number> of elements from given collection and return the remaining ones"
 examples: [
         {
             str: drop "some text" 5

@@ -1,11 +1,11 @@
 name: "unique"
 type: :function
 module: "Collections"
+description: "get given block without duplicates"
 returns: [
         :block
          :nothing
     ]
-description: "get given block without duplicates"
 examples: [
         {
             arr: [1 2 4 1 3 2]

@@ -1,11 +1,11 @@
 name: "xnor"
 type: :function
 module: "Binary"
+description: "calculate the binary XNOR for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary XNOR for the given values"
 examples: [
         "print xnor 2 3     ; -2"
          {

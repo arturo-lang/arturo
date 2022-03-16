@@ -1,10 +1,10 @@
 name: "close"
 type: :function
 module: "Databases"
+description: "close given database"
 returns: [
         :nothing
     ]
-description: "close given database"
 examples: [
         {
             db: open "my.db"    ; opens an SQLite database named 'my.db'

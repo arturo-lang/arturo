@@ -1,10 +1,10 @@
 name: "define"
 type: :function
 module: "Converters"
+description: "define new type with given characteristics"
 returns: [
         :nothing
     ]
-description: "define new type with given characteristics"
 examples: [
         {
             define :person [name surname age][  

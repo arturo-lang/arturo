@@ -1,11 +1,11 @@
 name: "not"
 type: :function
 module: "Binary"
+description: "calculate the binary complement the given value"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary complement the given value"
 examples: [
         "print not 123      ; -124"
          {

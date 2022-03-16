@@ -1,11 +1,11 @@
 name: "nand"
 type: :function
 module: "Binary"
+description: "calculate the binary NAND for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary NAND for the given values"
 examples: [
         "print nand 2 3     ; -3"
          {

@@ -1,10 +1,10 @@
 name: "symlink"
 type: :function
 module: "Files"
+description: "create symbolic link of file to given destination"
 returns: [
         :nothing
     ]
-description: "create symbolic link of file to given destination"
 examples: [
         {
             symlink relative "arturo/README.md" 

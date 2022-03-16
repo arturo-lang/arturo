@@ -1,10 +1,10 @@
 name: "panic"
 type: :function
 module: "System"
+description: "exit program with error message"
 returns: [
         :logical
     ]
-description: "exit program with error message"
 examples: [
         {
             panic.code:1 "something went terribly wrong. quitting..."

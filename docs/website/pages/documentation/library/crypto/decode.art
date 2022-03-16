@@ -1,11 +1,11 @@
 name: "decode"
 type: :function
 module: "Crypto"
+description: "encode given value (default: base-64)"
 returns: [
         :string
          :nothing
     ]
-description: "encode given value (default: base-64)"
 examples: [
         {
             print decode "TnVtcXVhbSBmdWdpZW5zIHJlc3BleGVyaXM="

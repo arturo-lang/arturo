@@ -1,11 +1,11 @@
 name: "attr"
 type: :function
 module: "Reflection"
+description: "get given attribute, if it exists"
 returns: [
         :null
          :any
     ]
-description: "get given attribute, if it exists"
 examples: [
         {
             multiply: function [x][

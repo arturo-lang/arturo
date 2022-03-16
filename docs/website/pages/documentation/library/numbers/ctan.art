@@ -1,11 +1,11 @@
 name: "ctan"
 type: :function
 module: "Numbers"
+description: "calculate the cotangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the cotangent of given angle"
 examples: [
         {
             print ctan 0                ; inf

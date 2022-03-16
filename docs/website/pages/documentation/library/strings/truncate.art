@@ -1,11 +1,11 @@
 name: "truncate"
 type: :function
 module: "Strings"
+description: "truncate string at given length"
 returns: [
         :string
          :nothing
     ]
-description: "truncate string at given length"
 examples: [
         {
             str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
@@ -49,6 +49,6 @@ arguments: #[
 related: [
         "Files/rename"
          "Logic/true"
+         "System/terminate"
          "Collections/permutate"
-         "Collections/repeat"
     ]

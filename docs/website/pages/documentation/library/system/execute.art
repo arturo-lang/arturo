@@ -1,10 +1,11 @@
 name: "execute"
 type: :function
 module: "System"
+description: "execute given shell command"
 returns: [
         :string
+         :dictionary
     ]
-description: "execute given shell command"
 examples: [
         {
             print execute "pwd"
@@ -15,6 +16,30 @@ examples: [
         }
     ]
 attributes: #[
+    args: #[
+        types: [
+                :block
+            ]
+        description: "use given command arguments"
+        ]
+    async: #[
+        types: [
+                :logical
+            ]
+        description: "execute asynchronously as a process and return id"
+        ]
+    code: #[
+        types: [
+                :logical
+            ]
+        description: "return process exit code"
+        ]
+    directly: #[
+        types: [
+                :logical
+            ]
+        description: "execute command directly, as a shell command"
+        ]
     ]
 arguments: #[
     command: [

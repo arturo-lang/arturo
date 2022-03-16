@@ -1,10 +1,10 @@
 name: "ceil"
 type: :function
 module: "Numbers"
+description: "calculate the smallest integer not smaller than given value"
 returns: [
         :integer
     ]
-description: "calculate the smallest integer not smaller than given value"
 examples: [
         {
             print ceil 2.1          ; 3
@@ -24,6 +24,6 @@ arguments: #[
 related: [
         "Core/call"
          "Net/mail"
+         "Ui/clip"
          "Arithmetic/dec"
-         "Arithmetic/div"
     ]

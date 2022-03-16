@@ -1,10 +1,10 @@
 name: "get"
 type: :function
 module: "Collections"
+description: "get collection\'s item by given index"
 returns: [
         :any
     ]
-description: "get collection\'s item by given index"
 examples: [
         {
             user: #[

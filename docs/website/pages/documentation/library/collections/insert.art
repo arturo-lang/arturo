@@ -1,13 +1,13 @@
 name: "insert"
 type: :function
 module: "Collections"
+description: "insert value in collection at given index"
 returns: [
         :string
          :dictionary
          :block
          :nothing
     ]
-description: "insert value in collection at given index"
 examples: [
         {
             insert [1 2 3 4] 0 "zero"

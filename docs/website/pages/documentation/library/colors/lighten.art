@@ -1,10 +1,10 @@
 name: "lighten"
 type: :function
 module: "Colors"
+description: "lighten color by given percentage (0.0-1.0)"
 returns: [
         :color
     ]
-description: "lighten color by given percentage (0.0-1.0)"
 examples: [
         {
             print #lightblue            ; #ADD8E6

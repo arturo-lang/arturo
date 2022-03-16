@@ -1,11 +1,11 @@
 name: "repeat"
 type: :function
 module: "Collections"
+description: "repeat value the given number of times and return new one"
 returns: [
         :string
          :block
     ]
-description: "repeat value the given number of times and return new one"
 examples: [
         {
             print repeat "hello" 3
@@ -39,5 +39,5 @@ related: [
         "Files/read"
          "Iterators/select"
          "Net/request"
-         "Strings/replace"
+         "Reflection/regex?"
     ]

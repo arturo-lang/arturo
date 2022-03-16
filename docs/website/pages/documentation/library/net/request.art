@@ -1,10 +1,10 @@
 name: "request"
 type: :function
 module: "Net"
+description: "perform HTTP request to url with given data and get response"
 returns: [
         :dictionary
     ]
-description: "perform HTTP request to url with given data and get response"
 examples: [
         {
             print request "https://httpbin.org/get" #[some:"arg" another: 123]

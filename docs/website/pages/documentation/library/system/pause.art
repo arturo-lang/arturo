@@ -1,10 +1,10 @@
 name: "pause"
 type: :function
 module: "System"
+description: "pause program\'s execution~for the given amount of milliseconds"
 returns: [
         :nothing
     ]
-description: "pause program\'s execution~for the given amount of milliseconds"
 examples: [
         {
             print "wait a moment"

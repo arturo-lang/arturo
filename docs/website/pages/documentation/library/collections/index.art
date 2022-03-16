@@ -1,12 +1,12 @@
 name: "index"
 type: :function
 module: "Collections"
+description: "return first index of value in given collection"
 returns: [
         :null
          :integer
          :string
     ]
-description: "return first index of value in given collection"
 examples: [
         {
             ind: index "hello" "e"

@@ -1,10 +1,10 @@
 name: "hypot"
 type: :function
 module: "Numbers"
+description: "calculate the hypotenuse of a right-angle triangle with given base and height"
 returns: [
         :floating
     ]
-description: "calculate the hypotenuse of a right-angle triangle with given base and height"
 examples: [
         {
             print hypot 3 4

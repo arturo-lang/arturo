@@ -1,10 +1,10 @@
 name: "unzip"
 type: :function
 module: "Files"
+description: "unzip given archive to destination"
 returns: [
         :nothing
     ]
-description: "unzip given archive to destination"
 examples: [
         {
             unzip "folder" "archive.zip"
@@ -23,6 +23,6 @@ arguments: #[
 related: [
         "Core/until"
          "Files/zip"
+         "Ui/unclip"
          "Sets/union"
-         "Strings/strip"
     ]

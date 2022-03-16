@@ -1,10 +1,10 @@
 name: "desaturate"
 type: :function
 module: "Colors"
+description: "desaturate color by given percentage (0.0-1.0)"
 returns: [
         :color
     ]
-description: "desaturate color by given percentage (0.0-1.0)"
 examples: [
         {
             desaturate #red 0.2         ; => #E61919

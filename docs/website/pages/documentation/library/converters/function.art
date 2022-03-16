@@ -1,12 +1,12 @@
 name: "function"
 type: :function
 module: "Converters"
+description: "create function with given arguments and body"
 returns: [
         :function
     ]
 alias: "$"
 infix?: false
-description: "create function with given arguments and body"
 examples: [
         {
             f: function [x][ x + 2 ]
@@ -20,6 +20,54 @@ examples: [
                 x * y
             ]
             print multiply 3 5        ; 15
+        }
+         {
+            ; forcing typed parameters
+            addThem: function [
+                x :integer
+                y :integer :floating
+            ][
+                x + y
+            ]
+        }
+         {
+            ; adding complete documentation for user function
+            ; using data comments within the body
+            addThem: function [
+                x :integer :floating
+                y :integer :floating
+            ][
+                ;; description: « takes two numbers and adds them up
+                ;; options: [
+                ;;      mul: :integer « also multiply by given number
+                ;; ]
+                ;; returns: :integer :floating
+                ;; example: {
+                ;;      addThem 10 20
+                ;;      addThem.mult:3 10 20
+                ;; }
+            
+                mult?: attr 'mult
+                if? not? null? mult? ->
+                    return mult? * x + y
+                else ->
+                    return x + y
+            ]
+            
+            info'addThem
+            
+            ; |--------------------------------------------------------------------------------
+            ; |        addThem  :function                                          0x10EF0E528
+            ; |--------------------------------------------------------------------------------
+            ; |                 takes two numbers and adds them up
+            ; |--------------------------------------------------------------------------------
+            ; |          usage  addThem x :integer :floating
+            ; |                         y :integer :floating
+            ; |
+            ; |        options  .mult :integer -> also multiply by given number
+            ; |
+            ; |        returns  :integer :floating
+            ; |--------------------------------------------------------------------------------
         }
          {
             publicF: function .export['x] [z][
@@ -83,5 +131,5 @@ related: [
         "Reflection/function?"
          "Sets/union"
          "Core/until"
-         "Collections/flatten"
+         "Ui/unclip"
     ]

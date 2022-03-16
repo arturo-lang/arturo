@@ -1,10 +1,10 @@
 name: "leap?"
 type: :function
 module: "Dates"
+description: "check if given year is a leap year"
 returns: [
         :logical
     ]
-description: "check if given year is a leap year"
 examples: [
         {
             print leap? now     ; false

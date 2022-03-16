@@ -1,10 +1,10 @@
 name: "type"
 type: :function
 module: "Reflection"
+description: "get type of given value"
 returns: [
         :type
     ]
-description: "get type of given value"
 examples: [
         {
             print type 18966          ; :integer

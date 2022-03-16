@@ -1,11 +1,11 @@
 name: "sort"
 type: :function
 module: "Collections"
+description: "sort given block in ascending order"
 returns: [
         :block
          :nothing
     ]
-description: "sort given block in ascending order"
 examples: [
         {
             a: [3 1 6]

@@ -1,11 +1,11 @@
 name: "xor"
 type: :function
 module: "Binary"
+description: "calculate the binary XOR for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary XOR for the given values"
 examples: [
         "print xor 2 3      ; 1"
          {

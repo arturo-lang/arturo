@@ -1,10 +1,10 @@
 name: "xor?"
 type: :function
 module: "Logic"
+description: "return the logical XOR for the given values"
 returns: [
         :logical
     ]
-description: "return the logical XOR for the given values"
 examples: [
         {
             x: 2

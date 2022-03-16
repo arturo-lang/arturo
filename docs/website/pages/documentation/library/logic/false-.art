@@ -1,10 +1,10 @@
 name: "false?"
 type: :function
 module: "Logic"
+description: "returns true if given value is false; otherwise, it returns false"
 returns: [
         :logical
     ]
-description: "returns true if given value is false; otherwise, it returns false"
 examples: [
         {
             print false? 1 = 2          ; true
@@ -25,5 +25,5 @@ related: [
         "Logic/false"
          "Logic/true?"
          "Collections/values"
-         "Core/case"
+         "Comparison/same?"
     ]

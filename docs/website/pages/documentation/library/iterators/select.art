@@ -1,11 +1,11 @@
 name: "select"
 type: :function
 module: "Iterators"
+description: "get collection\'s items that fulfil given condition"
 returns: [
         :block
          :nothing
     ]
-description: "get collection\'s items that fulfil given condition"
 examples: [
         {
             print select 1..10 [x][

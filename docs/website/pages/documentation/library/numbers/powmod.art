@@ -1,11 +1,11 @@
 name: "powmod"
 type: :function
 module: "Numbers"
+description: "modular exponentation: calculate the result of (base^exponent) % divider"
 returns: [
         :null
          :integer
     ]
-description: "modular exponentation: calculate the result of (base^exponent) % divider"
 examples: [
         {
             powmod 1 10 3   ; => 1

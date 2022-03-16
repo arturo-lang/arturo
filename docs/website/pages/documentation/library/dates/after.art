@@ -1,10 +1,10 @@
 name: "after"
 type: :function
 module: "Dates"
+description: "get date after given one using interval"
 returns: [
         :date
     ]
-description: "get date after given one using interval"
 examples: [
         {
             print now

@@ -1,12 +1,12 @@
 name: "upper"
 type: :function
 module: "Strings"
+description: "convert given string to uppercase"
 returns: [
         :char
          :string
          :nothing
     ]
-description: "convert given string to uppercase"
 examples: [
         {
             print upper "hello World, 你好!"       ; "HELLO WORLD, 你好!"

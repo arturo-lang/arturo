@@ -1,16 +1,22 @@
 name: "print"
 type: :function
 module: "Io"
+description: "print given value to screen with newline"
 returns: [
         :nothing
     ]
-description: "print given value to screen with newline"
 examples: [
         {
             print "Hello world!"          ; Hello world!
         }
     ]
 attributes: #[
+    lines: #[
+        types: [
+                :logical
+            ]
+        description: "print each value in block in a new line"
+        ]
     ]
 arguments: #[
     value: [

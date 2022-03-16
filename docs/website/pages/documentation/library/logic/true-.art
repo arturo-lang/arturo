@@ -1,10 +1,10 @@
 name: "true?"
 type: :function
 module: "Logic"
+description: "returns true if given value is true; otherwise, it returns false"
 returns: [
         :logical
     ]
-description: "returns true if given value is true; otherwise, it returns false"
 examples: [
         {
             print true? 1 = 2           ; false

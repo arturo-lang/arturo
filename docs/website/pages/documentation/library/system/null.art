@@ -1,0 +1,13 @@
+name: "null"
+type: :null
+module: "System"
+description: "embedded information about the current script"
+returns: [
+        :null
+    ]
+related: [
+        "System/script"
+         "Reflection/null?"
+         "Arithmetic/mul"
+         "Core/call"
+    ]

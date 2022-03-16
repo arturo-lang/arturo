@@ -1,13 +1,13 @@
 name: "contains?"
 type: :function
 module: "Collections"
+description: "check if collection contains given value"
 returns: [
         :string
          :dictionary
          :block
          :nothing
     ]
-description: "check if collection contains given value"
 examples: [
         {
             arr: [1 2 3 4]
@@ -31,12 +31,6 @@ examples: [
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     collection: [

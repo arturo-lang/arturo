@@ -1,11 +1,11 @@
 name: "permissions"
 type: :function
 module: "Files"
+description: "check permissions of given file"
 returns: [
         :null
          :dictionary
     ]
-description: "check permissions of given file"
 examples: [
         {
             inspect permissions "bin/arturo"

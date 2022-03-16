@@ -1,11 +1,11 @@
 name: "csech"
 type: :function
 module: "Numbers"
+description: "calculate the hyperbolic cosecant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the hyperbolic cosecant of given angle"
 examples: [
         {
             print csech 0               ; inf

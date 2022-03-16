@@ -1,13 +1,13 @@
 name: "mod"
 type: :function
 module: "Arithmetic"
+description: "calculate the modulo of given values and return result"
 returns: [
         :integer
          :nothing
     ]
 alias: "%"
 infix?: true
-description: "calculate the modulo of given values and return result"
 examples: [
         {
             print mod 5 2      ; 1

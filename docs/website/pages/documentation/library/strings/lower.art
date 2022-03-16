@@ -1,12 +1,12 @@
 name: "lower"
 type: :function
 module: "Strings"
+description: "convert given string to lowercase"
 returns: [
         :char
          :string
          :nothing
     ]
-description: "convert given string to lowercase"
 examples: [
         {
             print lower "hello World, 你好!"      ; "hello world, 你好!"

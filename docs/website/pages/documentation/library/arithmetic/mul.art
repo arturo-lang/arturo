@@ -1,6 +1,7 @@
 name: "mul"
 type: :function
 module: "Arithmetic"
+description: "calculate the product of given values and return result"
 returns: [
         :integer
          :floating
@@ -9,7 +10,6 @@ returns: [
     ]
 alias: "*"
 infix?: true
-description: "calculate the product of given values and return result"
 examples: [
         {
             print mul 1 2      ; 2

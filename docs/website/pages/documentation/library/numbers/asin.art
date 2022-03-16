@@ -1,11 +1,11 @@
 name: "asin"
 type: :function
 module: "Numbers"
+description: "calculate the inverse sine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse sine of given angle"
 examples: [
         {
             print asin 0                ; 0.0

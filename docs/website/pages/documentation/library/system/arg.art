@@ -1,7 +1,7 @@
 name: "arg"
 type: :block
-description: "access command-line arguments as a list"
 module: "System"
+description: "access command-line arguments as a list"
 returns: [
         :block
     ]

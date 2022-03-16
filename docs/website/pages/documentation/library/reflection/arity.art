@@ -1,10 +1,10 @@
 name: "arity"
 type: :function
 module: "Reflection"
+description: "get index of function arities"
 returns: [
         :dictionary
     ]
-description: "get index of function arities"
 examples: [
         "print arity\\print   ; 1"
     ]

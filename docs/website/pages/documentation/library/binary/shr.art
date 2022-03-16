@@ -1,11 +1,11 @@
 name: "shr"
 type: :function
 module: "Binary"
+description: "shift-right first value bits by second value"
 returns: [
         :integer
          :nothing
     ]
-description: "shift-right first value bits by second value"
 examples: [
         "print shr 16 3     ; 2"
          {

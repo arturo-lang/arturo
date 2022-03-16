@@ -1,10 +1,10 @@
 name: "prefix?"
 type: :function
 module: "Strings"
+description: "check if string starts with given prefix"
 returns: [
         :logical
     ]
-description: "check if string starts with given prefix"
 examples: [
         {
             prefix? "hello" "he"          ; => true
@@ -12,12 +12,6 @@ examples: [
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     string: [
@@ -25,11 +19,12 @@ arguments: #[
         ]
     prefix: [
             :string
+             :regex
         ]
     ]
 related: [
         "Strings/prefix"
          "Strings/suffix?"
+         "Reflection/regex?"
          "Converters/define"
-         "Io/print"
     ]

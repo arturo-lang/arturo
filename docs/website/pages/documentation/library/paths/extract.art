@@ -1,11 +1,11 @@
 name: "extract"
 type: :function
 module: "Paths"
+description: "extract components from path"
 returns: [
         :string
          :dictionary
     ]
-description: "extract components from path"
 examples: [
         {
             path: "/this/is/some/path.txt"
@@ -138,11 +138,23 @@ attributes: #[
             ]
         description: "get blue component from color"
         ]
+    alpha: #[
+        types: [
+                :logical
+            ]
+        description: "get alpha component from color"
+        ]
     hsl: #[
         types: [
                 :logical
             ]
         description: "get HSL representation from color"
+        ]
+    hsv: #[
+        types: [
+                :logical
+            ]
+        description: "get HSV representation from color"
         ]
     hue: #[
         types: [

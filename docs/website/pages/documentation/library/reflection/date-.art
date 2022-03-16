@@ -1,10 +1,10 @@
 name: "date?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :date"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :date"
 examples: [
         {
             print date? now             ; true

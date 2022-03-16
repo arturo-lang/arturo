@@ -1,10 +1,10 @@
 name: "or?"
 type: :function
 module: "Logic"
+description: "return the logical OR for the given values"
 returns: [
         :logical
     ]
-description: "return the logical OR for the given values"
 examples: [
         {
             x: 2

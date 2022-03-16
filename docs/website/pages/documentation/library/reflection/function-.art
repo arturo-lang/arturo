@@ -1,10 +1,10 @@
 name: "function?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :function"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :function"
 examples: [
         {
             print function? $[x][2*x]       ; true
@@ -12,8 +12,22 @@ examples: [
             print function? "print"         ; false
             print function? 123             ; false
         }
+         {
+            f: function [x][x+2]
+            
+            function? var'f                 ; => true
+            function? var'print             ; => true
+            function?.builtin var'f         ; => false
+            function?.builtin var'print     ; => true
+        }
     ]
 attributes: #[
+    builtin: #[
+        types: [
+                :logical
+            ]
+        description: "check if, internally, it\'s a built-in"
+        ]
     ]
 arguments: #[
     value: [

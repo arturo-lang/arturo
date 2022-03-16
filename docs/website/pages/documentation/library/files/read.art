@@ -1,6 +1,7 @@
 name: "read"
 type: :function
 module: "Files"
+description: "read file from given path"
 returns: [
         :string
          :binary
@@ -8,7 +9,6 @@ returns: [
     ]
 alias: "<<"
 infix?: false
-description: "read file from given path"
 examples: [
         {
             ; reading a simple local file

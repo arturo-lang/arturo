@@ -1,10 +1,10 @@
 name: "size"
 type: :function
 module: "Collections"
+description: "get size/length of given collection"
 returns: [
         :integer
     ]
-description: "get size/length of given collection"
 examples: [
         {
             arr: ["one" "two" "three"]

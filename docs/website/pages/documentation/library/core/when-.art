@@ -1,10 +1,10 @@
 name: "when?"
 type: :function
 module: "Core"
+description: "check if a specific condition is fulfilled and, if so, execute given action"
 returns: [
         :logical
     ]
-description: "check if a specific condition is fulfilled and, if so, execute given action"
 examples: [
         {
             a: 2

@@ -1,12 +1,12 @@
 name: "dup"
 type: :function
 module: "Core"
+description: "duplicate the top of the stack and convert non-returning call to a do-return call"
 returns: [
         :nothing
     ]
 alias: "<="
 infix?: false
-description: "duplicate the top of the stack and convert non-returning call to a do-return call"
 examples: [
         {
             ; a label normally consumes its inputs

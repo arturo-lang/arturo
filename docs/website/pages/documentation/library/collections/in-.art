@@ -1,13 +1,13 @@
 name: "in?"
 type: :function
 module: "Collections"
+description: "check if value exists in given collection"
 returns: [
         :string
          :dictionary
          :block
          :nothing
     ]
-description: "check if value exists in given collection"
 examples: [
         {
             arr: [1 2 3 4]
@@ -31,12 +31,6 @@ examples: [
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     value: [

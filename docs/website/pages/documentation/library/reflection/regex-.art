@@ -1,0 +1,27 @@
+name: "regex?"
+type: :function
+module: "Reflection"
+description: "checks if given value is of type :regex"
+returns: [
+        :logical
+    ]
+examples: [
+        {
+            print regex? {/[a-z]+/}     ; true
+            print regex? "[a-z]+"       ; false
+            print regex? 123            ; false
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/date?"
+         "Reflection/integer?"
+         "Reflection/label?"
+         "Reflection/type?"
+    ]

@@ -1,11 +1,11 @@
 name: "csec"
 type: :function
 module: "Numbers"
+description: "calculate the cosecant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the cosecant of given angle"
 examples: [
         {
             print csec 0                ; inf

@@ -1,10 +1,10 @@
 name: "stack"
 type: :function
 module: "Reflection"
+description: "get current stack"
 returns: [
         :dictionary
     ]
-description: "get current stack"
 examples: [
         {
             1 2 3 "done"

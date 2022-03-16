@@ -1,13 +1,13 @@
 name: "fdiv"
 type: :function
 module: "Arithmetic"
+description: "divide given values and return result"
 returns: [
         :floating
          :nothing
     ]
 alias: "//"
 infix?: true
-description: "divide given values and return result"
 examples: [
         "print fdiv 5 2     ; 2.5"
          {

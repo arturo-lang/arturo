@@ -1,10 +1,10 @@
 name: "type?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :type"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :type"
 examples: [
         {
             print type? :string         ; true

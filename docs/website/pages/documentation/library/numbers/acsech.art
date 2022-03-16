@@ -1,11 +1,11 @@
 name: "acsech"
 type: :function
 module: "Numbers"
+description: "calculate the inverse hyperbolic cosecant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse hyperbolic cosecant of given angle"
 examples: [
         {
             print acsech 0              ; inf

@@ -1,10 +1,10 @@
 name: "average"
 type: :function
 module: "Statistics"
+description: "get average from given collection of numbers"
 returns: [
         :floating
     ]
-description: "get average from given collection of numbers"
 examples: [
         {
             print average [2 4 5 6 7 2 3]

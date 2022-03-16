@@ -1,10 +1,10 @@
 name: "continue"
 type: :function
 module: "Core"
+description: "immediately continue with next iteration"
 returns: [
         :block
     ]
-description: "immediately continue with next iteration"
 examples: [
         {
             loop 1..5 'x [

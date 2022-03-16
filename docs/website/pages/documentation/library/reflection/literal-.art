@@ -1,10 +1,10 @@
 name: "literal?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :literal"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :literal"
 examples: [
         {
             print literal? 'x           ; true

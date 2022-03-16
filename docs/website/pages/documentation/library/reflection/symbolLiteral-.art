@@ -1,0 +1,26 @@
+name: "symbolLiteral?"
+type: :function
+module: "Reflection"
+description: "checks if given value is of type :symbolLiteral"
+returns: [
+        :logical
+    ]
+examples: [
+        {
+            symbolLiteral? '++
+            ; => true
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/literal?"
+         "Reflection/symbol?"
+         "Reflection/logical?"
+         "Reflection/binary?"
+    ]

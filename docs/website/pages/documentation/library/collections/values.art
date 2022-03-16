@@ -1,10 +1,10 @@
 name: "values"
 type: :function
 module: "Collections"
+description: "get list of values for given dictionary"
 returns: [
         :block
     ]
-description: "get list of values for given dictionary"
 examples: [
         {
             user: #[
@@ -25,7 +25,7 @@ arguments: #[
     ]
 related: [
         "Collections/keys"
+         "Core/alias"
+         "Files/volume"
          "Logic/false"
-         "Logic/false?"
-         "Collections/take"
     ]

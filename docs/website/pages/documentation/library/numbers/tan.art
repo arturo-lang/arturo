@@ -1,11 +1,11 @@
 name: "tan"
 type: :function
 module: "Numbers"
+description: "calculate the tangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the tangent of given angle"
 examples: [
         {
             print tan 0                 ; 0.0

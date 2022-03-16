@@ -1,10 +1,10 @@
 name: "attributeLabel?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :attributeLabel"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :attributeLabel"
 examples: [
         {
             attributeLabel? first [.something: x]

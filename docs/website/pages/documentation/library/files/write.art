@@ -1,12 +1,12 @@
 name: "write"
 type: :function
 module: "Files"
+description: "write content to file at given path"
 returns: [
         :nothing
     ]
 alias: ">>"
 infix?: false
-description: "write content to file at given path"
 examples: [
         {
             ; write some string data to given file path
@@ -39,6 +39,12 @@ attributes: #[
                 :logical
             ]
         description: "write value as Json"
+        ]
+    compact: #[
+        types: [
+                :logical
+            ]
+        description: "produce compact, non-prettified Json code"
         ]
     binary: #[
         types: [

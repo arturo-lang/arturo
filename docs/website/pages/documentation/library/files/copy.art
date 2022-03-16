@@ -1,10 +1,10 @@
 name: "copy"
 type: :function
 module: "Files"
+description: "copy file at path to given destination"
 returns: [
         :nothing
     ]
-description: "copy file at path to given destination"
 examples: [
         {
             copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"

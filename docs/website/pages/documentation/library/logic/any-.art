@@ -1,10 +1,10 @@
 name: "any?"
 type: :function
 module: "Logic"
+description: "check if any of the values in given block is true"
 returns: [
         :logical
     ]
-description: "check if any of the values in given block is true"
 examples: [
         {
             if any? @[false 3=4 2>1] 

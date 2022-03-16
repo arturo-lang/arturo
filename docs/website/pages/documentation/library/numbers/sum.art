@@ -1,11 +1,11 @@
 name: "sum"
 type: :function
 module: "Numbers"
+description: "calculate the sum of all values in given list"
 returns: [
         :integer
          :floating
     ]
-description: "calculate the sum of all values in given list"
 examples: [
         {
             print sum [3 4]           ; 7

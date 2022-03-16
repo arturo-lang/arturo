@@ -1,11 +1,11 @@
 name: "filter"
 type: :function
 module: "Iterators"
+description: "get collection\'s items by filtering those that do not fulfil given condition"
 returns: [
         :block
          :nothing
     ]
-description: "get collection\'s items by filtering those that do not fulfil given condition"
 examples: [
         {
             print filter 1..10 [x][

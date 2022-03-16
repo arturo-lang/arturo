@@ -1,15 +1,21 @@
 name: "exit"
 type: :function
 module: "System"
+description: "exit program"
 returns: [
         :nothing
     ]
-description: "exit program"
 examples: [
         "exit              ; (terminates the program)"
          "exit.with: 3      ; (terminates the program with code 3)"
     ]
 attributes: #[
+    args: #[
+        types: [
+                :integer
+            ]
+        description: "use given error code"
+        ]
     ]
 arguments: #[
     ]

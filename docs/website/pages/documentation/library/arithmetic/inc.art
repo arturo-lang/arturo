@@ -1,12 +1,12 @@
 name: "inc"
 type: :function
 module: "Arithmetic"
+description: "increase given value by 1"
 returns: [
         :integer
          :floating
          :nothing
     ]
-description: "increase given value by 1"
 examples: [
         "print inc 5        ; 6"
          {

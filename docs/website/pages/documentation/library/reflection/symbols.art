@@ -1,10 +1,10 @@
 name: "symbols"
 type: :function
 module: "Reflection"
+description: "get currently defined symbols"
 returns: [
         :dictionary
     ]
-description: "get currently defined symbols"
 examples: [
         {
             a: 2

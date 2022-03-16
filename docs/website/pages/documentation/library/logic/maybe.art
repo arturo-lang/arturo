@@ -1,7 +1,7 @@
 name: "maybe"
 type: :logical
-description: "the MAYBE logical constant"
 module: "Logic"
+description: "the MAYBE logical constant"
 returns: [
         :logical
     ]

@@ -1,11 +1,11 @@
 name: "nor"
 type: :function
 module: "Binary"
+description: "calculate the binary NOR for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary NOR for the given values"
 examples: [
         "print nor 2 3      ; -4"
          {

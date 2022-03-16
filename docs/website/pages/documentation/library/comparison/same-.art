@@ -1,0 +1,30 @@
+name: "same?"
+type: :function
+module: "Comparison"
+description: "check if given values are exactly the same (identity)"
+returns: [
+        :logical
+    ]
+examples: [
+        {
+            same? 1 2           ; => false
+            same? 3 3           ; => true
+            same? 3 3.0         ; => false
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    valueA: [
+            :any
+        ]
+    valueB: [
+            :any
+        ]
+    ]
+related: [
+        "Iterators/some?"
+         "Reflection/date?"
+         "Collections/sample"
+         "Collections/set"
+    ]

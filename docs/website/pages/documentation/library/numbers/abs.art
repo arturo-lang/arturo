@@ -1,11 +1,11 @@
 name: "abs"
 type: :function
 module: "Numbers"
+description: "get the absolute value for given integer"
 returns: [
         :integer
          :floating
     ]
-description: "get the absolute value for given integer"
 examples: [
         {
             print abs 6                 ; 6

@@ -1,11 +1,11 @@
 name: "capitalize"
 type: :function
 module: "Strings"
+description: "convert given string to capitalized"
 returns: [
         :string
          :nothing
     ]
-description: "convert given string to capitalized"
 examples: [
         {
             print capitalize "hello World"      ; "Hello World"

@@ -1,10 +1,10 @@
 name: "ensure"
 type: :function
 module: "Core"
+description: "assert given condition is true, or exit"
 returns: [
         :nothing
     ]
-description: "assert given condition is true, or exit"
 examples: [
         {
             num: input "give me a positive number"

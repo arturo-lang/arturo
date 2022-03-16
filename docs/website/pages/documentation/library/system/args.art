@@ -1,7 +1,7 @@
 name: "args"
 type: :dictionary
-description: "a dictionary with all command-line arguments parsed"
 module: "System"
+description: "a dictionary with all command-line arguments parsed"
 returns: [
         :dictionary
     ]

@@ -1,12 +1,12 @@
 name: "greater?"
 type: :function
 module: "Comparison"
+description: "check if valueA > valueB (greater than)"
 returns: [
         :logical
     ]
 alias: ">"
 infix?: true
-description: "check if valueA > valueB (greater than)"
 examples: [
         {
             greater? 5 2          ; => true

@@ -1,10 +1,10 @@
 name: "floating?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :floating"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :floating"
 examples: [
         {
             print floating? 3.14        ; true

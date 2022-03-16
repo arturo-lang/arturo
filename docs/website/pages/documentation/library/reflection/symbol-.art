@@ -1,10 +1,10 @@
 name: "symbol?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :symbol"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :symbol"
 examples: [
         {
             symbol? first [+ x]

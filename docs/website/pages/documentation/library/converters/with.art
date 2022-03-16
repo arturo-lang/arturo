@@ -1,10 +1,10 @@
 name: "with"
 type: :function
 module: "Converters"
+description: "create closure-style block by embedding given words"
 returns: [
         :block
     ]
-description: "create closure-style block by embedding given words"
 examples: [
         {
             f: function [x][ 

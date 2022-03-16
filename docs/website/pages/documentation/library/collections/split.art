@@ -1,11 +1,11 @@
 name: "split"
 type: :function
 module: "Collections"
+description: "split collection to components"
 returns: [
         :block
          :nothing
     ]
-description: "split collection to components"
 examples: [
         {
             split "hello"                 ; => [`h` `e` `l` `l` `o`]
@@ -43,15 +43,10 @@ attributes: #[
     by: #[
         types: [
                 :string
+                 :regex
                  :block
             ]
         description: "split using given separator"
-        ]
-    regex: #[
-        types: [
-                :string
-            ]
-        description: "split using given regular expression"
         ]
     at: #[
         types: [
@@ -80,8 +75,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/shl"
+        "Colors/spin"
+         "Binary/shl"
          "Collections/set"
          "Collections/slice"
-         "Collections/sort"
     ]

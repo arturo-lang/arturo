@@ -1,18 +1,18 @@
 name: "switch"
 type: :function
 module: "Core"
+description: "if condition is not false or null perform given action, otherwise perform alternative action"
 returns: [
         :nothing
     ]
 alias: "?"
 infix?: true
-description: "if condition is not false or null perform given action, otherwise perform alternative action"
 examples: [
         {
             x: 2
             
             switch x=2 -> print "yes, that's right!"
-                       -> print "nope, that's not right!
+                       -> print "nope, that's not right!"
             ; yes, that's right!
         }
     ]

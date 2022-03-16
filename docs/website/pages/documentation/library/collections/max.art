@@ -1,11 +1,11 @@
 name: "max"
 type: :function
 module: "Collections"
+description: "get maximum element in given collection"
 returns: [
         :null
          :any
     ]
-description: "get maximum element in given collection"
 examples: [
         "print max [4 2 8 5 1 9]       ; 9"
     ]

@@ -1,7 +1,7 @@
 name: "infinity"
 type: :floating
-description: "the IEEE floating point value of positive infinity"
 module: "Numbers"
+description: "the IEEE floating point value of positive infinity"
 returns: [
         :floating
     ]
