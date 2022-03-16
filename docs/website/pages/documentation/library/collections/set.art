@@ -1,10 +1,10 @@
 name: "set"
 type: :function
 module: "Collections"
+description: "set collection\'s item at index to given value"
 returns: [
         :nothing
     ]
-description: "set collection\'s item at index to given value"
 examples: [
         {
             myDict: #[ 

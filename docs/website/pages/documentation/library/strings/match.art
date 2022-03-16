@@ -1,10 +1,11 @@
 name: "match"
 type: :function
 module: "Strings"
-returns: [
-        :block
-    ]
 description: "get matches within string, using given regular expression"
+returns: [
+        :dictionary
+         :block
+    ]
 examples: [
         {
             print match "hello" "hello"             ; => ["hello"]
@@ -13,6 +14,12 @@ examples: [
         }
     ]
 attributes: #[
+    capture: #[
+        types: [
+                :logical
+            ]
+        description: "capture named groups"
+        ]
     ]
 arguments: #[
     string: [
@@ -20,6 +27,7 @@ arguments: #[
         ]
     regex: [
             :string
+             :regex
         ]
     ]
 related: [

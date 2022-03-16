@@ -1,11 +1,11 @@
 name: "levenshtein"
 type: :function
 module: "Strings"
+description: "calculate Levenshtein distance between given strings"
 returns: [
         :integer
          :block
     ]
-description: "calculate Levenshtein distance between given strings"
 examples: [
         {
             print levenshtein "for" "fur"         ; 1
@@ -40,8 +40,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/reverse"
+        "Strings/jaro"
+         "Collections/reverse"
          "Colors/lighten"
          "Core/ensure"
-         "Files/delete"
     ]

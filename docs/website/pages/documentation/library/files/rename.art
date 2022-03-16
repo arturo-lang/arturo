@@ -1,10 +1,10 @@
 name: "rename"
 type: :function
 module: "Files"
+description: "rename file at path using given new path name"
 returns: [
         :nothing
     ]
-description: "rename file at path using given new path name"
 examples: [
         {
             rename "README.md" "READIT.md"

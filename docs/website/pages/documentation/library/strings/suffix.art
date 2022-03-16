@@ -1,11 +1,11 @@
 name: "suffix"
 type: :function
 module: "Strings"
+description: "add given suffix to string"
 returns: [
         :string
          :nothing
     ]
-description: "add given suffix to string"
 examples: [
         {
             suffix "hell" "o"                  ; => "hello"

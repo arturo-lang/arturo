@@ -1,11 +1,11 @@
 name: "and"
 type: :function
 module: "Binary"
+description: "calculate the binary AND for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary AND for the given values"
 examples: [
         "print and 2 3      ; 2"
          {

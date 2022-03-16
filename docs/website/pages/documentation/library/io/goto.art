@@ -1,10 +1,10 @@
 name: "goto"
 type: :function
 module: "Io"
+description: "move cursor to given coordinates"
 returns: [
         :nothing
     ]
-description: "move cursor to given coordinates"
 examples: [
         {
             goto 10 15      ; (move cursor to column 10, line 15)

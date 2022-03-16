@@ -1,11 +1,11 @@
 name: "powerset"
 type: :function
 module: "Sets"
+description: "return the powerset of given set"
 returns: [
         :block
          :nothing
     ]
-description: "return the powerset of given set"
 examples: [
         {
             powerset [1 2 3]

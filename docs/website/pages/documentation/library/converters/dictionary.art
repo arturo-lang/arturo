@@ -1,12 +1,12 @@
 name: "dictionary"
 type: :function
 module: "Converters"
+description: "create dictionary from given block or file, by getting all internal symbols"
 returns: [
         :dictionary
     ]
 alias: "#"
 infix?: false
-description: "create dictionary from given block or file, by getting all internal symbols"
 examples: [
         {
             none: #[]               ; none: []
@@ -24,7 +24,15 @@ examples: [
             ]
             ; we are in the block
             ; yep
-            ; => [name: "John", age: 34]
+            ; d: [name: "John", age: 34]
+        }
+         {
+            e: #.lower [
+                Name: "John"
+                suRnaMe: "Doe"
+                AGE: 35
+            ]
+            ; e: [name:John, surname:Doe, age:35]
         }
     ]
 attributes: #[
@@ -40,11 +48,11 @@ attributes: #[
             ]
         description: "create dictionary from raw block"
         ]
-    data: #[
+    lower: #[
         types: [
                 :logical
             ]
-        description: "parse input as data"
+        description: "automatically convert all keys to lowercase"
         ]
     ]
 arguments: #[

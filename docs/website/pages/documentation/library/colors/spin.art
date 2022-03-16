@@ -1,0 +1,32 @@
+name: "spin"
+type: :function
+module: "Colors"
+description: "spin color around the hue wheel by given amount"
+returns: [
+        :color
+    ]
+examples: [
+        {
+            spin #red 90            ; => #80FF00
+            spin #red 180           ; => #00FFFF
+            
+            spin #123456 45         ; => #231256
+            spin #123456 360        ; => #123456
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    color: [
+            :color
+        ]
+    amount: [
+            :integer
+        ]
+    ]
+related: [
+        "Numbers/sin"
+         "Collections/min"
+         "Collections/split"
+         "Databases/open"
+    ]

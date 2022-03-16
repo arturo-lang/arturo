@@ -1,11 +1,11 @@
 name: "crc"
 type: :function
 module: "Crypto"
+description: "calculate the CRC32 polynomial of given string"
 returns: [
         :string
          :nothing
     ]
-description: "calculate the CRC32 polynomial of given string"
 examples: [
         {
             print crc "The quick brown fox jumps over the lazy dog"

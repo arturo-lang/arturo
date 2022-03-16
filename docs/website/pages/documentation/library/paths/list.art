@@ -1,10 +1,10 @@
 name: "list"
 type: :function
 module: "Paths"
+description: "get files in given path"
 returns: [
         :block
     ]
-description: "get files in given path"
 examples: [
         {
             loop list "." 'file [

@@ -1,10 +1,10 @@
 name: "serve"
 type: :function
 module: "Net"
+description: "start web server using given routes"
 returns: [
         :nothing
     ]
-description: "start web server using given routes"
 examples: [
         {
             serve .port:18966 #[
@@ -37,7 +37,7 @@ attributes: #[
     ]
 arguments: #[
     routes: [
-            :dictionary
+            :block
         ]
     ]
 related: [

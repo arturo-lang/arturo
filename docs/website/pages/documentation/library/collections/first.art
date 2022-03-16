@@ -1,10 +1,10 @@
 name: "first"
 type: :function
 module: "Collections"
+description: "return the first item of the given collection"
 returns: [
         :any
     ]
-description: "return the first item of the given collection"
 examples: [
         {
             print first "this is some text"       ; t

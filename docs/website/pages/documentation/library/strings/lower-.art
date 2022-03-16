@@ -1,10 +1,10 @@
 name: "lower?"
 type: :function
 module: "Strings"
+description: "check if given string is lowercase"
 returns: [
         :logical
     ]
-description: "check if given string is lowercase"
 examples: [
         {
             lower? "ñ"               ; => true

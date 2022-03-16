@@ -1,10 +1,10 @@
 name: "negative?"
 type: :function
 module: "Numbers"
+description: "check if given number is negative"
 returns: [
         :logical
     ]
-description: "check if given number is negative"
 examples: [
         {
             negative? 5       ; => false

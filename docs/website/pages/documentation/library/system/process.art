@@ -1,0 +1,34 @@
+name: "process"
+type: :function
+module: "System"
+description: "get information on current process/program"
+returns: [
+        :dictionary
+    ]
+examples: [
+        {
+            print process\id
+                ; 78046
+            
+                inspect process
+                ; [ :dictionary
+                ;       id      :    78046 :integer
+                ;       memory  :    [ :dictionary
+                ;           occupied  :        1783104 :integer
+                ;           free      :        360448 :integer
+                ;           total     :        2379776 :integer
+                ;           max       :        2379776 :integer
+                ;       ]
+                ; ]
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Core/unless"
+         "Io/prints"
+         "Numbers/prime?"
+         "Numbers/product"
+    ]

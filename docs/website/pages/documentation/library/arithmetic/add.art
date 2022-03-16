@@ -1,6 +1,7 @@
 name: "add"
 type: :function
 module: "Arithmetic"
+description: "add given values and return result"
 returns: [
         :integer
          :floating
@@ -10,7 +11,6 @@ returns: [
     ]
 alias: "+"
 infix?: true
-description: "add given values and return result"
 examples: [
         {
             print add 1 2      ; 3

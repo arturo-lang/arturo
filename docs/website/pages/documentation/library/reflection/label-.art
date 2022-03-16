@@ -1,10 +1,10 @@
 name: "label?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :label"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :label"
 examples: [
         {
             label? first [something: x]

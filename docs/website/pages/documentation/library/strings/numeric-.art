@@ -1,10 +1,10 @@
 name: "numeric?"
 type: :function
 module: "Strings"
+description: "check if given string is numeric"
 returns: [
         :logical
     ]
-description: "check if given string is numeric"
 examples: [
         {
             numeric? "hello"           ; => false

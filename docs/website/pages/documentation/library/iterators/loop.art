@@ -1,10 +1,10 @@
 name: "loop"
 type: :function
 module: "Iterators"
+description: "loop through collection, using given iterator and block"
 returns: [
         :nothing
     ]
-description: "loop through collection, using given iterator and block"
 examples: [
         {
             loop [1 2 3] 'x [

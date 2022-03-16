@@ -1,11 +1,11 @@
 name: "actan"
 type: :function
 module: "Numbers"
+description: "calculate the inverse cotangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse cotangent of given angle"
 examples: [
         {
             print actan 0                   ; 1.570796326794897

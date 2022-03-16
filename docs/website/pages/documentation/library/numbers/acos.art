@@ -1,11 +1,11 @@
 name: "acos"
 type: :function
 module: "Numbers"
+description: "calculate the inverse cosine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse cosine of given angle"
 examples: [
         {
             print acos 0                ; 1.570796326794897

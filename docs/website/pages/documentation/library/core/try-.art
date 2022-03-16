@@ -1,10 +1,10 @@
 name: "try?"
 type: :function
 module: "Core"
+description: "perform action, catch possible errors and return status"
 returns: [
         :logical
     ]
-description: "perform action, catch possible errors and return status"
 examples: [
         {
             try? [

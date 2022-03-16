@@ -1,10 +1,10 @@
 name: "combine"
 type: :function
 module: "Collections"
+description: "get combination of elements in given collections"
 returns: [
         :block
     ]
-description: "get combination of elements in given collections"
 examples: [
         {
             combine ["one" "two" "three"] [1 2 3]

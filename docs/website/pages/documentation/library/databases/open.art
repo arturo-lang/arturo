@@ -1,10 +1,10 @@
 name: "open"
 type: :function
 module: "Databases"
+description: "opens a new database connection and returns database"
 returns: [
         :database
     ]
-description: "opens a new database connection and returns database"
 examples: [
         {
             db: open "my.db"    ; opens an SQLite database named 'my.db'
@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/dec"
+        "Colors/spin"
+         "Arithmetic/dec"
          "Arithmetic/neg"
          "Arithmetic/pow"
-         "Binary/or"
     ]

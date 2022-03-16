@@ -1,10 +1,10 @@
 name: "clear"
 type: :function
 module: "Io"
+description: "clear terminal"
 returns: [
         :nothing
     ]
-description: "clear terminal"
 examples: [
         "clear             ; (clears the screen)"
     ]
@@ -14,7 +14,7 @@ arguments: #[
     ]
 related: [
         "Colors/blend"
+         "Core/alias"
          "Core/break"
          "Core/let"
-         "Core/var"
     ]

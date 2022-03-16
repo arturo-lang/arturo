@@ -1,12 +1,12 @@
 name: "take"
 type: :function
 module: "Collections"
+description: "keep first <number> of elements from given collection and return the remaining ones"
 returns: [
         :string
          :block
          :nothing
     ]
-description: "keep first <number> of elements from given collection and return the remaining ones"
 examples: [
         {
             str: take "some text" 5

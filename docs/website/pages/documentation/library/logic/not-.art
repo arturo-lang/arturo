@@ -1,10 +1,10 @@
 name: "not?"
 type: :function
 module: "Logic"
+description: "return the logical complement of the given value"
 returns: [
         :logical
     ]
-description: "return the logical complement of the given value"
 examples: [
         {
             ready: false

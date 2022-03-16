@@ -1,10 +1,10 @@
 name: "every?"
 type: :function
 module: "Iterators"
+description: "check if every single item in collection satisfy given condition"
 returns: [
         :logical
     ]
-description: "check if every single item in collection satisfy given condition"
 examples: [
         {
             if every? [2 4 6 8] 'x [even? x] 

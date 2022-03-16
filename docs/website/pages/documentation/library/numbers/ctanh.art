@@ -1,11 +1,11 @@
 name: "ctanh"
 type: :function
 module: "Numbers"
+description: "calculate the hyperbolic cotangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the hyperbolic cotangent of given angle"
 examples: [
         {
             print ctanh 0               ; inf

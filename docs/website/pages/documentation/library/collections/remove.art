@@ -1,6 +1,7 @@
 name: "remove"
 type: :function
 module: "Collections"
+description: "remove value from given collection"
 returns: [
         :string
          :dictionary
@@ -9,7 +10,6 @@ returns: [
     ]
 alias: "--"
 infix?: true
-description: "remove value from given collection"
 examples: [
         {
             remove "hello" "l"        ; => "heo"

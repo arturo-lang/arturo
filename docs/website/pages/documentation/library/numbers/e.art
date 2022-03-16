@@ -1,0 +1,13 @@
+name: "e"
+type: :floating
+module: "Numbers"
+description: "the constant e, Euler\'s number"
+returns: [
+        :floating
+    ]
+related: [
+        "Arithmetic/dec"
+         "Arithmetic/neg"
+         "Binary/or"
+         "Collections/get"
+    ]

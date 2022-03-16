@@ -1,12 +1,12 @@
 name: "query"
 type: :function
 module: "Databases"
+description: "execute command or block of commands in given database and get returned rows"
 returns: [
         :null
          :integer
          :block
     ]
-description: "execute command or block of commands in given database and get returned rows"
 examples: [
         {
             db: open "my.db"    ; opens an SQLite database named 'my.db'
@@ -48,6 +48,6 @@ arguments: #[
 related: [
         "Core/try"
          "Iterators/every?"
+         "Ui/alert"
          "Arithmetic/dec"
-         "Arithmetic/mul"
     ]

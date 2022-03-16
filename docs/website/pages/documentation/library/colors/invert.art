@@ -1,10 +1,10 @@
 name: "invert"
 type: :function
 module: "Colors"
+description: "get complement for given color"
 returns: [
         :color
     ]
-description: "get complement for given color"
 examples: [
         {
             print #orange               ; #FFA500

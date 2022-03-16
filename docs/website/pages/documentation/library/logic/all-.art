@@ -1,10 +1,10 @@
 name: "all?"
 type: :function
 module: "Logic"
+description: "check if all values in given block are true"
 returns: [
         :logical
     ]
-description: "check if all values in given block are true"
 examples: [
         {
             if all? @[2>1 "DONE"=upper "done" true] 

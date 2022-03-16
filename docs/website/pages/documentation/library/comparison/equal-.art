@@ -1,12 +1,12 @@
 name: "equal?"
 type: :function
 module: "Comparison"
+description: "check if valueA = valueB (equality)"
 returns: [
         :logical
     ]
 alias: "="
 infix?: true
-description: "check if valueA = valueB (equality)"
 examples: [
         {
             equal? 5 2            ; => false

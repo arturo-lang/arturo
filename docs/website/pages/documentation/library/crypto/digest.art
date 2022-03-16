@@ -1,11 +1,11 @@
 name: "digest"
 type: :function
 module: "Crypto"
+description: "get digest for given value (default: MD5)"
 returns: [
         :string
          :nothing
     ]
-description: "get digest for given value (default: MD5)"
 examples: [
         {
             print digest "Hello world"

@@ -1,13 +1,13 @@
 name: "neg"
 type: :function
 module: "Arithmetic"
+description: "reverse sign of given value and return it"
 returns: [
         :integer
          :floating
          :complex
          :nothing
     ]
-description: "reverse sign of given value and return it"
 examples: [
         "print neg 1        ; -1"
          {

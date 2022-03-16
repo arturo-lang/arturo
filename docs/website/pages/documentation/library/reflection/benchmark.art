@@ -1,11 +1,11 @@
 name: "benchmark"
 type: :function
 module: "Reflection"
+description: "benchmark given code"
 returns: [
         :floating
          :nothing
     ]
-description: "benchmark given code"
 examples: [
         {
             benchmark [ 

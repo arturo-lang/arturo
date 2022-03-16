@@ -1,11 +1,11 @@
 name: "exp"
 type: :function
 module: "Numbers"
+description: "calculate the exponential function for given value"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the exponential function for given value"
 examples: [
         {
             print exp 1.0           ; 2.718281828459045

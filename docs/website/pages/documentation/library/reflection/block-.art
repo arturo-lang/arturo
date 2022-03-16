@@ -1,10 +1,10 @@
 name: "block?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :block"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :block"
 examples: [
         {
             print block? [1 2 3]            ; true

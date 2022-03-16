@@ -1,10 +1,10 @@
 name: "input"
 type: :function
 module: "Io"
+description: "print prompt and get user input"
 returns: [
         :string
     ]
-description: "print prompt and get user input"
 examples: [
         {
             name: input "What is your name? "

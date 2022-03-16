@@ -1,11 +1,11 @@
 name: "actanh"
 type: :function
 module: "Numbers"
+description: "calculate the inverse hyperbolic cotangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse hyperbolic cotangent of given angle"
 examples: [
         {
             print actanh 0                  ; nan

@@ -1,10 +1,10 @@
 name: "pop"
 type: :function
 module: "Core"
+description: "pop top <number> values from stack"
 returns: [
         :any
     ]
-description: "pop top <number> values from stack"
 examples: [
         {
             1 2 3

@@ -1,11 +1,11 @@
 name: "difference"
 type: :function
 module: "Sets"
+description: "return the difference of given sets"
 returns: [
         :block
          :nothing
     ]
-description: "return the difference of given sets"
 examples: [
         {
             print difference [1 2 3 4] [3 4 5 6]

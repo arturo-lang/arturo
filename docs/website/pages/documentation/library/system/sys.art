@@ -1,7 +1,7 @@
 name: "sys"
 type: :dictionary
-description: "information about the current system"
 module: "System"
+description: "information about the current system"
 returns: [
         :dictionary
     ]

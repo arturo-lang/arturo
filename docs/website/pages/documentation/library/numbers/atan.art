@@ -1,11 +1,11 @@
 name: "atan"
 type: :function
 module: "Numbers"
+description: "calculate the inverse tangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse tangent of given angle"
 examples: [
         {
             print atan 0                ; 0.0

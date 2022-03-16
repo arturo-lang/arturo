@@ -1,11 +1,11 @@
 name: "outdent"
 type: :function
 module: "Strings"
+description: "outdent each line of given text, by using minimum shared indentation"
 returns: [
         :string
          :nothing
     ]
-description: "outdent each line of given text, by using minimum shared indentation"
 examples: [
         {
             print outdent {:

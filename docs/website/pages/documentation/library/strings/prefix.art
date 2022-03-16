@@ -1,11 +1,11 @@
 name: "prefix"
 type: :function
 module: "Strings"
+description: "add given prefix to string"
 returns: [
         :string
          :nothing
     ]
-description: "add given prefix to string"
 examples: [
         {
             prefix "ello" "h"                  ; => "hello"

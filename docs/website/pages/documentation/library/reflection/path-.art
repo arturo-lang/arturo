@@ -1,10 +1,10 @@
 name: "path?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :path"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :path"
 examples: [
         {
             path? first [a\b\c x]

@@ -1,0 +1,42 @@
+name: "dialog"
+type: :function
+module: "Ui"
+description: "show a file selection dialog and return selection"
+returns: [
+        :string
+    ]
+examples: [
+        {
+            selectedFile: dialog "Select a file to open"
+                ; gets full path for selected file, after dialog closes
+        }
+         {
+                selectedFolder: dialog.folder "Select a folder"
+                ; same as above, only for folder selection
+        }
+    ]
+attributes: #[
+    folder: #[
+        types: [
+                :logical
+            ]
+        description: "select folders instead of files"
+        ]
+    path: #[
+        types: [
+                :string
+            ]
+        description: "use given starting path"
+        ]
+    ]
+arguments: #[
+    title: [
+            :string
+        ]
+    ]
+related: [
+        "Numbers/log"
+         "Arithmetic/div"
+         "Collections/drop"
+         "Core/call"
+    ]

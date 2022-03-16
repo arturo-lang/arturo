@@ -1,10 +1,10 @@
 name: "sorted?"
 type: :function
 module: "Collections"
+description: "check if given collection is already sorted"
 returns: [
         :logical
     ]
-description: "check if given collection is already sorted"
 examples: [
         {
             sorted? [1 2 3 4 5]         ; => true

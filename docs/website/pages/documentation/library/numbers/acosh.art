@@ -1,11 +1,11 @@
 name: "acosh"
 type: :function
 module: "Numbers"
+description: "calculate the inverse hyperbolic cosine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse hyperbolic cosine of given angle"
 examples: [
         {
             print acosh 1.0             ; 0.0

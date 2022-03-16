@@ -1,0 +1,25 @@
+name: "clip"
+type: :function
+module: "Ui"
+description: "set clipboard content to given text"
+returns: [
+        :nothing
+    ]
+examples: [
+        {
+            clip "this is something to be pasted into the clipboard"
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    content: [
+            :string
+        ]
+    ]
+related: [
+        "Collections/chop"
+         "Files/zip"
+         "Numbers/ceil"
+         "Ui/unclip"
+    ]

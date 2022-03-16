@@ -1,10 +1,10 @@
 name: "inline?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :inline"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :inline"
 examples: [
         {
             inline? first [(something) x]

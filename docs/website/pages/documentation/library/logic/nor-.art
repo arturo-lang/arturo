@@ -1,10 +1,10 @@
 name: "nor?"
 type: :function
 module: "Logic"
+description: "return the logical NOR for the given values"
 returns: [
         :logical
     ]
-description: "return the logical NOR for the given values"
 examples: [
         {
             x: 2

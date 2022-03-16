@@ -1,11 +1,11 @@
 name: "indent"
 type: :function
 module: "Strings"
+description: "indent each line of given text"
 returns: [
         :string
          :nothing
     ]
-description: "indent each line of given text"
 examples: [
         {
             str: "one\ntwo\nthree"

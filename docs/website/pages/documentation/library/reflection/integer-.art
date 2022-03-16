@@ -1,17 +1,27 @@
 name: "integer?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :integer"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :integer"
 examples: [
         {
-            print integer? 123          ; true
-            print integer? "hello"      ; false
+            print integer? 123                  ; true
+            print integer? "hello"              ; false
+        }
+         {
+            integer?.big 123                    ; => false
+            integer?.big 12345678901234567890   ; => true
         }
     ]
 attributes: #[
+    big: #[
+        types: [
+                :logical
+            ]
+        description: "check if, internally, it\'s a bignum"
+        ]
     ]
 arguments: #[
     value: [
@@ -20,7 +30,7 @@ arguments: #[
     ]
 related: [
         "Reflection/inline?"
+         "Reflection/regex?"
          "Reflection/date?"
          "Reflection/literal?"
-         "Reflection/type?"
     ]

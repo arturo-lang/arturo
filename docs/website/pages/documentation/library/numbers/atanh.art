@@ -1,11 +1,11 @@
 name: "atanh"
 type: :function
 module: "Numbers"
+description: "calculate the inverse hyperbolic tangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse hyperbolic tangent of given angle"
 examples: [
         {
             print atanh 0               ; 0.0

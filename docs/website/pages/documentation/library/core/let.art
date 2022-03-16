@@ -1,12 +1,12 @@
 name: "let"
 type: :function
 module: "Core"
+description: "set symbol to given value"
 returns: [
         :nothing
     ]
 alias: ":"
 infix?: true
-description: "set symbol to given value"
 examples: [
         {
             let 'x 10               ; x: 10

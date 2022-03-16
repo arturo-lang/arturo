@@ -1,10 +1,10 @@
 name: "empty?"
 type: :function
 module: "Collections"
+description: "check if given collection is empty"
 returns: [
         :logical
     ]
-description: "check if given collection is empty"
 examples: [
         {
             empty? ""             ; => true

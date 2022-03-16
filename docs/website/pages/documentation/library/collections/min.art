@@ -1,11 +1,11 @@
 name: "min"
 type: :function
 module: "Collections"
+description: "get minimum element in given collection"
 returns: [
         :null
          :any
     ]
-description: "get minimum element in given collection"
 examples: [
         "print min [4 2 8 5 1 9]       ; 1"
     ]

@@ -1,10 +1,10 @@
 name: "darken"
 type: :function
 module: "Colors"
+description: "darken color by given percentage (0.0-1.0)"
 returns: [
         :color
     ]
-description: "darken color by given percentage (0.0-1.0)"
 examples: [
         {
             darken #red 0.2         ; => #CC0000

@@ -1,10 +1,10 @@
 name: "prime?"
 type: :function
 module: "Numbers"
+description: "check if given integer is prime"
 returns: [
         :logical
     ]
-description: "check if given integer is prime"
 examples: [
         {
             prime? 2          ; => true
@@ -28,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/write"
+        "Comparison/same?"
+         "Files/write"
          "Io/print"
          "Io/prints"
-         "Iterators/some?"
     ]

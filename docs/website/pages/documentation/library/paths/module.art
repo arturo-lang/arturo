@@ -1,11 +1,11 @@
 name: "module"
 type: :function
 module: "Paths"
+description: "get path for given module name"
 returns: [
         :null
          :string
     ]
-description: "get path for given module name"
 examples: [
         "print module \'html        ; /usr/local/lib/arturo/html.art"
          "do.import module \'html    ; (imports given module)"
@@ -21,6 +21,6 @@ arguments: #[
 related: [
         "Arithmetic/mod"
          "Arithmetic/mul"
+         "Files/volume"
          "Crypto/hash"
-         "Collections/sample"
     ]

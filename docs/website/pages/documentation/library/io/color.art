@@ -1,10 +1,10 @@
 name: "color"
 type: :function
 module: "Io"
+description: "get colored version of given string"
 returns: [
         :string
     ]
-description: "get colored version of given string"
 examples: [
         {
             print color #green "Hello!"                ; Hello! (in green)
@@ -29,6 +29,12 @@ attributes: #[
                 :logical
             ]
         description: "show underlined"
+        ]
+    keep: #[
+        types: [
+                :logical
+            ]
+        description: "don\'t reset color at string end"
         ]
     ]
 arguments: #[

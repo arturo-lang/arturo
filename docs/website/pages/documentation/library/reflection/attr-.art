@@ -1,10 +1,10 @@
 name: "attr?"
 type: :function
 module: "Reflection"
+description: "check if given attribute exists"
 returns: [
         :logical
     ]
-description: "check if given attribute exists"
 examples: [
         {
             greet: function [x][

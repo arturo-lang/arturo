@@ -1,0 +1,27 @@
+name: "unclip"
+type: :function
+module: "Ui"
+description: "get clipboard content"
+returns: [
+        :string
+    ]
+examples: [
+        {
+            ; paste something into the clipboard (optionally)
+                clip "this is something to be pasted into the clipboard"
+            
+                ; now, let's fetch whatever there is in the clipboard
+                unclip 
+                ; => "this is something to be pasted into the clipboard"
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    ]
+related: [
+        "Files/unzip"
+         "Ui/clip"
+         "Core/until"
+         "Arithmetic/inc"
+    ]

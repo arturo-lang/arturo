@@ -1,11 +1,11 @@
 name: "cos"
 type: :function
 module: "Numbers"
+description: "calculate the cosine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the cosine of given angle"
 examples: [
         {
             print cos 0                 ; 1.0

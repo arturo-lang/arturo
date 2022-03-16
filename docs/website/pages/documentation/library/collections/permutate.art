@@ -1,10 +1,10 @@
 name: "permutate"
 type: :function
 module: "Collections"
+description: "get all possible permutations of the elements in given collection"
 returns: [
         :block
     ]
-description: "get all possible permutations of the elements in given collection"
 examples: [
         {
             permutate [A B C]
@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Colors/desaturate"
+        "System/terminate"
+         "Colors/desaturate"
+         "Colors/palette"
          "Colors/saturate"
-         "Io/terminal"
-         "Strings/truncate"
     ]

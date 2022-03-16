@@ -1,11 +1,11 @@
 name: "join"
 type: :function
 module: "Strings"
+description: "join collection of values into string"
 returns: [
         :string
          :nothing
     ]
-description: "join collection of values into string"
 examples: [
         {
             arr: ["one" "two" "three"]
@@ -48,7 +48,7 @@ arguments: #[
     ]
 related: [
         "Collections/min"
+         "Colors/spin"
          "Numbers/asin"
          "Numbers/sin"
-         "Arithmetic/div"
     ]

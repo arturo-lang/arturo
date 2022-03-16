@@ -1,10 +1,10 @@
 name: "superset?"
 type: :function
 module: "Sets"
+description: "check if given set is a superset of second set"
 returns: [
         :logical
     ]
-description: "check if given set is a superset of second set"
 examples: [
         {
             superset? [1 2 3 4] [1 3]

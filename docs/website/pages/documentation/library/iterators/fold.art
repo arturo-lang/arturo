@@ -1,12 +1,12 @@
 name: "fold"
 type: :function
 module: "Iterators"
+description: "left-fold given collection returning accumulator"
 returns: [
         :null
          :block
          :nothing
     ]
-description: "left-fold given collection returning accumulator"
 examples: [
         {
             fold 1..10 [x,y]-> x + y

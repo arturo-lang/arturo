@@ -1,7 +1,7 @@
 name: "true"
 type: :logical
-description: "the TRUE logical constant"
 module: "Logic"
+description: "the TRUE logical constant"
 returns: [
         :logical
     ]

@@ -1,12 +1,12 @@
 name: "dec"
 type: :function
 module: "Arithmetic"
+description: "decrease given value by 1"
 returns: [
         :integer
          :floating
          :nothing
     ]
-description: "decrease given value by 1"
 examples: [
         "print dec 5        ; 4"
          {

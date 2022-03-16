@@ -1,10 +1,10 @@
 name: "conj"
 type: :function
 module: "Numbers"
+description: "calculate the complex conjugate of given number"
 returns: [
         :complex
     ]
-description: "calculate the complex conjugate of given number"
 examples: [
         {
             b: to :complex [1 2]        ; b: 1.0+2.0i

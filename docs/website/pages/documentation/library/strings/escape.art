@@ -1,11 +1,11 @@
 name: "escape"
 type: :function
 module: "Strings"
+description: "escape given string"
 returns: [
         :string
          :nothing
     ]
-description: "escape given string"
 examples: [
         {
             str: {a long "string" + with \diffe\rent symbols.}

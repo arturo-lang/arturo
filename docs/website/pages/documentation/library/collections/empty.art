@@ -1,10 +1,10 @@
 name: "empty"
 type: :function
 module: "Collections"
+description: "empty given collection"
 returns: [
         :nothing
     ]
-description: "empty given collection"
 examples: [
         {
             a: [1 2 3]

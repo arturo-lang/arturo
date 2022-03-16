@@ -1,10 +1,10 @@
 name: "gcd"
 type: :function
 module: "Numbers"
+description: "calculate greatest common divisor for given collection of integers"
 returns: [
         :integer
     ]
-description: "calculate greatest common divisor for given collection of integers"
 examples: [
         "print gcd [48 60 120]         ; 12"
     ]

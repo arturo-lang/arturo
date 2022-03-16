@@ -1,11 +1,11 @@
 name: "asinh"
 type: :function
 module: "Numbers"
+description: "calculate the inverse hyperbolic sine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse hyperbolic sine of given angle"
 examples: [
         {
             print asinh 0               ; 0.0

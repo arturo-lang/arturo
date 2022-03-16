@@ -1,12 +1,12 @@
 name: "array"
 type: :function
 module: "Converters"
+description: "create array from given block, by reducing/calculating all internal values"
 returns: [
         :block
     ]
 alias: "@"
 infix?: false
-description: "create array from given block, by reducing/calculating all internal values"
 examples: [
         {
             none: @[]               ; none: []
@@ -57,7 +57,7 @@ arguments: #[
     ]
 related: [
         "Reflection/arity"
+         "Core/alias"
          "Core/break"
          "Core/try"
-         "Files/read"
     ]

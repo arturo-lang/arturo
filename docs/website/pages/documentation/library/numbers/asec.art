@@ -1,11 +1,11 @@
 name: "asec"
 type: :function
 module: "Numbers"
+description: "calculate the inverse secant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse secant of given angle"
 examples: [
         {
             print asec 0                ; nan

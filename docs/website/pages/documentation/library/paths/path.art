@@ -1,7 +1,7 @@
 name: "path"
 type: :dictionary
-description: "common path constants"
 module: "Paths"
+description: "common path constants"
 returns: [
         :dictionary
     ]

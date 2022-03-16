@@ -1,10 +1,10 @@
 name: "from"
 type: :function
 module: "Converters"
+description: "get value from string, using given representation"
 returns: [
         :any
     ]
-description: "get value from string, using given representation"
 examples: [
         {
             print from.binary "1011"        ; 11

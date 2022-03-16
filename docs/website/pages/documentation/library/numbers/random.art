@@ -1,11 +1,11 @@
 name: "random"
 type: :function
 module: "Numbers"
+description: "get a random integer between given limits"
 returns: [
         :integer
          :floating
     ]
-description: "get a random integer between given limits"
 examples: [
         "rnd: random 0 60          ; rnd: (a random number between 0 and 60)"
     ]

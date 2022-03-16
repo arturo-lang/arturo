@@ -1,12 +1,12 @@
 name: "reverse"
 type: :function
 module: "Collections"
+description: "reverse given collection"
 returns: [
         :string
          :block
          :nothing
     ]
-description: "reverse given collection"
 examples: [
         {
             print reverse [1 2 3 4]           ; 4 3 2 1

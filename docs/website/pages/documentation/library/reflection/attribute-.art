@@ -1,10 +1,10 @@
 name: "attribute?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :attribute"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :attribute"
 examples: [
         {
             attribute? first [.something x]

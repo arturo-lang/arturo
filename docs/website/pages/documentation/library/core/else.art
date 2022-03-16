@@ -1,10 +1,10 @@
 name: "else"
 type: :function
 module: "Core"
+description: "perform action, if last condition was not true"
 returns: [
         :nothing
     ]
-description: "perform action, if last condition was not true"
 examples: [
         {
             x: 2

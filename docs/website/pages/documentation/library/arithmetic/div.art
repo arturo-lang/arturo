@@ -1,6 +1,7 @@
 name: "div"
 type: :function
 module: "Arithmetic"
+description: "perform integer division between given values and return result"
 returns: [
         :integer
          :floating
@@ -9,7 +10,6 @@ returns: [
     ]
 alias: "/"
 infix?: true
-description: "perform integer division between given values and return result"
 examples: [
         {
             print div 5 2      ; 2

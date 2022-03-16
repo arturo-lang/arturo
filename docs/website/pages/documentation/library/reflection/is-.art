@@ -1,10 +1,10 @@
 name: "is?"
 type: :function
 module: "Reflection"
+description: "check whether value is of given type"
 returns: [
         :logical
     ]
-description: "check whether value is of given type"
 examples: [
         {
             is? :string "hello"       ; => true

@@ -1,10 +1,10 @@
 name: "mail"
 type: :function
 module: "Net"
+description: "send mail using given message and configuration"
 returns: [
         :nothing
     ]
-description: "send mail using given message and configuration"
 examples: [
         {
             mail "recipient@somemail.com"

@@ -1,10 +1,10 @@
 name: "now"
 type: :function
 module: "Dates"
+description: "get date/time now"
 returns: [
         :date
     ]
-description: "get date/time now"
 examples: [
         {
             print now           ; 2020-10-23T14:16:13+02:00

@@ -1,10 +1,10 @@
 name: "digits"
 type: :function
 module: "Numbers"
+description: "get array of digits of given number"
 returns: [
         :block
     ]
-description: "get array of digits of given number"
 examples: [
         {
             digits 123

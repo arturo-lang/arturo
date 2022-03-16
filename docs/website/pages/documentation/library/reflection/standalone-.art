@@ -1,10 +1,10 @@
 name: "standalone?"
 type: :function
 module: "Reflection"
+description: "checks if current script runs from the command-line"
 returns: [
         :logical
     ]
-description: "checks if current script runs from the command-line"
 examples: [
         {
             doSomething: function [x][
@@ -25,5 +25,5 @@ related: [
         "Reflection/inline?"
          "Collections/contains?"
          "Collections/sample"
-         "Iterators/some?"
+         "Comparison/same?"
     ]

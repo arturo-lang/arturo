@@ -1,10 +1,10 @@
 name: "even?"
 type: :function
 module: "Numbers"
+description: "check if given number is even"
 returns: [
         :logical
     ]
-description: "check if given number is even"
 examples: [
         {
             even? 4           ; => true

@@ -1,12 +1,12 @@
 name: "less?"
 type: :function
 module: "Comparison"
+description: "check if valueA < valueB (less than)"
 returns: [
         :logical
     ]
 alias: "<"
 infix?: true
-description: "check if valueA < valueB (less than)"
 examples: [
         {
             less? 5 2             ; => false

@@ -1,10 +1,10 @@
 name: "floor"
 type: :function
 module: "Numbers"
+description: "calculate the largest integer not greater than given value"
 returns: [
         :integer
     ]
-description: "calculate the largest integer not greater than given value"
 examples: [
         {
             print floor 2.1         ; 2

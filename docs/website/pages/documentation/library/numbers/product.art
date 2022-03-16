@@ -1,11 +1,11 @@
 name: "product"
 type: :function
 module: "Numbers"
+description: "calculate the product of all values in given list"
 returns: [
         :integer
          :floating
     ]
-description: "calculate the product of all values in given list"
 examples: [
         {
             print product [3 4]       ; 12

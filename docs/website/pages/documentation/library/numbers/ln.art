@@ -1,11 +1,11 @@
 name: "ln"
 type: :function
 module: "Numbers"
+description: "calculate the natural logarithm of given value"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the natural logarithm of given value"
 examples: [
         {
             print ln 1.0                ; 0.0

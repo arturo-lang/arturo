@@ -1,11 +1,11 @@
 name: "sin"
 type: :function
 module: "Numbers"
+description: "calculate the sine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the sine of given angle"
 examples: [
         {
             print sin 0                 ; 0.0
@@ -29,6 +29,6 @@ arguments: #[
 related: [
         "Numbers/cos"
          "Collections/min"
+         "Colors/spin"
          "Numbers/asin"
-         "Numbers/sinh"
     ]

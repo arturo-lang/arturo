@@ -1,12 +1,12 @@
 name: "range"
 type: :function
 module: "Numbers"
+description: "get list of values in given range (inclusive)"
 returns: [
         :block
     ]
 alias: ".."
 infix?: true
-description: "get list of values in given range (inclusive)"
 examples: [
         {
             print range 1 4       ; 1 2 3 4

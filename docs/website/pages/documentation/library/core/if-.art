@@ -1,10 +1,10 @@
 name: "if?"
 type: :function
 module: "Core"
+description: "perform action, if given condition is not false or null and return condition result"
 returns: [
         :logical
     ]
-description: "perform action, if given condition is not false or null and return condition result"
 examples: [
         {
             x: 2

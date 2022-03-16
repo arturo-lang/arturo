@@ -1,10 +1,10 @@
 name: "last"
 type: :function
 module: "Collections"
+description: "return the last item of the given collection"
 returns: [
         :any
     ]
-description: "return the last item of the given collection"
 examples: [
         {
             print last "this is some text"       ; t

@@ -1,10 +1,10 @@
 name: "key?"
 type: :function
 module: "Collections"
+description: "check if dictionary contains given key"
 returns: [
         :logical
     ]
-description: "check if dictionary contains given key"
 examples: [
         {
             user: #[

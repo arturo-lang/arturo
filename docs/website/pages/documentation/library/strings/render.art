@@ -1,13 +1,13 @@
 name: "render"
 type: :function
 module: "Strings"
+description: "render template with |string| interpolation"
 returns: [
         :string
          :nothing
     ]
 alias: "~"
 infix?: false
-description: "render template with |string| interpolation"
 examples: [
         {
             x: 2
@@ -16,7 +16,7 @@ examples: [
         }
     ]
 attributes: #[
-    single: #[
+    once: #[
         types: [
                 :logical
             ]

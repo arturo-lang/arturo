@@ -1,10 +1,10 @@
 name: "factors"
 type: :function
 module: "Numbers"
+description: "get list of factors for given integer"
 returns: [
         :block
     ]
-description: "get list of factors for given integer"
 examples: [
         "factors 16                                  ; => [1 2 4 8 16]"
          {

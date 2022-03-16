@@ -1,10 +1,10 @@
 name: "extend"
 type: :function
 module: "Collections"
+description: "get new dictionary by merging given ones"
 returns: [
         :dictionary
     ]
-description: "get new dictionary by merging given ones"
 examples: [
         {
             person: #[ name: "john" surname: "doe" ]

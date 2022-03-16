@@ -1,10 +1,10 @@
 name: "cursor"
 type: :function
 module: "Io"
+description: "turn cursor visibility on/off"
 returns: [
         :nothing
     ]
-description: "turn cursor visibility on/off"
 examples: [
         {
             cursor false    ; (hides the cursor)

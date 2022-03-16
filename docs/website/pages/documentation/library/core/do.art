@@ -1,11 +1,11 @@
 name: "do"
 type: :function
 module: "Core"
+description: "evaluate and execute given code"
 returns: [
         :nothing
          :any
     ]
-description: "evaluate and execute given code"
 examples: [
         {
             do "print 123"                ; 123

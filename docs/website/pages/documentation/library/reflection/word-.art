@@ -1,10 +1,10 @@
 name: "word?"
 type: :function
 module: "Reflection"
+description: "checks if given value is of type :word"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :word"
 examples: [
         {
             word? first [something x]

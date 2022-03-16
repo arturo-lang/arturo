@@ -1,10 +1,10 @@
 name: "log"
 type: :function
 module: "Numbers"
+description: "calculate the logarithm of value using given base"
 returns: [
         :floating
     ]
-description: "calculate the logarithm of value using given base"
 examples: [
         {
             print log 9 3           ; 2.0

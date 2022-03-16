@@ -1,10 +1,10 @@
 name: "set?"
 type: :function
 module: "Reflection"
+description: "check if given variable is defined"
 returns: [
         :logical
     ]
-description: "check if given variable is defined"
 examples: [
         {
             boom: 12

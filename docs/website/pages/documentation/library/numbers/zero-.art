@@ -1,10 +1,10 @@
 name: "zero?"
 type: :function
 module: "Numbers"
+description: "check if given number is zero"
 returns: [
         :logical
     ]
-description: "check if given number is zero"
 examples: [
         {
             zero? 5-5         ; => true
