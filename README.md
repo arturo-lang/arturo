@@ -70,7 +70,7 @@ Installation
 
 Arturo comes with its own pre-built binaries - for, practically, all OSes - so, technically, it doesn't require any "installation". All you have to do is download one of them and run it - that's it!
 
-## <p align="center">[⇩ Download Arturo](https://arturo-lang.io/#download)</p>
+### <p align="center">[⇩ Download Arturo](https://arturo-lang.io/#download)</p>
 
 > ➤ Wanna be as up-to-date as possible?    
 >     
