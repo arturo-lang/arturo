@@ -115,7 +115,7 @@ Showcase
 ------------------------------
 
 <p align="center">
-	<a href="https://github.com/arturo-lang/grafito"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo.png"></a>    
+	<img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo.png#gh-light-mode-only"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo-dark.png#gh-dark-mode-only">   
 </p>
 <p align="center">
 	<a href="https://github.com/arturo-lang/grafito"><b>Portable, Serverless & Lightweight<br>SQLite-based Graph Database</b></a>
@@ -124,7 +124,7 @@ Showcase
 ---
 
 <p align="center">
-	<a href="https://github.com/arturo-lang/aguila"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png#gh-light-mode-only"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo-dark.png#gh-dark-mode-only"></a>    
+	<img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png">  
 </p>
 <p align="center">
 	<a href="https://github.com/arturo-lang/aguila"><b>Modern cross-platform webview-based desktop apps<br>without HTML/CSS/JS</b></a>
@@ -144,7 +144,7 @@ For that, the most convenient place for me would be the [GitHub Issues](https://
 
 For questions, quick ideas, and discussing generally the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo.
 
-[![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
+<img src="https://starchart.cc/arturo-lang/arturo.svg#gh-light-mode-only">
 
 FAQ
 ------------------------------
