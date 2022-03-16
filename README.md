@@ -70,7 +70,7 @@ Installation
 
 Arturo comes with its own pre-built binaries - for, practically, all OSes - so, technically, it doesn't require any "installation". All you have to do is download one of them and run it - that's it!
 
-#### [⬇️ Download Arturo](https://arturo-lang.io/#download)
+#### [😁 Download Arturo](https://arturo-lang.io/#download)
 
 *Wanna be as up-to-date as possible? Head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release!
 
