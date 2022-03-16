@@ -1,5 +1,5 @@
 <img align="left" width="190" src="docs/images/logo.png#gh-light-mode-only"/>
-<img align="left" width="190" src="docs/images/logo-gray.png#gh-dark-mode-only"/>
+<img align="left" width="190" src="docs/images/logo-lightgray.png#gh-dark-mode-only"/>
 
 <h1>Arturo</h1>
 
