@@ -47,9 +47,9 @@ loop 1..19 [x]->
 	print ["Factorial of" x "=" factorial x]
 ```
 
-Simple, isn't it?
-
-> 💡  For more - working - examples, just have a look into the /examples folder
+> ➤ Want to see more?    
+>     
+> For more - working - examples, just have a look at the [Examples](https://arturo-lang.io/documentation/examples/) in the official website.
 
 Documentation
 ------------------------------
@@ -70,9 +70,11 @@ Installation
 
 Arturo comes with its own pre-built binaries - for, practically, all OSes - so, technically, it doesn't require any "installation". All you have to do is download one of them and run it - that's it!
 
-#### [😁 Download Arturo](https://arturo-lang.io/#download)
+## <p align="center">[⇩ Download Arturo](https://arturo-lang.io/#download)</p>
 
-*Wanna be as up-to-date as possible? Head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release!
+> ➤ Wanna be as up-to-date as possible?    
+>     
+> Head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release!
 
 ### The alternative way
 
@@ -82,8 +84,6 @@ curl -sSL https://get.arturo-lang.io | sh
 
 For Unix/Mac, you may also copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
 To get the most recent (nightly) build, just use: `curl -sSL https://get.arturo-lang.io/latest | sh`
-
-*If there is any issue with the installation, just let me know and I'll try to fix it. In any case, it would be safer to try one of the pre-built binaries.*
 
 ### Manually
 
@@ -110,6 +110,10 @@ If you are on macOS, you can easily install Arturo using [Homebrew](https://brew
 ```bash
 brew install arturo
 ```
+
+> ➤ Trouble with the installation?    
+>    
+> If there is any issue with the installation, just let me know (by opening an issue) and I'll try to fix it. In any case, it would be safer to try one of the pre-built binaries.*
 
 Showcase
 ------------------------------
