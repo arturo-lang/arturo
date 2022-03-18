@@ -1,6 +1,7 @@
 name: "upper"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L810"
 description: "convert given string to uppercase"
 returns: [
         :char

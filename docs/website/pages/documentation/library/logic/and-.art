@@ -1,6 +1,7 @@
 name: "and?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L73"
 description: "return the logical AND for the given values"
 returns: [
         :logical

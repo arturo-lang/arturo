@@ -1,6 +1,7 @@
 name: "serve"
 type: :function
 module: "Net"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L282"
 description: "start web server using given routes"
 returns: [
         :nothing

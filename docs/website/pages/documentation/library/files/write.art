@@ -1,6 +1,7 @@
 name: "write"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L394"
 description: "write content to file at given path"
 returns: [
         :nothing

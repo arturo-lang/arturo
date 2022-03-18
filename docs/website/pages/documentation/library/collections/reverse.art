@@ -1,6 +1,7 @@
 name: "reverse"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L824"
 description: "reverse given collection"
 returns: [
         :string

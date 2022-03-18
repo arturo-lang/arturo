@@ -1,6 +1,7 @@
 name: "inline?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L366"
 description: "checks if given value is of type :inline"
 returns: [
         :logical

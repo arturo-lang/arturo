@@ -1,6 +1,7 @@
 name: "greaterOrEqual?"
 type: :function
 module: "Comparison"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L68"
 description: "check if valueA >= valueB (greater than or equal)"
 returns: [
         :logical

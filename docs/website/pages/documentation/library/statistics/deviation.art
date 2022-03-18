@@ -1,6 +1,7 @@
 name: "deviation"
 type: :function
 module: "Statistics"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L55"
 description: "get population standard deviation of given collection of numbers"
 returns: [
         :floating

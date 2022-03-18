@@ -1,6 +1,7 @@
 name: "until"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L714"
 description: "execute action until the given condition is not false or null"
 returns: [
         :nothing

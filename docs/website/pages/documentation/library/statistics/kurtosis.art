@@ -1,6 +1,7 @@
 name: "kurtosis"
 type: :function
 module: "Statistics"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L82"
 description: "get population kurtosis of given collection of numbers"
 returns: [
         :floating

@@ -1,6 +1,7 @@
 name: "info"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L300"
 description: "print info for given symbol"
 returns: [
         :dictionary

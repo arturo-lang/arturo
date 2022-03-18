@@ -1,6 +1,7 @@
 name: "angle"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L195"
 description: "calculate the phase angle of given number"
 returns: [
         :floating

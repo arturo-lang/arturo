@@ -1,6 +1,7 @@
 name: "null?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L573"
 description: "checks if given value is of type :null"
 returns: [
         :logical

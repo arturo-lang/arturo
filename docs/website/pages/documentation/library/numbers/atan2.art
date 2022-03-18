@@ -1,6 +1,7 @@
 name: "atan2"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L316"
 description: "calculate the inverse tangent of y / x"
 returns: [
         :floating

@@ -1,6 +1,7 @@
 name: "volume"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L375"
 description: "get file size for given path"
 returns: [
         :integer

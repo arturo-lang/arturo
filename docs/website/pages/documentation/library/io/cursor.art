@@ -1,6 +1,7 @@
 name: "cursor"
 type: :function
 module: "Io"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L129"
 description: "turn cursor visibility on/off"
 returns: [
         :nothing

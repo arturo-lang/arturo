@@ -1,6 +1,7 @@
 name: "false"
 type: :logical
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L162"
 description: "the FALSE logical constant"
 returns: [
         :logical

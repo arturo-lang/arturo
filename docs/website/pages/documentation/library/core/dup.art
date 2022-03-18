@@ -1,6 +1,7 @@
 name: "dup"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L285"
 description: "duplicate the top of the stack and convert non-returning call to a do-return call"
 returns: [
         :nothing

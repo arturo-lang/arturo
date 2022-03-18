@@ -1,6 +1,7 @@
 name: "add"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L30"
 description: "add given values and return result"
 returns: [
         :integer

@@ -1,6 +1,7 @@
 name: "remove"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L704"
 description: "remove value from given collection"
 returns: [
         :string

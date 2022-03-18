@@ -1,6 +1,7 @@
 name: "abs"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L41"
 description: "get the absolute value for given integer"
 returns: [
         :integer

@@ -1,6 +1,7 @@
 name: "dec"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L51"
 description: "decrease given value by 1"
 returns: [
         :integer

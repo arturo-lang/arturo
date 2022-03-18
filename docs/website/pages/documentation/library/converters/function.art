@@ -1,6 +1,7 @@
 name: "function"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L789"
 description: "create function with given arguments and body"
 returns: [
         :function

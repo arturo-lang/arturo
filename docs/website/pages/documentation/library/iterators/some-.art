@@ -1,6 +1,7 @@
 name: "some?"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L535"
 description: "check if any of collection\'s items satisfy given condition"
 returns: [
         :logical

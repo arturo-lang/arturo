@@ -1,6 +1,7 @@
 name: "truncate"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L770"
 description: "truncate string at given length"
 returns: [
         :string

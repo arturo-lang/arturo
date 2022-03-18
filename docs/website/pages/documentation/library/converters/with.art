@@ -1,6 +1,7 @@
 name: "with"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L1079"
 description: "create closure-style block by embedding given words"
 returns: [
         :block

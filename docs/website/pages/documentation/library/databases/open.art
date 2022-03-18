@@ -1,6 +1,7 @@
 name: "open"
 type: :function
 module: "Databases"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Databases.nim#L116"
 description: "opens a new database connection and returns database"
 returns: [
         :database

@@ -1,6 +1,7 @@
 name: "sin"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1060"
 description: "calculate the sine of given angle"
 returns: [
         :floating

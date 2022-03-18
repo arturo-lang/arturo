@@ -1,6 +1,7 @@
 name: "loop"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L278"
 description: "loop through collection, using given iterator and block"
 returns: [
         :nothing

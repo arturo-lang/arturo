@@ -1,6 +1,7 @@
 name: "break"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L82"
 description: "break out of current block or loop"
 returns: [
         :block

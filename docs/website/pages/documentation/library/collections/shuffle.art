@@ -1,6 +1,7 @@
 name: "shuffle"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L936"
 description: "get given collection shuffled"
 returns: [
         :block

@@ -1,6 +1,7 @@
 name: "sys"
 type: :dictionary
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L274"
 description: "information about the current system"
 returns: [
         :dictionary

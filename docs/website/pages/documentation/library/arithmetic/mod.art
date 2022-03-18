@@ -1,6 +1,7 @@
 name: "mod"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L130"
 description: "calculate the modulo of given values and return result"
 returns: [
         :integer

@@ -1,6 +1,7 @@
 name: "terminal"
 type: :function
 module: "Io"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L317"
 description: "get info about terminal"
 returns: [
         :dictionary

@@ -1,6 +1,7 @@
 name: "date?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L266"
 description: "checks if given value is of type :date"
 returns: [
         :logical

@@ -1,6 +1,7 @@
 name: "exit"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L158"
 description: "exit program"
 returns: [
         :nothing

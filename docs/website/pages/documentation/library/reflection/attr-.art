@@ -1,6 +1,7 @@
 name: "attr?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L82"
 description: "check if given attribute exists"
 returns: [
         :logical

@@ -1,6 +1,7 @@
 name: "difference"
 type: :function
 module: "Sets"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L34"
 description: "return the difference of given sets"
 returns: [
         :block

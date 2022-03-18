@@ -1,6 +1,7 @@
 name: "size"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L958"
 description: "get size/length of given collection"
 returns: [
         :integer

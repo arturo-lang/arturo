@@ -1,6 +1,7 @@
 name: "sorted?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1091"
 description: "check if given collection is already sorted"
 returns: [
         :logical

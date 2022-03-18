@@ -1,6 +1,7 @@
 name: "lighten"
 type: :function
 module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L126"
 description: "lighten color by given percentage (0.0-1.0)"
 returns: [
         :color

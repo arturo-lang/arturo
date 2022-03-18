@@ -1,6 +1,7 @@
 name: "webview"
 type: :function
 module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L219"
 description: "show webview window with given url or html source"
 returns: [
         :string

@@ -1,6 +1,7 @@
 name: "index"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L460"
 description: "return first index of value in given collection"
 returns: [
         :null

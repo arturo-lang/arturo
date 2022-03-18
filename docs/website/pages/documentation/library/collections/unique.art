@@ -1,6 +1,7 @@
 name: "unique"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1336"
 description: "get given block without duplicates"
 returns: [
         :block

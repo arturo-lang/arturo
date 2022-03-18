@@ -1,6 +1,7 @@
 name: "escape"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L113"
 description: "escape given string"
 returns: [
         :string

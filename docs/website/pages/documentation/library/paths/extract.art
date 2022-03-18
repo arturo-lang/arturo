@@ -1,6 +1,7 @@
 name: "extract"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L45"
 description: "extract components from path"
 returns: [
         :string

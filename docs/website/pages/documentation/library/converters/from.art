@@ -1,6 +1,7 @@
 name: "from"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L752"
 description: "get value from string, using given representation"
 returns: [
         :any

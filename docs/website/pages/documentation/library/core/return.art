@@ -1,6 +1,7 @@
 name: "return"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L538"
 description: "return given value from current function"
 returns: [
         :nothing

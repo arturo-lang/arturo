@@ -1,6 +1,7 @@
 name: "palette"
 type: :function
 module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L150"
 description: "create palette using given base color"
 returns: [
         :block

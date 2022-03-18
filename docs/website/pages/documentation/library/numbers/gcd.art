@@ -1,6 +1,7 @@
 name: "gcd"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L670"
 description: "calculate greatest common divisor for given collection of integers"
 returns: [
         :integer

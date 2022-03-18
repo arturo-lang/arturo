@@ -1,6 +1,7 @@
 name: "panic"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L179"
 description: "exit program with error message"
 returns: [
         :logical

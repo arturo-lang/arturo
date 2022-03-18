@@ -1,6 +1,7 @@
 name: "ensure"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L334"
 description: "assert given condition is true, or exit"
 returns: [
         :nothing

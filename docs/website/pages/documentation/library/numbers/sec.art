@@ -1,6 +1,7 @@
 name: "sec"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1018"
 description: "calculate the secant of given angle"
 returns: [
         :floating

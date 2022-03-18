@@ -1,6 +1,7 @@
 name: "unclip"
 type: :function
 module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L199"
 description: "get clipboard content"
 returns: [
         :string

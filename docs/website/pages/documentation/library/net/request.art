@@ -1,6 +1,7 @@
 name: "request"
 type: :function
 module: "Net"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L122"
 description: "perform HTTP request to url with given data and get response"
 returns: [
         :dictionary

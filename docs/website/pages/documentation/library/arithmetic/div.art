@@ -1,6 +1,7 @@
 name: "div"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L70"
 description: "perform integer division between given values and return result"
 returns: [
         :integer

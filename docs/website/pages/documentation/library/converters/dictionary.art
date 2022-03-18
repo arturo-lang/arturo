@@ -1,6 +1,7 @@
 name: "dictionary"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L680"
 description: "create dictionary from given block or file, by getting all internal symbols"
 returns: [
         :dictionary

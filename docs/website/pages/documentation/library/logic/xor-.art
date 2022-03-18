@@ -1,6 +1,7 @@
 name: "xor?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L428"
 description: "return the logical XOR for the given values"
 returns: [
         :logical

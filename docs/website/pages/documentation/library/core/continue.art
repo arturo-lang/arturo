@@ -1,6 +1,7 @@
 name: "continue"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L178"
 description: "immediately continue with next iteration"
 returns: [
         :block

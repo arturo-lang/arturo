@@ -1,6 +1,7 @@
 name: "close"
 type: :function
 module: "Databases"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Databases.nim#L49"
 description: "close given database"
 returns: [
         :nothing

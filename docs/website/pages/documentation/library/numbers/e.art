@@ -1,6 +1,7 @@
 name: "e"
 type: :floating
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L549"
 description: "the constant e, Euler\'s number"
 returns: [
         :floating

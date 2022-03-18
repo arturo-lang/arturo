@@ -1,6 +1,7 @@
 name: "label?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L520"
 description: "checks if given value is of type :label"
 returns: [
         :logical

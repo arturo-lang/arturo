@@ -1,6 +1,7 @@
 name: "any?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L121"
 description: "check if any of the values in given block is true"
 returns: [
         :logical

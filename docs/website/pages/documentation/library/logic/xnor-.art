@@ -1,6 +1,7 @@
 name: "xnor?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L388"
 description: "return the logical XNOR for the given values"
 returns: [
         :logical

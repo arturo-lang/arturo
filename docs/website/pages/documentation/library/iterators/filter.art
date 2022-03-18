@@ -1,6 +1,7 @@
 name: "filter"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L87"
 description: "get collection\'s items by filtering those that do not fulfil given condition"
 returns: [
         :block

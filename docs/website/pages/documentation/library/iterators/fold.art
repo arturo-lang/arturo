@@ -1,6 +1,7 @@
 name: "fold"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L143"
 description: "left-fold given collection returning accumulator"
 returns: [
         :null

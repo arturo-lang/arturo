@@ -1,6 +1,7 @@
 name: "mul"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L151"
 description: "calculate the product of given values and return result"
 returns: [
         :integer

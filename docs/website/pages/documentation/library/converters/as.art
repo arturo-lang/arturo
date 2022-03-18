@@ -1,6 +1,7 @@
 name: "as"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L492"
 description: "format given value as implied type"
 returns: [
         :any

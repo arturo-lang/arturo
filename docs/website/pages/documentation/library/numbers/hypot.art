@@ -1,6 +1,7 @@
 name: "hypot"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L706"
 description: "calculate the hypotenuse of a right-angle triangle with given base and height"
 returns: [
         :floating

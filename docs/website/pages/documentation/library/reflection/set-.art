@@ -1,6 +1,7 @@
 name: "set?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L640"
 description: "check if given variable is defined"
 returns: [
         :logical

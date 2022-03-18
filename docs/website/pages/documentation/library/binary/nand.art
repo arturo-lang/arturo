@@ -1,6 +1,7 @@
 name: "nand"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L51"
 description: "calculate the binary NAND for the given values"
 returns: [
         :integer

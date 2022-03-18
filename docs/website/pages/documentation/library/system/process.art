@@ -1,6 +1,7 @@
 name: "process"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L234"
 description: "get information on current process/program"
 returns: [
         :dictionary

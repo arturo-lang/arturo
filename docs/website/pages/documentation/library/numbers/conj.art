@@ -1,6 +1,7 @@
 name: "conj"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L372"
 description: "calculate the complex conjugate of given number"
 returns: [
         :complex

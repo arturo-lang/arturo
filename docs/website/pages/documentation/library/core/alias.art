@@ -1,6 +1,7 @@
 name: "alias"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L37"
 description: "assign symbol to given function"
 returns: [
         :nothing

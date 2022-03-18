@@ -1,6 +1,7 @@
 name: "empty?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L251"
 description: "check if given collection is empty"
 returns: [
         :logical

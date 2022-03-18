@@ -1,6 +1,7 @@
 name: "symlink"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L323"
 description: "create symbolic link of file to given destination"
 returns: [
         :nothing

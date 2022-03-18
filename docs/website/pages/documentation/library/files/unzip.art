@@ -1,6 +1,7 @@
 name: "unzip"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L359"
 description: "unzip given archive to destination"
 returns: [
         :nothing

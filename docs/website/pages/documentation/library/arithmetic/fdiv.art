@@ -1,6 +1,7 @@
 name: "fdiv"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L91"
 description: "divide given values and return result"
 returns: [
         :floating

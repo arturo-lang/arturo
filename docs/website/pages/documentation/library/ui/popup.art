@@ -1,6 +1,7 @@
 name: "popup"
 type: :function
 module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L125"
 description: "show popup dialog with given title and message and return result"
 returns: [
         :logical

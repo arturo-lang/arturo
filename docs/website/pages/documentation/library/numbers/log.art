@@ -1,6 +1,7 @@
 name: "log"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L752"
 description: "calculate the logarithm of value using given base"
 returns: [
         :floating

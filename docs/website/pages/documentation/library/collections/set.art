@@ -1,6 +1,7 @@
 name: "set"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L877"
 description: "set collection\'s item at index to given value"
 returns: [
         :nothing

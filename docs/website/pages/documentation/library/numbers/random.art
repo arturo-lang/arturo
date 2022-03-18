@@ -1,6 +1,7 @@
 name: "random"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L921"
 description: "get a random integer between given limits"
 returns: [
         :integer

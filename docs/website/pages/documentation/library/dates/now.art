@@ -1,6 +1,7 @@
 name: "now"
 type: :function
 module: "Dates"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Dates.nim#L172"
 description: "get date/time now"
 returns: [
         :date

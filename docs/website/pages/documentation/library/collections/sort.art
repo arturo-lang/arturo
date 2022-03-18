@@ -1,6 +1,7 @@
 name: "sort"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1009"
 description: "sort given block in ascending order"
 returns: [
         :block
