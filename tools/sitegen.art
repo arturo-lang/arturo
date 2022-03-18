@@ -104,6 +104,8 @@ loop functions [modl,lst][
         inspect funcInfo
         
         print join.path @[target ~"|func|.art"]
+        if not? exists? target ->
+            write.directory target ø
         write join.path @[target ~{|replace func "?" "-"|.art}] funcInfo
     ]
 ]
