@@ -23,14 +23,13 @@ dict: new []
 
 loop rosettas 'ro [
     'dict ++ ro
-    ;'dict ++ read ~"examples/rosetta/|ro|.art"
 ]
 
 write "docs/website/data/rosetta.art" as.pretty.code dict
 
 print as.pretty.code dict
-; get modules and functions
 
+; get modules and functions
 loop symbols [sym][
     print ["processing:" sym]
     inf: info.get sym
@@ -40,10 +39,9 @@ loop symbols [sym][
         lib: inf\module
         append 'modules lib
         if not? key? functions lib [
-            set functions lib []
+            functions\[lib]: []
         ]
-        set functions lib append (get functions lib) fun
-
+        functions\[lib]: append functions\[lib] fun
 
         levD: 100
         related: new #[]
@@ -65,20 +63,12 @@ loop symbols [sym][
                 ]
                 score: score + jaro sym sym2
                 score: score + 4 * jaro inf\description inf2\description
-                ; lev: 100
-                ; levA: (levenshtein sym sym2) * 3
-                ; levB: levenshtein (inf\description) (inf2\description)
-                ; if lib=lib2 [
-                ;     levA: levA / 2
-                ;     levB: levB / 2
-                ; ]
-                set related new ~"|capitalize lib2|/|sym2|" score ; min @[levA levB]
+
+                related\[new ~"|capitalize lib2|/|sym2|"]: score
             ]
         ]
         bestMatches: reverse last.n: 4 keys sort.values related
-        inspect bestMatches
-        set relatedFuncs sym bestMatches
-        ; inspect relatedFuncs
+        relatedFuncs\[sym]: bestMatches
     ]
 ]
 
@@ -90,7 +80,6 @@ unique 'modules
 
 loop functions [modl,lst][
     target: relative join.path @["../docs/website/pages/documentation/library" lower modl]
-    ; write.directory target ø
 
     loop lst 'func [
         funcInfo:  info.get func
@@ -109,7 +98,7 @@ loop functions [modl,lst][
             funcInfo\returns: @[funcInfo\type]
         ]
         funcInfo: remove.key funcInfo 'address
-        funcInfo\related: get relatedFuncs func
+        funcInfo\related: relatedFuncs\[func]
         funcInfo: replace strip as.pretty.code.unwrapped funcInfo "\t" "    "
 
         inspect funcInfo
@@ -120,7 +109,6 @@ loop functions [modl,lst][
 ]
 funcs: new []
 loop functions [modl,lst][
-    ; print ["re-processing:" modl]
     loop lst 'f [
         print ["adding:" f]
         'funcs ++ f
