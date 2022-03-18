@@ -211,7 +211,7 @@ proc defineSymbols*() =
     builtin "jaro",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "calculate Jaro similarity between given strings",
+        description = "calculate Jaro distance/similarity between given strings",
         args        = {
             "stringA"   : {String},
             "stringB"   : {String}
@@ -277,7 +277,7 @@ proc defineSymbols*() =
     builtin "levenshtein",
         alias       = unaliased, 
         rule        = PrefixPrecedence,
-        description = "calculate Levenshtein distance between given strings",
+        description = "calculate Levenshtein distance/similarity between given strings",
         args        = {
             "stringA"   : {String},
             "stringB"   : {String}
