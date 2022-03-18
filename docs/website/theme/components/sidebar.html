@@ -4,12 +4,12 @@
             Documentation
         </p> -->
         <ul class="menu-list">
-            <li><a <||= if all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] [ ||> class="is-active" <||]||> href="<||= linkTo {documentation} ||>">Home</a></li>
-            <li><a <||= if contains? pagePath "getting started" [||> class="is-active" <||]||> href="<||= linkTo {documentation/getting started} ||>">Getting Started</a></li>
-            <li><a <||= if contains? pagePath "in a nutshell" [||> class="is-active" <||]||> href="<||= linkTo {documentation/in a nutshell} ||>">In A Nutshell</a></li>
-            <li><a <||= if contains? pagePath "language" [||> class="is-active" <||]||> href="<||= linkTo {documentation/language} ||>">Language</a></li>
-            <li><a <||= if contains? pagePath "command line" [||> class="is-active" <||]||> href="<||= linkTo {documentation/command line} ||>">Command Line</a></li>
-            <li><a <||= if contains? pagePath "library" [||> class="is-active" <||]||> href="<||= linkTo {documentation/library} ||>">Library</a>
+            <li><a style="display:flex; align-items:center" <||= if all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] [ ||> class="is-active" <||]||> href="<||= linkTo {documentation} ||>"><i class="ph-house-<||= switch all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] ["fill"]["bold"] ||>"></i>&nbsp;&nbsp;Home</a></li>
+            <li><a style="display:flex; align-items:center" <||= if contains? pagePath "getting started" [||> class="is-active" <||]||> href="<||= linkTo {documentation/getting started} ||>"><i class="ph-play-circle-<||= switch contains? pagePath "getting started" ["fill"]["bold"] ||>"></i>&nbsp;&nbsp;Getting Started</a></li>
+            <li><a style="display:flex; align-items:center" <||= if contains? pagePath "in a nutshell" [||> class="is-active" <||]||> href="<||= linkTo {documentation/in a nutshell} ||>"><i class="ph-magic-wand-<||= switch contains? pagePath "in a nutshell" ["fill"]["bold"] ||>"></i>&nbsp;&nbsp;In A Nutshell</a></li>
+            <li><a style="display:flex; align-items:center" <||= if contains? pagePath "language" [||> class="is-active" <||]||> href="<||= linkTo {documentation/language} ||>"><i class="ph-tree-<||= switch contains? pagePath "language" ["fill"]["bold"] ||>"></i>&nbsp;&nbsp;Language</a></li>
+            <li><a style="display:flex; align-items:center" <||= if contains? pagePath "command line" [||> class="is-active" <||]||> href="<||= linkTo {documentation/command line} ||>"><i class="ph-monitor-<||= switch contains? pagePath "command line" ["fill"]["bold"] ||>"></i>&nbsp;&nbsp;Command Line</a></li>
+            <li><a style="display:flex; align-items:center" <||= if contains? pagePath "library" [||> class="is-active" <||]||> href="<||= linkTo {documentation/library} ||>"><i class="ph-books-<||= switch contains? pagePath "library" ["fill"]["bold"] ||>"></i>&nbsp;&nbsp;Library</a>
                 <||= if contains? pagePath lower "library" [||>
                     <ul style="margin-right:0">
                         <||= loop sort keys pageTree\documentation\library 'modul [ ||>
@@ -26,7 +26,7 @@
                     </ul>
                 <|| ] ||>
             </li>
-            <li><a <||= if contains? pagePath "examples" [||> class="is-active" <||]||> href="<||= linkTo {documentation/examples} ||>">Examples</a></li>
+            <li><a style="display:flex; align-items:center" <||= if contains? pagePath "examples" [||> class="is-active" <||]||> href="<||= linkTo {documentation/examples} ||>"><i class="ph-flask-<||= switch contains? pagePath "examples" ["fill"]["bold"] ||>"></i>&nbsp;&nbsp;Examples</a></li>
         </ul>
       </aside>
 </div>
