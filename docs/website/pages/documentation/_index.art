@@ -89,7 +89,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="in-a-nutshell"><div class="holder">
   <div class="card-image has-text-centered" style="display: flex; justify-content: center;">
-    <i class="ph-hand-pointing-bold" style="font-size: 100px; margin-top: 1rem;"></i>
+    <i class="ph-magic-wand-bold" style="font-size: 100px; margin-top: 1rem;"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">In A Nutshell</h4>
@@ -113,7 +113,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="command-line"><div class="holder">
   <div class="card-image has-text-centered" style="display: flex; justify-content: center;">
-    <i class="ph-terminal-window-bold" style="font-size: 100px; margin-top: 1rem;"></i>
+    <i class="ph-monitor-bold" style="font-size: 100px; margin-top: 1rem;"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">Command Line</h4>
