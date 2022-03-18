@@ -11,7 +11,7 @@
                 <!-- MAIN -->
                 <div class="column is-9 p-6 mb-6">
                     <!-- Breadcrumbs -->
-                    <||= SOURCE: null, importPartial "components/breadcrumbs.html" ||>
+                    <||= importPartial "components/breadcrumbs.html" ||>
 
                     <|| if not? all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] [ ||>
                         <h2 class="title is-size-3-touch is-size-2 is-spaced"><||= switch contains? pagePath "library" ["Library"] [join.with:" " map split.words last pagePath 'x -> capitalize x] ||></h2>
