@@ -1,6 +1,7 @@
 name: "subset?"
 type: :function
 module: "Sets"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L114"
 description: "check if given set is a subset of second set"
 returns: [
         :logical

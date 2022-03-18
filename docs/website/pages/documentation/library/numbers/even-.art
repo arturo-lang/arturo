@@ -1,6 +1,7 @@
 name: "even?"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L554"
 description: "check if given number is even"
 returns: [
         :logical

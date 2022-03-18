@@ -1,6 +1,7 @@
 name: "every?"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L34"
 description: "check if every single item in collection satisfy given condition"
 returns: [
         :logical

@@ -1,6 +1,7 @@
 name: "prime?"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L866"
 description: "check if given integer is prime"
 returns: [
         :logical

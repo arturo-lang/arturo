@@ -1,6 +1,7 @@
 name: "crc"
 type: :function
 module: "Crypto"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L40"
 description: "calculate the CRC32 polynomial of given string"
 returns: [
         :string

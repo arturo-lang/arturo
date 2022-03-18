@@ -1,6 +1,7 @@
 name: "replace"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L640"
 description: "replace every matched substring/s by given replacement string and return result"
 returns: [
         :string

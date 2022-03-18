@@ -1,6 +1,7 @@
 name: "strip"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L695"
 description: "strip whitespace from given string"
 returns: [
         :string

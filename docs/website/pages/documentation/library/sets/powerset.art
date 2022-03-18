@@ -1,6 +1,7 @@
 name: "powerset"
 type: :function
 module: "Sets"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L95"
 description: "return the powerset of given set"
 returns: [
         :block

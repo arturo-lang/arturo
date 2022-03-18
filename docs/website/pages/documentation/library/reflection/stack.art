@@ -1,6 +1,7 @@
 name: "stack"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L658"
 description: "get current stack"
 returns: [
         :dictionary

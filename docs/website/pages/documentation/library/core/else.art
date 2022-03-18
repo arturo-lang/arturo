@@ -1,6 +1,7 @@
 name: "else"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L310"
 description: "perform action, if last condition was not true"
 returns: [
         :nothing

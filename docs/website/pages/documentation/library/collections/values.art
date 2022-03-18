@@ -1,6 +1,7 @@
 name: "values"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1365"
 description: "get list of values for given dictionary"
 returns: [
         :block

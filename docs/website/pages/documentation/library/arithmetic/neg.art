@@ -1,6 +1,7 @@
 name: "neg"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L172"
 description: "reverse sign of given value and return it"
 returns: [
         :integer

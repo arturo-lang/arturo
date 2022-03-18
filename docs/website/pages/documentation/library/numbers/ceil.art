@@ -1,6 +1,7 @@
 name: "ceil"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L354"
 description: "calculate the smallest integer not smaller than given value"
 returns: [
         :integer

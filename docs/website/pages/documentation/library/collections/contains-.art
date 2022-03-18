@@ -1,6 +1,7 @@
 name: "contains?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L156"
 description: "check if collection contains given value"
 returns: [
         :string

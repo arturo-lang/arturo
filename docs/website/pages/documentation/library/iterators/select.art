@@ -1,6 +1,7 @@
 name: "select"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L479"
 description: "get collection\'s items that fulfil given condition"
 returns: [
         :block

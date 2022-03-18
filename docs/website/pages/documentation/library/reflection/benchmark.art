@@ -1,6 +1,7 @@
 name: "benchmark"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L166"
 description: "benchmark given code"
 returns: [
         :floating

@@ -1,6 +1,7 @@
 name: "lower?"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L335"
 description: "check if given string is lowercase"
 returns: [
         :logical

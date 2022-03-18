@@ -1,6 +1,7 @@
 name: "script"
 type: :dictionary
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L269"
 description: "embedded information about the current script"
 returns: [
         :dictionary

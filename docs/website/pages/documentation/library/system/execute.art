@@ -1,6 +1,7 @@
 name: "execute"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L94"
 description: "execute given shell command"
 returns: [
         :string

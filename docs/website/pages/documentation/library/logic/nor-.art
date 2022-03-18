@@ -1,6 +1,7 @@
 name: "nor?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L242"
 description: "return the logical NOR for the given values"
 returns: [
         :logical

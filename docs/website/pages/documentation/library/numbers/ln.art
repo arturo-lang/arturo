@@ -1,6 +1,7 @@
 name: "ln"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L731"
 description: "calculate the natural logarithm of given value"
 returns: [
         :floating

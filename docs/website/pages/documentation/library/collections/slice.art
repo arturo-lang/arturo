@@ -1,6 +1,7 @@
 name: "slice"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L987"
 description: "get a slice of collection between given indices"
 returns: [
         :string

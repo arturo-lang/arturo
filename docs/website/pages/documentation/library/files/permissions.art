@@ -1,6 +1,7 @@
 name: "permissions"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L134"
 description: "check permissions of given file"
 returns: [
         :null

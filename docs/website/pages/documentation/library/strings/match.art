@@ -1,6 +1,7 @@
 name: "match"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L364"
 description: "get matches within string, using given regular expression"
 returns: [
         :dictionary

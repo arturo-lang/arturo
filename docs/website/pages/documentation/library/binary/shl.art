@@ -1,6 +1,7 @@
 name: "shl"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L130"
 description: "shift-left first value bits by second value"
 returns: [
         :integer

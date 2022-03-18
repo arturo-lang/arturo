@@ -1,6 +1,7 @@
 name: "false?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L167"
 description: "returns true if given value is false; otherwise, it returns false"
 returns: [
         :logical

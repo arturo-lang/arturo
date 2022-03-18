@@ -1,6 +1,7 @@
 name: "acos"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L69"
 description: "calculate the inverse cosine of given angle"
 returns: [
         :floating

@@ -1,6 +1,7 @@
 name: "var"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L757"
 description: "get symbol value by given name"
 returns: [
         :any

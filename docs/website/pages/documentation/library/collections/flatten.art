@@ -1,6 +1,7 @@
 name: "flatten"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L328"
 description: "flatten given collection by eliminating nested blocks"
 returns: [
         :block

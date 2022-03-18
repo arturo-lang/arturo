@@ -1,6 +1,7 @@
 name: "jaro"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L211"
 description: "calculate Jaro distance/similarity between given strings"
 returns: [
         :floating

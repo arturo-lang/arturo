@@ -1,6 +1,7 @@
 name: "mail"
 type: :function
 module: "Net"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L82"
 description: "send mail using given message and configuration"
 returns: [
         :nothing

@@ -1,6 +1,7 @@
 name: "join"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L232"
 description: "join collection of values into string"
 returns: [
         :string

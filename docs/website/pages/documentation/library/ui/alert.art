@@ -1,6 +1,7 @@
 name: "alert"
 type: :function
 module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L46"
 description: "show notification with given title and message"
 returns: [
         :logical

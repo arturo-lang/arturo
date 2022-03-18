@@ -1,6 +1,7 @@
 name: "decode"
 type: :function
 module: "Crypto"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L59"
 description: "encode given value (default: base-64)"
 returns: [
         :string

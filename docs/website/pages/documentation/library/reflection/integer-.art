@@ -1,6 +1,7 @@
 name: "integer?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L405"
 description: "checks if given value is of type :integer"
 returns: [
         :logical

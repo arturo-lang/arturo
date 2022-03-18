@@ -1,6 +1,7 @@
 name: "logical?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L553"
 description: "checks if given value is of type :logical"
 returns: [
         :logical

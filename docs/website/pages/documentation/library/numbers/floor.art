@@ -1,6 +1,7 @@
 name: "floor"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L634"
 description: "calculate the largest integer not greater than given value"
 returns: [
         :integer

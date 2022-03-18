@@ -1,6 +1,7 @@
 name: "let"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L413"
 description: "set symbol to given value"
 returns: [
         :nothing

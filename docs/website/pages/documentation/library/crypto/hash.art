@@ -1,6 +1,7 @@
 name: "hash"
 type: :function
 module: "Crypto"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L191"
 description: "get hash for given value"
 returns: [
         :integer

@@ -1,6 +1,7 @@
 name: "median"
 type: :function
 module: "Statistics"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L109"
 description: "get median from given collection of numbers"
 returns: [
         :null

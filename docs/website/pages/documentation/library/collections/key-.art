@@ -1,6 +1,7 @@
 name: "key?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L550"
 description: "check if dictionary contains given key"
 returns: [
         :logical

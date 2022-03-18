@@ -1,6 +1,7 @@
 name: "pause"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L215"
 description: "pause program\'s execution~for the given amount of milliseconds"
 returns: [
         :nothing

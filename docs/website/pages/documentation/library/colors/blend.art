@@ -1,6 +1,7 @@
 name: "blend"
 type: :function
 module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L34"
 description: "blend given colors and get result"
 returns: [
         :color

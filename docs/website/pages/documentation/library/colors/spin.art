@@ -1,6 +1,7 @@
 name: "spin"
 type: :function
 module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L238"
 description: "spin color around the hue wheel by given amount"
 returns: [
         :color

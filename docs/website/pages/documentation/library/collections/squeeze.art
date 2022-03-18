@@ -1,6 +1,7 @@
 name: "squeeze"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1247"
 description: "reduce adjacent elements in given collection"
 returns: [
         :string

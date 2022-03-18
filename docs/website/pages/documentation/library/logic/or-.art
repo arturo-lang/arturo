@@ -1,6 +1,7 @@
 name: "or?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L316"
 description: "return the logical OR for the given values"
 returns: [
         :logical

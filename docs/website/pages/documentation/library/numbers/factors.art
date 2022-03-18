@@ -1,6 +1,7 @@
 name: "factors"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L593"
 description: "get list of factors for given integer"
 returns: [
         :block

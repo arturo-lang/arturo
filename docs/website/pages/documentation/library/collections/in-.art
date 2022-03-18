@@ -1,6 +1,7 @@
 name: "in?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L417"
 description: "check if value exists in given collection"
 returns: [
         :string

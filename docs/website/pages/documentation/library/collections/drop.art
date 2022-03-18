@@ -1,6 +1,7 @@
 name: "drop"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L199"
 description: "drop first <number> of elements from given collection and return the remaining ones"
 returns: [
         :string

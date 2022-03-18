@@ -1,6 +1,7 @@
 name: "sqrt"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1102"
 description: "get square root of given value"
 returns: [
         :floating

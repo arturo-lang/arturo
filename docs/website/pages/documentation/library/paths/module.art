@@ -1,6 +1,7 @@
 name: "module"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L226"
 description: "get path for given module name"
 returns: [
         :null

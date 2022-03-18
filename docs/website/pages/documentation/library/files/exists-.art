@@ -1,6 +1,7 @@
 name: "exists?"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L112"
 description: "check if given file exists"
 returns: [
         :logical

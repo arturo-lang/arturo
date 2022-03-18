@@ -1,6 +1,7 @@
 name: "csech"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L451"
 description: "calculate the hyperbolic cosecant of given angle"
 returns: [
         :floating

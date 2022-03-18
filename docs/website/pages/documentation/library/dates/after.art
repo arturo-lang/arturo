@@ -1,6 +1,7 @@
 name: "after"
 type: :function
 module: "Dates"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Dates.nim#L32"
 description: "get date after given one using interval"
 returns: [
         :date

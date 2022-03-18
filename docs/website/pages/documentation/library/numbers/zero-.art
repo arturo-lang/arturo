@@ -1,6 +1,7 @@
 name: "zero?"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1200"
 description: "check if given number is zero"
 returns: [
         :logical

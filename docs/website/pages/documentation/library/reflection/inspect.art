@@ -1,6 +1,7 @@
 name: "inspect"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L382"
 description: "print full dump of given value to screen"
 returns: [
         :nothing

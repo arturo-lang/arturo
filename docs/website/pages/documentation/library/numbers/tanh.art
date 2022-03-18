@@ -1,6 +1,7 @@
 name: "tanh"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1179"
 description: "calculate the hyperbolic tangent of given angle"
 returns: [
         :floating

@@ -1,6 +1,7 @@
 name: "permutate"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L682"
 description: "get all possible permutations of the elements in given collection"
 returns: [
         :block

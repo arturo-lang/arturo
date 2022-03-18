@@ -1,6 +1,7 @@
 name: "array"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L418"
 description: "create array from given block, by reducing/calculating all internal values"
 returns: [
         :block

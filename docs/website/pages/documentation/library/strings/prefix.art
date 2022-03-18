@@ -1,6 +1,7 @@
 name: "prefix"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L509"
 description: "add given prefix to string"
 returns: [
         :string

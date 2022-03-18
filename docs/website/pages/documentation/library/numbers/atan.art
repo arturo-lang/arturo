@@ -1,6 +1,7 @@
 name: "atan"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L295"
 description: "calculate the inverse tangent of given angle"
 returns: [
         :floating

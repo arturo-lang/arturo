@@ -1,6 +1,7 @@
 name: "color"
 type: :function
 module: "Io"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L65"
 description: "get colored version of given string"
 returns: [
         :string

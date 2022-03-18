@@ -1,6 +1,7 @@
 name: "pow"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L191"
 description: "calculate the power of given values and return result"
 returns: [
         :integer

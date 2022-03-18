@@ -1,6 +1,7 @@
 name: "clip"
 type: :function
 module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L81"
 description: "set clipboard content to given text"
 returns: [
         :nothing

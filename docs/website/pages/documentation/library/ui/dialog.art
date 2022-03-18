@@ -1,6 +1,7 @@
 name: "dialog"
 type: :function
 module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L98"
 description: "show a file selection dialog and return selection"
 returns: [
         :string

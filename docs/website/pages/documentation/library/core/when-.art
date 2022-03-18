@@ -1,6 +1,7 @@
 name: "when?"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L779"
 description: "check if a specific condition is fulfilled and, if so, execute given action"
 returns: [
         :logical

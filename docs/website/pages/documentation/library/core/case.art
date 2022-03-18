@@ -1,6 +1,7 @@
 name: "case"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L158"
 description: "initiate a case block to check for different cases"
 returns: [
         :nothing

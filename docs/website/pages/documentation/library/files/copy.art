@@ -1,6 +1,7 @@
 name: "copy"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L52"
 description: "copy file at path to given destination"
 returns: [
         :nothing

@@ -1,6 +1,7 @@
 name: "max"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L632"
 description: "get maximum element in given collection"
 returns: [
         :null

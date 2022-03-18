@@ -1,6 +1,7 @@
 name: "relative"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L301"
 description: "get relative path for given path, based on current script\'s location"
 returns: [
         :string

@@ -1,6 +1,7 @@
 name: "clear"
 type: :function
 module: "Io"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L52"
 description: "clear terminal"
 returns: [
         :nothing

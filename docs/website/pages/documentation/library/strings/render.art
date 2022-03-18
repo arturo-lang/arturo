@@ -1,6 +1,7 @@
 name: "render"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L553"
 description: "render template with |string| interpolation"
 returns: [
         :string

@@ -1,6 +1,7 @@
 name: "capitalize"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L94"
 description: "convert given string to capitalized"
 returns: [
         :string

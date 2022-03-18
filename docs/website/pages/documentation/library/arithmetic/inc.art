@@ -1,6 +1,7 @@
 name: "inc"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L111"
 description: "increase given value by 1"
 returns: [
         :integer

@@ -1,6 +1,7 @@
 name: "odd?"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L793"
 description: "check if given number is odd"
 returns: [
         :logical

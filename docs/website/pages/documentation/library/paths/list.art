@@ -1,6 +1,7 @@
 name: "list"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L190"
 description: "get files in given path"
 returns: [
         :block

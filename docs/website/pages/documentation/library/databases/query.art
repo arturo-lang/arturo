@@ -1,6 +1,7 @@
 name: "query"
 type: :function
 module: "Databases"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Databases.nim#L71"
 description: "execute command or block of commands in given database and get returned rows"
 returns: [
         :null

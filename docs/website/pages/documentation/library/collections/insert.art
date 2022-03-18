@@ -1,6 +1,7 @@
 name: "insert"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L501"
 description: "insert value in collection at given index"
 returns: [
         :string

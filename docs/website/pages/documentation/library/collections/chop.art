@@ -1,6 +1,7 @@
 name: "chop"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L109"
 description: "remove last item from given collection"
 returns: [
         :string

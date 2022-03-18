@@ -1,6 +1,7 @@
 name: "ctanh"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L493"
 description: "calculate the hyperbolic cotangent of given angle"
 returns: [
         :floating

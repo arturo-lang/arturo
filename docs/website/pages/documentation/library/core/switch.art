@@ -1,6 +1,7 @@
 name: "switch"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L566"
 description: "if condition is not false or null perform given action, otherwise perform alternative action"
 returns: [
         :nothing

@@ -1,6 +1,7 @@
 name: "terminate"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L280"
 description: "kill process with given id"
 returns: [
         :nothing

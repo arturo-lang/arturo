@@ -1,6 +1,7 @@
 name: "union"
 type: :function
 module: "Sets"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L226"
 description: "return the union of given sets"
 returns: [
         :block

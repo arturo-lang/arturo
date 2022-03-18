@@ -1,6 +1,7 @@
 name: "levenshtein"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L277"
 description: "calculate Levenshtein distance/similarity between given strings"
 returns: [
         :integer

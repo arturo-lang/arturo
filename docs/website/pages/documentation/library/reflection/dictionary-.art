@@ -1,6 +1,7 @@
 name: "dictionary?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L282"
 description: "checks if given value is of type :dictionary"
 returns: [
         :logical

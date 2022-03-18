@@ -1,6 +1,7 @@
 name: "if?"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L376"
 description: "perform action, if given condition is not false or null and return condition result"
 returns: [
         :logical

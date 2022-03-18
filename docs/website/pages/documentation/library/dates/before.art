@@ -1,6 +1,7 @@
 name: "before"
 type: :function
 module: "Dates"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Dates.nim#L90"
 description: "get date before given one using interval"
 returns: [
         :date

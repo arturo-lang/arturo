@@ -1,6 +1,7 @@
 name: "sinh"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1081"
 description: "calculate the hyperbolic sine of given angle"
 returns: [
         :floating

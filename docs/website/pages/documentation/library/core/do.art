@@ -1,6 +1,7 @@
 name: "do"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L207"
 description: "evaluate and execute given code"
 returns: [
         :nothing

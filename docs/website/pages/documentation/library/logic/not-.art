@@ -1,6 +1,7 @@
 name: "not?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L292"
 description: "return the logical complement of the given value"
 returns: [
         :logical

@@ -1,6 +1,7 @@
 name: "superset?"
 type: :function
 module: "Sets"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L170"
 description: "check if given set is a superset of second set"
 returns: [
         :logical

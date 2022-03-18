@@ -1,6 +1,7 @@
 name: "pop"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L494"
 description: "pop top <number> values from stack"
 returns: [
         :any
