@@ -20,7 +20,9 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:type](#type)
        - [:char](#char)
        - [:string](#string)
+       - [:regex](#regex)
        - [:literal](#literal)
+       - [:symbolLiteral](#symbolLiteral)
        - [:path](#path)
        - [:pathLabel](#pathLabel)
        - [:inline](#inline)
@@ -126,11 +128,15 @@ Some of the existing *aliases* in the built-in dictionary:
 %ALIAS_LIST%
 </table>
 
+> 💡 For the complete of recognized symbols in Arturo, you may have a look at [here](https://github.com/arturo-lang/arturo/blob/master/src/vm/values/value.nim#L52-L142)
+
 <h3 id="values">Values</h3>
 
 Values are the very core of Arturo and are used to refer to pretty much all the different kinds of data you can have.
 
-We could split them into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.
+> 💡 Words, labels, and symbols - that we already saw above - can be considered "values" as well; and treated as such, unless we proceed to evaluate them!
+
+We could split values into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.
 
 The complete list follows:
 
@@ -276,6 +282,17 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 > ; my variable is: 2
 > ```
 
+<h4 id="regex">:regex</h4>
+
+A regex value is nothing but a string containing a regular expression (that is then compiled and treated as such):
+
+```red
+type {/[A-Z]/}                    ; => :regex
+
+replace "HelLo" {/[A-Z]/} "X"     ; here we replace all capital letters
+                                  ; with an X
+```
+
 <h4 id="literal">:literal</h4>
 
 Literals in Arturo are just a way of referring to the *name* of a word or symbol. Think of it as the *string* version of a word, or like Ruby's *symbols*. 
@@ -288,6 +305,16 @@ info func
 ```
 
 However, literals may be used for much more - e.g. modifying a passed parameter in-place, without having to re-assign the result of an operation to a new variable. To learn more, have a look at **[In-place variable modification](#in-place-variable-modification)**.
+
+<h4 id="symbolLiteral">:symbolLiteral</h4>
+
+Symbol literals are to symbols pretty much what literals are to words. That is: the "literal", unevaluated form of the symbol.
+
+To declare a symbol literal, we may follow the example of normal, literals: `single quote` + accompanied by the symbol in question:
+
+```red
+type '++        ; => :symbolliteral
+```
 
 <h4 id="path">:path</h4>
 
