@@ -6,7 +6,7 @@
         <ul class="menu-list">
             <li><a <||= if all? @[2 = size pagePath "documentation" = first pagePath  "_index" = last pagePath] [ ||> class="is-active" <||]||> href="<||= linkTo {documentation} ||>">Home</a></li>
             <li><a <||= if contains? pagePath "getting started" [||> class="is-active" <||]||> href="<||= linkTo {documentation/getting started} ||>">Getting Started</a></li>
-            <li><a <||= if contains? pagePath "in a nutshell" [||> class="is-active" <||]||> href="<||= linkTo {documentation/in a nutshell} ||>">In A Nutshell<span class="tag is-small is-success is-pulled-right" style="border-radius: 20px !important; font-weight: bold; height: 1.7em !important;">NEW</span></a></li>
+            <li><a <||= if contains? pagePath "in a nutshell" [||> class="is-active" <||]||> href="<||= linkTo {documentation/in a nutshell} ||>">In A Nutshell</a></li>
             <li><a <||= if contains? pagePath "language" [||> class="is-active" <||]||> href="<||= linkTo {documentation/language} ||>">Language</a></li>
             <li><a <||= if contains? pagePath "command line" [||> class="is-active" <||]||> href="<||= linkTo {documentation/command line} ||>">Command Line</a></li>
             <li><a <||= if contains? pagePath "library" [||> class="is-active" <||]||> href="<||= linkTo {documentation/library} ||>">Library</a>
