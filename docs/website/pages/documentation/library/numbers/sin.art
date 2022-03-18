@@ -1,11 +1,12 @@
 name: "sin"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1060"
+description: "calculate the sine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the sine of given angle"
 examples: [
         {
             print sin 0                 ; 0.0
@@ -27,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/cos"
-         "Collections/min"
-         "Numbers/asin"
+        "Numbers/asin"
          "Numbers/sinh"
+         "Numbers/sec"
+         "Numbers/csec"
     ]

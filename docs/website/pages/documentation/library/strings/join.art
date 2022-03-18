@@ -1,11 +1,12 @@
 name: "join"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L232"
+description: "join collection of values into string"
 returns: [
         :string
          :nothing
     ]
-description: "join collection of values into string"
 examples: [
         {
             arr: ["one" "two" "three"]
@@ -47,8 +48,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/min"
-         "Numbers/asin"
-         "Numbers/sin"
-         "Arithmetic/div"
+        "Strings/indent"
+         "Strings/lower"
+         "Strings/jaro"
+         "Strings/capitalize"
     ]

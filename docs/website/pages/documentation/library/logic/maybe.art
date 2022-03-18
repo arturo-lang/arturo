@@ -1,13 +1,14 @@
 name: "maybe"
 type: :logical
-description: "the MAYBE logical constant"
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L187"
+description: "the MAYBE logical constant"
 returns: [
         :logical
     ]
 related: [
         "Logic/false"
          "Logic/true"
-         "Collections/max"
-         "Collections/take"
+         "Logic/any?"
+         "Logic/and?"
     ]

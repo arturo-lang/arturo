@@ -1,11 +1,12 @@
 name: "product"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L896"
+description: "calculate the product of all values in given list"
 returns: [
         :integer
          :floating
     ]
-description: "calculate the product of all values in given list"
 examples: [
         {
             print product [3 4]       ; 12
@@ -21,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sum"
-         "Io/print"
-         "Numbers/round"
-         "Paths/module"
+        "Numbers/log"
+         "Numbers/exp"
+         "Numbers/acsec"
+         "Numbers/acos"
     ]

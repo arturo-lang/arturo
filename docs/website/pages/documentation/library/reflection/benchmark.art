@@ -1,11 +1,12 @@
 name: "benchmark"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L166"
+description: "benchmark given code"
 returns: [
         :floating
          :nothing
     ]
-description: "benchmark given code"
 examples: [
         {
             benchmark [ 
@@ -36,8 +37,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/escape"
-         "Numbers/round"
-         "Collections/empty"
-         "Crypto/hash"
+        "Reflection/stack"
+         "Reflection/inspect"
+         "Reflection/symbols"
+         "Reflection/binary?"
     ]

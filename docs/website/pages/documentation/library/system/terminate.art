@@ -1,0 +1,39 @@
+name: "terminate"
+type: :function
+module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L280"
+description: "kill process with given id"
+returns: [
+        :nothing
+    ]
+examples: [
+        {
+            ; start process
+                pid: execute.async "someProcessThatDoesSomethingInTheBackground"
+            
+                ; wait for 5 seconds
+                pause 5000 
+            
+                ; terminate background process
+                terminate pid
+        }
+    ]
+attributes: #[
+    code: #[
+        types: [
+                :integer
+            ]
+        description: "use given error code"
+        ]
+    ]
+arguments: #[
+    id: [
+            :integer
+        ]
+    ]
+related: [
+        "System/args"
+         "System/arg"
+         "System/execute"
+         "System/pause"
+    ]

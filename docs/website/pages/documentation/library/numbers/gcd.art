@@ -1,10 +1,11 @@
 name: "gcd"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L670"
+description: "calculate greatest common divisor for given collection of integers"
 returns: [
         :integer
     ]
-description: "calculate greatest common divisor for given collection of integers"
 examples: [
         "print gcd [48 60 120]         ; 12"
     ]
@@ -16,8 +17,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/add"
-         "Arithmetic/mod"
-         "Binary/and"
-         "Collections/get"
+        "Numbers/acos"
+         "Numbers/acosh"
+         "Numbers/acsec"
+         "Numbers/acsech"
     ]

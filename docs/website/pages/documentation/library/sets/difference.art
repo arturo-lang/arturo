@@ -1,11 +1,12 @@
 name: "difference"
 type: :function
 module: "Sets"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L34"
+description: "return the difference of given sets"
 returns: [
         :block
          :nothing
     ]
-description: "return the difference of given sets"
 examples: [
         {
             print difference [1 2 3 4] [3 4 5 6]
@@ -43,5 +44,5 @@ related: [
         "Sets/intersection"
          "Sets/powerset"
          "Sets/union"
-         "Converters/define"
+         "Collections/first"
     ]

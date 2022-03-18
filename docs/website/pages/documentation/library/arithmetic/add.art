@@ -1,6 +1,8 @@
 name: "add"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L30"
+description: "add given values and return result"
 returns: [
         :integer
          :floating
@@ -10,7 +12,6 @@ returns: [
     ]
 alias: "+"
 infix?: true
-description: "add given values and return result"
 examples: [
         {
             print add 1 2      ; 3
@@ -39,8 +40,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/and"
-         "Arithmetic/fdiv"
+        "Arithmetic/fdiv"
          "Arithmetic/mod"
-         "Binary/nand"
+         "Arithmetic/sub"
+         "Arithmetic/mul"
     ]

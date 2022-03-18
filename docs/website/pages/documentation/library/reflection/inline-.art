@@ -1,10 +1,11 @@
 name: "inline?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L366"
+description: "checks if given value is of type :inline"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :inline"
 examples: [
         {
             inline? first [(something) x]
@@ -19,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/integer?"
-         "Reflection/string?"
-         "Reflection/binary?"
-         "Reflection/block?"
+        "Reflection/null?"
+         "Reflection/integer?"
+         "Reflection/label?"
+         "Reflection/function?"
     ]

@@ -1,10 +1,11 @@
 name: "pause"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L215"
+description: "pause program\'s execution~for the given amount of milliseconds"
 returns: [
         :nothing
     ]
-description: "pause program\'s execution~for the given amount of milliseconds"
 examples: [
         {
             print "wait a moment"
@@ -22,8 +23,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/case"
-         "Logic/false"
-         "Collections/last"
-         "Collections/take"
+        "System/process"
+         "System/args"
+         "System/panic"
+         "System/sys"
     ]

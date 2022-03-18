@@ -1,10 +1,11 @@
 name: "all?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L31"
+description: "check if all values in given block are true"
 returns: [
         :logical
     ]
-description: "check if all values in given block are true"
 examples: [
         {
             if all? @[2>1 "DONE"=upper "done" true] 
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/call"
+        "Logic/any?"
          "Logic/and?"
-         "Logic/any?"
-         "Reflection/null?"
+         "Logic/nand?"
+         "Logic/or?"
     ]

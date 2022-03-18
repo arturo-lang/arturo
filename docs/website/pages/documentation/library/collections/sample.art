@@ -1,10 +1,11 @@
 name: "sample"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L860"
+description: "get a random element from given collection"
 returns: [
         :any
     ]
-description: "get a random element from given collection"
 examples: [
         {
             sample [1 2 3]        ; (return a random number from 1 to 3)
@@ -20,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/angle"
-         "Collections/max"
+        "Collections/max"
          "Collections/min"
-         "Arithmetic/mul"
+         "Collections/chop"
+         "Collections/combine"
     ]

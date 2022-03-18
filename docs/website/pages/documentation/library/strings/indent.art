@@ -1,11 +1,12 @@
 name: "indent"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L171"
+description: "indent each line of given text"
 returns: [
         :string
          :nothing
     ]
-description: "indent each line of given text"
 examples: [
         {
             str: "one\ntwo\nthree"
@@ -42,8 +43,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/index"
-         "Collections/insert"
-         "Colors/invert"
-         "Io/input"
+        "Strings/outdent"
+         "Strings/join"
+         "Strings/truncate"
+         "Strings/render"
     ]

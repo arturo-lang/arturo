@@ -1,12 +1,13 @@
 name: "write"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L394"
+description: "write content to file at given path"
 returns: [
         :nothing
     ]
 alias: ">>"
 infix?: false
-description: "write content to file at given path"
 examples: [
         {
             ; write some string data to given file path
@@ -40,6 +41,12 @@ attributes: #[
             ]
         description: "write value as Json"
         ]
+    compact: #[
+        types: [
+                :logical
+            ]
+        description: "produce compact, non-prettified Json code"
+        ]
     binary: #[
         types: [
                 :logical
@@ -57,8 +64,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Converters/with"
-         "Core/while"
-         "Reflection/arity"
-         "Collections/size"
+        "Files/volume"
+         "Files/rename"
+         "Files/zip"
+         "Files/delete"
     ]

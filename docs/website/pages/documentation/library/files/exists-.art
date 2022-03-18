@@ -1,10 +1,11 @@
 name: "exists?"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L112"
+description: "check if given file exists"
 returns: [
         :logical
     ]
-description: "check if given file exists"
 examples: [
         {
             if exists? "somefile.txt" [ 
@@ -26,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/attr?"
-         "System/exit"
-         "Numbers/odd?"
+        "Files/permissions"
+         "Reflection/attr?"
          "Collections/empty?"
+         "Numbers/positive?"
     ]

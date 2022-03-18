@@ -1,10 +1,11 @@
 name: "permutate"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L682"
+description: "get all possible permutations of the elements in given collection"
 returns: [
         :block
     ]
-description: "get all possible permutations of the elements in given collection"
 examples: [
         {
             permutate [A B C]
@@ -19,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Colors/desaturate"
-         "Colors/saturate"
-         "Io/terminal"
-         "Strings/truncate"
+        "Collections/combine"
+         "Collections/repeat"
+         "Collections/sample"
+         "Collections/first"
     ]

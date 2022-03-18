@@ -1,0 +1,111 @@
+name: "popup"
+type: :function
+module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L125"
+description: "show popup dialog with given title and message and return result"
+returns: [
+        :logical
+         :literal
+    ]
+examples: [
+        {
+            popup "Hello!" "This is a popup message"
+                ; shows a message dialog with an OK button
+                ; when the dialog is closed, it returns: true
+        }
+         {
+                if popup.yesNo "Hmm..." "Are you sure you want to continue?" [
+                    ; a Yes/No dialog will appear - if the user clicks YES,
+                    ; then the function will return true; thus we can do what
+                    ; we want here
+            
+                ]
+        }
+         {
+                popup.okCancel.literal "Hello" "Click on a button"
+                ; => 'ok (if user clicked OK)
+                ; => 'cancel (if user clicked Cancel)
+        }
+    ]
+attributes: #[
+    info: #[
+        types: [
+                :logical
+            ]
+        description: "show informational popup"
+        ]
+    warning: #[
+        types: [
+                :logical
+            ]
+        description: "show popup as a warning"
+        ]
+    error: #[
+        types: [
+                :logical
+            ]
+        description: "show popup as an error"
+        ]
+    question: #[
+        types: [
+                :logical
+            ]
+        description: "show popup as a question"
+        ]
+    ok: #[
+        types: [
+                :logical
+            ]
+        description: "show an OK dialog (default)"
+        ]
+    okCancel: #[
+        types: [
+                :logical
+            ]
+        description: "show an OK/Cancel dialog"
+        ]
+    yesNo: #[
+        types: [
+                :logical
+            ]
+        description: "show a Yes/No dialog"
+        ]
+    yesNoCancel: #[
+        types: [
+                :logical
+            ]
+        description: "show a Yes/No/Cancel dialog"
+        ]
+    retryCancel: #[
+        types: [
+                :logical
+            ]
+        description: "show a Retry/Cancel dialog"
+        ]
+    retryAbortIgnore: #[
+        types: [
+                :logical
+            ]
+        description: "show an Abort/Retry/Ignore dialog"
+        ]
+    literal: #[
+        types: [
+                :logical
+            ]
+        description: "return the literal value of the pressed button"
+        ]
+    ]
+arguments: #[
+    title: [
+            :string
+        ]
+    message: [
+            :string
+        ]
+    ]
+related: [
+        "Ui/clip"
+         "Ui/alert"
+         "Ui/dialog"
+         "Ui/webview"
+    ]

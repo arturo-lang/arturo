@@ -1,10 +1,12 @@
 name: "execute"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L94"
+description: "execute given shell command"
 returns: [
         :string
+         :dictionary
     ]
-description: "execute given shell command"
 examples: [
         {
             print execute "pwd"
@@ -15,6 +17,30 @@ examples: [
         }
     ]
 attributes: #[
+    args: #[
+        types: [
+                :block
+            ]
+        description: "use given command arguments"
+        ]
+    async: #[
+        types: [
+                :logical
+            ]
+        description: "execute asynchronously as a process and return id"
+        ]
+    code: #[
+        types: [
+                :logical
+            ]
+        description: "return process exit code"
+        ]
+    directly: #[
+        types: [
+                :logical
+            ]
+        description: "execute command directly, as a shell command"
+        ]
     ]
 arguments: #[
     command: [
@@ -22,8 +48,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/ensure"
-         "Crypto/decode"
-         "Crypto/encode"
-         "Files/delete"
+        "System/env"
+         "System/script"
+         "System/panic"
+         "System/exit"
     ]

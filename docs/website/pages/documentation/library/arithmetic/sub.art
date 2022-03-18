@@ -1,6 +1,8 @@
 name: "sub"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L212"
+description: "subtract given values and return result"
 returns: [
         :integer
          :floating
@@ -10,7 +12,6 @@ returns: [
     ]
 alias: "-"
 infix?: true
-description: "subtract given values and return result"
 examples: [
         {
             print sub 2 1      ; 1
@@ -39,8 +40,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sum"
-         "Arithmetic/mul"
-         "Binary/shl"
-         "Binary/shr"
+        "Arithmetic/mul"
+         "Arithmetic/add"
+         "Arithmetic/pow"
+         "Arithmetic/fdiv"
     ]

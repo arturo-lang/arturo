@@ -1,10 +1,11 @@
 name: "serve"
 type: :function
 module: "Net"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L282"
+description: "start web server using given routes"
 returns: [
         :nothing
     ]
-description: "start web server using given routes"
 examples: [
         {
             serve .port:18966 #[
@@ -37,12 +38,12 @@ attributes: #[
     ]
 arguments: #[
     routes: [
-            :dictionary
+            :block
         ]
     ]
 related: [
-        "Binary/shr"
-         "Collections/remove"
-         "Collections/set"
-         "Collections/size"
+        "Net/request"
+         "Sets/powerset"
+         "Dates/before"
+         "Binary/shr"
     ]

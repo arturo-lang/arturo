@@ -1,10 +1,11 @@
 name: "while"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L818"
+description: "execute action while the given condition is is not false or null"
 returns: [
         :nothing
     ]
-description: "execute action while the given condition is is not false or null"
 examples: [
         {
             i: 0 
@@ -47,8 +48,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/write"
-         "Core/until"
-         "Binary/shl"
-         "Collections/size"
+        "Core/until"
+         "Core/switch"
+         "Core/unless"
+         "Core/continue"
     ]

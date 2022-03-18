@@ -1,11 +1,12 @@
 name: "exp"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L572"
+description: "calculate the exponential function for given value"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the exponential function for given value"
 examples: [
         {
             print exp 1.0           ; 2.718281828459045
@@ -27,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/dup"
-         "Core/pop"
-         "Files/zip"
-         "Iterators/map"
+        "Numbers/sech"
+         "Numbers/product"
+         "Numbers/ceil"
+         "Numbers/hypot"
     ]

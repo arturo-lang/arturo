@@ -1,11 +1,12 @@
 name: "not"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L91"
+description: "calculate the binary complement the given value"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary complement the given value"
 examples: [
         "print not 123      ; -124"
          {
@@ -23,7 +24,7 @@ arguments: #[
     ]
 related: [
         "Binary/nor"
-         "Dates/now"
-         "Logic/not?"
-         "Arithmetic/mod"
+         "Binary/xnor"
+         "Binary/xor"
+         "Binary/nand"
     ]

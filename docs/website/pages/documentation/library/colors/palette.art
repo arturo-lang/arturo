@@ -1,0 +1,90 @@
+name: "palette"
+type: :function
+module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L150"
+description: "create palette using given base color"
+returns: [
+        :block
+    ]
+examples: [
+        {
+            palette.triad #red      ; => [#FF0000 #00FF00 #0000FF]
+            palette.tetrad #red     ; => [#FF0000 #80FF00 #00FFFF #7F00FF]
+        }
+         {
+            palette.monochrome #red
+            ; => [#FF0000 #D40000 #AA0000 #7F0000 #550000 #2A0000]
+            
+            palette.monochrome.size:10 #red
+            ; => [#FF0000 #E50000 #CC0000 #B20000 #990000 #7F0000 #660000 #4C0000 #330000 #190000]
+        }
+         {
+            palette.analogous #red
+            ; => [#FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600]
+            
+            palette.analogous.size:10 #red
+            ; => [#FF00FF #FF00CC #FF0099 #FF0066 #FF0033 #FF0000 #FF3300 #FF6600 #FF9900 #FFCC00]
+        }
+         {
+            palette.random #red
+            ; => [#FF0000 #00EC00 #0000D2 #00F000 #0000FF #00FF00]
+            
+            palette.random.size:10 #red
+            ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
+        }
+    ]
+attributes: #[
+    triad: #[
+        types: [
+                :logical
+            ]
+        description: "generate a triad palette"
+        ]
+    tetrad: #[
+        types: [
+                :logical
+            ]
+        description: "generate a tetrad palette"
+        ]
+    split: #[
+        types: [
+                :logical
+            ]
+        description: "generate a split complement palette"
+        ]
+    analogous: #[
+        types: [
+                :logical
+            ]
+        description: "generate an analogous palette"
+        ]
+    monochrome: #[
+        types: [
+                :logical
+            ]
+        description: "generate a monochromatic palette"
+        ]
+    random: #[
+        types: [
+                :logical
+            ]
+        description: "generate random palette based on color triads"
+        ]
+    size: #[
+        types: [
+                :integer
+            ]
+        description: "specify the size of the generated palette"
+        ]
+    ]
+arguments: #[
+    color: [
+            :color
+        ]
+    ]
+related: [
+        "Colors/desaturate"
+         "Colors/saturate"
+         "Colors/invert"
+         "Colors/blend"
+    ]

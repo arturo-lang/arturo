@@ -1,10 +1,11 @@
 name: "inspect"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L382"
+description: "print full dump of given value to screen"
 returns: [
         :nothing
     ]
-description: "print full dump of given value to screen"
 examples: [
         {
             inspect 3                 ; 3 :integer
@@ -27,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/insert"
-         "Colors/invert"
-         "Io/input"
-         "Strings/indent"
+        "Reflection/info"
+         "Reflection/type"
+         "Io/prints"
+         "Reflection/arity"
     ]

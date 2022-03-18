@@ -1,10 +1,11 @@
 name: "gamma"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L653"
+description: "calculate the gamma function for given value"
 returns: [
         :floating
     ]
-description: "calculate the gamma function for given value"
 examples: [
         {
             print gamma 3.0         ; 2.0
@@ -21,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/exp"
-         "Arithmetic/add"
-         "Arithmetic/mod"
-         "Arithmetic/mul"
+        "Numbers/actan"
+         "Numbers/asec"
+         "Numbers/ctan"
+         "Numbers/angle"
     ]

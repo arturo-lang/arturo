@@ -1,10 +1,11 @@
 name: "list"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L190"
+description: "get files in given path"
 returns: [
         :block
     ]
-description: "get files in given path"
 examples: [
         {
             loop list "." 'file [
@@ -36,8 +37,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/last"
-         "Collections/first"
-         "Core/let"
-         "Reflection/is?"
+        "Files/volume"
+         "Paths/relative"
+         "Paths/normalize"
+         "Paths/extract"
     ]

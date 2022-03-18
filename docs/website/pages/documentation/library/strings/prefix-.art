@@ -1,10 +1,11 @@
 name: "prefix?"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L529"
+description: "check if string starts with given prefix"
 returns: [
         :logical
     ]
-description: "check if string starts with given prefix"
 examples: [
         {
             prefix? "hello" "he"          ; => true
@@ -12,12 +13,6 @@ examples: [
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     string: [
@@ -25,11 +20,12 @@ arguments: #[
         ]
     prefix: [
             :string
+             :regex
         ]
     ]
 related: [
-        "Strings/prefix"
-         "Strings/suffix?"
-         "Converters/define"
-         "Io/print"
+        "Strings/suffix?"
+         "Strings/upper?"
+         "Strings/numeric?"
+         "Strings/lower?"
     ]

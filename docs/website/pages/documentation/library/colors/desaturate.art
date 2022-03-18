@@ -1,10 +1,11 @@
 name: "desaturate"
 type: :function
 module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L84"
+description: "desaturate color by given percentage (0.0-1.0)"
 returns: [
         :color
     ]
-description: "desaturate color by given percentage (0.0-1.0)"
 examples: [
         {
             desaturate #red 0.2         ; => #E61919
@@ -27,5 +28,5 @@ related: [
         "Colors/saturate"
          "Colors/darken"
          "Colors/lighten"
-         "Collections/permutate"
+         "Colors/palette"
     ]

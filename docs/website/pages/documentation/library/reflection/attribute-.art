@@ -1,10 +1,11 @@
 name: "attribute?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L111"
+description: "checks if given value is of type :attribute"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :attribute"
 examples: [
         {
             attribute? first [.something x]
@@ -22,5 +23,5 @@ related: [
         "Reflection/attributeLabel?"
          "Reflection/database?"
          "Reflection/string?"
-         "Reflection/date?"
+         "Reflection/pathLabel?"
     ]

@@ -1,11 +1,12 @@
 name: "csech"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L451"
+description: "calculate the hyperbolic cosecant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the hyperbolic cosecant of given angle"
 examples: [
         {
             print csech 0               ; inf
@@ -28,7 +29,7 @@ arguments: #[
     ]
 related: [
         "Numbers/sech"
+         "Numbers/cosh"
          "Numbers/acsech"
-         "Numbers/asech"
-         "Numbers/csec"
+         "Numbers/sinh"
     ]

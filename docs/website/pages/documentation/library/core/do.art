@@ -1,11 +1,12 @@
 name: "do"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L207"
+description: "evaluate and execute given code"
 returns: [
         :nothing
          :any
     ]
-description: "evaluate and execute given code"
 examples: [
         {
             do "print 123"                ; 123
@@ -57,8 +58,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Converters/to"
-         "Arithmetic/add"
-         "Arithmetic/dec"
-         "Arithmetic/div"
+        "Core/dup"
+         "Core/continue"
+         "Crypto/decode"
+         "Core/new"
     ]

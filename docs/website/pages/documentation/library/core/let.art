@@ -1,12 +1,13 @@
 name: "let"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L413"
+description: "set symbol to given value"
 returns: [
         :nothing
     ]
 alias: ":"
 infix?: true
-description: "set symbol to given value"
 examples: [
         {
             let 'x 10               ; x: 10
@@ -53,8 +54,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/get"
-         "Collections/set"
-         "Arithmetic/dec"
-         "Arithmetic/neg"
+        "Core/alias"
+         "Core/return"
+         "Core/new"
+         "Core/var"
     ]

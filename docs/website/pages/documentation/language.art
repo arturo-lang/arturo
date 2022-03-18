@@ -20,7 +20,9 @@ Here, you'll find everything you may need to know about the language (and perhap
        - [:type](#type)
        - [:char](#char)
        - [:string](#string)
+       - [:regex](#regex)
        - [:literal](#literal)
+       - [:symbolLiteral](#symbolLiteral)
        - [:path](#path)
        - [:pathLabel](#pathLabel)
        - [:inline](#inline)
@@ -62,7 +64,7 @@ Let's try to resume some key points of Arturo's no-syntax:
 
 As you can see, there is not much to learn from scratch here:
 
-Once you learn what the language [**main components**](#the-main-components) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](https://github.com/arturo-lang/arturo/wiki/Library) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
+Once you learn what the language [**main components**](#the-main-components) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](../library/) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
 
 So, let's get to the gist of the matter!
 
@@ -126,11 +128,15 @@ Some of the existing *aliases* in the built-in dictionary:
 %ALIAS_LIST%
 </table>
 
+> 💡 For the complete of recognized symbols in Arturo, you may have a look at <a href="https://github.com/arturo-lang/arturo/blob/master/src/vm/values/value.nim#L52-L142" target="_blank">here</a>.
+
 <h3 id="values">Values</h3>
 
 Values are the very core of Arturo and are used to refer to pretty much all the different kinds of data you can have.
 
-We could split them into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.
+> 💡 Words, labels, and symbols - that we already saw above - can be considered "values" as well; and treated as such, unless we proceed to evaluate them!
+
+We could split values into 2 categories: a) literal values - that is values you can directly define in your code and b) constructible - values that are created using some function.
 
 The complete list follows:
 
@@ -276,6 +282,17 @@ A string is nothing but a series of characters, seen as one unit. In Arturo, to 
 > ; my variable is: 2
 > ```
 
+<h4 id="regex">:regex</h4>
+
+A regex value is nothing but a string containing a regular expression (that is then compiled and treated as such):
+
+```red
+type {/[A-Z]/}                    ; => :regex
+
+replace "HelLo" {/[A-Z]/} "X"     ; here we replace all capital letters
+                                  ; with an X
+```
+
 <h4 id="literal">:literal</h4>
 
 Literals in Arturo are just a way of referring to the *name* of a word or symbol. Think of it as the *string* version of a word, or like Ruby's *symbols*. 
@@ -288,6 +305,16 @@ info func
 ```
 
 However, literals may be used for much more - e.g. modifying a passed parameter in-place, without having to re-assign the result of an operation to a new variable. To learn more, have a look at **[In-place variable modification](#in-place-variable-modification)**.
+
+<h4 id="symbolLiteral">:symbolLiteral</h4>
+
+Symbol literals are to symbols pretty much what literals are to words. That is: the "literal", unevaluated form of the symbol.
+
+To declare a symbol literal, we may follow the example of normal, literals: `single quote` + accompanied by the symbol in question:
+
+```red
+type '++        ; => :symbolliteral
+```
 
 <h4 id="path">:path</h4>
 
@@ -794,7 +821,7 @@ print select map 1..10 'x [2*x] 'x [even? x]
 
 If you made it here, then I can assure you: you've already learned more than you need in order to be fully proficient in Arturo.
 
-Just head to the [Library Reference](https://github.com/arturo-lang/arturo/wiki/Library) and have a look at the built-in functions (with explanations and example code) and see what's already available for you or - if you want to see the language in action - just browse through the [examples/](https://github.com/arturo-lang/arturo/tree/master/examples) folder in the main source repo: there are many many *working* examples, to get more than just an idea.
+Just head to the [Library Reference](../library/) and have a look at the built-in functions (with explanations and example code) and see what's already available for you or - if you want to see the language in action - just browse through the [examples/](https://github.com/arturo-lang/arturo/tree/master/examples) folder in the main source repo: there are many many *working* examples, to get more than just an idea.
 
 **Welcome on board! :)**
 }

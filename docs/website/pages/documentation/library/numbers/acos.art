@@ -1,11 +1,12 @@
 name: "acos"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L69"
+description: "calculate the inverse cosine of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse cosine of given angle"
 examples: [
         {
             print acos 0                ; 1.570796326794897
@@ -27,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/asin"
+        "Numbers/acsec"
          "Numbers/acosh"
          "Numbers/cos"
-         "Numbers/acsec"
+         "Numbers/asin"
     ]

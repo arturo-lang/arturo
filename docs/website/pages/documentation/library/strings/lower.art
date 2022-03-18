@@ -1,12 +1,13 @@
 name: "lower"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L307"
+description: "convert given string to lowercase"
 returns: [
         :char
          :string
          :nothing
     ]
-description: "convert given string to lowercase"
 examples: [
         {
             print lower "hello World, 你好!"      ; "hello world, 你好!"
@@ -31,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/lower?"
-         "Strings/upper"
-         "Arithmetic/pow"
-         "Binary/nor"
+        "Strings/upper"
+         "Strings/capitalize"
+         "Strings/lower?"
+         "Strings/render"
     ]

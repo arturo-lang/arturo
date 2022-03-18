@@ -1,11 +1,12 @@
 name: "tan"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1158"
+description: "calculate the tangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the tangent of given angle"
 examples: [
         {
             print tan 0                 ; 0.0
@@ -30,5 +31,5 @@ related: [
         "Numbers/ctan"
          "Numbers/atan"
          "Numbers/tanh"
-         "Numbers/sec"
+         "Numbers/ctanh"
     ]

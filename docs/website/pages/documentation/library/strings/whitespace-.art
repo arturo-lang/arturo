@@ -1,10 +1,11 @@
 name: "whitespace?"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L906"
+description: "check if given string consists only of whitespace"
 returns: [
         :logical
     ]
-description: "check if given string consists only of whitespace"
 examples: [
         {
             whitespace? "hello"           ; => false
@@ -20,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/literal?"
-         "Strings/lower?"
-         "Core/when?"
-         "Core/while"
+        "Strings/lower?"
+         "Strings/numeric?"
+         "Strings/upper?"
+         "Strings/suffix?"
     ]

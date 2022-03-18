@@ -1,10 +1,11 @@
 name: "try?"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L621"
+description: "perform action, catch possible errors and return status"
 returns: [
         :logical
     ]
-description: "perform action, catch possible errors and return status"
 examples: [
         {
             try? [
@@ -39,7 +40,7 @@ arguments: #[
     ]
 related: [
         "Core/try"
-         "Collections/key?"
-         "Logic/any?"
-         "Logic/or?"
+         "Core/if?"
+         "Core/when?"
+         "Core/unless?"
     ]

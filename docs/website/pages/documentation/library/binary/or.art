@@ -1,11 +1,12 @@
 name: "or"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L110"
+description: "calculate the binary OR for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary OR for the given values"
 examples: [
         "print or 2 3       ; 3"
          {
@@ -25,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/nor"
-         "Binary/xor"
+        "Binary/xor"
+         "Binary/nor"
          "Binary/xnor"
          "Binary/and"
     ]

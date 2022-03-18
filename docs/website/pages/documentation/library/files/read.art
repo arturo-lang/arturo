@@ -1,6 +1,8 @@
 name: "read"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L213"
+description: "read file from given path"
 returns: [
         :string
          :binary
@@ -8,7 +10,6 @@ returns: [
     ]
 alias: "<<"
 infix?: false
-description: "read file from given path"
 examples: [
         {
             ; reading a simple local file
@@ -89,8 +90,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/break"
-         "Strings/pad"
-         "Paths/list"
-         "Arithmetic/add"
+        "Files/delete"
+         "Files/rename"
+         "Files/write"
+         "Files/volume"
     ]

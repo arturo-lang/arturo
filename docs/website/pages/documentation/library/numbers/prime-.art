@@ -1,10 +1,11 @@
 name: "prime?"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L866"
+description: "check if given integer is prime"
 returns: [
         :logical
     ]
-description: "check if given integer is prime"
 examples: [
         {
             prime? 2          ; => true
@@ -28,8 +29,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/write"
-         "Io/print"
-         "Io/prints"
-         "Iterators/some?"
+        "Numbers/positive?"
+         "Numbers/even?"
+         "Numbers/zero?"
+         "Numbers/negative?"
     ]

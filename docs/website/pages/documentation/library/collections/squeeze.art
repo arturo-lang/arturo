@@ -1,12 +1,13 @@
 name: "squeeze"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1247"
+description: "reduce adjacent elements in given collection"
 returns: [
         :string
          :block
          :nothing
     ]
-description: "reduce adjacent elements in given collection"
 examples: [
         {
             print squeeze [1 1 2 3 4 2 3 4 4 5 5 6 7]
@@ -31,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/shuffle"
-         "Collections/size"
-         "Databases/query"
-         "Net/serve"
+        "Collections/insert"
+         "Collections/sample"
+         "Collections/slice"
+         "Collections/last"
     ]

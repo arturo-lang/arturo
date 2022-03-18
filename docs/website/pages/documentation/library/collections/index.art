@@ -1,12 +1,13 @@
 name: "index"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L460"
+description: "return first index of value in given collection"
 returns: [
         :null
          :integer
          :string
     ]
-description: "return first index of value in given collection"
 examples: [
         {
             ind: index "hello" "e"
@@ -31,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/indent"
-         "Arithmetic/dec"
-         "Arithmetic/inc"
-         "Arithmetic/neg"
+        "Collections/insert"
+         "Collections/min"
+         "Collections/first"
+         "Collections/size"
     ]

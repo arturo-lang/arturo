@@ -1,12 +1,13 @@
 name: "reverse"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L824"
+description: "reverse given collection"
 returns: [
         :string
          :block
          :nothing
     ]
-description: "reverse given collection"
 examples: [
         {
             print reverse [1 2 3 4]           ; 4 3 2 1
@@ -28,8 +29,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/empty"
-         "Iterators/every?"
-         "Arithmetic/dec"
-         "Collections/append"
+        "Collections/remove"
+         "Collections/empty"
+         "Collections/first"
+         "Collections/squeeze"
     ]

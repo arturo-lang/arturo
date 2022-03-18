@@ -1,10 +1,11 @@
 name: "panic"
 type: :function
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L179"
+description: "exit program with error message"
 returns: [
         :logical
     ]
-description: "exit program with error message"
 examples: [
         {
             panic.code:1 "something went terribly wrong. quitting..."
@@ -37,8 +38,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Binary/and"
-         "Binary/nand"
-         "Logic/and?"
+        "System/exit"
+         "System/process"
+         "System/pause"
+         "System/env"
     ]

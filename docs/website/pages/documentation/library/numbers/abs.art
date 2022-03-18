@@ -1,11 +1,12 @@
 name: "abs"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L41"
+description: "get the absolute value for given integer"
 returns: [
         :integer
          :floating
     ]
-description: "get the absolute value for given integer"
 examples: [
         {
             print abs 6                 ; 6
@@ -26,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Converters/as"
-         "Arithmetic/add"
-         "Binary/and"
+        "Numbers/asec"
          "Numbers/acos"
+         "Numbers/acsec"
+         "Numbers/asin"
     ]

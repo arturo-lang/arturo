@@ -1,11 +1,12 @@
 name: "shr"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L161"
+description: "shift-right first value bits by second value"
 returns: [
         :integer
          :nothing
     ]
-description: "shift-right first value bits by second value"
 examples: [
         "print shr 16 3     ; 2"
          {
@@ -26,7 +27,7 @@ arguments: #[
     ]
 related: [
         "Binary/shl"
-         "Arithmetic/sub"
+         "Binary/xor"
          "Binary/nor"
-         "Binary/or"
+         "Binary/xnor"
     ]

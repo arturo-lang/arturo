@@ -1,10 +1,11 @@
 name: "wordwrap"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L867"
+description: "word wrap a given string"
 returns: [
         :logical
     ]
-description: "word wrap a given string"
 examples: [
         {
             print wordwrap {Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget mauris non justo mattis dignissim. Cras in lobortis felis, id ultricies ligula. Curabitur egestas tortor sed purus vestibulum auctor. Cras dui metus, euismod sit amet suscipit et, cursus ullamcorper felis. Integer elementum condimentum neque, et sagittis arcu rhoncus sed. In luctus congue eros, viverra dapibus mi rhoncus non. Pellentesque nisl diam, auctor quis sapien nec, suscipit aliquam velit. Nam ac nisi justo.}
@@ -41,8 +42,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/escape"
-         "Reflection/word?"
-         "Collections/drop"
-         "Converters/array"
+        "Strings/prefix"
+         "Strings/escape"
+         "Strings/strip"
+         "Strings/truncate"
     ]

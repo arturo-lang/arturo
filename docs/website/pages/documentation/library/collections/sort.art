@@ -1,11 +1,12 @@
 name: "sort"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1009"
+description: "sort given block in ascending order"
 returns: [
         :block
          :nothing
     ]
-description: "sort given block in ascending order"
 examples: [
         {
             a: [3 1 6]
@@ -59,8 +60,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sqrt"
-         "Binary/nor"
-         "Binary/not"
-         "Binary/or"
+        "Collections/insert"
+         "Collections/set"
+         "Collections/get"
+         "Collections/size"
     ]

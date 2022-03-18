@@ -1,11 +1,12 @@
 name: "csec"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L430"
+description: "calculate the cosecant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the cosecant of given angle"
 examples: [
         {
             print csec 0                ; inf
@@ -28,7 +29,7 @@ arguments: #[
     ]
 related: [
         "Numbers/sec"
+         "Numbers/cos"
          "Numbers/acsec"
-         "Numbers/asec"
          "Numbers/csech"
     ]

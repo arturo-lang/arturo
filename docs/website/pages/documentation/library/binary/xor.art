@@ -1,11 +1,12 @@
 name: "xor"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L201"
+description: "calculate the binary XOR for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary XOR for the given values"
 examples: [
         "print xor 2 3      ; 1"
          {
@@ -25,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/nor"
+        "Binary/xnor"
+         "Binary/nor"
          "Binary/or"
-         "Binary/xnor"
-         "Binary/and"
+         "Binary/not"
     ]

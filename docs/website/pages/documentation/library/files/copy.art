@@ -1,10 +1,11 @@
 name: "copy"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L52"
+description: "copy file at path to given destination"
 returns: [
         :nothing
     ]
-description: "copy file at path to given destination"
 examples: [
         {
             copy "testscript.art" normalize.tilde "~/Desktop/testscript.art"
@@ -32,8 +33,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/chop"
-         "Core/pop"
-         "Numbers/conj"
-         "Numbers/cos"
+        "Files/zip"
+         "Files/symlink"
+         "Files/volume"
+         "Files/write"
     ]

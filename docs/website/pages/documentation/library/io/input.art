@@ -1,10 +1,11 @@
 name: "input"
 type: :function
 module: "Io"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L177"
+description: "print prompt and get user input"
 returns: [
         :string
     ]
-description: "print prompt and get user input"
 examples: [
         {
             name: input "What is your name? "
@@ -62,8 +63,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Binary/not"
-         "Collections/in?"
-         "Collections/index"
+        "Io/prints"
+         "Io/print"
+         "Reflection/inspect"
+         "Io/goto"
     ]

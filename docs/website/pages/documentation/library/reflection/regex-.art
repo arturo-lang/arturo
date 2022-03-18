@@ -1,0 +1,28 @@
+name: "regex?"
+type: :function
+module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L623"
+description: "checks if given value is of type :regex"
+returns: [
+        :logical
+    ]
+examples: [
+        {
+            print regex? {/[a-z]+/}     ; true
+            print regex? "[a-z]+"       ; false
+            print regex? 123            ; false
+        }
+    ]
+attributes: #[
+    ]
+arguments: #[
+    value: [
+            :any
+        ]
+    ]
+related: [
+        "Reflection/integer?"
+         "Reflection/word?"
+         "Reflection/type?"
+         "Reflection/date?"
+    ]

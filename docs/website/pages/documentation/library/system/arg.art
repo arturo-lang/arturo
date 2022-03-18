@@ -1,13 +1,14 @@
 name: "arg"
 type: :block
-description: "access command-line arguments as a list"
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L50"
+description: "access command-line arguments as a list"
 returns: [
         :block
     ]
 related: [
         "System/args"
-         "Arithmetic/add"
-         "Arithmetic/neg"
-         "Binary/and"
+         "System/pause"
+         "System/process"
+         "System/script"
     ]

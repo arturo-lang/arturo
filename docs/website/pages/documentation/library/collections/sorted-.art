@@ -1,10 +1,11 @@
 name: "sorted?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L1091"
+description: "check if given collection is already sorted"
 returns: [
         :logical
     ]
-description: "check if given collection is already sorted"
 examples: [
         {
             sorted? [1 2 3 4 5]         ; => true
@@ -31,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/sort"
-         "Iterators/some?"
+        "Collections/empty?"
+         "Collections/contains?"
+         "Collections/in?"
          "Reflection/word?"
-         "Collections/empty?"
     ]

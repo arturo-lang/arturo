@@ -1,10 +1,12 @@
 name: "match"
 type: :function
 module: "Strings"
-returns: [
-        :block
-    ]
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L364"
 description: "get matches within string, using given regular expression"
+returns: [
+        :dictionary
+         :block
+    ]
 examples: [
         {
             print match "hello" "hello"             ; => ["hello"]
@@ -13,6 +15,12 @@ examples: [
         }
     ]
 attributes: #[
+    capture: #[
+        types: [
+                :logical
+            ]
+        description: "capture named groups"
+        ]
     ]
 arguments: #[
     string: [
@@ -20,11 +28,12 @@ arguments: #[
         ]
     regex: [
             :string
+             :regex
         ]
     ]
 related: [
-        "Paths/path"
-         "Collections/max"
-         "Converters/with"
-         "Core/switch"
+        "Strings/jaro"
+         "Strings/truncate"
+         "Strings/strip"
+         "Strings/levenshtein"
     ]

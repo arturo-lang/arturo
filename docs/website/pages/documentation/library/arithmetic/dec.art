@@ -1,12 +1,13 @@
 name: "dec"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L51"
+description: "decrease given value by 1"
 returns: [
         :integer
          :floating
          :nothing
     ]
-description: "decrease given value by 1"
 examples: [
         "print dec 5        ; 4"
          {
@@ -25,7 +26,7 @@ arguments: #[
     ]
 related: [
         "Arithmetic/inc"
-         "Numbers/sec"
-         "Arithmetic/div"
          "Arithmetic/neg"
+         "Arithmetic/fdiv"
+         "Arithmetic/div"
     ]

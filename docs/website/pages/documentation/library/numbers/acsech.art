@@ -1,11 +1,12 @@
 name: "acsech"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L132"
+description: "calculate the inverse hyperbolic cosecant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse hyperbolic cosecant of given angle"
 examples: [
         {
             print acsech 0              ; inf
@@ -28,7 +29,7 @@ arguments: #[
     ]
 related: [
         "Numbers/asech"
-         "Numbers/acsec"
-         "Numbers/csech"
          "Numbers/acosh"
+         "Numbers/asinh"
+         "Numbers/acsec"
     ]

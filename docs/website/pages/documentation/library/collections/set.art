@@ -1,10 +1,11 @@
 name: "set"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L877"
+description: "set collection\'s item at index to given value"
 returns: [
         :nothing
     ]
-description: "set collection\'s item at index to given value"
 examples: [
         {
             myDict: #[ 
@@ -47,7 +48,7 @@ arguments: #[
     ]
 related: [
         "Collections/get"
-         "Core/let"
-         "Numbers/sec"
-         "Reflection/set?"
+         "Collections/insert"
+         "Collections/permutate"
+         "Collections/squeeze"
     ]

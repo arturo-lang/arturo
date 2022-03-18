@@ -1,13 +1,14 @@
 name: "sys"
 type: :dictionary
-description: "information about the current system"
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L274"
+description: "information about the current system"
 returns: [
         :dictionary
     ]
 related: [
-        "Arithmetic/sub"
-         "Binary/shl"
-         "Binary/shr"
-         "Collections/keys"
+        "System/script"
+         "System/args"
+         "System/pause"
+         "System/process"
     ]

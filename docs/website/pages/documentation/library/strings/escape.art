@@ -1,11 +1,12 @@
 name: "escape"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L113"
+description: "escape given string"
 returns: [
         :string
          :nothing
     ]
-description: "escape given string"
 examples: [
         {
             str: {a long "string" + with \diffe\rent symbols.}
@@ -59,8 +60,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/case"
-         "Crypto/encode"
+        "Strings/strip"
          "Strings/wordwrap"
-         "Collections/sample"
+         "Strings/truncate"
+         "Strings/prefix"
     ]

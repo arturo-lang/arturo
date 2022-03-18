@@ -1,10 +1,11 @@
 name: "odd?"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L793"
+description: "check if given number is odd"
 returns: [
         :logical
     ]
-description: "check if given number is odd"
 examples: [
         {
             odd? 4            ; => false
@@ -20,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/even?"
-         "Numbers/zero?"
-         "Arithmetic/add"
-         "Logic/and?"
+        "Numbers/zero?"
+         "Numbers/even?"
+         "Numbers/positive?"
+         "Numbers/prime?"
     ]

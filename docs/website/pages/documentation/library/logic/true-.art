@@ -1,10 +1,11 @@
 name: "true?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L368"
+description: "returns true if given value is true; otherwise, it returns false"
 returns: [
         :logical
     ]
-description: "returns true if given value is true; otherwise, it returns false"
 examples: [
         {
             print true? 1 = 2           ; false
@@ -22,8 +23,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/true"
-         "Logic/false?"
-         "Core/try?"
-         "Reflection/type?"
+        "Logic/false?"
+         "Logic/xor?"
+         "Logic/nor?"
+         "Logic/or?"
     ]

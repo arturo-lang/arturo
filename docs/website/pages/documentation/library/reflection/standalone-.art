@@ -1,10 +1,11 @@
 name: "standalone?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L674"
+description: "checks if current script runs from the command-line"
 returns: [
         :logical
     ]
-description: "checks if current script runs from the command-line"
 examples: [
         {
             doSomething: function [x][
@@ -23,7 +24,7 @@ arguments: #[
     ]
 related: [
         "Reflection/inline?"
-         "Collections/contains?"
-         "Collections/sample"
-         "Iterators/some?"
+         "Reflection/function?"
+         "Reflection/dictionary?"
+         "Reflection/database?"
     ]

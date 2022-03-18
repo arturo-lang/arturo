@@ -1,13 +1,14 @@
 name: "false"
 type: :logical
-description: "the FALSE logical constant"
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L162"
+description: "the FALSE logical constant"
 returns: [
         :logical
     ]
 related: [
-        "Logic/false?"
-         "Logic/maybe"
+        "Logic/maybe"
          "Logic/true"
-         "Core/case"
+         "Core/null"
+         "Ui/unclip"
     ]

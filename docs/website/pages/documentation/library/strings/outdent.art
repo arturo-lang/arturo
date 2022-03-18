@@ -1,11 +1,12 @@
 name: "outdent"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L417"
+description: "outdent each line of given text, by using minimum shared indentation"
 returns: [
         :string
          :nothing
     ]
-description: "outdent each line of given text, by using minimum shared indentation"
 examples: [
         {
             print outdent {:
@@ -50,7 +51,7 @@ arguments: #[
     ]
 related: [
         "Strings/indent"
-         "Collections/extend"
-         "Databases/open"
-         "Arithmetic/dec"
+         "Strings/levenshtein"
+         "Strings/replace"
+         "Strings/truncate"
     ]

@@ -1,4 +1,5 @@
-<img align="left" width="190" src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/logo.png"/>
+<img align="left" width="190" src="docs/images/logo.png#gh-light-mode-only"/>
+<img align="left" width="190" src="docs/images/logo-lightgray.png#gh-dark-mode-only"/>
 
 <h1>Arturo</h1>
 
@@ -10,22 +11,14 @@
    * [The Language](#the-language)
    * [Documentation](#documentation)
    * [Installation](#installation)
-      * [The easy way](#the-easy-way)
-      * [Manually](#manually)
-        * [What you'll need first](#what-youll-need-first)
-        * [Build & Install Arturo](#build--install-arturo)
       * [Pre-built binaries](#pre-built-binaries)
-      * [Alternative ways](#alternative-ways)
+      * [The alternative way](#the-alternative-way)
+      * [Manually](#manually)
+      * [Other methods](#other-methods)
         * [Docker](#docker)
         * [Homebrew](#homebrew)
-   * [Editors & IDEs](#editors--ides)
-      * [Fonts](#fonts)
    * [Showcase](#showcase)
    * [Contributing](#contributing)
-      * [Roadmap](#roadmap)
-      * [Project structure](#project-structure)
-      * [The Compiler](#the-compiler)
-        * [General schema](#general-schema)
    * [Community](#community)
    * [FAQ](#faq)
    * [License](#license)
@@ -36,11 +29,11 @@
 The Language 
 ------------------------------
 
-Arturo is an independently-developed, modern programming language, vaguely related to various other ones - including but not limited to Logo, Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl, and Lisp.
+Arturo is an independently-developed, modern programming language, vaguely related to various other ones - including but not limited to: Logo, Rebol, Forth, Ruby, Haskell, D, SmallTalk, Tcl, and Lisp.
 
 The language has been designed following some very simple and straightforward principles:
 
-- Code is just a list of words and symbols
+- Code is just a list of words, symbols and literal values
 - Words and symbols within a block are interpreted - when needed - according to the context
 - No reserved words or keywords - look for them as hard as you can; there are absolutely none
 
@@ -54,78 +47,51 @@ loop 1..19 [x]->
 	print ["Factorial of" x "=" factorial x]
 ```
 
-Simple, isn't it?
-
-> 💡  For more - working - examples, just have a look into the /examples folder
+> ➤ Want to see more?    
+>     
+> For more - working - examples, just have a look at the [Examples](https://arturo-lang.io/documentation/examples/) in the official website.
 
 Documentation
 ------------------------------
 
-For more information about the language and access to the official Reference, please visit the [Arturo Programming Language Reference](https://github.com/arturo-lang/arturo/wiki) wiki.
+For more information about the language and access to the library reference, please visit the official [Arturo Programming Language documentation](https://arturo-lang.io/documentation/) website.
 
-|    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/getting-started.png)   | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/language.png)   |    ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/terminal.png)    | ![Language Reference](https://github.com/arturo-lang/arturo/wiki/images/library.png) |
-|-------------------------|-------------------|-------------------|-------------------------|
-|    **[Getting Started](https://github.com/arturo-lang/arturo/wiki/Getting-Started)**   | **[Language Reference](https://github.com/arturo-lang/arturo/wiki/Language)**   |    **[Command Line](https://github.com/arturo-lang/arturo/wiki/Command-Line)**   |    **[Library Reference](https://github.com/arturo-lang/arturo/wiki/Library)**    |
+| <p align="center"><img width="50%" src="docs/images/icons/getting-started.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/getting-started-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/in-a-nutshell.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/in-a-nutshell-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/language.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/language-white.png#gh-dark-mode-only"></p> |
+|-------------------------|-------------------|-------------------|
+| <p align="center">**[Getting Started](https://arturo-lang.io/documentation/getting-started/)**</p> | <p align="center">**[In A Nutshell](https://arturo-lang.io/documentation/in-a-nutshell/)**</p> | <p align="center">**[Language](https://arturo-lang.io/documentation/language/)**</p> |
+| <p align="center"><img width="50%" src="docs/images/icons/command-line.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/command-line-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/library.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/library-white.png#gh-dark-mode-only"></p> | <p align="center"><img width="50%" src="docs/images/icons/examples.png#gh-light-mode-only"><img width="50%" src="docs/images/icons/examples-white.png#gh-dark-mode-only"></p> |
+| <p align="center">**[Command Line](https://arturo-lang.io/documentation/command-line/)**</p> | <p align="center">**[Library](https://arturo-lang.io/documentation/library)**</p> | <p align="center">**[Examples](https://arturo-lang.io/documentation/examples)**</p> |
+
 
 Installation
 ------------------------------
 
-### The easy way
+### Pre-built binaries
+
+Arturo comes with its own pre-built binaries - for, practically, all OSes - so, technically, it doesn't require any "installation". All you have to do is download one of them and run it - that's it!
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+### <p align="center">[⇩ Download Arturo](https://arturo-lang.io/#download)</p>
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+> ➤ Wanna be as up-to-date as possible?    
+>     
+> Head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases) and simply download the latest release!
+
+### The alternative way
 
 ```bash
 curl -sSL https://get.arturo-lang.io | sh
 ```
 
-Copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
+For Unix/Mac, you may also copy-paste the code above in your terminal and Arturo's most recent stable version will be automatically installed.
 To get the most recent (nightly) build, just use: `curl -sSL https://get.arturo-lang.io/latest | sh`
-
-*If there is any issue with the installation, just let me know and I'll try to fix it. In this case, try one of the methods below.*
 
 ### Manually
 
-> 💡  Arturo should compile practically everywhere: Windows, Linux, BSD, Mac OS - [even Android](https://github.com/arturo-lang/arturo/issues/65#issuecomment-770723447). If you encounter an issue, or your OS is not supported, drop me a line!
+In order to build Arturo manually, you may have a look here at the [instructions here](https://github.com/arturo-lang/arturo/wiki/Building-Arturo).
 
-If you want to have the latest cutting-edge version of Arturo, the easiest and most bulletproof way is to build it yourself.
-
-#### What you'll need first
-
-* [Nim compiler](https://nim-lang.org/)<br> 
-  if you don't have it installed, all it'll take is 2 simple commands:
-
-      curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-      choosenim stable
-* Dependencies (*only* for Linux & full builds):
-   - gtk+-3.0 *(\* needed only for non-mini builds)*
-   - webkit2gtk-4.0 *(\* needed only for non-mini builds)*
-   - libgmp-dev
-
-#### Build & Install Arturo
-
-What you need to do in order to build Arturo and install it is clone this repo and run the installation script.
-
-All the process in a nutshell:
-
-```bash
-git clone https://github.com/arturo-lang/arturo.git
-cd arturo
-./build.nims install
-```
-
-> 💡  For Windows, the equivalent would be `nim build.nims install` - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
-
-After this, Arturo will be installed in `~/.arturo/bin`. Just make sure the aforementioned path is in your `$PATH` as per the installation script instructions.
-
-> 💡  For *mini* builds - that is without GTK dependencies and a tiny bit less library functions - just install via `./build.nims install mini`.
-
-### Pre-built binaries
-
-Arturo also comes with its own pre-built binaries (for now, for Linux and macOS). All you have to do is download one of them and run it - that's it!
-
-For stable versions, you may check out one of the ["official" releases](https://github.com/arturo-lang/arturo/releases/tag/v0.9.7).
-
-For being as up-to-date as possible, head over to the [Nightlies repo](https://github.com/arturo-lang/nightly/releases/tag/tag-2021-03-02) and simply download the latest release.
-
-### Alternative ways
+### Other methods
 
 #### Docker
 
@@ -147,39 +113,15 @@ If you are on macOS, you can easily install Arturo using [Homebrew](https://brew
 brew install arturo
 ```
 
-Editors & IDEs
-------------------------------
-
-If you prefer to use some specific editors, check which one is already supported (if your preferred editor is not yet supported, just drop me a line - or help me include it):
-
-- **Visual Studio Code**:   
-https://github.com/arturo-lang/art-vscode-package
-
-- **SublimeText**:    
-https://github.com/arturo-lang/art-sublimetext-package
-
-- **Vim / Neovim**: (Thanks @xigoi :-))   
-https://github.com/xigoi/vim-arturo
-
-- **ArtIDE Editor for Windows**: (Thanks @mikeparr :-))    
-http://www.mikeparr.info/artlang.html
-
-### Fonts
-
-The font you use is a matter of personal taste. However, if you still want to know the "official" preference and make Arturo's symbols *shine*, then I'd strongly recommend you use [Fira Code](https://github.com/tonsky/FiraCode) with ligatures turned on. ;-)
-
-The recommended settings for using Fira Code along with Arturo in Visual Studio Code would be:
-
-```
-"editor.fontFamily": "'Fira Code'",
-"editor.fontLigatures": "'ss07','ss09','cv20','cv22','cv23'"
-```
+> ➤ Trouble with the installation?    
+>    
+> If there is any issue with the installation, just let me know (by opening an issue) and I'll try to fix it. In any case, it would be safer to try one of the pre-built binaries.*
 
 Showcase
 ------------------------------
 
 <p align="center">
-	<a href="https://github.com/arturo-lang/grafito"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo.png"></a>    
+	<img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo.png#gh-light-mode-only"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/grafito/master/logo-dark.png#gh-dark-mode-only">   
 </p>
 <p align="center">
 	<a href="https://github.com/arturo-lang/grafito"><b>Portable, Serverless & Lightweight<br>SQLite-based Graph Database</b></a>
@@ -188,7 +130,7 @@ Showcase
 ---
 
 <p align="center">
-	<a href="https://github.com/arturo-lang/aguila"><img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png"></a>    
+	<img align="center" width="250" src="https://raw.githubusercontent.com/arturo-lang/aguila/master/docs/assets/logo.png">  
 </p>
 <p align="center">
 	<a href="https://github.com/arturo-lang/aguila"><b>Modern cross-platform webview-based desktop apps<br>without HTML/CSS/JS</b></a>
@@ -197,65 +139,7 @@ Showcase
 Contributing
 ------------------------------
 
-Please read [docs/CONTRIBUTING.md](https://github.com/arturo-lang/arturo/blob/master/docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
-
-**In a few words:** all contributions (even if they are just ideas or suggestions) are 100% welcome!
-
-### Roadmap
-
-The list of things to fix and/or add could be endless. But here is one, a bit prioritized (if you think you can help, you know the way ;-):
-
-- [X] Add support for big number handling (via GMP)
-- [ ] Enrich the system library
-   - [X] Add built-in support for Databases (Sqlite, etc)
-   - [X] Implement HTML module
-   - [ ] Add more Server-related features
-   - [ ] Implement LaTeX generation module
-   - [ ] Add custom grammar parser functionality
-- [ ] Optimize and refine the bytecode
-- [ ] Improve VM performance
-- [X] Add the option of saving intermediate bytecode
-- [X] Add support for a package manager
-- [ ] Add UI support (via libui? via webview? both?)
-- [ ] Explore different uses of Arturo's dialecting capabilities (DSLs)
-- [ ] Implement a basic Arturo compiler (written in Arturo :blush:)
-- [ ] Go full self-hosted (that's an ambitious one, I know...)
-
-### Project structure
-
-To get an initial idea of the project, here's a brief guide to where is what:
-
-| Location | Description |
-|---|---|
-| `bin/` | The destination of the final binary after compilation |
-| `examples/` | A list of working examples in Arturo |
-| `src/` | The main source folder |
-| `src/extras/` | 3rd party open-source code used by Arturo |
-| `src/helpers/` | Useful helper methods grouped by category and used mostly by library functions |
-| `src/library/` | The Arturo standard library functions, grouped by category |
-| `src/system/` | Components of the Arturo binary, written in Arturo (the REPL, the packager, etc) |
-| `src/vm/` | The Virtual Machine |
-| `src/vm/bytecode.nim` | A list of all the VM bytecodes along with their description |
-| `src/vm/env.nim` | VM Environment handling (paths, etc) |
-| `src/vm/eval.nim` | The evaluator: where the parse tree turns into bytecode instructions |
-| `src/vm/exec.nim` | The most important VM module, where the main loop is triggered |
-| `src/vm/parse.nim` | The main lexer/parser: turning the initial input into a parse tree, of words, symbols and values |
-| `src/vm/stack.nim` | Manipulation code for the different stacks used by the VM |
-| `src/vm/value.nim` | The main Value object for our Virtual Machine along with numerous overloads, from initialization methods to printing and basic arithmetic |
-| `src/arturo.nim` | The main entry; where all the magic begins |
-| `tests/` | Different unit tests |
-| `tools/` | Various tools, documentation generation, etc |
-| `version/` | Main version & build numbers |
-
-### The Compiler
-
-The main compiler is implemented in Nim/C as a Bytecode interpreter / Stack-based VM and should run in most architectures.
-
-The main goals are: expressiveness, brevity, performance and portability. (With that exact order)
-
-#### General schema
-
-<img src="https://raw.githubusercontent.com/arturo-lang/arturo/master/docs/images/schema.png"/>
+Please read [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for more details and the process for submitting pull requests.
 
 Community
 ------------------------------
@@ -264,9 +148,9 @@ In case you want to ask a question, suggest an idea, or practically anything rel
 
 For that, the most convenient place for me would be the [GitHub Issues](https://github.com/arturo-lang/arturo/issues) page.
 
-For questions, quick ideas, and discussing generally the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo and a [Gitter community](https://gitter.im/arturo-lang/community) -- which I will hopefully get familiar with at some point (lol).
+For questions, quick ideas, and discussing generally the language, there is also a [dedicated Discord Server](https://discord.gg/YdVK2CB) for all things Arturo.
 
-[![Stargazers over time](https://starchart.cc/arturo-lang/arturo.svg)](https://starchart.cc/arturo-lang/arturo)
+<img src="https://starchart.cc/arturo-lang/arturo.svg#gh-light-mode-only">
 
 FAQ
 ------------------------------

@@ -174,7 +174,7 @@ jobs:
           usesh: true
           prepare: pkg install -y nim gmp bash databases/sqlite3
           run: |
-            ./build.nims install ${{ matrix.version }} log
+            ./build.nims install ${{ matrix.version }} ${{ matrix.arch }} log
             export PATH="$HOME/.arturo/bin:$PATH"
 
       - name: Create artifact
@@ -229,29 +229,20 @@ jobs:
           pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
           mkdir dist
           mkdir nim
-          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
+          curl -L https://arturo-lang.s3.amazonaws.com/extra-dlls.zip -o dist/extradlls.zip
           curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
-          7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
+          7z x dist/extradlls.zip -obin
           7z x dist/nim.zip -onim
 
-          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
+          cp src/extras/webview/deps/dlls/x64/*.dll bin
           
           export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
 
           nim --version
 
           ./build.nims install ${{ matrix.version }} log
-
-          cp src/extras/webview/deps/dlls/x64/webview.dll webview.dll
-          cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll WebView2Loader.dll
-
-          mv bin/arturo.exe arturo.exe
 
       - name: Install dependencies + Build Arturo (mini)
         if: matrix.version == 'mini'
@@ -260,28 +251,54 @@ jobs:
           pacman --noconfirm -S p7zip mingw-w64-x86_64-toolchain
           mkdir dist
           mkdir nim
-          curl -L https://nim-lang.org/download/mingw64.zip -o dist/mingw64.zip
           curl -L https://nim-lang.org/download/dlls.zip -o dist/dlls.zip
           curl -L https://nim-lang.org/download/nim-1.6.4_x64.zip -o dist/nim.zip
-          7z x dist/mingw64.zip -odist
           7z x dist/dlls.zip -obin
           7z x dist/nim.zip -onim
-
-          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
-          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
           
           export PATH="${{ github.workspace }}/nim/nim-1.6.4/bin":$PATH
 
-          nim --version
-
           ./build.nims install ${{ matrix.version }} log
 
-          mv bin/arturo.exe arturo.exe
-
-      - name: Create artifact
+      - name: Create artifact (full)
+        if: matrix.version == 'full'
         run: |
-          7z a ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip ${{ env.app-name }}.exe README.md LICENSE *.dll
+          mkdir arturo-${{matrix.version}}-${{matrix.os}}
+          
+          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o sqlite3_64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o libgmp-10.dll
+          
+          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+          cp src/extras/webview/deps/dlls/x64/webview.dll arturo-${{matrix.version}}-${{matrix.os}}
+          cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll arturo-${{matrix.version}}-${{matrix.os}}
+
+          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.os}}
+          cp README.md arturo-${{matrix.version}}-${{matrix.os}}
+          cp LICENSE arturo-${{matrix.version}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+
+      - name: Create artifact (mini)
+        if: matrix.version == 'mini'
+        run: |
+          mkdir arturo-${{matrix.version}}-${{matrix.os}}
+          
+          curl -L https://arturo-lang.s3.amazonaws.com/libcrypto-1_1-x64.dll -o libcrypto-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/libssl-1_1-x64.dll -o libssl-1_1-x64.dll
+          curl -L https://arturo-lang.s3.amazonaws.com/pcre64.dll -o pcre64.dll
+
+          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+
+          cp bin/arturo.exe arturo-${{matrix.version}}-${{matrix.os}}
+          cp README.md arturo-${{matrix.version}}-${{matrix.os}}
+          cp LICENSE arturo-${{matrix.version}}-${{matrix.os}}
+          cp *.dll arturo-${{matrix.version}}-${{matrix.os}}
+
+      - name: Package artifact
+        run: |
+          7z a ${{ env.app-name }}-${{ steps.versionNumber.outputs.text }}-${{runner.os}}-${{matrix.version}}.zip arturo-${{matrix.version}}-${{matrix.os}}/*
 
       - name: Upload Artifact
         uses: 'actions/upload-artifact@v1'

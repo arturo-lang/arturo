@@ -1,12 +1,13 @@
 name: "relative"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L301"
+description: "get relative path for given path, based on current script\'s location"
 returns: [
         :string
     ]
 alias: "./"
 infix?: false
-description: "get relative path for given path, based on current script\'s location"
 examples: [
         {
             ; we are in folder: /Users/admin/Desktop
@@ -23,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/negative?"
-         "Collections/remove"
-         "Files/delete"
-         "Files/rename"
+        "Paths/normalize"
+         "Paths/module"
+         "Paths/list"
+         "Paths/path"
     ]

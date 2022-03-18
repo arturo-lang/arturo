@@ -1,10 +1,11 @@
 name: "goto"
 type: :function
 module: "Io"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Io.nim#L148"
+description: "move cursor to given coordinates"
 returns: [
         :nothing
     ]
-description: "move cursor to given coordinates"
 examples: [
         {
             goto 10 15      ; (move cursor to column 10, line 15)
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/not"
-         "Collections/get"
-         "Converters/to"
-         "Logic/not?"
+        "Io/color"
+         "Io/prints"
+         "Io/cursor"
+         "Io/terminal"
     ]

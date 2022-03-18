@@ -1,11 +1,12 @@
 name: "sech"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1039"
+description: "calculate the hyperbolic secant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the hyperbolic secant of given angle"
 examples: [
         {
             print sech 0                ; 1.0
@@ -28,7 +29,7 @@ arguments: #[
     ]
 related: [
         "Numbers/csech"
-         "Numbers/asech"
-         "Numbers/sec"
          "Numbers/sinh"
+         "Numbers/asech"
+         "Numbers/cosh"
     ]

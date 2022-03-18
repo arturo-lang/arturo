@@ -1,12 +1,13 @@
 name: "notEqual?"
 type: :function
 module: "Comparison"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L125"
+description: "check if valueA <> valueB (not equal)"
 returns: [
         :logical
     ]
 alias: "<>"
 infix?: true
-description: "check if valueA <> valueB (not equal)"
 examples: [
         {
             notEqual? 5 2         ; => true
@@ -27,7 +28,7 @@ arguments: #[
     ]
 related: [
         "Comparison/equal?"
-         "Comparison/less?"
-         "Comparison/greater?"
          "Comparison/lessOrEqual?"
+         "Comparison/greaterOrEqual?"
+         "Comparison/greater?"
     ]

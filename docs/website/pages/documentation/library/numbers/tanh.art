@@ -1,11 +1,12 @@
 name: "tanh"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1179"
+description: "calculate the hyperbolic tangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the hyperbolic tangent of given angle"
 examples: [
         {
             print tanh 0            ; 0.0
@@ -29,6 +30,6 @@ arguments: #[
 related: [
         "Numbers/ctanh"
          "Numbers/atanh"
+         "Numbers/sinh"
          "Numbers/tan"
-         "Numbers/sech"
     ]

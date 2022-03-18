@@ -1,11 +1,12 @@
 name: "normalize"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L243"
+description: "get normalized version of given path"
 returns: [
         :string
          :nothing
     ]
-description: "get normalized version of given path"
 examples: [
         {
             normalize "one/../two/../../three"
@@ -47,8 +48,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Io/color"
-         "Collections/combine"
-         "Strings/capitalize"
+        "Paths/module"
+         "Paths/relative"
+         "Paths/extract"
          "Paths/list"
     ]

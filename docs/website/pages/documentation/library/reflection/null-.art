@@ -1,10 +1,11 @@
 name: "null?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L573"
+description: "checks if given value is of type :null"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :null"
 examples: [
         {
             print null? null            ; true
@@ -21,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/null"
-         "Reflection/char?"
-         "Reflection/date?"
-         "Reflection/label?"
+        "Reflection/label?"
+         "Reflection/inline?"
+         "Reflection/logical?"
+         "Reflection/literal?"
     ]

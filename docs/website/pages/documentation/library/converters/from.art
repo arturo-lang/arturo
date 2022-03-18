@@ -1,10 +1,11 @@
 name: "from"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L752"
+description: "get value from string, using given representation"
 returns: [
         :any
     ]
-description: "get value from string, using given representation"
 examples: [
         {
             print from.binary "1011"        ; 11
@@ -38,8 +39,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/drop"
-         "Arithmetic/fdiv"
-         "Arithmetic/mod"
-         "Arithmetic/pow"
+        "Converters/array"
+         "Converters/function"
+         "Converters/dictionary"
+         "Converters/to"
     ]

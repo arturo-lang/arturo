@@ -1,12 +1,13 @@
 name: "range"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L940"
+description: "get list of values in given range (inclusive)"
 returns: [
         :block
     ]
 alias: ".."
 infix?: true
-description: "get list of values in given range (inclusive)"
 examples: [
         {
             print range 1 4       ; 1 2 3 4
@@ -34,7 +35,7 @@ arguments: #[
     ]
 related: [
         "Numbers/angle"
-         "Binary/and"
-         "Binary/nand"
-         "Collections/take"
+         "Numbers/asin"
+         "Numbers/random"
+         "Numbers/tan"
     ]
