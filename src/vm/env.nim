@@ -126,7 +126,10 @@ proc initEnv*(arguments: seq[string], version: string, build: string, script: Va
     ArturoVersion = version
     ArturoBuild = build
 
-    ScriptInfo = script
+    if script!=VNULL:
+        ScriptInfo = script
+    else:
+        ScriptInfo = newDictionary()
 
     PathStack = @[]
     when not defined(WEB):
