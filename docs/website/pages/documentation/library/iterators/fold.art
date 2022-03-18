@@ -1,12 +1,13 @@
 name: "fold"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L143"
+description: "left-fold given collection returning accumulator"
 returns: [
         :null
          :block
          :nothing
     ]
-description: "left-fold given collection returning accumulator"
 examples: [
         {
             fold 1..10 [x,y]-> x + y
@@ -53,8 +54,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mod"
-         "Arithmetic/add"
-         "Arithmetic/fdiv"
-         "Arithmetic/mul"
+        "Iterators/loop"
+         "Iterators/select"
+         "Iterators/filter"
+         "Collections/flatten"
     ]

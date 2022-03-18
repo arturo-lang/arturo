@@ -1,0 +1,53 @@
+name: "alias"
+type: :function
+module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L37"
+description: "assign symbol to given function"
+returns: [
+        :nothing
+    ]
+examples: [
+        {
+            addThem: function [x, y][
+                x + y
+            ]
+            alias --> 'addThem
+                
+            print --> 2 3
+            ; 5
+        }
+         {
+            multiplyThem: function [x, y][ x * y ]
+            alias.infix {<=>} 'multiplyThem
+            
+            print 2 <=> 3
+            ; 6
+        }
+    ]
+attributes: #[
+    infix: #[
+        types: [
+                :logical
+            ]
+        description: "use infix precedence"
+        ]
+    ]
+arguments: #[
+    symbol: [
+            :string
+             :symbol
+             :symbolliteral
+             :block
+        ]
+    function: [
+            :string
+             :word
+             :literal
+        ]
+    ]
+related: [
+        "Core/var"
+         "Core/let"
+         "Core/call"
+         "Core/ensure"
+    ]

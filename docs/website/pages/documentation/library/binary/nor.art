@@ -1,11 +1,12 @@
 name: "nor"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L71"
+description: "calculate the binary NOR for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary NOR for the given values"
 examples: [
         "print nor 2 3      ; -4"
          {
@@ -25,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/or"
-         "Binary/xnor"
+        "Binary/xnor"
          "Binary/xor"
-         "Binary/and"
+         "Binary/nand"
+         "Binary/not"
     ]

@@ -1,11 +1,12 @@
 name: "shuffle"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L936"
+description: "get given collection shuffled"
 returns: [
         :block
          :nothing
     ]
-description: "get given collection shuffled"
 examples: [
         "shuffle [1 2 3 4 5 6]         ; => [1 5 6 2 3 4 ]"
          {
@@ -23,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/suffix"
-         "Binary/shl"
-         "Collections/sample"
-         "Collections/squeeze"
+        "Collections/unique"
+         "Collections/size"
+         "Collections/empty"
+         "Collections/slice"
     ]

@@ -1,13 +1,14 @@
 name: "neg"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L172"
+description: "reverse sign of given value and return it"
 returns: [
         :integer
          :floating
          :complex
          :nothing
     ]
-description: "reverse sign of given value and return it"
 examples: [
         "print neg 1        ; -1"
          {
@@ -26,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/new"
-         "Arithmetic/dec"
-         "Binary/nor"
-         "Binary/not"
+        "Arithmetic/dec"
+         "Arithmetic/div"
+         "Arithmetic/fdiv"
+         "Arithmetic/add"
     ]

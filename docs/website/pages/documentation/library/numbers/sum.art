@@ -1,11 +1,12 @@
 name: "sum"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1133"
+description: "calculate the sum of all values in given list"
 returns: [
         :integer
          :floating
     ]
-description: "calculate the sum of all values in given list"
 examples: [
         {
             print sum [3 4]           ; 7
@@ -21,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/sub"
-         "Arithmetic/mul"
-         "Binary/shl"
-         "Binary/shr"
+        "Numbers/sin"
+         "Numbers/sec"
+         "Numbers/gamma"
+         "Numbers/asin"
     ]

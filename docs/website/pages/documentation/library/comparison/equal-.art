@@ -1,12 +1,13 @@
 name: "equal?"
 type: :function
 module: "Comparison"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L30"
+description: "check if valueA = valueB (equality)"
 returns: [
         :logical
     ]
 alias: "="
 infix?: true
-description: "check if valueA = valueB (equality)"
 examples: [
         {
             equal? 5 2            ; => false
@@ -26,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Comparison/less?"
-         "Comparison/notEqual?"
-         "Reflection/null?"
+        "Comparison/notEqual?"
+         "Comparison/less?"
          "Comparison/greater?"
+         "Comparison/greaterOrEqual?"
     ]

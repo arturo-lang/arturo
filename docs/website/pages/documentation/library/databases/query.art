@@ -1,12 +1,13 @@
 name: "query"
 type: :function
 module: "Databases"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Databases.nim#L71"
+description: "execute command or block of commands in given database and get returned rows"
 returns: [
         :null
          :integer
          :block
     ]
-description: "execute command or block of commands in given database and get returned rows"
 examples: [
         {
             db: open "my.db"    ; opens an SQLite database named 'my.db'
@@ -46,8 +47,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/try"
-         "Iterators/every?"
-         "Arithmetic/dec"
-         "Arithmetic/mul"
+        "Databases/open"
+         "Collections/take"
+         "Collections/squeeze"
+         "Strings/outdent"
     ]

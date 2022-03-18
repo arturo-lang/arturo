@@ -1,10 +1,11 @@
 name: "if"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L355"
+description: "perform action, if given condition is not false or null"
 returns: [
         :nothing
     ]
-description: "perform action, if given condition is not false or null"
 examples: [
         {
             x: 2
@@ -26,6 +27,6 @@ arguments: #[
 related: [
         "Core/if?"
          "Core/unless"
-         "Arithmetic/div"
-         "Arithmetic/inc"
+         "Core/switch"
+         "Core/else"
     ]

@@ -1,13 +1,14 @@
 name: "mod"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L130"
+description: "calculate the modulo of given values and return result"
 returns: [
         :integer
          :nothing
     ]
 alias: "%"
 infix?: true
-description: "calculate the modulo of given values and return result"
 examples: [
         {
             print mod 5 2      ; 1
@@ -30,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mul"
-         "Arithmetic/pow"
+        "Arithmetic/pow"
+         "Arithmetic/mul"
          "Arithmetic/add"
-         "Binary/and"
+         "Arithmetic/fdiv"
     ]

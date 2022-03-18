@@ -69,10 +69,13 @@
 
                     <div class="content">
                         <ul>
-                        
-                            <|| loop W\returns 'ret [||>
-                                <li><||= (ret=:nothing)? -> "or &nbsp;" -> "" ||><em>:<||= ret ||></em></li>
-                            <||]||>
+                            <|| if? and? [1=size W\returns][W\returns\0=:nothing] [ ||>
+                                <li><em>:nothing</em></li>
+                            <|| ] else [ ||>
+                                <|| loop W\returns 'ret [||>
+                                    <li><||= (ret=:nothing)? -> "or &nbsp;" -> "" ||><em>:<||= ret ||></em></li>
+                                <||]||>
+                            <|| ] ||>
                         </ul>
                     </div>
 

@@ -1,12 +1,13 @@
 name: "dup"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L285"
+description: "duplicate the top of the stack and convert non-returning call to a do-return call"
 returns: [
         :nothing
     ]
 alias: "<="
 infix?: false
-description: "duplicate the top of the stack and convert non-returning call to a do-return call"
 examples: [
         {
             ; a label normally consumes its inputs
@@ -29,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/dec"
-         "Arithmetic/div"
-         "Arithmetic/mul"
-         "Arithmetic/sub"
+        "Core/until"
+         "Core/unless"
+         "Core/do"
+         "Core/ensure"
     ]

@@ -1,11 +1,12 @@
 name: "digest"
 type: :function
 module: "Crypto"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L161"
+description: "get digest for given value (default: MD5)"
 returns: [
         :string
          :nothing
     ]
-description: "get digest for given value (default: MD5)"
 examples: [
         {
             print digest "Hello world"
@@ -31,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/first"
-         "Collections/get"
-         "Numbers/digits"
-         "Paths/list"
+        "Crypto/hash"
+         "Crypto/decode"
+         "Crypto/encode"
+         "Arithmetic/dec"
     ]

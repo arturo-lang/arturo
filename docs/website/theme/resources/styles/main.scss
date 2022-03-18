@@ -413,3 +413,22 @@ a.algolia-docsearch-suggestion:hover {
 .semibold {
     font-weight: 500;
 }
+
+li.source-link {
+    margin-left: auto !important;
+
+    a {
+        color: #BBBBBB !important;
+        font-weight: bold !important;
+
+        &:hover {
+            color: #363636 !important;
+            font-weight: bold !important;
+            border-bottom: 0 !important;
+        }
+    }
+
+    &:before {
+        content: '' !important;
+    }
+}

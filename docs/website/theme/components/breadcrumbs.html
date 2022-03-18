@@ -26,5 +26,8 @@
             ]
             join pathItems
         ||>
+        <||= if key? W 'source [ ~{
+            <li class="source-link"><a target="_blank" href="|W\source|"><i class="ph-code-bold"></i>&nbsp;&nbsp;Source</a></li>
+        }] ||>
     </ul>
 </nav>

@@ -1,12 +1,13 @@
 name: "inc"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L111"
+description: "increase given value by 1"
 returns: [
         :integer
          :floating
          :nothing
     ]
-description: "increase given value by 1"
 examples: [
         "print inc 5        ; 6"
          {
@@ -25,7 +26,7 @@ arguments: #[
     ]
 related: [
         "Arithmetic/dec"
-         "Collections/in?"
-         "Binary/and"
-         "Collections/min"
+         "Arithmetic/neg"
+         "Arithmetic/fdiv"
+         "Arithmetic/sub"
     ]

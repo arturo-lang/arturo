@@ -1,10 +1,11 @@
 name: "factors"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L593"
+description: "get list of factors for given integer"
 returns: [
         :block
     ]
-description: "get list of factors for given integer"
 examples: [
         "factors 16                                  ; => [1 2 4 8 16]"
          {
@@ -29,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/acos"
-         "Reflection/attrs"
-         "Collections/values"
-         "Dates/after"
+        "Numbers/digits"
+         "Numbers/acos"
+         "Numbers/abs"
+         "Numbers/acosh"
     ]

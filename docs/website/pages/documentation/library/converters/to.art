@@ -1,10 +1,11 @@
 name: "to"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L989"
+description: "convert value to given type"
 returns: [
         :any
     ]
-description: "convert value to given type"
 examples: [
         {
             to :integer "2020"            ; 2020
@@ -83,6 +84,12 @@ attributes: #[
             ]
         description: "convert HSL block to color"
         ]
+    hsv: #[
+        types: [
+                :logical
+            ]
+        description: "convert HSV block to color"
+        ]
     ]
 arguments: #[
     type: [
@@ -94,8 +101,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/do"
-         "Arithmetic/mod"
-         "Arithmetic/pow"
-         "Binary/nor"
+        "Converters/dictionary"
+         "Converters/from"
+         "Converters/as"
+         "Strings/lower"
     ]

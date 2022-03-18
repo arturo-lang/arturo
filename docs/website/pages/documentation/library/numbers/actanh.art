@@ -1,11 +1,12 @@
 name: "actanh"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L174"
+description: "calculate the inverse hyperbolic cotangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse hyperbolic cotangent of given angle"
 examples: [
         {
             print actanh 0                  ; nan
@@ -29,6 +30,6 @@ arguments: #[
 related: [
         "Numbers/atanh"
          "Numbers/actan"
-         "Numbers/ctanh"
+         "Numbers/asech"
          "Numbers/acosh"
     ]

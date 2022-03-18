@@ -1,10 +1,11 @@
 name: "digits"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L514"
+description: "get array of digits of given number"
 returns: [
         :block
     ]
-description: "get array of digits of given number"
 examples: [
         {
             digits 123
@@ -34,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Crypto/digest"
-         "Arithmetic/div"
-         "Collections/first"
-         "Collections/get"
+        "Numbers/factors"
+         "Numbers/sqrt"
+         "Numbers/log"
+         "Numbers/sinh"
     ]

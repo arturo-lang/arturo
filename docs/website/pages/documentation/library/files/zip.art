@@ -1,10 +1,11 @@
 name: "zip"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L438"
+description: "zip given files to file at destination"
 returns: [
         :nothing
     ]
-description: "zip given files to file at destination"
 examples: [
         {
             zip "dest.zip" ["file1.txt" "img.png"]
@@ -21,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/div"
-         "Collections/min"
-         "Core/dup"
-         "Core/if"
+        "Files/copy"
+         "Files/write"
+         "Files/permissions"
+         "Files/unzip"
     ]

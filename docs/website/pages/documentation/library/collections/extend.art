@@ -1,10 +1,11 @@
 name: "extend"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L275"
+description: "get new dictionary by merging given ones"
 returns: [
         :dictionary
     ]
-description: "get new dictionary by merging given ones"
 examples: [
         {
             person: #[ name: "john" surname: "doe" ]
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/append"
-         "Colors/blend"
-         "Numbers/even?"
-         "Binary/and"
+        "Collections/get"
+         "Collections/flatten"
+         "Collections/keys"
+         "Collections/min"
     ]

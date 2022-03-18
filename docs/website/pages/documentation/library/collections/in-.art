@@ -1,13 +1,14 @@
 name: "in?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L417"
+description: "check if value exists in given collection"
 returns: [
         :string
          :dictionary
          :block
          :nothing
     ]
-description: "check if value exists in given collection"
 examples: [
         {
             arr: [1 2 3 4]
@@ -31,12 +32,6 @@ examples: [
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     value: [
@@ -49,8 +44,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Core/if?"
-         "Reflection/is?"
-         "Binary/and"
+        "Collections/contains?"
+         "Collections/key?"
+         "Collections/sorted?"
+         "Collections/index"
     ]

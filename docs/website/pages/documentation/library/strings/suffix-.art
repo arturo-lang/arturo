@@ -1,10 +1,11 @@
 name: "suffix?"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L749"
+description: "check if string ends with given suffix"
 returns: [
         :logical
     ]
-description: "check if string ends with given suffix"
 examples: [
         {
             suffix? "hello" "lo"          ; => true
@@ -12,12 +13,6 @@ examples: [
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     string: [
@@ -25,11 +20,12 @@ arguments: #[
         ]
     suffix: [
             :string
+             :regex
         ]
     ]
 related: [
-        "Strings/suffix"
-         "Strings/prefix?"
-         "Collections/shuffle"
-         "Sets/subset?"
+        "Strings/prefix?"
+         "Strings/numeric?"
+         "Strings/ascii?"
+         "Strings/upper?"
     ]

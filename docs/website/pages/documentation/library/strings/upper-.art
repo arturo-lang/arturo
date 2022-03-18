@@ -1,10 +1,11 @@
 name: "upper?"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L838"
+description: "check if given string is uppercase"
 returns: [
         :logical
     ]
-description: "check if given string is uppercase"
 examples: [
         {
             upper? "Ñ"               ; => true
@@ -23,7 +24,7 @@ arguments: #[
     ]
 related: [
         "Strings/lower?"
-         "Strings/upper"
          "Strings/numeric?"
-         "Collections/append"
+         "Strings/prefix?"
+         "Strings/whitespace?"
     ]

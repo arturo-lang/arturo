@@ -1,13 +1,14 @@
 name: "contains?"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L156"
+description: "check if collection contains given value"
 returns: [
         :string
          :dictionary
          :block
          :nothing
     ]
-description: "check if collection contains given value"
 examples: [
         {
             arr: [1 2 3 4]
@@ -31,12 +32,6 @@ examples: [
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     collection: [
@@ -49,8 +44,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/continue"
+        "Collections/sorted?"
+         "Collections/in?"
+         "Collections/empty?"
          "Collections/key?"
-         "Collections/combine"
-         "Logic/nand?"
     ]

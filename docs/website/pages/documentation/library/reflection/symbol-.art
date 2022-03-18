@@ -1,10 +1,11 @@
 name: "symbol?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L711"
+description: "checks if given value is of type :symbol"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :symbol"
 examples: [
         {
             symbol? first [+ x]
@@ -19,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/symbols"
+        "Reflection/symbolLiteral?"
          "Reflection/label?"
-         "Reflection/null?"
-         "Reflection/string?"
+         "Reflection/block?"
+         "Reflection/type?"
     ]

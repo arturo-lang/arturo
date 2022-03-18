@@ -1,11 +1,12 @@
 name: "levenshtein"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L277"
+description: "calculate Levenshtein distance/similarity between given strings"
 returns: [
         :integer
          :block
     ]
-description: "calculate Levenshtein distance between given strings"
 examples: [
         {
             print levenshtein "for" "fur"         ; 1
@@ -40,8 +41,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/reverse"
-         "Colors/lighten"
-         "Core/ensure"
-         "Files/delete"
+        "Strings/replace"
+         "Strings/outdent"
+         "Strings/jaro"
+         "Strings/render"
     ]

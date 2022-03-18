@@ -1,13 +1,14 @@
 name: "pi"
 type: :floating
-description: "the number pi, mathematical constant"
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L811"
+description: "the number pi, mathematical constant"
 returns: [
         :floating
     ]
 related: [
-        "Arithmetic/div"
-         "Arithmetic/pow"
-         "Binary/or"
-         "Collections/min"
+        "Numbers/ceil"
+         "Numbers/sinh"
+         "Numbers/asinh"
+         "Numbers/powmod"
     ]

@@ -1,6 +1,8 @@
 name: "mul"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L151"
+description: "calculate the product of given values and return result"
 returns: [
         :integer
          :floating
@@ -9,7 +11,6 @@ returns: [
     ]
 alias: "*"
 infix?: true
-description: "calculate the product of given values and return result"
 examples: [
         {
             print mul 1 2      ; 2
@@ -37,7 +38,7 @@ arguments: #[
     ]
 related: [
         "Arithmetic/mod"
-         "Arithmetic/pow"
          "Arithmetic/sub"
-         "Binary/shl"
+         "Arithmetic/pow"
+         "Numbers/sum"
     ]

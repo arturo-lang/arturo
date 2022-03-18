@@ -1,11 +1,12 @@
 name: "extract"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L45"
+description: "extract components from path"
 returns: [
         :string
          :dictionary
     ]
-description: "extract components from path"
 examples: [
         {
             path: "/this/is/some/path.txt"
@@ -138,11 +139,23 @@ attributes: #[
             ]
         description: "get blue component from color"
         ]
+    alpha: #[
+        types: [
+                :logical
+            ]
+        description: "get alpha component from color"
+        ]
     hsl: #[
         types: [
                 :logical
             ]
         description: "get HSL representation from color"
+        ]
+    hsv: #[
+        types: [
+                :logical
+            ]
+        description: "get HSV representation from color"
         ]
     hue: #[
         types: [
@@ -170,8 +183,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/extend"
-         "Reflection/stack"
-         "System/exit"
-         "Binary/xor"
+        "Paths/normalize"
+         "Paths/path"
+         "Paths/list"
+         "Paths/relative"
     ]

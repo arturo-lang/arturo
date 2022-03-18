@@ -1,11 +1,12 @@
 name: "repeat"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L785"
+description: "repeat value the given number of times and return new one"
 returns: [
         :string
          :block
     ]
-description: "repeat value the given number of times and return new one"
 examples: [
         {
             print repeat "hello" 3
@@ -36,8 +37,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/read"
-         "Iterators/select"
-         "Net/request"
-         "Strings/replace"
+        "Collections/drop"
+         "Collections/permutate"
+         "Collections/take"
+         "Collections/insert"
     ]

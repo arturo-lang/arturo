@@ -1,11 +1,12 @@
 name: "webview"
 type: :function
 module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L219"
+description: "show webview window with given url or html source"
 returns: [
         :string
          :nothing
     ]
-description: "show webview window with given url or html source"
 examples: [
         {
             webview "Hello world!"
@@ -49,11 +50,47 @@ attributes: #[
             ]
         description: "window shouldn\'t be resizable"
         ]
+    maximized: #[
+        types: [
+                :logical
+            ]
+        description: "start in maximized mode"
+        ]
+    fullscreen: #[
+        types: [
+                :logical
+            ]
+        description: "start in fullscreen mode"
+        ]
+    borderless: #[
+        types: [
+                :logical
+            ]
+        description: "show as borderless window"
+        ]
+    topmost: #[
+        types: [
+                :logical
+            ]
+        description: "set window as always-on-top"
+        ]
     debug: #[
         types: [
                 :logical
             ]
         description: "add inspector console"
+        ]
+    on: #[
+        types: [
+                :dictionary
+            ]
+        description: "execute code on specific events"
+        ]
+    inject: #[
+        types: [
+                :string
+            ]
+        description: "inject JS code on webview initialization"
         ]
     ]
 arguments: #[
@@ -63,8 +100,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Net/serve"
-         "Collections/remove"
-         "Converters/define"
-         "Converters/with"
+        "Ui/alert"
+         "Ui/clip"
+         "Ui/dialog"
+         "Ui/popup"
     ]

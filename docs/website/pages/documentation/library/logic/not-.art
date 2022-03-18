@@ -1,10 +1,11 @@
 name: "not?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L292"
+description: "return the logical complement of the given value"
 returns: [
         :logical
     ]
-description: "return the logical complement of the given value"
 examples: [
         {
             ready: false
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/not"
-         "Logic/nor?"
-         "Binary/nor"
-         "Dates/now"
+        "Logic/nor?"
+         "Logic/xnor?"
+         "Logic/or?"
+         "Logic/xor?"
     ]

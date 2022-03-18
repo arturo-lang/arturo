@@ -1,10 +1,11 @@
 name: "keys"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L580"
+description: "get list of keys for given dictionary"
 returns: [
         :block
     ]
-description: "get list of keys for given dictionary"
 examples: [
         {
             user: #[
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/key?"
-         "Collections/values"
-         "System/sys"
-         "Arithmetic/dec"
+        "Collections/values"
+         "Collections/get"
+         "Collections/extend"
+         "Collections/key?"
     ]

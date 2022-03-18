@@ -1,10 +1,11 @@
 name: "after"
 type: :function
 module: "Dates"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Dates.nim#L32"
+description: "get date after given one using interval"
 returns: [
         :date
     ]
-description: "get date after given one using interval"
 examples: [
         {
             print now
@@ -78,7 +79,7 @@ arguments: #[
     ]
 related: [
         "Dates/before"
-         "Reflection/attr"
-         "Iterators/filter"
-         "Numbers/acsec"
+         "Numbers/atan"
+         "Numbers/factors"
+         "Statistics/average"
     ]

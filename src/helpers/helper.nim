@@ -189,7 +189,10 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             let parts = desc.split("]")
             desc = parts[1].strip()
             let modl = parts[0].strip().strip(chars={'['})
-            result["module"] = newString(modl)
+            let subparts = modl.split(":")
+            result["module"] = newString(subparts[0])
+            when defined(DOCGEN):
+                result["source"] = newString("https://github.com/arturo-lang/arturo/blob/master/src/library/{subparts[0]}.nim#L{subparts[1]}".fmt)
 
         result["description"] = newString(desc)
 
@@ -236,7 +239,6 @@ proc getInfo*(n: string, v: Value, aliases: SymbolDict):ValueDict =
             result["alias"] = newString(alias[0])
             result["infix?"] = newLogical(alias[1]==InfixPrecedence)
 
-        result["description"] = newString(v.info)
         result["example"] = newStringBlock(splitExamples(v.example))
 
 proc printInfo*(n: string, v: Value, aliases: SymbolDict, withExamples = false) =

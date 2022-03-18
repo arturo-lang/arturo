@@ -1,11 +1,12 @@
 name: "permissions"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L134"
+description: "check permissions of given file"
 returns: [
         :null
          :dictionary
     ]
-description: "check permissions of given file"
 examples: [
         {
             inspect permissions "bin/arturo"
@@ -46,8 +47,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sin"
-         "Reflection/is?"
-         "Numbers/sqrt"
-         "Strings/indent"
+        "Files/exists?"
+         "Files/symlink"
+         "Files/zip"
+         "Files/write"
     ]

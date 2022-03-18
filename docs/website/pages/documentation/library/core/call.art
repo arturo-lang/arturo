@@ -1,10 +1,11 @@
 name: "call"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L110"
+description: "call function with given list of parameters"
 returns: [
         :any
     ]
-description: "call function with given list of parameters"
 examples: [
         {
             multiply: function [x y][
@@ -41,7 +42,7 @@ arguments: #[
     ]
 related: [
         "Core/case"
-         "Core/null"
-         "Logic/all?"
-         "Net/mail"
+         "Core/unless"
+         "Core/until"
+         "Core/while"
     ]

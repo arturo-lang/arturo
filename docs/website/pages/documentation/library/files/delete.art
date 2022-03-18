@@ -1,10 +1,11 @@
 name: "delete"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L86"
+description: "delete file at given path"
 returns: [
         :nothing
     ]
-description: "delete file at given path"
 examples: [
         {
             delete "testscript.art"
@@ -25,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Paths/list"
-         "Converters/define"
-         "Core/else"
-         "Core/let"
+        "Files/read"
+         "Files/volume"
+         "Files/rename"
+         "Files/write"
     ]

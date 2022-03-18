@@ -1,11 +1,12 @@
 name: "atan"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L295"
+description: "calculate the inverse tangent of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the inverse tangent of given angle"
 examples: [
         {
             print atan 0                ; 0.0
@@ -30,5 +31,5 @@ related: [
         "Numbers/actan"
          "Numbers/atan2"
          "Numbers/atanh"
-         "Numbers/ctan"
+         "Numbers/actanh"
     ]

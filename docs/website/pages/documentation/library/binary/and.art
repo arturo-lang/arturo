@@ -1,11 +1,12 @@
 name: "and"
 type: :function
 module: "Binary"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Binary.nim#L30"
+description: "calculate the binary AND for the given values"
 returns: [
         :integer
          :nothing
     ]
-description: "calculate the binary AND for the given values"
 examples: [
         "print and 2 3      ; 2"
          {
@@ -26,7 +27,7 @@ arguments: #[
     ]
 related: [
         "Binary/nand"
-         "Arithmetic/add"
+         "Binary/xnor"
          "Binary/nor"
          "Binary/or"
     ]

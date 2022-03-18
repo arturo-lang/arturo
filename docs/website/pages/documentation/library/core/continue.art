@@ -1,10 +1,11 @@
 name: "continue"
 type: :function
 module: "Core"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Core.nim#L178"
+description: "immediately continue with next iteration"
 returns: [
         :block
     ]
-description: "immediately continue with next iteration"
 examples: [
         {
             loop 1..5 'x [
@@ -31,8 +32,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Collections/combine"
-         "Collections/contains?"
-         "Collections/unique"
-         "Converters/define"
+        "Core/ensure"
+         "Core/while"
+         "Core/until"
+         "Core/call"
     ]

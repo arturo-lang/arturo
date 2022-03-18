@@ -1,11 +1,12 @@
 name: "encode"
 type: :function
 module: "Crypto"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Crypto.nim#L92"
+description: "decode given value (default: base-64)"
 returns: [
         :string
          :nothing
     ]
-description: "decode given value (default: base-64)"
 examples: [
         {
             print encode "Numquam fugiens respexeris"
@@ -56,7 +57,7 @@ arguments: #[
     ]
 related: [
         "Crypto/decode"
-         "Core/ensure"
-         "Strings/escape"
-         "Arithmetic/inc"
+         "Crypto/digest"
+         "Databases/close"
+         "Numbers/round"
     ]

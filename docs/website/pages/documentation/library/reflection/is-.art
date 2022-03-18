@@ -1,10 +1,11 @@
 name: "is?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L429"
+description: "check whether value is of given type"
 returns: [
         :logical
     ]
-description: "check whether value is of given type"
 examples: [
         {
             is? :string "hello"       ; => true
@@ -27,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/in?"
-         "Core/if?"
-         "Arithmetic/inc"
-         "Converters/as"
+        "Reflection/integer?"
+         "Reflection/set?"
+         "Reflection/literal?"
+         "Reflection/string?"
     ]

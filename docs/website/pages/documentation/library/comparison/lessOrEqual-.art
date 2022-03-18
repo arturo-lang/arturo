@@ -1,12 +1,13 @@
 name: "lessOrEqual?"
 type: :function
 module: "Comparison"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Comparison.nim#L106"
+description: "check if valueA =< valueB (less than or equal)"
 returns: [
         :logical
     ]
 alias: "=<"
 infix?: true
-description: "check if valueA =< valueB (less than or equal)"
 examples: [
         {
             lessOrEqual? 5 2      ; => false
@@ -26,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Comparison/greaterOrEqual?"
-         "Comparison/less?"
+        "Comparison/less?"
          "Comparison/notEqual?"
+         "Comparison/greaterOrEqual?"
          "Comparison/greater?"
     ]

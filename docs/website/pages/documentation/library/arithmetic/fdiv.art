@@ -1,13 +1,14 @@
 name: "fdiv"
 type: :function
 module: "Arithmetic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Arithmetic.nim#L91"
+description: "divide given values and return result"
 returns: [
         :floating
          :nothing
     ]
 alias: "//"
 infix?: true
-description: "divide given values and return result"
 examples: [
         "print fdiv 5 2     ; 2.5"
          {
@@ -29,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/div"
-         "Arithmetic/add"
-         "Arithmetic/sub"
+        "Arithmetic/add"
+         "Arithmetic/div"
+         "Arithmetic/mod"
          "Arithmetic/dec"
     ]

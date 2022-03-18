@@ -1,10 +1,11 @@
 name: "positive?"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L816"
+description: "check if given number is positive"
 returns: [
         :logical
     ]
-description: "check if given number is positive"
 examples: [
         {
             positive? 5       ; => true
@@ -20,7 +21,7 @@ arguments: #[
     ]
 related: [
         "Numbers/negative?"
-         "Numbers/even?"
+         "Numbers/prime?"
          "Numbers/odd?"
          "Numbers/zero?"
     ]

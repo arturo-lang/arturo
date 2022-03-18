@@ -1,12 +1,13 @@
 name: "chop"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L109"
+description: "remove last item from given collection"
 returns: [
         :string
          :block
          :nothing
     ]
-description: "remove last item from given collection"
 examples: [
         {
             print chop "books"          ; book
@@ -28,8 +29,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/drop"
-         "Core/pop"
-         "Files/copy"
-         "Iterators/loop"
+        "Collections/remove"
+         "Collections/sample"
+         "Collections/combine"
+         "Collections/drop"
     ]

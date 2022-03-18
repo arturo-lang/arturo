@@ -1,27 +1,26 @@
 name: "replace"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L640"
+description: "replace every matched substring/s by given replacement string and return result"
 returns: [
         :string
          :nothing
     ]
-description: "replace every matched substring by given replacement string and return result"
 examples: [
         {
-            replace "hello" "l" "x"           ; => "hexxo"
+            replace "hello" "l" "x"         ; => "hexxo"
         }
          {
             str: "hello"
-            replace 'str "l" "x"              ; str: "hexxo"
+            replace 'str "l" "x"            ; str: "hexxo"
+        }
+         {
+            replace "hello" ["h" "l"] "x"           ; => "xexxo"
+            replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         }
     ]
 attributes: #[
-    regex: #[
-        types: [
-                :logical
-            ]
-        description: "match against a regular expression"
-        ]
     ]
 arguments: #[
     string: [
@@ -30,14 +29,17 @@ arguments: #[
         ]
     match: [
             :string
+             :regex
+             :block
         ]
     replacement: [
             :string
+             :block
         ]
     ]
 related: [
-        "Collections/repeat"
-         "Files/rename"
-         "Collections/remove"
-         "Collections/reverse"
+        "Strings/levenshtein"
+         "Strings/jaro"
+         "Strings/render"
+         "Strings/truncate"
     ]

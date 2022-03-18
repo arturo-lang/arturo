@@ -1,11 +1,12 @@
 name: "suffix"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L729"
+description: "add given suffix to string"
 returns: [
         :string
          :nothing
     ]
-description: "add given suffix to string"
 examples: [
         {
             suffix "hell" "o"                  ; => "hello"
@@ -28,7 +29,7 @@ arguments: #[
     ]
 related: [
         "Strings/prefix"
-         "Strings/suffix?"
-         "Collections/shuffle"
-         "Arithmetic/fdiv"
+         "Strings/escape"
+         "Strings/join"
+         "Strings/strip"
     ]

@@ -1,10 +1,11 @@
 name: "invert"
 type: :function
 module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L106"
+description: "get complement for given color"
 returns: [
         :color
     ]
-description: "get complement for given color"
 examples: [
         {
             print #orange               ; #FFA500
@@ -20,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/insert"
-         "Strings/indent"
-         "Collections/index"
-         "Io/input"
+        "Colors/palette"
+         "Colors/lighten"
+         "Colors/spin"
+         "Colors/blend"
     ]

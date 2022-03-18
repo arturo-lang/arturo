@@ -1,10 +1,11 @@
 name: "arity"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L37"
+description: "get index of function arities"
 returns: [
         :dictionary
     ]
-description: "get index of function arities"
 examples: [
         "print arity\\print   ; 1"
     ]
@@ -13,8 +14,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Converters/array"
-         "Files/write"
-         "Collections/empty"
-         "Converters/with"
+        "Reflection/attrs"
+         "Reflection/attr"
+         "Reflection/inspect"
+         "Io/prints"
     ]

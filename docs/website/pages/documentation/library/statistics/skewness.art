@@ -1,10 +1,11 @@
 name: "skewness"
 type: :function
 module: "Statistics"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L138"
+description: "get population skewness of given collection of numbers"
 returns: [
         :floating
     ]
-description: "get population skewness of given collection of numbers"
 examples: [
         {
             arr:  [1 2 3 4]
@@ -33,6 +34,6 @@ arguments: #[
 related: [
         "Statistics/kurtosis"
          "Statistics/variance"
-         "Collections/keys"
-         "Core/unless"
+         "Statistics/deviation"
+         "Statistics/median"
     ]

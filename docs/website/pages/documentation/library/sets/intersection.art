@@ -1,11 +1,12 @@
 name: "intersection"
 type: :function
 module: "Sets"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Sets.nim#L70"
+description: "return the intersection of given sets"
 returns: [
         :block
          :nothing
     ]
-description: "return the intersection of given sets"
 examples: [
         {
             print intersection [1 2 3 4] [3 4 5 6]
@@ -30,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Sets/powerset"
+        "Sets/difference"
+         "Sets/powerset"
          "Sets/union"
-         "Sets/difference"
-         "Numbers/asin"
+         "Collections/first"
     ]

@@ -1,0 +1,51 @@
+name: "alert"
+type: :function
+module: "Ui"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Ui.nim#L46"
+description: "show notification with given title and message"
+returns: [
+        :logical
+    ]
+examples: [
+        {
+            alert "Hello!" "This is a notification..."
+                ; show an OS notification without any styling
+            
+                alert.error "Ooops!" "Something went wrong!"
+                ; show an OS notification with an error message
+        }
+    ]
+attributes: #[
+    info: #[
+        types: [
+                :logical
+            ]
+        description: "show informational notification"
+        ]
+    warning: #[
+        types: [
+                :logical
+            ]
+        description: "show notification as a warning"
+        ]
+    error: #[
+        types: [
+                :logical
+            ]
+        description: "show notification as an error"
+        ]
+    ]
+arguments: #[
+    title: [
+            :string
+        ]
+    message: [
+            :string
+        ]
+    ]
+related: [
+        "Ui/dialog"
+         "Ui/webview"
+         "Ui/clip"
+         "Ui/popup"
+    ]

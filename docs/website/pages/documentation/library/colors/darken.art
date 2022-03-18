@@ -1,10 +1,11 @@
 name: "darken"
 type: :function
 module: "Colors"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Colors.nim#L62"
+description: "darken color by given percentage (0.0-1.0)"
 returns: [
         :color
     ]
-description: "darken color by given percentage (0.0-1.0)"
 examples: [
         {
             darken #red 0.2         ; => #CC0000
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Colors/lighten"
-         "Colors/saturate"
+        "Colors/saturate"
+         "Colors/lighten"
          "Colors/desaturate"
-         "Collections/take"
+         "Colors/blend"
     ]

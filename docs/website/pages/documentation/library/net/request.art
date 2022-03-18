@@ -1,10 +1,11 @@
 name: "request"
 type: :function
 module: "Net"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L122"
+description: "perform HTTP request to url with given data and get response"
 returns: [
         :dictionary
     ]
-description: "perform HTTP request to url with given data and get response"
 examples: [
         {
             print request "https://httpbin.org/get" #[some:"arg" another: 123]
@@ -121,8 +122,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/repeat"
-         "Collections/reverse"
-         "Collections/values"
-         "Comparison/equal?"
+        "Net/serve"
+         "Collections/repeat"
+         "Paths/relative"
+         "Sets/powerset"
     ]

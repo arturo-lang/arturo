@@ -1,13 +1,14 @@
 name: "render"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L553"
+description: "render template with |string| interpolation"
 returns: [
         :string
          :nothing
     ]
 alias: "~"
 infix?: false
-description: "render template with |string| interpolation"
 examples: [
         {
             x: 2
@@ -16,7 +17,7 @@ examples: [
         }
     ]
 attributes: #[
-    single: #[
+    once: #[
         types: [
                 :logical
             ]
@@ -35,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/index"
-         "Files/read"
-         "Files/rename"
-         "Numbers/random"
+        "Strings/truncate"
+         "Strings/lower"
+         "Strings/replace"
+         "Strings/upper"
     ]

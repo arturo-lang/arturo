@@ -1,11 +1,12 @@
 name: "strip"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L695"
+description: "strip whitespace from given string"
 returns: [
         :string
          :nothing
     ]
-description: "strip whitespace from given string"
 examples: [
         {
             str: "     Hello World     "
@@ -40,8 +41,8 @@ arguments: #[
         ]
     ]
 related: [
-        "System/script"
-         "Binary/shr"
-         "Collections/drop"
-         "Collections/sort"
+        "Strings/escape"
+         "Strings/capitalize"
+         "Strings/prefix"
+         "Strings/wordwrap"
     ]

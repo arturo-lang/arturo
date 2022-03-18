@@ -1,10 +1,11 @@
 name: "xor?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L428"
+description: "return the logical XOR for the given values"
 returns: [
         :logical
     ]
-description: "return the logical XOR for the given values"
 examples: [
         {
             x: 2
@@ -33,8 +34,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/nor?"
+        "Logic/xnor?"
          "Logic/or?"
-         "Logic/xnor?"
-         "Binary/xor"
+         "Logic/nor?"
+         "Logic/and?"
     ]

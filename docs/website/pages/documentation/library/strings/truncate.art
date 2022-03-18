@@ -1,11 +1,12 @@
 name: "truncate"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L770"
+description: "truncate string at given length"
 returns: [
         :string
          :nothing
     ]
-description: "truncate string at given length"
 examples: [
         {
             str: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse erat quam"
@@ -47,8 +48,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/rename"
-         "Logic/true"
-         "Collections/permutate"
-         "Collections/repeat"
+        "Strings/capitalize"
+         "Strings/render"
+         "Strings/escape"
+         "Strings/lower"
     ]

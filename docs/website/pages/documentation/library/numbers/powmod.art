@@ -1,11 +1,12 @@
 name: "powmod"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L841"
+description: "modular exponentation: calculate the result of (base^exponent) % divider"
 returns: [
         :null
          :integer
     ]
-description: "modular exponentation: calculate the result of (base^exponent) % divider"
 examples: [
         {
             powmod 1 10 3   ; => 1
@@ -32,8 +33,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mod"
-         "Arithmetic/pow"
-         "Core/pop"
-         "Dates/now"
+        "Numbers/product"
+         "Numbers/floor"
+         "Numbers/exp"
+         "Numbers/hypot"
     ]

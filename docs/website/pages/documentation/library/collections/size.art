@@ -1,10 +1,11 @@
 name: "size"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L958"
+description: "get size/length of given collection"
 returns: [
         :integer
     ]
-description: "get size/length of given collection"
 examples: [
         {
             arr: ["one" "two" "three"]
@@ -32,7 +33,7 @@ arguments: #[
     ]
 related: [
         "Collections/slice"
-         "Numbers/sin"
-         "Numbers/sinh"
-         "Arithmetic/div"
+         "Collections/shuffle"
+         "Collections/sample"
+         "Collections/index"
     ]

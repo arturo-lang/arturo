@@ -1,11 +1,12 @@
 name: "select"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L479"
+description: "get collection\'s items that fulfil given condition"
 returns: [
         :block
          :nothing
     ]
-description: "get collection\'s items that fulfil given condition"
 examples: [
         {
             print select 1..10 [x][
@@ -36,8 +37,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/repeat"
-         "Collections/set"
-         "Collections/slice"
-         "Collections/split"
+        "Iterators/filter"
+         "Iterators/loop"
+         "Iterators/fold"
+         "Iterators/map"
     ]

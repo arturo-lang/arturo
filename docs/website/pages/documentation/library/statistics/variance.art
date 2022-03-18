@@ -1,10 +1,11 @@
 name: "variance"
 type: :function
 module: "Statistics"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Statistics.nim#L165"
+description: "get population variance of given collection of numbers"
 returns: [
         :floating
     ]
-description: "get population variance of given collection of numbers"
 examples: [
         {
             arr:  [1 2 3 4]
@@ -31,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Statistics/kurtosis"
+        "Statistics/deviation"
          "Statistics/skewness"
-         "Numbers/range"
-         "Statistics/deviation"
+         "Statistics/kurtosis"
+         "Statistics/average"
     ]

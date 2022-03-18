@@ -1,10 +1,11 @@
 name: "ascii?"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L62"
+description: "check if given character/string is in ASCII"
 returns: [
         :logical
     ]
-description: "check if given character/string is in ASCII"
 examples: [
         "ascii? `d`              ; true"
          {
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/asin"
-         "Numbers/asinh"
-         "Collections/in?"
-         "Collections/size"
+        "Strings/numeric?"
+         "Strings/suffix?"
+         "Strings/upper?"
+         "Strings/lower?"
     ]

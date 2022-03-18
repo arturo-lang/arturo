@@ -1,10 +1,11 @@
 name: "attrs"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L143"
+description: "get dictionary of set attributes"
 returns: [
         :dictionary
     ]
-description: "get dictionary of set attributes"
 examples: [
         {
             greet: function [x][
@@ -26,7 +27,7 @@ arguments: #[
     ]
 related: [
         "Reflection/attr"
+         "Reflection/arity"
          "Reflection/attr?"
-         "Converters/as"
-         "Core/try"
+         "Reflection/symbols"
     ]

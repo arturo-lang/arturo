@@ -1,11 +1,12 @@
 name: "module"
 type: :function
 module: "Paths"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Paths.nim#L226"
+description: "get path for given module name"
 returns: [
         :null
          :string
     ]
-description: "get path for given module name"
 examples: [
         "print module \'html        ; /usr/local/lib/arturo/html.art"
          "do.import module \'html    ; (imports given module)"
@@ -19,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mod"
-         "Arithmetic/mul"
-         "Crypto/hash"
+        "Paths/normalize"
+         "Paths/relative"
+         "Reflection/type"
          "Collections/sample"
     ]

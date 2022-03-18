@@ -1,10 +1,11 @@
 name: "symlink"
 type: :function
 module: "Files"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Files.nim#L323"
+description: "create symbolic link of file to given destination"
 returns: [
         :nothing
     ]
-description: "create symbolic link of file to given destination"
 examples: [
         {
             symlink relative "arturo/README.md" 
@@ -36,8 +37,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/combine"
-         "Collections/min"
-         "Collections/slice"
-         "Collections/split"
+        "Files/copy"
+         "Files/permissions"
+         "Files/write"
+         "Files/unzip"
     ]

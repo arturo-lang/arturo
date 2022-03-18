@@ -1,10 +1,11 @@
 name: "nand?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L192"
+description: "return the logical NAND for the given values"
 returns: [
         :logical
     ]
-description: "return the logical NAND for the given values"
 examples: [
         {
             x: 2
@@ -34,7 +35,7 @@ arguments: #[
     ]
 related: [
         "Logic/and?"
-         "Binary/nand"
          "Logic/nor?"
-         "Logic/or?"
+         "Logic/xnor?"
+         "Logic/xor?"
     ]

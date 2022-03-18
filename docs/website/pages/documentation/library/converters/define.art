@@ -1,10 +1,11 @@
 name: "define"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L563"
+description: "define new type with given characteristics"
 returns: [
         :nothing
     ]
-description: "define new type with given characteristics"
 examples: [
         {
             define :person [name surname age][  
@@ -78,8 +79,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Crypto/decode"
-         "Dates/before"
-         "Files/delete"
-         "Arithmetic/dec"
+        "Converters/dictionary"
+         "Converters/function"
+         "Converters/from"
+         "Converters/with"
     ]

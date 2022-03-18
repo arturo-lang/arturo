@@ -1,11 +1,12 @@
 name: "sec"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L1018"
+description: "calculate the secant of given angle"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the secant of given angle"
 examples: [
         {
             print sec 0                 ; 1.0
@@ -28,7 +29,7 @@ arguments: #[
     ]
 related: [
         "Numbers/csec"
-         "Arithmetic/dec"
-         "Collections/set"
          "Numbers/asec"
+         "Numbers/sin"
+         "Numbers/sech"
     ]

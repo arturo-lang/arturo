@@ -1,10 +1,11 @@
 name: "last"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L602"
+description: "return the last item of the given collection"
 returns: [
         :any
     ]
-description: "return the last item of the given collection"
 examples: [
         {
             print last "this is some text"       ; t
@@ -30,7 +31,7 @@ arguments: #[
     ]
 related: [
         "Collections/first"
-         "Paths/list"
-         "Converters/as"
-         "Core/case"
+         "Collections/max"
+         "Collections/flatten"
+         "Collections/sample"
     ]

@@ -1,10 +1,11 @@
 name: "any?"
 type: :function
 module: "Logic"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Logic.nim#L121"
+description: "check if any of the values in given block is true"
 returns: [
         :logical
     ]
-description: "check if any of the values in given block is true"
 examples: [
         {
             if any? @[false 3=4 2>1] 
@@ -24,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/and?"
-         "Binary/and"
-         "Collections/in?"
-         "Collections/key?"
+        "Logic/all?"
+         "Logic/and?"
+         "Logic/nor?"
+         "Logic/nand?"
     ]

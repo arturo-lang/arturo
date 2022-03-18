@@ -1,11 +1,12 @@
 name: "ln"
 type: :function
 module: "Numbers"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Numbers.nim#L731"
+description: "calculate the natural logarithm of given value"
 returns: [
         :floating
          :complex
     ]
-description: "calculate the natural logarithm of given value"
 examples: [
         {
             print ln 1.0                ; 0.0
@@ -27,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Binary/and"
-         "Binary/or"
-         "Collections/in?"
+        "Numbers/log"
+         "Numbers/tanh"
+         "Numbers/angle"
+         "Numbers/sinh"
     ]

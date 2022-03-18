@@ -1,10 +1,11 @@
 name: "every?"
 type: :function
 module: "Iterators"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Iterators.nim#L34"
+description: "check if every single item in collection satisfy given condition"
 returns: [
         :logical
     ]
-description: "check if every single item in collection satisfy given condition"
 examples: [
         {
             if every? [2 4 6 8] 'x [even? x] 
@@ -35,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/even?"
-         "Collections/empty?"
+        "Iterators/some?"
+         "Iterators/filter"
+         "Iterators/select"
          "Collections/key?"
-         "Collections/reverse"
     ]

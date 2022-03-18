@@ -1,10 +1,11 @@
 name: "as"
 type: :function
 module: "Converters"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Converters.nim#L492"
+description: "format given value as implied type"
 returns: [
         :any
     ]
-description: "format given value as implied type"
 examples: [
         {
             print as.binary 123           ; 1111011
@@ -47,6 +48,12 @@ attributes: #[
             ]
         description: "convert words in block to literals, if not in context"
         ]
+    data: #[
+        types: [
+                :logical
+            ]
+        description: "parse input as Arturo data block"
+        ]
     code: #[
         types: [
                 :logical
@@ -72,8 +79,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/abs"
+        "Converters/array"
+         "Crypto/hash"
          "Arithmetic/add"
-         "Binary/and"
-         "Binary/or"
+         "Converters/to"
     ]

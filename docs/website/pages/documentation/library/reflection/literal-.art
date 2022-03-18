@@ -1,10 +1,11 @@
 name: "literal?"
 type: :function
 module: "Reflection"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Reflection.nim#L536"
+description: "checks if given value is of type :literal"
 returns: [
         :logical
     ]
-description: "checks if given value is of type :literal"
 examples: [
         {
             print literal? 'x           ; true
@@ -20,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/label?"
+        "Reflection/symbolLiteral?"
+         "Reflection/label?"
          "Reflection/logical?"
-         "Reflection/binary?"
-         "Reflection/date?"
+         "Reflection/integer?"
     ]

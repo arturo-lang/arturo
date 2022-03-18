@@ -1,10 +1,11 @@
 name: "pad"
 type: :function
 module: "Strings"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Strings.nim#L469"
+description: "align string by adding given padding"
 returns: [
         :string
     ]
-description: "align string by adding given padding"
 examples: [
         {
             pad "good" 10                 ; => "      good"
@@ -50,8 +51,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/add"
-         "Arithmetic/mod"
-         "Arithmetic/pow"
-         "Binary/and"
+        "Strings/jaro"
+         "Strings/match"
+         "Strings/wordwrap"
+         "Strings/replace"
     ]

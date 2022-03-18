@@ -1,4 +1,0 @@
-#### Attributes
-
-|Attribute|Type|Description|
-|---|---|---|

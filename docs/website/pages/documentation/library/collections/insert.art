@@ -1,13 +1,14 @@
 name: "insert"
 type: :function
 module: "Collections"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Collections.nim#L501"
+description: "insert value in collection at given index"
 returns: [
         :string
          :dictionary
          :block
          :nothing
     ]
-description: "insert value in collection at given index"
 examples: [
         {
             insert [1 2 3 4] 0 "zero"
@@ -43,8 +44,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Colors/invert"
-         "Reflection/inspect"
-         "Strings/indent"
-         "Collections/index"
+        "Collections/index"
+         "Collections/min"
+         "Collections/slice"
+         "Collections/set"
     ]

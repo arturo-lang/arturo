@@ -1,0 +1,1 @@
+**Do not** edit any of the files in this folder manually. All of them, are generated automatically via the sitegen tool ;-)

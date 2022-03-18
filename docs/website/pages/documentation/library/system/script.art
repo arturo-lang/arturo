@@ -1,13 +1,14 @@
 name: "script"
 type: :dictionary
-description: "embedded information about the current script"
 module: "System"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/System.nim#L269"
+description: "embedded information about the current script"
 returns: [
         :dictionary
     ]
 related: [
-        "Strings/strip"
-         "Collections/sort"
-         "Collections/split"
-         "Io/print"
+        "System/sys"
+         "System/process"
+         "System/args"
+         "System/panic"
     ]

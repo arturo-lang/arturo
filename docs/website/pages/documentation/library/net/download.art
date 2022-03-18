@@ -1,10 +1,11 @@
 name: "download"
 type: :function
 module: "Net"
+source: "https://github.com/arturo-lang/arturo/blob/master/src/library/Net.nim#L48"
+description: "download file from url to disk"
 returns: [
         :nothing
     ]
-description: "download file from url to disk"
 examples: [
         {
             download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
@@ -31,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/powmod"
-         "Io/color"
-         "Iterators/fold"
-         "Numbers/round"
+        "Net/mail"
+         "Statistics/median"
+         "Ui/dialog"
+         "Strings/join"
     ]
