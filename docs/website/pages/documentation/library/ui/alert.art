@@ -43,8 +43,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/let"
-         "Collections/get"
-         "Collections/insert"
-         "Collections/last"
+        "Ui/dialog"
+         "Ui/webview"
+         "Ui/clip"
+         "Ui/popup"
     ]

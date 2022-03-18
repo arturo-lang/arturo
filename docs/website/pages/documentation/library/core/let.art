@@ -53,8 +53,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/get"
-         "Collections/set"
-         "Arithmetic/dec"
-         "Arithmetic/neg"
+        "Core/alias"
+         "Core/return"
+         "Core/new"
+         "Core/var"
     ]

@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Io/terminal"
-         "Collections/permutate"
-         "Strings/truncate"
-         "Converters/define"
+        "System/args"
+         "System/arg"
+         "System/execute"
+         "System/pause"
     ]

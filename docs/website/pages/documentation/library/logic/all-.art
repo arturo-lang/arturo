@@ -24,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/call"
+        "Logic/any?"
          "Logic/and?"
-         "Logic/any?"
-         "Reflection/null?"
+         "Logic/nand?"
+         "Logic/or?"
     ]

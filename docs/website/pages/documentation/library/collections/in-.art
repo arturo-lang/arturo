@@ -43,8 +43,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Core/if?"
-         "Reflection/is?"
-         "Binary/and"
+        "Collections/contains?"
+         "Collections/key?"
+         "Collections/sorted?"
+         "Collections/index"
     ]

@@ -32,7 +32,7 @@ arguments: #[
     ]
 related: [
         "Collections/slice"
-         "Numbers/sin"
-         "Numbers/sinh"
-         "Arithmetic/div"
+         "Collections/shuffle"
+         "Collections/sample"
+         "Collections/index"
     ]

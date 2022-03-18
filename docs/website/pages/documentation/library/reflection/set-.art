@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/set"
-         "Collections/get"
-         "Collections/key?"
-         "Core/let"
+        "Reflection/attr?"
+         "Reflection/date?"
+         "Reflection/label?"
+         "Reflection/regex?"
     ]

@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/literal?"
-         "Strings/lower?"
-         "Comparison/same?"
-         "Core/when?"
+        "Strings/lower?"
+         "Strings/numeric?"
+         "Strings/upper?"
+         "Strings/suffix?"
     ]

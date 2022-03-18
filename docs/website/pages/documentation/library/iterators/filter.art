@@ -36,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Dates/after"
-         "Logic/false"
-         "Logic/false?"
-         "Numbers/floor"
+        "Iterators/select"
+         "Iterators/loop"
+         "Iterators/fold"
+         "Iterators/every?"
     ]

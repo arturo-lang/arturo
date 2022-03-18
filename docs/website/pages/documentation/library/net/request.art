@@ -121,8 +121,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/repeat"
-         "Collections/reverse"
-         "Collections/values"
-         "Comparison/equal?"
+        "Net/serve"
+         "Collections/repeat"
+         "Paths/relative"
+         "Sets/powerset"
     ]

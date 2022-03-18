@@ -25,7 +25,7 @@ arguments: #[
     ]
 related: [
         "Collections/keys"
-         "Core/alias"
-         "Files/volume"
-         "Logic/false"
+         "Collections/sample"
+         "Collections/slice"
+         "Collections/index"
     ]

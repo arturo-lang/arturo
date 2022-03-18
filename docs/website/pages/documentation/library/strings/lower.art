@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/lower?"
-         "Strings/upper"
-         "Arithmetic/pow"
-         "Binary/nor"
+        "Strings/upper"
+         "Strings/capitalize"
+         "Strings/lower?"
+         "Strings/render"
     ]

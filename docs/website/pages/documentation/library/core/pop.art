@@ -32,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/pow"
-         "Arithmetic/mod"
-         "Binary/nor"
-         "Binary/not"
+        "Core/dup"
+         "Core/do"
+         "Core/break"
+         "Core/try"
     ]

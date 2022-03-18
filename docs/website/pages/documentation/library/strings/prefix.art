@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/prefix?"
-         "Strings/suffix"
-         "Converters/define"
-         "Core/break"
+        "Strings/suffix"
+         "Strings/wordwrap"
+         "Strings/strip"
+         "Strings/escape"
     ]

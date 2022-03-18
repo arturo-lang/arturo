@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/asinh"
+        "Numbers/acsech"
+         "Numbers/asinh"
          "Numbers/acos"
-         "Numbers/cosh"
-         "Numbers/acsech"
+         "Numbers/actanh"
     ]

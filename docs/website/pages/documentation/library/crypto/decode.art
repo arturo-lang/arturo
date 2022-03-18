@@ -32,7 +32,7 @@ arguments: #[
     ]
 related: [
         "Crypto/encode"
+         "Crypto/digest"
+         "Core/do"
          "Arithmetic/dec"
-         "Collections/remove"
-         "Converters/define"
     ]

@@ -33,8 +33,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Arithmetic/pow"
-         "Binary/nor"
-         "Binary/not"
-         "Core/new"
+        "Dates/before"
+         "Dates/after"
+         "Numbers/random"
+         "Paths/module"
     ]

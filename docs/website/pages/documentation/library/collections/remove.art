@@ -71,7 +71,7 @@ arguments: #[
     ]
 related: [
         "Collections/chop"
-         "Collections/append"
-         "Crypto/decode"
-         "Dates/before"
+         "Collections/reverse"
+         "Collections/sample"
+         "Collections/empty"
     ]

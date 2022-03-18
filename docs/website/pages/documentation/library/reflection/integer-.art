@@ -29,8 +29,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/inline?"
+        "Reflection/literal?"
          "Reflection/regex?"
-         "Reflection/date?"
-         "Reflection/literal?"
+         "Reflection/string?"
+         "Reflection/inline?"
     ]

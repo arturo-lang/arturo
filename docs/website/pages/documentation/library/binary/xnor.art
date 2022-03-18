@@ -25,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/nor"
-         "Binary/xor"
-         "Binary/or"
+        "Binary/xor"
+         "Binary/nor"
          "Binary/and"
+         "Binary/nand"
     ]

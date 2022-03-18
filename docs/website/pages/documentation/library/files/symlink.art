@@ -36,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/combine"
-         "Collections/min"
-         "Collections/slice"
-         "Collections/split"
+        "Files/copy"
+         "Files/permissions"
+         "Files/write"
+         "Files/unzip"
     ]

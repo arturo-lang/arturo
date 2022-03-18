@@ -26,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/attr?"
-         "System/exit"
-         "Numbers/odd?"
+        "Files/permissions"
+         "Reflection/attr?"
          "Collections/empty?"
+         "Numbers/positive?"
     ]

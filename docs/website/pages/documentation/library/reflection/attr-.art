@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/attr"
-         "Reflection/attrs"
-         "Files/exists?"
-         "Core/try"
+        "Reflection/attribute?"
+         "Reflection/set?"
+         "Reflection/string?"
+         "Reflection/path?"
     ]

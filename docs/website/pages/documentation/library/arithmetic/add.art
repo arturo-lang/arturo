@@ -39,8 +39,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/and"
-         "Arithmetic/fdiv"
+        "Arithmetic/fdiv"
          "Arithmetic/mod"
-         "Binary/nand"
+         "Arithmetic/sub"
+         "Arithmetic/mul"
     ]

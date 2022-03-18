@@ -30,5 +30,5 @@ related: [
         "Numbers/atan"
          "Numbers/actanh"
          "Numbers/ctan"
-         "Numbers/acos"
+         "Numbers/atanh"
     ]

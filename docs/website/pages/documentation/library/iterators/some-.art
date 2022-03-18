@@ -35,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Comparison/same?"
-         "Collections/set"
-         "Collections/size"
-         "Collections/sort"
+        "Iterators/every?"
+         "Iterators/select"
+         "Collections/sorted?"
+         "Comparison/same?"
     ]

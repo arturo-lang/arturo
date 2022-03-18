@@ -32,7 +32,7 @@ arguments: #[
     ]
 related: [
         "Strings/lower"
+         "Strings/capitalize"
          "Strings/upper?"
-         "Collections/append"
-         "Databases/open"
+         "Strings/render"
     ]

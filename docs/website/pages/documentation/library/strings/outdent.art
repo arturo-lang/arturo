@@ -50,7 +50,7 @@ arguments: #[
     ]
 related: [
         "Strings/indent"
-         "Collections/extend"
-         "Databases/open"
-         "Arithmetic/dec"
+         "Strings/levenshtein"
+         "Strings/replace"
+         "Strings/truncate"
     ]

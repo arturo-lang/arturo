@@ -40,8 +40,8 @@ arguments: #[
         ]
     ]
 related: [
-        "System/script"
-         "Binary/shr"
-         "Collections/drop"
-         "Collections/sort"
+        "Strings/escape"
+         "Strings/capitalize"
+         "Strings/prefix"
+         "Strings/wordwrap"
     ]

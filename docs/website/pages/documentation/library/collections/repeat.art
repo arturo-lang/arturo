@@ -36,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/read"
-         "Iterators/select"
-         "Net/request"
-         "Reflection/regex?"
+        "Collections/drop"
+         "Collections/permutate"
+         "Collections/take"
+         "Collections/insert"
     ]

@@ -28,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/remove"
+        "Files/delete"
          "Files/read"
-         "Numbers/range"
-         "Strings/render"
+         "Files/write"
+         "Files/symlink"
     ]

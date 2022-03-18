@@ -41,8 +41,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/escape"
-         "Reflection/word?"
-         "Collections/drop"
-         "Converters/array"
+        "Strings/prefix"
+         "Strings/escape"
+         "Strings/strip"
+         "Strings/truncate"
     ]

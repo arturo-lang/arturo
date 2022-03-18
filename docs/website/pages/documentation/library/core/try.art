@@ -36,7 +36,7 @@ arguments: #[
     ]
 related: [
         "Core/try?"
-         "Binary/or"
-         "Converters/to"
-         "Crypto/crc"
+         "Core/break"
+         "Core/return"
+         "Core/else"
     ]

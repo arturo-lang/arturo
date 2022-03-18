@@ -47,8 +47,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/write"
-         "Core/until"
-         "Binary/shl"
-         "Collections/size"
+        "Core/until"
+         "Core/switch"
+         "Core/unless"
+         "Core/continue"
     ]

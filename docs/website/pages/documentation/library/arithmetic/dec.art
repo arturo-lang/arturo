@@ -25,7 +25,7 @@ arguments: #[
     ]
 related: [
         "Arithmetic/inc"
-         "Numbers/sec"
-         "Arithmetic/div"
          "Arithmetic/neg"
+         "Arithmetic/fdiv"
+         "Arithmetic/div"
     ]

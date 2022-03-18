@@ -29,8 +29,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/acos"
-         "Reflection/attrs"
-         "Collections/values"
-         "Dates/after"
+        "Numbers/digits"
+         "Numbers/acos"
+         "Numbers/abs"
+         "Numbers/acosh"
     ]

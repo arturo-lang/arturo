@@ -22,6 +22,6 @@ arguments: #[
 related: [
         "Numbers/even?"
          "Numbers/odd?"
-         "Numbers/negative?"
          "Numbers/positive?"
+         "Numbers/negative?"
     ]

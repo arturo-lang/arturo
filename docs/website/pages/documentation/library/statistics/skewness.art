@@ -33,6 +33,6 @@ arguments: #[
 related: [
         "Statistics/kurtosis"
          "Statistics/variance"
-         "Collections/keys"
-         "Core/unless"
+         "Statistics/deviation"
+         "Statistics/median"
     ]

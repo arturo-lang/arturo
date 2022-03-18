@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Comparison/same?"
-         "Numbers/exp"
-         "Arithmetic/add"
-         "Arithmetic/mod"
+        "Numbers/actan"
+         "Numbers/asec"
+         "Numbers/ctan"
+         "Numbers/angle"
     ]

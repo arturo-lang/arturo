@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Paths/path"
-         "Collections/max"
-         "Converters/with"
-         "Core/switch"
+        "Strings/jaro"
+         "Strings/truncate"
+         "Strings/strip"
+         "Strings/levenshtein"
     ]

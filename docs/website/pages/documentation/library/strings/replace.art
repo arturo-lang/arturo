@@ -37,8 +37,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/repeat"
-         "Files/rename"
-         "Collections/remove"
-         "Collections/reverse"
+        "Strings/levenshtein"
+         "Strings/jaro"
+         "Strings/render"
+         "Strings/truncate"
     ]

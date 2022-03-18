@@ -36,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/last"
-         "Collections/first"
-         "Core/let"
-         "Reflection/is?"
+        "Files/volume"
+         "Paths/relative"
+         "Paths/normalize"
+         "Paths/extract"
     ]

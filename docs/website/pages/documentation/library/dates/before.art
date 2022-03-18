@@ -80,7 +80,7 @@ arguments: #[
     ]
 related: [
         "Dates/after"
-         "Collections/remove"
-         "Converters/define"
-         "Crypto/decode"
+         "Dates/now"
+         "Numbers/abs"
+         "Numbers/random"
     ]

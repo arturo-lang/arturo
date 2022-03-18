@@ -62,8 +62,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Collections/in?"
+        "Reflection/inspect"
+         "Reflection/symbols"
          "Core/if"
-         "Core/if?"
+         "Io/prints"
     ]

@@ -37,7 +37,7 @@ arguments: #[
     ]
 related: [
         "Arithmetic/fdiv"
+         "Arithmetic/neg"
          "Arithmetic/dec"
-         "Collections/min"
-         "Core/do"
+         "Arithmetic/pow"
     ]

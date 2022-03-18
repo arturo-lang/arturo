@@ -18,7 +18,7 @@ arguments: #[
     ]
 related: [
         "Collections/min"
-         "Iterators/map"
-         "Arithmetic/mod"
-         "Arithmetic/mul"
+         "Collections/sample"
+         "Collections/last"
+         "Collections/combine"
     ]

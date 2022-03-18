@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/first"
-         "Collections/get"
-         "Numbers/digits"
-         "Paths/list"
+        "Crypto/hash"
+         "Crypto/decode"
+         "Crypto/encode"
+         "Arithmetic/dec"
     ]

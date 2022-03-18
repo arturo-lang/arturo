@@ -34,7 +34,7 @@ arguments: #[
     ]
 related: [
         "Numbers/angle"
-         "Binary/and"
-         "Binary/nand"
-         "Collections/take"
+         "Numbers/asin"
+         "Numbers/random"
+         "Numbers/tan"
     ]

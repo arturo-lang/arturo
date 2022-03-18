@@ -26,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mod"
-         "Arithmetic/neg"
-         "Arithmetic/pow"
-         "Binary/nor"
+        "Numbers/ln"
+         "Numbers/product"
+         "Numbers/cos"
+         "Numbers/angle"
     ]

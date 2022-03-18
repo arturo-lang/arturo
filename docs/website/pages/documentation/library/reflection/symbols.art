@@ -23,8 +23,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Reflection/symbol?"
-         "Collections/sample"
-         "Files/symlink"
-         "System/sys"
+        "Reflection/stack"
+         "Reflection/attrs"
+         "Reflection/info"
+         "Reflection/symbol?"
     ]

@@ -29,5 +29,5 @@ related: [
         "Colors/darken"
          "Colors/saturate"
          "Colors/desaturate"
-         "Collections/flatten"
+         "Colors/invert"
     ]

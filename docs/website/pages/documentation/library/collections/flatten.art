@@ -39,8 +39,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/last"
-         "Colors/darken"
-         "Colors/lighten"
-         "Colors/palette"
+        "Collections/combine"
+         "Collections/last"
+         "Collections/insert"
+         "Collections/slice"
     ]

@@ -13,8 +13,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Converters/array"
-         "Files/write"
-         "Collections/empty"
-         "Converters/with"
+        "Reflection/attrs"
+         "Reflection/attr"
+         "Reflection/inspect"
+         "Io/prints"
     ]

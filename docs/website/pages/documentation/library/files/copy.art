@@ -32,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/chop"
-         "Core/pop"
-         "Numbers/conj"
-         "Numbers/cos"
+        "Files/zip"
+         "Files/symlink"
+         "Files/volume"
+         "Files/write"
     ]

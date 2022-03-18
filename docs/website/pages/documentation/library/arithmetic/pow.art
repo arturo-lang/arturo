@@ -35,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/pop"
-         "Dates/now"
-         "Arithmetic/mod"
+        "Arithmetic/mod"
          "Arithmetic/mul"
+         "Numbers/product"
+         "Arithmetic/sub"
     ]

@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/false"
-         "Logic/true?"
-         "Collections/values"
-         "Comparison/same?"
+        "Logic/true?"
+         "Logic/all?"
+         "Logic/and?"
+         "Logic/any?"
     ]

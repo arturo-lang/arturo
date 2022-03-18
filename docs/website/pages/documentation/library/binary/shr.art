@@ -26,7 +26,7 @@ arguments: #[
     ]
 related: [
         "Binary/shl"
-         "Arithmetic/sub"
+         "Binary/xor"
          "Binary/nor"
-         "Binary/or"
+         "Binary/xnor"
     ]

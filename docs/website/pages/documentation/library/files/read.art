@@ -89,8 +89,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/break"
-         "Strings/pad"
-         "Paths/list"
-         "Arithmetic/add"
+        "Files/delete"
+         "Files/rename"
+         "Files/write"
+         "Files/volume"
     ]

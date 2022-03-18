@@ -30,7 +30,7 @@ arguments: #[
     ]
 related: [
         "Collections/first"
-         "Paths/list"
-         "Converters/as"
-         "Core/case"
+         "Collections/max"
+         "Collections/flatten"
+         "Collections/sample"
     ]

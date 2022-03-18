@@ -6,8 +6,8 @@ returns: [
         :dictionary
     ]
 related: [
-        "Reflection/path?"
-         "Converters/with"
-         "Crypto/hash"
-         "Numbers/tanh"
+        "Paths/extract"
+         "Paths/relative"
+         "Paths/normalize"
+         "Paths/list"
     ]

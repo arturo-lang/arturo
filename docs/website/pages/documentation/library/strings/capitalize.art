@@ -26,6 +26,6 @@ arguments: #[
 related: [
         "Strings/upper"
          "Strings/lower"
-         "Paths/normalize"
-         "Statistics/variance"
+         "Strings/strip"
+         "Strings/truncate"
     ]

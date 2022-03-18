@@ -20,8 +20,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Numbers/exp"
-         "Arithmetic/div"
-         "Arithmetic/fdiv"
-         "Binary/not"
+        "System/panic"
+         "System/env"
+         "System/execute"
+         "System/terminate"
     ]

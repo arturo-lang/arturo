@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/sub"
-         "Arithmetic/mul"
-         "Binary/shl"
-         "Binary/shr"
+        "Numbers/sin"
+         "Numbers/sec"
+         "Numbers/gamma"
+         "Numbers/asin"
     ]

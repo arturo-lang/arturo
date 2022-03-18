@@ -8,6 +8,6 @@ returns: [
 related: [
         "Logic/false"
          "Logic/true"
-         "Collections/max"
-         "Collections/take"
+         "Logic/any?"
+         "Logic/and?"
     ]

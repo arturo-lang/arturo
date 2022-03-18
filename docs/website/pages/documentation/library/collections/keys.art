@@ -24,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/key?"
-         "Collections/values"
-         "System/sys"
-         "Arithmetic/dec"
+        "Collections/values"
+         "Collections/get"
+         "Collections/extend"
+         "Collections/key?"
     ]

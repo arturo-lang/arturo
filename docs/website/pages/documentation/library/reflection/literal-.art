@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/label?"
+        "Reflection/symbolLiteral?"
+         "Reflection/label?"
          "Reflection/logical?"
-         "Reflection/binary?"
-         "Reflection/date?"
+         "Reflection/integer?"
     ]

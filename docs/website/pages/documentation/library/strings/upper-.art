@@ -23,7 +23,7 @@ arguments: #[
     ]
 related: [
         "Strings/lower?"
-         "Strings/upper"
          "Strings/numeric?"
-         "Collections/append"
+         "Strings/prefix?"
+         "Strings/whitespace?"
     ]

@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sum"
-         "Io/print"
-         "Numbers/round"
-         "Paths/module"
+        "Numbers/log"
+         "Numbers/exp"
+         "Numbers/acsec"
+         "Numbers/acos"
     ]

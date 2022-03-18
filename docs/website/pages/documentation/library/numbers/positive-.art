@@ -20,7 +20,7 @@ arguments: #[
     ]
 related: [
         "Numbers/negative?"
-         "Numbers/even?"
+         "Numbers/prime?"
          "Numbers/odd?"
          "Numbers/zero?"
     ]

@@ -30,7 +30,7 @@ arguments: #[
     ]
 related: [
         "Collections/last"
-         "Paths/list"
-         "Collections/sort"
-         "Converters/from"
+         "Collections/index"
+         "Collections/insert"
+         "Collections/min"
     ]

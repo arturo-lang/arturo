@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/indent"
-         "Arithmetic/dec"
-         "Arithmetic/inc"
-         "Arithmetic/neg"
+        "Collections/insert"
+         "Collections/min"
+         "Collections/first"
+         "Collections/size"
     ]

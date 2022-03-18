@@ -82,8 +82,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/delete"
-         "Ui/alert"
-         "Collections/flatten"
-         "Core/let"
+        "Colors/desaturate"
+         "Colors/saturate"
+         "Colors/invert"
+         "Colors/blend"
     ]

@@ -47,8 +47,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Io/color"
-         "Collections/combine"
-         "Files/volume"
-         "Strings/capitalize"
+        "Paths/module"
+         "Paths/relative"
+         "Paths/extract"
+         "Paths/list"
     ]

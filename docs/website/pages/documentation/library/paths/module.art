@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mod"
-         "Arithmetic/mul"
-         "Files/volume"
-         "Crypto/hash"
+        "Paths/normalize"
+         "Paths/relative"
+         "Reflection/type"
+         "Collections/sample"
     ]

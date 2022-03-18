@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Colors/spin"
-         "Arithmetic/dec"
-         "Arithmetic/neg"
-         "Arithmetic/pow"
+        "Databases/query"
+         "Colors/blend"
+         "Converters/define"
+         "Strings/outdent"
     ]

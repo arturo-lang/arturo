@@ -31,7 +31,7 @@ arguments: #[
     ]
 related: [
         "Collections/take"
-         "Collections/chop"
-         "Converters/from"
-         "Core/do"
+         "Collections/repeat"
+         "Collections/first"
+         "Collections/permutate"
     ]

@@ -29,6 +29,6 @@ arguments: #[
 related: [
         "Numbers/tan"
          "Numbers/actan"
-         "Numbers/atan"
          "Numbers/ctanh"
+         "Numbers/tanh"
     ]

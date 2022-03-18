@@ -24,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/append"
-         "Colors/blend"
-         "Numbers/even?"
-         "Binary/and"
+        "Collections/get"
+         "Collections/flatten"
+         "Collections/keys"
+         "Collections/min"
     ]

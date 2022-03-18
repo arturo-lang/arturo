@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/function?"
-         "Reflection/string?"
-         "Reflection/block?"
-         "Reflection/date?"
+        "Reflection/string?"
+         "Reflection/function?"
+         "Reflection/logical?"
+         "Reflection/inline?"
     ]

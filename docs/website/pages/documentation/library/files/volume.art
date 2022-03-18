@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Paths/list"
-         "Collections/values"
-         "Paths/module"
+        "Files/delete"
+         "Files/write"
          "Files/read"
+         "Paths/list"
     ]

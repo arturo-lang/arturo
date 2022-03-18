@@ -56,8 +56,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/arity"
-         "Core/alias"
-         "Core/break"
-         "Core/try"
+        "Converters/dictionary"
+         "Converters/from"
+         "Converters/as"
+         "Converters/function"
     ]

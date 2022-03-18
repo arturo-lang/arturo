@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/last"
-         "Collections/take"
-         "Converters/as"
-         "Core/call"
+        "Core/call"
+         "Core/ensure"
+         "Core/else"
+         "Core/while"
     ]

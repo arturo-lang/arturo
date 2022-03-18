@@ -23,8 +23,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/suffix"
-         "Strings/prefix?"
-         "Collections/shuffle"
-         "Sets/subset?"
+        "Strings/prefix?"
+         "Strings/numeric?"
+         "Strings/ascii?"
+         "Strings/upper?"
     ]

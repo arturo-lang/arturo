@@ -24,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Colors/lighten"
-         "Colors/saturate"
+        "Colors/saturate"
+         "Colors/lighten"
          "Colors/desaturate"
-         "Collections/take"
+         "Colors/blend"
     ]

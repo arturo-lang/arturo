@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Converters/with"
-         "Collections/slice"
-         "Numbers/sech"
-         "Numbers/sinh"
+        "Core/if"
+         "Core/while"
+         "Core/else"
+         "Core/until"
     ]

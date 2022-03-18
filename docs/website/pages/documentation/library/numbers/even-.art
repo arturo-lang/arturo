@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/odd?"
-         "Numbers/zero?"
-         "Core/when?"
-         "Iterators/every?"
+        "Numbers/zero?"
+         "Numbers/odd?"
+         "Numbers/negative?"
+         "Numbers/prime?"
     ]

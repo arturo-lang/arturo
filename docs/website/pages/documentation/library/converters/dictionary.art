@@ -62,8 +62,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/dictionary?"
+        "Converters/array"
          "Converters/function"
-         "Numbers/factors"
-         "Numbers/infinity"
+         "Converters/with"
+         "Converters/define"
     ]

@@ -20,7 +20,7 @@ arguments: #[
     ]
 related: [
         "Io/color"
-         "Binary/nor"
-         "Binary/or"
-         "Binary/shr"
+         "Io/goto"
+         "Io/prints"
+         "Io/terminal"
     ]

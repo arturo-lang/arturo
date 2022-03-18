@@ -39,6 +39,6 @@ arguments: #[
 related: [
         "Core/unless"
          "Core/if?"
-         "Comparison/less?"
-         "Dates/leap?"
+         "Core/when?"
+         "Core/else"
     ]

@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "System/terminate"
-         "Colors/desaturate"
-         "Colors/palette"
-         "Colors/saturate"
+        "Collections/combine"
+         "Collections/repeat"
+         "Collections/sample"
+         "Collections/first"
     ]

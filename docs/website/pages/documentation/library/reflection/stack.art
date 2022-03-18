@@ -18,8 +18,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Collections/slice"
-         "Collections/take"
-         "Numbers/atan"
-         "Numbers/atan2"
+        "Reflection/symbols"
+         "Reflection/attrs"
+         "Reflection/attr"
+         "Reflection/benchmark"
     ]

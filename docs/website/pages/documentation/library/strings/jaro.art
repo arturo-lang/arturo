@@ -1,7 +1,7 @@
 name: "jaro"
 type: :function
 module: "Strings"
-description: "calculate Jaro similarity between given strings"
+description: "calculate Jaro distance/similarity between given strings"
 returns: [
         :floating
     ]
@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/var"
-         "System/arg"
-         "Arithmetic/add"
-         "Binary/and"
+        "Strings/replace"
+         "Strings/match"
+         "Strings/levenshtein"
+         "Strings/join"
     ]

@@ -182,8 +182,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/extend"
-         "Reflection/stack"
-         "System/exit"
-         "Binary/xor"
+        "Paths/normalize"
+         "Paths/path"
+         "Paths/list"
+         "Paths/relative"
     ]

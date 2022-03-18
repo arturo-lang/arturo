@@ -36,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/repeat"
-         "Collections/set"
-         "Collections/slice"
-         "Collections/split"
+        "Iterators/filter"
+         "Iterators/loop"
+         "Iterators/fold"
+         "Iterators/map"
     ]

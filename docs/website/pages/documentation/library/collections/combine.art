@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/continue"
+        "Collections/slice"
          "Collections/min"
-         "Converters/define"
-         "Files/symlink"
+         "Collections/sample"
+         "Collections/chop"
     ]

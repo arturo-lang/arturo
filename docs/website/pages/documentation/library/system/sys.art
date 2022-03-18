@@ -6,8 +6,8 @@ returns: [
         :dictionary
     ]
 related: [
-        "Arithmetic/sub"
-         "Binary/shl"
-         "Binary/shr"
-         "Collections/keys"
+        "System/script"
+         "System/args"
+         "System/pause"
+         "System/null"
     ]

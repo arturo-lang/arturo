@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/case"
-         "Core/else"
-         "Numbers/cos"
-         "Numbers/cosh"
+        "Crypto/encode"
+         "Crypto/decode"
+         "Databases/query"
+         "Files/copy"
     ]

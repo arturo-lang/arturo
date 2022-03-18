@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/even?"
-         "Numbers/zero?"
-         "Arithmetic/add"
-         "Logic/and?"
+        "Numbers/zero?"
+         "Numbers/even?"
+         "Numbers/positive?"
+         "Numbers/prime?"
     ]

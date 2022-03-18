@@ -29,5 +29,5 @@ related: [
         "Colors/desaturate"
          "Colors/darken"
          "Colors/lighten"
-         "Statistics/average"
+         "Colors/palette"
     ]

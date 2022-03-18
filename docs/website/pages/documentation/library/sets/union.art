@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Sets/intersection"
-         "Binary/nor"
-         "Binary/not"
-         "Binary/xnor"
+        "Sets/difference"
+         "Sets/powerset"
+         "Sets/intersection"
+         "Converters/function"
     ]

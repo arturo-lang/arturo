@@ -78,8 +78,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/abs"
+        "Converters/array"
+         "Crypto/hash"
          "Arithmetic/add"
-         "Binary/and"
-         "Binary/or"
+         "Converters/to"
     ]

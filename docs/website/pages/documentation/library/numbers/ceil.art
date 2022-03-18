@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/call"
-         "Net/mail"
-         "Ui/clip"
-         "Arithmetic/dec"
+        "Numbers/acsech"
+         "Numbers/sin"
+         "Numbers/asec"
+         "Numbers/csec"
     ]

@@ -39,7 +39,7 @@ arguments: #[
     ]
 related: [
         "Core/try"
-         "Collections/key?"
-         "Logic/any?"
-         "Logic/or?"
+         "Core/if?"
+         "Core/when?"
+         "Core/unless?"
     ]

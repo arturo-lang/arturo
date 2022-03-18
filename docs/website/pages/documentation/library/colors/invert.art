@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/insert"
-         "Strings/indent"
-         "Collections/index"
-         "Io/input"
+        "Colors/palette"
+         "Colors/lighten"
+         "Colors/spin"
+         "Colors/blend"
     ]

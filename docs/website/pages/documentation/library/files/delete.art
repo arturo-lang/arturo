@@ -25,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Paths/list"
-         "Colors/palette"
-         "Converters/define"
-         "Core/else"
+        "Files/read"
+         "Files/volume"
+         "Files/rename"
+         "Files/write"
     ]

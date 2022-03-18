@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/keys"
-         "Core/try?"
-         "Logic/any?"
-         "Reflection/set?"
+        "Collections/empty?"
+         "Collections/in?"
+         "Collections/keys"
+         "Collections/contains?"
     ]

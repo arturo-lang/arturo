@@ -62,8 +62,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Binary/not"
-         "Collections/in?"
-         "Collections/index"
+        "Io/prints"
+         "Io/print"
+         "Reflection/inspect"
+         "Io/goto"
     ]

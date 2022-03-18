@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/symbols"
+        "Reflection/symbolLiteral?"
          "Reflection/label?"
-         "Reflection/null?"
-         "Reflection/string?"
+         "Reflection/block?"
+         "Reflection/type?"
     ]

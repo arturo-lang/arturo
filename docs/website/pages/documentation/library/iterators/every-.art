@@ -35,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/even?"
-         "Collections/empty?"
+        "Iterators/some?"
+         "Iterators/filter"
+         "Iterators/select"
          "Collections/key?"
-         "Collections/reverse"
     ]
