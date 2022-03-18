@@ -53,14 +53,31 @@ loop symbols [sym][
             if and? key? inf2 'module
                     inf <> inf2 [
                 lib2: inf2\module
-                lev: 100
-                levA: (levenshtein sym sym2) * 3
-                levB: levenshtein (inf\description) (inf2\description)
-                set related new ~"|capitalize lib2|/|sym2|" min @[levA levB]
+                score: 0.0
+                if lib=lib2 [
+                    score: score + 0.8
+                ]
+                if and? contains? sym "?" contains? sym2 "?" [
+                    score: score + 0.5
+                ]
+                if and? not? contains? sym "?" not? contains? sym2 "?" [
+                    score: score + 0.5
+                ]
+                score: score + jaro sym sym2
+                score: score + 4 * jaro inf\description inf2\description
+                ; lev: 100
+                ; levA: (levenshtein sym sym2) * 3
+                ; levB: levenshtein (inf\description) (inf2\description)
+                ; if lib=lib2 [
+                ;     levA: levA / 2
+                ;     levB: levB / 2
+                ; ]
+                set related new ~"|capitalize lib2|/|sym2|" score ; min @[levA levB]
             ]
         ]
-        ;inspect sort.values related
-        set relatedFuncs sym first.n: 4 keys sort.values related
+        bestMatches: reverse last.n: 4 keys sort.values related
+        inspect bestMatches
+        set relatedFuncs sym bestMatches
         ; inspect relatedFuncs
     ]
 ]
