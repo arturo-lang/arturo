@@ -16,8 +16,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "System/terminate"
+        "Io/prints"
          "Io/clear"
-         "Collections/min"
-         "Collections/permutate"
+         "Io/print"
+         "Io/color"
     ]

@@ -25,7 +25,7 @@ arguments: #[
     ]
 related: [
         "Statistics/average"
-         "Collections/min"
-         "Arithmetic/div"
-         "Arithmetic/fdiv"
+         "Statistics/variance"
+         "Statistics/deviation"
+         "Statistics/skewness"
     ]

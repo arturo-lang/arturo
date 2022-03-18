@@ -28,8 +28,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/drop"
-         "Core/pop"
-         "Files/copy"
-         "Iterators/loop"
+        "Collections/remove"
+         "Collections/sample"
+         "Collections/combine"
+         "Collections/drop"
     ]

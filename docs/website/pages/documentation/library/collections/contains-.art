@@ -43,8 +43,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/continue"
+        "Collections/sorted?"
+         "Collections/in?"
+         "Collections/empty?"
          "Collections/key?"
-         "Collections/combine"
-         "Logic/nand?"
     ]

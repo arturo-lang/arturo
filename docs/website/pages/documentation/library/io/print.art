@@ -25,7 +25,7 @@ arguments: #[
     ]
 related: [
         "Io/prints"
-         "Arithmetic/inc"
-         "Collections/in?"
-         "Collections/min"
+         "Io/input"
+         "Io/terminal"
+         "Strings/indent"
     ]

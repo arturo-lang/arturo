@@ -46,8 +46,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/nor"
-         "Binary/or"
-         "Binary/xnor"
-         "Binary/xor"
+        "Io/goto"
+         "Io/cursor"
+         "Io/clear"
+         "Io/terminal"
     ]

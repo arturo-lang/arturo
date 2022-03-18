@@ -24,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/and?"
-         "Binary/and"
-         "Collections/in?"
-         "Collections/key?"
+        "Logic/all?"
+         "Logic/and?"
+         "Logic/nor?"
+         "Logic/nand?"
     ]

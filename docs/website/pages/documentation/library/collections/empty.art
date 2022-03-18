@@ -23,8 +23,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/empty?"
-         "Collections/reverse"
-         "Files/copy"
-         "Numbers/exp"
+        "Collections/reverse"
+         "Collections/remove"
+         "Collections/max"
+         "Collections/shuffle"
     ]

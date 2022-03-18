@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/and"
-         "Binary/nand"
-         "Logic/and?"
-         "Logic/nand?"
+        "Numbers/asin"
+         "Numbers/range"
+         "Numbers/acos"
+         "Numbers/atan"
     ]

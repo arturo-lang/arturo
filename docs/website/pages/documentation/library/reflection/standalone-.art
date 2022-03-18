@@ -23,7 +23,7 @@ arguments: #[
     ]
 related: [
         "Reflection/inline?"
-         "Collections/contains?"
-         "Collections/sample"
-         "Comparison/same?"
+         "Reflection/function?"
+         "Reflection/dictionary?"
+         "Reflection/database?"
     ]

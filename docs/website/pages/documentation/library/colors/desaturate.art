@@ -27,5 +27,5 @@ related: [
         "Colors/saturate"
          "Colors/darken"
          "Colors/lighten"
-         "Collections/permutate"
+         "Colors/palette"
     ]

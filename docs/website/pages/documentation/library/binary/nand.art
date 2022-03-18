@@ -27,6 +27,6 @@ arguments: #[
 related: [
         "Binary/and"
          "Binary/nor"
-         "Logic/nand?"
+         "Binary/xnor"
          "Binary/or"
     ]

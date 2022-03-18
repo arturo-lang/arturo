@@ -27,7 +27,7 @@ arguments: #[
     ]
 related: [
         "Comparison/equal?"
-         "Comparison/less?"
-         "Comparison/greater?"
          "Comparison/lessOrEqual?"
+         "Comparison/greaterOrEqual?"
+         "Comparison/greater?"
     ]

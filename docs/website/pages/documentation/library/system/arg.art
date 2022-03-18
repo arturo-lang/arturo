@@ -7,7 +7,7 @@ returns: [
     ]
 related: [
         "System/args"
-         "Arithmetic/add"
-         "Arithmetic/neg"
-         "Binary/and"
+         "System/pause"
+         "System/process"
+         "System/script"
     ]

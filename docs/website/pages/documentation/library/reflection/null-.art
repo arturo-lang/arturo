@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "System/null"
-         "Reflection/char?"
-         "Reflection/date?"
-         "Reflection/label?"
+        "Reflection/label?"
+         "Reflection/inline?"
+         "Reflection/logical?"
+         "Reflection/literal?"
     ]

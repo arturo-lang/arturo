@@ -78,7 +78,7 @@ arguments: #[
     ]
 related: [
         "Dates/before"
-         "Reflection/attr"
-         "Iterators/filter"
-         "Numbers/acsec"
+         "Numbers/atan"
+         "Numbers/factors"
+         "Statistics/average"
     ]

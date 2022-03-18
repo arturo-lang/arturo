@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/sort"
-         "Iterators/some?"
+        "Collections/empty?"
+         "Collections/contains?"
+         "Collections/in?"
          "Reflection/word?"
-         "Collections/empty?"
     ]

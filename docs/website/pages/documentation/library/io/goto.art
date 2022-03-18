@@ -24,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/not"
-         "Collections/get"
-         "Converters/to"
-         "Logic/not?"
+        "Io/color"
+         "Io/prints"
+         "Io/cursor"
+         "Io/terminal"
     ]

@@ -23,8 +23,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Iterators/some?"
-         "Reflection/date?"
-         "Collections/sample"
-         "Collections/set"
+        "Comparison/greater?"
+         "Comparison/less?"
+         "Comparison/greaterOrEqual?"
+         "Comparison/equal?"
     ]

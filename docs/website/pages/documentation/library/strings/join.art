@@ -47,8 +47,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/min"
-         "Colors/spin"
-         "Numbers/asin"
-         "Numbers/sin"
+        "Strings/indent"
+         "Strings/lower"
+         "Strings/jaro"
+         "Strings/capitalize"
     ]

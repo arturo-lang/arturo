@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/powmod"
-         "Io/color"
-         "Iterators/fold"
-         "Numbers/round"
+        "Net/mail"
+         "Statistics/median"
+         "Ui/dialog"
+         "Strings/join"
     ]

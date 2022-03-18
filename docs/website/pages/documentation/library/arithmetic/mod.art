@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mul"
-         "Arithmetic/pow"
+        "Arithmetic/pow"
+         "Arithmetic/mul"
          "Arithmetic/add"
-         "Binary/and"
+         "Arithmetic/fdiv"
     ]

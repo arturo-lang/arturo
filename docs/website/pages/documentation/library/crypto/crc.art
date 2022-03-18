@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/dec"
-         "Arithmetic/inc"
-         "Binary/or"
-         "Core/try"
+        "Numbers/csech"
+         "Numbers/csec"
+         "Numbers/cosh"
+         "Numbers/acsech"
     ]

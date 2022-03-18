@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Converters/dictionary"
-         "Reflection/binary?"
+        "Reflection/binary?"
          "Reflection/function?"
-         "Reflection/char?"
+         "Reflection/literal?"
+         "Reflection/integer?"
     ]

@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/cos"
-         "Collections/min"
-         "Colors/spin"
-         "Numbers/asin"
+        "Numbers/asin"
+         "Numbers/sinh"
+         "Numbers/sec"
+         "Numbers/csec"
     ]

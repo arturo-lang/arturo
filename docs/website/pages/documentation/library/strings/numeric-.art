@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/lower?"
-         "Strings/upper?"
-         "Numbers/zero?"
-         "Numbers/even?"
+        "Strings/upper?"
+         "Strings/lower?"
+         "Strings/suffix?"
+         "Strings/ascii?"
     ]

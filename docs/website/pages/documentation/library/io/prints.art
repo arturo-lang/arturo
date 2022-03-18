@@ -23,7 +23,7 @@ arguments: #[
     ]
 related: [
         "Io/print"
-         "Files/write"
-         "Numbers/prime?"
-         "Reflection/arity"
+         "Io/input"
+         "Io/terminal"
+         "Io/goto"
     ]

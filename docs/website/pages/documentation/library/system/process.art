@@ -27,8 +27,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Core/unless"
-         "Io/prints"
-         "Numbers/prime?"
-         "Numbers/product"
+        "System/panic"
+         "System/pause"
+         "System/args"
+         "System/script"
     ]

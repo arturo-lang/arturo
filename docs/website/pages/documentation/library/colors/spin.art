@@ -25,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sin"
-         "Collections/min"
-         "Collections/split"
-         "Databases/open"
+        "Colors/invert"
+         "Colors/blend"
+         "Colors/palette"
+         "Colors/lighten"
     ]

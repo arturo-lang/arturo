@@ -27,8 +27,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Files/read"
-         "Colors/blend"
-         "Converters/array"
-         "Io/clear"
+        "Core/try"
+         "Core/return"
+         "Core/new"
+         "Core/case"
     ]

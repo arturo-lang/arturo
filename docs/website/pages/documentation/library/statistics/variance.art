@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Statistics/kurtosis"
+        "Statistics/deviation"
          "Statistics/skewness"
-         "Numbers/range"
-         "Statistics/deviation"
+         "Statistics/kurtosis"
+         "Statistics/average"
     ]

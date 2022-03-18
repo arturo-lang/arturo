@@ -38,8 +38,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/drop"
-         "Arithmetic/fdiv"
-         "Arithmetic/mod"
-         "Arithmetic/pow"
+        "Converters/array"
+         "Converters/function"
+         "Converters/dictionary"
+         "Converters/to"
     ]

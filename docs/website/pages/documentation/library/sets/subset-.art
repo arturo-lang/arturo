@@ -41,7 +41,7 @@ arguments: #[
     ]
 related: [
         "Sets/superset?"
-         "Reflection/set?"
-         "Arithmetic/sub"
-         "Collections/set"
+         "Strings/upper?"
+         "Comparison/same?"
+         "Files/exists?"
     ]

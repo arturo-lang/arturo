@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Comparison/less?"
-         "Collections/key?"
-         "Collections/last"
-         "Core/let"
+        "Numbers/zero?"
+         "Numbers/even?"
+         "Reflection/set?"
+         "Collections/empty?"
     ]

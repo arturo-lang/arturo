@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/lower"
-         "Strings/upper?"
+        "Strings/upper?"
          "Strings/numeric?"
-         "Iterators/some?"
+         "Strings/whitespace?"
+         "Strings/prefix?"
     ]

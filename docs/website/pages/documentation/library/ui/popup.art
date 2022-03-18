@@ -103,8 +103,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/pop"
-         "Arithmetic/pow"
-         "Core/dup"
-         "Databases/open"
+        "Ui/clip"
+         "Ui/alert"
+         "Ui/dialog"
+         "Ui/webview"
     ]

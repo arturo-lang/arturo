@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/date?"
-         "Reflection/pathLabel?"
+        "Reflection/pathLabel?"
+         "Reflection/date?"
          "Reflection/attribute?"
          "Reflection/label?"
     ]

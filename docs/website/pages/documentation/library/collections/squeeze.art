@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/shuffle"
-         "Collections/size"
-         "Databases/query"
-         "Net/serve"
+        "Collections/insert"
+         "Collections/sample"
+         "Collections/slice"
+         "Collections/last"
     ]

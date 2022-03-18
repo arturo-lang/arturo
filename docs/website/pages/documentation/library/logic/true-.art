@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/true"
-         "Logic/false?"
-         "Core/try?"
-         "Reflection/type?"
+        "Logic/false?"
+         "Logic/xor?"
+         "Logic/nor?"
+         "Logic/or?"
     ]

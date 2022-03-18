@@ -18,8 +18,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/chop"
-         "Files/zip"
-         "Numbers/ceil"
-         "Ui/unclip"
+        "Ui/unclip"
+         "Ui/alert"
+         "Ui/popup"
+         "Ui/dialog"
     ]

@@ -20,7 +20,7 @@ arguments: #[
     ]
 related: [
         "Reflection/binary?"
-         "Reflection/date?"
-         "Reflection/null?"
          "Reflection/path?"
+         "Reflection/word?"
+         "Reflection/date?"
     ]

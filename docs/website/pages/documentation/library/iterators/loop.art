@@ -86,8 +86,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/chop"
-         "Collections/drop"
-         "Core/pop"
-         "Numbers/floor"
+        "Iterators/select"
+         "Iterators/fold"
+         "Iterators/filter"
+         "Iterators/map"
     ]

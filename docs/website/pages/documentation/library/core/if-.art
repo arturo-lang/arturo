@@ -38,8 +38,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/in?"
-         "Core/if"
-         "Reflection/is?"
+        "Core/if"
          "Core/unless?"
+         "Core/try?"
+         "Core/switch"
     ]

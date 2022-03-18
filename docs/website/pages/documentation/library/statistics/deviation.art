@@ -32,7 +32,7 @@ arguments: #[
     ]
 related: [
         "Statistics/variance"
-         "Converters/function"
-         "Paths/relative"
+         "Statistics/skewness"
+         "Statistics/kurtosis"
          "Statistics/median"
     ]

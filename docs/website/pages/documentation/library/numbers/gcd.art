@@ -16,8 +16,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/add"
-         "Arithmetic/mod"
-         "Binary/and"
-         "Collections/get"
+        "Numbers/acos"
+         "Numbers/acosh"
+         "Numbers/acsec"
+         "Numbers/acsech"
     ]

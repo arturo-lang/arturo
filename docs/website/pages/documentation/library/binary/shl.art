@@ -32,7 +32,7 @@ arguments: #[
     ]
 related: [
         "Binary/shr"
-         "Arithmetic/mul"
-         "Arithmetic/sub"
-         "Collections/set"
+         "Binary/or"
+         "Binary/xor"
+         "Binary/nor"
     ]

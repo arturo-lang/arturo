@@ -59,8 +59,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/case"
-         "Crypto/encode"
+        "Strings/strip"
          "Strings/wordwrap"
-         "Collections/sample"
+         "Strings/truncate"
+         "Strings/prefix"
     ]

@@ -6,8 +6,8 @@ returns: [
         :floating
     ]
 related: [
-        "Arithmetic/div"
-         "Arithmetic/pow"
-         "Binary/or"
-         "Collections/min"
+        "Numbers/ceil"
+         "Numbers/sinh"
+         "Numbers/asinh"
+         "Numbers/powmod"
     ]

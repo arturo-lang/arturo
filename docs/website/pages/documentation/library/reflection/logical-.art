@@ -26,6 +26,6 @@ arguments: #[
 related: [
         "Reflection/literal?"
          "Reflection/block?"
+         "Reflection/floating?"
          "Reflection/label?"
-         "Reflection/binary?"
     ]

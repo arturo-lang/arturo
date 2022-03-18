@@ -37,7 +37,7 @@ arguments: #[
     ]
 related: [
         "Arithmetic/mod"
-         "Arithmetic/pow"
          "Arithmetic/sub"
-         "Binary/shl"
+         "Arithmetic/pow"
+         "Numbers/sum"
     ]

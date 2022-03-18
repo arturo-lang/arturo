@@ -31,7 +31,7 @@ arguments: #[
     ]
 related: [
         "Logic/nand?"
-         "Binary/and"
-         "Logic/any?"
          "Logic/nor?"
+         "Logic/xnor?"
+         "Logic/or?"
     ]

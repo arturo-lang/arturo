@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/div"
-         "Collections/min"
-         "Core/dup"
-         "Core/if"
+        "Files/copy"
+         "Files/write"
+         "Files/permissions"
+         "Files/unzip"
     ]

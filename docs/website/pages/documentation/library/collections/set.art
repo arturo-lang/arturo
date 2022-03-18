@@ -47,7 +47,7 @@ arguments: #[
     ]
 related: [
         "Collections/get"
-         "Core/let"
-         "Numbers/sec"
-         "Reflection/set?"
+         "Collections/insert"
+         "Collections/permutate"
+         "Collections/squeeze"
     ]

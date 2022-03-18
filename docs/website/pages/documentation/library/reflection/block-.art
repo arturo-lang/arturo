@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/word?"
-         "Reflection/binary?"
-         "Reflection/char?"
-         "Reflection/date?"
+        "Reflection/logical?"
+         "Reflection/word?"
+         "Reflection/null?"
+         "Reflection/symbol?"
     ]

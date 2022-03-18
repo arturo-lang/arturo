@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/pow"
-         "Binary/not"
-         "Core/pop"
-         "Io/input"
+        "Numbers/floor"
+         "Numbers/actanh"
+         "Numbers/product"
+         "Numbers/acosh"
     ]

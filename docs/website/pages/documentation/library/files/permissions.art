@@ -46,8 +46,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sin"
-         "Reflection/is?"
-         "Numbers/sqrt"
-         "Strings/indent"
+        "Files/exists?"
+         "Files/symlink"
+         "Files/zip"
+         "Files/write"
     ]

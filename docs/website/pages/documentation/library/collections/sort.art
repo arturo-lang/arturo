@@ -59,8 +59,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/sqrt"
-         "Binary/nor"
-         "Binary/not"
-         "Binary/or"
+        "Collections/insert"
+         "Collections/set"
+         "Collections/get"
+         "Collections/size"
     ]

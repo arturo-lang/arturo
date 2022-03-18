@@ -51,7 +51,7 @@ arguments: #[
     ]
 related: [
         "Collections/set"
-         "Core/let"
-         "Arithmetic/dec"
-         "Arithmetic/neg"
+         "Collections/insert"
+         "Collections/extend"
+         "Collections/keys"
     ]

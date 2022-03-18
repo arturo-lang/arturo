@@ -33,8 +33,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/mul"
-         "Collections/max"
+        "Net/download"
+         "Statistics/median"
+         "Strings/match"
          "Collections/min"
-         "Core/call"
     ]

@@ -23,7 +23,7 @@ arguments: #[
     ]
 related: [
         "Binary/nor"
-         "Dates/now"
-         "Logic/not?"
-         "Arithmetic/mod"
+         "Binary/xnor"
+         "Binary/xor"
+         "Binary/nand"
     ]

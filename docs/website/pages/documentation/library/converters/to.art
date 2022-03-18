@@ -100,8 +100,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/do"
-         "Arithmetic/mod"
-         "Arithmetic/pow"
-         "Binary/nor"
+        "Converters/dictionary"
+         "Converters/from"
+         "Converters/as"
+         "Strings/lower"
     ]

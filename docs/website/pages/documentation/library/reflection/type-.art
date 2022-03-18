@@ -21,7 +21,7 @@ arguments: #[
     ]
 related: [
         "Reflection/date?"
-         "Reflection/type"
-         "Reflection/char?"
-         "Reflection/label?"
+         "Reflection/literal?"
+         "Reflection/integer?"
+         "Reflection/regex?"
     ]

@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/insert"
-         "Core/else"
-         "Crypto/encode"
-         "Arithmetic/sub"
+        "Core/else"
+         "Core/return"
+         "Core/continue"
+         "Core/unless"
     ]

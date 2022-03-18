@@ -25,8 +25,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/empty"
-         "Iterators/every?"
+        "Collections/sorted?"
          "Collections/key?"
-         "Collections/sorted?"
+         "Collections/contains?"
+         "Collections/in?"
     ]

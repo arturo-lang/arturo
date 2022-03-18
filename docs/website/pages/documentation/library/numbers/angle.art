@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/range"
-         "Binary/and"
-         "Collections/sample"
-         "System/null"
+        "Numbers/tan"
+         "Numbers/tanh"
+         "Numbers/sinh"
+         "Numbers/sin"
     ]

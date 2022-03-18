@@ -26,6 +26,6 @@ arguments: #[
 related: [
         "Core/if?"
          "Core/unless"
-         "Arithmetic/div"
-         "Arithmetic/inc"
+         "Core/switch"
+         "Core/else"
     ]

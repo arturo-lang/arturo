@@ -30,8 +30,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Logic/nor?"
-         "Logic/xor?"
-         "Logic/xnor?"
-         "Binary/or"
+        "Logic/xor?"
+         "Logic/nor?"
+         "Logic/and?"
+         "Logic/not?"
     ]

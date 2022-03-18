@@ -63,8 +63,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Converters/with"
-         "Core/while"
-         "Reflection/arity"
-         "Collections/size"
+        "Files/volume"
+         "Files/rename"
+         "Files/zip"
+         "Files/delete"
     ]

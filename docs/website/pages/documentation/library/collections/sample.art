@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Comparison/same?"
-         "Numbers/angle"
-         "Collections/max"
+        "Collections/max"
          "Collections/min"
+         "Collections/chop"
+         "Collections/combine"
     ]

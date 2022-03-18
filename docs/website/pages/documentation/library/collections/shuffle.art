@@ -23,8 +23,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/suffix"
-         "Binary/shl"
-         "Collections/sample"
-         "Collections/squeeze"
+        "Collections/unique"
+         "Collections/size"
+         "Collections/empty"
+         "Collections/slice"
     ]

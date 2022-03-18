@@ -23,8 +23,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/negative?"
-         "Collections/remove"
-         "Files/delete"
-         "Files/rename"
+        "Paths/normalize"
+         "Paths/module"
+         "Paths/list"
+         "Paths/path"
     ]

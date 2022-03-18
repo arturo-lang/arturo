@@ -44,8 +44,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/and"
-         "Collections/extend"
+        "Collections/sample"
          "Collections/remove"
-         "Colors/blend"
+         "Collections/index"
+         "Collections/max"
     ]

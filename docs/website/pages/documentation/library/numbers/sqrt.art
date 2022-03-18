@@ -32,8 +32,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/sort"
-         "Binary/shr"
-         "Collections/set"
-         "Arithmetic/sub"
+        "Numbers/digits"
+         "Numbers/factors"
+         "Numbers/sin"
+         "Numbers/csec"
     ]

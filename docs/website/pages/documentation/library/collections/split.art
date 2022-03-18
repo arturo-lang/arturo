@@ -75,8 +75,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Colors/spin"
-         "Binary/shl"
-         "Collections/set"
+        "Collections/set"
          "Collections/slice"
+         "Collections/empty"
+         "Collections/flatten"
     ]

@@ -50,8 +50,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/add"
-         "Arithmetic/mod"
-         "Arithmetic/pow"
-         "Binary/and"
+        "Strings/jaro"
+         "Strings/match"
+         "Strings/wordwrap"
+         "Strings/replace"
     ]

@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/date?"
-         "Reflection/integer?"
-         "Reflection/label?"
+        "Reflection/integer?"
+         "Reflection/word?"
          "Reflection/type?"
+         "Reflection/date?"
     ]

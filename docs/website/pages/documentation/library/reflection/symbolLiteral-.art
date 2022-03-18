@@ -22,5 +22,5 @@ related: [
         "Reflection/literal?"
          "Reflection/symbol?"
          "Reflection/logical?"
-         "Reflection/binary?"
+         "Reflection/pathLabel?"
     ]

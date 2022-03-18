@@ -26,7 +26,7 @@ arguments: #[
     ]
 related: [
         "Reflection/attr"
+         "Reflection/arity"
          "Reflection/attr?"
-         "Converters/as"
-         "Core/alias"
+         "Reflection/symbols"
     ]

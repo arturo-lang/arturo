@@ -45,8 +45,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/last"
-         "Collections/slice"
-         "Collections/values"
-         "Converters/array"
+        "Core/var"
+         "Core/let"
+         "Core/call"
+         "Core/ensure"
     ]

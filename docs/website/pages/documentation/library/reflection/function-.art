@@ -35,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Converters/function"
-         "Reflection/floating?"
-         "Reflection/dictionary?"
+        "Reflection/floating?"
          "Reflection/inline?"
+         "Reflection/dictionary?"
+         "Reflection/string?"
     ]

@@ -22,8 +22,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Iterators/loop"
-         "Binary/nor"
-         "Binary/or"
-         "Binary/xnor"
+        "Numbers/log"
+         "Numbers/ln"
+         "Numbers/hypot"
+         "Numbers/cos"
     ]

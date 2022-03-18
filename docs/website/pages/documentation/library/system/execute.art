@@ -47,8 +47,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/ensure"
-         "Crypto/decode"
-         "Crypto/encode"
-         "Files/delete"
+        "System/env"
+         "System/script"
+         "System/panic"
+         "System/exit"
     ]

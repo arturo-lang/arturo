@@ -21,6 +21,6 @@ arguments: #[
 related: [
         "Reflection/attribute?"
          "Reflection/pathLabel?"
-         "Reflection/literal?"
+         "Reflection/date?"
          "Reflection/database?"
     ]

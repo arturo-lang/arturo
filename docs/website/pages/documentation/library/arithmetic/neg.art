@@ -26,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/new"
-         "Arithmetic/dec"
-         "Binary/nor"
-         "Binary/not"
+        "Arithmetic/dec"
+         "Arithmetic/div"
+         "Arithmetic/fdiv"
+         "Arithmetic/add"
     ]

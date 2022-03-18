@@ -6,8 +6,8 @@ returns: [
         :floating
     ]
 related: [
-        "Reflection/inline?"
-         "Strings/indent"
-         "Collections/first"
-         "Collections/insert"
+        "Numbers/asin"
+         "Numbers/sin"
+         "Numbers/digits"
+         "Numbers/factors"
     ]

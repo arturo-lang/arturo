@@ -35,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/log"
-         "Arithmetic/div"
-         "Collections/drop"
-         "Core/call"
+        "Ui/alert"
+         "Ui/clip"
+         "Ui/popup"
+         "Ui/webview"
     ]

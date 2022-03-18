@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/type?"
-         "Collections/take"
-         "Crypto/hash"
-         "Logic/true"
+        "Reflection/attr"
+         "Reflection/attrs"
+         "Reflection/inspect"
+         "Paths/module"
     ]

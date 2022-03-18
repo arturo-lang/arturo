@@ -20,7 +20,7 @@ arguments: #[
     ]
 related: [
         "Statistics/median"
-         "Collections/reverse"
-         "Colors/saturate"
-         "Converters/array"
+         "Statistics/variance"
+         "Statistics/skewness"
+         "Statistics/deviation"
     ]

@@ -13,8 +13,8 @@ attributes: #[
 arguments: #[
     ]
 related: [
-        "Colors/blend"
-         "Core/alias"
-         "Core/break"
-         "Core/let"
+        "Io/terminal"
+         "Io/color"
+         "Io/cursor"
+         "Files/read"
     ]

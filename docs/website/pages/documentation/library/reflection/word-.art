@@ -19,8 +19,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/block?"
-         "Reflection/char?"
-         "Reflection/date?"
-         "Reflection/null?"
+        "Reflection/char?"
+         "Reflection/regex?"
+         "Reflection/block?"
+         "Reflection/string?"
     ]

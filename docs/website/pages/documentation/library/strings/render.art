@@ -35,8 +35,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/index"
-         "Files/read"
-         "Files/rename"
-         "Numbers/random"
+        "Strings/truncate"
+         "Strings/lower"
+         "Strings/replace"
+         "Strings/upper"
     ]

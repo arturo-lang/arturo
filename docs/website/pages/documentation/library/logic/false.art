@@ -6,8 +6,8 @@ returns: [
         :logical
     ]
 related: [
-        "Logic/false?"
-         "Logic/maybe"
+        "Logic/maybe"
          "Logic/true"
-         "Core/case"
+         "Ui/unclip"
+         "Logic/false?"
     ]

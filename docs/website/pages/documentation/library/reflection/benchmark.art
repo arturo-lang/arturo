@@ -36,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/escape"
-         "Numbers/round"
-         "Collections/empty"
-         "Crypto/hash"
+        "Reflection/stack"
+         "Reflection/inspect"
+         "Reflection/symbols"
+         "Reflection/binary?"
     ]

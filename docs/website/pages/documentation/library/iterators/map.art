@@ -36,8 +36,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/max"
-         "Arithmetic/mod"
-         "Arithmetic/mul"
-         "Collections/min"
+        "Iterators/loop"
+         "Iterators/select"
+         "Collections/max"
+         "Collections/append"
     ]

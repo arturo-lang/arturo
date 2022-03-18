@@ -21,8 +21,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Sets/intersection"
-         "Sets/difference"
+        "Sets/difference"
+         "Sets/intersection"
          "Sets/union"
-         "Collections/reverse"
+         "Sets/superset?"
     ]

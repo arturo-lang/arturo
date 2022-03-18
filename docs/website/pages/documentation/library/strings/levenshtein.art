@@ -1,7 +1,7 @@
 name: "levenshtein"
 type: :function
 module: "Strings"
-description: "calculate Levenshtein distance between given strings"
+description: "calculate Levenshtein distance/similarity between given strings"
 returns: [
         :integer
          :block
@@ -40,8 +40,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Strings/jaro"
-         "Collections/reverse"
-         "Colors/lighten"
-         "Core/ensure"
+        "Strings/replace"
+         "Strings/outdent"
+         "Strings/jaro"
+         "Strings/render"
     ]

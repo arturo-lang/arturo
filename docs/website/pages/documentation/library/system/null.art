@@ -7,7 +7,7 @@ returns: [
     ]
 related: [
         "System/script"
-         "Reflection/null?"
-         "Arithmetic/mul"
-         "Core/call"
+         "System/pause"
+         "System/sys"
+         "System/env"
     ]

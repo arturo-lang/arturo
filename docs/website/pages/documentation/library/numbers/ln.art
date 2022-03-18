@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Binary/and"
-         "Binary/or"
-         "Collections/in?"
+        "Numbers/log"
+         "Numbers/tanh"
+         "Numbers/angle"
+         "Numbers/sinh"
     ]

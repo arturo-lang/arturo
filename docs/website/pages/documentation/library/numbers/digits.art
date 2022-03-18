@@ -34,8 +34,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Crypto/digest"
-         "Arithmetic/div"
-         "Collections/first"
-         "Collections/get"
+        "Numbers/factors"
+         "Numbers/sqrt"
+         "Numbers/log"
+         "Numbers/sinh"
     ]

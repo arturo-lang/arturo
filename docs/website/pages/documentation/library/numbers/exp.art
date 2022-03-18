@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/dup"
-         "Core/pop"
-         "Files/zip"
-         "Iterators/map"
+        "Numbers/sech"
+         "Numbers/product"
+         "Numbers/ceil"
+         "Numbers/hypot"
     ]

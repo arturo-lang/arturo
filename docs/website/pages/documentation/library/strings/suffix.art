@@ -28,7 +28,7 @@ arguments: #[
     ]
 related: [
         "Strings/prefix"
-         "Strings/suffix?"
-         "Collections/shuffle"
-         "Arithmetic/fdiv"
+         "Strings/escape"
+         "Strings/join"
+         "Strings/strip"
     ]

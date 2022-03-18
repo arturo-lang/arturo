@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/switch"
-         "Files/write"
-         "Numbers/sinh"
-         "Paths/path"
+        "Converters/dictionary"
+         "Converters/function"
+         "Converters/define"
+         "Converters/array"
     ]

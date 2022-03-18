@@ -28,7 +28,7 @@ arguments: #[
     ]
 related: [
         "Numbers/sec"
+         "Numbers/cos"
          "Numbers/acsec"
-         "Numbers/asec"
          "Numbers/csech"
     ]

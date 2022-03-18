@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/insert"
-         "Colors/invert"
-         "Io/input"
-         "Strings/indent"
+        "Reflection/info"
+         "Reflection/type"
+         "Io/prints"
+         "Reflection/arity"
     ]

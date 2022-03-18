@@ -31,8 +31,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/last"
+        "Crypto/digest"
+         "Numbers/abs"
          "Converters/as"
-         "Core/case"
-         "Numbers/cosh"
+         "Numbers/asin"
     ]

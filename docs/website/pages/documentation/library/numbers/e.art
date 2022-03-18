@@ -6,8 +6,8 @@ returns: [
         :floating
     ]
 related: [
-        "Arithmetic/dec"
-         "Arithmetic/neg"
-         "Binary/or"
-         "Collections/get"
+        "Numbers/ceil"
+         "Numbers/exp"
+         "Numbers/sech"
+         "Numbers/zero?"
     ]

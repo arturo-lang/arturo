@@ -28,7 +28,7 @@ arguments: #[
     ]
 related: [
         "Numbers/csec"
-         "Arithmetic/dec"
-         "Collections/set"
          "Numbers/asec"
+         "Numbers/sin"
+         "Numbers/sech"
     ]

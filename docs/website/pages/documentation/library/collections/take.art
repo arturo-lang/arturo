@@ -31,7 +31,7 @@ arguments: #[
     ]
 related: [
         "Collections/drop"
-         "Core/case"
-         "Logic/true"
-         "Numbers/tan"
+         "Collections/permutate"
+         "Collections/repeat"
+         "Collections/sample"
     ]

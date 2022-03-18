@@ -28,7 +28,7 @@ arguments: #[
     ]
 related: [
         "Collections/size"
-         "Collections/split"
-         "Colors/spin"
-         "Core/alias"
+         "Collections/combine"
+         "Collections/insert"
+         "Collections/sample"
     ]

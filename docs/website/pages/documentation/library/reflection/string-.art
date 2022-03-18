@@ -20,8 +20,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Reflection/inline?"
-         "Reflection/floating?"
-         "Reflection/symbol?"
-         "Reflection/type?"
+        "Reflection/floating?"
+         "Reflection/integer?"
+         "Reflection/attribute?"
+         "Reflection/inline?"
     ]

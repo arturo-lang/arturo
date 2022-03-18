@@ -24,8 +24,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Numbers/asin"
-         "Numbers/asinh"
-         "Collections/in?"
-         "Collections/size"
+        "Strings/numeric?"
+         "Strings/suffix?"
+         "Strings/upper?"
+         "Strings/lower?"
     ]

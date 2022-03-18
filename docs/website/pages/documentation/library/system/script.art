@@ -7,7 +7,7 @@ returns: [
     ]
 related: [
         "System/null"
-         "Strings/strip"
-         "Collections/sort"
-         "Collections/split"
+         "System/sys"
+         "System/process"
+         "System/args"
     ]

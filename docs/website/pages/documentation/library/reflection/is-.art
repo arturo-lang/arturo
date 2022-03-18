@@ -27,8 +27,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/in?"
-         "Core/if?"
-         "Arithmetic/inc"
-         "Converters/as"
+        "Reflection/integer?"
+         "Reflection/set?"
+         "Reflection/literal?"
+         "Reflection/string?"
     ]

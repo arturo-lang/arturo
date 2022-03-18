@@ -37,8 +37,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Arithmetic/inc"
-         "Binary/and"
-         "Binary/nand"
-         "Logic/and?"
+        "System/exit"
+         "System/process"
+         "System/pause"
+         "System/env"
     ]

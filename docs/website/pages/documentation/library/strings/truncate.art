@@ -47,8 +47,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Files/rename"
-         "Logic/true"
-         "System/terminate"
-         "Collections/permutate"
+        "Strings/capitalize"
+         "Strings/render"
+         "Strings/escape"
+         "Strings/lower"
     ]

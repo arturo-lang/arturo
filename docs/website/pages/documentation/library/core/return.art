@@ -26,8 +26,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Collections/get"
-         "Collections/remove"
-         "Collections/repeat"
-         "Collections/reverse"
+        "Core/ensure"
+         "Core/new"
+         "Core/let"
+         "Core/try"
     ]

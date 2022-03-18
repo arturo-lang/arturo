@@ -29,8 +29,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Binary/and"
-         "Binary/nand"
-         "Collections/append"
-         "Collections/extend"
+        "Colors/darken"
+         "Colors/palette"
+         "Colors/spin"
+         "Colors/invert"
     ]

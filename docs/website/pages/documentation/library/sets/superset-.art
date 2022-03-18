@@ -41,7 +41,7 @@ arguments: #[
     ]
 related: [
         "Sets/subset?"
+         "Strings/upper?"
+         "Strings/whitespace?"
          "Sets/powerset"
-         "Collections/reverse"
-         "Collections/sorted?"
     ]

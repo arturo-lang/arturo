@@ -46,8 +46,8 @@ arguments: #[
         ]
     ]
 related: [
-        "Core/try"
-         "Iterators/every?"
-         "Ui/alert"
-         "Arithmetic/dec"
+        "Databases/open"
+         "Collections/take"
+         "Collections/squeeze"
+         "Strings/outdent"
     ]

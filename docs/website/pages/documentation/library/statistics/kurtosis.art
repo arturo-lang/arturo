@@ -33,6 +33,6 @@ arguments: #[
 related: [
         "Statistics/skewness"
          "Statistics/variance"
-         "Core/unless"
-         "Core/until"
+         "Statistics/deviation"
+         "Statistics/median"
     ]
