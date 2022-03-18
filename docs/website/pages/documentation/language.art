@@ -128,7 +128,7 @@ Some of the existing *aliases* in the built-in dictionary:
 %ALIAS_LIST%
 </table>
 
-> 💡 For the complete of recognized symbols in Arturo, you may have a look at [here](https://github.com/arturo-lang/arturo/blob/master/src/vm/values/value.nim#L52-L142)
+> 💡 For the complete of recognized symbols in Arturo, you may have a look at <a href="https://github.com/arturo-lang/arturo/blob/master/src/vm/values/value.nim#L52-L142" target="_blank">here</a>.
 
 <h3 id="values">Values</h3>
 
