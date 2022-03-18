@@ -62,7 +62,7 @@ Let's try to resume some key points of Arturo's no-syntax:
 
 As you can see, there is not much to learn from scratch here:
 
-Once you learn what the language [**main components**](#the-main-components) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](https://github.com/arturo-lang/arturo/wiki/Library) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
+Once you learn what the language [**main components**](#the-main-components) are & a few details about **[precedence and evaluation](#precedence-and-evaluation)**, then only with the [**Library Reference**](../library/) at hand (the built-in functions that are already there for you, available to use), you're pretty much ready to write *any* program. ;-)
 
 So, let's get to the gist of the matter!
 
@@ -794,7 +794,7 @@ print select map 1..10 'x [2*x] 'x [even? x]
 
 If you made it here, then I can assure you: you've already learned more than you need in order to be fully proficient in Arturo.
 
-Just head to the [Library Reference](https://github.com/arturo-lang/arturo/wiki/Library) and have a look at the built-in functions (with explanations and example code) and see what's already available for you or - if you want to see the language in action - just browse through the [examples/](https://github.com/arturo-lang/arturo/tree/master/examples) folder in the main source repo: there are many many *working* examples, to get more than just an idea.
+Just head to the [Library Reference](../library/) and have a look at the built-in functions (with explanations and example code) and see what's already available for you or - if you want to see the language in action - just browse through the [examples/](https://github.com/arturo-lang/arturo/tree/master/examples) folder in the main source repo: there are many many *working* examples, to get more than just an idea.
 
 **Welcome on board! :)**
 }
