@@ -1,0 +1,13 @@
+name: "null"
+type: :null
+module: "Core"
+description: "the NULL constant"
+returns: [
+        :null
+    ]
+related: [
+        "Core/call"
+         "Core/else"
+         "Core/continue"
+         "Core/until"
+    ]

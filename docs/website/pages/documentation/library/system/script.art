@@ -1,13 +1,13 @@
 name: "script"
-type: :null
+type: :dictionary
 module: "System"
 description: "embedded information about the current script"
 returns: [
-        :null
+        :dictionary
     ]
 related: [
-        "System/null"
-         "System/sys"
+        "System/sys"
          "System/process"
          "System/args"
+         "System/panic"
     ]
