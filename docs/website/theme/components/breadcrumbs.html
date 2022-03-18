@@ -26,6 +26,8 @@
             ]
             join pathItems
         ||>
-        <li class="source-link"><a href="#"><i class="ph-code-bold"></i>&nbsp;&nbsp;Source</a></li>
+        <||= if not? null? SOURCE [ ~{
+            <li class="source-link"><a target="_blank" href="|SOURCE|"><i class="ph-code-bold"></i>&nbsp;&nbsp;Source</a></li>
+        }] ||>
     </ul>
 </nav>
