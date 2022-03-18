@@ -78,7 +78,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="getting-started"><div class="holder">
   <div class="card-image has-text-centered">
-    <i class="far fa-play-circle"></i>
+    <i class="ph-play-circle-bold"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">Getting Started</h4>
@@ -89,7 +89,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="in-a-nutshell"><div class="holder">
   <div class="card-image has-text-centered">
-    <i class="far fa-hand-point-up"></i>
+    <i class="ph-hand-pointing-bold"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">In A Nutshell</h4>
@@ -100,7 +100,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="language"><div class="holder">
   <div class="card-image has-text-centered">
-    <i class="fas fa-laptop-code"></i>
+    <i class="ph-tree-bold"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">Language</h4>
@@ -113,7 +113,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="command-line"><div class="holder">
   <div class="card-image has-text-centered">
-    <i class="fas fa-terminal"></i>
+    <i class="ph-terminal-window-bold"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">Command Line</h4>
@@ -125,7 +125,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="library"><div class="holder">
   <div class="card-image has-text-centered">
-    <i class="fas fa-book-open"></i>
+    <i class="ph-books-bold"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">Library</h4>
@@ -136,7 +136,7 @@ Here's what you can find here...
 <div class="column is-4">
   <a href="examples"><div class="holder">
   <div class="card-image has-text-centered">
-    <i class="fas fa-flask"></i>
+    <i class="ph-flask-bold"></i>
   </div>
   <div class="card-content has-text-centered">
       <h4 class="is-5">Examples</h4>
