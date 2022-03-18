@@ -4,7 +4,7 @@ boxes: {:
 
 <a href="#"><div class="tile box">
   <div class="card-content has-text-centered" style="font-size:5em;">
-    <i class="far fa-play-circle"></i>
+    <i class="ph-play-circle-bold"></i>
   </div>
   <footer class="card-footer">
     <p class="card-footer-item">
@@ -15,7 +15,7 @@ boxes: {:
 
 <a href="#"><div class="tile box">
   <div class="card-content has-text-centered" style="font-size:5em;">
-    <i class="far fa-hand-point-up"></i>
+    <i class="ph-hand-pointing-bold"></i>
   </div>
   <footer class="card-footer">
     <p class="card-footer-item">
@@ -26,7 +26,7 @@ boxes: {:
 
 <a href="#"><div class="tile box">
   <div class="card-content has-text-centered" style="font-size:5em;">
-    <i class="fas fa-laptop-code"></i>
+    <i class="ph-tree-bold"></i>
   </div>
   <footer class="card-footer">
     <p class="card-footer-item">
@@ -37,7 +37,7 @@ boxes: {:
 
 <a href="#"><div class="tile box">
   <div class="card-content has-text-centered" style="font-size:5em;">
-    <i class="fas fa-terminal"></i>
+    <i class="ph-terminal-window-bold"></i>
   </div>
   <footer class="card-footer">
     <p class="card-footer-item">
@@ -48,7 +48,7 @@ boxes: {:
 
 <a href="#"><div class="tile box">
   <div class="card-content has-text-centered" style="font-size:5em;">
-    <i class="fas fa-book-open"></i>
+    <i class="ph-books-bold"></i>
   </div>
   <footer class="card-footer">
     <p class="card-footer-item">
