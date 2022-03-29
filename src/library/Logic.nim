@@ -38,12 +38,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            if all? @[2>1 "DONE"=upper "done" true] 
-                -> print "yes, all are true"
-            ; yes, all are true
-            ..........
-            print all? @[true false true true]
-            ; false
+        if all? @[2>1 "DONE"=upper "done" true] 
+            -> print "yes, all are true"
+        ; yes, all are true
+        ..........
+        print all? @[true false true true]
+        ; false
         """:
             ##########################################################
             let blk = cleanBlock(x.a)
@@ -81,14 +81,14 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            y: 5
-            
-            if and? x=2 y>5 [
-                print "yep, that's correct!"]
-            ]
-            
-            ; yep, that's correct!
+        x: 2
+        y: 5
+        
+        if and? x=2 y>5 [
+            print "yep, that's correct!"]
+        ]
+        
+        ; yep, that's correct!
         """:
             ##########################################################
             if x.kind==Logical and y.kind==Logical:
@@ -128,12 +128,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            if any? @[false 3=4 2>1] 
-                -> print "yes, one (or more) of the values is true"
-            ; yes, one (or more) of the values is true
-            ..........
-            print any? @[false false false]
-            ; false
+        if any? @[false 3=4 2>1] 
+            -> print "yes, one (or more) of the values is true"
+        ; yes, one (or more) of the values is true
+        ..........
+        print any? @[false false false]
+        ; false
         """:
             ##########################################################
             let blk = cleanBlock(x.a)
@@ -174,11 +174,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print false? 1 = 2          ; true
-            print false? 1 <> 2         ; false
-            print false? odd? 2         ; true
+        print false? 1 = 2          ; true
+        print false? 1 <> 2         ; false
+        print false? odd? 2         ; true
 
-            print false? [1 2 3]        ; false
+        print false? [1 2 3]        ; false
         """:
             ##########################################################
             if x.kind != Logical: push(newLogical(false))
@@ -200,17 +200,17 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            y: 3
-            
-            if? nand? x=2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
-            
-            ; nope, that's not correct
+        x: 2
+        y: 3
+        
+        if? nand? x=2 y=3 [
+            print "yep, that's correct!"]
+        ]
+        else [
+            print "nope, that's not correct"
+        ]
+        
+        ; nope, that's not correct
         """:
             ##########################################################
             if x.kind==Logical and y.kind==Logical:
@@ -250,17 +250,17 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            y: 3
-            
-            if? nor? x>2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
-            
-            ; nope, that's not correct
+        x: 2
+        y: 3
+        
+        if? nor? x>2 y=3 [
+            print "yep, that's correct!"]
+        ]
+        else [
+            print "nope, that's not correct"
+        ]
+        
+        ; nope, that's not correct
         """:
             ##########################################################
             if x.kind==Logical and y.kind==Logical:
@@ -299,12 +299,12 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            ready: false
-            if not? ready [
-                print "we're still not ready!"
-            ]
-            
-            ; we're still not ready!
+        ready: false
+        if not? ready [
+            print "we're still not ready!"
+        ]
+        
+        ; we're still not ready!
         """:
             ##########################################################
             if x.kind==Logical:
@@ -324,14 +324,14 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            y: 4
-            
-            if or? x=2 y>5 [
-                print "yep, that's correct!"]
-            ]
-            
-            ; yep, that's correct!
+        x: 2
+        y: 4
+        
+        if or? x=2 y>5 [
+            print "yep, that's correct!"]
+        ]
+        
+        ; yep, that's correct!
         """:
             ##########################################################
             if x.kind==Logical and y.kind==Logical:
@@ -375,11 +375,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            print true? 1 = 2           ; false
-            print true? 1 <> 2          ; true
-            print true? even? 2         ; true
+        print true? 1 = 2           ; false
+        print true? 1 <> 2          ; true
+        print true? even? 2         ; true
 
-            print true? [1 2 3]         ; false
+        print true? [1 2 3]         ; false
         """:
             ##########################################################
             if x.kind != Logical: push(newLogical(false))
@@ -396,17 +396,17 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            y: 3
-            
-            if? xnor? x=2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
-            
-            ; yep, that's not correct
+        x: 2
+        y: 3
+        
+        if? xnor? x=2 y=3 [
+            print "yep, that's correct!"]
+        ]
+        else [
+            print "nope, that's not correct"
+        ]
+        
+        ; yep, that's not correct
         """:
             ##########################################################
             var a: logical
@@ -436,17 +436,17 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            x: 2
-            y: 3
-            
-            if? xor? x=2 y=3 [
-                print "yep, that's correct!"]
-            ]
-            else [
-                print "nope, that's not correct"
-            ]
-            
-            ; nope, that's not correct
+        x: 2
+        y: 3
+        
+        if? xor? x=2 y=3 [
+            print "yep, that's correct!"]
+        ]
+        else [
+            print "nope, that's not correct"
+        ]
+        
+        ; nope, that's not correct
         """:
             ##########################################################
             var a: logical

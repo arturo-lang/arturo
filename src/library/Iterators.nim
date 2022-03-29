@@ -43,15 +43,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            if every? [2 4 6 8] 'x [even? x] 
-                -> print "every number is an even integer"
-            ; every number is an even integer
-            ..........
-            print every? 1..10 'x -> x < 11
-            ; true
-            ..........
-            print every? [2 3 5 7 11 14] 'x [prime? x]
-            ; false
+        if every? [2 4 6 8] 'x [even? x] 
+            -> print "every number is an even integer"
+        ; every number is an even integer
+        ..........
+        print every? 1..10 'x -> x < 11
+        ; true
+        ..........
+        print every? [2 3 5 7 11 14] 'x [prime? x]
+        ; false
         """:
             ##########################################################
             var args: ValueArray
@@ -96,15 +96,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
         example     = """
-            print filter 1..10 [x][
-                even? x
-            ]
-            ; 1 3 5 7 9
-            ..........
-            arr: 1..10
-            filter 'arr 'x -> even? x
-            print arr
-            ; 1 3 5 7 9
+        print filter 1..10 [x][
+            even? x
+        ]
+        ; 1 3 5 7 9
+        ..........
+        arr: 1..10
+        filter 'arr 'x -> even? x
+        print arr
+        ; 1 3 5 7 9
         """:
             ##########################################################
             var args: ValueArray
@@ -155,17 +155,17 @@ proc defineSymbols*() =
         },
         returns     = {Block,Null,Nothing},
         example     = """
-            fold 1..10 [x,y]-> x + y
-            ; => 55 (1+2+3+4..) 
-            ..........
-            fold 1..10 .seed:1 [x,y][ x * y ]
-            ; => 3628800 (10!) 
-            ..........
-            fold 1..3 [x y]-> x - y
-            ; => -6
-            ..........
-            fold.right 1..3 [x y]-> x - y
-            ; => 2
+        fold 1..10 [x,y]-> x + y
+        ; => 55 (1+2+3+4..) 
+        ..........
+        fold 1..10 .seed:1 [x,y][ x * y ]
+        ; => 3628800 (10!) 
+        ..........
+        fold 1..3 [x y]-> x - y
+        ; => -6
+        ..........
+        fold.right 1..3 [x y]-> x - y
+        ; => 2
         """:
             ##########################################################
             var args = cleanBlock(y.a)
@@ -290,47 +290,47 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-            loop [1 2 3] 'x [
-                print x
-            ]
-            ; 1
-            ; 2
-            ; 3
-            ..........
-            loop 1..3 [x][
-                print ["x =>" x]
-            ]
-            ; x => 1
-            ; x => 2
-            ; x => 3
-            ..........
-            loop [A a B b C c] [x y][
-                print [x "=>" y]
-            ]
-            ; A => a
-            ; B => b
-            ; C => c
-            ..........
-            user: #[
-                name: "John"
-                surname: "Doe"
-            ]
-            
-            loop user [k v][
-                print [k "=>" v]
-            ]
-            ; name => John
-            ; surname => Doe
-            ..........
-            loop.with:'i ["zero" "one" "two"] 'x [
-                print ["item at:" i "=>" x]
-            ]
-            ; 0 => zero
-            ; 1 => one
-            ; 2 => two
-            ..........
-            loop.forever [1 2 3] => print 
-            ; 1 2 3 1 2 3 1 2 3 ...
+        loop [1 2 3] 'x [
+            print x
+        ]
+        ; 1
+        ; 2
+        ; 3
+        ..........
+        loop 1..3 [x][
+            print ["x =>" x]
+        ]
+        ; x => 1
+        ; x => 2
+        ; x => 3
+        ..........
+        loop [A a B b C c] [x y][
+            print [x "=>" y]
+        ]
+        ; A => a
+        ; B => b
+        ; C => c
+        ..........
+        user: #[
+            name: "John"
+            surname: "Doe"
+        ]
+        
+        loop user [k v][
+            print [k "=>" v]
+        ]
+        ; name => John
+        ; surname => Doe
+        ..........
+        loop.with:'i ["zero" "one" "two"] 'x [
+            print ["item at:" i "=>" x]
+        ]
+        ; 0 => zero
+        ; 1 => one
+        ; 2 => two
+        ..........
+        loop.forever [1 2 3] => print 
+        ; 1 2 3 1 2 3 1 2 3 ...
         """:
             ##########################################################
             var args: ValueArray
@@ -436,15 +436,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
         example     = """
-            print map 1..5 [x][
-                2*x
-            ]
-            ; 2 4 6 8 10
-            ..........
-            arr: 1..5
-            map 'arr 'x -> 2*x
-            print arr
-            ; 2 4 6 8 10
+        print map 1..5 [x][
+            2*x
+        ]
+        ; 2 4 6 8 10
+        ..........
+        arr: 1..5
+        map 'arr 'x -> 2*x
+        print arr
+        ; 2 4 6 8 10
         """:
             ##########################################################
             var args: ValueArray
@@ -488,15 +488,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
         example     = """
-            print select 1..10 [x][
-                even? x
-            ]
-            ; 2 4 6 8 10
-            ..........
-            arr: 1..10
-            select 'arr 'x -> even? x
-            print arr
-            ; 2 4 6 8 10
+        print select 1..10 [x][
+            even? x
+        ]
+        ; 2 4 6 8 10
+        ..........
+        arr: 1..10
+        select 'arr 'x -> even? x
+        print arr
+        ; 2 4 6 8 10
         """:
             ##########################################################
             var args: ValueArray
@@ -544,15 +544,15 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Logical},
         example     = """
-            if some? [1 3 5 6 7] 'x [even? x] 
-                -> print "at least one number is an even integer"
-            ; at least one number is an even integer
-            ..........
-            print some? 1..10 'x -> x > 9
-            ; true
-            ..........
-            print some? [4 6 8 10] 'x [prime? x]
-            ; false
+        if some? [1 3 5 6 7] 'x [even? x] 
+            -> print "at least one number is an even integer"
+        ; at least one number is an even integer
+        ..........
+        print some? 1..10 'x -> x > 9
+        ; true
+        ..........
+        print some? [4 6 8 10] 'x [prime? x]
+        ; false
         """:
             ##########################################################
             var args: ValueArray
