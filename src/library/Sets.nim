@@ -44,16 +44,16 @@ proc defineSymbols*() =
         },
         returns     = {Block,Nothing},
         example     = """
-        print difference [1 2 3 4] [3 4 5 6]
-        ; 1 2
-        ..........
-        a: [1 2 3 4]
-        b: [3 4 5 6]
-        difference 'a b
-        ; a: [1 2]
-        ..........
-        print difference.symmetric [1 2 3 4] [3 4 5 6]
-        ; 1 2 5 6
+            print difference [1 2 3 4] [3 4 5 6]
+            ; 1 2
+            ..........
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            difference 'a b
+            ; a: [1 2]
+            ..........
+            print difference.symmetric [1 2 3 4] [3 4 5 6]
+            ; 1 2 5 6
         """:
             ##########################################################
             if (popAttr("symmetric")!=VNULL):
@@ -78,13 +78,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
         example     = """
-        print intersection [1 2 3 4] [3 4 5 6]
-        ; 3 4
-        ..........
-        a: [1 2 3 4]
-        b: [3 4 5 6]
-        intersection 'a b
-        ; a: [3 4]
+            print intersection [1 2 3 4] [3 4 5 6]
+            ; 3 4
+            ..........
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            intersection 'a b
+            ; a: [3 4]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -102,8 +102,8 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
         example     = """
-        powerset [1 2 3]
-        ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
+            powerset [1 2 3]
+            ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
             ##########################################################
             if x.kind==Literal:
@@ -124,20 +124,20 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-        subset? [1 3] [1 2 3 4]
-        ; => true
+            subset? [1 3] [1 2 3 4]
+            ; => true
 
-        subset?.proper [1 3] [1 2 3 4]
-        ; => true
+            subset?.proper [1 3] [1 2 3 4]
+            ; => true
 
-        subset? [1 3] [3 5 6]
-        ; => false
+            subset? [1 3] [3 5 6]
+            ; => false
 
-        subset? [1 3] [1 3]
-        ; => true
+            subset? [1 3] [1 3]
+            ; => true
 
-        subset?.proper [1 3] [1 3]
-        ; => false
+            subset?.proper [1 3] [1 3]
+            ; => false
         """:
             ##########################################################
             if (popAttr("proper")!=VNULL):
@@ -180,20 +180,20 @@ proc defineSymbols*() =
         },
         returns     = {Logical},
         example     = """
-        superset? [1 2 3 4] [1 3]
-        ; => true
+            superset? [1 2 3 4] [1 3]
+            ; => true
 
-        superset?.proper [1 2 3 4] [1 3]
-        ; => true
+            superset?.proper [1 2 3 4] [1 3]
+            ; => true
 
-        superset? [3 5 6] [1 3]
-        ; => false
+            superset? [3 5 6] [1 3]
+            ; => false
 
-        superset? [1 3] [1 3]
-        ; => true
+            superset? [1 3] [1 3]
+            ; => true
 
-        superset?.proper [1 3] [1 3]
-        ; => false
+            superset?.proper [1 3] [1 3]
+            ; => false
         """:
             ##########################################################
             if (popAttr("proper")!=VNULL):
@@ -234,13 +234,13 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Block,Nothing},
         example     = """
-        print union [1 2 3 4] [3 4 5 6]
-        ; 1 2 3 4 5 6
-        ..........
-        a: [1 2 3 4]
-        b: [3 4 5 6]
-        union 'a b
-        ; a: [1 2 3 4 5 6]
+            print union [1 2 3 4] [3 4 5 6]
+            ; 1 2 3 4 5 6
+            ..........
+            a: [1 2 3 4]
+            b: [3 4 5 6]
+            union 'a b
+            ; a: [1 2 3 4 5 6]
         """:
             ##########################################################
             if x.kind==Literal:

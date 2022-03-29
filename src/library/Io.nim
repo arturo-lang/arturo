@@ -57,7 +57,7 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-        clear             ; (clears the screen)
+            clear             ; (clears the screen)
         """:
             ##########################################################
             clearTerminal()
@@ -78,8 +78,8 @@ proc defineSymbols*() =
         },
         returns     = {String},
         example     = """
-        print color #green "Hello!"                ; Hello! (in green)
-        print color #red.bold "Some text"          ; Some text (in red/bold)
+            print color #green "Hello!"                ; Hello! (in green)
+            print color #red.bold "Some text"          ; Some text (in red/bold)
         """:
             ##########################################################
             var color = ""
@@ -248,7 +248,7 @@ proc defineSymbols*() =
         },
         returns     = {Nothing},
         example     = """
-        print "Hello world!"          ; Hello world!
+            print "Hello world!"          ; Hello world!
         """:
             ##########################################################
             if x.kind==Block:
@@ -285,11 +285,11 @@ proc defineSymbols*() =
         attrs       = NoAttrs,
         returns     = {Nothing},
         example     = """
-        prints "Hello "
-        prints "world"
-        print "!"             
-        
-        ; Hello world!
+            prints "Hello "
+            prints "world"
+            print "!"             
+            
+            ; Hello world!
         """:
             ##########################################################
             when defined(WEB):
