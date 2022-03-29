@@ -8,12 +8,23 @@ returns: [
     ]
 examples: [
         {
-            serve .port:18966 #[
-                "/":                          [ "This is the homepage" ]
-                "/post/(?<title>[a-z]+)":     [ render "We are in post: |title|" ]
+            serve .port:18966 [
+                
+                GET "/"                     [ "This is the homepage" ]
+                GET "/post"                 $[id][ 
+                                                send.html ~"This is the post with id: |id|" 
+                                            ]                
+                POST "/getinfo"             $[id][ 
+                                                send.json write.json ø #[
+                                                    i: id
+                                                    msg: "This is some info"
+                                                ] 
+                                            ]
             ]
             
-            ; (run the app and go to localhost:18966 - that was it!)
+            ; run the app and go to localhost:18966 - that was it!
+            ; the app will respond to GET requests to "/" or "/post?id=..."
+            ; and also POST requests to "/getinfo" with an 'id' parameter
         }
     ]
 attributes: #[

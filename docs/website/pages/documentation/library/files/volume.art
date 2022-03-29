@@ -9,8 +9,8 @@ returns: [
 examples: [
         {
             volume "README.md"
-                ; => 13704 
-                ; (size in bytes)
+            ; => 13704 
+            ; (size in bytes)
         }
     ]
 attributes: #[

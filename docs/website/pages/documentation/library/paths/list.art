@@ -9,7 +9,7 @@ returns: [
 examples: [
         {
             loop list "." 'file [
-            ___print file
+                print file
             ]
             
             ; tests

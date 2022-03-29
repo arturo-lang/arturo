@@ -9,11 +9,11 @@ returns: [
 examples: [
         {
             selectedFile: dialog "Select a file to open"
-                ; gets full path for selected file, after dialog closes
+            ; gets full path for selected file, after dialog closes
         }
          {
-                selectedFolder: dialog.folder "Select a folder"
-                ; same as above, only for folder selection
+            selectedFolder: dialog.folder "Select a folder"
+            ; same as above, only for folder selection
         }
     ]
 attributes: #[

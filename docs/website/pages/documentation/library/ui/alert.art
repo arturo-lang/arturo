@@ -9,10 +9,10 @@ returns: [
 examples: [
         {
             alert "Hello!" "This is a notification..."
-                ; show an OS notification without any styling
+            ; show an OS notification without any styling
             
-                alert.error "Ooops!" "Something went wrong!"
-                ; show an OS notification with an error message
+            alert.error "Ooops!" "Something went wrong!"
+            ; show an OS notification with an error message
         }
     ]
 attributes: #[
