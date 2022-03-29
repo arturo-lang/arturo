@@ -9,11 +9,11 @@ returns: [
 examples: [
         {
             ; paste something into the clipboard (optionally)
-                clip "this is something to be pasted into the clipboard"
+            clip "this is something to be pasted into the clipboard"
             
-                ; now, let's fetch whatever there is in the clipboard
-                unclip 
-                ; => "this is something to be pasted into the clipboard"
+            ; now, let's fetch whatever there is in the clipboard
+            unclip 
+            ; => "this is something to be pasted into the clipboard"
         }
     ]
 attributes: #[
